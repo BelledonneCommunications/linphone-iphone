@@ -129,6 +129,63 @@ static void linphone_vcard_update_existing_friends_test(void) {
 	lf = NULL;
 }
 
+static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
+	LinphoneVcard *lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nIMPP;TYPE=home:sip:sylvain@sip.linphone.org\r\nTEL;TYPE=work:0952636505\r\nEND:VCARD\r\n");
+	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
+	MSList *sip_addresses = linphone_friend_get_addresses(lf);
+	MSList *phone_numbers = linphone_friend_get_phone_numbers(lf);
+	LinphoneAddress *addr = NULL;
+	
+	BC_ASSERT_EQUAL(ms_list_size(sip_addresses), 2, int, "%i");
+	BC_ASSERT_EQUAL(ms_list_size(phone_numbers), 1, int, "%i");
+	if (sip_addresses) ms_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
+	if (phone_numbers) ms_list_free(phone_numbers);
+	linphone_friend_unref(lf);
+	
+	lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nTEL;TYPE=work:0952636505\r\nTEL:0476010203\r\nEND:VCARD\r\n");
+	lf = linphone_friend_new_from_vcard(lvc);
+	sip_addresses = linphone_friend_get_addresses(lf);
+	phone_numbers = linphone_friend_get_phone_numbers(lf);
+	
+	BC_ASSERT_EQUAL(ms_list_size(sip_addresses), 0, int, "%i");
+	BC_ASSERT_EQUAL(ms_list_size(phone_numbers), 2, int, "%i");
+	if (sip_addresses) ms_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
+	if (phone_numbers) ms_list_free(phone_numbers);
+	
+	addr = linphone_address_new("sip:sylvain@sip.linphone.org");
+	linphone_friend_add_address(lf, addr);
+	linphone_address_unref(addr);
+	sip_addresses = linphone_friend_get_addresses(lf);
+	BC_ASSERT_EQUAL(ms_list_size(sip_addresses), 1, int, "%i");
+	if (sip_addresses) ms_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
+	
+	linphone_friend_remove_phone_number(lf, "0952636505");
+	phone_numbers = linphone_friend_get_phone_numbers(lf);
+	BC_ASSERT_EQUAL(ms_list_size(phone_numbers), 1, int, "%i");
+	if (phone_numbers) ms_list_free(phone_numbers);
+	
+	linphone_friend_remove_phone_number(lf, "0476010203");
+	phone_numbers = linphone_friend_get_phone_numbers(lf);
+	BC_ASSERT_EQUAL(ms_list_size(phone_numbers), 0, int, "%i");
+	if (phone_numbers) ms_list_free(phone_numbers);
+	
+	addr = linphone_address_new("sip:sylvain@sip.linphone.org");
+	linphone_friend_remove_address(lf, addr);
+	linphone_address_unref(addr);
+	sip_addresses = linphone_friend_get_addresses(lf);
+	BC_ASSERT_EQUAL(ms_list_size(sip_addresses), 0, int, "%i");
+	if (sip_addresses) ms_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
+	
+	linphone_friend_add_phone_number(lf, "+33952636505");
+	phone_numbers = linphone_friend_get_phone_numbers(lf);
+	BC_ASSERT_EQUAL(ms_list_size(phone_numbers), 1, int, "%i");
+	if (phone_numbers) ms_list_free(phone_numbers);
+	
+	linphone_friend_unref(lf);
+	lf = NULL;
+	lvc = NULL;
+}
+
 static void friends_if_no_db_set(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
 	LinphoneFriend *lf = linphone_core_create_friend(manager->lc);
@@ -663,6 +720,7 @@ test_t vcard_tests[] = {
 	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
 	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
 	{ "vCard creation for existing friends", linphone_vcard_update_existing_friends_test },
+	{ "vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses },
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 	{ "Friends working if no db set", friends_if_no_db_set },
 	{ "Friends storage migration from rc to db", friends_migration },

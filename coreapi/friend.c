@@ -195,6 +195,10 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 	}
 }
 
+const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
+	return lf->uri;
+}
+
 int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr = linphone_address_clone(addr);
 	LinphoneVcard *vcard = NULL;
@@ -209,6 +213,106 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 	}
 	
 	return 0;
+}
+
+void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !addr) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_add_sip_address(vcard, linphone_address_as_string_uri_only(addr));
+}
+
+MSList* linphone_friend_get_addresses(LinphoneFriend *lf) {
+	LinphoneVcard *vcard = NULL;
+	MSList *sipAddresses = NULL;
+	MSList *addresses = NULL;
+	MSList *iterator = NULL;
+	
+	if (!lf) {
+		return NULL;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return NULL;
+	}
+	
+	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
+	iterator = sipAddresses;
+	while (iterator) {
+		const char *sipAddress = (const char *)iterator->data;
+		LinphoneAddress *addr = linphone_address_new(sipAddress);
+		if (addr) {
+			addresses = ms_list_append(addresses, addr);
+		}
+		iterator = ms_list_next(iterator);
+	}
+	if (sipAddresses) ms_list_free(sipAddresses);
+	return addresses;
+}
+
+void linphone_friend_remove_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !addr) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_remove_sip_address(vcard, linphone_address_as_string_uri_only(addr));
+}
+
+void linphone_friend_add_phone_number(LinphoneFriend *lf, const char *phone) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !phone) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_add_phone_number(vcard, phone);
+}
+
+MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf) {
+	LinphoneVcard *vcard = NULL;
+	
+	if (!lf) {
+		return NULL;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return NULL;
+	}
+	
+	return linphone_vcard_get_phone_numbers(vcard);
+}
+
+void linphone_friend_remove_phone_number(LinphoneFriend *lf, const char *phone) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !phone) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_remove_phone_number(vcard, phone);
 }
 
 int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
@@ -332,10 +436,6 @@ static belle_sip_error_code _linphone_friend_marshall(belle_sip_object_t *obj, c
 		ms_free(tmp);
 	}
 	return err;
-}
-
-const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
-	return lf->uri;
 }
 
 const char * linphone_friend_get_name(const LinphoneFriend *lf) {
@@ -915,6 +1015,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 			linphone_friend_set_address(fr, linphone_address);
 			linphone_address_unref(linphone_address);
 		}
+		ms_free(sipAddresses);
 	}
 	if (name) {
 		linphone_friend_set_name(fr, name);

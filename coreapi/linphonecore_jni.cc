@@ -3442,8 +3442,72 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscription
 	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr, (LinphoneProxyConfig*)proxyConfigPtr, jonlyWhenRegistered);
 }
 
+extern "C" jlongArray Java_org_linphone_core_LinphoneFriendImpl_getAddresses(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	MSList *addresses = linphone_friend_get_addresses((LinphoneFriend*)ptr);
+	int size = ms_list_size(addresses);
+	jlongArray jaddresses = env->NewLongArray(size);
+	jlong *jInternalArray = env->GetLongArrayElements(jaddresses, NULL);
+	for (int i = 0; i < size; i++) {
+		jInternalArray[i] = (unsigned long) (addresses->data);
+		addresses = ms_list_next(addresses);
+	}
+	ms_list_free(addresses);
+	env->ReleaseLongArrayElements(jaddresses, jInternalArray, 0);
+	return jaddresses;
+}
 
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_addAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jlong jaddress) {
+	linphone_friend_add_address((LinphoneFriend*)ptr, (LinphoneAddress*)jaddress);
+}
 
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_removeAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jlong jaddress) {
+	linphone_friend_remove_address((LinphoneFriend*)ptr, (LinphoneAddress*)jaddress);
+}
+
+extern "C" jobjectArray Java_org_linphone_core_LinphoneFriendImpl_getPhoneNumbers(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	MSList *phone_numbers = linphone_friend_get_phone_numbers((LinphoneFriend*)ptr);
+	int size = ms_list_size(phone_numbers);
+	jobjectArray jphonenumbers = env->NewObjectArray(size, env->FindClass("java/lang/String"), env->NewStringUTF(""));
+	for (int i = 0; i < size; i++) {
+		const char *phone = (const char *)phone_numbers->data;
+		env->SetObjectArrayElement(jphonenumbers, i, env->NewStringUTF(phone));
+		phone_numbers = ms_list_next(phone_numbers);
+	}
+	ms_list_free(phone_numbers);
+	return jphonenumbers;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_addPhoneNumber(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jphone) {
+	if (jphone) {
+		const char* phone = env->GetStringUTFChars(jphone, NULL);
+		linphone_friend_add_phone_number((LinphoneFriend*)ptr, phone);
+		env->ReleaseStringUTFChars(jphone, phone);
+	}
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_removePhoneNumber(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jphone) {
+	if (jphone) {
+		const char* phone = env->GetStringUTFChars(jphone, NULL);
+		linphone_friend_remove_phone_number((LinphoneFriend*)ptr, phone);
+		env->ReleaseStringUTFChars(jphone, phone);
+	}
+}
 
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_getAddress(JNIEnv*  env
 																		,jobject  thiz

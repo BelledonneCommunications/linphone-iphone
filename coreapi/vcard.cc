@@ -163,6 +163,37 @@ MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
 	return result;
 }
 
+void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone) {
+	if (!vCard || !phone) return;
+	
+	shared_ptr<belcard::BelCardPhoneNumber> phone_number = belcard::BelCardGeneric::create<belcard::BelCardPhoneNumber>();
+	phone_number->setValue(phone);
+	vCard->belCard->addPhoneNumber(phone_number);
+}
+
+void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone) {
+	if (!vCard) return;
+	
+	for (auto it = vCard->belCard->getPhoneNumbers().begin(); it != vCard->belCard->getPhoneNumbers().end(); ++it) {
+		const char *value = (*it)->getValue().c_str();
+		if (strcmp(value, phone) == 0) {
+			vCard->belCard->removePhoneNumber(*it);
+			break;
+		}
+	}
+}
+
+MSList* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
+	MSList *result = NULL;
+	if (!vCard) return NULL;
+	
+	for (auto it = vCard->belCard->getPhoneNumbers().begin(); it != vCard->belCard->getPhoneNumbers().end(); ++it) {
+		const char *value = (*it)->getValue().c_str();
+		result = ms_list_append(result, (char *)value);
+	}
+	return result;
+}
+
 void linphone_vcard_set_organization(LinphoneVcard *vCard, const char *organization) {
 	if (!vCard) return;
 	
