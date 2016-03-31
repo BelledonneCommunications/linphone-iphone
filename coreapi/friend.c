@@ -460,6 +460,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 	LinphoneOnlineStatus online_status = LinphoneStatusOffline;
 	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusClosed;
 	LinphonePresenceActivity *activity = NULL;
+	const char *description = NULL;
 	unsigned int nb_activities = 0;
 
 	if (lf->presence != NULL) {
@@ -476,6 +477,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 		}
 		if (nb_activities == 1) {
 			activity = linphone_presence_model_get_activity(lf->presence);
+			description = linphone_presence_activity_get_description(activity);
 			switch (linphone_presence_activity_get_type(activity)) {
 				case LinphonePresenceActivityBreakfast:
 				case LinphonePresenceActivityDinner:
@@ -502,6 +504,12 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 					online_status = LinphoneStatusVacation;
 					break;
 				case LinphonePresenceActivityBusy:
+					if (description && strcmp(description, "Do not disturb") == 0) { // See linphonecore.c linphone_core_set_presence_info() method
+						online_status = LinphoneStatusDoNotDisturb;
+					} else {
+						online_status = LinphoneStatusBusy;
+					}
+					break;
 				case LinphonePresenceActivityLookingForWork:
 				case LinphonePresenceActivityPlaying:
 				case LinphonePresenceActivityShopping:
