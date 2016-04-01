@@ -2315,7 +2315,8 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 		return TRUE;
 	}
 
-	SoundDeviceDescription *sound_description = sound_device_description_get();
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
 	if(sound_description != NULL && sound_description == &genericSoundDeviceDescriptor){
 		return TRUE;
 	}
@@ -2323,6 +2324,19 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
 	if (ms_snd_card_get_minimal_latency(sndcard) != 0) return FALSE;
 	return TRUE;
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasCrappyOpenGL(JNIEnv *env, jobject thiz, jlong lcptr) {
+	LinphoneCore *lc = (LinphoneCore*) lcptr;
+	MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
+	if (sound_description != NULL && sound_description == &genericSoundDeviceDescriptor){
+		return FALSE;
+	}
+
+	if (sound_description->flags & DEVICE_HAS_CRAPPY_OPENGL) return TRUE;
+	return FALSE;
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasBuiltInEchoCanceler(JNIEnv *env, jobject thiz, jlong lcptr) {
