@@ -556,6 +556,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark ImagePickerDelegate
 
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
+	// When getting image from the camera, it may be 90° rotated due to orientation
+	// (image.imageOrientation = UIImageOrientationRight). Just rotate it to be face up.
+	if (image.imageOrientation != UIImageOrientationUp) {
+		UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale);
+		[image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+		image = UIGraphicsGetImageFromCurrentImageContext();
+		UIGraphicsEndImageContext();
+	}
+
 	// Dismiss popover on iPad
 	if (IPAD) {
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];

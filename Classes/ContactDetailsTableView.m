@@ -79,10 +79,10 @@
 		added = [_contact addEmail:value];
 	}
 
-	if (added && animated) {
+	if (added) {
 		NSUInteger count = [self getSectionData:section].count;
 		[tableview insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:count - 1 inSection:section] ]
-						 withRowAnimation:UITableViewRowAnimationFade];
+						 withRowAnimation:animated ? UITableViewRowAnimationFade : UITableViewRowAnimationNone];
 	}
 }
 
@@ -223,7 +223,7 @@
 
 				[self removeEmptyEntry:self.tableView section:section animated:NO];
 				// the section is empty -> remove titles
-				if ([[self getSectionData:section] count] == 0 && animated) {
+				if ([[self getSectionData:section] count] == 0) {
 					[self.tableView
 						  reloadSections:[NSIndexSet indexSetWithIndex:section]
 						withRowAnimation:animated ? UITableViewRowAnimationFade : UITableViewRowAnimationNone];
