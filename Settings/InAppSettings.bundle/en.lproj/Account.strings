@@ -10,7 +10,7 @@
 "Outbound proxy" = "Outbound proxy";
 "AVPF" = "AVPF";
 "Expire" = "Expire";
-"Prefix" = "Prefix";
-"Substitute + by 00" = "Substitute + by 00";
+"Country code prefix" = "Country code prefix";
+"Substitute + in phone numbers" = "Substitute + in phone numbers";
 "Account enabled" = "Account enabled";
 "Remove Account" = "Remove Account";
