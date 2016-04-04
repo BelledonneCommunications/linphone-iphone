@@ -2268,7 +2268,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 				video_stream_prepare_video(call->videostream);
 			}
 #endif
-			if (call->params->realtimetext_enabled) {
+			if (call->params->realtimetext_enabled && call->textstream->ms.state==MSStreamInitialized) {
 				text_stream_prepare_text(call->textstream);
 			}
 
@@ -3718,9 +3718,9 @@ static void linphone_call_stop_text_stream(LinphoneCall *call) {
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_TEXT);
 		media_stream_reclaim_sessions(&call->textstream->ms, &call->sessions[call->main_text_stream_index]);
 		linphone_call_log_fill_stats(call->log, (MediaStream*)call->textstream);
+		update_rtp_stats(call, call->main_text_stream_index);
 		text_stream_stop(call->textstream);
 		call->textstream = NULL;
-		update_rtp_stats(call, call->main_text_stream_index);
 		linphone_call_handle_stream_events(call, call->main_video_stream_index);
 		rtp_session_unregister_event_queue(call->sessions[call->main_text_stream_index].rtp_session, call->textstream_app_evq);
 		ortp_ev_queue_flush(call->textstream_app_evq);
