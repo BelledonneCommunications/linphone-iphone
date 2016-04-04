@@ -25,8 +25,8 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		,const char* reason_phrase) {
 	SalOp* op = (SalOp*)user_pointer;
 	belle_sip_response_t* response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher)));
-	ms_message("Register refresher [%i] reason [%s] for proxy [%s]",status_code,reason_phrase,sal_op_get_proxy(op));
-
+	ms_message("Register refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase,sal_op_get_proxy(op));
+	
 	if (belle_sip_refresher_get_auth_events(refresher)) {
 		if (op->auth_info) sal_auth_info_delete(op->auth_info);
 		/*only take first one for now*/
@@ -46,7 +46,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		}
 		sal_op_set_service_route(op,(const SalAddress*)service_route_address);
 		if (service_route_address) belle_sip_object_unref(service_route_address);
-
+		
 		sal_remove_pending_auth(op->base.root,op); /*just in case*/
 		if (contact) {
 			sal_op_set_contact_address(op,(SalAddress*)(BELLE_SIP_HEADER_ADDRESS(contact))); /*update contact with real value*/
@@ -79,13 +79,13 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires,Sal
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
 	belle_sip_header_t* accept_header;
-
+	
 	if (op->refresher){
 		belle_sip_refresher_stop(op->refresher);
 		belle_sip_object_unref(op->refresher);
 		op->refresher=NULL;
 	}
-
+	
 	op->type=SalOpRegister;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,from);
