@@ -775,4 +775,11 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
+- (IBAction)onLinkTap:(id)sender {
+	NSString *url = @"http://linphone.org/free-sip-service.html&action=recover";
+	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
+		LOGE(@"Failed to open %@, invalid URL", url);
+	}
+}
+
 @end
