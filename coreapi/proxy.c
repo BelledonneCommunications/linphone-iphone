@@ -939,6 +939,9 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 											, flatten_start);
 				ms_debug("Prepended prefix resulted in %s", result);
 			}
+		}else if (tmpproxy->dial_escape_plus){
+			/* user did not provide dial prefix, so we'll take the most generic one */
+			result = replace_plus_with_icp(flatten,most_common_dialplan.icp);
 		}
 		if (result==NULL) {
 			result = flatten;
