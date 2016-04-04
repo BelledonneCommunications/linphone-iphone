@@ -1330,6 +1330,11 @@ public interface LinphoneCore {
 	 * If the device has a builtin echo canceller, it will return false.
 	 */
 	boolean hasBuiltInEchoCanceler();
+	
+	/**
+	 * Returns true if the OpenGL on this device is crappy and we need to use the old Android display
+	 */
+	boolean hasCrappyOpenGL();
 
 	void enableIpv6(boolean enable);
 

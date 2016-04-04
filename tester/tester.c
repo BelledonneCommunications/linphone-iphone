@@ -542,6 +542,7 @@ void liblinphone_tester_before_each(void) {
 static char* all_leaks_buffer = NULL;
 
 int liblinphone_tester_after_each(void) {
+	int err = 0;
 	if (!liblinphone_tester_leak_detector_disabled){
 		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
 		if (leaked_objects > 0) {
@@ -564,11 +565,11 @@ int liblinphone_tester_after_each(void) {
 			// if the test is NOT marked as leaking memory and it actually is, we should make it fail
 			if (!leaks_expected && leaked_objects > 0) {
 				BC_FAIL("This test is leaking memory!");
-				return 1;
+				err = 1;
 				// and reciprocally
 			} else if (leaks_expected && leaked_objects == 0) {
 				BC_FAIL("This test is not leaking anymore, please remove LeaksMemory tag!");
-				return 1;
+				// err = 1; // do not force fail actually, because it can be some false positive warning
 			}
 		}
 	}
@@ -576,7 +577,7 @@ int liblinphone_tester_after_each(void) {
 	if (manager_count != 0) {
 		ms_fatal("%d Linphone core managers are still alive!", manager_count);
 	}
-	return 0;
+	return err;
 }
 
 void liblinphone_tester_uninit(void) {
@@ -721,14 +722,13 @@ static void linphone_conference_server_call_state_changed(LinphoneCore *lc, Linp
 			if(linphone_call_get_conference(call) == NULL) {
 				linphone_core_add_to_conference(lc, call);
 				linphone_core_leave_conference(lc);
-				if(conf_srv->first_call == NULL) conf_srv->first_call = linphone_call_ref(call);
+				if(conf_srv->first_call == NULL) conf_srv->first_call = call;
 			}
 			break;
 
 		case LinphoneCallEnd:
 			if(call == conf_srv->first_call) {
 				linphone_core_terminate_conference(lc);
-				linphone_call_unref(call);
 				conf_srv->first_call = NULL;
 			}
 			break;

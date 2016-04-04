@@ -498,6 +498,9 @@ class Project:
 			self.add(td)
 
 	def __parseCFunctionMemberdef(self, node):
+		internal = node.find("./detaileddescription/internal")
+		if internal is not None:
+			return None
 		missingDocWarning = ''
 		name = node.find('./name').text
 		t = ''.join(node.find('./type').itertext())
@@ -557,7 +560,8 @@ class Project:
 		memberdefs = tree.findall("./compounddef[@kind='group']/sectiondef[@kind='func']/memberdef[@kind='function'][@prot='public'][@static='no']")
 		for m in memberdefs:
 			f = self.__parseCFunctionMemberdef(m)
-			self.add(f)
+			if f is not None:
+				self.add(f)
 
 	def initFromFiles(self, xmlfiles):
 		trees = []

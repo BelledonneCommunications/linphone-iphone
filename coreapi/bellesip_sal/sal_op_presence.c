@@ -47,7 +47,29 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 }
 
 static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
-	/*ms_error("presence_process_io_error not implemented yet");*/
+	SalOp* op = (SalOp*)user_ctx;
+	belle_sip_request_t* request;
+	belle_sip_client_transaction_t* client_transaction = NULL;
+	
+	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(belle_sip_io_error_event_get_source(event),
+		belle_sip_client_transaction_t)){
+		 client_transaction = (belle_sip_client_transaction_t*)belle_sip_io_error_event_get_source(event);
+	}
+	
+	if (!client_transaction) return;
+	
+	request = belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
+	
+	if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0){
+		if (op->refresher){
+			ms_warning("presence_process_io_error() refresher is present, should not happen");
+			return;
+		}
+		ms_message("subscription to [%s] io error",sal_op_get_to(op));
+		if (!op->op_released){
+			op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
+		}
+	}
 }
 
 static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
@@ -80,6 +102,12 @@ static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* 
 		}
 		/*send a new SUBSCRIBE, that will attempt to establish a new dialog*/
 		sal_subscribe_presence(op,NULL,NULL,-1);
+	}
+	if (status_code == 0 || status_code == 503){
+		/*timeout or io error: the remote doesn't seem reachable.*/
+		if (!op->op_released){
+			op->base.root->callbacks.notify_presence(op,SalSubscribeActive, NULL,NULL); /*NULL = offline*/
+		}
 	}
 }
 

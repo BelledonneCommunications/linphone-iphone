@@ -1681,6 +1681,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_32,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_40,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_codec2,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_bv16,NULL,FALSE);
 
 
 #ifdef VIDEO_ENABLED
@@ -4172,6 +4173,7 @@ int linphone_core_preempt_sound_resources(LinphoneCore *lc){
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	char temp[255]={0};
 	const char *subject="Call resuming";
+	char *tmp;
 
 	if(call->state!=LinphoneCallPaused ){
 		ms_warning("we cannot resume a call that has not been established and paused before");
@@ -4212,7 +4214,8 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_set_state(call,LinphoneCallResuming,"Resuming");
 	if (call->params->in_conference==FALSE)
 		lc->current_call=call;
-	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
+	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",(tmp = linphone_call_get_remote_address_as_string(call)));
+	ms_free(tmp);
 	linphone_core_notify_display_status(lc,temp);
 
 	if (lc->sip_conf.sdp_200_ack){
@@ -4458,6 +4461,7 @@ LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc)
  * Get playback sound level in 0-100 scale.
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 int linphone_core_get_play_level(LinphoneCore *lc)
 {
@@ -4468,6 +4472,7 @@ int linphone_core_get_play_level(LinphoneCore *lc)
  * Get ring sound level in 0-100 scale
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 int linphone_core_get_ring_level(LinphoneCore *lc)
 {
@@ -4478,6 +4483,7 @@ int linphone_core_get_ring_level(LinphoneCore *lc)
  * Get sound capture level in 0-100 scale
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 int linphone_core_get_rec_level(LinphoneCore *lc){
 	return lc->sound_conf.rec_lev;
@@ -4487,6 +4493,7 @@ int linphone_core_get_rec_level(LinphoneCore *lc){
  * Set sound ring level in 0-100 scale
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	MSSndCard *sndcard;
@@ -4560,7 +4567,7 @@ float linphone_core_get_playback_gain_db(LinphoneCore *lc) {
 
 /**
  * Set sound playback level in 0-100 scale
- *
+ * @deprecated
  * @ingroup media_parameters
 **/
 void linphone_core_set_play_level(LinphoneCore *lc, int level){
@@ -4572,7 +4579,7 @@ void linphone_core_set_play_level(LinphoneCore *lc, int level){
 
 /**
  * Set sound capture level in 0-100 scale
- *
+ * @deprecated
  * @ingroup media_parameters
 **/
 void linphone_core_set_rec_level(LinphoneCore *lc, int level)
@@ -4887,6 +4894,13 @@ void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 		belle_tls_crypto_config_set_verify_exceptions(lc->http_crypto_config, yesno ? 0 : BELLE_TLS_VERIFY_CN_MISMATCH);
 	}
 	lp_config_set_int(lc->config,"sip","verify_server_cn",yesno);
+}
+
+void linphone_core_set_ssl_config(LinphoneCore *lc, void *ssl_config) {
+	sal_set_ssl_config(lc->sal, ssl_config);
+	if (lc->http_crypto_config) {
+		belle_tls_crypto_config_set_ssl_config(lc->http_crypto_config, ssl_config);
+	}
 }
 
 static void notify_end_of_ringtone( LinphoneRingtonePlayer* rp, void* user_data, int status) {

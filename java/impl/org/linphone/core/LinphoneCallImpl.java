@@ -259,10 +259,10 @@ class LinphoneCallImpl implements LinphoneCall {
 		return new LinphonePlayerImpl(getPlayer(nativePtr));
 	}
 	
-	private native long getChatRoom(long nativePtr);
+	private native Object getChatRoom(long nativePtr);
 	@Override
 	public LinphoneChatRoom getChatRoom() {
-		return new LinphoneChatRoomImpl(getChatRoom(nativePtr));
+		return (LinphoneChatRoom)(getChatRoom(nativePtr));
 	}
 
 	@Override

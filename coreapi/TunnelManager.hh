@@ -111,6 +111,18 @@ namespace belledonnecomm {
 		 */
 		bool tunnelizeSipPacketsEnabled() const;
 		/**
+		 * Indicate to the tunnel manager wether server certificate
+		 * must be verified during TLS handshake. Default: disabled
+		 * @param enable If set to TRUE, SIP packets will pass through the tunnel.
+		 * If set to FALSE, SIP packets will pass by the configured proxies.
+		 */
+		void verifyServerCertificate(bool enable);
+		/**
+		 * Check wether the tunnel manager is set to verify server certificate during TLS handshake
+		 * @return True, server certificate is verified(using the linphonecore root certificate)
+		 */
+		bool verifyServerCertificateEnabled() const;
+		/**
 		 * @brief Constructor
 		 * @param lc The LinphoneCore instance of which the TunnelManager will be associated to.
 		 */
@@ -188,6 +200,7 @@ namespace belledonnecomm {
 		LinphoneTunnelMode mMode;
 		State mState;
 		bool mTunnelizeSipPackets;
+		bool mVerifyServerCertificate;
 		TunnelClient* mTunnelClient;
 		std::string mHttpUserName;
 		std::string mHttpPasswd;

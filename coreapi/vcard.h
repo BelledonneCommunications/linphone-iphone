@@ -123,6 +123,48 @@ void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_
 LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
 
 /**
+ * Adds a phone number in the vCard, using the TEL property
+ * @param[in] vCard the LinphoneVcard
+ * @param[in] sip_address the phone number to add
+ */
+void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone);
+
+/**
+ * Removes a phone number in the vCard (if it exists), using the TEL property
+ * @param[in] vCard the LinphoneVcard
+ * @param[in] sip_address the phone number to remove
+ */
+void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone);
+
+/**
+ * Returns the list of phone numbers (as string) in the vCard (all the TEL attributes) or NULL
+ * @param[in] vCard the LinphoneVcard
+ * @return \mslist{const char *}
+ */
+LINPHONE_PUBLIC MSList* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard);
+
+/**
+ * Returns the list of SIP addresses (as string) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
+ * @param[in] vCard the LinphoneVcard
+ * @return \mslist{const char *}
+ */
+LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
+
+/**
+ * Fills the Organization field of the vCard
+ * @param[in] vCard the LinphoneVcard
+ * @param[in] url the Organization
+ */
+LINPHONE_PUBLIC void linphone_vcard_set_organization(LinphoneVcard *vCard, const char *organization);
+
+/**
+ * Gets the Organization of the vCard
+ * @param[in] vCard the LinphoneVcard
+ * @return the Organization of the vCard or NULL
+ */
+LINPHONE_PUBLIC const char* linphone_vcard_get_organization(const LinphoneVcard *vCard);
+
+/**
  * Generates a random unique id for the vCard.
  * If is required to be able to synchronize the vCard with a CardDAV server
  * @param[in] vCard the LinphoneVcard
@@ -163,7 +205,7 @@ LINPHONE_PUBLIC const char* linphone_vcard_get_etag(const LinphoneVcard *vCard);
  * @param[in] vCard the LinphoneVcard
  * @param[in] url the URL
  */
-LINPHONE_PUBLIC void linphone_vcard_set_url(LinphoneVcard *vCard, const char * url);
+LINPHONE_PUBLIC void linphone_vcard_set_url(LinphoneVcard *vCard, const char *url);
 
 /**
  * Gets the URL of the vCard

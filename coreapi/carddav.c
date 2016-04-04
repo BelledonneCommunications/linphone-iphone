@@ -31,7 +31,7 @@ LinphoneCardDavContext* linphone_carddav_context_new(LinphoneFriendList *lfl) {
 	carddav_context = (LinphoneCardDavContext *)ms_new0(LinphoneCardDavContext, 1);
 	carddav_context->friend_list = linphone_friend_list_ref(lfl);
 #else
-	ms_error("vCard isn't available (maybe it wasn't compiled), can't do CardDAV sync");
+	ms_error("[carddav] vCard isn't available (maybe it wasn't compiled), can't do CardDAV sync");
 #endif
 	return carddav_context;
 }
@@ -64,7 +64,7 @@ static void linphone_carddav_sync_done(LinphoneCardDavContext *cdc, bool_t succe
 		ms_debug("CardDAV sync successful, saving new cTag: %i", cdc->ctag);
 		linphone_friend_list_update_revision(cdc->friend_list, cdc->ctag);
 	} else {
-		ms_error("CardDAV sync failure: %s", msg);
+		ms_error("[carddav] CardDAV sync failure: %s", msg);
 	}
 	
 	if (cdc->sync_done_cb) {
@@ -105,31 +105,38 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 					linphone_vcard_set_url(lvc, full_url);
 					linphone_vcard_set_etag(lvc, vCard->etag);
 					ms_debug("Downloaded vCard etag/url are %s and %s", vCard->etag, full_url);
-				}
-				lf = linphone_friend_new_from_vcard(lvc);
-				local_friend = ms_list_find_custom(friends, (int (*)(const void*, const void*))find_matching_friend, lf);
-				
-				if (local_friend) {
-					LinphoneFriend *lf2 = (LinphoneFriend *)local_friend->data;
-					lf->storage_id = lf2->storage_id;
-					lf->pol = lf2->pol;
-					lf->subscribe = lf2->subscribe;
-					lf->refkey = ms_strdup(lf2->refkey);
-					lf->presence_received = lf2->presence_received;
-					lf->lc = lf2->lc;
-					lf->friend_list = lf2->friend_list;
-					
-					if (cdc->contact_updated_cb) {
-						ms_debug("Contact updated: %s", linphone_friend_get_name(lf));
-						cdc->contact_updated_cb(cdc, lf, lf2);
+
+					lf = linphone_friend_new_from_vcard(lvc);
+					if (lf) {
+						local_friend = ms_list_find_custom(friends, (int (*)(const void*, const void*))find_matching_friend, lf);
+						
+						if (local_friend) {
+							LinphoneFriend *lf2 = (LinphoneFriend *)local_friend->data;
+							lf->storage_id = lf2->storage_id;
+							lf->pol = lf2->pol;
+							lf->subscribe = lf2->subscribe;
+							lf->refkey = ms_strdup(lf2->refkey);
+							lf->presence_received = lf2->presence_received;
+							lf->lc = lf2->lc;
+							lf->friend_list = lf2->friend_list;
+							
+							if (cdc->contact_updated_cb) {
+								ms_debug("Contact updated: %s", linphone_friend_get_name(lf));
+								cdc->contact_updated_cb(cdc, lf, lf2);
+							}
+						} else {
+							if (cdc->contact_created_cb) {
+								ms_debug("Contact created: %s", linphone_friend_get_name(lf));
+								cdc->contact_created_cb(cdc, lf);
+							}
+						}
+						linphone_friend_unref(lf);
+					} else {
+						ms_error("[carddav] Couldn't create a friend from vCard");
 					}
 				} else {
-					if (cdc->contact_created_cb) {
-						ms_debug("Contact created: %s", linphone_friend_get_name(lf));
-						cdc->contact_created_cb(cdc, lf);
-					}
+					ms_error("[carddav] Couldn't parse vCard %s", vCard->vcard);
 				}
-				linphone_friend_unref(lf);
 			}
 			vCards = ms_list_next(vCards);
 		}
@@ -367,7 +374,7 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 				linphone_carddav_sync_done(query->context, TRUE, NULL);
 				break;
 			default:
-				ms_error("Unknown request: %i", query->type);
+				ms_error("[carddav] Unknown request: %i", query->type);
 				break;
 			}
 		} else {
@@ -383,7 +390,7 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 
 static void process_io_error_from_carddav_request(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)data;
-	ms_error("I/O error during CardDAV request sending");
+	ms_error("[carddav] I/O error during CardDAV request sending");
 	linphone_carddav_query_free(query);
 	linphone_carddav_sync_done(query->context, FALSE, "I/O error during CardDAV request sending");
 }
@@ -412,7 +419,7 @@ static void process_auth_requested_from_carddav_request(void *data, belle_sip_au
 	}
 	
 	if (!auth_infos) {
-		ms_error("Authentication requested during CardDAV request sending, and username/password weren't provided");
+		ms_error("[carddav] Authentication requested during CardDAV request sending, and username/password weren't provided");
 		linphone_carddav_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
 		linphone_carddav_query_free(query);
 	}
@@ -528,7 +535,7 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 		}
 		
 		if (msg) {
-			ms_error("%s", msg);
+			ms_error("[carddav] %s", msg);
 		}
 		
 		if (cdc && cdc->sync_done_cb) {
@@ -582,7 +589,7 @@ void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *
 		}
 		
 		if (msg) {
-			ms_error("%s", msg);
+			ms_error("[carddav] %s", msg);
 		}
 		
 		if (cdc && cdc->sync_done_cb) {

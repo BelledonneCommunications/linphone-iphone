@@ -155,4 +155,22 @@ public interface LinphoneFriend {
 	 * @return
 	 */
 	String getName();
+	/**
+	 * Set an organization for this friend
+	 * @param organization
+	 */
+	void setOrganization(String organization);
+	/**
+	 * Get organization of this friend
+	 * @return
+	 */
+	String getOrganization();
+	
+	LinphoneAddress[] getAddresses();
+	void addAddress(LinphoneAddress addr);
+	void removeAddress(LinphoneAddress addr);
+	
+	String[] getPhoneNumbers();
+	void addPhoneNumber(String phone);
+	void removePhoneNumber(String phone);
 }

@@ -751,6 +751,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	} else {
 		ms_message("Don't put audio stream on local offer for call [%p]",call);
 		md->streams[call->main_audio_stream_index].dir = SalStreamInactive;
+		if(l) l=ms_list_free_with_data(l, (void (*)(void *))payload_type_destroy);
 	}
 	if (params->custom_sdp_media_attributes[LinphoneStreamTypeAudio])
 		md->streams[call->main_audio_stream_index].custom_sdp_attributes = sal_custom_sdp_attribute_clone(params->custom_sdp_media_attributes[LinphoneStreamTypeAudio]);
@@ -785,6 +786,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	} else {
 		ms_message("Don't put video stream on local offer for call [%p]",call);
 		md->streams[call->main_video_stream_index].dir = SalStreamInactive;
+		if(l) l=ms_list_free_with_data(l, (void (*)(void *))payload_type_destroy);
 	}
 	if (params->custom_sdp_media_attributes[LinphoneStreamTypeVideo])
 		md->streams[call->main_video_stream_index].custom_sdp_attributes = sal_custom_sdp_attribute_clone(params->custom_sdp_media_attributes[LinphoneStreamTypeVideo]);
@@ -1713,6 +1715,7 @@ static void linphone_call_destroy(LinphoneCall *obj){
 		linphone_address_unref(obj->me);
 		obj->me = NULL;
 	}
+	if (obj->onhold_file) ms_free(obj->onhold_file);
 
 	sal_error_info_reset(&obj->non_op_error);
 }
@@ -2054,15 +2057,23 @@ LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 #ifdef VIDEO_ENABLED
 	call->camera_enabled=enable;
-	if ((call->state==LinphoneCallStreamsRunning || call->state==LinphoneCallOutgoingEarlyMedia || call->state==LinphoneCallIncomingEarlyMedia)
-		&& call->videostream!=NULL && video_stream_started(call->videostream) ){
-		if (video_stream_get_camera(call->videostream) != linphone_call_get_video_device(call)) {
-			const char *cur_cam, *new_cam;
-			cur_cam = video_stream_get_camera(call->videostream) ? ms_web_cam_get_name(video_stream_get_camera(call->videostream)) : "NULL";
-			new_cam = linphone_call_get_video_device(call) ? ms_web_cam_get_name(linphone_call_get_video_device(call)) : "NULL";
-			ms_message("Switching video cam from [%s] to [%s] on call [%p]"	, cur_cam, new_cam, call);
-			video_stream_change_camera(call->videostream, linphone_call_get_video_device(call));
-		}
+	switch(call->state) {
+		case LinphoneCallStreamsRunning:
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallConnected:
+			if(call->videostream!=NULL
+				&& video_stream_started(call->videostream)
+				&& video_stream_get_camera(call->videostream) != linphone_call_get_video_device(call)) {
+				const char *cur_cam, *new_cam;
+				cur_cam = video_stream_get_camera(call->videostream) ? ms_web_cam_get_name(video_stream_get_camera(call->videostream)) : "NULL";
+				new_cam = linphone_call_get_video_device(call) ? ms_web_cam_get_name(linphone_call_get_video_device(call)) : "NULL";
+				ms_message("Switching video cam from [%s] to [%s] on call [%p]"	, cur_cam, new_cam, call);
+				video_stream_change_camera(call->videostream, linphone_call_get_video_device(call));
+			}
+			break;
+			
+		default: break;
 	}
 #endif
 }

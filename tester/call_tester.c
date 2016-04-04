@@ -3241,6 +3241,44 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+static void early_media_call_with_ice(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall *marie_call;
+	MSList *lcs = NULL;
+	
+	lcs = ms_list_append(lcs, marie->lc);
+	lcs = ms_list_append(lcs, pauline->lc);
+
+	/*in this test, pauline has ICE activated, marie not, but marie proposes early media.
+	 * We want to check that ICE processing is not disturbing early media*/
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	
+	linphone_core_invite_address(pauline->lc, marie->identity);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,1000));
+	
+	wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
+	
+	marie_call = linphone_core_get_current_call(marie->lc);
+
+	if (!marie_call) goto end;
+	
+	linphone_core_accept_call(marie->lc, marie_call);
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+
+	end_call(marie, pauline);
+end:
+	ms_list_free(lcs);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void early_media_call_with_ringing(void){
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -3756,6 +3794,26 @@ static void call_rejected_without_403_because_wrong_credentials_no_auth_req_cb(v
 }
 
 #ifdef VIDEO_ENABLED
+static void video_early_media_call(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCall *pauline_to_marie;
+	
+	linphone_core_set_video_device(pauline->lc, "Mire: Mire (synthetic moving picture)");
+	
+	video_call_base_3(pauline, marie, TRUE, LinphoneMediaEncryptionNone, TRUE, TRUE);
+	
+	BC_ASSERT_PTR_NOT_NULL(pauline_to_marie = linphone_core_get_current_call(pauline->lc));
+	if(pauline_to_marie) {
+		BC_ASSERT_EQUAL(pauline_to_marie->videostream->source->desc->id, MS_MIRE_ID, int, "%d");
+	}
+	
+	end_call(pauline, marie);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 /*this is call forking with early media managed at client side (not by flexisip server)*/
 static void multiple_early_media(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -4203,26 +4261,34 @@ static void call_with_in_dialog_codec_change(void) {
 static void call_with_in_dialog_codec_change_no_sdp(void) {
 	call_with_in_dialog_codec_change_base(TRUE);
 }
+
 static void call_with_custom_supported_tags(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	const LinphoneCallParams *remote_params;
 	const char *recv_supported;
-	bool_t call_ok;
+	LinphoneCall *pauline_call;
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	linphone_core_add_supported_tag(marie->lc,"pouet-tag");
-	BC_ASSERT_TRUE(call_ok=call(pauline,marie));
-	if (!call_ok) goto end;
-	liblinphone_tester_check_rtcp(marie,pauline);
-	remote_params=linphone_call_get_remote_params(linphone_core_get_current_call(pauline->lc));
+	linphone_core_add_supported_tag(marie->lc,"truc-tag");
+	linphone_core_add_supported_tag(marie->lc,"machin-tag");
+	
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging,1));
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	if (!pauline_call) goto end;
+	
+	remote_params=linphone_call_get_remote_params(pauline_call);
 	recv_supported=linphone_call_params_get_custom_header(remote_params,"supported");
 	BC_ASSERT_PTR_NOT_NULL(recv_supported);
 	if (recv_supported){
-		BC_ASSERT_PTR_NOT_NULL(strstr(recv_supported,"pouet-tag"));
+		BC_ASSERT_PTR_NOT_NULL(strstr(recv_supported,"pouet-tag, truc-tag, machin-tag"));
 	}
+	
 	end_call(marie,pauline);
 end:
 	linphone_core_manager_destroy(marie);
@@ -6097,6 +6163,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with media relay (random ports)", call_with_media_relay_random_ports),
 	TEST_NO_TAG("Simple call compatibility mode", simple_call_compatibility_mode),
 	TEST_NO_TAG("Early-media call", early_media_call),
+	TEST_ONE_TAG("Early-media call with ICE", early_media_call_with_ice, "ICE"),
 	TEST_NO_TAG("Early-media call with ringing", early_media_call_with_ringing),
 	TEST_NO_TAG("Early-media call with updated media session", early_media_call_with_session_update),
 	TEST_NO_TAG("Early-media call with updated codec", early_media_call_with_codec_update),
@@ -6151,6 +6218,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with video declined", call_with_declined_video),
 	TEST_NO_TAG("Call with video declined despite policy", call_with_declined_video_despite_policy),
 	TEST_NO_TAG("Call with video declined using policy", call_with_declined_video_using_policy),
+	TEST_NO_TAG("Video early-media call", video_early_media_call),
 	TEST_NO_TAG("Call with multiple early media", multiple_early_media),
 	TEST_ONE_TAG("Call with ICE from video to non-video", call_with_ice_video_to_novideo, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added", call_with_ice_video_added, "ICE"),

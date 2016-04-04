@@ -53,6 +53,7 @@ struct Sal{
 	bool_t enable_sip_update; /*true by default*/
 	SalOpSDPHandling default_sdp_handling;
 	bool_t pending_trans_checking; /*testing purpose*/
+	void *ssl_config;
 };
 
 typedef enum SalOpState {

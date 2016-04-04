@@ -216,7 +216,6 @@ class ArgumentType:
 			self.cnativefmt_str = '%ld'
 		elif self.basic_type == 'MSList':
 			if self.contained_type == 'const char *':
-				print("nthoetnuoehautnohutneueosanm")
 				self.type_str = 'list of string'
 				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsMSListOfString({arg_name});\n"
 				self.convert_from_func = 'PyList_FromMSListOfString'

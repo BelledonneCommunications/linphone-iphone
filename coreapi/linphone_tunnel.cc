@@ -330,6 +330,15 @@ bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) {
 	return bcTunnel(tunnel)->tunnelizeSipPacketsEnabled() ? TRUE : FALSE;
 }
 
+void linphone_tunnel_verify_server_certificate(LinphoneTunnel *tunnel, bool_t enable) {
+	bcTunnel(tunnel)->verifyServerCertificate(enable);
+	lp_config_set_int(config(tunnel), "tunnel", "verifyCert", (enable ? TRUE : FALSE));
+}
+
+bool_t linphone_tunnel_verify_server_certificate_enabled(const LinphoneTunnel *tunnel) {
+	return bcTunnel(tunnel)->verifyServerCertificateEnabled() ? TRUE : FALSE;
+}
+
 static void my_ortp_logv(const char *domain, OrtpLogLevel level, const char *fmt, va_list args){
 	ortp_logv(domain, level,fmt,args);
 }
@@ -342,10 +351,12 @@ static void my_ortp_logv(const char *domain, OrtpLogLevel level, const char *fmt
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	LinphoneTunnelMode mode = linphone_tunnel_mode_from_string(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
 	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "sip", TRUE);
+	bool_t tunnelVerifyServerCertificate = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "verifyCert", FALSE);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);
 	linphone_tunnel_enable_sip(tunnel, tunnelizeSIPPackets);
 	linphone_tunnel_set_mode(tunnel, mode);
+	linphone_tunnel_verify_server_certificate(tunnel, tunnelVerifyServerCertificate);
 }
 
 /* Deprecated functions */

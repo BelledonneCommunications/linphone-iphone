@@ -501,6 +501,7 @@ Sal * sal_init(MSFactory *factory){
 	sal->refresher_retry_after=60000; /*default value in ms*/
 	sal->enable_sip_update=TRUE;
 	sal->pending_trans_checking=TRUE;
+	sal->ssl_config = NULL;
 	return sal;
 }
 
@@ -746,6 +747,7 @@ static void set_tls_properties(Sal *ctx){
 		else if (!ctx->tls_verify_cn) verify_exceptions = BELLE_TLS_VERIFY_CN_MISMATCH;
 		belle_tls_crypto_config_set_verify_exceptions(crypto_config, verify_exceptions);
 		if (ctx->root_ca != NULL) belle_tls_crypto_config_set_root_ca(crypto_config, ctx->root_ca);
+		if (ctx->ssl_config != NULL) belle_tls_crypto_config_set_ssl_config(crypto_config, ctx->ssl_config);
 		belle_sip_tls_listening_point_set_crypto_config(tlp, crypto_config);
 		belle_sip_object_unref(crypto_config);
 	}
@@ -770,6 +772,12 @@ void sal_verify_server_certificates(Sal *ctx, bool_t verify){
 
 void sal_verify_server_cn(Sal *ctx, bool_t verify){
 	ctx->tls_verify_cn=verify;
+	set_tls_properties(ctx);
+	return ;
+}
+
+void sal_set_ssl_config(Sal *ctx, void *ssl_config) {
+	ctx->ssl_config = ssl_config;
 	set_tls_properties(ctx);
 	return ;
 }
