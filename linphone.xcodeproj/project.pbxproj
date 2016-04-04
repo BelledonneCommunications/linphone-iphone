@@ -532,6 +532,7 @@
 		634610061B61330300548952 /* UILabel+Boldify.m in Sources */ = {isa = PBXBuildFile; fileRef = 634610051B61330300548952 /* UILabel+Boldify.m */; };
 		6346100F1B61409800548952 /* CallOutgoingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6346100E1B61409800548952 /* CallOutgoingView.m */; };
 		634610121B6140A500548952 /* CallOutgoingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 634610101B6140A500548952 /* CallOutgoingView.xib */; };
+		63510D9E1CB2757300FB5E90 /* CallTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 63510D981CB2752600FB5E90 /* CallTester.m */; };
 		635173F91BA082A40095EB0A /* UIChatBubblePhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 635173F81BA082A40095EB0A /* UIChatBubblePhotoCell.m */; };
 		6352A5751BE0D4B800594C1C /* CallSideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6352A5731BE0D4B800594C1C /* CallSideMenuView.m */; };
 		6352A5761BE0D4B800594C1C /* CallSideMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */; };
@@ -1436,6 +1437,8 @@
 		6346100D1B61409800548952 /* CallOutgoingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallOutgoingView.h; sourceTree = "<group>"; };
 		6346100E1B61409800548952 /* CallOutgoingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallOutgoingView.m; sourceTree = "<group>"; };
 		634610111B6140A500548952 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/CallOutgoingView.xib; sourceTree = "<group>"; };
+		63510D971CB2752600FB5E90 /* CallTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallTester.h; sourceTree = "<group>"; };
+		63510D981CB2752600FB5E90 /* CallTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallTester.m; sourceTree = "<group>"; };
 		635173F71BA082A40095EB0A /* UIChatBubblePhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatBubblePhotoCell.h; sourceTree = "<group>"; };
 		635173F81BA082A40095EB0A /* UIChatBubblePhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatBubblePhotoCell.m; sourceTree = "<group>"; };
 		6352A5721BE0D4B800594C1C /* CallSideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallSideMenuView.h; sourceTree = "<group>"; };
@@ -2261,6 +2264,8 @@
 				630589E61B4E810900EFAE36 /* AssistantTester.m */,
 				63CAACD41C91D0D100216F8D /* NotificationTester.h */,
 				63CAACD51C91D0D100216F8D /* NotificationTester.m */,
+				63510D971CB2752600FB5E90 /* CallTester.h */,
+				63510D981CB2752600FB5E90 /* CallTester.m */,
 			);
 			path = TestsUI;
 			sourceTree = "<group>";
@@ -3891,6 +3896,7 @@
 				630589EB1B4E810900EFAE36 /* AssistantTester.m in Sources */,
 				630589E71B4E810900EFAE36 /* ChatTester.m in Sources */,
 				630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */,
+				63510D9E1CB2757300FB5E90 /* CallTester.m in Sources */,
 				63CAACDB1C91D10200216F8D /* NotificationTester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

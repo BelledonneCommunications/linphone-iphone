@@ -4,7 +4,6 @@
 <dict>
 	<key>PreferenceSpecifiers</key>
 	<array>
-
 		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
@@ -205,7 +204,7 @@
 			<key>Key</key>
 			<string>account_prefix_preference</string>
 			<key>Title</key>
-			<string>Prefix</string>
+			<string>Country code prefix</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>IASKTextAlignment</key>
@@ -217,11 +216,11 @@
 			<key>Key</key>
 			<string>account_substitute_+_by_00_preference</string>
 			<key>Title</key>
-			<string>Substitute + by 00</string>
+			<string>Substitute + in phone numbers</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
-				<dict>
+		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
@@ -231,7 +230,7 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
-				<dict>
+		<dict>
 			<key>Key</key>
 			<string>account_mandatory_remove_button</string>
 			<key>Title</key>

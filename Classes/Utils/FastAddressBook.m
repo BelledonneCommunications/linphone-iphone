@@ -76,22 +76,15 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 + (NSString *)normalizeSipURI:(NSString *)address {
 	// replace all whitespaces (non-breakable, utf8 nbsp etc.) by the "classical" whitespace
-	address = [[address componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
-		componentsJoinedByString:@" "];
-	NSString *normalizedSipAddress = nil;
-	LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, [address UTF8String]);
-	if (linphoneAddress != NULL) {
-		char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
-		if (tmp != NULL) {
-			normalizedSipAddress = [NSString stringWithUTF8String:tmp];
-			// remove transport, if any
-			NSRange pos = [normalizedSipAddress rangeOfString:@";"];
-			if (pos.location != NSNotFound) {
-				normalizedSipAddress = [normalizedSipAddress substringToIndex:pos.location];
-			}
-			ms_free(tmp);
-		}
-		linphone_address_destroy(linphoneAddress);
+	NSString *normalizedSipAddress = [[address
+		componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@" "];
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, [address UTF8String]);
+	if (addr != NULL) {
+		linphone_address_clean(addr);
+		char *tmp = linphone_address_as_string(addr);
+		normalizedSipAddress = [NSString stringWithUTF8String:tmp];
+		ms_free(tmp);
+		linphone_address_destroy(addr);
 	}
 	return normalizedSipAddress;
 }

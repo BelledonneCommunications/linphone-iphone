@@ -45,7 +45,7 @@
 	}];
 	// also add current entry, if not listed
 	NSString *nsuri = filter.lowercaseString;
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, nsuri.UTF8String);
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:nsuri];
 	if (addr) {
 		char *uri = linphone_address_as_string(addr);
 		nsuri = [NSString stringWithUTF8String:uri];

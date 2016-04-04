@@ -328,7 +328,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[_addressField resignFirstResponder];
 	}
 	if (textField.text.length > 0) {
-		LinphoneAddress *addr = linphone_core_interpret_url(LC, textField.text.UTF8String);
+		LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:textField.text];
 		[LinphoneManager.instance call:addr];
 		if (addr)
 			linphone_address_destroy(addr);
@@ -390,7 +390,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)onOneLongClick:(id)sender {
 	LinphoneManager *lm = LinphoneManager.instance;
 	NSString *voiceMail = [lm lpConfigStringForKey:@"voice_mail_uri"];
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, voiceMail ? voiceMail.UTF8String : NULL);
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:voiceMail];
 	if (addr) {
 		linphone_address_set_display_name(addr, NSLocalizedString(@"Voice mail", nil).UTF8String);
 		[lm call:addr];

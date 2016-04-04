@@ -2,7 +2,7 @@
 //  CallTester.h
 //  linphone
 //
-//  Created by Gautier Pelloux-Prayer on 24/08/15.
+//  Created by Gautier Pelloux-Prayer on 04/04/16.
 //
 //
 

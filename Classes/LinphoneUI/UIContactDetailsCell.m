@@ -90,14 +90,14 @@
 }
 
 - (IBAction)onCallClick:(id)event {
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
 	[LinphoneManager.instance call:addr];
 	if (addr)
 		linphone_address_destroy(addr);
 }
 
 - (IBAction)onChatClick:(id)event {
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
 	if (addr == NULL)
 		return;
 	ChatConversationView *view = VIEW(ChatConversationView);

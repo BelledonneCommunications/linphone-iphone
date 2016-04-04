@@ -32,6 +32,8 @@
 + (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
 + (NSString *)deviceName;
 
++ (LinphoneAddress *)normalizeSipOrPhoneAddress:(NSString *)addr;
+
 typedef enum {
 	LinphoneDateHistoryList,
 	LinphoneDateHistoryDetails,

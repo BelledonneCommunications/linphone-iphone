@@ -339,6 +339,26 @@
 	return [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
 }
 
++ (LinphoneAddress *)normalizeSipOrPhoneAddress:(NSString *)value {
+	if (!value) {
+		return NULL;
+	}
+
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, value.UTF8String);
+
+	// since user wants to escape plus, we assume it expects to have phone numbers by default
+	if (addr && cfg && linphone_proxy_config_get_dial_escape_plus(cfg)) {
+		char *phone = linphone_proxy_config_normalize_phone_number(cfg, value.UTF8String);
+		if (phone) {
+			linphone_address_set_username(addr, phone);
+			ms_free(phone);
+		}
+	}
+
+	return addr;
+}
+
 @end
 
 @implementation NSNumber (HumanReadableSize)

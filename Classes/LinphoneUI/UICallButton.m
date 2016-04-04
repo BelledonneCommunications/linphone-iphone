@@ -86,7 +86,7 @@
 	}
 
 	if ([address length] > 0) {
-		LinphoneAddress *addr = linphone_core_interpret_url(LC, address.UTF8String);
+		LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:address];
 		[LinphoneManager.instance call:addr];
 		if (addr)
 			linphone_address_destroy(addr);
