@@ -11,6 +11,12 @@ Group changes to describe their impact on the project, as follows:
     Security to invite users to upgrade in case of vulnerabilities.
 
 ## [Unreleased]
+### Added
+- Added "Forgot your password?" link in Linphone account assistant
+### Fixed
+- Fix invalid photo rotation when using Camera for avatars
+- Parse user input as SIP address or phone number depending on default account settings: if "substitute + by country code" is set,
+consider inputs to be phone numbers, otherwise SIP addresses.
 
 ## [3.12.1] - 2016-02-19
 ### Changed
