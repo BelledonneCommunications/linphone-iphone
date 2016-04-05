@@ -5634,7 +5634,7 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		linphone_call_params_enable_realtime_text(pauline_params, TRUE);
 	}
 	
-	BC_ASSERT_TRUE((call_ok=call_with_params(marie, marie, pauline_params, NULL)));
+	BC_ASSERT_TRUE((call_ok=call_with_params(pauline, marie, pauline_params, NULL)));
 	if (!call_ok) goto end;
 
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
