@@ -65,8 +65,9 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)dealloc {
-	ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
-	CFRelease(addressBook);
+	if (addressBook) {
+		ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
+	}
 }
 
 #pragma mark -
