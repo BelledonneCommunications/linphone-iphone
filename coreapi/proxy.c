@@ -858,6 +858,7 @@ static bool_t lookup_dial_plan_by_ccc(const char *ccc, dial_plan_t *plan){
 
 bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username){
 	const char *p;
+	if (!username) return FALSE;
 	for(p=username;*p!='\0';++p){
 		if (isdigit(*p) ||
 			*p==' ' ||
