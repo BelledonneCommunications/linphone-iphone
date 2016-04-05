@@ -11,8 +11,6 @@ password_length=-1
 username_length=-1
 
 [misc]
-add_missing_audio_codecs=0
-add_missing_video_codecs=0
 #by default it is set to 30 by liblinphone
 history_max_size=-1
 
