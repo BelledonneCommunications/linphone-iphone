@@ -118,12 +118,14 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)selectContact:(ABRecordRef)acontact andReload:(BOOL)reload {
-	_contact = NULL;
-	[self resetData];
-
-	_emptyLabel.hidden = (acontact != NULL);
+	if (self.isEditing) {
+		[self setEditing:FALSE];
+	}
+	ABAddressBookRevert(addressBook);
 
 	_contact = acontact;
+	_emptyLabel.hidden = (_contact != NULL);
+
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:acontact];
 	[_tableController setContact:[[Contact alloc] initWithPerson:_contact]];
