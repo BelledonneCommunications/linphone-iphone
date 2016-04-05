@@ -3721,7 +3721,7 @@ static void linphone_call_stop_text_stream(LinphoneCall *call) {
 		update_rtp_stats(call, call->main_text_stream_index);
 		text_stream_stop(call->textstream);
 		call->textstream = NULL;
-		linphone_call_handle_stream_events(call, call->main_video_stream_index);
+		linphone_call_handle_stream_events(call, call->main_text_stream_index);
 		rtp_session_unregister_event_queue(call->sessions[call->main_text_stream_index].rtp_session, call->textstream_app_evq);
 		ortp_ev_queue_flush(call->textstream_app_evq);
 		ortp_ev_queue_destroy(call->textstream_app_evq);
