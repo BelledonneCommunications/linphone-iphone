@@ -5611,9 +5611,10 @@ static void call_with_network_switch_in_early_state_2(void){
 	_call_with_network_switch_in_early_state(FALSE);
 }
 
-static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh){
+static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCallParams *pauline_params = NULL;
 	MSList *lcs = NULL;
 	bool_t call_ok;
 
@@ -5628,8 +5629,12 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		lp_config_set_int(linphone_core_get_config(marie->lc), "net", "recreate_sockets_when_network_is_up", 1);
 		lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "recreate_sockets_when_network_is_up", 1);
 	}
-
-	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	if (enable_rtt) {
+		pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
+		linphone_call_params_enable_realtime_text(pauline_params, TRUE);
+	}
+	
+	BC_ASSERT_TRUE((call_ok=call_with_params(marie, marie, pauline_params, NULL)));
 	if (!call_ok) goto end;
 
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
@@ -5679,15 +5684,19 @@ end:
 }
 
 static void call_with_network_switch(void){
-	_call_with_network_switch(FALSE, FALSE);
+	_call_with_network_switch(FALSE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_and_ice(void){
-	_call_with_network_switch(TRUE, FALSE);
+	_call_with_network_switch(TRUE, FALSE, FALSE);
+}
+
+static void call_with_network_switch_ice_and_rtt(void) {
+	_call_with_network_switch(TRUE, FALSE, TRUE);
 }
 
 static void call_with_network_switch_and_socket_refresh(void){
-	_call_with_network_switch(TRUE, TRUE);
+	_call_with_network_switch(TRUE, TRUE, FALSE);
 }
 
 static void call_with_sip_and_rtp_independant_switches(void){
@@ -6312,6 +6321,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with network switch in early state 1", call_with_network_switch_in_early_state_1),
 	TEST_NO_TAG("Call with network switch in early state 2", call_with_network_switch_in_early_state_2),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
+	TEST_ONE_TAG("Call with network switch, ICE and RTT", call_with_network_switch_ice_and_rtt, "ICE"),
 	TEST_NO_TAG("Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh),
 	TEST_NO_TAG("Call with SIP and RTP independant switches", call_with_sip_and_rtp_independant_switches),
 	TEST_NO_TAG("Call with rtcp-mux", call_with_rtcp_mux),
