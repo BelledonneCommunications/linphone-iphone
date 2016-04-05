@@ -25,7 +25,7 @@ INIT_WITH_COMMON_CF {
 	[self setRoundRadius];
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(orientationDidChange:)
-											   name:@"UIDeviceOrientationDidChangeNotification"
+											   name:UIDeviceOrientationDidChangeNotification
 											 object:nil];
 	return self;
 }
