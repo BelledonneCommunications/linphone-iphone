@@ -112,8 +112,7 @@
 		LOGI(@"Switching to a test account...");
 
 		LinphoneCore *lc = [LinphoneManager getLc];
-		linphone_core_clear_proxy_config(lc);
-		linphone_core_clear_all_auth_info(lc);
+		[[LinphoneManager instance] removeAllAccounts];
 
 		LinphoneAddress *testAddr = linphone_core_interpret_url(
 			LC, [[NSString stringWithFormat:@"sip:%@@%@", [self me], [self accountDomain]] UTF8String]);
@@ -132,13 +131,11 @@
 															linphone_address_get_username(testAddr), NULL, NULL,
 															linphone_address_get_domain(testAddr));
 
-		[[LinphoneManager instance] configurePushTokenForProxyConfig:testProxy];
-		[[LinphoneManager instance] removeAllAccounts];
-
 		linphone_proxy_config_enable_register(testProxy, true);
 		linphone_core_add_auth_info(lc, testAuth);
 		linphone_core_add_proxy_config(lc, testProxy);
 		linphone_core_set_default_proxy_config(lc, testProxy);
+		[[LinphoneManager instance] configurePushTokenForProxyConfig:testProxy];
 
 		linphone_proxy_config_unref(testProxy);
 		linphone_auth_info_destroy(testAuth);

@@ -13,6 +13,7 @@
 #pragma mark - Setup
 
 - (void)beforeAll {
+	[super beforeAll];
 	[self switchToValidAccountIfNeeded];
 }
 
