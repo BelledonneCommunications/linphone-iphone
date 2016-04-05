@@ -3403,7 +3403,7 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 					break;
 				case MS_AES_256_SHA1_32:
 					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
-					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
+					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS32;
 					break;
 				case MS_CRYPTO_SUITE_INVALID:
 					break;
