@@ -465,7 +465,17 @@
 			  withResponseInfo:(NSDictionary *)responseInfo
 			 completionHandler:(void (^)())completionHandler {
 
-	if ([notification.category isEqualToString:@"incoming_msg"] && [identifier isEqualToString:@"reply_inline"]) {
+	if ([notification.category isEqualToString:@"incoming_call"]) {
+		if ([identifier isEqualToString:@"answer"]) {
+			// use the standard handler
+			[self application:application didReceiveLocalNotification:notification];
+		} else if ([identifier isEqualToString:@"decline"]) {
+			LinphoneCall *call = linphone_core_get_current_call(LC);
+			if (call)
+				linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+		}
+	} else if ([notification.category isEqualToString:@"incoming_msg"] &&
+			   [identifier isEqualToString:@"reply_inline"]) {
 		LinphoneCore *lc = [LinphoneManager getLc];
 		NSString *replyText = [responseInfo objectForKey:UIUserNotificationActionResponseTypedTextKey];
 		NSString *from = [notification.userInfo objectForKey:@"from_addr"];
@@ -477,6 +487,7 @@
 			[PhoneMainView.instance updateApplicationBadgeNumber];
 		}
 	}
+	completionHandler();
 }
 
 - (void)application:(UIApplication *)application
