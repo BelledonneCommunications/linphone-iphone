@@ -11,20 +11,25 @@ Group changes to describe their impact on the project, as follows:
     Security to invite users to upgrade in case of vulnerabilities.
 
 ## [Unreleased]
+
 ### Added
 - Added "Forgot your password?" link in Linphone account assistant
+
 ### Changed
 - Push notifications are now configurable per account
+
 ### Fixed
 - Fix invalid photo rotation when using Camera for avatars
 - Parse user input as SIP address or phone number depending on default account settings: if "substitute + by country code" is set,
 consider inputs to be phone numbers, otherwise SIP addresses.
 
 ## [3.12.1] - 2016-02-19
+
 ### Changed
 - New About view
 - [plugins registration] procedure has been updated
 - iLBC has been removed - we are now using webrtc implementation instead, which is built by default. Removed libilbc.a from XCode project
+
 ### Fixed
 - reload chat view on iPad on changes
 - remove “invalid length” error in assistant
@@ -33,12 +38,15 @@ consider inputs to be phone numbers, otherwise SIP addresses.
 - update application badge count when answering within notification
 
 ## 3.0 - 2016-01-06
+
 ### Added
 - Multi account support
+
 ### Changed
 - New flat design rebranding
 
 ## 0.7.6 - 2013-03-04
+
 ### Added
 - Initial version
 
