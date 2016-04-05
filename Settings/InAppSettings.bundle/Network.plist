@@ -137,16 +137,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>Title</key>
-			<string>Push Notification</string>
-			<key>Key</key>
-			<string>pushnotification_preference</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
 			<key>Key</key>
 			<string>network_limit_group</string>
 			<key>Title</key>

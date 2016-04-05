@@ -9,6 +9,7 @@
 		<entry name="reg_proxy" overwrite="true"></entry>
 		<entry name="reg_route" overwrite="true"></entry>
 		<entry name="reg_sendregister" overwrite="true">1</entry>
+		<entry name="refkey" overwrite="true"></entry>
 	</section>
 
 	<section name="assistant">

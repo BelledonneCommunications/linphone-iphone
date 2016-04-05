@@ -13,6 +13,8 @@ Group changes to describe their impact on the project, as follows:
 ## [Unreleased]
 ### Added
 - Added "Forgot your password?" link in Linphone account assistant
+### Changed
+- Push notifications are now configurable per account
 ### Fixed
 - Fix invalid photo rotation when using Camera for avatars
 - Parse user input as SIP address or phone number depending on default account settings: if "substitute + by country code" is set,

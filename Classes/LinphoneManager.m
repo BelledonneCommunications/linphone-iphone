@@ -520,6 +520,20 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 	//	lp_config_for_each_entry(_configDb, "wizard", migrateWizardToAssistant, (__bridge void *)(self));
 }
 
+- (void)migratePushNotificationPerAccount {
+	NSString *s = [self lpConfigStringForKey:@"pushnotification_preference"];
+	if (s && s.boolValue) {
+		LOGI(@"Migrating push notification per account, enabling for ALL");
+		[self lpConfigSetBool:NO forKey:@"pushnotification_preference"];
+		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		while (proxies) {
+			linphone_proxy_config_set_ref_key(proxies->data, "push_notification");
+			[self configurePushTokenForProxyConfig:proxies->data];
+			proxies = proxies->next;
+		}
+	}
+}
+
 #pragma mark - Linphone Core Functions
 
 + (LinphoneCore *)getLc {
@@ -533,27 +547,12 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 
 #pragma mark Debug functions
 
-struct _entry_data {
-	const LpConfig *conf;
-	const char *section;
-};
-
-static void dump_entry(const char *entry, void *data) {
-	struct _entry_data *d = (struct _entry_data *)data;
-	const char *value = lp_config_get_string(d->conf, d->section, entry, "");
-	LOGI(@"%s=%s", entry, value);
-}
-
-static void dump_section(const char *section, void *data) {
-	LOGI(@"[%s]", section);
-	struct _entry_data d = {(const LpConfig *)data, section};
-	lp_config_for_each_entry((const LpConfig *)data, section, dump_entry, &d);
-}
-
 + (void)dumpLcConfig {
 	if (theLinphoneCore) {
 		LpConfig *conf = LinphoneManager.instance.configDb;
-		lp_config_for_each_section(conf, dump_section, conf);
+		char *config = lp_config_dump(conf);
+		LOGI(@"\n%s", config);
+		ms_free(config);
 	}
 }
 
@@ -825,9 +824,7 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 	if (_wasRemoteProvisioned) {
 		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 		if (cfg) {
-			linphone_proxy_config_edit(cfg);
 			[self configurePushTokenForProxyConfig:cfg];
-			linphone_proxy_config_done(cfg);
 		}
 	}
 }
@@ -1398,8 +1395,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_call_logs_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 
 	[self migrationLinphoneSettings];
-
 	[self migrationFromVersion2To3];
+	[self migratePushNotificationPerAccount];
 
 	[self setupNetworkReachabilityCallback];
 
@@ -1686,9 +1683,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	// handle proxy config if any
 	if (proxyCfg) {
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] ||
-			[LinphoneManager.instance lpConfigBoolForKey:@"pushnotification_preference"]) {
-
+		const char *refkey = linphone_proxy_config_get_ref_key(proxyCfg);
+		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
 			// For registration register
 			[self refreshRegisters];
 		}
@@ -1739,7 +1736,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LOGI(@"Entering [%s] bg mode", shouldEnterBgMode ? "normal" : "lite");
 
 	if (!shouldEnterBgMode) {
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"pushnotification_preference"]) {
+		const char *refkey = linphone_proxy_config_get_ref_key(proxyCfg);
+		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
+		if (pushNotifEnabled) {
 			LOGI(@"Keeping lc core to handle push");
 			/*destroy voip socket if any and reset connectivity mode*/
 			connectivity = none;
@@ -2052,17 +2051,21 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	_pushNotificationToken = apushNotificationToken;
 
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(theLinphoneCore);
-	if (cfg) {
-		linphone_proxy_config_edit(cfg);
-		[self configurePushTokenForProxyConfig:cfg];
-		linphone_proxy_config_done(cfg);
+	const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+	while (proxies) {
+		linphone_proxy_config_set_ref_key(proxies->data, "push_notification");
+		[self configurePushTokenForProxyConfig:proxies->data];
+		proxies = proxies->next;
 	}
 }
 
 - (void)configurePushTokenForProxyConfig:(LinphoneProxyConfig *)proxyCfg {
+	linphone_proxy_config_edit(proxyCfg);
+
 	NSData *tokenData = _pushNotificationToken;
-	if (tokenData != nil && [self lpConfigBoolForKey:@"pushnotification_preference"]) {
+	const char *refkey = linphone_proxy_config_get_ref_key(proxyCfg);
+	BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
+	if (tokenData != nil && pushNotifEnabled) {
 		const unsigned char *tokenBuffer = [tokenData bytes];
 		NSMutableString *tokenString = [NSMutableString stringWithCapacity:[tokenData length] * 2];
 		for (int i = 0; i < [tokenData length]; ++i) {
@@ -2092,6 +2095,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, NULL);
 		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
 	}
+
+	linphone_proxy_config_done(proxyCfg);
 }
 
 #pragma mark - Misc Functions

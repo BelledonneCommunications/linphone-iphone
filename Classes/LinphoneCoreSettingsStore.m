@@ -124,6 +124,7 @@
 
 	// default values
 	{
+		[self setBool:NO forKey:@"account_pushnotification_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_username_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_domain_preference"];
 		[self setCString:"" forKey:@"account_display_name_preference"];
@@ -146,6 +147,11 @@
 		proxy = proxies->data;
 		// root section
 		{
+			const char *refkey = linphone_proxy_config_get_ref_key(proxy);
+			if (refkey) {
+				BOOL pushEnabled = (strcmp(refkey, "push_notification") == 0);
+				[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
+			}
 			const LinphoneAddress *identity_addr = linphone_proxy_config_get_identity_address(proxy);
 			if (identity_addr) {
 				const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
@@ -336,8 +342,6 @@
 				break;
 		}
 		[self setCString:val forKey:@"media_encryption_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"pushnotification_preference" withDefault:NO]
-			   forKey:@"pushnotification_preference"];
 		[self setInteger:linphone_core_get_upload_bandwidth(LC) forKey:@"upload_bandwidth_preference"];
 		[self setInteger:linphone_core_get_download_bandwidth(LC) forKey:@"download_bandwidth_preference"];
 		[self setBool:linphone_core_adaptive_rate_control_enabled(LC) forKey:@"adaptive_rate_control_preference"];
@@ -443,7 +447,7 @@
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"account_expire_preference"];
 		BOOL isWifiOnly = [self boolForKey:@"wifi_only_preference"];
-		BOOL pushnotification = [self boolForKey:@"pushnotification_preference"];
+		BOOL pushnotification = [self boolForKey:@"account_pushnotification_preference"];
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
 		NSString *proxyAddress = [self stringForKey:@"account_proxy_preference"];
 
@@ -522,7 +526,7 @@
 			linphone_proxy_config_set_dial_escape_plus(proxyCfg, substitute_plus_by_00);
 		}
 
-		[lm lpConfigSetInt:pushnotification forKey:@"pushnotification_preference"];
+		linphone_proxy_config_set_ref_key(proxyCfg, pushnotification ? "push_notification" : NULL);
 		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, is_enabled);
@@ -599,7 +603,6 @@
 		account_changed |= [self valueChangedForKey:@"port_preference"];
 		account_changed |= [self valueChangedForKey:@"random_port_preference"];
 		account_changed |= [self valueChangedForKey:@"use_ipv6"];
-		account_changed |= [self valueChangedForKey:@"pushnotification_preference"];
 
 		if (account_changed)
 			[self synchronizeAccounts];

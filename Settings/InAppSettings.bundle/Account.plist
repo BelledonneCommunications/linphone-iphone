@@ -25,6 +25,16 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>Push Notification</string>
+			<key>Key</key>
+			<string>account_pushnotification_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
 			<key>AutocorrectionType</key>
