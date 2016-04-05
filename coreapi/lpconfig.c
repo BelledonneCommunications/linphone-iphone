@@ -923,26 +923,53 @@ const char** lp_config_get_sections_names(LpConfig *lpconfig) {
 	const MSList *sections = lpconfig->sections;
 	int ndev;
 	int i;
-	
+
 	ndev = ms_list_size(sections);
 	sections_names = ms_malloc((ndev + 1) * sizeof(const char *));
-	
+
 	for (i = 0; sections != NULL; sections = sections->next, i++) {
 		LpSection *section = (LpSection *)sections->data;
 		sections_names[i] = ms_strdup(section->name);
 	}
-	
+
 	sections_names[ndev] = NULL;
 	return sections_names;
 }
 
 char* lp_config_dump_as_xml(const LpConfig *lpconfig) {
 	char *buffer;
-	
+
 	lpc2xml_context *ctx = lpc2xml_context_new(NULL, NULL);
 	lpc2xml_set_lpc(ctx, lpconfig);
 	lpc2xml_convert_string(ctx, &buffer);
 	lpc2xml_context_destroy(ctx);
-	
+
+	return buffer;
+}
+
+struct _entry_data {
+	const LpConfig *conf;
+	const char *section;
+	char** buffer;
+};
+
+static void dump_entry(const char *entry, void *data) {
+	struct _entry_data *d = (struct _entry_data *) data;
+	const char *value = lp_config_get_string(d->conf, d->section, entry, "");
+	*d->buffer = ms_strcat_printf(*d->buffer, "\t%s=%s\n", entry, value);
+}
+
+static void dump_section(const char *section, void *data) {
+	struct _entry_data *d = (struct _entry_data *) data;
+	d->section = section;
+	*d->buffer = ms_strcat_printf(*d->buffer, "[%s]\n", section);
+	lp_config_for_each_entry(d->conf, section, dump_entry, d);
+}
+
+char* lp_config_dump(const LpConfig *lpconfig) {
+	char* buffer = NULL;
+	struct _entry_data d = { lpconfig, NULL, &buffer };
+	lp_config_for_each_section(lpconfig, dump_section, &d);
+
 	return buffer;
 }
