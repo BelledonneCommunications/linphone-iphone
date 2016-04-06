@@ -350,6 +350,7 @@
 		631A52091C770B7700B95673 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A52061C770B7700B95673 /* libmsamr.a */; };
 		631A520A1C770B7700B95673 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A52071C770B7700B95673 /* libmsbcg729.a */; };
 		631A520B1C770B7700B95673 /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A52081C770B7700B95673 /* libmsopenh264.a */; };
+		631C40241CB5037700EAE960 /* devices.c in Sources */ = {isa = PBXBuildFile; fileRef = 631C40231CB5037700EAE960 /* devices.c */; };
 		63FD3F251CA186DF00E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F221CA186DF00E9AECC /* libmbedcrypto.a */; };
 		63FD3F261CA186DF00E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F231CA186DF00E9AECC /* libmbedtls.a */; };
 		63FD3F271CA186DF00E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F241CA186DF00E9AECC /* libmbedx509.a */; };
@@ -797,6 +798,7 @@
 		631A52061C770B7700B95673 /* libmsamr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsamr.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsamr.a"; sourceTree = "<group>"; };
 		631A52071C770B7700B95673 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
 		631A52081C770B7700B95673 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
+		631C40231CB5037700EAE960 /* devices.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = devices.c; sourceTree = "<group>"; };
 		63FD3F221CA186DF00E9AECC /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedcrypto.a"; sourceTree = "<group>"; };
 		63FD3F231CA186DF00E9AECC /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedtls.a"; sourceTree = "<group>"; };
 		63FD3F241CA186DF00E9AECC /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedx509.a"; sourceTree = "<group>"; };
@@ -1233,17 +1235,16 @@
 			isa = PBXGroup;
 			children = (
 				22C8D0EC176A079600DAFB4E /* aac-eld.c */,
-				22AF73BD1753E83700BE8398 /* msopus.c */,
-				22D07CE416F3BFCB009F2C9E /* speexec.c */,
 				223CA7F016D9268D00EF1BEC /* alaw.c */,
 				223CA7F216D9268D00EF1BEC /* aqsnd.c */,
 				223CA7F416D9268D00EF1BEC /* audiomixer.c */,
 				223CA7F516D9268D00EF1BEC /* chanadapt.c */,
+				631C40231CB5037700EAE960 /* devices.c */,
+				223CA7F616D9268D00EF1BEC /* dtmfgen.c */,
+				223CA7F716D9268D00EF1BEC /* equalizer.c */,
+				F02538F819794908002C30F3 /* flowcontrol.c */,
 				F02538EB19794847002C30F3 /* g711.c */,
 				F02538EC19794847002C30F3 /* g711.h */,
-				223CA7F616D9268D00EF1BEC /* dtmfgen.c */,
-				F02538F819794908002C30F3 /* flowcontrol.c */,
-				223CA7F716D9268D00EF1BEC /* equalizer.c */,
 				223CA7F916D9268D00EF1BEC /* genericplc.c */,
 				223CA7FA16D9268D00EF1BEC /* gsm.c */,
 				223CA7FB16D9268D00EF1BEC /* l16.c */,
@@ -1251,9 +1252,11 @@
 				223CA7FF16D9268D00EF1BEC /* msfilerec.c */,
 				223CA80016D9268D00EF1BEC /* msg722.c */,
 				223CA80116D9268D00EF1BEC /* msiounit.m */,
+				22AF73BD1753E83700BE8398 /* msopus.c */,
 				223CA80216D9268D00EF1BEC /* msresample.c */,
 				223CA80316D9268D00EF1BEC /* msspeex.c */,
 				223CA80416D9268D00EF1BEC /* msvolume.c */,
+				22D07CE416F3BFCB009F2C9E /* speexec.c */,
 				223CA80916D9268D00EF1BEC /* tonedetector.c */,
 				223CA80A16D9268D00EF1BEC /* ulaw.c */,
 				223CA80B16D9268D00EF1BEC /* waveheader.h */,
@@ -2106,6 +2109,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2206D2D7177AC70900C40726 /* mediastreamAppDelegate.m in Sources */,
+				631C40241CB5037700EAE960 /* devices.c in Sources */,
 				2206D2D8177AC70900C40726 /* mediastreamViewController.m in Sources */,
 				F0ED9B931A1648D900A788CE /* mediastream.c in Sources */,
 				F04D51EE1A08E638004DD530 /* common.c in Sources */,
