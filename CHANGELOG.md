@@ -16,6 +16,7 @@ Group changes to describe their impact on the project, as follows:
 - Added "Forgot your password?" link in Linphone account assistant
 
 ### Changed
+- Enable Neon intrinsics optimizations for speex resampler (ENABLE_ARM_NEON_INTRINSICS)
 - Push notifications are now configurable per account
 
 ### Fixed
