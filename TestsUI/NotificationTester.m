@@ -28,6 +28,13 @@
 	linphone_core_set_network_reachable(LC, NO);
 
 	[tester tapViewWithAccessibilityLabel:@"Chat"];
+
+	// it can take several seconds to receive the remote push notification...
+	int timeout = 5;
+	while (timeout > 0) {
+		[tester tryFindingViewWithAccessibilityLabel:@"Contact name, Message" error:nil];
+		timeout--;
+	}
 	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
 										value:[NSString stringWithFormat:@"%@, hello my own (1)", self.me]
 									   traits:UIAccessibilityTraitStaticText];
