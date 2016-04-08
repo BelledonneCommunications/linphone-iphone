@@ -602,6 +602,8 @@ void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
 	 /* FIXME we should wait until subscription to complete. */
 	if (list->event) {
 		linphone_event_terminate(list->event);
+		linphone_event_unref(list->event);
+		list->event = NULL;
 	} else if (list->friends)
 		ms_list_for_each(list->friends, (void (*)(void *))linphone_friend_close_subscriptions);
 }
