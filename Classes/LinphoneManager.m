@@ -248,7 +248,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_database = NULL;
 		_speakerEnabled = FALSE;
 		_bluetoothEnabled = FALSE;
-		_tunnelMode = FALSE;
 
 		_fileTransferDelegates = [[NSMutableArray alloc] init];
 
@@ -1210,7 +1209,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			lm.connectivity = none;
 			[LinphoneManager kickOffNetworkConnection];
 		} else {
-			LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
 			Connectivity newConnectivity;
 			BOOL isWifiOnly = [lm lpConfigBoolForKey:@"wifi_only_preference" withDefault:FALSE];
 			if (!ctx || ctx->testWWan)
@@ -1229,8 +1227,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			}
 
 			if (lm.connectivity != newConnectivity) {
-				if (tunnel)
-					linphone_tunnel_reconnect(tunnel);
 				// connectivity has changed
 				linphone_core_set_network_reachable(theLinphoneCore, false);
 				if (newConnectivity == wwan && proxy && isWifiOnly) {
@@ -1241,17 +1237,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				LOGI(@"Network connectivity changed to type [%s]", (newConnectivity == wifi ? "wifi" : "wwan"));
 			}
 			lm.connectivity = newConnectivity;
-			switch (lm.tunnelMode) {
-				case tunnel_wwan:
-					linphone_tunnel_enable(tunnel, lm.connectivity == wwan);
-					break;
-				case tunnel_auto:
-					linphone_tunnel_auto_detect(tunnel);
-					break;
-				default:
-					// nothing to do
-					break;
-			}
 		}
 		if (ctx && ctx->networkStateChanged) {
 			(*ctx->networkStateChanged)(lm.connectivity);
@@ -2341,31 +2326,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		}
 	}
 	return filter;
-}
-
-#pragma Tunnel
-
-- (void)setTunnelMode:(TunnelMode)atunnelMode {
-	LinphoneTunnel *tunnel = linphone_core_get_tunnel(theLinphoneCore);
-	_tunnelMode = atunnelMode;
-	switch (_tunnelMode) {
-		case tunnel_off:
-			linphone_tunnel_enable(tunnel, false);
-			break;
-		case tunnel_on:
-			linphone_tunnel_enable(tunnel, true);
-			break;
-		case tunnel_wwan:
-			if (connectivity != wwan) {
-				linphone_tunnel_enable(tunnel, false);
-			} else {
-				linphone_tunnel_enable(tunnel, true);
-			}
-			break;
-		case tunnel_auto:
-			linphone_tunnel_auto_detect(tunnel);
-			break;
-	}
 }
 
 #pragma mark - InApp Purchase events

@@ -33,7 +33,6 @@
 #import "InAppProductsManager.h"
 
 #include "linphone/linphonecore.h"
-#include "linphone/linphone_tunnel.h"
 
 extern NSString *const LINPHONERC_APPLICATION_KEY;
 
@@ -63,13 +62,6 @@ typedef enum _NetworkType {
     network_lte,
     network_wifi
 } NetworkType;
-
-typedef enum _TunnelMode {
-    tunnel_off = 0,
-    tunnel_on,
-    tunnel_wwan,
-    tunnel_auto
-} TunnelMode;
 
 typedef enum _Connectivity {
 	wifi,
@@ -208,7 +200,6 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, assign) BOOL bluetoothAvailable;
 @property (nonatomic, assign) BOOL bluetoothEnabled;
 @property (readonly) ALAssetsLibrary *photoLibrary;
-@property (nonatomic, assign) TunnelMode tunnelMode;
 @property (readonly) NSString* contactSipField;
 @property (readonly,copy) NSString* contactFilter;
 @property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);

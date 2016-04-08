@@ -21,6 +21,7 @@
 #import "Utils.h"
 
 #include "linphone/lpconfig.h"
+#include "linphone/linphone_tunnel.h"
 
 @implementation LinphoneCoreSettingsStore
 
@@ -758,7 +759,7 @@
 			NSString *lTunnelPrefAddress = [self stringForKey:@"tunnel_address_preference"];
 			int lTunnelPrefPort = [self integerForKey:@"tunnel_port_preference"];
 			LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
-			TunnelMode mode = tunnel_off;
+			LinphoneTunnelMode mode = LinphoneTunnelModeDisable;
 			int lTunnelPort = 443;
 			if (lTunnelPrefPort) {
 				lTunnelPort = lTunnelPrefPort;
@@ -772,20 +773,18 @@
 				linphone_tunnel_add_server(tunnel, ltc);
 
 				if ([lTunnelPrefMode isEqualToString:@"off"]) {
-					mode = tunnel_off;
+					mode = LinphoneTunnelModeDisable;
 				} else if ([lTunnelPrefMode isEqualToString:@"on"]) {
-					mode = tunnel_on;
-				} else if ([lTunnelPrefMode isEqualToString:@"wwan"]) {
-					mode = tunnel_wwan;
+					mode = LinphoneTunnelModeEnable;
 				} else if ([lTunnelPrefMode isEqualToString:@"auto"]) {
-					mode = tunnel_auto;
+					mode = LinphoneTunnelModeAuto;
 				} else {
 					LOGE(@"Unexpected tunnel mode [%s]", [lTunnelPrefMode UTF8String]);
 				}
 			}
 
 			[lm lpConfigSetString:lTunnelPrefMode forKey:@"tunnel_mode_preference"];
-			[LinphoneManager.instance setTunnelMode:mode];
+			linphone_tunnel_set_mode(tunnel, mode);
 		}
 	}
 

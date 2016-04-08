@@ -11,7 +11,6 @@
 			<array>
 				<string>Off</string>
 				<string>On</string>
-				<string>WWAN</string>
 				<string>Auto</string>
 			</array>
 			<key>Key</key>
@@ -24,7 +23,6 @@
 			<array>
 				<string>off</string>
 				<string>on</string>
-				<string>wwan</string>
 				<string>auto</string>
 			</array>
 		</dict>
