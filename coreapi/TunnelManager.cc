@@ -343,7 +343,7 @@ LinphoneTunnelMode TunnelManager::getMode() const {
 void TunnelManager::processUdpMirrorEvent(const Event &ev){
 	if(mState != autodetecting) return;
 	if (ev.mData.mHaveUdp) {
-		ms_message("TunnelManager: UDP mirror test succeed");
+		ms_message("TunnelManager: UDP mirror test succeed on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
 		if(mTunnelClient) {
 			if(mTunnelizeSipPackets) doUnregistration();
 			sal_set_tunnel(mCore->sal,NULL);
@@ -353,10 +353,10 @@ void TunnelManager::processUdpMirrorEvent(const Event &ev){
 		}
 		mState = disabled;
 	} else {
-		ms_message("TunnelManager: UDP mirror test failed");
+		ms_message("TunnelManager: UDP mirror test failed on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
 		mCurrentUdpMirrorClient++;
 		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
-			ms_message("TunnelManager: trying another UDP mirror");
+			ms_message("TunnelManager: trying another UDP mirror on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
 			if (mLongRunningTaskId == 0)
 				mLongRunningTaskId = sal_begin_background_task("Tunnel auto detect", NULL, NULL);
 			UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;

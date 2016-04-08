@@ -361,6 +361,7 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 
 /* Deprecated functions */
 void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled) {
+	ms_warning("linphone_tunnel_enable is deprecated - please use linphone_tunnel_set_mode instead.");
 	if(enabled) linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeEnable);
 	else linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeDisable);
 }
