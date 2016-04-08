@@ -120,7 +120,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 #define SOUNDS_PREFIX
 #endif
 /* relative path where is stored local ring*/
-#define LOCAL_RING SOUNDS_PREFIX "rings/oldphone.wav"
+#define LOCAL_RING SOUNDS_PREFIX "rings/oldphone-mono.wav"
 #define LOCAL_RING_MKV SOUNDS_PREFIX "rings/notes_of_the_optimistic.mkv"
 /* same for remote ring (ringback)*/
 #define REMOTE_RING SOUNDS_PREFIX "ringback.wav"
