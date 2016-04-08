@@ -35,8 +35,9 @@ static void core_init_test(void) {
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	/* until we have good certificates on our test server... */
 	linphone_core_verify_server_certificates(lc,FALSE);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
-	linphone_core_destroy(lc);
+	if (BC_ASSERT_PTR_NOT_NULL(lc)) {
+		linphone_core_destroy(lc);
+	}
 }
 
 static void linphone_address_test(void) {
@@ -51,7 +52,7 @@ static void core_sip_transport_test(void) {
 	LCSipTransports tr;
 	memset (&v_table,0,sizeof(v_table));
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
+	if (!BC_ASSERT_PTR_NOT_NULL(lc)) return;
 	linphone_core_get_sip_transports(lc,&tr);
 	BC_ASSERT_EQUAL(tr.udp_port,5060, int, "%d"); /*default config*/
 	BC_ASSERT_EQUAL(tr.tcp_port,5060, int, "%d"); /*default config*/
@@ -83,7 +84,7 @@ static void linphone_interpret_url_test(void)
 	char *tmp;
 	memset ( &v_table,0,sizeof ( v_table ) );
 	lc = linphone_core_new ( &v_table,NULL,NULL,NULL );
-	BC_ASSERT_PTR_NOT_NULL_FATAL ( lc );
+	if (!BC_ASSERT_PTR_NOT_NULL( lc )) return;
 
 	proxy_config =linphone_core_create_proxy_config(lc);
 	linphone_proxy_config_set_identity(proxy_config, "sip:moi@sip.linphone.org");
@@ -94,10 +95,10 @@ static void linphone_interpret_url_test(void)
 	linphone_proxy_config_unref(proxy_config);
 
 	address = linphone_core_interpret_url(lc, sips_address);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(address);
-	BC_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_scheme(address), "sips");
-	BC_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_username(address), "margaux");
-	BC_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_domain(address), "sip.linphone.org");
+	BC_ASSERT_PTR_NOT_NULL(address);
+	BC_ASSERT_STRING_EQUAL(linphone_address_get_scheme(address), "sips");
+	BC_ASSERT_STRING_EQUAL(linphone_address_get_username(address), "margaux");
+	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(address), "sip.linphone.org");
 	linphone_address_destroy(address);
 
 	address = linphone_core_interpret_url(lc,"23");
@@ -272,7 +273,7 @@ static void chat_room_test(void) {
 	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
+	if (!BC_ASSERT_PTR_NOT_NULL(lc)) return;
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room_from_uri(lc,"sip:toto@titi.com"));
 	linphone_core_destroy(lc);
 }

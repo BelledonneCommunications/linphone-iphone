@@ -83,7 +83,7 @@ void liblinphone_tester_enable_ipv6(bool_t enabled){
 
 LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(addr);
+	if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
 	linphone_address_set_username(addr,test_username);
 	BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
 	if (!domain) domain= test_route;

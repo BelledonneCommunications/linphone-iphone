@@ -959,8 +959,8 @@ static void lime_unit(void) {
 	memcpy(associatedKeys.peerURI, "pipo1@pipo.com", 15);
 	associatedKeys.associatedZIDNumber  = 0;
 	retval = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys);
-	BC_ASSERT_EQUAL_FATAL(retval, 0, int, "%d");
-	BC_ASSERT_EQUAL_FATAL(associatedKeys.associatedZIDNumber, 2, int, "%d"); /* there are 2 keys associated to pipo1@pipo.com address in the cache above*/
+	BC_ASSERT_EQUAL(retval, 0, int, "%d");
+	BC_ASSERT_EQUAL(associatedKeys.associatedZIDNumber, 2, int, "%d"); /* there are 2 keys associated to pipo1@pipo.com address in the cache above*/
 	ms_message("Get cached key by URI, for sender, return %d keys", associatedKeys.associatedZIDNumber);
 
 	for (i=0; i<associatedKeys.associatedZIDNumber; i++) {
@@ -973,7 +973,7 @@ static void lime_unit(void) {
 	/* get data from cache : receiver */
 	memcpy(associatedKey.peerZID, targetZID, 12);
 	retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
-	BC_ASSERT_EQUAL_FATAL(retval, 0, int, "%d");
+	BC_ASSERT_EQUAL(retval, 0, int, "%d");
 	printHex("Got receiver key for ZID", targetZID, 12);
 	printHex("Key", associatedKey.key, 32);
 	printHex("sessionID", associatedKey.sessionId, 32);
@@ -986,7 +986,7 @@ static void lime_unit(void) {
 	memcpy(receiverZID, associatedKeys.peerKeys[0]->peerZID, 12);
 	memcpy(associatedKeys.peerKeys[0]->peerZID, senderZID, 12);
 	retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, strlen(PLAIN_TEXT_TEST_MESSAGE)+16, receiverZID, plainMessage);
-	BC_ASSERT_EQUAL_FATAL(retval, 0, int, "%d");
+	BC_ASSERT_EQUAL(retval, 0, int, "%d");
 	BC_ASSERT_STRING_EQUAL((char *)plainMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
 	ms_message("Decrypt and auth returned %d\nPlain text is %s\n", retval, plainMessage);
 
@@ -995,14 +995,14 @@ static void lime_unit(void) {
 	associatedKey.key[0]++;
 	associatedKey.sessionId[0]++;
 	retval = lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER);
-	BC_ASSERT_EQUAL_FATAL(retval, 0, int, "%d");
+	BC_ASSERT_EQUAL(retval, 0, int, "%d");
 
 	/* update sender data */
 	associatedKeys.peerKeys[0]->sessionIndex++;
 	associatedKeys.peerKeys[0]->key[0]++;
 	associatedKeys.peerKeys[0]->sessionId[0]++;
 	retval = lime_setCachedKey(cacheBuffer, associatedKeys.peerKeys[0], LIME_SENDER);
-	BC_ASSERT_EQUAL_FATAL(retval, 0, int, "%d");
+	BC_ASSERT_EQUAL(retval, 0, int, "%d");
 
 	/* free memory */
 	lime_freeKeys(associatedKeys);
@@ -1047,7 +1047,7 @@ static void lime_unit(void) {
 	/* encrypt a msg */
 	retval = lime_createMultipartMessage(cacheBufferAlice, (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
 
-	BC_ASSERT_EQUAL_FATAL(retval, 0, int, "%d");
+	BC_ASSERT_EQUAL(retval, 0, int, "%d");
 	if (retval == 0) {
 		ms_message("Encrypted msg created is %s", multipartMessage);
 	}
@@ -1055,7 +1055,7 @@ static void lime_unit(void) {
 	/* decrypt the multipart msg */
 	retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage);
 
-	BC_ASSERT_EQUAL_FATAL(retval, 0, int, "%d");
+	BC_ASSERT_EQUAL(retval, 0, int, "%d");
 	if (retval == 0) {
 		BC_ASSERT_STRING_EQUAL((char *)decryptedMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
 		ms_message("Succesfully decrypted msg is %s", decryptedMessage);
@@ -1154,7 +1154,7 @@ static void database_migration(void) {
 	char *tmp_db  = bc_tester_file("tmp.db");
 	const MSList* chatrooms;
 
-	BC_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
+	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	// enable to test the performances of the migration step
 	//linphone_core_message_storage_set_debug(marie->lc, TRUE);
@@ -1182,7 +1182,7 @@ static void history_range(void){
 	char *src_db = bc_tester_res("messages.db");
 	char *tmp_db  = bc_tester_file("tmp.db");
 
-	BC_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
+	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
 
@@ -1223,7 +1223,7 @@ static void history_count(void) {
 	char *src_db = bc_tester_res("messages.db");
 	char *tmp_db  = bc_tester_file("tmp.db");
 
-	BC_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
+	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
 

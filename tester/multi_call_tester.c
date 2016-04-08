@@ -269,7 +269,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 
 	marie_call_laure=linphone_core_get_current_call(marie->lc);
 
-	BC_ASSERT_PTR_NOT_NULL_FATAL(marie_call_laure);
+	if (!BC_ASSERT_PTR_NOT_NULL(marie_call_laure)) goto end;
 	linphone_core_add_to_conference(marie->lc,marie_call_laure);
 	if(!is_remote_conf) {
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallUpdating,initial_marie_stat.number_of_LinphoneCallUpdating+1,5000));
@@ -344,7 +344,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,is_remote_conf?3:2,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,is_remote_conf?2:1,10000));
 	if(is_remote_conf) BC_ASSERT_TRUE(wait_for_list(lcs,&focus->stat.number_of_LinphoneCallEnd,3,10000));
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,is_remote_conf?2:1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,is_remote_conf?3:2,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,is_remote_conf?2:1,10000));
@@ -444,7 +444,7 @@ static void simple_call_transfer(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,2000));
 
 	marie_calling_laure=linphone_core_get_current_call(marie->lc);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(marie_calling_laure);
+	if (!BC_ASSERT_PTR_NOT_NULL(marie_calling_laure)) goto end;
 	BC_ASSERT_PTR_EQUAL(linphone_call_get_transferer_call(marie_calling_laure),marie_calling_pauline);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallConnected,1,2000));
@@ -456,6 +456,7 @@ static void simple_call_transfer(void) {
 	end_call(marie, laure);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,2000));
 
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
@@ -656,7 +657,7 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 
 	marie_call_laure=linphone_core_get_current_call(marie->lc);
 
-	BC_ASSERT_PTR_NOT_NULL_FATAL(marie_call_laure);
+	if (!BC_ASSERT_PTR_NOT_NULL(marie_call_laure)) goto end;
 
 	linphone_core_add_to_conference(marie->lc,marie_call_laure);
 
@@ -718,7 +719,7 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,initial_laure_stat.number_of_LinphoneCallEnd+2,3000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,initial_marie_stat.number_of_LinphoneCallEnd+3,3000));
 	}
-
+end:
 	ms_list_free(lcs);
 }
 
@@ -769,7 +770,7 @@ static void eject_from_4_participants_conference(void) {
 
 	marie_call_laure=linphone_core_get_current_call(marie->lc);
 
-	BC_ASSERT_PTR_NOT_NULL_FATAL(marie_call_laure);
+	if (!BC_ASSERT_PTR_NOT_NULL(marie_call_laure)) goto end;
 
 	linphone_core_add_to_conference(marie->lc,marie_call_laure);
 	linphone_core_add_to_conference(marie->lc,marie_call_michelle);
@@ -806,7 +807,7 @@ static void eject_from_4_participants_conference(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&michelle->stat.number_of_LinphoneCallEnd,1,10000));
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,10000));
@@ -814,6 +815,7 @@ static void eject_from_4_participants_conference(void) {
 
 	ms_list_free(lcs);
 
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
