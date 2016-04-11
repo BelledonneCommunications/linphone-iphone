@@ -199,9 +199,14 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
 	_editButton.hidden = ([ContactSelection getSelectionMode] != ContactSelectionModeEdit &&
 						  [ContactSelection getSelectionMode] != ContactSelectionModeNone);
+	[_tableController.tableView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -250,19 +255,36 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 
 	if ([self viewIsCurrentlyPortrait]) {
-		CGRect frame = self.contentView.frame;
-		frame.size.height -= _avatarImage.frame.origin.y + _avatarImage.frame.size.height;
-		frame.origin.y = _nameLabel.frame.origin.y;
+		CGRect frame = _tableController.tableView.frame;
+		frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
 		if (!editing) {
 			frame.origin.y += _nameLabel.frame.size.height;
-			frame.size.height -= _nameLabel.frame.size.height;
 		}
 
+		frame.size.height = _tableController.tableView.contentSize.height;
 		_tableController.tableView.frame = frame;
+		[self recomputeContentViewSize];
 	}
+
 	if (animated) {
 		[UIView commitAnimations];
 	}
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+					  ofObject:(id)object
+						change:(NSDictionary *)change
+					   context:(void *)context {
+	CGRect frame = _tableController.tableView.frame;
+	frame.size = _tableController.tableView.contentSize;
+	_tableController.tableView.frame = frame;
+	[self recomputeContentViewSize];
+}
+
+- (void)recomputeContentViewSize {
+	_contentView.contentSize =
+		CGSizeMake(_tableController.tableView.frame.size.width + _tableController.tableView.frame.origin.x,
+				   _tableController.tableView.frame.size.height + _tableController.tableView.frame.origin.y);
 }
 
 #pragma mark - Action Functions

@@ -137,7 +137,8 @@
 	} else if (section == ContactSections_Number) {
 		return _contact.phoneNumbers.count;
 	} else if (section == ContactSections_Email) {
-		return _contact.emails.count;
+		BOOL showEmails = [LinphoneManager.instance lpConfigBoolForKey:@"show_contacts_emails_preference"];
+		return showEmails ? _contact.emails.count : 0;
 	}
 	return 0;
 }
