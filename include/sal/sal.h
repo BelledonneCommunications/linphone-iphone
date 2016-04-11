@@ -261,6 +261,8 @@ typedef struct SalStreamDescription{
 	bool_t pad[1];
 	char dtls_fingerprint[256];
 	SalDtlsRole dtls_role;
+	uint8_t zrtphash[128];
+	uint8_t haveZrtpHash; /**< flag for zrtp hash presence */
 	int ttl; /*for multicast -1 to disable*/
 	SalMulticastRole multicast_role;
 } SalStreamDescription;

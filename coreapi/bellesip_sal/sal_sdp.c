@@ -288,6 +288,11 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 		ms_free(ssrc_attribute);
 	}
 
+	/* insert zrtp-hash attribute if needed */
+	if (stream->haveZrtpHash == 1) {
+		belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("zrtp-hash", (const char *)(stream->zrtphash)));
+	}
+
 	switch ( stream->dir ) {
 		case SalStreamSendRecv:
 			/*dir="sendrecv";*/
@@ -832,6 +837,14 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	/* Read crypto lines if any */
 	if (sal_stream_description_has_srtp(stream)) {
 		sdp_parse_media_crypto_parameters(media_desc, stream);
+	}
+
+	/* Read zrtp-hash attribute */
+	if ((attribute=belle_sdp_media_description_get_attribute(media_desc,"zrtp-hash"))!=NULL) {
+		if ((value=belle_sdp_attribute_get_value(attribute))!=NULL) {
+			strncpy((char *)(stream->zrtphash), belle_sdp_attribute_get_value(attribute),sizeof(stream->zrtphash));
+			stream->haveZrtpHash = 1;
+		}
 	}
 
 	/* Get ICE candidate attributes if any */
