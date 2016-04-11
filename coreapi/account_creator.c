@@ -170,9 +170,13 @@ static char* _get_identity(const LinphoneAccountCreator *creator) {
 		//we must escape username
 		LinphoneProxyConfig* proxy = linphone_proxy_config_new();
 		LinphoneAddress* addr;
-		linphone_proxy_config_set_identity(proxy, "sip:userame@domain.com");
+		// creator->domain may contain some port or some transport (eg. toto.org:443;transport=tcp),
+		// we will accept that
+		char * tmpidentity = ms_strdup_printf("sip:username@%s", creator->domain);
+		linphone_proxy_config_set_identity(proxy, tmpidentity);
+		ms_free(tmpidentity);
 		addr = linphone_proxy_config_normalize_sip_uri(proxy, creator->username);
-		linphone_address_set_domain(addr, creator->domain);
+
 		identity = linphone_address_as_string(addr);
 		linphone_address_destroy(addr);
 		linphone_proxy_config_destroy(proxy);

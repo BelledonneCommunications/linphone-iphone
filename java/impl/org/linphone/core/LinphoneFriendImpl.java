@@ -60,7 +60,11 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		this.setAddress(nativePtr, ((LinphoneAddressImpl)anAddress).nativePtr);
 	}
 	public LinphoneAddress getAddress() {
-		return new LinphoneAddressImpl(getAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
+		long ptr = getAddress(nativePtr);
+		if (ptr != 0) {
+			return new LinphoneAddressImpl(ptr, LinphoneAddressImpl.WrapMode.FromConst);
+		}
+		return null;
 	}
 	public void setIncSubscribePolicy(SubscribePolicy policy) {
 		synchronized(getSyncObject()){
@@ -129,5 +133,67 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	@Override
 	public String getName() {
 		return getName(nativePtr);
+	}
+	
+	private native void setOrganization(long nativePtr, String organization);
+	@Override
+	public void setOrganization(String organization) {
+		setOrganization(nativePtr, organization);
+	}
+	
+	private native String getOrganization(long nativePtr);
+	@Override
+	public String getOrganization() {
+		return getOrganization(nativePtr);
+	}
+	
+	private native long[] getAddresses(long nativePtr);
+	@Override
+	public LinphoneAddress[] getAddresses() {
+		long[] ptrs = getAddresses(nativePtr);
+		if (ptrs == null) return null;
+
+		LinphoneAddress[] addresses = new LinphoneAddress[ptrs.length];
+		for (int i = 0; i < addresses.length; i++) {
+			addresses[i] = new LinphoneAddressImpl(ptrs[i], LinphoneAddressImpl.WrapMode.FromConst);
+		}
+		return addresses;
+	}
+	
+	private native void addAddress(long nativePtr, long addr);
+	@Override
+	public void addAddress(LinphoneAddress addr) {
+		addAddress(nativePtr, ((LinphoneAddressImpl)addr).nativePtr);
+	}
+	
+	private native void removeAddress(long nativePtr, long addr);
+	@Override
+	public void removeAddress(LinphoneAddress addr) {
+		removeAddress(nativePtr, ((LinphoneAddressImpl)addr).nativePtr);
+	}
+	
+	private native Object[] getPhoneNumbers(long nativePtr);
+	@Override
+	public String[] getPhoneNumbers() {
+		Object[] phones = getPhoneNumbers(nativePtr);
+		if (phones == null) return null;
+		
+		String[] phoneNumbers = new String[phones.length];
+		for (int i = 0; i < phones.length; i++) {
+			phoneNumbers[i] = phones[i].toString();
+		}
+		return phoneNumbers;
+	}
+	
+	private native void addPhoneNumber(long nativePtr, String phone);
+	@Override
+	public void addPhoneNumber(String phone) {
+		addPhoneNumber(nativePtr, phone);
+	}
+	
+	private native void removePhoneNumber(long nativePtr, String phone);
+	@Override
+	public void removePhoneNumber(String phone) {
+		removePhoneNumber(nativePtr, phone);
 	}
 }

@@ -195,6 +195,10 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 	}
 }
 
+const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
+	return lf->uri;
+}
+
 int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr = linphone_address_clone(addr);
 	LinphoneVcard *vcard = NULL;
@@ -209,6 +213,106 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 	}
 	
 	return 0;
+}
+
+void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !addr) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_add_sip_address(vcard, linphone_address_as_string_uri_only(addr));
+}
+
+MSList* linphone_friend_get_addresses(LinphoneFriend *lf) {
+	LinphoneVcard *vcard = NULL;
+	MSList *sipAddresses = NULL;
+	MSList *addresses = NULL;
+	MSList *iterator = NULL;
+	
+	if (!lf) {
+		return NULL;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return NULL;
+	}
+	
+	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
+	iterator = sipAddresses;
+	while (iterator) {
+		const char *sipAddress = (const char *)iterator->data;
+		LinphoneAddress *addr = linphone_address_new(sipAddress);
+		if (addr) {
+			addresses = ms_list_append(addresses, addr);
+		}
+		iterator = ms_list_next(iterator);
+	}
+	if (sipAddresses) ms_list_free(sipAddresses);
+	return addresses;
+}
+
+void linphone_friend_remove_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !addr) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_remove_sip_address(vcard, linphone_address_as_string_uri_only(addr));
+}
+
+void linphone_friend_add_phone_number(LinphoneFriend *lf, const char *phone) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !phone) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_add_phone_number(vcard, phone);
+}
+
+MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf) {
+	LinphoneVcard *vcard = NULL;
+	
+	if (!lf) {
+		return NULL;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return NULL;
+	}
+	
+	return linphone_vcard_get_phone_numbers(vcard);
+}
+
+void linphone_friend_remove_phone_number(LinphoneFriend *lf, const char *phone) {
+	LinphoneVcard *vcard = NULL;
+	if (!lf || !phone) {
+		return;
+	}
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (!vcard) {
+		return;
+	}
+	
+	linphone_vcard_remove_phone_number(vcard, phone);
 }
 
 int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
@@ -334,10 +438,6 @@ static belle_sip_error_code _linphone_friend_marshall(belle_sip_object_t *obj, c
 	return err;
 }
 
-const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
-	return lf->uri;
-}
-
 const char * linphone_friend_get_name(const LinphoneFriend *lf) {
 	if (lf && lf->vcard) {
 		return linphone_vcard_get_full_name(lf->vcard);
@@ -360,6 +460,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 	LinphoneOnlineStatus online_status = LinphoneStatusOffline;
 	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusClosed;
 	LinphonePresenceActivity *activity = NULL;
+	const char *description = NULL;
 	unsigned int nb_activities = 0;
 
 	if (lf->presence != NULL) {
@@ -376,6 +477,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 		}
 		if (nb_activities == 1) {
 			activity = linphone_presence_model_get_activity(lf->presence);
+			description = linphone_presence_activity_get_description(activity);
 			switch (linphone_presence_activity_get_type(activity)) {
 				case LinphonePresenceActivityBreakfast:
 				case LinphonePresenceActivityDinner:
@@ -402,6 +504,12 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 					online_status = LinphoneStatusVacation;
 					break;
 				case LinphonePresenceActivityBusy:
+					if (description && strcmp(description, "Do not disturb") == 0) { // See linphonecore.c linphone_core_set_presence_info() method
+						online_status = LinphoneStatusDoNotDisturb;
+					} else {
+						online_status = LinphoneStatusBusy;
+					}
+					break;
 				case LinphonePresenceActivityLookingForWork:
 				case LinphonePresenceActivityPlaying:
 				case LinphonePresenceActivityShopping:
@@ -915,6 +1023,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 			linphone_friend_set_address(fr, linphone_address);
 			linphone_address_unref(linphone_address);
 		}
+		ms_free(sipAddresses);
 	}
 	if (name) {
 		linphone_friend_set_name(fr, name);
@@ -1366,7 +1475,7 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 		return;
 	}
 	
-	if (ms_list_size(linphone_friend_list_get_friends(lfl)) > 0) {
+	if (ms_list_size(linphone_friend_list_get_friends(lfl)) > 0 && lfl->storage_id == 0) {
 		linphone_core_remove_friend_list(lc, lfl);
 		lfl = linphone_core_create_friend_list(lc);
 		linphone_core_add_friend_list(lc, lfl);

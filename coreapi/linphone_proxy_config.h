@@ -524,6 +524,29 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig
 **/
 LINPHONE_PUBLIC const LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg);
 
+
+/**
+ * Get the persistent reference key associated to the proxy config.
+ *
+ * The reference key can be for example an id to an external database.
+ * It is stored in the config file, thus can survive to process exits/restarts.
+ *
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return The reference key string that has been associated to the proxy config, or NULL if none has been associated.
+**/
+LINPHONE_PUBLIC const char * linphone_proxy_config_get_ref_key(const LinphoneProxyConfig *cfg);
+
+/**
+ * Associate a persistent reference key to the proxy config.
+ *
+ * The reference key can be for example an id to an external database.
+ * It is stored in the config file, thus can survive to process exits/restarts.
+ *
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @param[in] refkey The reference key string to associate to the proxy config.
+**/
+LINPHONE_PUBLIC void linphone_proxy_config_set_ref_key(LinphoneProxyConfig *cfg, const char *refkey);
+
 /**
  * @}
  */

@@ -1,0 +1,51 @@
+diff -urN polarssl.orig/library/Makefile polarssl.new/library/Makefile
+--- polarssl.orig/library/Makefile	2013-08-22 10:24:46.353700982 +0200
++++ polarssl.new/library/Makefile	2013-08-22 10:21:43.933733318 +0200
+@@ -28,12 +28,14 @@
+ # OSX shared library extension:
+ ifdef DARWIN 
+ DLEXT=dylib
++SONAME=libpolarssl.0.dylib
+ endif
+ 
+ # Windows shared library extension:
+ ifdef WINDOWS
+ DLEXT=dll
+ LDFLAGS += -lws2_32
++SONAME=libpolarssl-0.dll
+ endif
+ 
+ OBJS=	aes.o		arc4.o		asn1parse.o		\
+@@ -73,15 +75,17 @@
+ 
+ libpolarssl.so: libpolarssl.a
+ 	echo "  LD    $@"
+-	$(CC) ${LDFLAGS} -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS)
++	$(CC) ${LDFLAGS} -shared -Wl,-soname,$(SONAME) -o $(SONAME) $(OBJS)
++	ln -s $(SONAME) $@
+ 
+ libpolarssl.dylib: libpolarssl.a
+ 	echo "  LD    $@"
+-	$(CC) ${LDFLAGS} -dynamiclib -o $@ $(OBJS)
++	$(CC) ${LDFLAGS} -dynamiclib -Wl,-install_name,$(SONAME) -o $(SONAME) $(OBJS)
++	ln -s $(SONAME) $@
+ 
+ libpolarssl.dll: libpolarssl.a 
+ 	echo "  LD    $@" 
+-	$(CC) -shared -Wl,-soname,$@,--out-implib,$@.a -o $@ $(OBJS) -lws2_32 -lwinmm -lgdi32 
++	$(CC) -shared -Wl,-soname,$(SONAME),--out-implib,$@.a -o $(SONAME) $(OBJS) -lws2_32 -lwinmm -lgdi32 
+ 
+ .c.o:
+ 	echo "  CC    $<"
+diff -urN polarssl.orig/Makefile polarssl.new/Makefile
+--- polarssl.orig/Makefile	2013-08-22 10:24:34.585703377 +0200
++++ polarssl.new/Makefile	2013-08-22 10:19:26.801749343 +0200
+@@ -21,7 +21,7 @@
+ 	cp -r include/polarssl $(DESTDIR)/include
+ 	
+ 	mkdir -p $(DESTDIR)/lib
+-	cp library/libpolarssl.* $(DESTDIR)/lib
++	cp -d library/libpolarssl* $(DESTDIR)/lib
+ 	
+ 	mkdir -p $(DESTDIR)/bin
+ 	cp library/libpolarssl*.dll $(DESTDIR)/bin

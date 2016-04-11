@@ -309,7 +309,7 @@ void linphone_gtk_account_creation_password_changed(GtkEntry *entry) {
 	} else {
 		if (gtk_entry_get_text_length(password) < PASSWORD_MIN_SIZE) {
 			gtk_label_set_text(passwordError, "Password is too short !");
-		} else if (!g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) == 0) {
+		} else if (g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) != 0) {
 			gtk_label_set_text(passwordError, "Passwords don't match !");
 		}
 		g_object_set_data(G_OBJECT(page), "is_password_correct", GINT_TO_POINTER(0));

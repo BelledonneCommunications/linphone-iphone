@@ -38,7 +38,7 @@ const char *liblinphone_tester_get_notify_content(void){
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	LinphoneCoreManager *mgr;
 	const char * ua = linphone_event_get_custom_header(lev, "User-Agent");
-	BC_ASSERT_PTR_NOT_NULL_FATAL(content);
+	if (!BC_ASSERT_PTR_NOT_NULL(content)) return;
 	if (!linphone_content_is_multipart(content) && (!ua ||  !strstr(ua, "flexisip"))) { /*disable check for full presence serveur support*/
 		/*hack to disable content checking for list notify */
 		BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
@@ -206,7 +206,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 	if (terminated_by_subscriber){
 		linphone_event_terminate(lev);
 	}else{
-		BC_ASSERT_PTR_NOT_NULL_FATAL(pauline->lev);
+		BC_ASSERT_PTR_NOT_NULL(pauline->lev);
 		linphone_event_terminate(pauline->lev);
 	}
 
@@ -268,7 +268,7 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	if (terminated_by_subscriber){
 		linphone_event_terminate(lev);
 	}else{
-		BC_ASSERT_PTR_NOT_NULL_FATAL(pauline->lev);
+		BC_ASSERT_PTR_NOT_NULL(pauline->lev);
 		linphone_event_terminate(pauline->lev);
 	}
 

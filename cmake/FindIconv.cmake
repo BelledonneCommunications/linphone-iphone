@@ -26,13 +26,16 @@
 #  ICONV_INCLUDE_DIRS - the libiconv include directory
 #  ICONV_LIBRARIES - The libraries needed to use libiconv
 
-set(_ICONV_ROOT_PATHS
-	${CMAKE_INSTALL_PREFIX}
-)
+if(APPLE AND NOT IOS)
+	set(ICONV_HINTS "/usr")
+endif()
+if(ICONV_HINTS)
+	set(ICONV_LIBRARIES_HINTS "${ICONV_HINTS}/lib")
+endif()
 
 find_path(ICONV_INCLUDE_DIRS
 	NAMES iconv.h
-	HINTS _ICONV_ROOT_PATHS
+	HINTS "${ICONV_HINTS}"
 	PATH_SUFFIXES include
 )
 
@@ -42,8 +45,7 @@ endif()
 
 find_library(ICONV_LIBRARIES
 	NAMES iconv
-	HINTS ${_ICONV_ROOT_PATHS}
-	PATH_SUFFIXES bin lib
+	HINTS "${ICONV_LIBRARIES_HINTS}"
 )
 
 include(FindPackageHandleStandardArgs)

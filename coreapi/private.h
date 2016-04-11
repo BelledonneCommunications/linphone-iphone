@@ -631,6 +631,7 @@ struct _LinphoneProxyConfig
 	LinphoneEvent *long_term_event;
 	unsigned long long previous_publish_config_hash[2];
 
+	char *refkey;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneProxyConfig);

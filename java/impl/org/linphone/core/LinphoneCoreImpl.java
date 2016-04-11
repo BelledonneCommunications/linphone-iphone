@@ -104,8 +104,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native int getPresenceInfo(long nativePtr);
 	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native Object getPresenceModel(long nativePtr);
-	private native long getOrCreateChatRoom(long nativePtr,String to);
-	private native long getChatRoom(long nativePtr,long to);
+	private native Object getOrCreateChatRoom(long nativePtr,String to);
+	private native Object getChatRoom(long nativePtr,long to);
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
 	private native boolean isVideoEnabled(long nativePtr);
 	private native boolean isVideoSupported(long nativePtr);
@@ -170,7 +170,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setChatDatabasePath(long nativePtr, String path);
 	private native void setCallLogsDatabasePath(long nativePtr, String path);
 	private native void setFriendsDatabasePath(long nativePtr, String path);
-	private native long[] getChatRooms(long nativePtr);
+	private native Object[] getChatRooms(long nativePtr);
 	private native int migrateToMultiTransport(long nativePtr);
 	private native void migrateCallLogs(long nativePtr);
 	private native void setCallErrorTone(long nativePtr, int reason, String path);
@@ -497,10 +497,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return (PresenceModel)getPresenceModel(nativePtr);
 	}
 	public synchronized LinphoneChatRoom getOrCreateChatRoom(String to) {
-		return new LinphoneChatRoomImpl(getOrCreateChatRoom(nativePtr,to));
+		return (LinphoneChatRoom)(getOrCreateChatRoom(nativePtr,to));
 	}
 	public synchronized LinphoneChatRoom getChatRoom(LinphoneAddress to) {
-		return new LinphoneChatRoomImpl(getChatRoom(nativePtr, ((LinphoneAddressImpl) to).nativePtr));
+		return (LinphoneChatRoom)(getChatRoom(nativePtr, ((LinphoneAddressImpl) to).nativePtr));
 	}
 	public synchronized void setPreviewWindow(Object w) {
 		setPreviewWindowId(nativePtr, w);
@@ -1108,6 +1108,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized boolean hasBuiltInEchoCanceler() {
 		return hasBuiltInEchoCanceler(nativePtr);
 	}
+	private native boolean hasCrappyOpenGL(long ptr);
+	@Override
+	public synchronized boolean hasCrappyOpenGL() {
+		return hasCrappyOpenGL(nativePtr);
+	}
 	private native void declineCall(long coreptr, long callptr, int reason);
 	@Override
 	public synchronized void declineCall(LinphoneCall aCall, Reason reason) {
@@ -1228,13 +1233,13 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 
 	public synchronized LinphoneChatRoom[] getChatRooms() {
-		long[] typesPtr = getChatRooms(nativePtr);
+		Object[] typesPtr = getChatRooms(nativePtr);
 		if (typesPtr == null) return null;
 
 		LinphoneChatRoom[] proxies = new LinphoneChatRoom[typesPtr.length];
 
 		for (int i=0; i < proxies.length; i++) {
-			proxies[i] = new LinphoneChatRoomImpl(typesPtr[i]);
+			proxies[i] = (LinphoneChatRoom)(typesPtr[i]);
 		}
 
 		return proxies;

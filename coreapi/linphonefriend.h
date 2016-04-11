@@ -162,7 +162,49 @@ LINPHONE_PUBLIC int linphone_friend_set_address(LinphoneFriend *fr, const Linpho
  * @param lf #LinphoneFriend object
  * @return #LinphoneAddress
  */
-LINPHONE_PUBLIC	const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+LINPHONE_PUBLIC const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+
+/**
+ * Adds an address in this friend
+ * @param lf #LinphoneFriend object
+ * @param addr #LinphoneAddress object
+ */
+LINPHONE_PUBLIC void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr);
+
+/**
+ * Returns a list of #LinphoneAddress for this friend
+ * @param lf #LinphoneFriend object
+ * @return \mslist{LinphoneAddress}
+ */
+LINPHONE_PUBLIC MSList* linphone_friend_get_addresses(LinphoneFriend *lf);
+
+/**
+ * Removes an address in this friend
+ * @param lf #LinphoneFriend object
+ * @param addr #LinphoneAddress object
+ */
+LINPHONE_PUBLIC void linphone_friend_remove_address(LinphoneFriend *lf, const LinphoneAddress *addr);
+
+/**
+ * Adds a phone number in this friend
+ * @param lf #LinphoneFriend object
+ * @param phone number to add
+ */
+LINPHONE_PUBLIC void linphone_friend_add_phone_number(LinphoneFriend *lf, const char *phone);
+
+/**
+ * Returns a list of phone numbers for this friend
+ * @param lf #LinphoneFriend object
+ * @return \mslist{const char *}
+ */
+LINPHONE_PUBLIC MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
+
+/**
+ * Removes a phone number in this friend
+ * @param lf #LinphoneFriend object
+ * @param phone number to remove
+ */
+LINPHONE_PUBLIC void linphone_friend_remove_phone_number(LinphoneFriend *lf, const char *phone);
 
 /**
  * Set the display name for this friend

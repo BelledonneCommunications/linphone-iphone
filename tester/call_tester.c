@@ -564,8 +564,7 @@ static void call_outbound_with_multiple_proxy(void) {
 	lpc = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_core_set_default_proxy(marie->lc,NULL);
 
-	BC_ASSERT_FATAL(lpc != NULL);
-	BC_ASSERT_FATAL(registered_lpc != NULL);
+	if (!BC_ASSERT_PTR_NOT_NULL(lpc) || !BC_ASSERT_PTR_NOT_NULL(registered_lpc)) return;
 
 	// create new LPC that will successfully register
 	linphone_proxy_config_set_identity(registered_lpc, linphone_proxy_config_get_identity(lpc));
@@ -671,19 +670,19 @@ static void multiple_answers_call_with_media_relay(void) {
 	call1 = linphone_core_get_current_call(marie1->lc);
 	call2 = linphone_core_get_current_call(marie2->lc);
 
-	BC_ASSERT_PTR_NOT_NULL_FATAL(call1);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(call2);
+	if (BC_ASSERT_PTR_NOT_NULL(call1) && BC_ASSERT_PTR_NOT_NULL(call2)) {
+		BC_ASSERT_EQUAL( linphone_core_accept_call(marie1->lc, call1), 0, int, "%d");
+		ms_sleep(1); /*sleep to make sure that the 200OK of marie1 reaches the server first*/
+		BC_ASSERT_EQUAL( linphone_core_accept_call(marie2->lc, call2), 0, int, "%d");
 
-	BC_ASSERT_EQUAL( linphone_core_accept_call(marie1->lc, call1), 0, int, "%d");
-	ms_sleep(1); /*sleep to make sure that the 200OK of marie1 reaches the server first*/
-	BC_ASSERT_EQUAL( linphone_core_accept_call(marie2->lc, call2), 0, int, "%d");
+		BC_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
+		BC_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
+		/*the server will send a bye to marie2, as is 200Ok arrived second*/
+		BC_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 4000) );
 
-	BC_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
-	BC_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
-	/*the server will send a bye to marie2, as is 200Ok arrived second*/
-	BC_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 4000) );
+		end_call(marie1, pauline);
+	}
 
-	end_call(marie1, pauline);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(marie2);
@@ -933,8 +932,9 @@ void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int
 		linphone_core_enable_payload_type(lc,pt,FALSE);
 	}
 	pt=linphone_core_find_payload_type(lc,mime,rate,-1);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(pt);
-	linphone_core_enable_payload_type(lc,pt,TRUE);
+	if (BC_ASSERT_PTR_NOT_NULL(pt)) {
+		linphone_core_enable_payload_type(lc,pt,TRUE);
+	}
 }
 
 #ifdef VIDEO_ENABLED
@@ -947,8 +947,9 @@ void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
 		linphone_core_enable_payload_type(lc, (PayloadType *)it->data, FALSE);
 	}
 	pt = linphone_core_find_payload_type(lc, mime, -1, -1);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(pt);
-	linphone_core_enable_payload_type(lc, pt, TRUE);
+	if (BC_ASSERT_PTR_NOT_NULL(pt)) {
+		linphone_core_enable_payload_type(lc, pt, TRUE);
+	}
 }
 #endif
 
@@ -3241,6 +3242,44 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+static void early_media_call_with_ice(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall *marie_call;
+	MSList *lcs = NULL;
+
+	lcs = ms_list_append(lcs, marie->lc);
+	lcs = ms_list_append(lcs, pauline->lc);
+
+	/*in this test, pauline has ICE activated, marie not, but marie proposes early media.
+	 * We want to check that ICE processing is not disturbing early media*/
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+
+	linphone_core_invite_address(pauline->lc, marie->identity);
+
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,1000));
+
+	wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
+
+	marie_call = linphone_core_get_current_call(marie->lc);
+
+	if (!marie_call) goto end;
+
+	linphone_core_accept_call(marie->lc, marie_call);
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+
+	end_call(marie, pauline);
+end:
+	ms_list_free(lcs);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void early_media_call_with_ringing(void){
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -3756,6 +3795,26 @@ static void call_rejected_without_403_because_wrong_credentials_no_auth_req_cb(v
 }
 
 #ifdef VIDEO_ENABLED
+static void video_early_media_call(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCall *pauline_to_marie;
+
+	linphone_core_set_video_device(pauline->lc, "Mire: Mire (synthetic moving picture)");
+
+	video_call_base_3(pauline, marie, TRUE, LinphoneMediaEncryptionNone, TRUE, TRUE);
+
+	BC_ASSERT_PTR_NOT_NULL(pauline_to_marie = linphone_core_get_current_call(pauline->lc));
+	if(pauline_to_marie) {
+		BC_ASSERT_EQUAL(pauline_to_marie->videostream->source->desc->id, MS_MIRE_ID, int, "%d");
+	}
+
+	end_call(pauline, marie);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 /*this is call forking with early media managed at client side (not by flexisip server)*/
 static void multiple_early_media(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -4217,20 +4276,20 @@ static void call_with_custom_supported_tags(void) {
 	linphone_core_add_supported_tag(marie->lc,"pouet-tag");
 	linphone_core_add_supported_tag(marie->lc,"truc-tag");
 	linphone_core_add_supported_tag(marie->lc,"machin-tag");
-	
+
 	linphone_core_invite_address(marie->lc, pauline->identity);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging,1));
 	pauline_call = linphone_core_get_current_call(pauline->lc);
 	if (!pauline_call) goto end;
-	
+
 	remote_params=linphone_call_get_remote_params(pauline_call);
 	recv_supported=linphone_call_params_get_custom_header(remote_params,"supported");
 	BC_ASSERT_PTR_NOT_NULL(recv_supported);
 	if (recv_supported){
 		BC_ASSERT_PTR_NOT_NULL(strstr(recv_supported,"pouet-tag, truc-tag, machin-tag"));
 	}
-	
+
 	end_call(marie,pauline);
 end:
 	linphone_core_manager_destroy(marie);
@@ -5553,9 +5612,10 @@ static void call_with_network_switch_in_early_state_2(void){
 	_call_with_network_switch_in_early_state(FALSE);
 }
 
-static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh){
+static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCallParams *pauline_params = NULL;
 	MSList *lcs = NULL;
 	bool_t call_ok;
 
@@ -5570,8 +5630,12 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		lp_config_set_int(linphone_core_get_config(marie->lc), "net", "recreate_sockets_when_network_is_up", 1);
 		lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "recreate_sockets_when_network_is_up", 1);
 	}
+	if (enable_rtt) {
+		pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
+		linphone_call_params_enable_realtime_text(pauline_params, TRUE);
+	}
 
-	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	BC_ASSERT_TRUE((call_ok=call_with_params(pauline, marie, pauline_params, NULL)));
 	if (!call_ok) goto end;
 
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
@@ -5621,15 +5685,19 @@ end:
 }
 
 static void call_with_network_switch(void){
-	_call_with_network_switch(FALSE, FALSE);
+	_call_with_network_switch(FALSE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_and_ice(void){
-	_call_with_network_switch(TRUE, FALSE);
+	_call_with_network_switch(TRUE, FALSE, FALSE);
+}
+
+static void call_with_network_switch_ice_and_rtt(void) {
+	_call_with_network_switch(TRUE, FALSE, TRUE);
 }
 
 static void call_with_network_switch_and_socket_refresh(void){
-	_call_with_network_switch(TRUE, TRUE);
+	_call_with_network_switch(TRUE, TRUE, FALSE);
 }
 
 static void call_with_sip_and_rtp_independant_switches(void){
@@ -6105,6 +6173,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with media relay (random ports)", call_with_media_relay_random_ports),
 	TEST_NO_TAG("Simple call compatibility mode", simple_call_compatibility_mode),
 	TEST_NO_TAG("Early-media call", early_media_call),
+	TEST_ONE_TAG("Early-media call with ICE", early_media_call_with_ice, "ICE"),
 	TEST_NO_TAG("Early-media call with ringing", early_media_call_with_ringing),
 	TEST_NO_TAG("Early-media call with updated media session", early_media_call_with_session_update),
 	TEST_NO_TAG("Early-media call with updated codec", early_media_call_with_codec_update),
@@ -6159,6 +6228,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with video declined", call_with_declined_video),
 	TEST_NO_TAG("Call with video declined despite policy", call_with_declined_video_despite_policy),
 	TEST_NO_TAG("Call with video declined using policy", call_with_declined_video_using_policy),
+	TEST_NO_TAG("Video early-media call", video_early_media_call),
 	TEST_NO_TAG("Call with multiple early media", multiple_early_media),
 	TEST_ONE_TAG("Call with ICE from video to non-video", call_with_ice_video_to_novideo, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added", call_with_ice_video_added, "ICE"),
@@ -6252,6 +6322,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with network switch in early state 1", call_with_network_switch_in_early_state_1),
 	TEST_NO_TAG("Call with network switch in early state 2", call_with_network_switch_in_early_state_2),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
+	TEST_ONE_TAG("Call with network switch, ICE and RTT", call_with_network_switch_ice_and_rtt, "ICE"),
 	TEST_NO_TAG("Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh),
 	TEST_NO_TAG("Call with SIP and RTP independant switches", call_with_sip_and_rtp_independant_switches),
 	TEST_NO_TAG("Call with rtcp-mux", call_with_rtcp_mux),

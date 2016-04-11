@@ -39,6 +39,7 @@
 					<fileInfo id="0.2079208171.2090246372" name="ringback.wav" rcbsApplicability="disable" resourcePath="tester/sounds/ringback.wav" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="coreapi"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="daemon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="gtk"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tester"/>

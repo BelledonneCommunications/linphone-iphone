@@ -83,6 +83,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/linphone
 %{_bindir}/linphonec
 %{_bindir}/linphonecsh
+%{_bindir}/linphone-daemon
+%{_bindir}/linphone-daemon-pipetest
 %{_bindir}/lp-autoanswer
 %{_bindir}/lp-test-ecc
 %{_libdir}/*.so.*

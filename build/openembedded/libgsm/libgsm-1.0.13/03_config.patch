@@ -1,0 +1,154 @@
+diff -urNad libgsm-1.0.10~/Makefile libgsm-1.0.10/Makefile
+--- libgsm-1.0.10~/Makefile	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/Makefile	2007-11-01 15:48:02.000000000 +0100
+@@ -151,7 +151,7 @@
+ 
+ HEADERS	=	$(INC)/proto.h		\
+ 		$(INC)/unproto.h	\
+-		$(INC)/config.h		\
++		$(INC)/gsm_config.h	\
+ 		$(INC)/private.h	\
+ 		$(INC)/gsm.h		\
+ 		$(INC)/toast.h		\
+diff -urNad libgsm-1.0.10~/inc/config.h libgsm-1.0.10/inc/config.h
+--- libgsm-1.0.10~/inc/config.h	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/inc/config.h	1970-01-01 01:00:00.000000000 +0100
+@@ -1,37 +0,0 @@
+-/*
+- * Copyright 1992 by Jutta Degener and Carsten Bormann, Technische
+- * Universitaet Berlin.  See the accompanying file "COPYRIGHT" for
+- * details.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.
+- */
+-
+-/*$Header: /tmp_amd/presto/export/kbs/jutta/src/gsm/RCS/config.h,v 1.5 1996/07/02 11:26:20 jutta Exp $*/
+-
+-#ifndef	CONFIG_H
+-#define	CONFIG_H
+-
+-/*efine	SIGHANDLER_T	int 		/* signal handlers are void	*/
+-/*efine HAS_SYSV_SIGNAL	1		/* sigs not blocked/reset?	*/
+-
+-#define	HAS_STDLIB_H	1		/* /usr/include/stdlib.h	*/
+-#define	HAS_LIMITS_H	1		/* /usr/include/limits.h	*/
+-#define	HAS_FCNTL_H	1		/* /usr/include/fcntl.h		*/
+-#define	HAS_ERRNO_DECL	1		/* errno.h declares errno	*/
+-
+-#define	HAS_FSTAT 	1		/* fstat syscall		*/
+-#define	HAS_FCHMOD 	1		/* fchmod syscall		*/
+-#define	HAS_CHMOD 	1		/* chmod syscall		*/
+-#define	HAS_FCHOWN 	1		/* fchown syscall		*/
+-#define	HAS_CHOWN 	1		/* chown syscall		*/
+-/*efine	HAS__FSETMODE 	1		/* _fsetmode -- set file mode	*/
+-
+-#define	HAS_STRING_H 	1		/* /usr/include/string.h 	*/
+-/*efine	HAS_STRINGS_H	1		/* /usr/include/strings.h 	*/
+-
+-#define	HAS_UNISTD_H	1		/* /usr/include/unistd.h	*/
+-#define	HAS_UTIME	1		/* POSIX utime(path, times)	*/
+-/*efine	HAS_UTIMES	1		/* use utimes()	syscall instead	*/
+-#define	HAS_UTIME_H	1		/* UTIME header file		*/
+-#define	HAS_UTIMBUF	1		/* struct utimbuf		*/
+-/*efine	HAS_UTIMEUSEC   1		/* microseconds in utimbuf?	*/
+-
+-#endif	/* CONFIG_H */
+diff -urNad libgsm-1.0.10~/inc/gsm_config.h libgsm-1.0.10/inc/gsm_config.h
+--- libgsm-1.0.10~/inc/gsm_config.h	1970-01-01 01:00:00.000000000 +0100
++++ libgsm-1.0.10/inc/gsm_config.h	2007-11-01 15:46:19.000000000 +0100
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 1992 by Jutta Degener and Carsten Bormann, Technische
++ * Universitaet Berlin.  See the accompanying file "COPYRIGHT" for
++ * details.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.
++ */
++
++/*$Header: /tmp_amd/presto/export/kbs/jutta/src/gsm/RCS/config.h,v 1.5 1996/07/02 11:26:20 jutta Exp $*/
++
++#ifndef	CONFIG_H
++#define	CONFIG_H
++
++/*efine	SIGHANDLER_T	int 		-* signal handlers are void	*/
++/*efine HAS_SYSV_SIGNAL	1		-* sigs not blocked/reset?	*/
++
++#define	HAS_STDLIB_H	1		/* /usr/include/stdlib.h	*/
++#define	HAS_STDIO_H 	1		/* /usr/include/stdio.h 	*/
++/*efine	HAS_LIMITS_H	1		-* /usr/include/limits.h	*/
++#define	HAS_FCNTL_H	1		/* /usr/include/fcntl.h		*/
++
++#define	HAS_FSTAT 	1		/* fstat syscall		*/
++#define	HAS_FCHMOD 	1		/* fchmod syscall		*/
++#define	HAS_CHMOD 	1		/* chmod syscall		*/
++#define	HAS_FCHOWN 	1		/* fchown syscall		*/
++#define	HAS_CHOWN 	1		/* chown syscall		*/
++/*efine	HAS__FSETMODE 	1		-* _fsetmode -- set file mode	*/
++
++#define	HAS_STRING_H 	1		/* /usr/include/string.h 	*/
++/*efine	HAS_STRINGS_H	1		-* /usr/include/strings.h 	*/
++
++#define	HAS_UNISTD_H	1		/* /usr/include/unistd.h	*/
++#define	HAS_UTIME	1		/* POSIX utime(path, times)	*/
++/*efine	HAS_UTIMES	1		-* use utimes()	syscall instead	*/
++#define	HAS_UTIME_H	1		/* UTIME header file		*/
++/*efine	HAS_UTIMBUF	1		-* struct utimbuf		*/
++/*efine	HAS_UTIMEUSEC   1		-* microseconds in utimbuf?	*/
++
++#endif	/* CONFIG_H */
+diff -urNad libgsm-1.0.10~/inc/toast.h libgsm-1.0.10/inc/toast.h
+--- libgsm-1.0.10~/inc/toast.h	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/inc/toast.h	2007-11-01 15:48:17.000000000 +0100
+@@ -9,7 +9,7 @@
+ #ifndef	TOAST_H
+ #define	TOAST_H				/* Guard against multiple includes */
+ 
+-#include "config.h"
++#include "gsm_config.h"
+ 
+ #include <sys/types.h>
+ #include <sys/stat.h>
+diff -urNad libgsm-1.0.10~/src/code.c libgsm-1.0.10/src/code.c
+--- libgsm-1.0.10~/src/code.c	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/src/code.c	2007-11-01 15:48:34.000000000 +0100
+@@ -6,7 +6,7 @@
+ 
+ /* $Header: /tmp_amd/presto/export/kbs/jutta/src/gsm/RCS/code.c,v 1.3 1996/07/02 09:59:05 jutta Exp $ */
+ 
+-#include	"config.h"
++#include	"gsm_config.h"
+ 
+ 
+ #ifdef	HAS_STDLIB_H
+diff -urNad libgsm-1.0.10~/src/gsm_create.c libgsm-1.0.10/src/gsm_create.c
+--- libgsm-1.0.10~/src/gsm_create.c	1996-07-02 16:32:44.000000000 +0200
++++ libgsm-1.0.10/src/gsm_create.c	2007-11-01 15:48:48.000000000 +0100
+@@ -6,7 +6,7 @@
+ 
+ static char const	ident[] = "$Header: /tmp_amd/presto/export/kbs/jutta/src/gsm/RCS/gsm_create.c,v 1.4 1996/07/02 09:59:05 jutta Exp $";
+ 
+-#include	"config.h"
++#include	"gsm_config.h"
+ 
+ #ifdef	HAS_STRING_H
+ #include	<string.h>
+diff -urNad libgsm-1.0.10~/src/gsm_destroy.c libgsm-1.0.10/src/gsm_destroy.c
+--- libgsm-1.0.10~/src/gsm_destroy.c	1996-07-02 16:32:39.000000000 +0200
++++ libgsm-1.0.10/src/gsm_destroy.c	2007-11-01 15:48:57.000000000 +0100
+@@ -7,7 +7,7 @@
+ /* $Header: /tmp_amd/presto/export/kbs/jutta/src/gsm/RCS/gsm_destroy.c,v 1.3 1994/11/28 19:52:25 jutta Exp $ */
+ 
+ #include "gsm.h"
+-#include "config.h"
++#include "gsm_config.h"
+ #include "proto.h"
+ 
+ #ifdef	HAS_STDLIB_H
+diff -urNad libgsm-1.0.10~/tls/taste.c libgsm-1.0.10/tls/taste.c
+--- libgsm-1.0.10~/tls/taste.c	1996-07-02 16:33:05.000000000 +0200
++++ libgsm-1.0.10/tls/taste.c	2007-11-01 15:49:54.000000000 +0100
+@@ -10,7 +10,7 @@
+ #include	<string.h>
+ #include	<memory.h>
+ 
+-#include	"config.h"
++#include	"gsm_config.h"
+ 
+ #ifdef	HAS_STDLIB_H
+ #	include	<stdlib.h>

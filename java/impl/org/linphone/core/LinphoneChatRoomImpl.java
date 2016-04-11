@@ -29,8 +29,8 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native long getPeerAddress(long ptr);
 	private native void sendMessage(long ptr, String message);
 	private native void sendMessage2(long ptr, Object msg, long messagePtr, StateListener listener);
-	private native long[] getHistoryRange(long ptr, int begin, int end);
-	private native long[] getHistory(long ptr, int limit);
+	private native Object[] getHistoryRange(long ptr, int begin, int end);
+	private native Object[] getHistory(long ptr, int limit);
 	private native void destroy(long ptr);
 	private native int getUnreadMessagesCount(long ptr);
 	private native int getHistorySize(long ptr);
@@ -43,7 +43,15 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 			String url, int state, long timestamp, boolean isRead,
 			boolean isIncoming);
 	private native void sendChatMessage(long ptr, Object message, long messagePtr);
-
+	private native void finalize(long nativePtr);
+	
+	protected void finalize() throws Throwable {
+		if (nativePtr != 0) {
+			finalize(nativePtr);
+		}
+		super.finalize();
+	}
+	
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
 	}
@@ -80,14 +88,14 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 
 	public LinphoneChatMessage[] getHistoryRange(int begin, int end) {
 		synchronized(getCore()){
-			long[] typesPtr = getHistoryRange(nativePtr, begin, end);
+			Object[] typesPtr = getHistoryRange(nativePtr, begin, end);
 			return getHistoryPrivate(typesPtr);
 		}
 	}
 
 	public LinphoneChatMessage[] getHistory(int limit) {
 		synchronized(getCore()){
-			long[] typesPtr = getHistory(nativePtr, limit);
+			Object[] typesPtr = getHistory(nativePtr, limit);
 			return getHistoryPrivate(typesPtr);
 		}
 	}
@@ -149,15 +157,8 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public synchronized LinphoneCore getCore() {
 		return (LinphoneCore)getCore(nativePtr);
 	}
-	private LinphoneChatMessage[] getHistoryPrivate(long[] typesPtr) {
-		if (typesPtr == null) return null;
-
-		LinphoneChatMessage[] messages = new LinphoneChatMessage[typesPtr.length];
-		for (int i=0; i < messages.length; i++) {
-			messages[i] = new LinphoneChatMessageImpl(typesPtr[i]);
-		}
-
-		return messages;
+	private LinphoneChatMessage[] getHistoryPrivate(Object[] typesPtr) {
+		return (LinphoneChatMessage[]) typesPtr;
 	}
 	
 	private native long createFileTransferMessage(long ptr, String name, String type, String subtype, int size);
