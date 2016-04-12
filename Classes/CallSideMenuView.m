@@ -121,6 +121,18 @@
 		[result appendString:[NSString stringWithFormat:@"/%i channels", payload->channels]];
 	}
 	[result appendString:@"\n"];
+	// Encoder & decoder descriptions
+	const char *enc_desc = ms_factory_get_encoder(linphone_core_get_ms_factory(LC), payload->mime_type)->text;
+	const char *dec_desc = ms_factory_get_decoder(linphone_core_get_ms_factory(LC), payload->mime_type)->text;
+	if (strcmp(enc_desc, dec_desc) == 0) {
+		[result appendString:[NSString stringWithFormat:@"Encoder/Decoder: %s", enc_desc]];
+		[result appendString:@"\n"];
+	} else {
+		[result appendString:[NSString stringWithFormat:@"Encoder: %s", enc_desc]];
+		[result appendString:@"\n"];
+		[result appendString:[NSString stringWithFormat:@"Decoder: %s", dec_desc]];
+		[result appendString:@"\n"];
+	}
 
 	if (stats != NULL) {
 		[result

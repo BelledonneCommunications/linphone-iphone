@@ -18,7 +18,7 @@ Group changes to describe their impact on the project, as follows:
 ### Changed
 - Enable Neon intrinsics optimizations for speex resampler (ENABLE_ARM_NEON_INTRINSICS)
 - Push notifications are now configurable per account
-
+- Update to latest OpenH264 version to fix issue with Xcode 7.3 and arm64 devices [openh264-2434]
 ### Fixed
 - Fix invalid photo rotation when using Camera for avatars
 - Parse user input as SIP address or phone number depending on default account settings: if "substitute + by country code" is set,
@@ -56,3 +56,4 @@ consider inputs to be phone numbers, otherwise SIP addresses.
 [Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.12.1...HEAD
 [3.12.1]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.12.1.zip
 [plugins registration]: https://github.com/BelledonneCommunications/linphone-iphone/blob/3.12.1/Classes/LinphoneManager.m#L1461-L1472
+[openh264-2434]: https://github.com/cisco/openh264/issues/2434
