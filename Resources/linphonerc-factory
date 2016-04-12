@@ -27,9 +27,3 @@ ringer_dev_id=AQ: Audio Queue Device
 
 [video]
 display_filter_auto_rotate=0
-
-[proxy_0]
-lol=toto
-
-[misc234]
-lol=tata
