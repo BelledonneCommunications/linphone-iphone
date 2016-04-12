@@ -289,7 +289,7 @@ void v_table_reference_destroy(VTableReference *ref){
 }
 
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal) {
-	ms_message("Vtable [%p] registered on core [%p]",lc,vtable);
+	ms_message("Vtable [%p] registered on core [%p]",vtable, lc);
 	lc->vtable_refs=ms_list_append(lc->vtable_refs,v_table_reference_new(vtable, autorelease, internal));
 }
 
