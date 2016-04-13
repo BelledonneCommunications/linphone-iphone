@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/dtmfgen.h"
+#include "mediastreamer2/msjpegwriter.h"
 
 #ifdef INET6
 #ifndef _WIN32
@@ -5356,6 +5357,42 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
  * Video related functions                                                  *
  ******************************************************************************/
 
+static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
+	if (id == MS_JPEG_WRITER_SNAPSHOT_TAKEN) {
+		LinphoneCore *lc = (LinphoneCore *)userdata;
+		ms_filter_remove_notify_callback(lc->previewstream->local_jpegwriter, snapshot_taken, lc);
+		linphone_core_enable_video_preview(lc, FALSE);
+	}
+}
+
+int linphone_core_take_preview_snapshot(LinphoneCore *lc, const char *file) {
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+
+	if (!file) return -1;
+#ifdef VIDEO_ENABLED
+	if (call) {
+		return linphone_call_take_preview_snapshot(call, file);
+	} else {
+		if (lc->previewstream == NULL) {
+			MSVideoSize vsize=lc->video_conf.preview_vsize.width != 0 ? lc->video_conf.preview_vsize : lc->video_conf.vsize;
+			lc->previewstream = video_preview_new(lc->factory);
+			video_preview_set_size(lc->previewstream, vsize);
+			video_preview_set_display_filter_name(lc->previewstream, NULL);
+			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
+			video_preview_start(lc->previewstream, lc->video_conf.device);
+			lc->previewstream->ms.factory = lc->factory;
+			linphone_core_enable_video_preview(lc, TRUE);
+
+			ms_filter_add_notify_callback(lc->previewstream->local_jpegwriter, snapshot_taken, lc, TRUE);
+			ms_filter_call_method(lc->previewstream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void*)file);
+		} else {
+			ms_filter_call_method(lc->previewstream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void*)file);
+		}
+		return 0;
+	}
+#endif
+	return -1;
+}
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
