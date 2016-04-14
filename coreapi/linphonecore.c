@@ -5361,7 +5361,6 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
 	if (id == MS_JPEG_WRITER_SNAPSHOT_TAKEN) {
 		LinphoneCore *lc = (LinphoneCore *)userdata;
-		ms_filter_remove_notify_callback(lc->previewstream->local_jpegwriter, snapshot_taken, lc);
 		linphone_core_enable_video_preview(lc, FALSE);
 	}
 }
