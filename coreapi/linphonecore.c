@@ -5357,6 +5357,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
  * Video related functions                                                  *
  ******************************************************************************/
 
+#ifdef VIDEO_ENABLED
 static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
 	if (id == MS_JPEG_WRITER_SNAPSHOT_TAKEN) {
 		LinphoneCore *lc = (LinphoneCore *)userdata;
@@ -5364,15 +5365,16 @@ static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id,
 		linphone_core_enable_video_preview(lc, FALSE);
 	}
 }
+#endif
 
 int linphone_core_take_preview_snapshot(LinphoneCore *lc, const char *file) {
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
 	if (!file) return -1;
-#ifdef VIDEO_ENABLED
 	if (call) {
 		return linphone_call_take_preview_snapshot(call, file);
 	} else {
+#ifdef VIDEO_ENABLED
 		if (lc->previewstream == NULL) {
 			MSVideoSize vsize=lc->video_conf.preview_vsize.width != 0 ? lc->video_conf.preview_vsize : lc->video_conf.vsize;
 			lc->previewstream = video_preview_new(lc->factory);
@@ -5389,8 +5391,8 @@ int linphone_core_take_preview_snapshot(LinphoneCore *lc, const char *file) {
 			ms_filter_call_method(lc->previewstream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void*)file);
 		}
 		return 0;
-	}
 #endif
+	}
 	return -1;
 }
 
