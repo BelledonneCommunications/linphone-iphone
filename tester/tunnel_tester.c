@@ -255,16 +255,15 @@ static void register_on_second_tunnel(void) {
 
 		linphone_tunnel_simulate_udp_loss(tunnel, TRUE);
 
+		linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
 
 		// add a first tunnel config with an invalid port
 		linphone_tunnel_config_set_port(config, 4141);
-		linphone_tunnel_config_set_host(config, "tunnel.linphone2.org");
 		linphone_tunnel_config_set_remote_udp_mirror_port(config, 54321);
 		linphone_tunnel_add_server(tunnel, config);
 
 		// then a proper server
 		linphone_tunnel_config_set_port(config, 443);
-		linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
 		linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
 		linphone_tunnel_add_server(tunnel, config);
 

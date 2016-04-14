@@ -398,6 +398,12 @@ void TunnelManager::networkReachableCb(LinphoneCore *lc, bool_t reachable) {
 		LOGI("TunnelManager: Network is now reachable, starting auto detection");
 		tunnel->startAutoDetection();
 		tunnel->mState = autodetecting;
+	} else if (!reachable && tunnel->mState == autodetecting) {
+		// if network is no more reachable, cancel autodetection
+		for(UdpMirrorClientList::iterator udpMirror = tunnel->mUdpMirrorClients.begin(); udpMirror != tunnel->mUdpMirrorClients.end(); udpMirror++) {
+			udpMirror->stop();
+		}
+		tunnel->mState = disabled;
 	}
 	linphone_core_get_local_ip_for(AF_INET, NULL,tunnel->mLocalAddr);
 }
