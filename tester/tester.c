@@ -385,7 +385,7 @@ LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
 	return manager;
 }
 
-LinphoneCoreManager* linphone_core_manager_new2( const char* rc_file, int check_for_proxies) {
+LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
 	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
 	linphone_core_manager_init(manager, rc_file);
 	linphone_core_manager_start(manager, check_for_proxies);
