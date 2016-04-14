@@ -1396,13 +1396,13 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_retransmition) {
 	}
 	linphone_core_pause_call(pauline->lc,call_pauline);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
-	
+
 	if (with_retransmition) {
 		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1,1000));
 		sal_set_send_error(marie->lc->sal,0); /*to trash 200ok without generating error*/
 	}
 
-	
+
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
 
@@ -1417,8 +1417,10 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_retransmition) {
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
 
 	/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
-	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
-	BC_ASSERT_EQUAL((int)stats->cum_packet_loss, 0, int, "%d");
+	if (BC_ASSERT_PTR_NOT_NULL(call_pauline->sessions->rtp_session)) {
+		stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+		BC_ASSERT_EQUAL((int)stats->cum_packet_loss, 0, int, "%d");
+	}
 
 	end_call(pauline, marie);
 end:
