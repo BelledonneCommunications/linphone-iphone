@@ -1725,9 +1725,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-	
+
 	linphone_core_add_friend_list(lc, NULL);
-	
+
 	linphone_task_list_init(&lc->hooks);
 
 	internal_vtable->notify_received = linphone_core_internal_notify_received;
@@ -3226,7 +3226,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		linphone_core_notify_display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
-	
+
 	cp = linphone_call_params_copy(params);
 
 	real_url=linphone_address_as_string(addr);
@@ -6568,7 +6568,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
 	}
-	
+
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
 
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
@@ -6633,13 +6633,13 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->ringtoneplayer) {
 		linphone_ringtoneplayer_destroy(lc->ringtoneplayer);
 	}
-	
+
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
 	linphone_core_friends_storage_close(lc);
-	
+
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
@@ -7142,7 +7142,7 @@ LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const cha
 
 
 /**
- * Check if a call will need the sound resources in near future (typically an outgoing call that is awaiting 
+ * Check if a call will need the sound resources in near future (typically an outgoing call that is awaiting
  * response).
  * In liblinphone, it is not possible to have two independant calls using sound device or camera at the same time.
  * In order to prevent this situation, an application can use linphone_core_sound_resources_locked() to know whether

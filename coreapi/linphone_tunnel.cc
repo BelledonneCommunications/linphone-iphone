@@ -377,3 +377,7 @@ void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel) {
 bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
 	return linphone_tunnel_get_mode(tunnel) == LinphoneTunnelModeAuto;
 }
+
+void linphone_tunnel_simulate_udp_loss(LinphoneTunnel *tunnel, bool_t enabled) {
+	bcTunnel(tunnel)->simulateUdpLoss(enabled);
+}
