@@ -616,8 +616,6 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 	/*GtkNotebook *notebook= ( GtkNotebook * ) linphone_gtk_get_widget ( main_window,"viewswitch" );*/
 	const LinphoneAddress *from= linphone_chat_message_get_from ( msg );
 
-	linphone_core_take_preview_snapshot(lc, "/home/viish/capture.jpg");
-
 	w= ( GtkWidget* ) g_object_get_data ( G_OBJECT ( friendlist ),"chatview" );
 	if ( w!=NULL ) {
 	/* Chat window opened */
