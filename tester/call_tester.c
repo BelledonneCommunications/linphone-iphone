@@ -1374,7 +1374,7 @@ static void call_with_custom_sdp_attributes(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-void call_paused_resumed_base(bool_t multicast) {
+void call_paused_resumed_base(bool_t multicast, bool_t with_retransmition) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline;
@@ -1391,8 +1391,18 @@ void call_paused_resumed_base(bool_t multicast) {
 
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
 
+	if (with_retransmition) {
+		sal_set_send_error(marie->lc->sal,1500); /*to trash 200ok without generating error*/
+	}
 	linphone_core_pause_call(pauline->lc,call_pauline);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
+	
+	if (with_retransmition) {
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1,1000));
+		sal_set_send_error(marie->lc->sal,0); /*to trash 200ok without generating error*/
+	}
+
+	
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
 
@@ -1415,8 +1425,13 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
 static void call_paused_resumed(void) {
-	call_paused_resumed_base(FALSE);
+	call_paused_resumed_base(FALSE,FALSE);
+}
+
+static void call_paused_resumed_with_sip_packets_losses(void) {
+	call_paused_resumed_base(FALSE,TRUE);
 }
 
 static void call_paused_by_both(void) {
@@ -6181,6 +6196,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call without SDP", call_with_no_sdp),
 	TEST_NO_TAG("Call without SDP and ACK without SDP", call_with_no_sdp_ack_without_sdp),
 	TEST_NO_TAG("Call paused resumed", call_paused_resumed),
+	TEST_NO_TAG("Call paused resumed with sip packets looses", call_paused_resumed_with_sip_packets_losses),
 #ifdef VIDEO_ENABLED
 	TEST_NO_TAG("Call paused resumed with video", call_paused_resumed_with_video),
 	TEST_NO_TAG("Call paused resumed with video no sdp ack", call_paused_resumed_with_no_sdp_ack),

@@ -183,7 +183,7 @@ static void simple_publish_with_expire(int expires) {
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishOk,4));
 
 	linphone_core_manager_destroy(marie);
-	/*fixme we should wait untill 200ok*/BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishCleared,2,int,"%i");
+	/*fixme we should wait untill 200okBC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishCleared,2,int,"%i");*/
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,4,int,"%i");
 
 }

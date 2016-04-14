@@ -69,7 +69,7 @@ static void call_multicast(void)  {
 	call_multicast_base(FALSE);
 }
 static void multicast_audio_with_pause_resume(void) {
-	call_paused_resumed_base(TRUE);
+	call_paused_resumed_base(TRUE,FALSE);
 }
 #ifdef VIDEO_ENABLED
 static void call_multicast_video(void)  {
