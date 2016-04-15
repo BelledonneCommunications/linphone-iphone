@@ -1374,7 +1374,7 @@ static void call_with_custom_sdp_attributes(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-void call_paused_resumed_base(bool_t multicast, bool_t with_retransmition) {
+void call_paused_resumed_base(bool_t multicast, bool_t with_losses) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline;
@@ -1391,13 +1391,13 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_retransmition) {
 
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
 
-	if (with_retransmition) {
+	if (with_losses) {
 		sal_set_send_error(marie->lc->sal,1500); /*to trash 200ok without generating error*/
 	}
 	linphone_core_pause_call(pauline->lc,call_pauline);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
-
-	if (with_retransmition) {
+	
+	if (with_losses) {
 		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1,1000));
 		sal_set_send_error(marie->lc->sal,0); /*to trash 200ok without generating error*/
 	}
@@ -1422,6 +1422,27 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_retransmition) {
 		BC_ASSERT_EQUAL((int)stats->cum_packet_loss, 0, int, "%d");
 	}
 
+	if (with_losses) {
+		/* now we want to loose the ack*/
+		linphone_core_pause_call(pauline->lc,call_pauline);
+		sal_set_send_error(pauline->lc->sal,1500); /*to trash ACK without generating error*/
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,2));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,2));
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,2,1000));
+		/*now try to resume*/
+		sal_set_send_error(pauline->lc->sal,0);
+		linphone_core_resume_call(pauline->lc,call_pauline);
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3,2000));
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3,2000));
+		/*resume failed because ACK not received to re-invite is rejected*/
+		/*next try is ok*/
+		linphone_core_resume_call(pauline->lc,call_pauline);
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
+		
+	}
+
+	
 	end_call(pauline, marie);
 end:
 	linphone_core_manager_destroy(marie);

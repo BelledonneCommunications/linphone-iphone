@@ -632,6 +632,7 @@ struct _LinphoneProxyConfig
 	unsigned long long previous_publish_config_hash[2];
 
 	char *refkey;
+	char *sip_etag; /*publish context*/
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneProxyConfig);
