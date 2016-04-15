@@ -668,7 +668,9 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,initial_laure_stat.number_of_LinphoneCallEnd+1,5000));
 	}
 
-	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_conference(marie->lc));
+	if (!BC_ASSERT_PTR_NOT_NULL(linphone_core_get_conference(marie->lc))) {
+		goto end;
+	}
 
 	linphone_core_add_to_conference(marie->lc,marie_call_pauline);
 
