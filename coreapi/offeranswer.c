@@ -489,11 +489,10 @@ static void initiate_incoming(MSFactory *factory, const SalStreamDescription *lo
 	}
 
 	if (remote_offer->haveZrtpHash == 1) {
-		if (local_cap->haveZrtpHash == 1) {
+		if (ms_zrtp_available()) { /* if ZRTP is available, set the zrtp hash even if it is not selected */
 			strncpy((char *)(result->zrtphash), (char *)(local_cap->zrtphash), sizeof(local_cap->zrtphash));
 			result->haveZrtpHash =  1;
 		}
-		/* TODO: what if remote offer a zrtp-hash but we don't have it in local */
 	}
 
 	strcpy(result->ice_pwd, local_cap->ice_pwd);

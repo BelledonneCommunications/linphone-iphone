@@ -331,13 +331,22 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		|| linphone_core_get_media_encryption(callee_mgr->lc) != LinphoneMediaEncryptionNone) {
 		/*wait for encryption to be on, in case of zrtp or dtls, it can take a few seconds*/
 		if (	(linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionZRTP)
+				|| (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP) /* is callee is ZRTP, wait for it */
 				|| (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS))
 			wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_caller.number_of_LinphoneCallEncryptedOn+1);
 		if ((linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP)
 			|| (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionDTLS)
+			|| (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionZRTP)
 			|| (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS) /*also take care of caller policy*/ )
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_callee.number_of_LinphoneCallEncryptedOn+1);
-		{
+
+		/* when caller is encryptionNone but callee is ZRTP, we expect ZRTP to take place */
+		if ((linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionNone) && (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP)) {
+			const LinphoneCallParams* call_param = linphone_call_get_current_params(callee_call);
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param), LinphoneMediaEncryptionZRTP, int, "%d");
+			call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param), LinphoneMediaEncryptionZRTP, int, "%d");
+		}else { /* otherwise, final status shall stick to caller core parameter */
 			const LinphoneCallParams* call_param = linphone_call_get_current_params(callee_call);
 			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc), int, "%d");
 			call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
@@ -3134,8 +3143,9 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 
 		BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 		if (!call_ok) goto end;
-		if (linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP
-			&& linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP) {
+		/* if caller set ZRTP or (callee set ZRTP and caller has no encryption requested), ZRTP shall take place, wait for the SAS */
+		if ((linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP)
+			|| ((linphone_core_get_media_encryption(marie->lc) == LinphoneMediaEncryptionZRTP) && (linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionNone))) {
 			/*wait for SAS*/
 			int i;
 			for (i=0;i<100;i++) {
@@ -6078,20 +6088,44 @@ static void call_with_ice_and_rtcp_mux_without_reinvite(void){
 }
 
 static void call_with_zrtp_configured_calling_base(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
-	bool_t call_ok;
+	if (ms_zrtp_available()) {
+		bool_t call_ok;
 
-	linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionZRTP);
-	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+		linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionZRTP);
+		BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 
-	liblinphone_tester_check_rtcp(marie,pauline);
+		liblinphone_tester_check_rtcp(marie,pauline);
 
-	BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
-					, LinphoneMediaEncryptionNone, int, "%i");
-	BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
-					, LinphoneMediaEncryptionNone, int, "%i");
-	end_call(pauline, marie);
+		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
+					, LinphoneMediaEncryptionZRTP, int, "%i");
+		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
+					, LinphoneMediaEncryptionZRTP, int, "%i");
+		end_call(pauline, marie);
+	} else {
+		ms_warning("Test skipped, ZRTP not available");
+	}
 
 }
+
+static void call_with_zrtp_configured_callee_base(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
+	if (ms_zrtp_available()) {
+		bool_t call_ok;
+
+		linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionZRTP);
+		BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+
+		liblinphone_tester_check_rtcp(marie,pauline);
+
+		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
+					, LinphoneMediaEncryptionZRTP, int, "%i");
+		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
+					, LinphoneMediaEncryptionZRTP, int, "%i");
+		end_call(pauline, marie);
+	} else {
+		ms_warning("Test skipped, ZRTP not available");
+	}
+}
+
 
 /*
  * this test checks the 'dont_default_to_stun_candidates' mode, where the c= line is left to host
@@ -6137,6 +6171,16 @@ static void call_with_zrtp_configured_calling_side(void) {
 
 	call_with_zrtp_configured_calling_base(marie,pauline);
 
+	/* now set other encryptions mode for receiver(marie), we shall always fall back to caller preference: ZRTP */
+	linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionDTLS);
+	call_with_zrtp_configured_calling_base(marie,pauline);
+
+	linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionSRTP);
+	call_with_zrtp_configured_calling_base(marie,pauline);
+
+
+	linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionNone);
+
 	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
 	linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
 	call_with_zrtp_configured_calling_base(marie,pauline);
@@ -6150,6 +6194,27 @@ static void call_with_zrtp_configured_calling_side(void) {
 
 
 }
+
+static void call_with_zrtp_configured_callee_side(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	call_with_zrtp_configured_callee_base(marie,pauline);
+
+	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
+	linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
+	call_with_zrtp_configured_callee_base(marie,pauline);
+
+	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	call_with_zrtp_configured_callee_base(marie,pauline);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+
+}
+
 test_t call_tests[] = {
 	TEST_NO_TAG("Early declined call", early_declined_call),
 	TEST_NO_TAG("Call declined", call_declined),
@@ -6331,7 +6396,8 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE and rtcp-mux without ICE re-invite", call_with_ice_and_rtcp_mux_without_reinvite, "ICE"),
 	TEST_ONE_TAG("Call with ICE with default candidate not stun", call_with_ice_with_default_candidate_not_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server", call_with_ice_without_stun, "ICE"),
-	TEST_NO_TAG("call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side)
+	TEST_NO_TAG("call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
+	TEST_NO_TAG("call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side)
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

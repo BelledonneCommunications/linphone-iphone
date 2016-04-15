@@ -257,6 +257,11 @@ bool_t sal_stream_description_has_dtls(const SalStreamDescription *sd) {
 	return FALSE;
 }
 
+bool_t sal_stream_description_has_zrtp(const SalStreamDescription *sd) {
+	if (sd->haveZrtpHash==1) return TRUE;
+	return FALSE;
+}
+
 bool_t sal_media_description_has_avpf(const SalMediaDescription *md) {
 	int i;
 	if (md->nb_streams == 0) return FALSE;
@@ -293,6 +298,16 @@ bool_t sal_media_description_has_dtls(const SalMediaDescription *md) {
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_dtls(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_media_description_has_zrtp(const SalMediaDescription *md) {
+	int i;
+	if (md->nb_streams == 0) return FALSE;
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (sal_stream_description_has_zrtp(&md->streams[i]) != TRUE) return FALSE;
 	}
 	return TRUE;
 }

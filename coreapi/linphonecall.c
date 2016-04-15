@@ -524,12 +524,16 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 
 static void setup_zrtp_hash(LinphoneCall *call, SalMediaDescription *md) {
 	int i;
-	if (call->params->media_encryption==LinphoneMediaEncryptionZRTP) {
+	if (ms_zrtp_available()) { /* set the hello hash for all streams */
 		for(i=0; i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 			if (!sal_stream_description_active(&md->streams[i])) continue;
 			if (call->sessions[i].zrtp_context!=NULL) {
 				ms_zrtp_getHelloHash(call->sessions[i].zrtp_context, md->streams[i].zrtphash, 128);
-				md->streams[i].haveZrtpHash = 1;
+				if (call->params->media_encryption==LinphoneMediaEncryptionZRTP) { /* turn on the flag to use it if ZRTP is set */
+					md->streams[i].haveZrtpHash = 1;
+				} else {
+					md->streams[i].haveZrtpHash = 0;
+				}
 			} else {
 				md->streams[i].haveZrtpHash = 0;
 			}
@@ -1179,7 +1183,9 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, S
 			call->params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(call->core)*1000;
 		}
 	}
-	if ((sal_media_description_has_dtls(md) == TRUE) && (media_stream_dtls_supported() == TRUE)) {
+	if ((sal_media_description_has_zrtp(md) == TRUE) && (ms_zrtp_available() == TRUE)) {
+		call->params->media_encryption = LinphoneMediaEncryptionZRTP;
+	}else if ((sal_media_description_has_dtls(md) == TRUE) && (media_stream_dtls_supported() == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionDTLS;
 	}else if ((sal_media_description_has_srtp(md) == TRUE) && (ms_srtp_supported() == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionSRTP;
@@ -1815,7 +1821,12 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		}//else don't update the state if all streams are shutdown.
 		break;
 	case LinphoneMediaEncryptionNone:
-		call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+		/* check if we actually switched to ZRTP */
+		if (at_least_one_stream_started(call) && (all_streams_encrypted = linphone_call_all_streams_encrypted(call)) && linphone_call_get_authentication_token(call)) {
+				call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
+		} else {
+			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+		}
         break;
 	}
     call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
@@ -3360,6 +3371,10 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 			}
 			cam = linphone_call_get_video_device(call);
 			if (!is_inactive){
+				/* get remote stream description to check for zrtp-hash presence */
+				SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+				const SalStreamDescription *remote_stream = sal_media_description_find_best_stream(remote_desc, SalVideo);
+
 				if (sal_stream_description_has_srtp(vstream) == TRUE) {
 					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
 					if (crypto_idx >= 0) {
@@ -3412,11 +3427,17 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,call->current_params->encryption_mandatory);
 				_linphone_call_set_next_video_frame_decoded_trigger(call);
 
-				/* start ZRTP if needed */
-				if (call->params->media_encryption==LinphoneMediaEncryptionZRTP) {
+				/* start ZRTP engine if needed : set here or remote have a zrtp-hash attribute */
+				if (call->params->media_encryption==LinphoneMediaEncryptionZRTP || remote_stream->haveZrtpHash==1) {
 					/*audio stream is already encrypted and video stream is active*/
 					if (media_stream_secured((MediaStream *)call->audiostream) && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
 						video_stream_start_zrtp(call->videostream);
+						if (remote_stream->haveZrtpHash == 1) {
+							int retval;
+							if ((retval = ms_zrtp_setPeerHelloHash(call->videostream->ms.sessions.zrtp_context, (uint8_t *)remote_stream->zrtphash, strlen((const char *)(remote_stream->zrtphash)))) != 0) {
+								ms_error("video stream ZRTP hash mismatch 0x%x", retval);
+							}
+						}
 					}
 				}
 			}
