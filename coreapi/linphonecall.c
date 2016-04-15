@@ -2689,15 +2689,16 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 		ms_filter_call_method(f,MS_EQUALIZER_SET_ACTIVE,&enabled);
 		if (enabled){
 			if (gains){
-				do{
-					int bytes;
-					MSEqualizerGain g;
-					if (sscanf(gains,"%f:%f:%f %n",&g.frequency,&g.gain,&g.width,&bytes)==3){
-						ms_message("Read equalizer gains: %f(~%f) --> %f",g.frequency,g.width,g.gain);
-						ms_filter_call_method(f,MS_EQUALIZER_SET_GAIN,&g);
-						gains+=bytes;
-					}else break;
-				}while(1);
+				MSList *gains_list = ms_parse_equalizer_string(gains);
+				if (gains_list) {
+					MSList *it;
+					for(it=gains_list; it; it=it->next) {
+						MSEqualizerGain *g = (MSEqualizerGain *)it->data;
+						ms_message("Read equalizer gains: %f(~%f) --> %f",g->frequency,g->width,g->gain);
+						ms_filter_call_method(f,MS_EQUALIZER_SET_GAIN, g);
+					}
+					ms_list_free_with_data(gains_list, ms_free);
+				}
 			}
 		}
 	}
