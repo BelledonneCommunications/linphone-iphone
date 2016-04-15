@@ -164,7 +164,7 @@ static void simple_publish_with_expire(int expires) {
 	linphone_proxy_config_enable_publish(proxy,FALSE);
 	linphone_proxy_config_done(proxy);
 
-	
+
 	/*fixme PUBLISH state machine is too simple, clear state should only be propagated at API level  when 200ok is received*/
 	/*BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishProgress,3));*/
 	wait_for_until(marie->lc,marie->lc,NULL,0,2000);
@@ -515,7 +515,7 @@ static void subscriber_no_longer_reachable(void){
 	linphone_core_set_presence_model(pauline1->lc,presence);
 
 	previous_number_of_LinphonePresenceActivityOnline=marie->stat.number_of_LinphonePresenceActivityOnline;
-	
+
 	/*don't schedule marie to simulate Notify timeout server side*/
 	wait_for_until(pauline1->lc, NULL, 0, 0, 35000);
 
@@ -562,7 +562,7 @@ static void subscribe_with_late_publish(void) {
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyPresenceReceived,1,2000));
 	/*BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");*/
 
-	
+
 	/*enable publish*/
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityPresentation,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
@@ -829,7 +829,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	reset_counters(&marie->stat);
 
 	/*keep in ming long terme presence*/
-	
+
 	if (!BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphonePresenceActivityOnline, 1, 4000)))
 		goto end;
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), marie_identity);
@@ -837,7 +837,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 					, LinphonePresenceActivityOnline, int, "%d"); fixme, should be LinphonePresenceActivityUnknown*/
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOnline, int, "%d");
 
-	
+
 	if (!BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphonePresenceActivityOnline, 2, 4000))) goto end;
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOnline, int, "%d");
@@ -1089,8 +1089,8 @@ static void long_term_presence_inexistent_friend(void) {
 static void long_term_presence_list(void) {
 	LinphoneFriend *f1, *f2;
 	LinphoneFriendList* friends;
-	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
-	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	enable_publish(pauline, TRUE);
 	enable_deflate_content_encoding(pauline, FALSE);
 
 	friends = linphone_core_create_friend_list(pauline->lc);
@@ -1105,8 +1105,8 @@ static void long_term_presence_list(void) {
 	linphone_core_add_friend_list(pauline->lc, friends);
 	linphone_friend_list_unref(friends);
 
-	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_NotifyPresenceReceived,2));
-	BC_ASSERT_EQUAL(linphone_core_get_default_friend_list(pauline->lc)->expected_notification_version, 1, int, "%d");
+	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_NotifyPresenceReceived,1));
+	BC_ASSERT_EQUAL(linphone_core_get_default_friend_list(pauline->lc)->expected_notification_version, 2, int, "%d");
 
 	f1 = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:liblinphone_tester@sip.example.org");
 	BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(f1)), LinphonePresenceBasicStatusOpen, int, "%d");
