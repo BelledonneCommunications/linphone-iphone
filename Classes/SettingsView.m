@@ -181,11 +181,11 @@
 
 	NSMutableDictionary *newItemDict = [NSMutableDictionary dictionaryWithCapacity:3];
 	[newItemDict addEntriesFromDictionary:[_viewList objectAtIndex:kIASKSpecifierValuesViewControllerIndex]]; // copy
-																											  // the
-																											  // title
-																											  // and
-																											  // explain
-																											  // strings
+	// the
+	// title
+	// and
+	// explain
+	// strings
 
 	IASKSpecifierValuesViewController *targetViewController = [[IASKSpecifierValuesViewControllerEx alloc] init];
 	// add the new view controller to the dictionary and then to the 'viewList' array
@@ -605,6 +605,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (!IPAD) {
 		[hiddenKeys addObject:@"preview_preference"];
 	}
+
 	if ([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
 		[hiddenKeys addObject:@"assistant_button"];
 	}
@@ -831,7 +832,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 								 fileName:attachment[2]];
 			}
 		}
-		[self presentViewController:picker animated:true completion:nil];
+		[self.view.window.rootViewController presentViewController:picker animated:true completion:nil];
 	}
 }
 
@@ -843,7 +844,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else {
 		LOGI(@"Mail completed with status: %d", result);
 	}
-	[self dismissViewControllerAnimated:true completion:nil];
+	[controller dismissViewControllerAnimated:true completion:nil];
 }
 
 - (IBAction)onDialerBackClick:(id)sender {
