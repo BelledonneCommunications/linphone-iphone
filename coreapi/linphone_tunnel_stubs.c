@@ -93,3 +93,4 @@ void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled) {}
 bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel) { return FALSE; }
 void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel) {}
 bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) { return FALSE; }
+void linphone_tunnel_simulate_udp_loss(LinphoneTunnel *tunnel, bool_t enabled) {}

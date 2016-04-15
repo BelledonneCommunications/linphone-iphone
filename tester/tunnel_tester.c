@@ -23,6 +23,28 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+/* Retrieve the public IP from a given hostname */
+static const char* get_ip_from_hostname(const char * tunnel_hostname){
+	struct addrinfo hints;
+	struct addrinfo *res = NULL, *it = NULL;
+	struct sockaddr_in *add;
+	char * output = NULL;
+	int err;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	if ((err = getaddrinfo(tunnel_hostname, NULL, &hints, &res))){
+		ms_error("error while retrieving IP from %s: %s", tunnel_hostname, gai_strerror(err));
+		return NULL;
+	}
+
+	for (it=res; it!=NULL; it=it->ai_next){
+		add = (struct sockaddr_in *) it->ai_addr;
+		output = inet_ntoa( add->sin_addr );
+	}
+	freeaddrinfo(res);
+	return output;
+}
 static char* get_public_contact_ip(LinphoneCore* lc)  {
 	const LinphoneAddress * contact = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(lc));
 	BC_ASSERT_PTR_NOT_NULL(contact);
@@ -30,24 +52,17 @@ static char* get_public_contact_ip(LinphoneCore* lc)  {
 }
 
 
-static void call_with_tunnel_base_with_config_files(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice, const char *marie_rc, const char *pauline_rc) {
+static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice) {
 	if (linphone_core_tunnel_available()){
-		LinphoneCoreManager *pauline = linphone_core_manager_new( pauline_rc);
-		LinphoneCoreManager *marie = linphone_core_manager_new( marie_rc);
+		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
+		LinphoneCoreManager *marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCall *pauline_call, *marie_call;
 		LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(pauline->lc);
 		LinphoneAddress *server_addr = linphone_address_new(linphone_proxy_config_get_server_addr(proxy));
 		LinphoneAddress *route = linphone_address_new(linphone_proxy_config_get_route(proxy));
-		LinphoneAddress *tunnel_name, *tunnel_ip_addr;
-		const char * tunnel_ip;
+		const char * tunnel_ip = get_ip_from_hostname("tunnel.linphone.org");
 		char *public_ip, *public_ip2=NULL;
 
-		linphone_core_enable_dns_srv(pauline->lc,FALSE);
-		tunnel_name = linphone_address_new("sip:tunnel.wildcard2.linphone.org:443");
-		tunnel_ip_addr = linphone_core_manager_resolve(pauline, tunnel_name);
-		tunnel_ip = linphone_address_get_domain(tunnel_ip_addr);
-		linphone_core_enable_dns_srv(pauline->lc,TRUE);
-		
 		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,1));
 		public_ip = get_public_contact_ip(pauline->lc);
 		BC_ASSERT_STRING_NOT_EQUAL(public_ip, tunnel_ip);
@@ -78,14 +93,12 @@ static void call_with_tunnel_base_with_config_files(LinphoneTunnelMode tunnel_mo
 			LinphoneTunnel *tunnel = linphone_core_get_tunnel(pauline->lc);
 			LinphoneTunnelConfig *config = linphone_tunnel_config_new();
 
-			linphone_tunnel_config_set_host(config, tunnel_ip);
+			linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
 			linphone_tunnel_config_set_port(config, 443);
 			linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
 			linphone_tunnel_add_server(tunnel, config);
 			linphone_tunnel_set_mode(tunnel, tunnel_mode);
 			linphone_tunnel_enable_sip(tunnel, with_sip);
-
-			linphone_tunnel_config_unref(config);
 
 			/*
 			 * Enabling the tunnel with sip cause another REGISTER to be made.
@@ -146,8 +159,6 @@ static void call_with_tunnel_base_with_config_files(LinphoneTunnelMode tunnel_mo
 		if(public_ip2 != NULL) ms_free(public_ip2);
 		linphone_address_destroy(server_addr);
 		linphone_address_destroy(route);
-		linphone_address_destroy(tunnel_name);
-		linphone_address_destroy(tunnel_ip_addr);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}else{
@@ -155,9 +166,6 @@ static void call_with_tunnel_base_with_config_files(LinphoneTunnelMode tunnel_mo
 	}
 }
 
-static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice) {
-	call_with_tunnel_base_with_config_files(tunnel_mode, with_sip, encryption, with_video_and_ice, "marie_rc", "pauline_rc");
-}
 
 static void call_with_tunnel(void) {
 	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE);
@@ -169,10 +177,6 @@ static void call_with_tunnel_srtp(void) {
 
 static void call_with_tunnel_without_sip(void) {
 	call_with_tunnel_base(LinphoneTunnelModeEnable, FALSE, LinphoneMediaEncryptionNone, FALSE);
-}
-
-static void call_with_tunnel_verify_server_certificate(void) {
-	call_with_tunnel_base_with_config_files(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE, "marie_rc",  "pauline_tunnel_verify_server_certificate_rc");
 }
 
 static void call_with_tunnel_auto(void) {
@@ -240,11 +244,54 @@ static void tunnel_ice_call(void) {
 	else
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
+
+static void register_on_second_tunnel(void) {
+	if (linphone_core_tunnel_available()) {
+		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
+		LinphoneTunnel *tunnel = linphone_core_get_tunnel(pauline->lc);
+		LinphoneTunnelConfig *config = linphone_tunnel_config_new();
+		const char * tunnel_ip = get_ip_from_hostname("tunnel.linphone.org");
+		char* public_ip;
+
+		linphone_tunnel_simulate_udp_loss(tunnel, TRUE);
+
+		linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
+
+		// add a first tunnel config with an invalid port
+		linphone_tunnel_config_set_port(config, 4141);
+		linphone_tunnel_config_set_remote_udp_mirror_port(config, 54321);
+		linphone_tunnel_add_server(tunnel, config);
+
+		// then a proper server
+		linphone_tunnel_config_set_port(config, 443);
+		linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
+		linphone_tunnel_add_server(tunnel, config);
+
+		linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeAuto);
+		linphone_tunnel_enable_sip(tunnel, TRUE);
+
+		reset_counters(&pauline->stat);
+
+		linphone_core_refresh_registers(pauline->lc);
+		// we should expect 2 registers: since tunnel autodetection takes several seconds, a first
+		// register will be made, then tunnel will be configured and another register will be fired up
+		BC_ASSERT_TRUE(wait_for(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk,2));
+
+		public_ip = get_public_contact_ip(pauline->lc);
+		BC_ASSERT_STRING_EQUAL(public_ip, tunnel_ip);
+		ms_free(public_ip);
+
+		linphone_tunnel_config_unref(config);
+		linphone_core_manager_destroy(pauline);
+	} else {
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
+	}
+}
+
 test_t tunnel_tests[] = {
 	TEST_NO_TAG("Simple", call_with_tunnel),
 	TEST_NO_TAG("With SRTP", call_with_tunnel_srtp),
 	TEST_NO_TAG("Without SIP", call_with_tunnel_without_sip),
-	TEST_NO_TAG("Verify Server Certificate", call_with_tunnel_verify_server_certificate),
 	TEST_NO_TAG("In automatic mode", call_with_tunnel_auto),
 	TEST_NO_TAG("In automatic mode with SRTP without SIP", call_with_tunnel_auto_without_sip_with_srtp),
 	TEST_NO_TAG("Ice call", tunnel_ice_call),
@@ -257,6 +304,7 @@ test_t tunnel_tests[] = {
 	TEST_NO_TAG("DTLS ice video call", tunnel_dtls_video_ice_call),
 	TEST_NO_TAG("ZRTP ice video call", tunnel_zrtp_video_ice_call),
 #endif
+	TEST_NO_TAG("Register on second tunnel", register_on_second_tunnel),
 };
 
 test_suite_t tunnel_test_suite = {"Tunnel", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

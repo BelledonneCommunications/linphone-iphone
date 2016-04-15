@@ -180,6 +180,11 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		g_object_set_data(G_OBJECT(w),"from_message",g_strdup(from_str));
 	}
 	ms_free(from_str);
+	
+	if (!message) {
+		const char *external_body_url = linphone_chat_message_get_external_body_url(msg);
+		if (external_body_url) message = external_body_url;
+	}
 
 	// Inserts message body and tags URIs as hypertext links
 	if(message) {

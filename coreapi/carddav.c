@@ -430,10 +430,11 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 	belle_generic_uri_t *uri = NULL;
 	belle_http_request_t *req = NULL;
 	belle_sip_memory_body_handler_t *bh = NULL;
+	LinphoneCardDavContext *cdc = query->context;
+	char* ua = NULL;
 
 	uri = belle_generic_uri_parse(query->url);
 	if (!uri) {
-		LinphoneCardDavContext *cdc = query->context;
 		if (cdc && cdc->sync_done_cb) {
 			cdc->sync_done_cb(cdc, FALSE, "Could not send request, URL is invalid");
 		}
@@ -443,7 +444,6 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 	req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), NULL);
 	
 	if (!req) {
-		LinphoneCardDavContext *cdc = query->context;
 		if (cdc && cdc->sync_done_cb) {
 			cdc->sync_done_cb(cdc, FALSE, "Could not create belle_http_request_t");
 		}
@@ -452,6 +452,9 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 		return;
 	}
 	
+	ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent(cdc->friend_list->lc), linphone_core_get_version());
+	belle_sip_message_add_header((belle_sip_message_t *)req, belle_sip_header_create("User-Agent", ua));
+	ms_free(ua);
 	if (query->depth) {
 		belle_sip_message_add_header((belle_sip_message_t *)req, belle_sip_header_create("Depth", query->depth));
 	} else if (query->ifmatch) {

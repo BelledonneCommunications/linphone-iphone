@@ -113,7 +113,17 @@ static void remote_provisioning_file(void) {
 #elif defined(LINPHONE_WINDOWS_UNIVERSAL)
 	marie = linphone_core_manager_new2("marie_remote_localfile_win10_rc", FALSE);
 #else
-	marie = linphone_core_manager_new2("marie_remote_localfile_rc", FALSE);
+	marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_remote_localfile_rc");
+	// fix relative path to absolute path
+	{
+		char* path = bc_tester_res("rcfiles/marie_remote_localfile2_rc");
+		char* abspath = ms_strdup_printf("file://%s", path);
+		lp_config_set_string(marie->lc->config, "misc", "config-uri", abspath);
+		linphone_core_manager_start(marie, 1);
+		ms_free(path);
+		ms_free(abspath);
+	}
 #endif
 	BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
 

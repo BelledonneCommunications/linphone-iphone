@@ -148,7 +148,8 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mTunnelClient(NULL),
 	mHttpProxyPort(0),
 	mVTable(NULL),
-	mLongRunningTaskId(0)
+	mLongRunningTaskId(0),
+	mSimulateUdpLoss(false)
 {
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
@@ -342,18 +343,12 @@ LinphoneTunnelMode TunnelManager::getMode() const {
 
 void TunnelManager::processUdpMirrorEvent(const Event &ev){
 	if(mState != autodetecting) return;
-	if (ev.mData.mHaveUdp) {
-		ms_message("TunnelManager: UDP mirror test succeed on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
-		if(mTunnelClient) {
-			if(mTunnelizeSipPackets) doUnregistration();
-			sal_set_tunnel(mCore->sal,NULL);
-			delete mTunnelClient;
-			mTunnelClient = NULL;
-			if(mTunnelizeSipPackets) doRegistration();
+	if (mSimulateUdpLoss || !ev.mData.mHaveUdp) {
+		if (mSimulateUdpLoss) {
+			ms_message("TunnelManager: simulate UDP lost on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
+		} else {
+			ms_message("TunnelManager: UDP mirror test failed on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
 		}
-		mState = disabled;
-	} else {
-		ms_message("TunnelManager: UDP mirror test failed on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
 		mCurrentUdpMirrorClient++;
 		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
 			ms_message("TunnelManager: trying another UDP mirror on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
@@ -370,6 +365,16 @@ void TunnelManager::processUdpMirrorEvent(const Event &ev){
 				mState = ready;
 			}
 		}
+	} else {
+		ms_message("TunnelManager: UDP mirror test succeed on %s:%d", mCurrentUdpMirrorClient->getServerAddress().mAddr.c_str(), mCurrentUdpMirrorClient->getServerAddress().mPort);
+		if(mTunnelClient) {
+			if(mTunnelizeSipPackets) doUnregistration();
+			sal_set_tunnel(mCore->sal,NULL);
+			delete mTunnelClient;
+			mTunnelClient = NULL;
+			if(mTunnelizeSipPackets) doRegistration();
+		}
+		mState = disabled;
 	}
 }
 
@@ -390,8 +395,15 @@ void TunnelManager::sUdpMirrorClientCallback(bool isUdpAvailable, void* data) {
 void TunnelManager::networkReachableCb(LinphoneCore *lc, bool_t reachable) {
 	TunnelManager *tunnel = bcTunnel(linphone_core_get_tunnel(lc));
 	if(reachable && tunnel->getMode() == LinphoneTunnelModeAuto && tunnel->mState != connecting && tunnel->mState != autodetecting) {
+		LOGI("TunnelManager: Network is now reachable, starting auto detection");
 		tunnel->startAutoDetection();
 		tunnel->mState = autodetecting;
+	} else if (!reachable && tunnel->mState == autodetecting) {
+		// if network is no more reachable, cancel autodetection
+		for(UdpMirrorClientList::iterator udpMirror = tunnel->mUdpMirrorClients.begin(); udpMirror != tunnel->mUdpMirrorClients.end(); udpMirror++) {
+			udpMirror->stop();
+		}
+		tunnel->mState = disabled;
 	}
 	linphone_core_get_local_ip_for(AF_INET, NULL,tunnel->mLocalAddr);
 }
@@ -454,4 +466,8 @@ void TunnelManager::setHttpProxy(const char *host,int port, const char *username
 
 LinphoneCore *TunnelManager::getLinphoneCore() const{
 	return mCore;
+}
+
+void TunnelManager::simulateUdpLoss(bool enabled) {
+	mSimulateUdpLoss = enabled;
 }

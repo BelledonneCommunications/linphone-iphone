@@ -155,6 +155,9 @@ namespace belledonnecomm {
 		bool isConnected() const;
 
 		bool isActivated() const;
+
+		void simulateUdpLoss(bool enabled);
+
 	private:
 		enum State {
 			disabled,
@@ -215,6 +218,7 @@ namespace belledonnecomm {
 		std::queue<Event> mEvq;
 		char mLocalAddr[64];
 		unsigned long mLongRunningTaskId;
+		bool mSimulateUdpLoss;
 	};
 
 /**

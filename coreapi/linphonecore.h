@@ -3609,6 +3609,15 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, flo
 **/
 LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
+/**
+ * Take a photo of currently from capture device and write it into a jpeg file.
+ * Note that the snapshot is asynchronous, an application shall not assume that the file is created when the function returns.
+ * @ingroup misc
+ * @param lc the linphone core
+ * @param file a path where to write the jpeg content.
+ * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported).
+**/
+LINPHONE_PUBLIC int linphone_core_take_preview_snapshot(LinphoneCore *lc, const char *file);
 LINPHONE_PUBLIC bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val);

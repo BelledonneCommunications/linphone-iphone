@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/dtmfgen.h"
+#include "mediastreamer2/msjpegwriter.h"
 
 #ifdef INET6
 #ifndef _WIN32
@@ -1724,9 +1725,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-	
+
 	linphone_core_add_friend_list(lc, NULL);
-	
+
 	linphone_task_list_init(&lc->hooks);
 
 	internal_vtable->notify_received = linphone_core_internal_notify_received;
@@ -3225,7 +3226,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		linphone_core_notify_display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
-	
+
 	cp = linphone_call_params_copy(params);
 
 	real_url=linphone_address_as_string(addr);
@@ -5356,6 +5357,43 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
  * Video related functions                                                  *
  ******************************************************************************/
 
+#ifdef VIDEO_ENABLED
+static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
+	if (id == MS_JPEG_WRITER_SNAPSHOT_TAKEN) {
+		LinphoneCore *lc = (LinphoneCore *)userdata;
+		linphone_core_enable_video_preview(lc, FALSE);
+	}
+}
+#endif
+
+int linphone_core_take_preview_snapshot(LinphoneCore *lc, const char *file) {
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+
+	if (!file) return -1;
+	if (call) {
+		return linphone_call_take_preview_snapshot(call, file);
+	} else {
+#ifdef VIDEO_ENABLED
+		if (lc->previewstream == NULL) {
+			MSVideoSize vsize=lc->video_conf.preview_vsize.width != 0 ? lc->video_conf.preview_vsize : lc->video_conf.vsize;
+			lc->previewstream = video_preview_new(lc->factory);
+			video_preview_set_size(lc->previewstream, vsize);
+			video_preview_set_display_filter_name(lc->previewstream, NULL);
+			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
+			video_preview_start(lc->previewstream, lc->video_conf.device);
+			lc->previewstream->ms.factory = lc->factory;
+			linphone_core_enable_video_preview(lc, TRUE);
+
+			ms_filter_add_notify_callback(lc->previewstream->local_jpegwriter, snapshot_taken, lc, TRUE);
+			ms_filter_call_method(lc->previewstream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void*)file);
+		} else {
+			ms_filter_call_method(lc->previewstream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void*)file);
+		}
+		return 0;
+#endif
+	}
+	return -1;
+}
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
@@ -6530,7 +6568,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
 	}
-	
+
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
 
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
@@ -6595,13 +6633,13 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->ringtoneplayer) {
 		linphone_ringtoneplayer_destroy(lc->ringtoneplayer);
 	}
-	
+
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
 	linphone_core_friends_storage_close(lc);
-	
+
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
@@ -7104,7 +7142,7 @@ LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const cha
 
 
 /**
- * Check if a call will need the sound resources in near future (typically an outgoing call that is awaiting 
+ * Check if a call will need the sound resources in near future (typically an outgoing call that is awaiting
  * response).
  * In liblinphone, it is not possible to have two independant calls using sound device or camera at the same time.
  * In order to prevent this situation, an application can use linphone_core_sound_resources_locked() to know whether
