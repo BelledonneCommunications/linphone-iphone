@@ -7,6 +7,6 @@ sip_random_port=1
 
 [auth_info_0]
 domain=dav.linphone.org
-username=sylvain
-ha1=4747ce2517a985f2fc20234a38f068b6
-realm=SabreDAV
+username=tester
+ha1=102bdd8ccafef75cf7572c97969afd9a
+realm=BaikalDAV
