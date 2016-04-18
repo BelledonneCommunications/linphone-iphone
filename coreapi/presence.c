@@ -232,7 +232,7 @@ static void presence_person_add_note(LinphonePresencePerson *person, LinphonePre
 }
 
 static int presence_model_insert_person_by_timestamp(LinphonePresencePerson *current, LinphonePresencePerson *to_insert) {
-	return current->timestamp > to_insert->timestamp;
+	return current->timestamp < to_insert->timestamp;
 }
 
 static void presence_model_add_person(LinphonePresenceModel *model, LinphonePresencePerson *person) {
@@ -368,12 +368,14 @@ struct _get_activity_st {
 };
 
 static void presence_model_get_activity(const LinphonePresencePerson *person, struct _get_activity_st *st) {
-	unsigned int size = ms_list_size(person->activities);
-	if ((st->current_idx != (unsigned)-1) && (st->requested_idx < (st->current_idx + size))) {
-		st->activity = (LinphonePresenceActivity *)ms_list_nth_data(person->activities, st->requested_idx - st->current_idx);
-		st->current_idx = (unsigned)-1;
-	} else {
-		st->current_idx += size;
+	if (st->current_idx != (unsigned)-1) {
+		unsigned int size = ms_list_size(person->activities);
+		if (st->requested_idx < (st->current_idx + size)) {
+			st->activity = (LinphonePresenceActivity *)ms_list_nth_data(person->activities, st->requested_idx - st->current_idx);
+			st->current_idx = (unsigned)-1;
+		} else {
+			st->current_idx += size;
+		}
 	}
 }
 
