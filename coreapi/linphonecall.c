@@ -2682,24 +2682,41 @@ static void linphone_core_dtmf_received(LinphoneCall *call, int dtmf){
 }
 
 static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
-	if (st->equalizer){
-		MSFilter *f=st->equalizer;
-		int enabled=lp_config_get_int(lc->config,"sound","eq_active",0);
-		const char *gains=lp_config_get_string(lc->config,"sound","eq_gains",NULL);
+	const char *eq_active = lp_config_get_string(lc->config, "sound", "eq_active", NULL);
+	const char *eq_gains = lp_config_get_string(lc->config, "sound", "eq_gains", NULL);
+
+	if(eq_active) ms_warning("'eq_active' linphonerc parameter has not effect anymore. Please use 'mic_eq_active' or 'spk_eq_active' instead");
+	if(eq_gains) ms_warning("'eq_gains' linphonerc parameter has not effect anymore. Please use 'mic_eq_gains' or 'spk_eq_gains' instead");
+	if (st->mic_equalizer){
+		MSFilter *f=st->mic_equalizer;
+		int enabled=lp_config_get_int(lc->config,"sound","mic_eq_active",0);
+		const char *gains=lp_config_get_string(lc->config,"sound","mic_eq_gains",NULL);
 		ms_filter_call_method(f,MS_EQUALIZER_SET_ACTIVE,&enabled);
-		if (enabled){
-			if (gains){
-				MSList *gains_list = ms_parse_equalizer_string(gains);
-				if (gains_list) {
-					MSList *it;
-					for(it=gains_list; it; it=it->next) {
-						MSEqualizerGain *g = (MSEqualizerGain *)it->data;
-						ms_message("Read equalizer gains: %f(~%f) --> %f",g->frequency,g->width,g->gain);
-						ms_filter_call_method(f,MS_EQUALIZER_SET_GAIN, g);
-					}
-					ms_list_free_with_data(gains_list, ms_free);
-				}
+		if (enabled && gains){
+			MSList *gains_list = ms_parse_equalizer_string(gains);
+			MSList *it;
+			for(it=gains_list; it; it=it->next) {
+				MSEqualizerGain *g = (MSEqualizerGain *)it->data;
+				ms_message("Read microphone equalizer gains: %f(~%f) --> %f",g->frequency,g->width,g->gain);
+				ms_filter_call_method(f,MS_EQUALIZER_SET_GAIN, g);
 			}
+			if(gains_list) ms_list_free_with_data(gains_list, ms_free);
+		}
+	}
+	if (st->spk_equalizer){
+		MSFilter *f=st->spk_equalizer;
+		int enabled=lp_config_get_int(lc->config,"sound","spk_eq_active",0);
+		const char *gains=lp_config_get_string(lc->config,"sound","spk_eq_gains",NULL);
+		ms_filter_call_method(f,MS_EQUALIZER_SET_ACTIVE,&enabled);
+		if (enabled && gains){
+			MSList *gains_list = ms_parse_equalizer_string(gains);
+			MSList *it;
+			for(it=gains_list; it; it=it->next) {
+				MSEqualizerGain *g = (MSEqualizerGain *)it->data;
+				ms_message("Read speaker equalizer gains: %f(~%f) --> %f",g->frequency,g->width,g->gain);
+				ms_filter_call_method(f,MS_EQUALIZER_SET_GAIN, g);
+			}
+			if(gains_list) ms_list_free_with_data(gains_list, ms_free);
 		}
 	}
 }
