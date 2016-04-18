@@ -123,7 +123,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
 	cfg->avpf_mode = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf", LinphoneAVPFDefault) : LinphoneAVPFDefault;
 	cfg->avpf_rr_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
-	cfg->publish_expires=-1;
+	cfg->publish_expires= lc ? lp_config_get_default_int(lc->config, "proxy", "publish_expires", -1) : -1;
 	cfg->refkey = refkey ? ms_strdup(refkey) : NULL;
 }
 
@@ -1353,6 +1353,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_string(config,key,"dial_prefix",cfg->dial_prefix);
 	lp_config_set_int(config,key,"privacy",cfg->privacy);
 	if (cfg->refkey) lp_config_set_string(config,key,"refkey",cfg->refkey);
+	lp_config_set_int(config, key, "publish_expires", cfg->publish_expires);
 }
 
 
@@ -1411,6 +1412,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	CONFIGURE_INT_VALUE(cfg,config,key,privacy,"privacy")
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,ref_key,"refkey")
+	CONFIGURE_INT_VALUE(cfg,config,key,publish_expires,"publish_expires")
 
 	return cfg;
 }
