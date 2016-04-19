@@ -3643,12 +3643,18 @@ extern "C" void  Java_org_linphone_core_LinphoneFriendImpl_finalize(JNIEnv*  env
 	linphone_friend_unref(lfriend);
 }
 
-extern "C" void  Java_org_linphone_core_LinphoneFriendListImpl_finalize(JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_finalize(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
 	LinphoneFriendList *lfriendList=(LinphoneFriendList*)ptr;
 	linphone_friend_list_set_user_data(lfriendList,NULL);
 	linphone_friend_list_unref(lfriendList);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setPresenceModel(JNIEnv *env, jobject jobj, jlong ptr, jlong modelPtr) {
+	LinphoneFriend *lf = (LinphoneFriend *)ptr;
+	LinphonePresenceModel *model = (LinphonePresenceModel *)modelPtr;
+	linphone_friend_set_presence_model(lf, model);
 }
 
 /*

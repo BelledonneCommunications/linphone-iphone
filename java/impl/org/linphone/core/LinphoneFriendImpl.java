@@ -88,6 +88,9 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	public PresenceModel getPresenceModel() {
 		return (PresenceModel)getPresenceModel(nativePtr);
 	}
+	public void setPresenceModel(PresenceModel presenceModel) {
+		setPresenceModel(nativePtr, ((PresenceModelImpl)presenceModel).getNativePtr());
+	}
 	public void edit() {
 		synchronized(getSyncObject()){
 			edit(nativePtr);

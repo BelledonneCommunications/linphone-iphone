@@ -114,6 +114,11 @@ public interface LinphoneFriend {
 	 */
 	PresenceModel getPresenceModel();
 	/**
+	 * @brief Set the presence information of a friend
+	 * @param presenceModel A #PresenceModel object
+	 */
+	void setPresenceModel(PresenceModel presenceModel);
+	/**
 	 * Starts editing a friend configuration.
 	 *<br> Because friend configuration must be consistent, applications MUST call {@link #edit()} before doing any attempts to modify friend configuration (such as address or subscription policy and so on). 
 	 *Once the modifications are done, then the application must call {@link #done()} to commit the changes.
