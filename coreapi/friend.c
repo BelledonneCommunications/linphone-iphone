@@ -221,6 +221,12 @@ void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr
 		return;
 	}
 	
+	if (lf->uri == NULL) {
+		LinphoneAddress *fr = linphone_address_clone(addr);
+		linphone_address_clean(fr);
+		lf->uri = fr;
+	}
+	
 	vcard = linphone_friend_get_vcard(lf);
 	if (!vcard) {
 		return;
