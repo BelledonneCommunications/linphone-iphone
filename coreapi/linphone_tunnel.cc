@@ -198,6 +198,7 @@ static void linphone_tunnel_refresh_config(LinphoneTunnel *tunnel) {
 	while(old_list != NULL) {
 		LinphoneTunnelConfig *tunnel_config = (LinphoneTunnelConfig *)old_list->data;
 		linphone_tunnel_add_server_intern(tunnel, tunnel_config);
+		linphone_tunnel_config_unref(tunnel_config);
 		old_list = old_list->next;
 	}
 }
