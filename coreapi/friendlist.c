@@ -538,8 +538,14 @@ static void carddav_updated(LinphoneCardDavContext *cdc, LinphoneFriend *lf_new,
 }
 
 void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *list) {
-	LinphoneCardDavContext *cdc = linphone_carddav_context_new(list);
-
+	LinphoneCardDavContext *cdc = NULL;
+	
+	if (!list || !list->uri || !list->lc) {
+		ms_error("FATAL");
+		return;
+	}
+	
+	cdc = linphone_carddav_context_new(list);
 	if (cdc) {
 		cdc->contact_created_cb = carddav_created;
 		cdc->contact_removed_cb = carddav_removed;

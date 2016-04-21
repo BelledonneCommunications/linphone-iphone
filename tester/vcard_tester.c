@@ -405,9 +405,9 @@ static void carddav_sync(void) {
 	linphone_carddav_set_updated_contact_callback(c, carddav_updated_contact);
 	linphone_carddav_synchronize(c);
 
-	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
@@ -431,7 +431,7 @@ static void carddav_sync_2(void) {
 
 	unlink(friends_db);
 	linphone_core_set_friends_database_path(manager->lc, friends_db);
-	BC_ASSERT_EQUAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
+	BC_ASSERT_EQUAL(linphone_friend_list_add_local_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf);
 
 	linphone_carddav_set_user_data(c, stats);
@@ -442,11 +442,11 @@ static void carddav_sync_2(void) {
 
 	linphone_carddav_synchronize(c);
 
-	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
@@ -473,7 +473,7 @@ static void carddav_sync_3(void) {
 
 	unlink(friends_db);
 	linphone_core_set_friends_database_path(manager->lc, friends_db);
-	BC_ASSERT_EQUAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
+	BC_ASSERT_EQUAL(linphone_friend_list_add_local_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf);
 
 	linphone_carddav_set_user_data(c, stats);
@@ -484,15 +484,16 @@ static void carddav_sync_3(void) {
 
 	linphone_carddav_synchronize(c);
 
-	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->updated_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
 	unlink(friends_db);
 	ms_free(friends_db);
 	linphone_carddav_context_destroy(c);
+	c = NULL;
 	linphone_core_manager_destroy(manager);
 }
 
@@ -519,11 +520,11 @@ static void carddav_sync_4(void) {
 	BC_ASSERT_PTR_NULL(linphone_vcard_get_uid(lvc));
 	linphone_carddav_put_vcard(c, lf);
 	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	linphone_carddav_delete_vcard(c, lf);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 
 	linphone_friend_unref(lf);
@@ -581,13 +582,13 @@ static void carddav_integration(void) {
 	BC_ASSERT_EQUAL(ms_list_size(lfl->dirty_friends_to_update), 0, int, "%d");
 	BC_ASSERT_EQUAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
 	BC_ASSERT_EQUAL(ms_list_size(lfl->dirty_friends_to_update), 1, int, "%d");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	BC_ASSERT_EQUAL(ms_list_size(lfl->dirty_friends_to_update), 0, int, "%d");
 	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
 	linphone_friend_list_remove_friend(lfl, lf);
 	BC_ASSERT_EQUAL(ms_list_size(lfl->friends), 0, int, "%d");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 	linphone_friend_unref(lf);
 	lf = NULL;
@@ -605,14 +606,14 @@ static void carddav_integration(void) {
 
 	BC_ASSERT_EQUAL(lfl->revision, 0, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 0, 2000);
+	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 0, 5000);
 	BC_ASSERT_EQUAL(stats->new_contact_count, 0, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->updated_contact_count, 1, int, "%i");
 	BC_ASSERT_NOT_EQUAL(lfl->revision, 0, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 
 	BC_ASSERT_EQUAL(ms_list_size(lfl->friends), 1, int, "%i");
@@ -643,6 +644,7 @@ static void carddav_clean(void) {  // This is to ensure the content of the test 
 	LinphoneFriendListCbs *cbs = linphone_friend_list_get_callbacks(lfl);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
 	MSList *friends = NULL;
+	MSList *friends_iterator = NULL;
 	LinphoneFriend *lf = NULL;
 	LinphoneVcard *lvc = NULL;
 
@@ -655,26 +657,28 @@ static void carddav_clean(void) {  // This is to ensure the content of the test 
 	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
 
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	stats->sync_done_count = 0;
 
 	friends = ms_list_copy(lfl->friends);
-	while (friends) {
-		LinphoneFriend *lf = (LinphoneFriend *)friends->data;
+	friends_iterator = friends;
+	while (friends_iterator) {
+		LinphoneFriend *lf = (LinphoneFriend *)friends_iterator->data;
 		linphone_friend_list_remove_friend(lfl, lf);
-		wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+		wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 		BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 		stats->sync_done_count = 0;
 		stats->removed_contact_count = 0;
-		friends = ms_list_next(friends);
+		friends_iterator = ms_list_next(friends_iterator);
 	}
+	ms_list_free(friends);
 
 	lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sylvain@sip.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
 	linphone_vcard_set_url(lvc, "http://dav.linphone.org/card.php/addressbooks/tester/default/me.vcf");
 	lf = linphone_friend_new_from_vcard(lvc);
 	linphone_friend_list_add_friend(lfl, lf);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
@@ -698,13 +702,13 @@ static void carddav_multiple_sync(void) {
 	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
 
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 5000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 0, int, "%i");
 
