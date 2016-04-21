@@ -1391,7 +1391,6 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 					err = process_pidf_xml_presence_person_notes(xml_ctx, person, i);
 				}
 				if (err == 0) {
-					ms_error("one more at %s: %s", person_timestamp_str, linphone_presence_activity_to_string(person->activities->data));
 					presence_model_add_person(model, person);
 				} else {
 					linphone_presence_person_unref(person);
