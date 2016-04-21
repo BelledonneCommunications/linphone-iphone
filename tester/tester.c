@@ -476,6 +476,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&multi_call_test_suite);
 	bc_tester_add_suite(&message_test_suite);
 	bc_tester_add_suite(&presence_test_suite);
+	bc_tester_add_suite(&presence_server_test_suite);
 #ifdef UPNP
 	bc_tester_add_suite(&upnp_test_suite);
 #endif

@@ -750,7 +750,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
 		linphone_core_set_network_reachable(marie->lc, TRUE);
 		linphone_core_manager_start(marie, TRUE);
-		
+
 
 		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
 		linphone_core_set_network_reachable(pauline->lc, TRUE);
@@ -835,9 +835,9 @@ void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *mar
 
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress, 1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived, 1, int, "%d");
-	
+
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDelivered, 1));
-	
+
 }
 
 static void file_transfer_message_external_body_to_external_body_client(void) {
@@ -1018,11 +1018,11 @@ static void test_publish_unpublish(void) {
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,TRUE);
 	linphone_proxy_config_done(proxy);
-	wait_core(marie->lc);
+	wait_for(marie->lc, NULL, NULL, 0);
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,FALSE);
 	linphone_proxy_config_done(proxy);
-	wait_core(marie->lc);
+	wait_for(marie->lc, NULL, NULL, 0);
 	linphone_core_manager_destroy(marie);
 }
 

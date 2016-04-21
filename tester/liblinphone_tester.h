@@ -44,6 +44,7 @@ extern test_suite_t register_test_suite;
 extern test_suite_t call_test_suite;
 extern test_suite_t message_test_suite;
 extern test_suite_t presence_test_suite;
+extern test_suite_t presence_server_test_suite;
 extern test_suite_t upnp_test_suite;
 extern test_suite_t event_test_suite;
 extern test_suite_t flexisip_test_suite;
@@ -367,11 +368,10 @@ LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bo
 void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv);
 
 extern const char *liblinphone_tester_mire_id;
-	
+
 LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const LinphoneAddress *source);
 FILE *sip_start(const char *senario, const char* dest_username, const char *passwd, LinphoneAddress* dest_addres);
 
-void wait_core(LinphoneCore *core) ;
 
 
 #ifdef __cplusplus
