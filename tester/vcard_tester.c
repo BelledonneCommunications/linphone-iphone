@@ -79,9 +79,6 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 
 	elapsed = (double)(end - start);
 	ms_error("Imported a thousand of vCards from file (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
-#ifndef ANDROID
-	BC_ASSERT_TRUE(elapsed < 1500000); // 1.5 seconds
-#endif
 
 	lfl = linphone_core_create_friend_list(manager->lc);
 	infile = fopen(import_filepath, "rb");
@@ -105,9 +102,6 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 
 	elapsed = (double)(end - start);
 	ms_error("Imported a thousand of vCards from buffer (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
-#ifndef ANDROID
-	BC_ASSERT_TRUE(elapsed < 1500000); // 1.5 seconds
-#endif
 
 	linphone_friend_list_unref(lfl);
 
@@ -718,7 +712,6 @@ static void carddav_multiple_sync(void) {
 	linphone_core_manager_destroy(manager);
 }
 
-#if 0 // To remove once crash will be fixed
 static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
@@ -746,10 +739,9 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	ms_free(stats);
 	linphone_friend_unref(lf1);
 	linphone_friend_unref(lf2);
-	linphone_friend_list_unref(lfl);belle_sip_auth_helper_compute_ha1
+	linphone_friend_list_unref(lfl);
 	linphone_core_manager_destroy(manager);
 }
-#endif
 
 #else
 static void dummy_test(void) {
@@ -773,9 +765,7 @@ test_t vcard_tests[] = {
 	{ "CardDAV synchronization 3", carddav_sync_3 },
 	{ "CardDAV synchronization 4", carddav_sync_4 },
 	{ "CardDAV integration", carddav_integration },
-#if 0
 	{ "CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync },
-#endif
 	{ "CardDAV multiple synchronizations", carddav_multiple_sync },
 #else
 	{ "Dummy test", dummy_test }

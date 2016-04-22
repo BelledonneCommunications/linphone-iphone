@@ -404,9 +404,11 @@ static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendL
 		ms_warning("Friend %s already in list [%s], ignored.", tmp ? tmp : "unknown", list->display_name);
 		if (tmp) ms_free(tmp);
 	} else {
-		return linphone_friend_list_import_friend(list, lf, synchronize);
+		LinphoneFriendListStatus status = linphone_friend_list_import_friend(list, lf, synchronize);
+		linphone_friend_save(lf, lf->lc);
+		return status;
 	}
-	return LinphoneFriendListOK;
+	return LinphoneFriendListInvalidFriend;
 }
 
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
@@ -431,7 +433,6 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 	if (synchronize) {
 		list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
 	}
-	linphone_friend_save(lf, lf->lc);
 	return LinphoneFriendListOK;
 }
 
@@ -483,13 +484,13 @@ const MSList * linphone_friend_list_get_friends(const LinphoneFriendList *list) 
 }
 
 void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
-	LinphoneCardDavContext *cdc = linphone_carddav_context_new(list);
 	MSList *dirty_friends = list->dirty_friends_to_update;
 
-	if (cdc) {
-		cdc->sync_done_cb = carddav_done;
-		while (dirty_friends) {
+	while (dirty_friends) {
+		LinphoneCardDavContext *cdc = linphone_carddav_context_new(list);
+		if (cdc) {
 			LinphoneFriend *lf = (LinphoneFriend *)dirty_friends->data;
+			cdc->sync_done_cb = carddav_done;
 			if (lf) {
 				if (cdc->friend_list->cbs->sync_state_changed_cb) {
 					cdc->friend_list->cbs->sync_state_changed_cb(cdc->friend_list, LinphoneFriendListSyncStarted, NULL);
@@ -498,8 +499,8 @@ void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
 			}
 			dirty_friends = ms_list_next(dirty_friends);
 		}
-		list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 	}
+	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 }
 
 static void carddav_created(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
@@ -786,6 +787,7 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 		}
 		vcards = ms_list_next(vcards);
 	}
+	linphone_core_store_friends_list_in_db(list->lc, list);
 	return count;
 }
 
@@ -819,6 +821,7 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 		}
 		vcards = ms_list_next(vcards);
 	}
+	linphone_core_store_friends_list_in_db(list->lc, list);
 	return count;
 }
 
