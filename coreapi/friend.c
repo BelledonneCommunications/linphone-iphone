@@ -601,8 +601,13 @@ void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *
 }
 
 void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc) {
+	if (!lc) return;
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
-	linphone_core_store_friend_in_db(lc, fr);
+	if (lc->friends_db_file) {
+		linphone_core_store_friend_in_db(lc, fr);
+	} else {
+		linphone_core_write_friends_config(lc);
+	}
 #else
 	linphone_core_write_friends_config(lc);
 #endif
@@ -690,7 +695,6 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 	}
 	if (linphone_core_ready(lc)) linphone_friend_apply(lf, lc);
 	else lf->commit = TRUE;
-	linphone_friend_save(lf, lc);
 }
 
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *lf) {

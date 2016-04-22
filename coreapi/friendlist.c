@@ -431,9 +431,7 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 	if (synchronize) {
 		list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
 	}
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
-	linphone_core_store_friend_in_db(lf->lc, lf);
-#endif
+	linphone_friend_save(lf, lf->lc);
 	return LinphoneFriendListOK;
 }
 
@@ -465,6 +463,9 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 				linphone_carddav_delete_vcard(cdc, lf);
 			}
 		}
+	}
+	if (!list->lc->friends_db_file) {
+		linphone_core_write_friends_config(list->lc);
 	}
 
 	lf->friend_list = NULL;
@@ -785,9 +786,6 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 		}
 		vcards = ms_list_next(vcards);
 	}
-#ifndef FRIENDS_SQL_STORAGE_ENABLED
-	linphone_core_write_friends_config(list->lc);
-#endif
 	return count;
 }
 
@@ -821,9 +819,6 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 		}
 		vcards = ms_list_next(vcards);
 	}
-#ifndef FRIENDS_SQL_STORAGE_ENABLED
-	linphone_core_write_friends_config(list->lc);
-#endif
 	return count;
 }
 
