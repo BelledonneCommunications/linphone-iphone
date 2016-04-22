@@ -347,6 +347,7 @@ static void friends_sqlite_storage(void) {
 	BC_ASSERT_EQUAL(stats->removed_list_count, 1, int, "%i");
 
 end:
+	ms_free(stats);
 	unlink(friends_db);
 	ms_free(friends_db);
 	linphone_address_unref(addr);
@@ -712,9 +713,43 @@ static void carddav_multiple_sync(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 0, int, "%i");
 
+	ms_free(stats);
 	linphone_friend_list_unref(lfl);
 	linphone_core_manager_destroy(manager);
 }
+
+#if 0 // To remove once crash will be fixed
+static void carddav_server_to_client_and_client_to_sever_sync(void) {
+	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
+	LinphoneFriendListCbs *cbs = linphone_friend_list_get_callbacks(lfl);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
+	LinphoneVcard *lvc1 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneFriend *lf1 = linphone_friend_new_from_vcard(lvc1);
+	LinphoneVcard *lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneFriend *lf2 = linphone_friend_new_from_vcard(lvc2);
+	
+	linphone_friend_list_cbs_set_user_data(cbs, stats);
+	linphone_friend_list_cbs_set_contact_created(cbs, carddav_contact_created);
+	linphone_friend_list_cbs_set_contact_deleted(cbs, carddav_contact_deleted);
+	linphone_friend_list_cbs_set_contact_updated(cbs, carddav_contact_updated);
+	linphone_friend_list_cbs_set_sync_status_changed(cbs, carddav_sync_status_changed);
+	linphone_core_add_friend_list(manager->lc, lfl);
+	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
+	
+	linphone_friend_list_add_friend(lfl, lf1);
+	linphone_friend_list_synchronize_friends_from_server(lfl);
+	linphone_friend_list_add_friend(lfl, lf2);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 15000);
+	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
+
+	ms_free(stats);
+	linphone_friend_unref(lf1);
+	linphone_friend_unref(lf2);
+	linphone_friend_list_unref(lfl);belle_sip_auth_helper_compute_ha1
+	linphone_core_manager_destroy(manager);
+}
+#endif
 
 #else
 static void dummy_test(void) {
@@ -738,6 +773,9 @@ test_t vcard_tests[] = {
 	{ "CardDAV synchronization 3", carddav_sync_3 },
 	{ "CardDAV synchronization 4", carddav_sync_4 },
 	{ "CardDAV integration", carddav_integration },
+#if 0
+	{ "CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync },
+#endif
 	{ "CardDAV multiple synchronizations", carddav_multiple_sync },
 #else
 	{ "Dummy test", dummy_test }
