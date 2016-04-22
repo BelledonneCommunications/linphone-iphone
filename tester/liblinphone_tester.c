@@ -24,7 +24,7 @@
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #ifdef HAVE_GTK
 #include <gtk/gtk.h>

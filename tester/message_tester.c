@@ -27,6 +27,11 @@
 #include <sqlite3.h>
 #endif
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+
 
 static char* message_external_body_url=NULL;
 
@@ -1763,3 +1768,7 @@ test_suite_t message_test_suite = {
 	liblinphone_tester_after_each,
 	sizeof(message_tests) / sizeof(message_tests[0]), message_tests
 };
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif

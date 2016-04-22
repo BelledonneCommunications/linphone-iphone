@@ -270,7 +270,14 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	mgr->v_table.text_received=text_message_received;
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 	mgr->v_table.message_received=message_received;
 	mgr->v_table.is_composing_received=is_composing_received;
 	mgr->v_table.new_subscription_requested=new_subscription_requested;
