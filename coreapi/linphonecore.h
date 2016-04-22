@@ -846,6 +846,7 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
  * @param call The LinphoneCall object
  * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
  * @return 0 if successful, -1 on error.
+ * @ingroup call_control
 **/
 LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
 
@@ -857,6 +858,7 @@ LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
  * @param call The LinphoneCall object
  * @param dtmfs A dtmf sequence such as '123#123123'
  * @return -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
+ * @ingroup call_control
 **/
 LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
 
@@ -868,6 +870,7 @@ LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
  * function will be automatically called if call state change to anything but LinphoneCallStreamsRunning.
  *
  * @param call The LinphoneCall object
+ * @ingroup call_control
 **/
 LINPHONE_PUBLIC	void linphone_call_cancel_dtmfs(LinphoneCall *call);
 
