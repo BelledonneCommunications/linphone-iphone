@@ -94,3 +94,6 @@
 [submodule "submodules/bctoolbox"]
 	path = submodules/bctoolbox
 	url = git://git.linphone.org/bctoolbox
+[submodule "submodules/externals/mbedtls"]
+	path = submodules/externals/mbedtls
+	url = git://git.linphone.org/mbedtls.git
