@@ -42,6 +42,10 @@ void linphone_carddav_context_destroy(LinphoneCardDavContext *cdc) {
 			linphone_friend_list_unref(cdc->friend_list);
 			cdc->friend_list = NULL;
 		}
+		if (cdc->auth_info) {
+			linphone_auth_info_destroy(cdc->auth_info);
+			cdc->auth_info = NULL;
+		}
 		ms_free(cdc);
 	}
 }
@@ -448,31 +452,39 @@ static void process_auth_requested_from_carddav_request(void *data, belle_sip_au
 	const char *realm = belle_sip_auth_event_get_realm(event);
 	belle_generic_uri_t *uri = belle_generic_uri_parse(query->url);
 	const char *domain = belle_generic_uri_get_host(uri);
-	LinphoneCore *lc = cdc->friend_list->lc;
-	const MSList *auth_infos = linphone_core_get_auth_info_list(lc);
 	
-	ms_debug("Looking for auth info for domain %s and realm %s", domain, realm);
-	while (auth_infos) {
-		LinphoneAuthInfo *auth_info = (LinphoneAuthInfo *)auth_infos->data;
-		if (auth_info->domain && strcmp(domain, auth_info->domain) == 0) {
-			if (!auth_info->realm || strcmp(realm, auth_info->realm) == 0) {
-				belle_sip_auth_event_set_username(event, auth_info->username);
-				belle_sip_auth_event_set_passwd(event, auth_info->passwd);
-				belle_sip_auth_event_set_ha1(event, auth_info->ha1);
-				break;
+	if (cdc->auth_info) {
+		belle_sip_auth_event_set_username(event, cdc->auth_info->username);
+		belle_sip_auth_event_set_passwd(event, cdc->auth_info->passwd);
+		belle_sip_auth_event_set_ha1(event, cdc->auth_info->ha1);
+	} else {
+		LinphoneCore *lc = cdc->friend_list->lc;
+		const MSList *auth_infos = linphone_core_get_auth_info_list(lc);
+		
+		ms_debug("Looking for auth info for domain %s and realm %s", domain, realm);
+		while (auth_infos) {
+			LinphoneAuthInfo *auth_info = (LinphoneAuthInfo *)auth_infos->data;
+			if (auth_info->domain && strcmp(domain, auth_info->domain) == 0) {
+				if (!auth_info->realm || strcmp(realm, auth_info->realm) == 0) {
+					belle_sip_auth_event_set_username(event, auth_info->username);
+					belle_sip_auth_event_set_passwd(event, auth_info->passwd);
+					belle_sip_auth_event_set_ha1(event, auth_info->ha1);
+					cdc->auth_info = linphone_auth_info_clone(auth_info);
+					break;
+				}
 			}
+			auth_infos = ms_list_next(auth_infos);
 		}
-		auth_infos = ms_list_next(auth_infos);
-	}
 	
-	if (!auth_infos) {
-		ms_error("[carddav] Authentication requested during CardDAV request sending, and username/password weren't provided");
-		if (is_query_client_to_server_sync(query)) {
-			linphone_carddav_client_to_server_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
-		} else {
-			linphone_carddav_server_to_client_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
+		if (!auth_infos) {
+			ms_error("[carddav] Authentication requested during CardDAV request sending, and username/password weren't provided");
+			if (is_query_client_to_server_sync(query)) {
+				linphone_carddav_client_to_server_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
+			} else {
+				linphone_carddav_server_to_client_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
+			}
+			linphone_carddav_query_free(query);
 		}
-		linphone_carddav_query_free(query);
 	}
 }
 
