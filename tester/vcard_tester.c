@@ -721,6 +721,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	LinphoneFriend *lf1 = linphone_friend_new_from_vcard(lvc1);
 	LinphoneVcard *lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf2 = linphone_friend_new_from_vcard(lvc2);
+	MSList *friends = NULL, *friends_iterator = NULL;
 	
 	linphone_friend_list_cbs_set_user_data(cbs, stats);
 	linphone_friend_list_cbs_set_contact_created(cbs, carddav_contact_created);
@@ -731,14 +732,29 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
 	
 	linphone_friend_list_add_friend(lfl, lf1);
+	linphone_friend_unref(lf1);
 	linphone_friend_list_synchronize_friends_from_server(lfl);
 	linphone_friend_list_add_friend(lfl, lf2);
+	linphone_friend_unref(lf2);
 	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 15000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
+	
+	stats->sync_done_count = 0;
+	friends = ms_list_copy(lfl->friends);
+	friends_iterator = friends;
+	while (friends_iterator) {
+		LinphoneFriend *lf = (LinphoneFriend *)friends_iterator->data;
+		if (lf && strcmp(linphone_friend_get_name(lf), "Sylvain Berfini") != 0) {
+			linphone_friend_list_remove_friend(lfl, lf);
+			wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+			BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
+			stats->sync_done_count = 0;
+		}
+		friends_iterator = ms_list_next(friends_iterator);
+	}
+	ms_list_free(friends);
 
 	ms_free(stats);
-	linphone_friend_unref(lf1);
-	linphone_friend_unref(lf2);
 	linphone_friend_list_unref(lfl);
 	linphone_core_manager_destroy(manager);
 }
@@ -765,8 +781,8 @@ test_t vcard_tests[] = {
 	{ "CardDAV synchronization 3", carddav_sync_3 },
 	{ "CardDAV synchronization 4", carddav_sync_4 },
 	{ "CardDAV integration", carddav_integration },
-	{ "CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync },
 	{ "CardDAV multiple synchronizations", carddav_multiple_sync },
+	{ "CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync },
 #else
 	{ "Dummy test", dummy_test }
 #endif
