@@ -919,13 +919,10 @@ void linphone_core_write_friends_config(LinphoneCore* lc) {
 	MSList *elem;
 	int i;
 	int store_friends;
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
-	return;
-#endif
+	
 	if (! linphone_core_ready(lc)) return; /*dont write config when reading it !*/
 	store_friends = lp_config_get_int(lc->config, "misc", "store_friends", 1);
 	if (store_friends) {
-		
 		for (elem=linphone_core_get_default_friend_list(lc)->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
 			linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
 		}
