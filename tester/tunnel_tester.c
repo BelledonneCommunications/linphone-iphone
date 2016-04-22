@@ -250,23 +250,24 @@ static void register_on_second_tunnel(void) {
 	if (linphone_core_tunnel_available()) {
 		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
 		LinphoneTunnel *tunnel = linphone_core_get_tunnel(pauline->lc);
-		LinphoneTunnelConfig *config = linphone_tunnel_config_new();
+		LinphoneTunnelConfig *config1 = linphone_tunnel_config_new();
+		LinphoneTunnelConfig *config2 = linphone_tunnel_config_new();
 		const char * tunnel_ip = get_ip_from_hostname("tunnel.linphone.org");
 		char* public_ip;
 
 		linphone_tunnel_simulate_udp_loss(tunnel, TRUE);
 
-		linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
-
 		// add a first tunnel config with an invalid port
-		linphone_tunnel_config_set_port(config, 4141);
-		linphone_tunnel_config_set_remote_udp_mirror_port(config, 54321);
-		linphone_tunnel_add_server(tunnel, config);
+		linphone_tunnel_config_set_host(config1, "sip3.linphone.org");
+		linphone_tunnel_config_set_port(config1, 4141);
+		linphone_tunnel_config_set_remote_udp_mirror_port(config1, 54321);
+		linphone_tunnel_add_server(tunnel, config1);
 
 		// then a proper server
-		linphone_tunnel_config_set_port(config, 443);
-		linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
-		linphone_tunnel_add_server(tunnel, config);
+		linphone_tunnel_config_set_host(config2, "tunnel.linphone.org");
+		linphone_tunnel_config_set_port(config2, 443);
+		linphone_tunnel_config_set_remote_udp_mirror_port(config2, 12345);
+		linphone_tunnel_add_server(tunnel, config2);
 
 		linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeAuto);
 		linphone_tunnel_enable_sip(tunnel, TRUE);
@@ -282,7 +283,8 @@ static void register_on_second_tunnel(void) {
 		BC_ASSERT_STRING_EQUAL(public_ip, tunnel_ip);
 		ms_free(public_ip);
 
-		linphone_tunnel_config_unref(config);
+		linphone_tunnel_config_unref(config1);
+		linphone_tunnel_config_unref(config2);
 		linphone_core_manager_destroy(pauline);
 	} else {
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
