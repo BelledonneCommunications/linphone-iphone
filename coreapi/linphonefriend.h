@@ -520,6 +520,13 @@ LINPHONE_PUBLIC void linphone_core_set_friends_database_path(LinphoneCore *lc, c
 LINPHONE_PUBLIC void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc);
 
 /**
+ * Saves a friend either in database if configured, otherwise in linphonerc
+ * @param fr the linphone friend to save
+ * @param lc the linphone core
+ */
+void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc);
+
+/**
  * @}
  */
 
