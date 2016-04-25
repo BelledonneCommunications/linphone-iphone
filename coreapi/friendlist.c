@@ -497,8 +497,8 @@ void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
 				}
 				linphone_carddav_put_vcard(cdc, lf);
 			}
-			dirty_friends = ms_list_next(dirty_friends);
 		}
+		dirty_friends = ms_list_next(dirty_friends);
 	}
 	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 }
