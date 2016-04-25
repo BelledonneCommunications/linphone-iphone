@@ -570,14 +570,16 @@
 
 	// Compute frame for each elements
 	CGRect viewFrame = self.view.frame;
+	int origin = currentViewDescription.fullscreen ? 0 : IPHONE_STATUSBAR_HEIGHT;
 
 	// 1. status bar - fixed size on top
 	CGRect statusBarFrame = self.statusBarView.frame;
-	int origin = currentViewDescription.fullscreen ? 0 : IPHONE_STATUSBAR_HEIGHT;
 	if (self.statusBarViewController != nil && currentViewDescription.statusBarEnabled) {
 		statusBarFrame.origin.y = origin;
+		// move origin below status bar
+		origin += statusBarFrame.size.height;
 	} else {
-		statusBarFrame.origin.y = origin - statusBarFrame.size.height;
+		statusBarFrame.origin.y = -statusBarFrame.size.height;
 	}
 
 	//	2. side menu - fixed size, always starting below status bar (hack: except in fullscreen)
@@ -597,7 +599,7 @@
 		if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {
 			tabFrame.origin.y = viewFrame.size.height - tabFrame.size.height;
 		} else {
-			tabFrame.origin.y = statusBarFrame.origin.y + statusBarFrame.size.height;
+			tabFrame.origin.y = origin;
 			tabFrame.size.height = viewFrame.size.height - tabFrame.origin.y;
 		}
 	} else {
@@ -607,7 +609,7 @@
 
 	//	4. main view and details view - space left width of 35%/65% each
 	CGRect mainFrame = viewFrame;
-	mainFrame.origin.y = statusBarFrame.origin.y + statusBarFrame.size.height;
+	mainFrame.origin.y = origin;
 	mainFrame.size.height -= mainFrame.origin.y;
 	if (!currentViewDescription.fullscreen) {
 		if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {

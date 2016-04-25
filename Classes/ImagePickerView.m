@@ -91,6 +91,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[UIApplication sharedApplication] setStatusBarHidden:NO]; // Fix UIImagePickerController status bar hide
 	[[UIApplication sharedApplication]
 		setStatusBarStyle:UIStatusBarStyleDefault]; // Fix UIImagePickerController status bar style change
+
+	[PhoneMainView.instance hideStatusBar:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -98,6 +100,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (popoverController != nil) {
 		[popoverController dismissPopoverAnimated:NO];
 	}
+
+	[PhoneMainView.instance hideStatusBar:NO];
 }
 
 #pragma mark - Property Functions
@@ -172,9 +176,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 					   inView:(UIView *)ipadView {
 	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
 	  ImagePickerView *view = VIEW(ImagePickerView);
-	  if (!(IPAD && ipadView && ipadPopoverView)) {
-		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	  }
 	  view.sourceType = type;
 
 	  // Displays a control that allows the user to choose picture or
@@ -198,6 +199,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  inView:ipadView
 								permittedArrowDirections:UIPopoverArrowDirectionAny
 												animated:FALSE];
+	  } else {
+		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	  }
 	};
 
