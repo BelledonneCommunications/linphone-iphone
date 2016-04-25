@@ -121,6 +121,7 @@ static void subscriber_no_longer_reachable(void){
 	MSList *lcs = NULL;
 	LinphonePresenceModel * presence;
 	int previous_number_of_LinphonePresenceActivityOnline=0;
+	int previous_number_of_LinphonePresenceActivityOffline=0;
 
 	lcs = ms_list_append(lcs, marie->lc);
 	lcs = ms_list_append(lcs, pauline1->lc);
@@ -159,7 +160,8 @@ static void subscriber_no_longer_reachable(void){
 	//sal_set_send_error(marie->lc->sal,0);
 
 	/*because of notify timeout detected by server, so subscription is reset*/
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOffline,2, 4000));
+	previous_number_of_LinphonePresenceActivityOffline = marie->stat.number_of_LinphonePresenceActivityOffline;
+	BC_ASSERT_TRUE(wait_for_list(lcs,&previous_number_of_LinphonePresenceActivityOffline,1, 4000));
 
 	// now subscription is supposed to be dead because notify was not answered in time.
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline,NULL);
@@ -176,7 +178,6 @@ static void subscriber_no_longer_reachable(void){
 }
 
 static void subscribe_with_late_publish(void) {
-#if 0
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneProxyConfig* proxy;
@@ -249,7 +250,6 @@ static void subscribe_with_late_publish(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-#endif
 }
 
 static void test_forked_subscribe_notify_publish(void) {
@@ -280,8 +280,7 @@ static void test_forked_subscribe_notify_publish(void) {
 	linphone_core_add_friend(pauline->lc,lf);
 
 	/*wait for subscribe acknowledgment*/
-	wait_for_list(lcs,&pauline->stat.number_of_NotifyPresenceReceived,1,2000);
-	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_NotifyPresenceReceived,1,3000));
 
 	/*enable publish*/
 
@@ -299,23 +298,21 @@ static void test_forked_subscribe_notify_publish(void) {
 
 
 	/*wait for marie status*/
-	wait_for_list(lcs,&pauline->stat.number_of_NotifyPresenceReceived,3,2000);
+	wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityOnline,3,2000); /*initial + 2 from publish*/
 	BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
 
 	/*wait for new status*/
-	wait_for_list(lcs,&pauline->stat.number_of_NotifyPresenceReceived,4,2000);
+	wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityBusy,1,3000);
 	BC_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf), int, "%d");
 
 
 	presence =linphone_presence_model_new_with_activity(  LinphonePresenceActivityMeeting,NULL);
 	linphone_core_set_presence_model(marie2->lc,presence);
 	/*wait for new status*/
-	wait_for_list(lcs,&pauline->stat.number_of_NotifyPresenceReceived,5,2000);
-	BC_ASSERT_TRUE(LinphoneStatusBusy == linphone_friend_get_status(lf)
-				   || LinphoneStatusDoNotDisturb == linphone_friend_get_status(lf)); /*because liblinphone compositor is very simple for now */
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityMeeting,1,3000));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
