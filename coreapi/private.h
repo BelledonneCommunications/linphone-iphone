@@ -729,6 +729,7 @@ struct _LinphoneFriendList {
 	MSList *dirty_friends_to_update;
 	int revision;
 	LinphoneFriendListCbs *cbs;
+	bool_t enable_subscriptions;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriendList);

@@ -387,8 +387,9 @@ void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op)
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 	if (lf->outsub!=NULL) {
 		sal_unsubscribe(lf->outsub);
-		lf->subscribe_active=FALSE;
 	}
+	/* for friend list there is no necessary outsub*/
+	lf->subscribe_active=FALSE;
 }
 
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf){

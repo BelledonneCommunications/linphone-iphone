@@ -209,8 +209,6 @@ LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_uri(const L
 **/
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key);
 
-LINPHONE_PUBLIC void linphone_friend_list_close_subscriptions(LinphoneFriendList *list);
-
 LINPHONE_PUBLIC void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 
 /**
@@ -407,6 +405,13 @@ LINPHONE_PUBLIC int linphone_friend_list_import_friends_from_vcard4_buffer(Linph
  * @param[in] vcard_file the path to a file that will contain the vCards
  */
 LINPHONE_PUBLIC void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list, const char *vcard_file);
+
+/**
+ * Enable subscription to NOTIFYes of all friends list
+ * @param[in] list the LinphoneFriendList object
+ * @param[in] enabled should subscription be enabled or not
+ */
+LINPHONE_PUBLIC void linphone_friend_list_enable_subscriptions(LinphoneFriendList *list, bool_t enabled);
 
 /**
  * @}

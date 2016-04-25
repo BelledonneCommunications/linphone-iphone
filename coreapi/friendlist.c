@@ -285,6 +285,7 @@ static bool_t linphone_friend_list_has_subscribe_inactive(const LinphoneFriendLi
 static LinphoneFriendList * linphone_friend_list_new(void) {
 	LinphoneFriendList *list = belle_sip_object_new(LinphoneFriendList);
 	list->cbs = linphone_friend_list_cbs_new();
+	list->enable_subscriptions = FALSE;
 	belle_sip_object_ref(list);
 	return list;
 }
@@ -541,12 +542,12 @@ static void carddav_updated(LinphoneCardDavContext *cdc, LinphoneFriend *lf_new,
 
 void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *list) {
 	LinphoneCardDavContext *cdc = NULL;
-	
+
 	if (!list || !list->uri || !list->lc) {
 		ms_error("FATAL");
 		return;
 	}
-	
+
 	cdc = linphone_carddav_context_new(list);
 	if (cdc) {
 		cdc->contact_created_cb = carddav_created;
@@ -606,19 +607,19 @@ LinphoneFriend * linphone_friend_list_find_friend_by_out_subscribe(const Linphon
 	return NULL;
 }
 
-void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
-	 /* FIXME we should wait until subscription to complete. */
+static void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
+	/* FIXME we should wait until subscription to complete. */
 	if (list->event) {
 		linphone_event_terminate(list->event);
 		linphone_event_unref(list->event);
 		list->event = NULL;
-	} else if (list->friends)
-		ms_list_for_each(list->friends, (void (*)(void *))linphone_friend_close_subscriptions);
+	}
+	ms_list_for_each(list->friends, (void (*)(void *))linphone_friend_close_subscriptions);
 }
 
 void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered) {
 	const MSList *elem;
-	if (list->rls_uri != NULL) {
+	if (list->enable_subscriptions && list->rls_uri != NULL) {
 		LinphoneAddress *address = linphone_address_new(list->rls_uri);
 		char *xml_content = create_resource_list_xml(list);
 		if ((address != NULL) && (xml_content != NULL) && (linphone_friend_list_has_subscribe_inactive(list) == TRUE)) {
@@ -851,4 +852,15 @@ void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list
 	}
 
 	fclose(file);
+}
+
+void linphone_friend_list_enable_subscriptions(LinphoneFriendList *list, bool_t enabled) {
+	if (list->enable_subscriptions != enabled) {
+		if (enabled) {
+			linphone_friend_list_update_subscriptions(list, NULL, TRUE);
+		} else {
+			linphone_friend_list_close_subscriptions(list);
+		}
+		list->enable_subscriptions = enabled;
+	}
 }

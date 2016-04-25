@@ -6559,7 +6559,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	for (elem = lc->friends_lists; elem != NULL; elem = ms_list_next(elem)) {
 		LinphoneFriendList *list = (LinphoneFriendList *)elem->data;
-		linphone_friend_list_close_subscriptions(list);
+		linphone_friend_list_enable_subscriptions(list, FALSE);
 		if (list->event)
 			wait_until_unsubscribe =  TRUE;
 	}
