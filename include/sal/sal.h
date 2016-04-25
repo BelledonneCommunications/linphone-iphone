@@ -691,7 +691,7 @@ bool_t sal_op_is_ipv6(SalOp *op);
 bool_t sal_op_is_idle(SalOp *op);
 
 const SalErrorInfo *sal_error_info_none(void);
-const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
+LINPHONE_PUBLIC const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
 void sal_error_info_reset(SalErrorInfo *ei);
 void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning);
 
