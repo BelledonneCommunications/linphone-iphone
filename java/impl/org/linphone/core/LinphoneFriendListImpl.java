@@ -30,6 +30,7 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	private native void addLocalFriend(long nativePtr, long friendPtr);
 	private native LinphoneFriend[] getFriendList(long nativePtr);
 	private native void updateSubscriptions(long nativePtr, long proxyConfigPtr, boolean onlyWhenRegistered);
+	private native void closeSubscriptions(long nativePtr);
 	private native Object getCore(long ptr);
 	private native LinphoneFriend findFriendByUri(long nativePtr, String uri);
 	private native void setListener(long ptr, LinphoneFriendListListener listener);
@@ -70,6 +71,13 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	public void updateSubscriptions(LinphoneProxyConfig proxyConfig,boolean onlyWhenRegistered) {
 		synchronized(getSyncObject()){
 			updateSubscriptions(nativePtr,  ((LinphoneProxyConfigImpl)proxyConfig).nativePtr,onlyWhenRegistered);
+		}
+	}
+	
+	@Override
+	public void closeSubscriptions() {
+		synchronized(getSyncObject()) {
+			closeSubscriptions(nativePtr);
 		}
 	}
 	
