@@ -87,6 +87,8 @@ struct _LpConfig{
 	int readonly;
 };
 
+bc_vfs* g_bc_vfs= NULL;
+
 char* lp_realpath(const char* file, char* name) {
 #if defined(_WIN32) || defined(__QNX__) || defined(ANDROID)
 	return ms_strdup(file);
@@ -368,6 +370,7 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 }
 
 LpConfig * lp_config_new(const char *filename){
+	bc_vfs_register(bc_demovfs(),g_bc_vfs, 1);
 	return lp_config_new_with_factory(filename, NULL);
 }
 
@@ -392,6 +395,8 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 }
 
 LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
+	bc_vfs_file *pFile = NULL;
+	g_bc_vfs = bc_demovfs();
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
@@ -420,10 +425,10 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		}
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
-		lpconfig->file=fopen(lpconfig->filename,"r+");
+		lpconfig->file=g_bc_vfs->xOpen(g_bc_vfs,lpconfig->filename,pFile, O_RDWR, S_IRUSR | S_IWUSR);
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 		if (lpconfig->file==NULL){
-			lpconfig->file=fopen(lpconfig->tmpfilename,"r+");
+			lpconfig->file=g_bc_vfs->xOpen(g_bc_vfs,lpconfig->tmpfilename, pFile,  O_RDWR, S_IRUSR | S_IWUSR);
 			if (lpconfig->file){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
 			}
@@ -449,7 +454,8 @@ fail:
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
-	FILE* f=fopen(path,"r");
+	bc_vfs_file *pFile = NULL;
+	FILE* f=g_bc_vfs->xOpen(g_bc_vfs,path ,O_RDONLY, pFile, S_IRUSR | S_IWUSR);
 	if (f!=NULL){
 		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig,f);
@@ -686,13 +692,15 @@ void lp_section_write(LpSection *sec, FILE *file){
 
 int lp_config_sync(LpConfig *lpconfig){
 	FILE *file;
+	bc_vfs_file *pFile = NULL;
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
+
 #ifndef _WIN32
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	file=fopen(lpconfig->tmpfilename,"w");
+	file=g_bc_vfs->xOpen(g_bc_vfs,lpconfig->tmpfilename, O_WRONLY, pFile, S_IRUSR | S_IWUSR);
 	if (file==NULL){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
 		lpconfig->readonly=1;
@@ -815,6 +823,7 @@ static const char *_lp_config_dirname(char *path) {
 }
 
 bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
+	bc_vfs_file *pFile = NULL;
 	if (lpconfig->filename == NULL) {
 		return FALSE;
 	} else {
@@ -829,7 +838,7 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 
 		if(realfilepath == NULL) return FALSE;
 
-		file = fopen(realfilepath, "r");
+		file = g_bc_vfs->xOpen(g_bc_vfs,realfilepath, O_RDONLY, pFile, S_IRUSR | S_IWUSR);
 		ms_free(realfilepath);
 		if (file) {
 			fclose(file);
@@ -844,7 +853,8 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	char *filepath = NULL;
 	char *realfilepath = NULL;
 	FILE *file;
-
+	bc_vfs_file *pFile = NULL;
+	
 	if (lpconfig->filename == NULL) return;
 
 	if(strlen(data) == 0) {
@@ -861,7 +871,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 
-	file = fopen(realfilepath, "w");
+	file = g_bc_vfs->xOpen(g_bc_vfs,realfilepath, O_WRONLY,pFile, S_IRUSR | S_IWUSR);
 	if(file == NULL) {
 		ms_error("Could not open %s for write", realfilepath);
 		goto end;
@@ -881,6 +891,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	const char *dir = NULL;
 	char *filepath = NULL;
 	FILE *file = NULL;
+	bc_vfs_file *pFile = NULL;
 	char* realfilepath = NULL;
 
 	if (lpconfig->filename == NULL) return -1;
@@ -894,7 +905,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		goto err;
 	}
 
-	file = fopen(realfilepath, "r");
+	file = g_bc_vfs->xOpen(g_bc_vfs,realfilepath, O_RDONLY, pFile ,S_IRUSR | S_IWUSR);
 	if(file == NULL) {
 		ms_error("Could not open %s for read. %s", realfilepath, strerror(errno));
 		goto err;
