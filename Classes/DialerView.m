@@ -249,17 +249,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
 
-		[alertView
-			addButtonWithTitle:NSLocalizedString(@"Send logs", nil)
-						 block:^{
-						   NSString *appName =
-							   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-						   NSString *logsAddress = [mgr lpConfigStringForKey:@"debug_popup_email" withDefault:@""];
-						   [self presentMailViewWithTitle:appName forRecipients:@[ logsAddress ] attachLogs:true];
-						 }];
-
 		int debugLevel = [LinphoneManager.instance lpConfigIntForKey:@"debugenable_preference"];
 		BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
+
+		if (debugEnabled) {
+			[alertView
+				addButtonWithTitle:NSLocalizedString(@"Send logs", nil)
+							 block:^{
+							   NSString *appName =
+								   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+							   NSString *logsAddress = [mgr lpConfigStringForKey:@"debug_popup_email" withDefault:@""];
+							   [self presentMailViewWithTitle:appName forRecipients:@[ logsAddress ] attachLogs:true];
+							 }];
+		}
 		NSString *actionLog =
 			(debugEnabled ? NSLocalizedString(@"Disable logs", nil) : NSLocalizedString(@"Enable logs", nil));
 		[alertView
