@@ -759,7 +759,7 @@ static void net_config_read (LinphoneCore *lc)
 
 	nat_policy_ref = lp_config_get_string(lc->config, "net", "nat_policy_ref", NULL);
 	if (nat_policy_ref != NULL) {
-		lc->nat_policy = linphone_nat_policy_new_from_config(lc->config, nat_policy_ref);
+		lc->nat_policy = linphone_core_create_nat_policy_from_config(lc, nat_policy_ref);
 	}
 
 	lc->net_conf.nat_address_ip = NULL;
@@ -5073,31 +5073,18 @@ void linphone_core_send_dtmf(LinphoneCore *lc, char dtmf)
 	linphone_call_send_dtmf(call, dtmf);
 }
 
-void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){
-	if (lc->net_conf.stun_server!=NULL)
-		ms_free(lc->net_conf.stun_server);
-	if (server)
-		lc->net_conf.stun_server=ms_strdup(server);
-	else lc->net_conf.stun_server=NULL;
-
-	/* each time the stun server is changed, we must clean the resolved cached addrinfo*/
-	if (lc->net_conf.stun_addrinfo){
-		freeaddrinfo(lc->net_conf.stun_addrinfo);
-		lc->net_conf.stun_addrinfo=NULL;
-	}
-	/*if a stun server is set, we must request asynchronous resolution immediately to be ready for call*/
-	if (lc->net_conf.stun_server){
-		linphone_core_resolve_stun_server(lc);
-	}
-
+void linphone_core_set_stun_server(LinphoneCore *lc, const char *server) {
 	if (lc->nat_policy != NULL)
-		linphone_nat_policy_set_stun_server(lc->nat_policy, lc->net_conf.stun_server);
-	else if (linphone_core_ready(lc))
-		lp_config_set_string(lc->config,"net","stun_server",lc->net_conf.stun_server);
+		linphone_nat_policy_set_stun_server(lc->nat_policy, server);
+	else
+		lp_config_set_string(lc->config, "net", "stun_server", server);
 }
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc){
-	return lc->net_conf.stun_server;
+	if (lc->nat_policy != NULL)
+		return linphone_nat_policy_get_stun_server(lc->nat_policy);
+	else
+		return lp_config_get_string(lc->config, "net", "stun_server", NULL);
 }
 
 
@@ -5173,7 +5160,7 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 		nat_policy = linphone_nat_policy_ref(lc->nat_policy);
 		linphone_nat_policy_clear(nat_policy);
 	} else {
-		nat_policy = linphone_nat_policy_new();
+		nat_policy = linphone_core_create_nat_policy(lc);
 	}
 
 	switch (pol) {
@@ -6364,13 +6351,6 @@ void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;
 
-	if (config->stun_server!=NULL){
-		ms_free(config->stun_server);
-	}
-	if (config->stun_addrinfo){
-		freeaddrinfo(config->stun_addrinfo);
-		config->stun_addrinfo=NULL;
-	}
 	if (config->nat_address!=NULL){
 		lp_config_set_string(lc->config,"net","nat_address",config->nat_address);
 		ms_free(lc->net_conf.nat_address);
@@ -6381,7 +6361,7 @@ void net_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"net","mtu",config->mtu);
 	if (lc->nat_policy != NULL) {
 		lp_config_set_string(lc->config, "net", "nat_policy_ref", lc->nat_policy->ref);
-		linphone_nat_policy_save_to_config(lc->nat_policy, lc->config);
+		linphone_nat_policy_save_to_config(lc->nat_policy);
 	}
 }
 

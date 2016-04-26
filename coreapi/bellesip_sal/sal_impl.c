@@ -1154,6 +1154,10 @@ SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int fam
 	return (SalResolverContext*)belle_sip_stack_resolve_a(sal->stack,name,port,family,(belle_sip_resolver_callback_t)cb,data);
 }
 
+SalResolverContext * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, SalResolverCallback cb, void *data) {
+	return (SalResolverContext *)belle_sip_stack_resolve(sal->stack, service, transport, name, port, family, (belle_sip_resolver_callback_t)cb, data);
+}
+
 /*
 void sal_resolve_cancel(Sal *sal, SalResolverContext* ctx){
 	belle_sip_stack_resolve_cancel(sal->stack,ctx);

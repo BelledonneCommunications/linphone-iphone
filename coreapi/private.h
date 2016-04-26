@@ -437,6 +437,7 @@ LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, Li
 LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc);
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize);
 
+int linphone_parse_host_port(const char *input, char *host, size_t hostlen, int *port);
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
 bool_t host_has_ipv6_network(void);
@@ -799,7 +800,6 @@ typedef struct net_config
 {
 	char *nat_address; /* may be IP or host name */
 	char *nat_address_ip; /* ip translated from nat_address */
-	char *stun_server;
 	struct addrinfo *stun_addrinfo;
 	SalResolverContext * stun_res;
 	int download_bw;
@@ -1190,6 +1190,9 @@ BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
 struct _LinphoneNatPolicy {
 	belle_sip_object_t base;
 	void *user_data;
+	LinphoneCore *lc;
+	SalResolverContext *stun_resolver_context;
+	struct addrinfo *stun_addrinfo;
 	char *stun_server;
 	char *ref;
 	bool_t stun_enabled;
@@ -1200,8 +1203,7 @@ struct _LinphoneNatPolicy {
 
 BELLE_SIP_DECLARE_VPTR(LinphoneNatPolicy);
 
-LinphoneNatPolicy * linphone_nat_policy_new_from_config(LpConfig *config, const char *ref);
-void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy, LpConfig *config);
+void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy);
 
 
 /*****************************************************************************

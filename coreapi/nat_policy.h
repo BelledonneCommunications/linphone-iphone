@@ -38,12 +38,6 @@ typedef struct _LinphoneNatPolicy LinphoneNatPolicy;
 
 
 /**
- * Create a new LinphoneNatPolicy object with every policies being disabled.
- * @return A new LinphoneNatPolicy object.
- */
-LINPHONE_PUBLIC LinphoneNatPolicy * linphone_nat_policy_new(void);
-
-/**
  * Acquire a reference to the LinphoneNatPolicy object.
  * @param[in] policy LinphoneNatPolicy object.
  * @return The same LinphoneNatPolicy object.
@@ -151,6 +145,35 @@ LINPHONE_PUBLIC const char * linphone_nat_policy_get_stun_server(const LinphoneN
  * @param[in] stun_server The STUN server to use with this NAT policy.
  */
 LINPHONE_PUBLIC void linphone_nat_policy_set_stun_server(LinphoneNatPolicy *policy, const char *stun_server);
+
+/**
+ * Start a STUN server DNS resolution.
+ * @param[in] policy LinphoneNatPolicy object
+ */
+LINPHONE_PUBLIC void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy);
+
+/**
+ * Get the addrinfo representation of the STUN server address.
+ * WARNING: This function may block for up to 1 second.
+ * @param[in] policy LinphoneNatPolicy object
+ * @return addrinfo representation of the STUN server address.
+ */
+LINPHONE_PUBLIC const struct addrinfo * linphone_nat_policy_get_stun_server_addrinfo(LinphoneNatPolicy *policy);
+
+/**
+ * Create a new LinphoneNatPolicy object with every policies being disabled.
+ * @param[in] lc LinphoneCore object
+ * @return A new LinphoneNatPolicy object.
+ */
+LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_create_nat_policy(LinphoneCore *lc);
+
+/**
+ * Create a new LinphoneNatPolicy by reading the config of a LinphoneCore according to the passed ref.
+ * @param[in] lc LinphoneCore object
+ * @param[in] ref The reference of a NAT policy in the config of the LinphoneCore
+ * @return A new LinphoneNatPolicy object.
+ */
+LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_create_nat_policy_from_config(LinphoneCore *lc, const char *ref);
 
 /**
  * @}

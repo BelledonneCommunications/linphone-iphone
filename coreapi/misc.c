@@ -584,16 +584,20 @@ static void stun_server_resolved(LinphoneCore *lc, const char *name, struct addr
 }
 
 void linphone_core_resolve_stun_server(LinphoneCore *lc){
-	/*
-	 * WARNING: stun server resolution only done in IPv4.
-	 * TODO: use IPv6 resolution if linphone_core_ipv6_enabled()==TRUE and use V4Mapped addresses for ICE gathering.
-	 */
-	const char *server=lc->net_conf.stun_server;
-	if (lc->sal && server && !lc->net_conf.stun_res){
-		char host[NI_MAXHOST];
-		int port=3478;
-		linphone_parse_host_port(server,host,sizeof(host),&port);
-		lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_INET,(SalResolverCallback)stun_server_resolved,lc);
+	if (lc->nat_policy != NULL) {
+		linphone_nat_policy_resolve_stun_server(lc->nat_policy);
+	} else {
+		/*
+		* WARNING: stun server resolution only done in IPv4.
+		* TODO: use IPv6 resolution if linphone_core_ipv6_enabled()==TRUE and use V4Mapped addresses for ICE gathering.
+		*/
+		const char *server=linphone_core_get_stun_server(lc);
+		if (lc->sal && server && !lc->net_conf.stun_res){
+			char host[NI_MAXHOST];
+			int port=3478;
+			linphone_parse_host_port(server,host,sizeof(host),&port);
+			lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_INET,(SalResolverCallback)stun_server_resolved,lc);
+		}
 	}
 }
 
@@ -609,18 +613,22 @@ void linphone_core_resolve_stun_server(LinphoneCore *lc){
  * changed.
 **/
 const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
-	const char *server=linphone_core_get_stun_server(lc);
-	if (server){
-		int wait_ms=0;
-		int wait_limit=1000;
-		linphone_core_resolve_stun_server(lc);
-		while (!lc->net_conf.stun_addrinfo && lc->net_conf.stun_res!=NULL && wait_ms<wait_limit){
-			sal_iterate(lc->sal);
-			ms_usleep(50000);
-			wait_ms+=50;
+	if (lc->nat_policy != NULL) {
+		return linphone_nat_policy_get_stun_server_addrinfo(lc->nat_policy);
+	} else {
+		const char *server=linphone_core_get_stun_server(lc);
+		if (server){
+			int wait_ms=0;
+			int wait_limit=1000;
+			linphone_core_resolve_stun_server(lc);
+			while (!lc->net_conf.stun_addrinfo && lc->net_conf.stun_res!=NULL && wait_ms<wait_limit){
+				sal_iterate(lc->sal);
+				ms_usleep(50000);
+				wait_ms+=50;
+			}
 		}
+		return lc->net_conf.stun_addrinfo;
 	}
-	return lc->net_conf.stun_addrinfo;
 }
 
 void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable) {

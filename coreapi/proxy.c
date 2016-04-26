@@ -1358,7 +1358,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 
 	if (cfg->nat_policy != NULL) {
 		lp_config_set_string(config, key, "nat_policy_ref", cfg->nat_policy->ref);
-		linphone_nat_policy_save_to_config(cfg->nat_policy, config);
+		linphone_nat_policy_save_to_config(cfg->nat_policy);
 	}
 }
 
@@ -1423,7 +1423,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 
 	nat_policy_ref = lp_config_get_string(config, key, "nat_policy_ref", NULL);
 	if (nat_policy_ref != NULL) {
-		cfg->nat_policy = linphone_nat_policy_new_from_config(config, nat_policy_ref);
+		cfg->nat_policy = linphone_core_create_nat_policy_from_config(lc, nat_policy_ref);
 	}
 
 	return cfg;
