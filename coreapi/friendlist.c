@@ -285,7 +285,7 @@ static bool_t linphone_friend_list_has_subscribe_inactive(const LinphoneFriendLi
 static LinphoneFriendList * linphone_friend_list_new(void) {
 	LinphoneFriendList *list = belle_sip_object_new(LinphoneFriendList);
 	list->cbs = linphone_friend_list_cbs_new();
-	list->enable_subscriptions = FALSE;
+	list->enable_subscriptions = TRUE;
 	belle_sip_object_ref(list);
 	return list;
 }
