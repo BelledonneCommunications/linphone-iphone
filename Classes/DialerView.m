@@ -267,7 +267,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[alertView
 			addButtonWithTitle:actionLog
 						 block:^{
-						   int newDebugLevel = debugEnabled ? ORTP_ERROR : ORTP_DEBUG;
+						   int newDebugLevel = debugEnabled ? 0 : ORTP_DEBUG;
 						   [LinphoneManager.instance lpConfigSetInt:newDebugLevel forKey:@"debugenable_preference"];
 						   [Log enableLogs:newDebugLevel];
 						 }];
