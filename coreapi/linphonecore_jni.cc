@@ -3458,10 +3458,6 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneFriendListImpl_getFriendL
 	return jFriends;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_closeSubscriptions(JNIEnv* env, jobject thiz, jlong friendListptr) {
-	linphone_friend_list_close_subscriptions((LinphoneFriendList*)friendListptr);
-}
-
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscriptions(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong friendListptr
