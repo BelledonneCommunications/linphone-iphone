@@ -166,6 +166,11 @@ static void processSection_cb(const char *entry, struct __processSectionCtx *ctx
 			ctx->ret = 0;
 			return;
 		}
+		
+		if (lp_config_get_skip_flag_for_entry(ctx->ctx->lpc, ctx->section, entry)) {
+			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped entry %s", entry);
+			return;
+		}
 
 		node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"entry", NULL);
 		if(node == NULL) {
@@ -200,8 +205,15 @@ struct __processConfigCtx {
 
 static void processConfig_cb(const char *section, struct __processConfigCtx *ctx) {
 	if(ctx->ret == 0) {
-		xmlNode *node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"section", NULL);
+		xmlNode *node;
 		xmlAttr *name_attr;
+		
+		if (lp_config_get_skip_flag_for_section(ctx->ctx->lpc, section)) {
+			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped section %s", section);
+			return;
+		}
+		
+		node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"section", NULL);
 		if(node == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create \"section\" element");
 			ctx->ret = -1;
