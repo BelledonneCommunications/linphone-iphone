@@ -140,7 +140,7 @@ static void subscriber_no_longer_reachable(void){
 
 	linphone_core_add_friend(marie->lc, lf);
 	linphone_friend_unref(lf);
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,1, 2000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceBasicStatusOpen,1, 2000));
 
 	/*make sure marie subscribe is not reset by accident because of code below located in linphone_core_iterate
 
@@ -162,7 +162,7 @@ static void subscriber_no_longer_reachable(void){
 	//sal_set_send_error(marie->lc->sal,0);
 
 	/*because of notify timeout detected by server, so subscription is reset*/
-	previous_number_of_LinphonePresenceActivityOffline = marie->stat.number_of_LinphonePresenceActivityOffline;
+	previous_number_of_LinphonePresenceActivityOffline = marie->stat.number_of_LinphonePresenceBasicStatusClosed;
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOffline,previous_number_of_LinphonePresenceActivityOffline+1, 4000));
 
 	// now subscription is supposed to be dead because notify was not answered in time.
