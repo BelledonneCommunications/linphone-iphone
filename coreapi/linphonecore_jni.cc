@@ -2061,6 +2061,10 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_exportFriendsToVCa
 	env->ReleaseStringUTFChars(jpath, path);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_enableSubscriptions(JNIEnv* env, jobject thiz, jlong list, jboolean enable) {
+	linphone_friend_list_enable_subscriptions((LinphoneFriendList*)list, enable);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriendList(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
