@@ -1005,6 +1005,10 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 	return TRUE;
 }
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 	LinphoneAddress* linphone_address = NULL;
 	LinphoneFriend *fr;
@@ -1018,14 +1022,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 	name = linphone_vcard_get_full_name(vcard);
 	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
 
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#endif
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	fr = linphone_friend_new();
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic pop
-#endif
 	// Currently presence takes too much time when dealing with hundreds of friends, so I disabled it for now
 	fr->pol = LinphoneSPDeny;
 	fr->subscribe = FALSE;
@@ -1046,6 +1043,9 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 
 	return fr;
 }
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
 /*drops all references to the core and unref*/
 void _linphone_friend_release(LinphoneFriend *lf){
@@ -1172,6 +1172,10 @@ static int create_friend_list(void *data, int argc, char **argv, char **colName)
 	return 0;
 }
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 /* DB layout:
  * | 0  | storage_id
  * | 1  | friend_list_id
@@ -1198,14 +1202,7 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	}
 	if (!lf) {
 		LinphoneAddress *addr = linphone_address_new(argv[2]);
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#endif
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 		lf = linphone_friend_new();
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic pop
-#endif
 		linphone_friend_set_address(lf, addr);
 		linphone_address_unref(addr);
 	}
@@ -1219,6 +1216,9 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	linphone_friend_unref(lf);
 	return 0;
 }
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
 static int linphone_sql_request_friend(sqlite3* db, const char *stmt, MSList **list) {
 	char* errmsg = NULL;

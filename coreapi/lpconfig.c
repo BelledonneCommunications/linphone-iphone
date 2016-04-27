@@ -63,6 +63,7 @@ typedef struct _LpItem{
 	char *value;
 	int is_comment;
 	bool_t overwrite; // If set to true, will add overwrite=true when converted to xml
+	bool_t skip; // If set to true, won't be dumped when converted to xml
 } LpItem;
 
 typedef struct _LpSectionParam{
@@ -75,6 +76,7 @@ typedef struct _LpSection{
 	MSList *items;
 	MSList *params;
 	bool_t overwrite; // If set to true, will add overwrite=true to all items of this section when converted to xml
+	bool_t skip; // If set to true, won't be dumped when converted to xml
 } LpSection;
 
 struct _LpConfig{
@@ -582,7 +584,7 @@ bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const ch
 		item = lp_section_find_item(sec, key);
 		if (item != NULL) return item->overwrite;
 	}
-	return 0;
+	return FALSE;
 }
 
 bool_t lp_config_get_overwrite_flag_for_section(const LpConfig *lpconfig, const char *section) {
@@ -591,7 +593,27 @@ bool_t lp_config_get_overwrite_flag_for_section(const LpConfig *lpconfig, const 
 	if (sec != NULL){
 		return sec->overwrite;
 	}
-	return 0;
+	return FALSE;
+}
+
+bool_t lp_config_get_skip_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) return item->skip;
+	}
+	return FALSE;
+}
+
+bool_t lp_config_get_skip_flag_for_section(const LpConfig *lpconfig, const char *section) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		return sec->skip;
+	}
+	return FALSE;
 }
 
 void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value){
@@ -661,6 +683,24 @@ void lp_config_set_overwrite_flag_for_section(LpConfig *lpconfig, const char *se
 	sec = lp_config_find_section(lpconfig, section);
 	if (sec != NULL) {
 		sec->overwrite = value;
+	}
+}
+
+void lp_config_set_skip_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) item->skip = value;
+	}
+}
+
+void lp_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		sec->skip = value;
 	}
 }
 

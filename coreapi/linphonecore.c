@@ -1571,6 +1571,8 @@ void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path){
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
+	linphone_core_add_friend_list(lc, NULL);
+
 	sip_setup_register_all(lc->factory);
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -1587,6 +1589,7 @@ static void linphone_core_start(LinphoneCore * lc) {
 		linphone_tunnel_configure(lc->tunnel);
 	}
 #endif
+
 
 	linphone_core_notify_display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -1725,8 +1728,6 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-
-	linphone_core_add_friend_list(lc, NULL);
 
 	linphone_task_list_init(&lc->hooks);
 
@@ -2781,7 +2782,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			if (elapsed>lc->sip_conf.inc_timeout){
 				LinphoneReason decline_reason;
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
-				decline_reason=lc->current_call ? LinphoneReasonBusy : LinphoneReasonDeclined;
+				decline_reason = (lc->current_call != call) ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
 				sal_error_info_set(&call->non_op_error,SalReasonRequestTimeout,408,"Not answered",NULL);
 				linphone_core_decline_call(lc,call,decline_reason);

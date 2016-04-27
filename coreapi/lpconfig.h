@@ -348,6 +348,34 @@ LINPHONE_PUBLIC bool_t lp_config_get_overwrite_flag_for_section(const LpConfig *
 **/
 LINPHONE_PUBLIC void lp_config_set_overwrite_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value);
 
+/**
+ * Retrieves the skip flag for a config item
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t lp_config_get_skip_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key);
+
+/**
+ * Sets the skip flag for a config item (used when dumping config as xml)
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_set_skip_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value);
+
+/**
+ * Retrieves the skip flag for a config section
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t lp_config_get_skip_flag_for_section(const LpConfig *lpconfig, const char *section);
+
+/**
+ * Sets the skip flag for a config section (used when dumping config as xml)
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value);
+
 #ifdef __cplusplus
 }
 #endif
