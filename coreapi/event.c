@@ -334,7 +334,7 @@ const char* linphone_event_get_custom_header(LinphoneEvent* ev, const char* name
 void linphone_event_terminate(LinphoneEvent *lev){
 	// if event was already terminated (including on error), we should not terminate it again
 	// otherwise it will be unreffed twice.
-	if (lev->publish_state == LinphonePublishError || lev->publish_state == LinphoneSubscriptionTerminated) {
+	if (lev->publish_state == LinphonePublishError || lev->publish_state == LinphonePublishCleared) {
 		return;
 	}
 	if (lev->subscription_state == LinphoneSubscriptionError || lev->subscription_state == LinphoneSubscriptionTerminated) {
@@ -414,10 +414,10 @@ LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev){
 static belle_sip_error_code _linphone_event_marshall(belle_sip_object_t *obj, char* buff, size_t buff_size, size_t *offset) {
 	LinphoneEvent *ev = (LinphoneEvent*)obj;
 	belle_sip_error_code err = BELLE_SIP_OK;
-	
-	err = belle_sip_snprintf(buff, buff_size, offset, "%s of %s", ev->dir == LinphoneSubscriptionIncoming ? 
+
+	err = belle_sip_snprintf(buff, buff_size, offset, "%s of %s", ev->dir == LinphoneSubscriptionIncoming ?
 		"Incoming Subscribe" : (ev->dir == LinphoneSubscriptionOutgoing ? "Outgoing subscribe" : "Publish"), ev->name);
-	
+
 	return err;
 }
 
