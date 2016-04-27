@@ -641,7 +641,12 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
 	IceCheckList *text_check_list;
-	const char *server = linphone_core_get_stun_server(lc);
+	LinphoneNatPolicy *nat_policy = NULL;
+	const char *server = NULL;
+
+	if (call->dest_proxy != NULL) nat_policy = linphone_proxy_config_get_nat_policy(call->dest_proxy);
+	if (nat_policy == NULL) nat_policy = linphone_core_get_nat_policy(lc);
+	if (nat_policy != NULL) server = linphone_nat_policy_get_stun_server(nat_policy);
 
 	if (call->ice_session == NULL) return -1;
 	audio_check_list = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
@@ -653,8 +658,8 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 		ms_warning("Ice gathering is not implemented for ipv6");
 		return -1;
 	}
-	if (server){
-		ai=linphone_core_get_stun_server_addrinfo(lc);
+	if ((nat_policy != NULL) && (server != NULL) && (server[0] != '\0')) {
+		ai=linphone_nat_policy_get_stun_server_addrinfo(nat_policy);
 		if (ai==NULL){
 			ms_warning("Fail to resolve STUN server for ICE gathering, continuing without stun.");
 		}
@@ -687,9 +692,11 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 		ice_add_local_candidate(text_check_list, "host", local_addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateInProgress;
 	}
-	if (ai){
-		ms_message("ICE: gathering candidate from [%s]",server);
+	if ((ai != NULL) && (nat_policy != NULL)
+		&& (linphone_nat_policy_stun_enabled(nat_policy) || linphone_nat_policy_turn_enabled(nat_policy))) {
+		ms_message("ICE: gathering candidate from [%s] using %s", server, linphone_nat_policy_turn_enabled(nat_policy) ? "TURN" : "STUN");
 		/* Gather local srflx candidates. */
+		ice_session_enable_turn(call->ice_session, linphone_nat_policy_turn_enabled(nat_policy));
 		ice_session_gather_candidates(call->ice_session, ai->ai_addr, (socklen_t)ai->ai_addrlen);
 		return 1;
 	} else {

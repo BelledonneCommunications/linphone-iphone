@@ -554,7 +554,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_ref_key(LinphoneProxyConfig *cfg,
  * @return LinphoneNatPolicy object in use.
  * @see linphone_core_get_nat_policy()
  */
-LINPHONE_PUBLIC const LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg);
 
 /**
  * Set the policy to use to pass through NATs/firewalls when using this proxy config.

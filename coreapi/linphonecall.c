@@ -1311,7 +1311,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, const SalM
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 	SalMediaDescription *md;
-	LinphoneFirewallPolicy fpol;
+	LinphoneNatPolicy *nat_policy = NULL;
 	int i;
 
 	call->dir=LinphoneCallIncoming;
@@ -1386,28 +1386,26 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		}
 	}
 
-	fpol=linphone_core_get_firewall_policy(call->core);
-	/*create the ice session now if ICE is required*/
-	if (fpol==LinphonePolicyUseIce){
+	if (call->dest_proxy != NULL) nat_policy = linphone_proxy_config_get_nat_policy(call->dest_proxy);
+	if (nat_policy == NULL) nat_policy = linphone_core_get_nat_policy(call->core);
+	if ((nat_policy != NULL) && linphone_nat_policy_ice_enabled(nat_policy)) {
+		/* Create the ice session now if ICE is required */
 		if (md){
 			linphone_call_create_ice_session(call, IR_Controlled);
 		}else{
-			fpol=LinphonePolicyNoFirewall;
+			nat_policy = NULL;
 			ms_warning("ICE not supported for incoming INVITE without SDP.");
 		}
 	}
 
 	/*reserve the sockets immediately*/
 	linphone_call_init_media_streams(call);
-	switch (fpol) {
-		case LinphonePolicyUseIce:
+	if (nat_policy != NULL) {
+		if (linphone_nat_policy_ice_enabled(nat_policy)) {
 			call->defer_notify_incoming = linphone_call_prepare_ice(call,TRUE) == 1;
-			break;
-		case LinphonePolicyUseStun:
+		} else if (linphone_nat_policy_stun_enabled(nat_policy)) {
 			call->ping_time=linphone_core_run_stun_tests(call->core,call);
-			/* No break to also destroy ice session in this case. */
-			break;
-		case LinphonePolicyUseUpnp:
+		} else if (linphone_nat_policy_upnp_enabled(nat_policy)) {
 #ifdef BUILD_UPNP
 			if(!lc->rtp_conf.disable_upnp) {
 				call->upnp_session = linphone_upnp_session_new(call);
@@ -1419,9 +1417,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 				}
 			}
 #endif //BUILD_UPNP
-			break;
-		default:
-			break;
+		}
 	}
 
 	discover_mtu(lc,linphone_address_get_domain(from));

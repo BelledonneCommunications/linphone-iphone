@@ -1689,7 +1689,7 @@ void linphone_proxy_config_set_ref_key(LinphoneProxyConfig *cfg, const char *ref
 	if (refkey) cfg->refkey=ms_strdup(refkey);
 }
 
-const LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg) {
+LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg) {
 	return cfg->nat_policy;
 }
 
