@@ -332,7 +332,17 @@ const char* linphone_event_get_custom_header(LinphoneEvent* ev, const char* name
 
 
 void linphone_event_terminate(LinphoneEvent *lev){
+	// if event was already terminated (including on error), we should not terminate it again
+	// otherwise it will be unreffed twice.
+	if (lev->publish_state == LinphonePublishError || lev->publish_state == LinphoneSubscriptionTerminated) {
+		return;
+	}
+	if (lev->subscription_state == LinphoneSubscriptionError || lev->subscription_state == LinphoneSubscriptionTerminated) {
+		return;
+	}
+
 	lev->terminating=TRUE;
+
 	if (lev->dir==LinphoneSubscriptionIncoming){
 		sal_notify_close(lev->op);
 	}else if (lev->dir==LinphoneSubscriptionOutgoing){
