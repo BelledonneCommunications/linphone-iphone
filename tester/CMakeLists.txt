@@ -22,6 +22,7 @@
 
 set(SOURCE_FILES
 	accountmanager.c
+	audio_bypass_tester.c
 	call_tester.c
 	complex_sip_call_tester.c
 	dtmf_tester.c

@@ -112,6 +112,7 @@ lib_LTLIBRARIES = liblinphonetester.la
 
 liblinphonetester_la_SOURCES = \
 				accountmanager.c \
+				audio_bypass_tester.c \
 				call_tester.c \
 				complex_sip_call_tester.c \
 				dtmf_tester.c \
