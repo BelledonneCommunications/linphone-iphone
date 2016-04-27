@@ -6513,7 +6513,7 @@ static void codecs_config_uninit(LinphoneCore *lc)
 	ms_list_free_with_data(lc->codecs_conf.text_codecs, (void (*)(void*))payload_type_destroy);
 }
 
-void ui_config_uninit(LinphoneCore* lc)
+void friends_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
 	lc->friends_lists = ms_list_free_with_data(lc->friends_lists, (void (*)(void*))_linphone_friend_list_release);
@@ -6555,19 +6555,19 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		LinphoneCall *the_call = lc->calls->data;
 		linphone_core_terminate_call(lc,the_call);
 		linphone_core_iterate(lc);
-		ms_usleep(50000);
+		ms_usleep(10000);
 	}
 
 	for (elem = lc->friends_lists; elem != NULL; elem = ms_list_next(elem)) {
 		LinphoneFriendList *list = (LinphoneFriendList *)elem->data;
-		linphone_friend_list_enable_subscriptions(list, FALSE);
+		linphone_friend_list_enable_subscriptions(list,FALSE);
 		if (list->event)
 			wait_until_unsubscribe =  TRUE;
 	}
 	/*give a chance to unsubscribe, might be optimized*/
-	for (i=0; wait_until_unsubscribe && i<20; i++) {
+	for (i=0; wait_until_unsubscribe && i<50; i++) {
 		linphone_core_iterate(lc);
-		ms_usleep(50000);
+		ms_usleep(10000);
 	}
 
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
@@ -6582,7 +6582,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	lc->msevq=NULL;
 	/* save all config */
-	ui_config_uninit(lc);
+	friends_config_uninit(lc);
 	sip_config_uninit(lc);
 	net_config_uninit(lc);
 	rtp_config_uninit(lc);
