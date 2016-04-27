@@ -82,14 +82,16 @@ typedef struct _LpSection{
 struct _LpConfig{
 	int refcnt;
 	FILE *file;
+	int fd;
 	char *filename;
 	char *tmpfilename;
 	MSList *sections;
 	int modified;
 	int readonly;
+	bc_vfs* g_bc_vfs;
 };
 
-bc_vfs* g_bc_vfs= NULL;
+
 
 char* lp_realpath(const char* file, char* name) {
 #if defined(_WIN32) || defined(__QNX__) || defined(ANDROID)
@@ -372,7 +374,6 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 }
 
 LpConfig * lp_config_new(const char *filename){
-	bc_vfs_register(bc_demovfs(),g_bc_vfs, 1);
 	return lp_config_new_with_factory(filename, NULL);
 }
 
@@ -397,9 +398,10 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 }
 
 LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
-	bc_vfs_file *pFile = NULL;
-	g_bc_vfs = bc_demovfs();
+	bc_vfs_file *pFile = (bc_vfs_file*)calloc(sizeof(bc_vfs_file),1);
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
+	lpconfig->g_bc_vfs = bc_demovfs();
+
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
 		if(ortp_file_exist(config_filename) == 0) {
@@ -427,20 +429,25 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		}
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
-		lpconfig->file=g_bc_vfs->xOpen(g_bc_vfs,lpconfig->filename,pFile, O_RDWR, S_IRUSR | S_IWUSR);
+		
+		lpconfig->fd=lpconfig->g_bc_vfs->xOpen(lpconfig->g_bc_vfs,lpconfig->filename,pFile, O_RDWR, S_IRUSR | S_IWUSR);
+		
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
-		if (lpconfig->file==NULL){
-			lpconfig->file=g_bc_vfs->xOpen(g_bc_vfs,lpconfig->tmpfilename, pFile,  O_RDWR, S_IRUSR | S_IWUSR);
-			if (lpconfig->file){
+		if (lpconfig->fd==0){
+			lpconfig->fd=lpconfig->g_bc_vfs->xOpen(lpconfig->g_bc_vfs,lpconfig->tmpfilename, pFile,  O_RDWR, S_IRUSR | S_IWUSR);
+			if (lpconfig->fd){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
 			}
 		}
 #endif
-		if (lpconfig->file!=NULL){
+		if (lpconfig->fd!=0){
+			lpconfig->file = fdopen(lpconfig->fd, "r+");
 			lp_config_parse(lpconfig,lpconfig->file);
 			fclose(lpconfig->file);
-
-			lpconfig->file=NULL;
+			pFile->pMethods->xClose(pFile);
+			free(pFile);
+			lpconfig->file = NULL;
+			lpconfig->fd = 0;
 			lpconfig->modified=0;
 		}
 	}
@@ -456,13 +463,14 @@ fail:
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
-	bc_vfs_file *pFile = NULL;
-	FILE* f=g_bc_vfs->xOpen(g_bc_vfs,path ,O_RDONLY, pFile, S_IRUSR | S_IWUSR);
+	bc_vfs_file *pFile = (bc_vfs_file*)calloc(sizeof(bc_vfs_file),1);
+	FILE* f=lpconfig->g_bc_vfs->xOpen(lpconfig->g_bc_vfs,path ,O_RDONLY, pFile, S_IRUSR | S_IWUSR);
 	if (f!=NULL){
 		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig,f);
-		fclose(f);
+		pFile->pMethods->xClose(pFile);
 		ms_free(path);
+		free(pFile);
 		return 0;
 	}
 	ms_warning("Fail to open file %s",path);
@@ -732,7 +740,8 @@ void lp_section_write(LpSection *sec, FILE *file){
 
 int lp_config_sync(LpConfig *lpconfig){
 	FILE *file;
-	bc_vfs_file *pFile = NULL;
+	int fd = 0;
+	bc_vfs_file *pFile = (bc_vfs_file*)calloc(sizeof(bc_vfs_file),1);
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
 
@@ -740,14 +749,18 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	file=g_bc_vfs->xOpen(g_bc_vfs,lpconfig->tmpfilename, O_WRONLY, pFile, S_IRUSR | S_IWUSR);
-	if (file==NULL){
+	fd = lpconfig->g_bc_vfs->xOpen(lpconfig->g_bc_vfs,lpconfig->tmpfilename, pFile, O_WRONLY,  S_IRUSR | S_IWUSR);
+	if (fd < 0 ){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
 		lpconfig->readonly=1;
 		return -1;
 	}
+	lpconfig->fd = fd;
+	file = fdopen(lpconfig->fd, "w");
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)file);
-	fclose(file);
+	pFile->pMethods->xClose(pFile);
+	free(pFile);
+
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 	/* On windows, rename() does not accept that the newpath is an existing file, while it is accepted on Unix.
 	 * As a result, we are forced to first delete the linphonerc file, and then rename.*/
@@ -863,7 +876,7 @@ static const char *_lp_config_dirname(char *path) {
 }
 
 bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
-	bc_vfs_file *pFile = NULL;
+	bc_vfs_file *pFile = (bc_vfs_file*)calloc(sizeof(bc_vfs_file),1);
 	if (lpconfig->filename == NULL) {
 		return FALSE;
 	} else {
@@ -878,10 +891,10 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 
 		if(realfilepath == NULL) return FALSE;
 
-		file = g_bc_vfs->xOpen(g_bc_vfs,realfilepath, O_RDONLY, pFile, S_IRUSR | S_IWUSR);
+		file = lpconfig->g_bc_vfs->xOpen(lpconfig->g_bc_vfs,realfilepath, O_RDONLY, pFile, S_IRUSR | S_IWUSR);
 		ms_free(realfilepath);
 		if (file) {
-			fclose(file);
+			pFile->pMethods->xClose(pFile);
 		}
 		return file != NULL;
 	}
@@ -893,7 +906,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	char *filepath = NULL;
 	char *realfilepath = NULL;
 	FILE *file;
-	bc_vfs_file *pFile = NULL;
+	bc_vfs_file *pFile = (bc_vfs_file*)calloc(sizeof(bc_vfs_file),1);
 	
 	if (lpconfig->filename == NULL) return;
 
@@ -911,7 +924,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 
-	file = g_bc_vfs->xOpen(g_bc_vfs,realfilepath, O_WRONLY,pFile, S_IRUSR | S_IWUSR);
+	file = lpconfig->g_bc_vfs->xOpen(lpconfig->g_bc_vfs,realfilepath, O_WRONLY,pFile, S_IRUSR | S_IWUSR);
 	if(file == NULL) {
 		ms_error("Could not open %s for write", realfilepath);
 		goto end;
@@ -931,7 +944,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	const char *dir = NULL;
 	char *filepath = NULL;
 	FILE *file = NULL;
-	bc_vfs_file *pFile = NULL;
+	bc_vfs_file *pFile = (bc_vfs_file*)calloc(sizeof(bc_vfs_file),1);
 	char* realfilepath = NULL;
 
 	if (lpconfig->filename == NULL) return -1;
@@ -945,7 +958,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		goto err;
 	}
 
-	file = g_bc_vfs->xOpen(g_bc_vfs,realfilepath, O_RDONLY, pFile ,S_IRUSR | S_IWUSR);
+	file = lpconfig->g_bc_vfs->xOpen(lpconfig->g_bc_vfs,realfilepath, O_RDONLY, pFile ,S_IRUSR | S_IWUSR);
 	if(file == NULL) {
 		ms_error("Could not open %s for read. %s", realfilepath, strerror(errno));
 		goto err;
