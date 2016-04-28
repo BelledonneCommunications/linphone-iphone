@@ -169,6 +169,7 @@ static void processSection_cb(const char *entry, struct __processSectionCtx *ctx
 		
 		if (lp_config_get_skip_flag_for_entry(ctx->ctx->lpc, ctx->section, entry)) {
 			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped entry %s", entry);
+			ctx->ret = 0;
 			return;
 		}
 
@@ -210,6 +211,7 @@ static void processConfig_cb(const char *section, struct __processConfigCtx *ctx
 		
 		if (lp_config_get_skip_flag_for_section(ctx->ctx->lpc, section)) {
 			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped section %s", section);
+			ctx->ret = 0;
 			return;
 		}
 		
