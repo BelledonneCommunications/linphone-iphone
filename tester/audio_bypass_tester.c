@@ -18,8 +18,6 @@
 
 #include "liblinphone_tester.h"
 #include "private.h"
-#include "mediastreamer2/msfileplayer.h"
-#include "mediastreamer2/msfilerec.h"
 
 static void audio_bypass_snd_read_init(MSFilter *f) {
 	
@@ -126,7 +124,7 @@ static int audio_bypass_snd_write_get_fmt(MSFilter *f, void *arg) {
 static MSFilterMethod audio_bypass_snd_write_methods[] = {
 	{ MS_FILTER_GET_SAMPLE_RATE, audio_bypass_snd_write_get_sample_rate },
 	{ MS_FILTER_GET_NCHANNELS, audio_bypass_snd_write_get_nchannels },
-	{ MS_FILTER_GET_OUTPUT_FMT,	audio_bypass_snd_write_get_fmt },
+	{ MS_FILTER_GET_OUTPUT_FMT, audio_bypass_snd_write_get_fmt },
 	{ 0, NULL }
 };
 
@@ -155,14 +153,6 @@ static MSFilter* audio_bypass_snd_card_create_reader(MSSndCard *sndcard) {
 static MSFilter* audio_bypass_snd_card_create_writer(MSSndCard *sndcard) {
 	MSFactory *factory = ms_snd_card_get_factory(sndcard);
 	MSFilter *f = ms_factory_create_filter_from_desc(factory, &audio_bypass_snd_write_desc);
-	
-	MSPinFormat *pinfmt = ms_new0(MSPinFormat, 0);
-	pinfmt->pin = 0;
-	pinfmt->fmt = ms_factory_get_audio_format(factory, "L16", 44100, 1, NULL);
-	
-	ms_filter_call_method(f, MS_FILTER_SET_OUTPUT_FMT, pinfmt);
-	ms_free(pinfmt);
-	
 	return f;
 }
 
@@ -192,8 +182,22 @@ static MSSndCard* create_audio_bypass_snd_card(void) {
 	return sndcard;
 }
 
+#define AUDIO_BYPASS_SOUNDCARD "audioBypass: audio bypass sound card"
+
 static void audio_bypass_snd_card_detect(MSSndCardManager *m) {
 	ms_snd_card_manager_add_card(m, create_audio_bypass_snd_card());
+}
+
+static void only_enable_payload(MSList *codecs, const char *mime, int channels) {
+	while (codecs) {
+		PayloadType *pt = (PayloadType *)codecs->data;
+		if (strcmp(pt->mime_type, mime) == 0 && pt->channels == channels) {
+			pt->flags |= PAYLOAD_TYPE_ENABLED;
+		} else {
+			pt->flags &= PAYLOAD_TYPE_ENABLED;
+		}
+		codecs = ms_list_next(codecs);
+	}
 }
 
 static void audio_bypass(void) {
@@ -212,34 +216,22 @@ static void audio_bypass(void) {
 	MSList *pauline_audio_codecs = pauline_lc->codecs_conf.audio_codecs;
 	
 	// Enable L16 audio codec
-	while (marie_audio_codecs) {
-		PayloadType *pt = (PayloadType *)marie_audio_codecs->data;
-		if (strcmp(pt->mime_type, "L16") == 0 && pt->channels == 1) {
-			pt->flags |= PAYLOAD_TYPE_ENABLED;
-		} else {
-			pt->flags &= PAYLOAD_TYPE_ENABLED;
-		}
-		marie_audio_codecs = ms_list_next(marie_audio_codecs);
-	}
-	while (pauline_audio_codecs) {
-		PayloadType *pt = (PayloadType *)pauline_audio_codecs->data;
-		if (strcmp(pt->mime_type, "L16") == 0 && pt->channels == 1) {
-			pt->flags |= PAYLOAD_TYPE_ENABLED;
-		} else {
-			pt->flags &= PAYLOAD_TYPE_ENABLED;
-		}
-		pauline_audio_codecs = ms_list_next(pauline_audio_codecs);
-	}
+	only_enable_payload(marie_audio_codecs, "L16", 1);
+	only_enable_payload(pauline_audio_codecs, "L16", 1);
 	
 	// Add our custom sound card
 	ms_snd_card_manager_register_desc(marie_sndcard_manager, &audio_bypass_snd_card_desc);
 	ms_snd_card_manager_register_desc(pauline_sndcard_manager, &audio_bypass_snd_card_desc);
 	linphone_core_reload_sound_devices(marie->lc);
 	linphone_core_reload_sound_devices(pauline->lc);
-	linphone_core_set_playback_device(marie->lc, "audioBypass: audio bypass sound card");
-	linphone_core_set_playback_device(pauline->lc, "audioBypass: audio bypass sound card");
-	linphone_core_set_capture_device(marie->lc, "audioBypass: audio bypass sound card");
-	linphone_core_set_capture_device(pauline->lc, "audioBypass: audio bypass sound card");
+	linphone_core_set_playback_device(marie->lc, AUDIO_BYPASS_SOUNDCARD);
+	linphone_core_set_playback_device(pauline->lc, AUDIO_BYPASS_SOUNDCARD);
+	linphone_core_set_capture_device(marie->lc, AUDIO_BYPASS_SOUNDCARD);
+	linphone_core_set_capture_device(pauline->lc, AUDIO_BYPASS_SOUNDCARD);
+	BC_ASSERT_STRING_EQUAL(linphone_core_get_capture_device(marie->lc), AUDIO_BYPASS_SOUNDCARD);
+	BC_ASSERT_STRING_EQUAL(linphone_core_get_capture_device(pauline->lc), AUDIO_BYPASS_SOUNDCARD);
+	BC_ASSERT_STRING_EQUAL(linphone_core_get_playback_device(marie->lc), AUDIO_BYPASS_SOUNDCARD);
+	BC_ASSERT_STRING_EQUAL(linphone_core_get_playback_device(pauline->lc), AUDIO_BYPASS_SOUNDCARD);
 
 	call_ok = call(marie, pauline);
 	BC_ASSERT_TRUE(call_ok);
