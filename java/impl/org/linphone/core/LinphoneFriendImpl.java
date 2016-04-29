@@ -30,6 +30,7 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native int  getIncSubscribePolicy(long nativePtr);
 	private native void enableSubscribes(long nativePtr,boolean value);
 	private native boolean isSubscribesEnabled(long nativePtr);
+	private native boolean isPresenceReceived(long nativePtr);
 	private native int getStatus(long nativePtr);
 	private native Object getPresenceModel(long nativePtr);
 	private native void setPresenceModel(long nativePtr, long presencePtr);
@@ -81,6 +82,9 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	}
 	public boolean isSubscribesEnabled() {
 		return isSubscribesEnabled(nativePtr);
+	}
+	public boolean isPresenceReceived() {
+		return isPresenceReceived(nativePtr);
 	}
 	public OnlineStatus getStatus() {
 		return OnlineStatus.fromInt(getStatus(nativePtr));
