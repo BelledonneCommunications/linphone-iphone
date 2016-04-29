@@ -1,6 +1,7 @@
 
 TESTER_SOUNDS = sounds/ahbahouaismaisbon.wav \
 				sounds/hello8000.wav  \
+				sounds/hello44100.wav  \
 				sounds/oldphone.wav \
 				sounds/sintel_trailer_opus_h264.mkv \
 				sounds/sintel_trailer_pcmu_h264.mkv \
