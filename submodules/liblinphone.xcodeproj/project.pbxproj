@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F8057671CD351C400D2CCDB /* msiframerequestslimiter.c in Sources */ = {isa = PBXBuildFile; fileRef = 0F8057661CD351C400D2CCDB /* msiframerequestslimiter.c */; };
 		1561A554178D9C68006B4B2F /* ioshardware.h in Headers */ = {isa = PBXBuildFile; fileRef = 1561A553178D9C68006B4B2F /* ioshardware.h */; };
 		1561A555178D9C71006B4B2F /* ioshardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 1561A551178D98E2006B4B2F /* ioshardware.m */; };
 		2206D2D3177AC70900C40726 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C6177AC70900C40726 /* InfoPlist.strings */; };
@@ -549,6 +550,7 @@
 /* Begin PBXFileReference section */
 		0F3BFC961BFCC7420025B8DF /* liblinphone-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "liblinphone-sdk"; path = "../liblinphone-sdk"; sourceTree = "<group>"; };
 		0F3BFC981BFCC7A00025B8DF /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
+		0F8057661CD351C400D2CCDB /* msiframerequestslimiter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msiframerequestslimiter.c; sourceTree = "<group>"; };
 		1561A551178D98E2006B4B2F /* ioshardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ioshardware.m; sourceTree = "<group>"; };
 		1561A553178D9C68006B4B2F /* ioshardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioshardware.h; sourceTree = "<group>"; };
 		2203127413A249F70049A2ED /* filter-template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "filter-template.c"; sourceTree = "<group>"; };
@@ -1343,6 +1345,7 @@
 		223CA84E16D9268D00EF1BEC /* voip */ = {
 			isa = PBXGroup;
 			children = (
+				0F8057661CD351C400D2CCDB /* msiframerequestslimiter.c */,
 				630DCF6A1BBAC08200A0DDC8 /* rfc4103_textstream.c */,
 				630DCF6B1BBAC08200A0DDC8 /* video_preset_high_fps.c */,
 				630DCF661BBAC05100A0DDC8 /* msvideopresets.c */,
@@ -2053,6 +2056,7 @@
 				F08272DA1A7F898200BB6004 /* dtls_srtp.c in Sources */,
 				22C8D0B81769F8FF00DAFB4E /* join.c in Sources */,
 				22C8D0B91769F8FF00DAFB4E /* msrtp.c in Sources */,
+				0F8057671CD351C400D2CCDB /* msiframerequestslimiter.c in Sources */,
 				22C8D0BA1769F8FF00DAFB4E /* tee.c in Sources */,
 				22C8D0BB1769F8FF00DAFB4E /* void.c in Sources */,
 				22C8D0BC1769F8FF00DAFB4E /* dsptools.c in Sources */,
