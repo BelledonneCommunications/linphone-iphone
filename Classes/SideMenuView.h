@@ -16,7 +16,8 @@
 @property(strong, nonatomic) IBOutlet UISwipeGestureRecognizer *swipeGestureRecognizer;
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property(weak, nonatomic) IBOutlet UIButton *addressButton;
+@property(weak, nonatomic) IBOutlet UILabel *addressLabel;
+@property(weak, nonatomic) IBOutlet UIImageView *presenceImage;
 @property(strong, nonatomic) IBOutlet SideMenuTableView *sideMenuTableViewController;
 @property(weak, nonatomic) IBOutlet UIView *grayBackground;
 - (IBAction)onLateralSwipe:(id)sender;
