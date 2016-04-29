@@ -1705,7 +1705,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		const MSList* friendLists = linphone_core_get_friends_lists(lc);
 		while( friendLists != NULL ){
 			LinphoneFriendList* list = friendLists->data;
-			ms_warning("notify presence for list %p", list);
+			ms_message("notify presence for list %p", list);
 			linphone_friend_list_notify_presence_received(list, lev, body);
 			friendLists = friendLists->next;
 		}
