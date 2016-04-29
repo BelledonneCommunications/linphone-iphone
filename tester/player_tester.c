@@ -33,19 +33,14 @@ static void eof_callback(LinphonePlayer *player, void *user_data) {
 }
 
 static void play_file(const char *filename, bool_t supported_format, const char *audio_mime, const char *video_mime) {
-	LinphoneCoreManager *lc_manager;
+	LinphoneCoreManager *lc_manager = linphone_core_manager_new("marie_rc");
 	LinphonePlayer *player;
-	int res, time = 0;
+	int res, timer = 0;
 	bool_t eof = FALSE;
-	bool_t audio_codec_supported;
-	bool_t video_codec_supported;
 
-	lc_manager = linphone_core_manager_new("marie_rc");
-	BC_ASSERT_PTR_NOT_NULL(lc_manager);
-	if(lc_manager == NULL) return;
-	
-	audio_codec_supported = (audio_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), audio_mime));
-	video_codec_supported = (video_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), video_mime));
+	bool_t audio_codec_supported = (audio_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), audio_mime));
+	bool_t video_codec_supported = (video_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), video_mime));
+	int expected_res = (supported_format && (audio_codec_supported || video_codec_supported)) ? 0 : -1;
 
 	player = linphone_core_create_local_player(lc_manager->lc,
 											   ms_snd_card_manager_get_default_card(ms_factory_get_snd_card_manager(linphone_core_get_ms_factory((void *)lc_manager->lc))),
@@ -54,19 +49,15 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	if(player == NULL) goto fail;
 
 	res = linphone_player_open(player, filename, eof_callback, &eof);
-	if(supported_format && (audio_codec_supported || video_codec_supported)) {
-		BC_ASSERT_EQUAL(res, 0, int, "%d");
-	} else {
-		BC_ASSERT_EQUAL(res, -1, int, "%d");
-	}
-	
+	BC_ASSERT_EQUAL(res, expected_res, int, "%d");
+
 	if(res == -1) goto fail;
 
 	res = linphone_player_start(player);
 	BC_ASSERT_EQUAL(res, 0, int, "%d");
 	if(res == -1) goto fail;
 
-	BC_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, (int)(linphone_player_get_duration(player) * 1.05)));
+	BC_ASSERT_TRUE(wait_for_eof(&eof, &timer, 100, (int)(linphone_player_get_duration(player) * 1.05)));
 
 	linphone_player_close(player);
 

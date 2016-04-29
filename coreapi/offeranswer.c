@@ -198,7 +198,7 @@ static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSL
 			}
 			matched->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
 			if (p2->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
-				matched->flags |= PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED;
+				payload_type_set_flag(matched, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 				/* Negotiation of AVPF features (keep common features) */
 				matched->avpf.features &= p2->avpf.features;
 				matched->avpf.rpsi_compatibility = p2->avpf.rpsi_compatibility;
@@ -206,6 +206,8 @@ static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSL
 				if (p2->avpf.trr_interval < matched->avpf.trr_interval) {
 					matched->avpf.trr_interval = matched->avpf.trr_interval;
 				}
+			}else{
+				payload_type_unset_flag(matched, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 			}
 			res=ms_list_append(res,matched);
 			/* we should use the remote numbering even when parsing a response */
@@ -518,7 +520,7 @@ static void initiate_incoming(MSFactory *factory, const SalStreamDescription *lo
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
 	result->rtcp_mux = remote_offer->rtcp_mux && local_cap->rtcp_mux;
-    result->implicit_rtcp_fb = local_cap->implicit_rtcp_fb && remote_offer->implicit_rtcp_fb;
+	result->implicit_rtcp_fb = local_cap->implicit_rtcp_fb && remote_offer->implicit_rtcp_fb;
 }
 
 

@@ -1649,6 +1649,14 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInCall(JNIEnv* env
 
 	return (jboolean)linphone_core_in_call((LinphoneCore*)lc);
 }
+
+extern "C" jboolean Java_org_linphone_core_LinphoneFriendImpl_isPresenceReceived(JNIEnv* env
+		,jobject  thiz
+		,jlong lf) {
+
+	return (jboolean)linphone_friend_is_presence_received((LinphoneFriend*)lf);
+}
+
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInComingInvitePending(JNIEnv* env
 		,jobject  thiz
 		,jlong lc) {

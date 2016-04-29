@@ -239,57 +239,62 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 			ms_warning("Receiving request for null or terminated op [%p], ignored",op);
 			return;
 		}
-	}else if (strcmp("INVITE",method)==0) {
+	}else{
 		/*handle the case where we are receiving a request with to tag but it is not belonging to any dialog*/
-		belle_sip_header_to_t *to = belle_sip_message_get_header_by_type(req, belle_sip_header_to_t);
-		if (belle_sip_header_to_get_tag(to) != NULL){
-			ms_warning("Receiving INVITE with to-tag but no know dialog here. Rejecting.");
-			resp=belle_sip_response_create_from_request(req,481);
+		if (strcmp("INVITE",method)==0 || strcmp("NOTIFY",method)==0) {
+			belle_sip_header_to_t *to = belle_sip_message_get_header_by_type(req, belle_sip_header_to_t);
+			if (belle_sip_header_to_get_tag(to) != NULL){
+				ms_warning("Receiving %s with to-tag but no know dialog here. Rejecting.", method);
+				resp=belle_sip_response_create_from_request(req,481);
+				belle_sip_provider_send_response(sal->prov,resp);
+				return;
+			}
+		}
+
+		if (strcmp("INVITE",method)==0) {
+			op=sal_op_new(sal);
+			op->dir=SalOpDirIncoming;
+			sal_op_call_fill_cbs(op);
+		}else if ((strcmp("SUBSCRIBE",method)==0 || strcmp("NOTIFY",method)==0) && (evh=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Event"))!=NULL) {
+			op=sal_op_new(sal);
+			op->dir=SalOpDirIncoming;
+			if (strncmp(belle_sip_header_get_unparsed_value(evh),"presence",strlen("presence"))==0){
+				sal_op_presence_fill_cbs(op);
+			}else
+				sal_op_subscribe_fill_cbs(op);
+		}else if (strcmp("MESSAGE",method)==0) {
+			op=sal_op_new(sal);
+			op->dir=SalOpDirIncoming;
+			sal_op_message_fill_cbs(op);
+		}else if (strcmp("OPTIONS",method)==0) {
+			resp=belle_sip_response_create_from_request(req,200);
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		}else if (strcmp("INFO",method)==0) {
+			resp=belle_sip_response_create_from_request(req,481);/*INFO out of call dialogs are not allowed*/
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		}else if (strcmp("BYE",method)==0) {
+			resp=belle_sip_response_create_from_request(req,481);/*out of dialog BYE */
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		}else if (strcmp("CANCEL",method)==0) {
+			resp=belle_sip_response_create_from_request(req,481);/*out of dialog CANCEL */
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		}else if (sal->enable_test_features && strcmp("PUBLISH",method)==0) {
+			resp=belle_sip_response_create_from_request(req,200);/*out of dialog BYE */
+			belle_sip_message_add_header((belle_sip_message_t*)resp,belle_sip_header_create("SIP-Etag","4441929FFFZQOA"));
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		}else {
+			ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
+			resp=belle_sip_response_create_from_request(req,405);
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp)
+										,BELLE_SIP_HEADER(belle_sip_header_allow_create("INVITE, CANCEL, ACK, BYE, SUBSCRIBE, NOTIFY, MESSAGE, OPTIONS, INFO")));
 			belle_sip_provider_send_response(sal->prov,resp);
 			return;
 		}
-		op=sal_op_new(sal);
-		op->dir=SalOpDirIncoming;
-		sal_op_call_fill_cbs(op);
-	}else if ((strcmp("SUBSCRIBE",method)==0 || strcmp("NOTIFY",method)==0) && (evh=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Event"))!=NULL) {
-		op=sal_op_new(sal);
-		op->dir=SalOpDirIncoming;
-		if (strncmp(belle_sip_header_get_unparsed_value(evh),"presence",strlen("presence"))==0){
-			sal_op_presence_fill_cbs(op);
-		}else
-			sal_op_subscribe_fill_cbs(op);
-	}else if (strcmp("MESSAGE",method)==0) {
-		op=sal_op_new(sal);
-		op->dir=SalOpDirIncoming;
-		sal_op_message_fill_cbs(op);
-	}else if (strcmp("OPTIONS",method)==0) {
-		resp=belle_sip_response_create_from_request(req,200);
-		belle_sip_provider_send_response(sal->prov,resp);
-		return;
-	}else if (strcmp("INFO",method)==0) {
-		resp=belle_sip_response_create_from_request(req,481);/*INFO out of call dialogs are not allowed*/
-		belle_sip_provider_send_response(sal->prov,resp);
-		return;
-	}else if (strcmp("BYE",method)==0) {
-		resp=belle_sip_response_create_from_request(req,481);/*out of dialog BYE */
-		belle_sip_provider_send_response(sal->prov,resp);
-		return;
-	}else if (strcmp("CANCEL",method)==0) {
-		resp=belle_sip_response_create_from_request(req,481);/*out of dialog CANCEL */
-		belle_sip_provider_send_response(sal->prov,resp);
-		return;
-	}else if (sal->enable_test_features && strcmp("PUBLISH",method)==0) {
-		resp=belle_sip_response_create_from_request(req,200);/*out of dialog BYE */
-		belle_sip_message_add_header((belle_sip_message_t*)resp,belle_sip_header_create("SIP-Etag","4441929FFFZQOA"));
-		belle_sip_provider_send_response(sal->prov,resp);
-		return;
-	}else {
-		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
-		resp=belle_sip_response_create_from_request(req,405);
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp)
-									,BELLE_SIP_HEADER(belle_sip_header_allow_create("INVITE, CANCEL, ACK, BYE, SUBSCRIBE, NOTIFY, MESSAGE, OPTIONS, INFO")));
-		belle_sip_provider_send_response(sal->prov,resp);
-		return;
 	}
 
 	if (!op->base.from_address)  {
@@ -1010,7 +1015,7 @@ int sal_generate_uuid(char *uuid, size_t len) {
 	sal_uuid_t uuid_struct;
 	int i;
 	int written;
-	
+
 	if (len==0) return -1;
 	/*create an UUID as described in RFC4122, 4.4 */
 	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(sal_uuid_t));

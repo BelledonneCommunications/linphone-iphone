@@ -66,6 +66,7 @@ static void simple(void) {
 		BC_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityDinner, int, "%d");
 	}
 
+	linphone_friend_unref(f);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -249,7 +250,7 @@ static void subscribe_with_late_publish(void) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityBreakfast, 0, int,"%i");
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityAppointment, 1, int,"%i");
 
-
+	linphone_friend_unref(lf);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -316,6 +317,7 @@ static void test_forked_subscribe_notify_publish(void) {
 	/*wait for new status*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityMeeting,1,3000));
 
+	linphone_friend_unref(lf);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
@@ -554,12 +556,12 @@ static void test_presence_list_subscription_expire_for_unknown(void) {
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_update_subscriptions(lfl,NULL,FALSE);
-
 	linphone_friend_list_unref(lfl);
 
 	/* wait for refresh*/
 	BC_ASSERT_FALSE(wait_for_until(laure->lc, NULL, &laure->stat.number_of_NotifyPresenceReceived, 1, 4000));
 
+	linphone_friend_unref(lf);
 	linphone_core_manager_destroy(laure);
 }
 
@@ -583,8 +585,10 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
 	lf = linphone_core_create_friend_with_address(laure->lc, pauline_identity);
 	linphone_friend_list_add_friend(lfl, lf);
+	linphone_friend_unref(lf);
 	lf = linphone_core_create_friend_with_address(laure->lc, "sip:michelle@sip.inexistentdomain.com");
 	linphone_friend_list_add_friend(lfl, lf);
+	linphone_friend_unref(lf);
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
@@ -712,14 +716,14 @@ static void long_term_presence_list(void) {
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
-	TEST_ONE_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable, "presence"),
-	TEST_ONE_TAG("Subscribe with late publish", subscribe_with_late_publish, "LeaksMemory"),
-	TEST_ONE_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish, "LeaksMemory"),
-	TEST_ONE_TAG("Presence list", test_presence_list, "LeaksMemory"),
-	TEST_ONE_TAG("Presence list without compression", test_presence_list_without_compression, "LeaksMemory"),
-	TEST_ONE_TAG("Presence list, subscription expiration for unknown contact",test_presence_list_subscription_expire_for_unknown, "LeaksMemory"),
-	TEST_ONE_TAG("Presence list, silent subscription expiration", presence_list_subscribe_dialog_expire, "LeaksMemory"),
-	TEST_ONE_TAG("Presence list, io error",presence_list_subscribe_io_error, "LeaksMemory"),
+	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
+	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
+	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
+	TEST_NO_TAG("Presence list", test_presence_list),
+	TEST_NO_TAG("Presence list without compression", test_presence_list_without_compression),
+	TEST_NO_TAG("Presence list, subscription expiration for unknown contact",test_presence_list_subscription_expire_for_unknown),
+	TEST_NO_TAG("Presence list, silent subscription expiration", presence_list_subscribe_dialog_expire),
+	TEST_NO_TAG("Presence list, io error",presence_list_subscribe_io_error),
 	TEST_NO_TAG("Long term presence existing friend",long_term_presence_existing_friend),
 	TEST_NO_TAG("Long term presence inexistent friend",long_term_presence_inexistent_friend),
 	TEST_NO_TAG("Long term presence list",long_term_presence_list),
