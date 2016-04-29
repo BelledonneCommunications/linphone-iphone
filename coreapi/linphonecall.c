@@ -1434,11 +1434,11 @@ void linphone_call_free_media_resources(LinphoneCall *call){
 	int i;
 
 	linphone_call_stop_media_streams(call);
+	linphone_call_delete_upnp_session(call);
+	linphone_call_delete_ice_session(call);
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
 		ms_media_stream_sessions_uninit(&call->sessions[i]);
 	}
-	linphone_call_delete_upnp_session(call);
-	linphone_call_delete_ice_session(call);
 	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_AUDIO]);
 	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_VIDEO]);
 	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_TEXT]);

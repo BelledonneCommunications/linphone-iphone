@@ -635,6 +635,36 @@ void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable) {
 	lc->forced_ice_relay = enable;
 }
 
+static void stun_auth_requested_cb(LinphoneCall *call, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1) {
+	LinphoneProxyConfig *proxy = NULL;
+	const LinphoneAddress *addr = NULL;
+	const LinphoneAuthInfo *auth_info = NULL;
+	LinphoneCore *lc = call->core;
+	const char *user;
+
+	// Get the username from the proxy config
+	if (call->dest_proxy != NULL) proxy = call->dest_proxy;
+	else proxy = linphone_core_get_default_proxy_config(call->core);
+	if (proxy == NULL) return;
+	addr = linphone_proxy_config_get_identity_address(proxy);
+	if (addr == NULL) return;
+	user = linphone_address_get_username(addr);
+	if (user == NULL) return;
+
+	auth_info = linphone_core_find_auth_info(lc, realm, user, NULL);
+	if (auth_info != NULL) {
+		const char *hash = linphone_auth_info_get_ha1(auth_info);
+		if (hash != NULL) {
+			*ha1 = hash;
+		} else {
+			*password = linphone_auth_info_get_passwd(auth_info);
+		}
+		*username = user;
+	} else {
+		ms_warning("No auth info found for STUN auth request");
+	}
+}
+
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	char local_addr[64];
 	const struct addrinfo *ai = NULL;
@@ -697,6 +727,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 		ms_message("ICE: gathering candidate from [%s] using %s", server, linphone_nat_policy_turn_enabled(nat_policy) ? "TURN" : "STUN");
 		/* Gather local srflx candidates. */
 		ice_session_enable_turn(call->ice_session, linphone_nat_policy_turn_enabled(nat_policy));
+		ice_session_set_stun_auth_requested_cb(call->ice_session, (MSStunAuthRequestedCb)stun_auth_requested_cb, call);
 		ice_session_gather_candidates(call->ice_session, ai->ai_addr, (socklen_t)ai->ai_addrlen);
 		return 1;
 	} else {
