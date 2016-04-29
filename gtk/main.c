@@ -1277,7 +1277,7 @@ static void on_call_updated_response(GtkWidget *dialog, gint responseid, gpointe
 	LinphoneCall *call = (LinphoneCall *)g_object_get_data(G_OBJECT(dialog), "call");
 	if (linphone_call_get_state(call)==LinphoneCallUpdatedByRemote){
 		LinphoneCore *lc=linphone_call_get_core(call);
-		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 		linphone_call_params_enable_video(params,responseid==GTK_RESPONSE_YES);
 		linphone_core_accept_call_update(lc,call,params);
 		linphone_call_params_destroy(params);

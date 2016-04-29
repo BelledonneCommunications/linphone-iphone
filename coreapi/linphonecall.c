@@ -735,10 +735,10 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 
 	/*set audio capabilities */
 
-    codec_hints.bandwidth_limit=params->audio_bw;
-    codec_hints.max_codecs=-1;
-    codec_hints.previously_used=old_md ? old_md->streams[call->main_audio_stream_index].already_assigned_payloads : NULL;
-    l=make_codec_list(lc, &codec_hints, SalAudio, lc->codecs_conf.audio_codecs);
+	codec_hints.bandwidth_limit=params->audio_bw;
+	codec_hints.max_codecs=-1;
+	codec_hints.previously_used=old_md ? old_md->streams[call->main_audio_stream_index].already_assigned_payloads : NULL;
+	l=make_codec_list(lc, &codec_hints, SalAudio, lc->codecs_conf.audio_codecs);
 
 	if (params->has_audio && l != NULL) {
 		strncpy(md->streams[call->main_audio_stream_index].rtp_addr,linphone_call_get_public_ip_for_stream(call,call->main_audio_stream_index),sizeof(md->streams[call->main_audio_stream_index].rtp_addr));
@@ -1503,7 +1503,14 @@ void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *
 	if (rmd) {
 		linphone_call_compute_streams_indexes(call, rmd);
 		linphone_call_update_biggest_desc(call, rmd);
-        call->params->implicit_rtcp_fb &= sal_media_description_has_implicit_avpf(rmd);
+		/* Why disabling implicit_rtcp_fb ? It is a local policy choice actually. It doesn't disturb to propose it again and again
+		 * even if the other end apparently doesn't support it.
+		 * The following line of code is causing trouble, while for example making an audio call, then adding video.
+		 * Due to the 200Ok response of the audio-only offer where no rtcp-fb attribute is present, implicit_rtcp_fb is set to
+		 * FALSE, which is then preventing it to be eventually used when video is later added to the call.
+		 * I did the choice of commenting it out.
+		 */
+		/*call->params->implicit_rtcp_fb &= sal_media_description_has_implicit_avpf(rmd);*/
 	}
 	rcp = linphone_call_get_remote_params(call);
 	if (rcp){
@@ -1827,9 +1834,9 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		} else {
 			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 		}
-        break;
+		break;
 	}
-    call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
+	call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
 	if (call->current_params->avpf_enabled == TRUE) {
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
 	} else {
@@ -1848,15 +1855,13 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 			call->current_params->audio_multicast_enabled = FALSE;
 
 		sd=sal_media_description_find_best_stream(md,SalVideo);
-        call->current_params->implicit_rtcp_fb = sd ? sal_stream_description_has_implicit_avpf(sd): FALSE;
+		call->current_params->implicit_rtcp_fb = sd ? sal_stream_description_has_implicit_avpf(sd): FALSE;
 		call->current_params->video_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneMediaDirectionInactive;
 		if (call->current_params->video_dir != LinphoneMediaDirectionInactive) {
 			rtp_addr = sd->rtp_addr[0]!='\0' ? sd->rtp_addr : call->resultdesc->addr;
 			call->current_params->video_multicast_enabled = ms_is_multicast(rtp_addr);
 		} else
 			call->current_params->video_multicast_enabled = FALSE;
-
-
 
 	}
 

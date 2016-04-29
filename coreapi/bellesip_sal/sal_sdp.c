@@ -126,7 +126,7 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 	uint16_t trr_int = 0;
 
 	general_trr_int = is_rtcp_fb_trr_int_the_same_for_all_payloads(stream, &trr_int);
-    if (general_trr_int == TRUE && trr_int != 0) {
+	if (general_trr_int == TRUE && trr_int != 0) {
 		add_rtcp_fb_trr_int_attribute(media_desc, -1, trr_int);
 	}
 	if (stream->rtcp_fb.generic_nack_enabled == TRUE) {
@@ -737,7 +737,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	belle_sip_list_t *custom_attribute_it;
 	const char* value;
 	const char *mtype,*proto;
-    bool_t has_avpf_attributes;
+	bool_t has_avpf_attributes;
 
 	stream=&md->streams[md->nb_streams];
 	media=belle_sdp_media_description_get_media ( media_desc );
@@ -850,16 +850,15 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	/* Get ICE candidate attributes if any */
 	sdp_parse_media_ice_parameters(media_desc, stream);
     
-    has_avpf_attributes = sdp_parse_rtcp_fb_parameters(media_desc, stream);
+	has_avpf_attributes = sdp_parse_rtcp_fb_parameters(media_desc, stream);
     
 	/* Get RTCP-FB attributes if any */
 	if (sal_stream_description_has_avpf(stream)) {
 		enable_avpf_for_stream(stream);
+	}else if (has_avpf_attributes ){
+		enable_avpf_for_stream(stream);
+		stream->implicit_rtcp_fb = TRUE;
 	}
-    else if (has_avpf_attributes ){
-        
-        stream->implicit_rtcp_fb = TRUE;
-    }
 
 	/* Get RTCP-XR attributes if any */
 	stream->rtcp_xr = md->rtcp_xr;	// Use session parameters if no stream parameters are defined
