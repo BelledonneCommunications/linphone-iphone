@@ -3954,7 +3954,14 @@ void linphone_call_set_microphone_volume_gain(LinphoneCall *call, float volume) 
 	if(call->audiostream) audio_stream_set_sound_card_input_gain(call->audiostream, volume);
 	else ms_error("Could not set record volume: no audio stream");
 }
-
+static float agregate_ratings(float audio_rating, float video_rating){
+	float result;
+	if (audio_rating<0 && video_rating<0) result=-1;
+	else if (audio_rating<0) result=video_rating*5.0f;
+	else if (video_rating<0) result=audio_rating*5.0f;
+	else result=audio_rating*video_rating*5.0f;
+	return result;
+}
 /**
  * Obtain real-time quality rating of the call
  *
@@ -3975,18 +3982,14 @@ void linphone_call_set_microphone_volume_gain(LinphoneCall *call, float volume) 
 float linphone_call_get_current_quality(LinphoneCall *call){
 	float audio_rating=-1.f;
 	float video_rating=-1.f;
-	float result;
+
 	if (call->audiostream){
 		audio_rating=media_stream_get_quality_rating((MediaStream*)call->audiostream)/5.0f;
 	}
 	if (call->videostream){
 		video_rating=media_stream_get_quality_rating((MediaStream*)call->videostream)/5.0f;
 	}
-	if (audio_rating<0 && video_rating<0) result=-1;
-	else if (audio_rating<0) result=video_rating*5.0f;
-	else if (video_rating<0) result=audio_rating*5.0f;
-	else result=audio_rating*video_rating*5.0f;
-	return result;
+	return agregate_ratings(audio_rating, video_rating);
 }
 
 /**
@@ -3995,10 +3998,16 @@ float linphone_call_get_current_quality(LinphoneCall *call){
  * See linphone_call_get_current_quality() for more details about quality measurement.
 **/
 float linphone_call_get_average_quality(LinphoneCall *call){
+	float audio_rating=-1.f;
+	float video_rating=-1.f;
+	
 	if (call->audiostream){
-		return audio_stream_get_average_quality_rating(call->audiostream);
+		audio_rating = media_stream_get_average_quality_rating((MediaStream*)call->audiostream)/5.0f;
 	}
-	return -1;
+	if (call->videostream){
+		video_rating = media_stream_get_average_quality_rating((MediaStream*)call->videostream)/5.0f;
+	}
+	return agregate_ratings(audio_rating, video_rating);
 }
 
 static void update_local_stats(LinphoneCallStats *stats, MediaStream *stream) {
