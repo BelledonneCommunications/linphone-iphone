@@ -19,6 +19,8 @@ Group changes to describe their impact on the project, as follows:
 - Enable Neon intrinsics optimizations for speex resampler (ENABLE_ARM_NEON_INTRINSICS)
 - Push notifications are now configurable per account
 - Update to latest OpenH264 version to fix issue with Xcode 7.3 and arm64 devices [openh264-2434]
+- Default transport reset to "UDP" for external accounts in assistant since most providers only support that
+
 ### Fixed
 - Fix invalid photo rotation when using Camera for avatars
 - Parse user input as SIP address or phone number depending on default account settings: if "substitute + by country code" is set,
