@@ -516,7 +516,6 @@
 		6316A3DA1C5F64350073BFA4 /* voicemail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6316A2291C5F64350073BFA4 /* voicemail@2x.png */; };
 		6316A3DB1C5F64350073BFA4 /* waiting_time.png in Resources */ = {isa = PBXBuildFile; fileRef = 6316A22A1C5F64350073BFA4 /* waiting_time.png */; };
 		6316A3DC1C5F64350073BFA4 /* waiting_time@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6316A22B1C5F64350073BFA4 /* waiting_time@2x.png */; };
-		6316FA6D1BE12A3E0050E441 /* UIRightImageButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6316FA6C1BE12A3E0050E441 /* UIRightImageButton.m */; };
 		63177FBF1C86E68C00ADE58D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
 		6334DDFA1BBAC97C00631900 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		6334DDFB1BBAC99400631900 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
@@ -819,6 +818,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = EABD46791857A0C700A5F081;
 			remoteInfo = KIF;
+		};
+		633FC7C71CD7466400774B8B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAB89FFC1CAC546900C6DFC1;
+			remoteInfo = KIFFrameworkConsumer;
+		};
+		633FC7C91CD7466400774B8B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAB8A0141CAC546A00C6DFC1;
+			remoteInfo = KIFFrameworkConsumerTests;
 		};
 		D3554ED015CA79AA00478841 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1415,8 +1428,6 @@
 		6316A2291C5F64350073BFA4 /* voicemail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "voicemail@2x.png"; sourceTree = "<group>"; };
 		6316A22A1C5F64350073BFA4 /* waiting_time.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = waiting_time.png; sourceTree = "<group>"; };
 		6316A22B1C5F64350073BFA4 /* waiting_time@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "waiting_time@2x.png"; sourceTree = "<group>"; };
-		6316FA6B1BE12A3E0050E441 /* UIRightImageButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRightImageButton.h; sourceTree = "<group>"; };
-		6316FA6C1BE12A3E0050E441 /* UIRightImageButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRightImageButton.m; sourceTree = "<group>"; };
 		6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateView.h; sourceTree = "<group>"; };
 		6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateView.m; sourceTree = "<group>"; };
 		633756371B67BAF400E21BAD /* SideMenuTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableView.h; sourceTree = "<group>"; };
@@ -2110,8 +2121,6 @@
 				2214EBF212F86360002A5394 /* UIMutedMicroButton.m */,
 				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
-				6316FA6B1BE12A3E0050E441 /* UIRightImageButton.h */,
-				6316FA6C1BE12A3E0050E441 /* UIRightImageButton.m */,
 				6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */,
 				6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */,
 				63FB30331A680E73008CA393 /* UIRoundedImageView.h */,
@@ -2277,6 +2286,8 @@
 				63058A011B4E816A00EFAE36 /* Test Host.app */,
 				63058A031B4E816A00EFAE36 /* KIF Tests - XCTest.xctest */,
 				63058A071B4E816A00EFAE36 /* KIF.framework */,
+				633FC7C81CD7466400774B8B /* KIFFrameworkConsumer.app */,
+				633FC7CA1CD7466400774B8B /* KIFFrameworkConsumerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3173,6 +3184,20 @@
 			remoteRef = 63058A061B4E816A00EFAE36 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		633FC7C81CD7466400774B8B /* KIFFrameworkConsumer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = KIFFrameworkConsumer.app;
+			remoteRef = 633FC7C71CD7466400774B8B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		633FC7CA1CD7466400774B8B /* KIFFrameworkConsumerTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = KIFFrameworkConsumerTests.xctest;
+			remoteRef = 633FC7C91CD7466400774B8B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		D3554ED115CA79AA00478841 /* libXMLRPC.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -3808,7 +3833,6 @@
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */,
 				633888451BFB2C49001D5E7B /* HPGrowingTextView.m in Sources */,
-				6316FA6D1BE12A3E0050E441 /* UIRightImageButton.m in Sources */,
 				63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatsListTableView.m in Sources */,
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
