@@ -252,7 +252,8 @@ static void audio_bypass_snd_read_postprocess(MSFilter *f) {
 }
 
 static void audio_bypass_snd_read_uninit(MSFilter *f) {
-	
+	PlayerData *d=(PlayerData*)f->data;
+	ms_free(d);
 }
 
 static int audio_bypass_snd_read_set_sample_rate(MSFilter *f, void *arg) { // This is to prevent ms2 to put a resampler between this filter and the rtpsend
@@ -422,15 +423,17 @@ static void audio_bypass_snd_card_detect(MSSndCardManager *m) {
 	ms_snd_card_manager_add_card(m, create_audio_bypass_snd_card());
 }
 
-static void only_enable_payload(MSList *codecs, const char *mime, int channels) {
-	while (codecs) {
-		PayloadType *pt = (PayloadType *)codecs->data;
-		if (strcmp(pt->mime_type, mime) == 0 && pt->channels == channels) {
-			pt->flags |= PAYLOAD_TYPE_ENABLED;
-		} else {
-			pt->flags &= PAYLOAD_TYPE_ENABLED;
-		}
-		codecs = ms_list_next(codecs);
+static void only_enable_payload(LinphoneCore *lc, const char *mime, int rate, int channels) {
+	const MSList *elem = linphone_core_get_audio_codecs(lc);
+	PayloadType *pt;
+
+	for(; elem != NULL; elem = elem->next) {
+		pt = (PayloadType *)elem->data;
+		linphone_core_enable_payload_type(lc, pt, FALSE);
+	}
+	pt = linphone_core_find_payload_type(lc, mime, rate, channels);
+	if (BC_ASSERT_PTR_NOT_NULL(pt)) {
+		linphone_core_enable_payload_type(lc, pt, TRUE);
 	}
 }
 
@@ -446,16 +449,17 @@ static void audio_bypass(void) {
 	MSSndCardManager *pauline_sndcard_manager = ms_factory_get_snd_card_manager(pauline_factory);
 	
 	bool_t call_ok;
-	MSList *marie_audio_codecs = marie_lc->codecs_conf.audio_codecs;
-	MSList *pauline_audio_codecs = pauline_lc->codecs_conf.audio_codecs;
 	char *hellopath = bc_tester_res("sounds/hello44100.wav");
 	char *recordpath = bc_tester_file("audiobypass-record.wav");
 	double similar=1;
 	const double threshold = 0.85;
 	
+	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
+	unlink(recordpath);
+	
 	// Enable L16 audio codec
-	only_enable_payload(marie_audio_codecs, "L16", 1);
-	only_enable_payload(pauline_audio_codecs, "L16", 1);
+	only_enable_payload(marie_lc, "L16", 44100, 1);
+	only_enable_payload(pauline_lc, "L16", 44100, 1);
 	
 	// Add our custom sound card
 	ms_snd_card_manager_register_desc(marie_sndcard_manager, &audio_bypass_snd_card_desc);
@@ -489,9 +493,10 @@ static void audio_bypass(void) {
 	BC_ASSERT_LOWER(similar, 1.0, double, "%g");
 
 end:
+	bc_free(recordpath);
+	bc_free(hellopath);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	bc_free(recordpath);
 }
 
 test_t audio_bypass_tests[] = {
