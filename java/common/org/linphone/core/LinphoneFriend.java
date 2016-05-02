@@ -102,6 +102,12 @@ public interface LinphoneFriend {
 	 * @return true is subscription is activated for this friend.
 	 */
 	boolean isSubscribesEnabled();
+
+	/**
+	 * get presence received status if already setted
+	 * @return true if presence is received from this friend.
+	 */
+	boolean isPresenceReceived();
 	/**
 	 * @brief Get the status of a friend
 	 * @return OnlineStatus

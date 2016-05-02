@@ -48,74 +48,83 @@ void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char
 
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters;
-	LinphonePresenceActivity *activity = NULL;
+	
+	int i;
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	ms_message("New Notify request from [%s] ",from);
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_NotifyPresenceReceived++;
-
 	counters->last_received_presence = linphone_friend_get_presence_model(lf);
-	activity = linphone_presence_model_get_activity(counters->last_received_presence);
-	switch (linphone_presence_activity_get_type(activity)) {
-		case LinphonePresenceActivityOffline:
-			counters->number_of_LinphonePresenceActivityOffline++; break;
-		case LinphonePresenceActivityOnline:
-			counters->number_of_LinphonePresenceActivityOnline++; break;
-		case LinphonePresenceActivityAppointment:
-			counters->number_of_LinphonePresenceActivityAppointment++; break;
-		case LinphonePresenceActivityAway:
-			counters->number_of_LinphonePresenceActivityAway++; break;
-		case LinphonePresenceActivityBreakfast:
-			counters->number_of_LinphonePresenceActivityBreakfast++; break;
-		case LinphonePresenceActivityBusy:
-			counters->number_of_LinphonePresenceActivityBusy++; break;
-		case LinphonePresenceActivityDinner:
-			counters->number_of_LinphonePresenceActivityDinner++; break;
-		case LinphonePresenceActivityHoliday:
-			counters->number_of_LinphonePresenceActivityHoliday++; break;
-		case LinphonePresenceActivityInTransit:
-			counters->number_of_LinphonePresenceActivityInTransit++; break;
-		case LinphonePresenceActivityLookingForWork:
-			counters->number_of_LinphonePresenceActivityLookingForWork++; break;
-		case LinphonePresenceActivityLunch:
-			counters->number_of_LinphonePresenceActivityLunch++; break;
-		case LinphonePresenceActivityMeal:
-			counters->number_of_LinphonePresenceActivityMeal++; break;
-		case LinphonePresenceActivityMeeting:
-			counters->number_of_LinphonePresenceActivityMeeting++; break;
-		case LinphonePresenceActivityOnThePhone:
-			counters->number_of_LinphonePresenceActivityOnThePhone++; break;
-		case LinphonePresenceActivityOther:
-			counters->number_of_LinphonePresenceActivityOther++; break;
-		case LinphonePresenceActivityPerformance:
-			counters->number_of_LinphonePresenceActivityPerformance++; break;
-		case LinphonePresenceActivityPermanentAbsence:
-			counters->number_of_LinphonePresenceActivityPermanentAbsence++; break;
-		case LinphonePresenceActivityPlaying:
-			counters->number_of_LinphonePresenceActivityPlaying++; break;
-		case LinphonePresenceActivityPresentation:
-			counters->number_of_LinphonePresenceActivityPresentation++; break;
-		case LinphonePresenceActivityShopping:
-			counters->number_of_LinphonePresenceActivityShopping++; break;
-		case LinphonePresenceActivitySleeping:
-			counters->number_of_LinphonePresenceActivitySleeping++; break;
-		case LinphonePresenceActivitySpectator:
-			counters->number_of_LinphonePresenceActivitySpectator++; break;
-		case LinphonePresenceActivitySteering:
-			counters->number_of_LinphonePresenceActivitySteering++; break;
-		case LinphonePresenceActivityTravel:
-			counters->number_of_LinphonePresenceActivityTravel++; break;
-		case LinphonePresenceActivityTV:
-			counters->number_of_LinphonePresenceActivityTV++; break;
-		case LinphonePresenceActivityUnknown:
-			counters->number_of_LinphonePresenceActivityUnknown++; break;
-		case LinphonePresenceActivityVacation:
-			counters->number_of_LinphonePresenceActivityVacation++; break;
-		case LinphonePresenceActivityWorking:
-			counters->number_of_LinphonePresenceActivityWorking++; break;
-		case LinphonePresenceActivityWorship:
-			counters->number_of_LinphonePresenceActivityWorship++; break;
+	if (linphone_presence_model_get_basic_status(counters->last_received_presence) == LinphonePresenceBasicStatusOpen) {
+		counters->number_of_LinphonePresenceBasicStatusOpen++;
+	} else if (linphone_presence_model_get_basic_status(counters->last_received_presence) == LinphonePresenceBasicStatusClosed) {
+		counters->number_of_LinphonePresenceBasicStatusClosed++;
+	} else {
+		ms_error("unexpeted basioc status [%i]",linphone_presence_model_get_basic_status(counters->last_received_presence));
+	}
+	for (i=0;i<linphone_presence_model_get_nb_activities(counters->last_received_presence); i++) {
+		LinphonePresenceActivity *activity = linphone_presence_model_get_nth_activity(counters->last_received_presence, i);
+		switch (linphone_presence_activity_get_type(activity)) {
+			case LinphonePresenceActivityOffline:
+				counters->number_of_LinphonePresenceActivityOffline++; break;
+			case LinphonePresenceActivityOnline:
+				counters->number_of_LinphonePresenceActivityOnline++; break;
+			case LinphonePresenceActivityAppointment:
+				counters->number_of_LinphonePresenceActivityAppointment++; break;
+			case LinphonePresenceActivityAway:
+				counters->number_of_LinphonePresenceActivityAway++; break;
+			case LinphonePresenceActivityBreakfast:
+				counters->number_of_LinphonePresenceActivityBreakfast++; break;
+			case LinphonePresenceActivityBusy:
+				counters->number_of_LinphonePresenceActivityBusy++; break;
+			case LinphonePresenceActivityDinner:
+				counters->number_of_LinphonePresenceActivityDinner++; break;
+			case LinphonePresenceActivityHoliday:
+				counters->number_of_LinphonePresenceActivityHoliday++; break;
+			case LinphonePresenceActivityInTransit:
+				counters->number_of_LinphonePresenceActivityInTransit++; break;
+			case LinphonePresenceActivityLookingForWork:
+				counters->number_of_LinphonePresenceActivityLookingForWork++; break;
+			case LinphonePresenceActivityLunch:
+				counters->number_of_LinphonePresenceActivityLunch++; break;
+			case LinphonePresenceActivityMeal:
+				counters->number_of_LinphonePresenceActivityMeal++; break;
+			case LinphonePresenceActivityMeeting:
+				counters->number_of_LinphonePresenceActivityMeeting++; break;
+			case LinphonePresenceActivityOnThePhone:
+				counters->number_of_LinphonePresenceActivityOnThePhone++; break;
+			case LinphonePresenceActivityOther:
+				counters->number_of_LinphonePresenceActivityOther++; break;
+			case LinphonePresenceActivityPerformance:
+				counters->number_of_LinphonePresenceActivityPerformance++; break;
+			case LinphonePresenceActivityPermanentAbsence:
+				counters->number_of_LinphonePresenceActivityPermanentAbsence++; break;
+			case LinphonePresenceActivityPlaying:
+				counters->number_of_LinphonePresenceActivityPlaying++; break;
+			case LinphonePresenceActivityPresentation:
+				counters->number_of_LinphonePresenceActivityPresentation++; break;
+			case LinphonePresenceActivityShopping:
+				counters->number_of_LinphonePresenceActivityShopping++; break;
+			case LinphonePresenceActivitySleeping:
+				counters->number_of_LinphonePresenceActivitySleeping++; break;
+			case LinphonePresenceActivitySpectator:
+				counters->number_of_LinphonePresenceActivitySpectator++; break;
+			case LinphonePresenceActivitySteering:
+				counters->number_of_LinphonePresenceActivitySteering++; break;
+			case LinphonePresenceActivityTravel:
+				counters->number_of_LinphonePresenceActivityTravel++; break;
+			case LinphonePresenceActivityTV:
+				counters->number_of_LinphonePresenceActivityTV++; break;
+			case LinphonePresenceActivityUnknown:
+				counters->number_of_LinphonePresenceActivityUnknown++; break;
+			case LinphonePresenceActivityVacation:
+				counters->number_of_LinphonePresenceActivityVacation++; break;
+			case LinphonePresenceActivityWorking:
+				counters->number_of_LinphonePresenceActivityWorking++; break;
+			case LinphonePresenceActivityWorship:
+				counters->number_of_LinphonePresenceActivityWorship++; break;
+		}
 	}
 }
 

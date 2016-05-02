@@ -495,7 +495,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 	if (call->params->internal_call_update)
 		call->params->internal_call_update = FALSE;
 
-	
+
 #ifdef BUILD_UPNP
 	if (call->upnp_session != NULL && rmd) {
 		linphone_core_update_upnp_from_remote_media_description(call, rmd);
@@ -511,12 +511,12 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 		md = NULL;
 	}
 	if (md){ /*there is a valid SDP in the response, either offer or answer, and we're able to start/update the streams*/
-		
+
 		/* Handle remote ICE attributes if any. */
 		if (call->ice_session != NULL && rmd) {
 			linphone_call_update_ice_from_remote_media_description(call, rmd, FALSE);
 		}
-		
+
 		switch (call->state){
 			case LinphoneCallResuming:
 				linphone_core_notify_display_status(lc,_("Call resumed."));
@@ -1063,7 +1063,7 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	LinphoneAddress *refer_to_addr = linphone_address_new(referto);
 	char method[20] = "";
-	
+
 	if(refer_to_addr) {
 		const char *tmp = linphone_address_get_method_param(refer_to_addr);
 		if(tmp) strncpy(method, tmp, sizeof(method));
@@ -1131,7 +1131,7 @@ static void parse_presence_requested(SalOp *op, const char *content_type, const 
 
 static void convert_presence_to_xml_requested(SalOp *op, SalPresenceModel *presence, const char *contact, char **content) {
 	/*for backward compatibility because still used by notify. No loguer used for publish*/
-	
+
 	if(linphone_presence_model_get_presentity((LinphonePresenceModel*)presence) == NULL) {
 		LinphoneAddress * presentity = linphone_address_new(contact);
 		linphone_presence_model_set_presentity((LinphonePresenceModel*)presence, presentity);
@@ -1313,8 +1313,8 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalBodyHandler *body_handler){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-
-	if (lev==NULL) {
+	bool_t out_of_dialog = (lev==NULL);
+	if (out_of_dialog) {
 		/*out of subscribe notify */
 		lev=linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
@@ -1328,6 +1328,11 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalB
 	if (st!=SalSubscribeNone){
 		linphone_event_set_state(lev,linphone_subscription_state_from_sal(st));
 	}
+
+	if (out_of_dialog) {
+		linphone_event_unref(lev);
+	}
+
 }
 
 static void subscribe_received(SalOp *op, const char *eventname, const SalBodyHandler *body_handler){

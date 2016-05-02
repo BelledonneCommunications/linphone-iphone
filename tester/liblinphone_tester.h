@@ -193,6 +193,9 @@ typedef struct _stats {
 	int number_of_LinphonePresenceActivityWorking;
 	int number_of_LinphonePresenceActivityWorship;
 	const LinphonePresenceModel *last_received_presence;
+	
+	int number_of_LinphonePresenceBasicStatusOpen;
+	int number_of_LinphonePresenceBasicStatusClosed;
 
 	int number_of_inforeceived;
 	LinphoneInfoMessage* last_received_info_message;

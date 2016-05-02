@@ -1649,6 +1649,14 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInCall(JNIEnv* env
 
 	return (jboolean)linphone_core_in_call((LinphoneCore*)lc);
 }
+
+extern "C" jboolean Java_org_linphone_core_LinphoneFriendImpl_isPresenceReceived(JNIEnv* env
+		,jobject  thiz
+		,jlong lf) {
+
+	return (jboolean)linphone_friend_is_presence_received((LinphoneFriend*)lf);
+}
+
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInComingInvitePending(JNIEnv* env
 		,jobject  thiz
 		,jlong lc) {
@@ -2059,6 +2067,10 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_exportFriendsToVCa
 	const char* path = env->GetStringUTFChars(jpath, NULL);
 	linphone_friend_list_export_friends_as_vcard4_file((LinphoneFriendList*)list, path);
 	env->ReleaseStringUTFChars(jpath, path);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_enableSubscriptions(JNIEnv* env, jobject thiz, jlong list, jboolean enable) {
+	linphone_friend_list_enable_subscriptions((LinphoneFriendList*)list, enable);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriendList(JNIEnv*  env
@@ -3452,10 +3464,6 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneFriendListImpl_getFriendL
 	}
 	
 	return jFriends;
-}
-
-extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_closeSubscriptions(JNIEnv* env, jobject thiz, jlong friendListptr) {
-	linphone_friend_list_close_subscriptions((LinphoneFriendList*)friendListptr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscriptions(JNIEnv*  env

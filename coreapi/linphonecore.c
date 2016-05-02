@@ -1571,6 +1571,8 @@ void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path){
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
+	linphone_core_add_friend_list(lc, NULL);
+
 	sip_setup_register_all(lc->factory);
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -1587,6 +1589,7 @@ static void linphone_core_start(LinphoneCore * lc) {
 		linphone_tunnel_configure(lc->tunnel);
 	}
 #endif
+
 
 	linphone_core_notify_display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -1702,7 +1705,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		const MSList* friendLists = linphone_core_get_friends_lists(lc);
 		while( friendLists != NULL ){
 			LinphoneFriendList* list = friendLists->data;
-			ms_warning("notify presence for list %p", list);
+			ms_message("notify presence for list %p", list);
 			linphone_friend_list_notify_presence_received(list, lev, body);
 			friendLists = friendLists->next;
 		}
@@ -1725,8 +1728,6 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-
-	linphone_core_add_friend_list(lc, NULL);
 
 	linphone_task_list_init(&lc->hooks);
 
@@ -2781,7 +2782,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			if (elapsed>lc->sip_conf.inc_timeout){
 				LinphoneReason decline_reason;
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
-				decline_reason=lc->current_call ? LinphoneReasonBusy : LinphoneReasonDeclined;
+				decline_reason = (lc->current_call != call) ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
 				sal_error_info_set(&call->non_op_error,SalReasonRequestTimeout,408,"Not answered",NULL);
 				linphone_core_decline_call(lc,call,decline_reason);
@@ -6512,7 +6513,7 @@ static void codecs_config_uninit(LinphoneCore *lc)
 	ms_list_free_with_data(lc->codecs_conf.text_codecs, (void (*)(void*))payload_type_destroy);
 }
 
-void ui_config_uninit(LinphoneCore* lc)
+void friends_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
 	lc->friends_lists = ms_list_free_with_data(lc->friends_lists, (void (*)(void*))_linphone_friend_list_release);
@@ -6554,19 +6555,19 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		LinphoneCall *the_call = lc->calls->data;
 		linphone_core_terminate_call(lc,the_call);
 		linphone_core_iterate(lc);
-		ms_usleep(50000);
+		ms_usleep(10000);
 	}
 
 	for (elem = lc->friends_lists; elem != NULL; elem = ms_list_next(elem)) {
 		LinphoneFriendList *list = (LinphoneFriendList *)elem->data;
-		linphone_friend_list_enable_subscriptions(list, FALSE);
+		linphone_friend_list_enable_subscriptions(list,FALSE);
 		if (list->event)
 			wait_until_unsubscribe =  TRUE;
 	}
 	/*give a chance to unsubscribe, might be optimized*/
-	for (i=0; wait_until_unsubscribe && i<20; i++) {
+	for (i=0; wait_until_unsubscribe && i<50; i++) {
 		linphone_core_iterate(lc);
-		ms_usleep(50000);
+		ms_usleep(10000);
 	}
 
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
@@ -6581,7 +6582,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	lc->msevq=NULL;
 	/* save all config */
-	ui_config_uninit(lc);
+	friends_config_uninit(lc);
 	sip_config_uninit(lc);
 	net_config_uninit(lc);
 	rtp_config_uninit(lc);
