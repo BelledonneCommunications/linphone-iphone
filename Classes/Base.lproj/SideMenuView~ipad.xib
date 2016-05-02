@@ -7,9 +7,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SideMenuView">
             <connections>
+                <outlet property="addressLabel" destination="ypg-P8-Els" id="gRv-Fz-Dbk"/>
                 <outlet property="avatarImage" destination="BNQ-7N-NGT" id="LXr-Yr-zSK"/>
                 <outlet property="grayBackground" destination="ccB-VK-LF9" id="Rbz-Ix-k62"/>
                 <outlet property="nameLabel" destination="XbU-2B-u1b" id="rKF-4e-1HA"/>
+                <outlet property="presenceImage" destination="tNM-uE-Eum" id="dfy-Sb-hgE"/>
                 <outlet property="sideMenuTableViewController" destination="Yyh-z6-IGO" id="6Xq-OQ-vYm"/>
                 <outlet property="swipeGestureRecognizer" destination="JRs-i1-zCl" id="YA3-UP-6Dc"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
