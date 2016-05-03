@@ -18,12 +18,11 @@
 
 #include "liblinphone_tester.h"
 #include "private.h"
+#include "audio_bypass_wav_header.h" // This is a copy of mediastreamer2/src/audiofilters/wav_header.h
 
 /**********************************************************************
  * This is a (simpler) copy of msfileplay filter in mediastreamer2   *
  *********************************************************************/
-
-#include "mediastreamer2/src/audiofilters/waveheader.h"
 
 struct _PlayerData{
 	int fd;
@@ -39,15 +38,6 @@ struct _PlayerData{
 	uint32_t ts;
 	bool_t swap;
 	bool_t is_raw;
-#ifdef HAVE_PCAP
-	pcap_t *pcap;
-	struct pcap_pkthdr *pcap_hdr;
-	const u_char *pcap_data;
-	bool_t pcap_started;
-	uint64_t pcap_initial_time;
-	uint32_t pcap_initial_ts;
-	uint16_t pcap_seq;
-#endif
 };
 
 typedef struct _PlayerData PlayerData;
