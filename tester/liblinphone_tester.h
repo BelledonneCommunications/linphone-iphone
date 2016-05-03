@@ -61,6 +61,7 @@ extern test_suite_t multicast_call_test_suite;
 extern test_suite_t multi_call_test_suite;
 extern test_suite_t proxy_config_test_suite;
 extern test_suite_t vcard_test_suite;
+extern test_suite_t audio_bypass_suite;
 #if HAVE_SIPP
 extern test_suite_t complex_sip_call_test_suite;
 #endif
