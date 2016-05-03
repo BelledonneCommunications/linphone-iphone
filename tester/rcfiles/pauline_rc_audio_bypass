@@ -50,7 +50,7 @@ dns_srv_enabled=0 #no srv needed in general
 stun_server=stun.linphone.org
 
 [misc]
-add_missing_audio_codecs=0
+add_missing_audio_codecs=1
 
 [audio_codec_0]
 mime=L16
