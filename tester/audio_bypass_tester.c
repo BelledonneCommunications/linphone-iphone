@@ -428,12 +428,12 @@ static void only_enable_payload(LinphoneCore *lc, const char *mime, int rate, in
 }
 
 static void audio_bypass(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc_audio_bypass");
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCore *marie_lc = marie->lc;
 	MSFactory *marie_factory = linphone_core_get_ms_factory(marie_lc);
 	MSSndCardManager *marie_sndcard_manager = ms_factory_get_snd_card_manager(marie_factory);
 	
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc_audio_bypass");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneCore *pauline_lc = pauline->lc;
 	MSFactory *pauline_factory = linphone_core_get_ms_factory(pauline_lc);
 	MSSndCardManager *pauline_sndcard_manager = ms_factory_get_snd_card_manager(pauline_factory);
@@ -443,6 +443,9 @@ static void audio_bypass(void) {
 	char *recordpath = bc_tester_file("audiobypass-record.wav");
 	double similar=1;
 	const double threshold = 0.85;
+	
+	lp_config_set_string(marie_lc->config, "sound", "features", "None");
+	lp_config_set_string(pauline_lc->config, "sound", "features", "None");
 	
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
