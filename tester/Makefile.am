@@ -111,6 +111,8 @@ liblinphone_HEADERS = liblinphone_tester.h
 
 lib_LTLIBRARIES = liblinphonetester.la
 
+liblinphonetester_la_HEADERS = audio_bypass_wav_header.h
+
 liblinphonetester_la_SOURCES = \
 				accountmanager.c \
 				audio_bypass_tester.c \
