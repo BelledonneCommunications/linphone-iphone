@@ -1,6 +1,7 @@
 
 TESTER_SOUNDS = sounds/ahbahouaismaisbon.wav \
 				sounds/hello8000.wav  \
+				sounds/hello44100.wav  \
 				sounds/oldphone.wav \
 				sounds/sintel_trailer_opus_h264.mkv \
 				sounds/sintel_trailer_pcmu_h264.mkv \
@@ -110,8 +111,11 @@ liblinphone_HEADERS = liblinphone_tester.h
 
 lib_LTLIBRARIES = liblinphonetester.la
 
+liblinphonetester_la_HEADERS = audio_bypass_wav_header.h
+
 liblinphonetester_la_SOURCES = \
 				accountmanager.c \
+				audio_bypass_tester.c \
 				call_tester.c \
 				complex_sip_call_tester.c \
 				dtmf_tester.c \
