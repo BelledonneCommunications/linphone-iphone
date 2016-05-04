@@ -6893,6 +6893,11 @@ LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const cha
 		result = find_payload_type_from_list(type, rate, 0, linphone_core_get_video_codecs(lc));
 		if (result) {
 			return result;
+		} else {
+			result = find_payload_type_from_list(type, rate, 0, linphone_core_get_text_codecs(lc));
+			if (result) {
+				return result;
+			}
 		}
 	}
 	/*not found*/
