@@ -743,7 +743,7 @@ void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 	if (bc_file_fprintf(lpconfig->pFile, 0, "]\n")< 0) ms_error("lp_section_write : write error ");
 	ms_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)lpconfig);
 
-	if (bc_file_fprintf(lpconfig->pFile, 0, "\n")< 0) ms_error("lp_section_write : write error on %s");
+	if (bc_file_fprintf(lpconfig->pFile, 0, "\n")< 0) ms_error("lp_section_write : write error");
 	
 }
 
