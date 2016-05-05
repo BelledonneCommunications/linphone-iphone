@@ -223,6 +223,7 @@ static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSL
 				*/
 				matched=payload_type_clone(matched);
 				payload_type_set_number(matched,local_number);
+				payload_type_set_flag(matched, PAYLOAD_TYPE_FLAG_CAN_RECV);
 				payload_type_set_flag(matched, PAYLOAD_TYPE_FROZEN_NUMBER);
 				res=ms_list_append(res,matched);
 			}
