@@ -365,7 +365,7 @@ void lp_config_parse(LpConfig *lpconfig, bc_vfs_file* pFile){
 	LpSection* current_section = NULL;
 	int size  =0;
 	if (pFile==NULL) return;
-	while(( size = bc_file_get_nxtline(lpconfig->pFile, tmp, MAX_LEN)) > 0){
+	while(( size = bctbx_file_get_nxtline(lpconfig->pFile, tmp, MAX_LEN)) > 0){
 		tmp[size] = '\0';
 		current_section = lp_config_parse_line(lpconfig, tmp, current_section);
 	}
@@ -428,13 +428,13 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
 		int fd;
-		pFile = bc_file_open(lpconfig->g_bc_vfs,lpconfig->filename, "r+");
+		pFile = bctbx_file_open(lpconfig->g_bc_vfs,lpconfig->filename, "r+");
 		fd  = pFile->fd;
 		lpconfig->pFile = pFile;
 		
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 		if (fd < 0){
-			pFile = bc_file_open(lpconfig->g_bc_vfs,lpconfig->tmpfilename, "r+");
+			pFile = bctbx_file_open(lpconfig->g_bc_vfs,lpconfig->tmpfilename, "r+");
 			if (fd){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
 			}
@@ -442,7 +442,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 #endif
 		if (fd > 0){
 		    lp_config_parse(lpconfig, pFile);
-			bc_file_close(pFile);
+			bctbx_file_close(pFile);
 			lpconfig->pFile = NULL;
 			lpconfig->modified=0;
 		}
@@ -460,12 +460,12 @@ fail:
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	int fd=-1;
-	bc_vfs_file* pFile = bc_file_open(lpconfig->g_bc_vfs, path, "r");
+	bc_vfs_file* pFile = bctbx_file_open(lpconfig->g_bc_vfs, path, "r");
 	fd = pFile->fd;
 	if (fd < 0){
 		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig, pFile);
-		bc_file_close(pFile);
+		bctbx_file_close(pFile);
 		ms_free(path);
 		return 0;
 	}
@@ -711,11 +711,11 @@ void lp_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *section
 void lp_item_write(LpItem *item, LpConfig *lpconfig){
 	int ret =-1 ;
 	if (item->is_comment){	
-		ret =bc_file_fprintf(lpconfig->pFile, 0, "%s\n",item->value);
+		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s\n",item->value);
 
 	}
 	else if (item->value && item->value[0] != '\0' ){
-		ret =bc_file_fprintf(lpconfig->pFile, 0, "%s=%s\n",item->key,item->value);
+		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s=%s\n",item->key,item->value);
 	}
 	
 	else {
@@ -728,7 +728,7 @@ void lp_item_write(LpItem *item, LpConfig *lpconfig){
 
 void lp_section_param_write(LpSectionParam *param, LpConfig *lpconfig){
 	if( param->value && param->value[0] != '\0') {
-		bc_file_fprintf(lpconfig->pFile, 0, " %s=%s", param->key, param->value);
+		bctbx_file_fprintf(lpconfig->pFile, 0, " %s=%s", param->key, param->value);
 
 	} else {
 		ms_warning("Not writing param %s to file, it is empty", param->key);
@@ -737,13 +737,13 @@ void lp_section_param_write(LpSectionParam *param, LpConfig *lpconfig){
 
 void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 
-	if (bc_file_fprintf(lpconfig->pFile, 0, "[%s",sec->name) < 0) ms_error("lp_section_write : write error on %s", sec->name);
+	if (bctbx_file_fprintf(lpconfig->pFile, 0, "[%s",sec->name) < 0) ms_error("lp_section_write : write error on %s", sec->name);
 	ms_list_for_each2(sec->params, (void (*)(void*, void*))lp_section_param_write, (void *)lpconfig);
 
-	if (bc_file_fprintf(lpconfig->pFile, 0, "]\n")< 0) ms_error("lp_section_write : write error ");
+	if (bctbx_file_fprintf(lpconfig->pFile, 0, "]\n")< 0) ms_error("lp_section_write : write error ");
 	ms_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)lpconfig);
 
-	if (bc_file_fprintf(lpconfig->pFile, 0, "\n")< 0) ms_error("lp_section_write : write error");
+	if (bctbx_file_fprintf(lpconfig->pFile, 0, "\n")< 0) ms_error("lp_section_write : write error");
 	
 }
 
@@ -756,7 +756,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	bc_vfs_file *pFile  = bc_file_open(lpconfig->g_bc_vfs,lpconfig->tmpfilename, "w");
+	bc_vfs_file *pFile  = bctbx_file_open(lpconfig->g_bc_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
 	fd = pFile->fd;
 	if (fd < 0 ){
@@ -766,7 +766,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	}
 	
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)lpconfig);
-	bc_file_close(pFile);
+	bctbx_file_close(pFile);
 
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 	/* On windows, rename() does not accept that the newpath is an existing file, while it is accepted on Unix.
@@ -897,10 +897,10 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 
 		if(realfilepath == NULL) return FALSE;
 
-		pFile = bc_file_open(lpconfig->g_bc_vfs,realfilepath, "r");
+		pFile = bctbx_file_open(lpconfig->g_bc_vfs,realfilepath, "r");
 		ms_free(realfilepath);
 		if (pFile->fd > 0) {
-			bc_file_close(pFile);
+			bctbx_file_close(pFile);
 		}
 		return pFile->fd > 0;
 	}
@@ -930,7 +930,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 
-	pFile = bc_file_open(lpconfig->g_bc_vfs,realfilepath,  "w");
+	pFile = bctbx_file_open(lpconfig->g_bc_vfs,realfilepath,  "w");
 	fd = pFile->fd;
 	
 	if(fd < 0) {
@@ -939,7 +939,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	}
 
 	fprintf(pFile->file, "%s", data);
-	bc_file_close(pFile);
+	bctbx_file_close(pFile);
 
 end:
 	ms_free(dup_config_file);
@@ -967,7 +967,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		goto err;
 	}
 
-	pFile = bc_file_open(lpconfig->g_bc_vfs,realfilepath,"r");
+	pFile = bctbx_file_open(lpconfig->g_bc_vfs,realfilepath,"r");
 	if (pFile !=NULL)
 		fd = pFile->fd;
 	
@@ -977,13 +977,13 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	}
 
 
-	if(bc_file_read(pFile, data, 1, max_length) < 0){
+	if(bctbx_file_read(pFile, data, 1, max_length) < 0){
 		ms_error("%s could not be loaded. %s", realfilepath, strerror(errno));
 		goto err;
 		
 	}
 
-	bc_file_close(pFile);
+	bctbx_file_close(pFile);
 
 	ms_free(dup_config_file);
 	ms_free(filepath);
