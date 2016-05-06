@@ -161,8 +161,10 @@ void linphone_core_register_offer_answer_providers(LinphoneCore *lc){
 static PayloadType * find_payload_type_best_match(MSFactory *factory, const MSList *local_payloads, const PayloadType *refpt,
 						  const MSList *remote_payloads, bool_t reading_response){
 	PayloadType *ret = NULL;
-	MSOfferAnswerContext *ctx = ms_factory_create_offer_answer_context(factory, refpt->mime_type);
-	if (ctx){
+	MSOfferAnswerContext *ctx = NULL;
+
+	// When a stream is inactive, refpt->mime_type might be null
+	if (refpt->mime_type && (ctx = ms_factory_create_offer_answer_context(factory, refpt->mime_type))) {
 		ms_message("Doing offer/answer processing with specific provider for codec [%s]", refpt->mime_type); 
 		ret = ms_offer_answer_context_match_payload(ctx, local_payloads, refpt, remote_payloads, reading_response);
 		ms_offer_answer_context_destroy(ctx);
