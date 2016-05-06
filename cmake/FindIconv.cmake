@@ -27,7 +27,7 @@
 #  ICONV_LIBRARIES - The libraries needed to use libiconv
 
 if(APPLE AND NOT IOS)
-	set(ICONV_HINTS "/usr")
+	set(ICONV_HINTS "${CMAKE_OSX_SYSROOT}/usr" "/usr")
 endif()
 if(ICONV_HINTS)
 	set(ICONV_LIBRARIES_HINTS "${ICONV_HINTS}/lib")
