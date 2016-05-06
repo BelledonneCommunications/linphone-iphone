@@ -38,6 +38,7 @@ static LinphoneNatPolicy * linphone_nat_policy_new(LinphoneCore *lc) {
 static void linphone_nat_policy_destroy(LinphoneNatPolicy *policy) {
 	if (policy->ref) belle_sip_free(policy->ref);
 	if (policy->stun_server) belle_sip_free(policy->stun_server);
+	if (policy->stun_server_username) belle_sip_free(policy->stun_server_username);
 	if (policy->stun_addrinfo) freeaddrinfo(policy->stun_addrinfo);
 }
 
@@ -66,6 +67,7 @@ static void _linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy,
 	section = belle_sip_strdup_printf("nat_policy_%i", index);
 	lp_config_set_string(config, section, "ref", policy->ref);
 	lp_config_set_string(config, section, "stun_server", policy->stun_server);
+	lp_config_set_string(config, section, "stun_server_username", policy->stun_server_username);
 	if (linphone_nat_policy_upnp_enabled(policy)) {
 		l = ms_list_append(l, "upnp");
 	} else {
@@ -183,6 +185,21 @@ void linphone_nat_policy_set_stun_server(LinphoneNatPolicy *policy, const char *
 	}
 }
 
+const char * linphone_nat_policy_get_stun_server_username(const LinphoneNatPolicy *policy) {
+	return policy->stun_server_username;
+}
+
+void linphone_nat_policy_set_stun_server_username(LinphoneNatPolicy *policy, const char *username) {
+	char *new_username = NULL;
+
+	if (username != NULL) new_username = belle_sip_strdup(username);
+	if (policy->stun_server_username != NULL) {
+		belle_sip_free(policy->stun_server_username);
+		policy->stun_server_username = NULL;
+	}
+	if (new_username != NULL) policy->stun_server_username = new_username;
+}
+
 static void stun_server_resolved(LinphoneNatPolicy *policy, const char *name, struct addrinfo *addrinfo) {
 	if (policy->stun_addrinfo) {
 		belle_sip_freeaddrinfo(policy->stun_addrinfo);
@@ -259,9 +276,11 @@ LinphoneNatPolicy * linphone_core_create_nat_policy_from_config(LinphoneCore *lc
 			const char *config_ref = lp_config_get_string(config, section, "ref", NULL);
 			if ((config_ref != NULL) && (strcmp(config_ref, ref) == 0)) {
 				const char *server = lp_config_get_string(config, section, "stun_server", NULL);
+				const char *username = lp_config_get_string(config, section, "stun_server_username", NULL);
 				MSList *l = lp_config_get_string_list(config, section, "protocols", NULL);
 				policy = _linphone_nat_policy_new_with_ref(lc, ref);
 				if (server != NULL) linphone_nat_policy_set_stun_server(policy, server);
+				if (username != NULL) linphone_nat_policy_set_stun_server_username(policy, username);
 				if (l != NULL) {
 					bool_t upnp_enabled = FALSE;
 					MSList *elem;

@@ -131,7 +131,7 @@ LINPHONE_PUBLIC bool_t linphone_nat_policy_upnp_enabled(const LinphoneNatPolicy 
 LINPHONE_PUBLIC void linphone_nat_policy_enable_upnp(LinphoneNatPolicy *policy, bool_t enable);
 
 /**
- * Get the STUN server to use with this NAT policy.
+ * Get the STUN/TURN server to use with this NAT policy.
  * Used when STUN or TURN are enabled.
  * @param[in] policy LinphoneNatPolicy object
  * @return The STUN server used by this NAT policy.
@@ -139,12 +139,30 @@ LINPHONE_PUBLIC void linphone_nat_policy_enable_upnp(LinphoneNatPolicy *policy, 
 LINPHONE_PUBLIC const char * linphone_nat_policy_get_stun_server(const LinphoneNatPolicy *policy);
 
 /**
- * Set the STUN server to use with this NAT policy.
+ * Set the STUN/TURN server to use with this NAT policy.
  * Used when STUN or TURN are enabled.
  * @param[in] policy LinphoneNatPolicy object
  * @param[in] stun_server The STUN server to use with this NAT policy.
  */
 LINPHONE_PUBLIC void linphone_nat_policy_set_stun_server(LinphoneNatPolicy *policy, const char *stun_server);
+
+/**
+ * Get the username used to authenticate with the STUN/TURN server.
+ * The authentication will search for a LinphoneAuthInfo with this username.
+ * If it is not set the username of the currently used LinphoneProxyConfig is used to search for a LinphoneAuthInfo.
+ * @param[in] policy LinphoneNatPolicy object
+ * @return The username used to authenticate with the STUN/TURN server.
+ */
+LINPHONE_PUBLIC const char * linphone_nat_policy_get_stun_server_username(const LinphoneNatPolicy *policy);
+
+/**
+ * Seth the username used to authenticate with the STUN/TURN server.
+ * The authentication will search for a LinphoneAuthInfo with this username.
+ * If it is not set the username of the currently used LinphoneProxyConfig is used to search for a LinphoneAuthInfo.
+ * @param[in] policy LinphoneNatPolicy object
+ * @param[in] username The username used to authenticate with the STUN/TURN server.
+ */
+LINPHONE_PUBLIC void linphone_nat_policy_set_stun_server_username(LinphoneNatPolicy *policy, const char *username);
 
 /**
  * Start a STUN server DNS resolution.

@@ -637,18 +637,31 @@ void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable) {
 
 static void stun_auth_requested_cb(LinphoneCall *call, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1) {
 	LinphoneProxyConfig *proxy = NULL;
+	const LinphoneNatPolicy *nat_policy = NULL;
 	const LinphoneAddress *addr = NULL;
 	const LinphoneAuthInfo *auth_info = NULL;
 	LinphoneCore *lc = call->core;
 	const char *user;
 
-	// Get the username from the proxy config
+	// Get the username from the nat policy or the proxy config
 	if (call->dest_proxy != NULL) proxy = call->dest_proxy;
 	else proxy = linphone_core_get_default_proxy_config(call->core);
 	if (proxy == NULL) return;
-	addr = linphone_proxy_config_get_identity_address(proxy);
-	if (addr == NULL) return;
-	user = linphone_address_get_username(addr);
+	nat_policy = linphone_proxy_config_get_nat_policy(proxy);
+	if (nat_policy != NULL) {
+		user = linphone_nat_policy_get_stun_server_username(nat_policy);
+	} else {
+		nat_policy = linphone_core_get_nat_policy(call->core);
+		if (nat_policy != NULL) {
+			user = linphone_nat_policy_get_stun_server_username(nat_policy);
+		}
+	}
+	if (user == NULL) {
+		/* If the username has not been found in the nat_policy, take the username from the currently used proxy config. */
+		addr = linphone_proxy_config_get_identity_address(proxy);
+		if (addr == NULL) return;
+		user = linphone_address_get_username(addr);
+	}
 	if (user == NULL) return;
 
 	auth_info = linphone_core_find_auth_info(lc, realm, user, NULL);

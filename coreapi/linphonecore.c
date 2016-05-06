@@ -5155,12 +5155,17 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol) {
 	LinphoneNatPolicy *nat_policy;
+	char *stun_server = NULL;
+	char *stun_server_username = NULL;
 	
 	if (lc->nat_policy != NULL) {
 		nat_policy = linphone_nat_policy_ref(lc->nat_policy);
+		stun_server = ms_strdup(linphone_nat_policy_get_stun_server(lc->nat_policy));
+		stun_server_username = ms_strdup(linphone_nat_policy_get_stun_server_username(lc->nat_policy));
 		linphone_nat_policy_clear(nat_policy);
 	} else {
 		nat_policy = linphone_core_create_nat_policy(lc);
+		stun_server = ms_strdup(linphone_core_get_stun_server(lc));
 	}
 
 	switch (pol) {
@@ -5184,7 +5189,14 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 			break;
 	}
 
-	linphone_nat_policy_set_stun_server(nat_policy, linphone_core_get_stun_server(lc));
+	if (stun_server_username != NULL) {
+		linphone_nat_policy_set_stun_server_username(nat_policy, stun_server_username);
+		ms_free(stun_server_username);
+	}
+	if (stun_server != NULL) {
+		linphone_nat_policy_set_stun_server(nat_policy, stun_server);
+		ms_free(stun_server);
+	}
 	linphone_core_set_nat_policy(lc, nat_policy);
 	linphone_nat_policy_unref(nat_policy);
 }

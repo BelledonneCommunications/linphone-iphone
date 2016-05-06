@@ -1194,6 +1194,7 @@ struct _LinphoneNatPolicy {
 	SalResolverContext *stun_resolver_context;
 	struct addrinfo *stun_addrinfo;
 	char *stun_server;
+	char *stun_server_username;
 	char *ref;
 	bool_t stun_enabled;
 	bool_t turn_enabled;
