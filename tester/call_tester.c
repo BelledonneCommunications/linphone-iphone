@@ -4266,6 +4266,41 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+static void call_with_very_early_call_update(void) {
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCallParams *params;
+	
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	linphone_core_invite_address(marie->lc,pauline->identity);
+	
+	BC_ASSERT_TRUE (wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallIncomingReceived,1));
+	BC_ASSERT_TRUE(linphone_core_inc_invite_pending(pauline->lc));
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1, int, "%d");
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallOutgoingRinging,1));
+	
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(pauline->lc));
+	if (linphone_core_get_current_call_remote_address(pauline->lc)) {
+		linphone_core_accept_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
+	}
+
+	
+	params=linphone_core_create_call_params(pauline->lc,linphone_core_get_current_call(pauline->lc));
+	linphone_core_update_call(pauline->lc,linphone_core_get_current_call(pauline->lc),params);
+	linphone_call_params_destroy(params);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdatedByRemote,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	end_call(marie,pauline);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+
 static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
 	int dummy=0;
 	LinphoneCoreManager* marie;
@@ -6392,6 +6427,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with no audio codec", call_with_no_audio_codec),
 	TEST_NO_TAG("Video call with no audio and no video codec", video_call_with_no_audio_and_no_video_codec),
 	TEST_NO_TAG("Call with in-dialog UPDATE request", call_with_in_dialog_update),
+	TEST_NO_TAG("Call with in-dialog very early call request", call_with_very_early_call_update),
 	TEST_NO_TAG("Call with in-dialog codec change", call_with_in_dialog_codec_change),
 	TEST_NO_TAG("Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp),
 	TEST_NO_TAG("Call with pause no SDP on resume", call_with_paused_no_sdp_on_resume),

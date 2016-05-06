@@ -4367,7 +4367,8 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			case IS_Failed:
 				/* At least one ICE session has succeeded, so perform a call update. */
 				if (ice_session_has_completed_check_list(call->ice_session) == TRUE) {
-					if (ice_session_role(call->ice_session) == IR_Controlling && call->params->update_call_when_ice_completed ) {
+					const LinphoneCallParams *current_param =  linphone_call_get_current_params(call);
+					if (ice_session_role(call->ice_session) == IR_Controlling && current_param->update_call_when_ice_completed ) {
 						LinphoneCallParams *params = linphone_core_create_call_params(call->core, call);
 						params->internal_call_update = TRUE;
 						linphone_core_update_call(call->core, call, params);

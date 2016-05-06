@@ -329,7 +329,6 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 	if (cr->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(cr->call))) {
 		uint32_t new_line = 0x2028;
 		linphone_chat_message_put_char(msg, new_line); // New Line
-		linphone_chat_message_set_state(msg, LinphoneChatMessageStateDelivered);
 		linphone_chat_message_unref(msg);
 		return;
 	}
@@ -867,7 +866,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 		if (character == new_line || character == crlf || character == lf) {
 			// End of message
 			LinphoneChatMessage *msg = cr->pending_message;
-			ms_message("New line received, forge a message with content %s", cr->pending_message->message);
+			ms_debug("New line received, forge a message with content %s", cr->pending_message->message);
 
 			linphone_chat_message_set_from(msg, cr->peer_url);
 			if (msg->to)
@@ -878,7 +877,10 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 			msg->state = LinphoneChatMessageStateDelivered;
 			msg->is_read = FALSE;
 			msg->dir = LinphoneChatMessageIncoming;
-			msg->storage_id = linphone_chat_message_store(msg);
+			
+			if (lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
+				msg->storage_id = linphone_chat_message_store(msg);
+			}
 
 			if (cr->unread_count < 0) cr->unread_count = 1;
 			else cr->unread_count++;
@@ -890,7 +892,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 		} else {
 			char *value = utf8_to_char(character);
 			cr->pending_message->message = ms_strcat_printf(cr->pending_message->message, value);
-			ms_message("Received RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, cr->pending_message->message);
+			ms_debug("Received RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, cr->pending_message->message);
 			ms_free(value);
 		}
 	}
@@ -911,15 +913,39 @@ uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
 	return 0;
 }
 
-int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t charater) {
+int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character) {
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
 	LinphoneCall *call = cr->call;
+	LinphoneCore *lc = cr->lc;
+	uint32_t new_line = 0x2028;
+	uint32_t crlf = 0x0D0A;
+	uint32_t lf = 0x0A;
 
 	if (!call || !call->textstream) {
 		return -1;
 	}
-
-	text_stream_putchar32(call->textstream, charater);
+	
+	if (character == new_line || character == crlf || character == lf) {
+		if (lc && lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
+			ms_debug("New line sent, forge a message with content %s", msg->message);
+			msg->time = ms_time(0);
+			msg->state = LinphoneChatMessageStateDelivered;
+			msg->is_read = TRUE;
+			msg->dir = LinphoneChatMessageOutgoing;
+			if (msg->from) linphone_address_destroy(msg->from);
+			msg->from = linphone_address_new(linphone_core_get_identity(lc));
+			msg->storage_id = linphone_chat_message_store(msg);
+			ms_free(msg->message);
+			msg->message = NULL;
+		}
+	} else {
+		char *value = utf8_to_char(character);
+		msg->message = ms_strcat_printf(msg->message, value);
+		ms_debug("Sent RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, msg->message);
+		ms_free(value);
+	}
+	
+	text_stream_putchar32(call->textstream, character);
 	return 0;
 }
 
