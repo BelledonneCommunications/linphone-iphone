@@ -215,13 +215,12 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 bool_t wait_for_stun_resolution(LinphoneCoreManager *m) {
 	MSTimeSpec start;
 	int timeout_ms = 10000;
-
 	liblinphone_tester_clock_start(&start);
-	while (m->lc->net_conf.stun_addrinfo == NULL && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
+	while (linphone_core_get_stun_server_addrinfo(m->lc) == NULL && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
 		linphone_core_iterate(m->lc);
 		ms_usleep(20000);
 	}
-	return m->lc->net_conf.stun_addrinfo != NULL;
+	return linphone_core_get_stun_server_addrinfo(m->lc) != NULL;
 }
 
 static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t enable) {
@@ -339,6 +338,7 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 
 void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies) {
 	LinphoneProxyConfig* proxy;
+	LinphoneNatPolicy *nat_policy;
 	int proxy_count;
 
 	/*BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
@@ -370,7 +370,9 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 		linphone_address_clean(mgr->identity);
 	}
 
-	if (linphone_core_get_stun_server(mgr->lc) != NULL){
+	nat_policy = linphone_core_get_nat_policy(mgr->lc);
+	if ((nat_policy != NULL) && (linphone_nat_policy_get_stun_server(nat_policy) != NULL) &&
+		(linphone_nat_policy_stun_enabled(nat_policy) || linphone_nat_policy_turn_enabled(nat_policy))) {
 		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
 		BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
 	}

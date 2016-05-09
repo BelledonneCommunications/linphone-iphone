@@ -1173,7 +1173,7 @@ static void call_with_no_sdp_ack_without_sdp(void){
 	linphone_core_manager_destroy(pauline);
 }
 
-static void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts) {
+void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts) {
 	LinphoneCall *c1 = linphone_core_get_current_call(caller->lc);
 	LinphoneCall *c2 = linphone_core_get_current_call(callee->lc);
 	BC_ASSERT_PTR_NOT_NULL(c1);
