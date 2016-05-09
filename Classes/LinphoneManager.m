@@ -1400,6 +1400,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 		if (strcmp(FRONT_CAM_NAME, cam) == 0) {
 			_frontCamId = cam;
 			// great set default cam to front
+			LOGI(@"Setting default camera [%s]", _frontCamId);
 			linphone_core_set_video_device(theLinphoneCore, _frontCamId);
 		}
 		if (strcmp(BACK_CAM_NAME, cam) == 0) {

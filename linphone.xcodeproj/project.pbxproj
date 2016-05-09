@@ -653,6 +653,7 @@
 		63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */; };
 		63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */; };
 		63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */; };
+		63F2257F1CE0BB6D000F827A /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 63F2257E1CE0BB6D000F827A /* nowebcamCIF.jpg */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
 		63FD3F091CA17F9100E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */; };
 		63FD3F0A1CA17F9100E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F071CA17F9100E9AECC /* libmbedtls.a */; };
@@ -1562,6 +1563,7 @@
 		63F1DF4C1BCE985F00EDED90 /* UICallConferenceCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallConferenceCell.h; sourceTree = "<group>"; };
 		63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallConferenceCell.m; sourceTree = "<group>"; };
 		63F1DF521BCE986A00EDED90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallConferenceCell.xib; sourceTree = "<group>"; };
+		63F2257E1CE0BB6D000F827A /* nowebcamCIF.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nowebcamCIF.jpg; sourceTree = "<group>"; };
 		63FB30331A680E73008CA393 /* UIRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundedImageView.h; sourceTree = "<group>"; };
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
 		63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "liblinphone-sdk/apple-darwin/lib/libmbedcrypto.a"; sourceTree = "<group>"; };
@@ -2601,6 +2603,7 @@
 				6316A1761C5F64340073BFA4 /* micro_disabled@2x.png */,
 				6316A1771C5F64340073BFA4 /* micro_selected.png */,
 				6316A1781C5F64340073BFA4 /* micro_selected@2x.png */,
+				63F2257E1CE0BB6D000F827A /* nowebcamCIF.jpg */,
 				6316A1791C5F64340073BFA4 /* numpad_0_default.png */,
 				6316A17A1C5F64340073BFA4 /* numpad_0_default@2x.png */,
 				6316A17B1C5F64340073BFA4 /* numpad_0_over.png */,
@@ -3532,6 +3535,7 @@
 				6316A26F1C5F64350073BFA4 /* call_start_body_over@2x.png in Resources */,
 				6316A37B1C5F64350073BFA4 /* numpad_hash_default@2x.png in Resources */,
 				D38187B915FE342200C3EDCA /* ContactDetailsView.xib in Resources */,
+				63F2257F1CE0BB6D000F827A /* nowebcamCIF.jpg in Resources */,
 				6316A3511C5F64350073BFA4 /* numpad_4~ipad@2x.png in Resources */,
 				6316A3221C5F64350073BFA4 /* menu.png in Resources */,
 				6316A2741C5F64350073BFA4 /* call_status_incoming~ipad.png in Resources */,
