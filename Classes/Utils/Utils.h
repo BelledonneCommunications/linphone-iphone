@@ -30,7 +30,7 @@
 + (void)buttonFixStates:(UIButton*)button;
 + (void)buttonMultiViewAddAttributes:(NSMutableDictionary*)attributes button:(UIButton*)button;
 + (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
-+ (NSString *)deviceName;
++ (NSString *)deviceModelIdentifier;
 
 + (LinphoneAddress *)normalizeSipOrPhoneAddress:(NSString *)addr;
 

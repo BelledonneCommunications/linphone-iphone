@@ -1360,13 +1360,14 @@ static LinphoneCoreVTable linphonec_vtable = {
 	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
 	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
 
-	NSMutableString *device = [[NSMutableString alloc]
+	NSString *device = [[NSMutableString alloc]
 		initWithString:[NSString
 						   stringWithFormat:@"%@_%@_iOS%@",
 											[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
-											[LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion]];
-	[device stringByReplacingOccurrencesOfString:@"," withString:@"."];
-	[device stringByReplacingOccurrencesOfString:@" " withString:@"."];
+											[LinphoneUtils deviceModelIdentifier],
+											UIDevice.currentDevice.systemVersion]];
+	device = [device stringByReplacingOccurrencesOfString:@"," withString:@"."];
+	device = [device stringByReplacingOccurrencesOfString:@" " withString:@"."];
 	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"];
@@ -1399,7 +1400,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 		if (strcmp(FRONT_CAM_NAME, cam) == 0) {
 			_frontCamId = cam;
 			// great set default cam to front
-			linphone_core_set_video_device(theLinphoneCore, cam);
+			linphone_core_set_video_device(theLinphoneCore, _frontCamId);
 		}
 		if (strcmp(BACK_CAM_NAME, cam) == 0) {
 			_backCamId = cam;
