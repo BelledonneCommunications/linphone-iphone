@@ -241,14 +241,17 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 		}
 	}else{
 		/*handle the case where we are receiving a request with to tag but it is not belonging to any dialog*/
-		if (strcmp("INVITE",method)==0 || strcmp("NOTIFY",method)==0) {
-			belle_sip_header_to_t *to = belle_sip_message_get_header_by_type(req, belle_sip_header_to_t);
-			if (belle_sip_header_to_get_tag(to) != NULL){
-				ms_warning("Receiving %s with to-tag but no know dialog here. Rejecting.", method);
-				resp=belle_sip_response_create_from_request(req,481);
-				belle_sip_provider_send_response(sal->prov,resp);
-				return;
-			}
+		belle_sip_header_to_t *to = belle_sip_message_get_header_by_type(req, belle_sip_header_to_t);
+		if ((strcmp("INVITE",method)==0 || strcmp("NOTIFY",method)==0) && (belle_sip_header_to_get_tag(to) != NULL)) {
+			ms_warning("Receiving %s with to-tag but no know dialog here. Rejecting.", method);
+			resp=belle_sip_response_create_from_request(req,481);
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		/* by default (eg. when a to-tag is present), out of dialog ACK are automatically
+		handled in lower layers (belle-sip) but in case it misses, it will be forwarded to us */
+		} else if (strcmp("ACK",method)==0 && (belle_sip_header_to_get_tag(to) == NULL)) {
+			ms_warning("Receiving ACK without to-tag but no know dialog here. Ignoring");
+			return;
 		}
 
 		if (strcmp("INVITE",method)==0) {
