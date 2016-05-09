@@ -1762,7 +1762,10 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->network_last_check = 0;
 	lc->network_last_status = FALSE;
 
-	lc->http_provider = belle_sip_stack_create_http_provider(sal_get_belle_sip_stack(lc->sal), "0.0.0.0");
+	/* Create the http provider in dual stack mode (ipv4 and ipv6.
+	 * If this creates problem, we may need to implement parallel ipv6/ ipv4 http requests in belle-sip.
+	 */
+	lc->http_provider = belle_sip_stack_create_http_provider(sal_get_belle_sip_stack(lc->sal), "::0");
 	lc->http_crypto_config = belle_tls_crypto_config_new();
 	belle_http_provider_set_tls_crypto_config(lc->http_provider,lc->http_crypto_config);
 
@@ -2675,10 +2678,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 	if (linphone_core_get_global_state(lc) == LinphoneGlobalStartup) {
 		if (sal_get_root_ca(lc->sal)) {
-			belle_tls_crypto_config_t *crypto_config = belle_tls_crypto_config_new();
-			belle_tls_crypto_config_set_root_ca(crypto_config, sal_get_root_ca(lc->sal));
-			belle_http_provider_set_tls_crypto_config(lc->http_provider, crypto_config);
-			belle_sip_object_unref(crypto_config);
+			belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, sal_get_root_ca(lc->sal));
+			belle_http_provider_set_tls_crypto_config(lc->http_provider, lc->http_crypto_config);
 		}
 
 		linphone_core_notify_display_status(lc, _("Configuring"));
