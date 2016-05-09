@@ -216,12 +216,16 @@ static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState
 
 
 	linphone_core_terminate_all_calls(marie->lc);
-
+	
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,2,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,2,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,10000));
 
-
+	linphone_call_params_unref(laure_params);
+	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
@@ -923,9 +927,9 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Call waiting indication with privacy", call_waiting_indication_with_privacy),
 	TEST_NO_TAG("Second call rejected if first one in progress", second_call_rejected_if_first_one_in_progress),
 	TEST_NO_TAG("Second call allowed if not using audio", second_call_allowed_if_not_using_audio),
-	TEST_ONE_TAG("Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress, "LeaksMemory"),
-	TEST_ONE_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing, "LeaksMemory"),
-	TEST_ONE_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media, "LeaksMemory"),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media),
 	TEST_NO_TAG("Simple conference", simple_conference),
 	TEST_TWO_TAGS("Simple conference with ICE", simple_conference_with_ice, "ICE",),
 	TEST_TWO_TAGS("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE",),
