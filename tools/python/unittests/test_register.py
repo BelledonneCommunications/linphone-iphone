@@ -173,7 +173,7 @@ class TestRegister:
         assert_equals(cm.stats.number_of_auth_info_requested, 1)
 
     def test_multiple_accounts(self):
-        CoreManager('multi_account_rc', True)
+        CoreManager('multi_account_rc', False)
 
     def test_transport_change(self):
         cm = CoreManager('multi_account_rc', True)

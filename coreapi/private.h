@@ -416,6 +416,7 @@ void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void _linphone_friend_release(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
+void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 LinphoneFriend *linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op);
