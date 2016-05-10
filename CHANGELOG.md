@@ -27,6 +27,7 @@ Group changes to describe their impact on the project, as follows:
 consider inputs to be phone numbers, otherwise SIP addresses.
 - Automatically start call when answering from within notification in iOS9+
 - Contact details view is now scrollable to fix issue on small screens
+- Unregister accounts in case of application shutdown when remote push notifications are not enabled
 
 ## [3.12.1] - 2016-02-19
 

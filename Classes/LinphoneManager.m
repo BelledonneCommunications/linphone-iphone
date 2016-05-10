@@ -1678,7 +1678,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		}
 
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"]) {
-
 			// register keepalive
 			if ([[UIApplication sharedApplication]
 					setKeepAliveTimeout:600 /*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/
@@ -2040,7 +2039,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	const MSList *proxies = linphone_core_get_proxy_config_list(LC);
 	while (proxies) {
-		linphone_proxy_config_set_ref_key(proxies->data, "push_notification");
 		[self configurePushTokenForProxyConfig:proxies->data];
 		proxies = proxies->next;
 	}
