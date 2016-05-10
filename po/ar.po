@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-15 14:09+0100\n"
-"PO-Revision-Date: 2016-03-15 13:09+0000\n"
+"POT-Creation-Date: 2016-05-10 11:54+0200\n"
+"PO-Revision-Date: 2016-05-10 09:58+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/belledonne-communications/linphone-gtk/language/ar/)\n"
 "MIME-Version: 1.0\n"
@@ -106,15 +106,15 @@ msgstr "أنا"
 msgid "Couldn't find pixmap file: %s"
 msgstr "أيقونة غير موجودة : %s"
 
-#: ../gtk/chat.c:202 ../gtk/chat.c:260
+#: ../gtk/chat.c:207 ../gtk/chat.c:265
 msgid "Sending..."
 msgstr "يجري الإرسال...‏"
 
-#: ../gtk/chat.c:219 ../gtk/chat.c:269
+#: ../gtk/chat.c:224 ../gtk/chat.c:274
 msgid "Message not sent"
 msgstr "لم تُرسَل الرسالة"
 
-#: ../gtk/chat.c:493
+#: ../gtk/chat.c:498
 msgid "Copy"
 msgstr "نسخ"
 
@@ -160,7 +160,7 @@ msgstr "ابدأ مرشد الصوت"
 msgid "Run self test and exit 0 if succeed"
 msgstr "شغِّل الاختبار الذاتي ثم اخرِجْ 0 إذا نجح"
 
-#: ../gtk/main.c:1036
+#: ../gtk/main.c:1058
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
@@ -168,80 +168,80 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr "يود %s إضافتك إلى جهات اتصاله.\nهل تريد إضافته إلى جهات اتصالك والسماح له برؤية حالة حضورك ؟\nإن كان الجواب بالرفض، سوف يجري حظر هذا الشخص مؤقتا."
 
-#: ../gtk/main.c:1113
+#: ../gtk/main.c:1135
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr "ادخل كلمة السر لـ  <i>%s</i>\n في نطاق <i>%s</i>:"
 
-#: ../gtk/main.c:1222
+#: ../gtk/main.c:1244
 msgid "Call error"
 msgstr "خطأ في المكالمة"
 
-#: ../gtk/main.c:1225 ../coreapi/linphonecore.c:3938
+#: ../gtk/main.c:1247 ../coreapi/linphonecore.c:3942
 msgid "Call ended"
 msgstr "إنتهت المكالمة"
 
-#: ../gtk/main.c:1228 ../coreapi/call_log.c:235
+#: ../gtk/main.c:1250 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "مكالمة واردة"
 
-#: ../gtk/main.c:1231 ../gtk/incall_view.c:579 ../gtk/in_call_frame.ui.h:2
+#: ../gtk/main.c:1253 ../gtk/incall_view.c:579 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "أجِبْ"
 
-#: ../gtk/main.c:1233 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1255 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "ارفضْ"
 
-#: ../gtk/main.c:1240
+#: ../gtk/main.c:1262
 msgid "Call paused"
 msgstr "المكالمة متوقفة"
 
-#: ../gtk/main.c:1240
+#: ../gtk/main.c:1262
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>بواسطة %s</b>"
 
-#: ../gtk/main.c:1314
+#: ../gtk/main.c:1336
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "يود %s تشغيل الفيديو. هل تقبل ذلك ؟"
 
-#: ../gtk/main.c:1480
+#: ../gtk/main.c:1502
 msgid "Website link"
 msgstr "وصلة إلى الموقع وِبْ"
 
-#: ../gtk/main.c:1539 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1561 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "لِنْفُونْ"
 
-#: ../gtk/main.c:1540
+#: ../gtk/main.c:1562
 msgid "A video internet phone"
 msgstr "الهاتف المرئي عبر الإنترنت"
 
-#: ../gtk/main.c:1602
+#: ../gtk/main.c:1624
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (افتراضي)"
 
-#: ../gtk/main.c:1975 ../coreapi/callbacks.c:1080
+#: ../gtk/main.c:1997 ../coreapi/callbacks.c:1080
 #, c-format
 msgid "We are transferred to %s"
 msgstr "التحويل إلى %s"
 
-#: ../gtk/main.c:1986
+#: ../gtk/main.c:2008
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "لا وجود للوحة الصوت على هذا الحاسوب.\nلن تتمكن من تلقي أو إجراء أي مكالمة."
 
-#: ../gtk/main.c:2151
+#: ../gtk/main.c:2173
 msgid "A free SIP video-phone"
 msgstr "هاتف SIP المرئي الحر"
 
-#: ../gtk/main.c:2270
+#: ../gtk/main.c:2292
 #, c-format
 msgid "Hello\n"
 msgstr "أهلا\n"
@@ -547,7 +547,7 @@ msgid "%.3f seconds"
 msgstr "%.3f ثانية"
 
 #: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
-#: ../gtk/videowindow.c:242
+#: ../gtk/videowindow.c:248
 msgid "Hang up"
 msgstr "ضع السماعة"
 
@@ -1142,11 +1142,11 @@ msgstr "إظهار لوحة الأرقام"
 
 #: ../gtk/main.ui.h:8
 msgid "Import contacts from vCards"
-msgstr ""
+msgstr "استورد جهات الاتصال من أنساق vCard"
 
 #: ../gtk/main.ui.h:9
 msgid "Export contacts as vCards"
-msgstr ""
+msgstr "صدِّر جهات الاتصال بنسق vCard"
 
 #: ../gtk/main.ui.h:10
 msgid "_Help"
@@ -1508,11 +1508,11 @@ msgstr "وسيط التعمية إجباري"
 
 #: ../gtk/parameters.ui.h:77
 msgid "Mandatory"
-msgstr ""
+msgstr "واجب"
 
 #: ../gtk/parameters.ui.h:78
 msgid "Preferred"
-msgstr ""
+msgstr "مستحب"
 
 #: ../gtk/parameters.ui.h:79
 msgid "<b>Encryption</b>"
@@ -1804,52 +1804,52 @@ msgstr "<b>تهيئة وكيل http (اختياري)</b>"
 msgid "Please wait"
 msgstr "يُرجى الانتظار"
 
-#: ../coreapi/linphonecore.c:1590
+#: ../coreapi/linphonecore.c:1594
 msgid "Ready"
 msgstr "جاهز"
 
-#: ../coreapi/linphonecore.c:2681
+#: ../coreapi/linphonecore.c:2685
 msgid "Configuring"
 msgstr "تجري التهيئة"
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:3080
+#: ../coreapi/linphonecore.c:3084
 msgid "Contacting"
 msgstr "يتصل ب"
 
-#: ../coreapi/linphonecore.c:3085
+#: ../coreapi/linphonecore.c:3089
 msgid "Could not call"
 msgstr "لم يتمكن من الاتصال"
 
-#: ../coreapi/linphonecore.c:3224
+#: ../coreapi/linphonecore.c:3228
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "آسف، وصل عدد المكالمات الآنية إلى حده الأقصى"
 
-#: ../coreapi/linphonecore.c:3384
+#: ../coreapi/linphonecore.c:3388
 msgid "is contacting you"
 msgstr "يتصل بك"
 
-#: ../coreapi/linphonecore.c:3385
+#: ../coreapi/linphonecore.c:3389
 msgid " and asked autoanswer."
 msgstr "ويطلب ردا تلقائيا."
 
-#: ../coreapi/linphonecore.c:3502
+#: ../coreapi/linphonecore.c:3506
 msgid "Modifying call parameters..."
 msgstr "يجري تعديل إعدادات المكالمة..."
 
-#: ../coreapi/linphonecore.c:3894
+#: ../coreapi/linphonecore.c:3898
 msgid "Connected."
 msgstr "متصل."
 
-#: ../coreapi/linphonecore.c:3919
+#: ../coreapi/linphonecore.c:3923
 msgid "Call aborted"
 msgstr "أُلغيت المكالمة"
 
-#: ../coreapi/linphonecore.c:4121
+#: ../coreapi/linphonecore.c:4125
 msgid "Could not pause the call"
 msgstr "لم يتمكن من توقيف المكالمة مؤقتا"
 
-#: ../coreapi/linphonecore.c:4124
+#: ../coreapi/linphonecore.c:4128
 msgid "Pausing the current call..."
 msgstr "وضع المكالمة قيد الانتظار..."
 
@@ -1913,32 +1913,32 @@ msgstr "في عطلة"
 msgid "Unknown status"
 msgstr "حالة مجهولة"
 
-#: ../coreapi/proxy.c:336
+#: ../coreapi/proxy.c:339
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr "إن عنوان SIP الذي أدخلت غير صحيح، يجب أن يبدأ بـ \"sip:‎\" متبوعا باسم المضيف."
 
-#: ../coreapi/proxy.c:342
+#: ../coreapi/proxy.c:345
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr "إن هوية SIP التي أدخلت غير صحيحة.\nيجب أن تكون بهذا النمط sip:username@proxydomain، مثلا sip:alice@example.net"
 
-#: ../coreapi/proxy.c:972
+#: ../coreapi/proxy.c:979
 msgid "Looking for telephone number destination..."
 msgstr "يجري البحث عن وجهة رقم الهاتف..."
 
-#: ../coreapi/proxy.c:976
+#: ../coreapi/proxy.c:983
 msgid "Could not resolve this number."
 msgstr "لم يتمكن من إيجاد هذا الرقم."
 
-#: ../coreapi/proxy.c:1409
+#: ../coreapi/proxy.c:1437
 #, c-format
 msgid "Could not login as %s"
 msgstr "تعذر الولوج بالهوية %s"
 
-#: ../coreapi/proxy.c:1494
+#: ../coreapi/proxy.c:1522
 #, c-format
 msgid "Refreshing on %s..."
 msgstr "‫يجري إنعاش في %s...‬"
@@ -2047,16 +2047,16 @@ msgstr "خدمة غير متاحة، تجري الإعادة"
 msgid "Authentication token is %s"
 msgstr "شارة التحقق من الهوية هي %s"
 
-#: ../coreapi/linphonecall.c:1616
+#: ../coreapi/linphonecall.c:1646
 #, c-format
 msgid "Call parameters could not be modified: %s."
 msgstr "‫لم تُعدَّل معاملات المكالمات : %s.‬"
 
-#: ../coreapi/linphonecall.c:1618
+#: ../coreapi/linphonecall.c:1648
 msgid "Call parameters were successfully modified."
 msgstr "عُدِّلت معاملات المكالمات بنجاج."
 
-#: ../coreapi/linphonecall.c:4527
+#: ../coreapi/linphonecall.c:4619
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
@@ -2101,3 +2101,7 @@ msgstr "المكالمة الصادرة"
 #, c-format
 msgid "Cannot play %s."
 msgstr "لم يتمكن من تشغيل %s"
+
+#: ../gtk/videowindow.c:252
+msgid "Take screenshot"
+msgstr ""

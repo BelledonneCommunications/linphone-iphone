@@ -220,6 +220,7 @@ LINPHONE_PUBLIC void linphone_gtk_unmonitor_usb(void);
 
 LINPHONE_PUBLIC void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap);
 LINPHONE_PUBLIC gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_conference);
+LINPHONE_PUBLIC gchar *linphone_gtk_get_snapshot_path(void);
 LINPHONE_PUBLIC void linphone_gtk_schedule_restart(void);
 
 LINPHONE_PUBLIC void linphone_gtk_show_audio_assistant(void);

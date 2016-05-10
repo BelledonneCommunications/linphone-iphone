@@ -398,7 +398,7 @@ static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendL
 			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
 		if (lf->friend_list)
 			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
-		return LinphoneFriendListInvalidFriend;
+		return status;
 	}
 	if (ms_list_find(list->friends, lf) != NULL) {
 		char *tmp = NULL;

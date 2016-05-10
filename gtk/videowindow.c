@@ -186,6 +186,12 @@ static void on_controls_response(GtkWidget *dialog, int response_id, GtkWidget *
 			linphone_core_terminate_call(linphone_gtk_get_core(),call);
 		}
 		break;
+		case GTK_RESPONSE_APPLY:
+		{
+			LinphoneCall *call=(LinphoneCall*)g_object_get_data(G_OBJECT(video_window),"call");
+			char *path = (char *)linphone_gtk_get_snapshot_path();
+			linphone_call_take_video_snapshot(call, path);
+		}
 	}
 
 }
@@ -243,6 +249,11 @@ static GtkWidget *show_video_controls(GtkWidget *video_window){
 		gtk_button_set_image(GTK_BUTTON(button), image);
 		gtk_widget_show(button);
 		gtk_dialog_add_action_widget(GTK_DIALOG(w),button,GTK_RESPONSE_REJECT);
+		button=gtk_button_new_with_label(_("Take screenshot"));
+		image = gtk_image_new_from_icon_name("linphone-take-screenshot", GTK_ICON_SIZE_BUTTON);
+		gtk_button_set_image(GTK_BUTTON(button), image);
+		gtk_widget_show(button);
+		gtk_dialog_add_action_widget(GTK_DIALOG(w),button,GTK_RESPONSE_APPLY);
 		g_signal_connect(w,"response",(GCallback)on_controls_response,video_window);
 		timeout=g_timeout_add(3000,(GSourceFunc)gtk_widget_destroy,w);
 		g_object_set_data(G_OBJECT(w),"timeout",GINT_TO_POINTER(timeout));

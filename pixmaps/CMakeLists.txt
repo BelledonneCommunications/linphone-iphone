@@ -122,6 +122,7 @@ install(FILES
 	linphone-call-transfer.png
 	linphone-record.png
 	linphone-chat-send.png
+	linphone-take-screenshot.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
