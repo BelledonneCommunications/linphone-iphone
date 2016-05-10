@@ -1226,7 +1226,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				// else keep default value from linphonecore
 			}
 
-			if (lm.connectivity != newConnectivity) {
+			// in case of wifi change (newconnectivity == lm.connectivity == wifi), we must
+			// reregister because we are using a different router anyway
+			if (lm.connectivity != newConnectivity || newConnectivity != wwan) {
 				// connectivity has changed
 				linphone_core_set_network_reachable(theLinphoneCore, false);
 				if (newConnectivity == wwan && proxy && isWifiOnly) {
@@ -1235,8 +1237,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				linphone_core_set_network_reachable(theLinphoneCore, true);
 				linphone_core_iterate(theLinphoneCore);
 				LOGI(@"Network connectivity changed to type [%s]", (newConnectivity == wifi ? "wifi" : "wwan"));
+				lm.connectivity = newConnectivity;
 			}
-			lm.connectivity = newConnectivity;
 		}
 		if (ctx && ctx->networkStateChanged) {
 			(*ctx->networkStateChanged)(lm.connectivity);
