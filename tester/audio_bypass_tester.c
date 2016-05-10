@@ -60,37 +60,37 @@ static void audio_bypass_snd_read_init(MSFilter *f) {
 	f->data=d;
 }
 
-int ms_read_wav_header_from_fd(wave_header_t *header,int fd){
+int audio_bypass_read_wav_header_from_fd(wave_header_t *header,int fd){
 	int count;
 	int skip;
 	int hsize=0;
 	riff_t *riff_chunk=&header->riff_chunk;
 	format_t *format_chunk=&header->format_chunk;
 	data_t *data_chunk=&header->data_chunk;
-	
+
 	unsigned long len=0;
-	
+
 	len = read(fd, (char*)riff_chunk, sizeof(riff_t)) ;
 	if (len != sizeof(riff_t)){
 		goto not_a_wav;
 	}
-	
+
 	if (0!=strncmp(riff_chunk->riff, "RIFF", 4) || 0!=strncmp(riff_chunk->wave, "WAVE", 4)){
 		goto not_a_wav;
 	}
-	
-	len = read(fd, (char*)format_chunk, sizeof(format_t)) ;            
+
+	len = read(fd, (char*)format_chunk, sizeof(format_t)) ;
 	if (len != sizeof(format_t)){
 		ms_warning("Wrong wav header: cannot read file");
 		goto not_a_wav;
 	}
-	
+
 	if ((skip=le_uint32(format_chunk->len)-0x10)>0)
 	{
 		lseek(fd,skip,SEEK_CUR);
 	}
 	hsize=sizeof(wave_header_t)-0x10+le_uint32(format_chunk->len);
-	
+
 	count=0;
 	do{
 		len = read(fd, data_chunk, sizeof(data_t)) ;
@@ -119,11 +119,11 @@ int ms_read_wav_header_from_fd(wave_header_t *header,int fd){
 static int read_wav_header(PlayerData *d){
 	wave_header_t header;
 	format_t *format_chunk=&header.format_chunk;
-	int ret=ms_read_wav_header_from_fd(&header,d->fd);
-	
+	int ret=audio_bypass_read_wav_header_from_fd(&header,d->fd);
+
 	d->samplesize=le_uint16(format_chunk->blockalign)/d->nchannels;
 	d->hsize=ret;
-	
+
 	#ifdef WORDS_BIGENDIAN
 	if (le_uint16(format_chunk->blockalign)==le_uint16(format_chunk->channel) * 2)
 		d->swap=TRUE;
@@ -150,7 +150,7 @@ static void audio_bypass_snd_read_preprocess(MSFilter *f) {
 	}
 	ms_filter_notify_no_arg(f,MS_FILTER_OUTPUT_FMT_CHANGED);
 	ms_message("MSFilePlayer[%p]: %s opened: rate=%i,channel=%i",f,file,d->rate,d->nchannels);
-	
+
 	if (d->state==MSPlayerPaused)
 		d->state=MSPlayerPlaying;
 	return;
@@ -298,11 +298,11 @@ MSFilterDesc audio_bypass_snd_read_desc = {
 };
 
 static void audio_bypass_snd_write_init(MSFilter *f) {
-	
+
 }
 
 static void audio_bypass_snd_write_preprocess(MSFilter *f) {
-	
+
 }
 
 static void audio_bypass_snd_write_process(MSFilter *f) {
@@ -311,11 +311,11 @@ static void audio_bypass_snd_write_process(MSFilter *f) {
 }
 
 static void audio_bypass_snd_write_postprocess(MSFilter *f) {
-	
+
 }
 
 static void audio_bypass_snd_write_uninit(MSFilter *f) {
-	
+
 }
 
 static int audio_bypass_snd_write_set_sample_rate(MSFilter *f, void *arg) { // This is to prevent ms2 to put a resampler between this filter and the rtprecv
@@ -391,7 +391,7 @@ MSSndCardDesc audio_bypass_snd_card_desc = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,	
+	NULL,
 	audio_bypass_snd_card_create_reader,
 	audio_bypass_snd_card_create_writer,
 	NULL
@@ -432,28 +432,28 @@ static void audio_bypass(void) {
 	LinphoneCore *marie_lc = marie->lc;
 	MSFactory *marie_factory = linphone_core_get_ms_factory(marie_lc);
 	MSSndCardManager *marie_sndcard_manager = ms_factory_get_snd_card_manager(marie_factory);
-	
+
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneCore *pauline_lc = pauline->lc;
 	MSFactory *pauline_factory = linphone_core_get_ms_factory(pauline_lc);
 	MSSndCardManager *pauline_sndcard_manager = ms_factory_get_snd_card_manager(pauline_factory);
-	
+
 	bool_t call_ok;
 	char *hellopath = bc_tester_res("sounds/hello44100.wav");
 	char *recordpath = bc_tester_file("audiobypass-record.wav");
 	double similar=1;
 	const double threshold = 0.85;
-	
+
 	lp_config_set_string(marie_lc->config, "sound", "features", "None");
 	lp_config_set_string(pauline_lc->config, "sound", "features", "None");
-	
+
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
-	
+
 	// Enable L16 audio codec
 	only_enable_payload(marie_lc, "L16", 44100, 1);
 	only_enable_payload(pauline_lc, "L16", 44100, 1);
-	
+
 	// Add our custom sound card
 	ms_snd_card_manager_register_desc(marie_sndcard_manager, &audio_bypass_snd_card_desc);
 	ms_snd_card_manager_register_desc(pauline_sndcard_manager, &audio_bypass_snd_card_desc);
@@ -475,12 +475,12 @@ static void audio_bypass(void) {
 	call_ok = call(marie, pauline);
 	BC_ASSERT_TRUE(call_ok);
 	if (!call_ok) goto end;
-	
+
 	BC_ASSERT_STRING_EQUAL(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie_lc)))->mime_type, "L16");
-	
+
 	wait_for_until(pauline_lc, marie_lc, NULL, 0, 22000); //hello44100.wav is 22 seconds long
 	end_call(marie, pauline);
-	
+
 	BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, &audio_cmp_params, NULL, NULL), 0, int, "%d");
 	BC_ASSERT_GREATER(similar, threshold, double, "%g");
 	BC_ASSERT_LOWER(similar, 1.0, double, "%g");
@@ -496,6 +496,6 @@ test_t audio_bypass_tests[] = {
 	TEST_NO_TAG("Audio Bypass", audio_bypass)
 };
 
-test_suite_t audio_bypass_suite = { "Audio Bypass", NULL, NULL, 
+test_suite_t audio_bypass_suite = { "Audio Bypass", NULL, NULL,
 	liblinphone_tester_before_each, liblinphone_tester_after_each,
 	sizeof(audio_bypass_tests) / sizeof(audio_bypass_tests[0]), audio_bypass_tests };
