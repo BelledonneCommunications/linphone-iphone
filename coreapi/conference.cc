@@ -194,17 +194,16 @@ using namespace std;
 
 Conference::Participant::Participant(LinphoneCall *call) {
 	m_uri = linphone_address_clone(linphone_call_get_remote_address(call));
-	m_call = linphone_call_ref(call);
+	m_call = call;
 }
 
 Conference::Participant::Participant(const Participant &src) {
 	m_uri = linphone_address_clone(src.m_uri);
-	m_call = src.m_call ? linphone_call_ref(src.m_call) : NULL;
+	m_call = src.m_call;
 }
 
 Conference::Participant::~Participant() {
 	linphone_address_unref(m_uri);
-	if(m_call) linphone_call_unref(m_call);
 }
 
 bool Conference::Participant::operator==(const Participant &src) const {
@@ -407,7 +406,6 @@ int LocalConference::addParticipant(LinphoneCall *call) {
 		ms_error("Call is in state %s, it cannot be added to the conference.",linphone_call_state_to_string(call->state));
 		return -1;
 	}
-	Conference::addParticipant(call);
 	return 0;
 }
 
@@ -425,7 +423,6 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 		}
 	}
 	call->params->in_conference=FALSE;
-	Conference::removeParticipant(call);
 
 	str=linphone_call_get_remote_address_as_string(call);
 	ms_message("%s will be removed from conference", str);
@@ -590,12 +587,14 @@ void LocalConference::onCallStreamStarting(LinphoneCall *call, bool isPausedByRe
 	ms_audio_conference_mute_member(m_conf,ep,isPausedByRemote);
 	call->endpoint=ep;
 	setState(LinphoneConferenceRunning);
+	Conference::addParticipant(call);
 }
 
 void LocalConference::onCallStreamStopping(LinphoneCall *call) {
 	ms_audio_conference_remove_member(m_conf,call->endpoint);
 	ms_audio_endpoint_release_from_stream(call->endpoint);
 	call->endpoint=NULL;
+	Conference::removeParticipant(call);
 }
 
 void LocalConference::onCallTerminating(LinphoneCall *call) {
