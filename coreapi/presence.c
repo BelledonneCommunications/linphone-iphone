@@ -1889,10 +1889,10 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	LinphonePresenceModel *presence = model ? (LinphonePresenceModel *)model:linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL);
 
 	if (linphone_core_get_default_friend_list(lc) != NULL)
-		lf=linphone_friend_list_find_friend_by_out_subscribe(linphone_core_get_default_friend_list(lc), op);
+		lf=linphone_core_find_friend_by_out_subscribe(lc, op);
 	if (lf==NULL && lp_config_get_int(lc->config,"sip","allow_out_of_subscribe_presence",0)){
 		const SalAddress *addr=sal_op_get_from_address(op);
-		lf = linphone_friend_list_find_friend_by_address(linphone_core_get_default_friend_list(lc), (LinphoneAddress *)addr);
+		lf = linphone_core_find_friend(lc, (LinphoneAddress *)addr);
 	}
 	if (lf!=NULL){
 		LinphonePresenceActivity *activity = NULL;

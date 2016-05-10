@@ -670,7 +670,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 		} else {
 			ms_message("Friends list [%p] subscription update skipped since subscriptions not enabled yet", list);
 		}
-	} else {
+	} else if (list->enable_subscriptions) {
 		for (elem = list->friends; elem != NULL; elem = elem->next) {
 			LinphoneFriend *lf = (LinphoneFriend *)elem->data;
 			linphone_friend_update_subscribes(lf, cfg, only_when_registered);
