@@ -61,7 +61,7 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	} else if (linphone_presence_model_get_basic_status(counters->last_received_presence) == LinphonePresenceBasicStatusClosed) {
 		counters->number_of_LinphonePresenceBasicStatusClosed++;
 	} else {
-		ms_error("unexpeted basioc status [%i]",linphone_presence_model_get_basic_status(counters->last_received_presence));
+		ms_error("Unexpected basic status [%i]",linphone_presence_model_get_basic_status(counters->last_received_presence));
 	}
 	for (i=0;i<linphone_presence_model_get_nb_activities(counters->last_received_presence); i++) {
 		LinphonePresenceActivity *activity = linphone_presence_model_get_nth_activity(counters->last_received_presence, i);
