@@ -2389,14 +2389,17 @@ static void video_call_disable_implicit_AVPF_on_callee(void) {
     lp_config_set_int(callee_lp,"rtp","rtcp_fb_implicit_rtcp_fb",0);
 
     video_call_base_3(caller,callee,TRUE,LinphoneMediaEncryptionNone,TRUE,TRUE);
-    params = linphone_call_get_current_params(linphone_core_get_current_call(callee->lc));
-    BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), "RTP/AVP");
-    params2 =linphone_call_get_current_params(linphone_core_get_current_call(caller->lc));
-    BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params2), "RTP/AVP");
+	if(BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(callee->lc))) {
+		params = linphone_call_get_current_params(linphone_core_get_current_call(callee->lc));
+		BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), "RTP/AVP");
+	}
+	if(BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(caller->lc))) {
+		params2 =linphone_call_get_current_params(linphone_core_get_current_call(caller->lc));
+		BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params2), "RTP/AVP");
+	}
     end_call(caller, callee);
     linphone_core_manager_destroy(callee);
     linphone_core_manager_destroy(caller);
-
 }
 
 
