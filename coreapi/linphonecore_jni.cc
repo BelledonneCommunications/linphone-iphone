@@ -3727,10 +3727,12 @@ extern "C" jobjectArray _LinphoneChatRoomImpl_getHistory(JNIEnv* env, jobject th
 			env->SetObjectArrayElement(jHistory, i, jmsg);
 			env->DeleteLocalRef(jmsg);
 		}
+		
 		history = history->next;
 	}
-
-	ms_list_free(list);
+	/*getChatMessage() acquired a ref that is "transfered" to the java object. We must drop
+		* the reference given by linphone_chat_room_get_history_range()*/
+	ms_list_free_with_data(list, (void (*)(void*))linphone_chat_message_unref);
 	return jHistory;
 }
 extern "C" jobjectArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistoryRange(JNIEnv*  env

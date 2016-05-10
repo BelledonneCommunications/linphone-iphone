@@ -193,13 +193,12 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 		if(atoi(argv[3])==LinphoneChatMessageIncoming){
 			new_message->dir=LinphoneChatMessageIncoming;
 			linphone_chat_message_set_from(new_message,linphone_chat_room_get_peer_address(cr));
-			linphone_chat_message_set_to(new_message,local_addr);
+			new_message->to = local_addr; /*direct assignation to avoid a copy*/
 		} else {
 			new_message->dir=LinphoneChatMessageOutgoing;
-			linphone_chat_message_set_from(new_message,local_addr);
+			new_message->from = local_addr; /*direct assignation to avoid a copy*/
 			linphone_chat_message_set_to(new_message,linphone_chat_room_get_peer_address(cr));
 		}
-		linphone_address_destroy(local_addr);
 
 		new_message->time = (time_t)atol(argv[9]);
 		new_message->is_read=atoi(argv[6]);

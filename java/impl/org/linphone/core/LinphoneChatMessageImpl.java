@@ -3,7 +3,7 @@ package org.linphone.core;
 import java.io.UnsupportedEncodingException;
 
 public class LinphoneChatMessageImpl implements LinphoneChatMessage {
-	protected final long nativePtr;
+	protected long nativePtr;
 	private native byte[] getText(long ptr);
 	private native long getPeerAddress(long ptr);
 	private native String getExternalBodyUrl(long ptr);
@@ -112,7 +112,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
 	protected void finalize() throws Throwable{
-		unref(nativePtr);
+		destroy();
 		super.finalize();
 	}
 	
@@ -159,5 +159,11 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	@Override
 	public void putChar(long character) throws LinphoneCoreException {
 		putChar(nativePtr, character);
+	}
+	public void destroy(){
+		if (nativePtr != 0) {
+			unref(nativePtr);
+			nativePtr = 0;
+		}
 	}
 }

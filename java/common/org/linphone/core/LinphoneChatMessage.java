@@ -234,5 +234,12 @@ public interface LinphoneChatMessage {
 	 * @throw LinphoneCoreExeption .
 	 */
 	void putChar(long character) throws LinphoneCoreException;
+
+	/**
+	 * Frees the underlying native resource of the message.
+	 * It should not be accessed afterwards.
+	 * This is for optimizing the memory resources at runtime. Not calling this does not result in a memory leak.
+	**/
+	void destroy();
 	
 }
