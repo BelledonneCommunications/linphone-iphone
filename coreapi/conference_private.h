@@ -43,7 +43,7 @@ typedef enum {
 typedef enum {
 	LinphoneConferenceStopped, /*< Initial state */
 	LinphoneConferenceStarting, /*< A participant has been added but the conference is not running yet */
-	LinphoneConferenceReady, /*< The conference is running */
+	LinphoneConferenceRunning, /*< The conference is running */
 	LinphoneConferenceStartingFailed /*< A participant has been added but the initialization of the conference has failed */
 } LinphoneConferenceState;
 /**
