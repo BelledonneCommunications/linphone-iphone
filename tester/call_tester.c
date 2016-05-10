@@ -4288,10 +4288,12 @@ static void call_with_very_early_call_update(void) {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
 	}
 
+	if(linphone_core_get_current_call(pauline->lc)) {
+		params=linphone_core_create_call_params(pauline->lc,linphone_core_get_current_call(pauline->lc));
+		linphone_core_update_call(pauline->lc,linphone_core_get_current_call(pauline->lc),params);
+		linphone_call_params_destroy(params);
+	}
 	
-	params=linphone_core_create_call_params(pauline->lc,linphone_core_get_current_call(pauline->lc));
-	linphone_core_update_call(pauline->lc,linphone_core_get_current_call(pauline->lc),params);
-	linphone_call_params_destroy(params);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdatedByRemote,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
