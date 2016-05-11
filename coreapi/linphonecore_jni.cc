@@ -5330,9 +5330,16 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_publish(JNIEnv
 
 // LpConfig
 extern "C" jlong Java_org_linphone_core_LpConfigImpl_newLpConfigImpl(JNIEnv *env, jobject thiz, jstring file) {
-		const char *cfile = env->GetStringUTFChars(file, NULL);
-		LpConfig *lp = lp_config_new(cfile);
+	const char *cfile = env->GetStringUTFChars(file, NULL);
+	LpConfig *lp = lp_config_new(cfile);
 	env->ReleaseStringUTFChars(file, cfile);
+	return (jlong) lp;
+}
+
+extern "C" jlong Java_org_linphone_core_LpConfigImpl_newLpConfigImplFromBuffer(JNIEnv *env, jobject thiz, jstring buffer) {
+	const char *cbuffer = env->GetStringUTFChars(buffer, NULL);
+	LpConfig *lp = lp_config_new_from_buffer(cbuffer);
+	env->ReleaseStringUTFChars(buffer, cbuffer);
 	return (jlong) lp;
 }
 

@@ -85,7 +85,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	
 	@Override
 	public LpConfig createLpConfig(String file) {
-		return new LpConfigImpl(file);
+		return LpConfigImpl.fromFile(file);
+	}
+	
+	public LpConfig createLpConfigFromString(String buffer) {
+		return LpConfigImpl.fromBuffer(buffer);
 	}
 
 	@Override

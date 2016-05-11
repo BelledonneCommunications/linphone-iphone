@@ -103,6 +103,7 @@ abstract public class LinphoneCoreFactory {
 	 */
 	abstract public LinphoneAddress createLinphoneAddress(String address) throws LinphoneCoreException;
 	abstract public LpConfig createLpConfig(String file);
+	abstract public LpConfig createLpConfigFromString(String buffer);
 	
 	/**
 	 * Enable verbose traces
