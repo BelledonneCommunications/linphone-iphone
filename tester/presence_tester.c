@@ -278,16 +278,15 @@ static void simple_subscribe_with_early_notify(void) {
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
 	LinphoneAddress *marie_identity_addr = linphone_address_clone(marie->identity);
 	LpConfig *pauline_lp;
-	pauline_lp = linphone_core_get_config(pauline->lc);
-	lp_config_set_int(pauline_lp,"sip","notify_pending_state",1);
 	
-	bool_t result=FALSE;
 	char* pauline_identity=linphone_address_as_string_uri_only(pauline->identity);
 	char* marie_identity;
 	
 	LinphoneFriend* pauline_s_friend;
 	LinphoneFriend* marie_s_friend=linphone_core_create_friend_with_address(marie->lc,pauline_identity);
 	
+	pauline_lp = linphone_core_get_config(pauline->lc);
+	lp_config_set_int(pauline_lp,"sip","notify_pending_state",1);
 	
 	linphone_friend_edit(marie_s_friend);
 	linphone_friend_enable_subscribes(marie_s_friend,TRUE);
@@ -308,7 +307,7 @@ static void simple_subscribe_with_early_notify(void) {
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_NotifyPresenceReceived,1));
 	BC_ASSERT_EQUAL(linphone_friend_get_subscription_state(marie_s_friend), LinphoneSubscriptionPending,int, "%d");
 	
-	result=wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,marie->stat.number_of_LinphonePresenceActivityOnline+1);
+	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,marie->stat.number_of_LinphonePresenceActivityOnline+1);
 	
 	BC_ASSERT_EQUAL(marie->stat.number_of_NotifyPresenceReceived,2, int, "%d");
 	
