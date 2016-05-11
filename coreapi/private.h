@@ -702,6 +702,7 @@ struct _LinphoneFriend{
 	LinphoneVcard *vcard;
 	unsigned int storage_id;
 	LinphoneFriendList *friend_list;
+	LinphoneSubscriptionState out_sub_state;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);

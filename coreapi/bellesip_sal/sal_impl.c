@@ -235,7 +235,12 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 
 	if (dialog) {
 		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
-		if (op==NULL || op->state==SalOpStateTerminated){
+		
+		if (op == NULL  && strcmp("NOTIFY",method) == 0) {
+			/*special case for Dialog created by notify mathing subscribe*/
+			belle_sip_transaction_t * sub_trans = belle_sip_dialog_get_last_transaction(dialog);
+			op = (SalOp*)belle_sip_transaction_get_application_data(sub_trans);
+		} else if (op==NULL || op->state==SalOpStateTerminated){
 			ms_warning("Receiving request for null or terminated op [%p], ignored",op);
 			return;
 		}

@@ -1513,6 +1513,9 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	if (lf!=NULL){
 		linphone_friend_add_incoming_subscription(lf, op);
 		lf->inc_subscribe_pending=TRUE;
+		if (lp_config_get_int(lc->config,"sip","notify_pending_state",0)) {
+			sal_notify_pending_state(op);
+		}
 		sal_subscribe_accept(op);
 		linphone_friend_done(lf);	/*this will do all necessary actions */
 	}else{
@@ -1904,6 +1907,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		linphone_friend_set_presence_model(lf, presence);
 		lf->subscribe_active=TRUE;
 		lf->presence_received = TRUE;
+		lf->out_sub_state = linphone_subscription_state_from_sal(ss);
 		linphone_core_notify_notify_presence_received(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 		if (op != lf->outsub){
