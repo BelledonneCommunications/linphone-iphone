@@ -1509,9 +1509,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	ms_message("Receiving new subscription from %s.",from);
 
 	/* check if we answer to this subscription */
-	if (linphone_core_get_default_friend_list(lc) != NULL) {
-		lf = linphone_friend_list_find_friend_by_address(linphone_core_get_default_friend_list(lc), uri);
-	}
+	lf = linphone_core_find_friend(lc, uri);
 	if (lf!=NULL){
 		linphone_friend_add_incoming_subscription(lf, op);
 		lf->inc_subscribe_pending=TRUE;
@@ -1938,8 +1936,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 	LinphoneFriend *lf = NULL;
 
-	if (linphone_core_get_default_friend_list(lc) != NULL)
-		lf = linphone_friend_list_find_friend_by_inc_subscribe(linphone_core_get_default_friend_list(lc), op);
+	lf = linphone_core_find_friend_by_inc_subscribe(lc, op);
 
 	if (lf!=NULL){
 		/*this will release the op*/
