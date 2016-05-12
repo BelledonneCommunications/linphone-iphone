@@ -50,6 +50,7 @@ set(LINPHONE_HEADER_FILES
 	lpconfig.h
 	ringtoneplayer.h
 	sipsetup.h
+	sqlite3_bctbx_vfs.h
 	xml2lpc.h
 	xmlrpc.h
 	vcard.h
@@ -113,6 +114,7 @@ set(LINPHONE_SOURCE_FILES_C
 	sal.c
 	siplogin.c
 	sipsetup.c
+	sqlite3_bctbx_vfs.c
 	xml2lpc.c
 	xml.c
 	xmlrpc.c
