@@ -683,10 +683,34 @@ static void call_with_sips_not_achievable(void){
 	}
 }
 
-static void call_with_ipv6(void) {
+
+
+static bool_t is_sending_ipv6(RtpSession *session, bool_t rtcp){
+	const struct sockaddr *dest = rtcp ? (struct sockaddr*)&session->rtcp.gs.rem_addr : (struct sockaddr*)&session->rtp.gs.rem_addr;
+	struct sockaddr_in6 *in6=(struct sockaddr_in6*)dest;
+	return dest->sa_family == AF_INET6 && !IN6_IS_ADDR_V4MAPPED(&in6->sin6_addr);
+}
+static bool_t is_remote_contact_ipv6(LinphoneCall *call){
+	const char *contact=linphone_call_get_remote_contact(call);
+	LinphoneAddress *ct_addr;
+	bool_t ret = FALSE;
+
+	BC_ASSERT_PTR_NOT_NULL(contact);
+	if (contact){
+		ct_addr=linphone_address_new(contact);
+		BC_ASSERT_PTR_NOT_NULL(ct_addr);
+		if (ct_addr){
+			ret = strchr(linphone_address_get_domain(ct_addr),':') != NULL;
+		}
+		linphone_address_destroy(ct_addr);
+	}
+	return ret;
+}
+
+static void _call_with_ipv6(bool_t caller_with_ipv6, bool_t callee_with_ipv6) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
-	LinphoneCall *pauline_call;
+	LinphoneCall *pauline_call, *marie_call;
 
 	/*calling ortp_init() here is done to have WSAStartup() done, otherwise liblinphone_tester_ipv6_available() will not work.*/
 	ortp_init();
@@ -696,39 +720,52 @@ static void call_with_ipv6(void) {
 		return;
 	}
 
-	liblinphone_tester_enable_ipv6(TRUE);
-	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	marie = linphone_core_manager_new2( "marie_rc", FALSE);
+	linphone_core_enable_ipv6(marie->lc, caller_with_ipv6);
+	linphone_core_manager_start(marie, TRUE);
+	
+	pauline = linphone_core_manager_new2( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", FALSE);
+	linphone_core_enable_ipv6(pauline->lc, callee_with_ipv6);
+	linphone_core_manager_start(pauline, TRUE);
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
 	BC_ASSERT_TRUE(call(marie,pauline));
-	pauline_call=linphone_core_get_current_call(pauline->lc);
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	marie_call = linphone_core_get_current_call(marie->lc);
 	BC_ASSERT_PTR_NOT_NULL(pauline_call);
-	if (pauline_call){
+	BC_ASSERT_PTR_NOT_NULL(marie_call);
+	if (pauline_call && marie_call){
 		/*check that the remote contact is IPv6*/
-		const char *contact=linphone_call_get_remote_contact(pauline_call);
-		LinphoneAddress *ct_addr;
-
-		BC_ASSERT_PTR_NOT_NULL(contact);
-		if (contact){
-			ct_addr=linphone_address_new(contact);
-			BC_ASSERT_PTR_NOT_NULL(ct_addr);
-			if (ct_addr){
-				BC_ASSERT_PTR_NOT_NULL(strchr(linphone_address_get_domain(ct_addr),':'));
-			}
-			linphone_address_destroy(ct_addr);
-		}
-
+		BC_ASSERT_EQUAL(is_remote_contact_ipv6(pauline_call), caller_with_ipv6, int, "%i");
+		BC_ASSERT_EQUAL(is_remote_contact_ipv6(marie_call), callee_with_ipv6, int, "%i");
+		
+		/*check that the RTP destinations are IPv6 (flexisip should propose an IPv6 relay for parties with IPv6)*/
+		BC_ASSERT_EQUAL(is_sending_ipv6(marie_call->sessions[0].rtp_session, FALSE), caller_with_ipv6, int, "%i");
+		BC_ASSERT_EQUAL(is_sending_ipv6(marie_call->sessions[0].rtp_session, TRUE), caller_with_ipv6, int, "%i");
+		BC_ASSERT_EQUAL(is_sending_ipv6(pauline_call->sessions[0].rtp_session, FALSE), callee_with_ipv6, int, "%i");
+		BC_ASSERT_EQUAL(is_sending_ipv6(pauline_call->sessions[0].rtp_session, TRUE), callee_with_ipv6, int, "%i");
+		
 	}
 
 	liblinphone_tester_check_rtcp(marie,pauline);
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	liblinphone_tester_enable_ipv6(FALSE);
 
 	ortp_exit();
+}
+
+static void call_with_ipv6(void){
+	_call_with_ipv6(TRUE, TRUE);
+}
+
+static void call_ipv4_to_ipv6(void){
+	_call_with_ipv6(FALSE, TRUE);
+}
+
+static void call_ipv6_to_ipv4(void){
+	_call_with_ipv6(TRUE, FALSE);
 }
 
 static void file_transfer_message_rcs_to_external_body_client(void) {
@@ -1143,7 +1180,9 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Early-media call forking", early_media_call_forking),
 	TEST_NO_TAG("Call with sips", call_with_sips),
 	TEST_ONE_TAG("Call with sips not achievable", call_with_sips_not_achievable, "LeaksMemory"),
-	TEST_NO_TAG("Call with ipv6", call_with_ipv6),
+	TEST_NO_TAG("Call ipv6 to ipv6", call_with_ipv6),
+	TEST_NO_TAG("Call ipv6 to ipv4", call_ipv6_to_ipv4),
+	TEST_NO_TAG("Call ipv4 to ipv6", call_ipv4_to_ipv6),
 	TEST_ONE_TAG("Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher, "LeaksMemory"),
 	/*TEST_ONE_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish, "LeaksMemory"),*/
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),

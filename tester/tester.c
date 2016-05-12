@@ -39,7 +39,7 @@
 #define unlink _unlink
 #endif
 
-static bool_t liblinphone_tester_ipv6_enabled=FALSE;
+
 static int liblinphone_tester_keep_accounts_flag = 0;
 static int liblinphone_tester_keep_record_files = FALSE;
 static int liblinphone_tester_leak_detector_disabled = FALSE;
@@ -77,9 +77,6 @@ bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms){
 	return FALSE;
 }
 
-void liblinphone_tester_enable_ipv6(bool_t enabled){
-	liblinphone_tester_ipv6_enabled=enabled;
-}
 
 LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
@@ -155,8 +152,6 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	sal_enable_test_features(lc->sal,TRUE);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 	linphone_core_set_static_picture(lc,nowebcampath);
-
-	linphone_core_enable_ipv6(lc, liblinphone_tester_ipv6_enabled);
 
 	ms_free(ringpath);
 	ms_free(ringbackpath);

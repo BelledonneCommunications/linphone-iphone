@@ -326,11 +326,13 @@ bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_implicit_avpf(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_dtls(const SalStreamDescription *sd);
+bool_t sal_stream_description_has_ipv6(const SalStreamDescription *md);
 bool_t sal_media_description_has_avpf(const SalMediaDescription *md);
 bool_t sal_media_description_has_implicit_avpf(const SalMediaDescription *md);
 bool_t sal_media_description_has_srtp(const SalMediaDescription *md);
 bool_t sal_media_description_has_dtls(const SalMediaDescription *md);
 bool_t sal_media_description_has_zrtp(const SalMediaDescription *md);
+bool_t sal_media_description_has_ipv6(const SalMediaDescription *md);
 int sal_media_description_get_nb_active_streams(const SalMediaDescription *md);
 
 struct SalOpBase;
