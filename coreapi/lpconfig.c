@@ -81,13 +81,13 @@ typedef struct _LpSection{
 
 struct _LpConfig{
 	int refcnt;
-	bc_vfs_file* pFile;
+	bctbx_vfs_file* pFile;
 	char *filename;
 	char *tmpfilename;
 	MSList *sections;
 	int modified;
 	int readonly;
-	bc_vfs* g_bc_vfs;
+	bctbx_vfs* g_bctbx_vfs;
 };
 
 
@@ -360,7 +360,7 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 	return cur;
 }
 
-void lp_config_parse(LpConfig *lpconfig, bc_vfs_file* pFile){
+void lp_config_parse(LpConfig *lpconfig, bctbx_vfs_file* pFile){
 	char tmp[MAX_LEN]= {'\0'};
 	LpSection* current_section = NULL;
 	int size  =0;
@@ -398,8 +398,8 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
-	bc_vfs_register(bc_create_vfs(),&lpconfig->g_bc_vfs);
-	bc_vfs_file* pFile = NULL;
+	bctbx_vfs_register(bc_create_vfs(),&lpconfig->g_bctbx_vfs);
+	bctbx_vfs_file* pFile = NULL;
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
 		if(ortp_file_exist(config_filename) == 0) {
@@ -428,13 +428,13 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
 		int fd;
-		pFile = bctbx_file_open(lpconfig->g_bc_vfs,lpconfig->filename, "r+");
+		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
 		fd  = pFile->fd;
 		lpconfig->pFile = pFile;
 		
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 		if (fd < 0){
-			pFile = bctbx_file_open(lpconfig->g_bc_vfs,lpconfig->tmpfilename, "r+");
+			pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "r+");
 			if (fd){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
 			}
@@ -460,7 +460,7 @@ fail:
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	int fd=-1;
-	bc_vfs_file* pFile = bctbx_file_open(lpconfig->g_bc_vfs, path, "r");
+	bctbx_vfs_file* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
 	fd = pFile->fd;
 	if (fd < 0){
 		ms_message("Reading config information from %s", path);
@@ -756,7 +756,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	bc_vfs_file *pFile  = bctbx_file_open(lpconfig->g_bc_vfs,lpconfig->tmpfilename, "w");
+	bctbx_vfs_file *pFile  = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
 	fd = pFile->fd;
 	if (fd < 0 ){
@@ -883,7 +883,7 @@ static const char *_lp_config_dirname(char *path) {
 }
 
 bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
-	bc_vfs_file *pFile = lpconfig->pFile;
+	bctbx_vfs_file *pFile = lpconfig->pFile;
 	if (lpconfig->filename == NULL) {
 		return FALSE;
 	} else {
@@ -897,7 +897,7 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 
 		if(realfilepath == NULL) return FALSE;
 
-		pFile = bctbx_file_open(lpconfig->g_bc_vfs,realfilepath, "r");
+		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
 		ms_free(realfilepath);
 		if (pFile->fd > 0) {
 			bctbx_file_close(pFile);
@@ -913,7 +913,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	char *realfilepath = NULL;
 	int fd = 0;
 
-	bc_vfs_file *pFile = lpconfig->pFile;
+	bctbx_vfs_file *pFile = lpconfig->pFile;
 	if (lpconfig->filename == NULL) return;
 
 	if(strlen(data) == 0) {
@@ -930,7 +930,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 
-	pFile = bctbx_file_open(lpconfig->g_bc_vfs,realfilepath,  "w");
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
 	fd = pFile->fd;
 	
 	if(fd < 0) {
@@ -952,7 +952,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	const char *dir = NULL;
 	char *filepath = NULL;
 	int fd = 0;
-	bc_vfs_file* pFile = NULL;
+	bctbx_vfs_file* pFile = NULL;
 
 	char* realfilepath = NULL;
 
@@ -967,7 +967,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		goto err;
 	}
 
-	pFile = bctbx_file_open(lpconfig->g_bc_vfs,realfilepath,"r");
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
 	if (pFile !=NULL)
 		fd = pFile->fd;
 	

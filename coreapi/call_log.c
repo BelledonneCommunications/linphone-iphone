@@ -373,7 +373,9 @@ void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 	int ret;
 	const char *errmsg;
 	sqlite3 *db;
-
+	sqlite3_vfs_register(sqlite3_bctbx_vfs_create(), 1);
+	sqlite3_vfs* t = sqlite3_vfs_find("sql3_bctbx_vfs");
+	sqlite3_vfs_register(t, 1);
 	linphone_core_call_log_storage_close(lc);
 
 	ret=_linphone_sqlite3_open(lc->logs_db_file, &db);
