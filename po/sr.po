@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-15 14:09+0100\n"
-"PO-Revision-Date: 2016-03-15 13:09+0000\n"
+"POT-Creation-Date: 2016-05-10 11:54+0200\n"
+"PO-Revision-Date: 2016-05-10 09:58+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Serbian (http://www.transifex.com/belledonne-communications/linphone-gtk/language/sr/)\n"
 "MIME-Version: 1.0\n"
@@ -99,15 +99,15 @@ msgstr "Ја"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Не могу да пронађем датотеку сличице: %s"
 
-#: ../gtk/chat.c:202 ../gtk/chat.c:260
+#: ../gtk/chat.c:207 ../gtk/chat.c:265
 msgid "Sending..."
 msgstr "Шаљем..."
 
-#: ../gtk/chat.c:219 ../gtk/chat.c:269
+#: ../gtk/chat.c:224 ../gtk/chat.c:274
 msgid "Message not sent"
 msgstr "Порука није послата"
 
-#: ../gtk/chat.c:493
+#: ../gtk/chat.c:498
 msgid "Copy"
 msgstr "Умножи"
 
@@ -153,7 +153,7 @@ msgstr "Покреће помоћника звука"
 msgid "Run self test and exit 0 if succeed"
 msgstr "Покреће самоиспробавање и излази 0 ако је успешно"
 
-#: ../gtk/main.c:1036
+#: ../gtk/main.c:1058
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
@@ -161,80 +161,80 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr "%s жели да вас дода на свој списак контакта.\nДа ли желите да га/је додате на ваш списак контакта и да му/јој омогућите да види ваше стање присуства?\nАко одговорите негативно, ова особа ће тренутно бити стављена на списак забрањених."
 
-#: ../gtk/main.c:1113
+#: ../gtk/main.c:1135
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr "Унесите вашу лозинку за корисничко име <i>%s</i>\n на подручју <i>%s</i>:"
 
-#: ../gtk/main.c:1222
+#: ../gtk/main.c:1244
 msgid "Call error"
 msgstr "Грешка позива"
 
-#: ../gtk/main.c:1225 ../coreapi/linphonecore.c:3938
+#: ../gtk/main.c:1247 ../coreapi/linphonecore.c:3942
 msgid "Call ended"
 msgstr "Позив је завршен"
 
-#: ../gtk/main.c:1228 ../coreapi/call_log.c:235
+#: ../gtk/main.c:1250 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "Долазни позив"
 
-#: ../gtk/main.c:1231 ../gtk/incall_view.c:579 ../gtk/in_call_frame.ui.h:2
+#: ../gtk/main.c:1253 ../gtk/incall_view.c:579 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "Јави се"
 
-#: ../gtk/main.c:1233 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1255 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "Одбиј"
 
-#: ../gtk/main.c:1240
+#: ../gtk/main.c:1262
 msgid "Call paused"
 msgstr "Позив је заустављен"
 
-#: ../gtk/main.c:1240
+#: ../gtk/main.c:1262
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>од %s</b>"
 
-#: ../gtk/main.c:1314
+#: ../gtk/main.c:1336
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s предлаже да започнете видео. Да ли прихватате ?"
 
-#: ../gtk/main.c:1480
+#: ../gtk/main.c:1502
 msgid "Website link"
 msgstr "Веза веб сајта"
 
-#: ../gtk/main.c:1539 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1561 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Линфон"
 
-#: ../gtk/main.c:1540
+#: ../gtk/main.c:1562
 msgid "A video internet phone"
 msgstr "Интернетски видео телефон"
 
-#: ../gtk/main.c:1602
+#: ../gtk/main.c:1624
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (основно)"
 
-#: ../gtk/main.c:1975 ../coreapi/callbacks.c:1080
+#: ../gtk/main.c:1997 ../coreapi/callbacks.c:1080
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Преселили смо се на %s"
 
-#: ../gtk/main.c:1986
+#: ../gtk/main.c:2008
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "Ниједна звучна картица није откривена на овом рачунару.\nНећете бити у могућности да шаљете или да примате звучне позиве."
 
-#: ../gtk/main.c:2151
+#: ../gtk/main.c:2173
 msgid "A free SIP video-phone"
 msgstr "Слободан СИП телефон са снимком"
 
-#: ../gtk/main.c:2270
+#: ../gtk/main.c:2292
 #, c-format
 msgid "Hello\n"
 msgstr "Здраво\n"
@@ -451,11 +451,11 @@ msgstr[2] "Нашао сам %i контаката"
 
 #: ../gtk/setupwizard.c:219
 msgid "Username is already in use!"
-msgstr ""
+msgstr "Корисничко име је већ у употреби!"
 
 #: ../gtk/setupwizard.c:223
 msgid "Failed to check username availability. Please try again later."
-msgstr ""
+msgstr "Нисам успео да проверим доступност корисничког имена. Касније покушајте опет."
 
 #: ../gtk/incall_view.c:67 ../gtk/incall_view.c:87
 #, c-format
@@ -537,7 +537,7 @@ msgid "%.3f seconds"
 msgstr "%.3f секунде"
 
 #: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
-#: ../gtk/videowindow.c:242
+#: ../gtk/videowindow.c:248
 msgid "Hang up"
 msgstr "Прекини"
 
@@ -1132,11 +1132,11 @@ msgstr "Прикажи тастатуру"
 
 #: ../gtk/main.ui.h:8
 msgid "Import contacts from vCards"
-msgstr ""
+msgstr "Увези контакте из вКарти"
 
 #: ../gtk/main.ui.h:9
 msgid "Export contacts as vCards"
-msgstr ""
+msgstr "Извези контакте у вКарте"
 
 #: ../gtk/main.ui.h:10
 msgid "_Help"
@@ -1490,7 +1490,7 @@ msgstr "Врста шифровања медија"
 
 #: ../gtk/parameters.ui.h:75
 msgid "Use Lime for outgoing chat messages"
-msgstr ""
+msgstr "Користи Лиме за одлазне поруке ћаскања"
 
 #: ../gtk/parameters.ui.h:76
 msgid "Media encryption is mandatory"
@@ -1498,15 +1498,15 @@ msgstr "Шифровање медија је обавезно"
 
 #: ../gtk/parameters.ui.h:77
 msgid "Mandatory"
-msgstr ""
+msgstr "Обавезно"
 
 #: ../gtk/parameters.ui.h:78
 msgid "Preferred"
-msgstr ""
+msgstr "Жељено"
 
 #: ../gtk/parameters.ui.h:79
 msgid "<b>Encryption</b>"
-msgstr ""
+msgstr "<b>Шифровање</b>"
 
 #: ../gtk/parameters.ui.h:80
 msgid "Network settings"
@@ -1794,52 +1794,52 @@ msgstr "<b>Подесите хттп посредника (изборно)</b>"
 msgid "Please wait"
 msgstr "Сачекајте мало"
 
-#: ../coreapi/linphonecore.c:1590
+#: ../coreapi/linphonecore.c:1594
 msgid "Ready"
 msgstr "Спреман"
 
-#: ../coreapi/linphonecore.c:2681
+#: ../coreapi/linphonecore.c:2685
 msgid "Configuring"
 msgstr "Подешавам"
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:3080
+#: ../coreapi/linphonecore.c:3084
 msgid "Contacting"
 msgstr "Ступам у везу"
 
-#: ../coreapi/linphonecore.c:3085
+#: ../coreapi/linphonecore.c:3089
 msgid "Could not call"
 msgstr "Не могу да позовем"
 
-#: ../coreapi/linphonecore.c:3224
+#: ../coreapi/linphonecore.c:3228
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Извините, достигли смо највећи број истовремених позива"
 
-#: ../coreapi/linphonecore.c:3384
+#: ../coreapi/linphonecore.c:3388
 msgid "is contacting you"
 msgstr "вам се обраћа"
 
-#: ../coreapi/linphonecore.c:3385
+#: ../coreapi/linphonecore.c:3389
 msgid " and asked autoanswer."
 msgstr " и затражени само-одговор."
 
-#: ../coreapi/linphonecore.c:3502
+#: ../coreapi/linphonecore.c:3506
 msgid "Modifying call parameters..."
 msgstr "Мењам параметре позива..."
 
-#: ../coreapi/linphonecore.c:3894
+#: ../coreapi/linphonecore.c:3898
 msgid "Connected."
 msgstr "Повезан сам."
 
-#: ../coreapi/linphonecore.c:3919
+#: ../coreapi/linphonecore.c:3923
 msgid "Call aborted"
 msgstr "Позив је прекинут"
 
-#: ../coreapi/linphonecore.c:4121
+#: ../coreapi/linphonecore.c:4125
 msgid "Could not pause the call"
 msgstr "Не могу да зауставим позив"
 
-#: ../coreapi/linphonecore.c:4124
+#: ../coreapi/linphonecore.c:4128
 msgid "Pausing the current call..."
 msgstr "Заустављам тренутни позив..."
 
@@ -1903,32 +1903,32 @@ msgstr "На одмору"
 msgid "Unknown status"
 msgstr "Непознато стање"
 
-#: ../coreapi/proxy.c:336
+#: ../coreapi/proxy.c:339
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr "Адреса сип посредника коју сте унели је неисправна, мора почети на „sip:“ за којим следи назив домаћина."
 
-#: ../coreapi/proxy.c:342
+#: ../coreapi/proxy.c:345
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr "Сип идентитет који сте унели није исправан.\nТреба да буде у облику „sip:корисник@домен-посредника“, као што је „sip:alice@example.net“"
 
-#: ../coreapi/proxy.c:972
+#: ../coreapi/proxy.c:979
 msgid "Looking for telephone number destination..."
 msgstr "Тражим одредиште телефонског броја..."
 
-#: ../coreapi/proxy.c:976
+#: ../coreapi/proxy.c:983
 msgid "Could not resolve this number."
 msgstr "Не могу да решим овај број."
 
-#: ../coreapi/proxy.c:1409
+#: ../coreapi/proxy.c:1437
 #, c-format
 msgid "Could not login as %s"
 msgstr "Не могу да се пријавим као %s"
 
-#: ../coreapi/proxy.c:1494
+#: ../coreapi/proxy.c:1522
 #, c-format
 msgid "Refreshing on %s..."
 msgstr "Освежавам на %s..."
@@ -2037,16 +2037,16 @@ msgstr "Услуга није доступна, поново покушавам"
 msgid "Authentication token is %s"
 msgstr "Симбол потврђивања идентитета је „%s“"
 
-#: ../coreapi/linphonecall.c:1616
+#: ../coreapi/linphonecall.c:1646
 #, c-format
 msgid "Call parameters could not be modified: %s."
 msgstr "Параметри позива не могу бити измењени: %s."
 
-#: ../coreapi/linphonecall.c:1618
+#: ../coreapi/linphonecall.c:1648
 msgid "Call parameters were successfully modified."
 msgstr "Параметри позива су успешно измењени."
 
-#: ../coreapi/linphonecall.c:4527
+#: ../coreapi/linphonecall.c:4619
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
@@ -2088,3 +2088,7 @@ msgstr "Одлазни позив"
 #, c-format
 msgid "Cannot play %s."
 msgstr "Не могу да пустим „%s“."
+
+#: ../gtk/videowindow.c:252
+msgid "Take screenshot"
+msgstr ""

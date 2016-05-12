@@ -871,6 +871,29 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 	return g_build_filename(dir,filename,NULL);
 }
 
+gchar *linphone_gtk_get_snapshot_path(void) {
+	const char *dir=g_get_user_special_dir(G_USER_DIRECTORY_PICTURES);
+	char filename[256]={0};
+	char date[64]={0};
+	time_t curtime=time(NULL);
+	struct tm loctime;
+	const char *ext="jpg";
+
+#ifdef _WIN32
+	loctime=*localtime(&curtime);
+#else
+	localtime_r(&curtime,&loctime);
+#endif
+	snprintf(date,sizeof(date)-1,"%i%02i%02i-%02i%02i%02i",loctime.tm_year+1900,loctime.tm_mon+1,loctime.tm_mday, loctime.tm_hour, loctime.tm_min, loctime.tm_sec);
+	snprintf(filename,sizeof(filename)-1,"%s-snapshot-%s.%s",
+			linphone_gtk_get_ui_config("title","Linphone"),
+			date, ext);
+	if (!dir) {
+		ms_message ("No directory for pictures, using [%s] instead",dir=getenv("HOME"));
+	}
+	return g_build_filename(dir,filename,NULL);
+}
+
 static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
 	LinphoneCore *lc=linphone_gtk_get_core();
@@ -890,7 +913,6 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	}
 	return FALSE;
 }
-
 
 static void accept_incoming_call(LinphoneCall *call){
 	LinphoneCore *lc=linphone_gtk_get_core();

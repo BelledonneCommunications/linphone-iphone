@@ -1509,12 +1509,13 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	ms_message("Receiving new subscription from %s.",from);
 
 	/* check if we answer to this subscription */
-	if (linphone_core_get_default_friend_list(lc) != NULL) {
-		lf = linphone_friend_list_find_friend_by_address(linphone_core_get_default_friend_list(lc), uri);
-	}
+	lf = linphone_core_find_friend(lc, uri);
 	if (lf!=NULL){
 		linphone_friend_add_incoming_subscription(lf, op);
 		lf->inc_subscribe_pending=TRUE;
+		if (lp_config_get_int(lc->config,"sip","notify_pending_state",0)) {
+			sal_notify_pending_state(op);
+		}
 		sal_subscribe_accept(op);
 		linphone_friend_done(lf);	/*this will do all necessary actions */
 	}else{
@@ -1889,10 +1890,10 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	LinphonePresenceModel *presence = model ? (LinphonePresenceModel *)model:linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL);
 
 	if (linphone_core_get_default_friend_list(lc) != NULL)
-		lf=linphone_friend_list_find_friend_by_out_subscribe(linphone_core_get_default_friend_list(lc), op);
+		lf=linphone_core_find_friend_by_out_subscribe(lc, op);
 	if (lf==NULL && lp_config_get_int(lc->config,"sip","allow_out_of_subscribe_presence",0)){
 		const SalAddress *addr=sal_op_get_from_address(op);
-		lf = linphone_friend_list_find_friend_by_address(linphone_core_get_default_friend_list(lc), (LinphoneAddress *)addr);
+		lf = linphone_core_find_friend(lc, (LinphoneAddress *)addr);
 	}
 	if (lf!=NULL){
 		LinphonePresenceActivity *activity = NULL;
@@ -1906,6 +1907,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		linphone_friend_set_presence_model(lf, presence);
 		lf->subscribe_active=TRUE;
 		lf->presence_received = TRUE;
+		lf->out_sub_state = linphone_subscription_state_from_sal(ss);
 		linphone_core_notify_notify_presence_received(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 		if (op != lf->outsub){
@@ -1938,8 +1940,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 	LinphoneFriend *lf = NULL;
 
-	if (linphone_core_get_default_friend_list(lc) != NULL)
-		lf = linphone_friend_list_find_friend_by_inc_subscribe(linphone_core_get_default_friend_list(lc), op);
+	lf = linphone_core_find_friend_by_inc_subscribe(lc, op);
 
 	if (lf!=NULL){
 		/*this will release the op*/

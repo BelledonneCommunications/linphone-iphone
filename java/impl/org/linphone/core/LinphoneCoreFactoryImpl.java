@@ -25,8 +25,6 @@ import java.util.List;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 
-import android.util.Log;
-
 public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 	private static boolean loadOptionalLibrary(String s) {
@@ -34,18 +32,17 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			System.loadLibrary(s);
 			return true;
 		} catch (Throwable e) {
-			Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library lib" + s);
+			//android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library lib" + s);
 		}
 		return false;
 	}
 
 	static {
 		List<String> cpuabis=Version.getCpuAbis();
-		String ffmpegAbi;
 		boolean libLoaded=false;
 		Throwable firstException=null;
 		for (String abi : cpuabis){
-			Log.i("LinphoneCoreFactoryImpl","Trying to load liblinphone for " + abi);
+			//android.util.Log.i("LinphoneCoreFactoryImpl","Trying to load liblinphone for " + abi);
 			loadOptionalLibrary("ffmpeg-linphone-" + abi);
 			//Main library
 			try {
@@ -54,7 +51,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 				System.loadLibrary("mediastreamer_base-" + abi);
 				System.loadLibrary("mediastreamer_voip-" + abi);
 				System.loadLibrary("linphone-" + abi);
-				Log.i("LinphoneCoreFactoryImpl","Loading done with " + abi);
+				org.linphone.mediastream.Log.i("LinphoneCoreFactoryImpl","Loading done with " + abi);
 				libLoaded=true;
 				break;
 			}catch(Throwable e) {
@@ -88,7 +85,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	
 	@Override
 	public LpConfig createLpConfig(String file) {
-		return new LpConfigImpl(file);
+		return LpConfigImpl.fromFile(file);
+	}
+	
+	public LpConfig createLpConfigFromString(String buffer) {
+		return LpConfigImpl.fromBuffer(buffer);
 	}
 
 	@Override

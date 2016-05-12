@@ -413,7 +413,6 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
-		int unterminated_calls;
 
 		if (!liblinphone_tester_keep_record_files && record_file){
 			if ((bc_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
@@ -421,10 +420,6 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 			} else {
 				unlink(record_file);
 			}
-		}
-		BC_ASSERT_EQUAL((unterminated_calls=ms_list_size(mgr->lc->calls)), 0, int, "%i");
-		if (unterminated_calls != 0) {
-			ms_error("There are still %d calls pending, please terminates them before invoking linphone_core_manager_destroy().", unterminated_calls);
 		}
 		linphone_core_destroy(mgr->lc);
 	}

@@ -57,7 +57,7 @@ class Account:
     def __init__(self, id_addr, unique_id):
         self.created = False
         self.done = False
-        self.auth_requested = False
+        self.registered = False
         self.identity = id_addr.clone()
         self.password = linphone.testing.get_random_token(8)
         self.modified_identity = id_addr.clone()
@@ -94,19 +94,23 @@ class AccountManager:
     @classmethod
     def account_created_on_server_cb(cls, lc, cfg, state, message):
         if state == linphone.RegistrationState.Ok:
-            lc.user_data().created = True
+            if cfg.error_info.phrase == "Test account created":
+                lc.user_data().created = True
+            else:
+                lc.user_data().registered = True
         elif state == linphone.RegistrationState.Cleared:
             lc.user_data().done = True
 
     @classmethod
     def account_created_auth_requested_cb(cls, lc, realm, username, domain):
-        lc.user_data().auth_requested = True
+        lc.user_data().created = True
 
     def check_account(self, cfg):
         create_account = False
         lc = cfg.core
         id_addr = cfg.identity_address
         account = self._get_account(id_addr)
+        original_ai = lc.find_auth_info(None, id_addr.username, id_addr.domain)
         if account is None:
             linphonetester_logger.info("[TESTER] No account for {identity} exists, going to create one.".format(identity=id_addr.as_string()))
             account = Account(id_addr, self.unique_id)
@@ -115,6 +119,8 @@ class AccountManager:
         cfg.identity_address = account.modified_identity
         if create_account:
             self._create_account_on_server(account, cfg)
+        if original_ai is not None:
+            lc.remove_auth_info(original_ai)
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
         return account.modified_identity
@@ -133,24 +139,27 @@ class AccountManager:
         lc = CoreManager.configure_lc_from(vtable, tester_resources_path, None, account)
         lc.sip_transports = linphone.SipTransports(-1, -1, -1, -1)
         cfg = lc.create_proxy_config()
+        tmp_identity.secure = False
         tmp_identity.password = account.password
         tmp_identity.set_header("X-Create-Account", "yes")
         cfg.identity_address = tmp_identity
         server_addr = linphone.Address.new(refcfg.server_addr)
+        server_addr.secure = False
         server_addr.transport = linphone.TransportType.Tcp;
         server_addr.port = 0
         cfg.server_addr = server_addr.as_string()
-        cfg.expires = 3600
+        cfg.expires = 3 * 3600 # Accounts are valid 3 hours
         lc.add_proxy_config(cfg)
-        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().auth_requested == True, 10000) != True:
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().created == True, 10000) != True:
             linphonetester_logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity_address.as_string()))
             sys.exit(-1)
         cfg.edit()
-        cfg.identity_address = account.modified_identity
+        cfg.identity_address = account.modified_identity.clone()
+        cfg.identity_address.secure = False
         cfg.done()
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
-        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().created == True, 3000) != True:
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().registered == True, 3000) != True:
             linphonetester_logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity_address.as_string()))
             sys.exit(-1)
         lc.remove_proxy_config(cfg)
@@ -215,8 +224,11 @@ class CoreManagerStats:
 
         self.number_of_IframeDecoded = 0
 
-        self.number_of_NewSubscriptionRequest =0
+        self.number_of_NewSubscriptionRequest = 0
         self.number_of_NotifyReceived = 0
+        self.number_of_NotifyPresenceReceived = 0
+        self.number_of_LinphonePresenceBasicStatusOpen = 0
+        self.number_of_LinphonePresenceBasicStatusClosed = 0
         self.number_of_LinphonePresenceActivityOffline = 0
         self.number_of_LinphonePresenceActivityOnline = 0
         self.number_of_LinphonePresenceActivityAppointment = 0
@@ -483,74 +495,81 @@ class CoreManager:
         linphonetester_logger.info("[TESTER] New subscription request: from [{from_str}], url [{url}]".format(
             from_str=lf.address.as_string(), url=url))
         manager.stats.number_of_NewSubscriptionRequest += 1
-        lc.add_friend(lf) # Accept subscription
+        lc.default_friend_list.add_friend(lf) # Accept subscription
 
     @classmethod
     def notify_presence_received(cls, lc, lf):
         manager = lc.user_data()
         linphonetester_logger.info("[TESTER] New notify request: from [{from_str}]".format(
             from_str=lf.address.as_string()))
-        manager.stats.number_of_NotifyReceived += 1
+        manager.stats.number_of_NotifyPresenceReceived += 1
         manager.stats.last_received_presence = lf.presence_model
-        acttype = manager.stats.last_received_presence.activity.type
-        if acttype == linphone.PresenceActivityType.Offline:
-            manager.stats.number_of_LinphonePresenceActivityOffline += 1
-        elif acttype == linphone.PresenceActivityType.Online:
-            manager.stats.number_of_LinphonePresenceActivityOnline += 1
-        elif acttype == linphone.PresenceActivityType.Appointment:
-            manager.stats.number_of_LinphonePresenceActivityAppointment += 1
-        elif acttype == linphone.PresenceActivityType.Away:
-            manager.stats.number_of_LinphonePresenceActivityAway += 1
-        elif acttype == linphone.PresenceActivityType.Breakfast:
-            manager.stats.number_of_LinphonePresenceActivityBreakfast += 1
-        elif acttype == linphone.PresenceActivityType.Busy:
-            manager.stats.number_of_LinphonePresenceActivityBusy += 1
-        elif acttype == linphone.PresenceActivityType.Dinner:
-            manager.stats.number_of_LinphonePresenceActivityDinner += 1
-        elif acttype == linphone.PresenceActivityType.Holiday:
-            manager.stats.number_of_LinphonePresenceActivityHoliday += 1
-        elif acttype == linphone.PresenceActivityType.InTransit:
-            manager.stats.number_of_LinphonePresenceActivityInTransit += 1
-        elif acttype == linphone.PresenceActivityType.LookingForWork:
-            manager.stats.number_of_LinphonePresenceActivityLookingForWork += 1
-        elif acttype == linphone.PresenceActivityType.Lunch:
-            manager.stats.number_of_LinphonePresenceActivityLunch += 1
-        elif acttype == linphone.PresenceActivityType.Meal:
-            manager.stats.number_of_LinphonePresenceActivityMeal += 1
-        elif acttype == linphone.PresenceActivityType.Meeting:
-            manager.stats.number_of_LinphonePresenceActivityMeeting += 1
-        elif acttype == linphone.PresenceActivityType.OnThePhone:
-            manager.stats.number_of_LinphonePresenceActivityOnThePhone += 1
-        elif acttype == linphone.PresenceActivityType.Other:
-            manager.stats.number_of_LinphonePresenceActivityOther += 1
-        elif acttype == linphone.PresenceActivityType.Performance:
-            manager.stats.number_of_LinphonePresenceActivityPerformance += 1
-        elif acttype == linphone.PresenceActivityType.PermanentAbsence:
-            manager.stats.number_of_LinphonePresenceActivityPermanentAbsence += 1
-        elif acttype == linphone.PresenceActivityType.Playing:
-            manager.stats.number_of_LinphonePresenceActivityPlaying += 1
-        elif acttype == linphone.PresenceActivityType.Presentation:
-            manager.stats.number_of_LinphonePresenceActivityPresentation += 1
-        elif acttype == linphone.PresenceActivityType.Shopping:
-            manager.stats.number_of_LinphonePresenceActivityShopping += 1
-        elif acttype == linphone.PresenceActivityType.Sleeping:
-            manager.stats.number_of_LinphonePresenceActivitySleeping += 1
-        elif acttype == linphone.PresenceActivityType.Spectator:
-            manager.stats.number_of_LinphonePresenceActivitySpectator += 1
-        elif acttype == linphone.PresenceActivityType.Steering:
-            manager.stats.number_of_LinphonePresenceActivitySteering += 1
-        elif acttype == linphone.PresenceActivityType.Travel:
-            manager.stats.number_of_LinphonePresenceActivityTravel += 1
-        elif acttype == linphone.PresenceActivityType.TV:
-            manager.stats.number_of_LinphonePresenceActivityTV += 1
-        elif acttype == linphone.PresenceActivityType.Unknown:
-            manager.stats.number_of_LinphonePresenceActivityUnknown += 1
-        elif acttype == linphone.PresenceActivityType.Vacation:
-            manager.stats.number_of_LinphonePresenceActivityVacation += 1
-        elif acttype == linphone.PresenceActivityType.Working:
-            manager.stats.number_of_LinphonePresenceActivityWorking += 1
-        elif acttype == linphone.PresenceActivityType.Worship:
-            manager.stats.number_of_LinphonePresenceActivityWorship += 1
+        if manager.stats.last_received_presence.basic_status == linphone.PresenceBasicStatus.Open:
+            manager.stats.number_of_LinphonePresenceBasicStatusOpen += 1
+        elif manager.stats.last_received_presence.basic_status == linphone.PresenceBasicStatus.Closed:
+            manager.stats.number_of_LinphonePresenceBasicStatusClosed += 1
+        else:
+            linphonetester_logger.error("[TESTER] Unexpected basic status {status}".format(status=manager.status.last_received_presence.basic_status))
+        for i in range(0, manager.stats.last_received_presence.nb_activities):
+            acttype = manager.stats.last_received_presence.get_nth_activity(i).type
+            if acttype == linphone.PresenceActivityType.Offline:
+                manager.stats.number_of_LinphonePresenceActivityOffline += 1
+            elif acttype == linphone.PresenceActivityType.Online:
+                manager.stats.number_of_LinphonePresenceActivityOnline += 1
+            elif acttype == linphone.PresenceActivityType.Appointment:
+                manager.stats.number_of_LinphonePresenceActivityAppointment += 1
+            elif acttype == linphone.PresenceActivityType.Away:
+                manager.stats.number_of_LinphonePresenceActivityAway += 1
+            elif acttype == linphone.PresenceActivityType.Breakfast:
+                manager.stats.number_of_LinphonePresenceActivityBreakfast += 1
+            elif acttype == linphone.PresenceActivityType.Busy:
+                manager.stats.number_of_LinphonePresenceActivityBusy += 1
+            elif acttype == linphone.PresenceActivityType.Dinner:
+                manager.stats.number_of_LinphonePresenceActivityDinner += 1
+            elif acttype == linphone.PresenceActivityType.Holiday:
+                manager.stats.number_of_LinphonePresenceActivityHoliday += 1
+            elif acttype == linphone.PresenceActivityType.InTransit:
+                manager.stats.number_of_LinphonePresenceActivityInTransit += 1
+            elif acttype == linphone.PresenceActivityType.LookingForWork:
+                manager.stats.number_of_LinphonePresenceActivityLookingForWork += 1
+            elif acttype == linphone.PresenceActivityType.Lunch:
+                manager.stats.number_of_LinphonePresenceActivityLunch += 1
+            elif acttype == linphone.PresenceActivityType.Meal:
+                manager.stats.number_of_LinphonePresenceActivityMeal += 1
+            elif acttype == linphone.PresenceActivityType.Meeting:
+                manager.stats.number_of_LinphonePresenceActivityMeeting += 1
+            elif acttype == linphone.PresenceActivityType.OnThePhone:
+                manager.stats.number_of_LinphonePresenceActivityOnThePhone += 1
+            elif acttype == linphone.PresenceActivityType.Other:
+                manager.stats.number_of_LinphonePresenceActivityOther += 1
+            elif acttype == linphone.PresenceActivityType.Performance:
+                manager.stats.number_of_LinphonePresenceActivityPerformance += 1
+            elif acttype == linphone.PresenceActivityType.PermanentAbsence:
+                manager.stats.number_of_LinphonePresenceActivityPermanentAbsence += 1
+            elif acttype == linphone.PresenceActivityType.Playing:
+                manager.stats.number_of_LinphonePresenceActivityPlaying += 1
+            elif acttype == linphone.PresenceActivityType.Presentation:
+                manager.stats.number_of_LinphonePresenceActivityPresentation += 1
+            elif acttype == linphone.PresenceActivityType.Shopping:
+                manager.stats.number_of_LinphonePresenceActivityShopping += 1
+            elif acttype == linphone.PresenceActivityType.Sleeping:
+                manager.stats.number_of_LinphonePresenceActivitySleeping += 1
+            elif acttype == linphone.PresenceActivityType.Spectator:
+                manager.stats.number_of_LinphonePresenceActivitySpectator += 1
+            elif acttype == linphone.PresenceActivityType.Steering:
+                manager.stats.number_of_LinphonePresenceActivitySteering += 1
+            elif acttype == linphone.PresenceActivityType.Travel:
+                manager.stats.number_of_LinphonePresenceActivityTravel += 1
+            elif acttype == linphone.PresenceActivityType.TV:
+                manager.stats.number_of_LinphonePresenceActivityTV += 1
+            elif acttype == linphone.PresenceActivityType.Unknown:
+                manager.stats.number_of_LinphonePresenceActivityUnknown += 1
+            elif acttype == linphone.PresenceActivityType.Vacation:
+                manager.stats.number_of_LinphonePresenceActivityVacation += 1
+            elif acttype == linphone.PresenceActivityType.Working:
+                manager.stats.number_of_LinphonePresenceActivityWorking += 1
+            elif acttype == linphone.PresenceActivityType.Worship:
+                manager.stats.number_of_LinphonePresenceActivityWorship += 1
 
     def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}):
         if not vtable.has_key('registration_state_changed'):
@@ -588,17 +607,27 @@ class CoreManager:
             rc_path = os.path.join('rcfiles', rc_file)
         self.lc = CoreManager.configure_lc_from(vtable, tester_resources_path, rc_path, self)
         self.check_accounts()
-        if check_for_proxies and rc_file is not None:
+
+        self.lc.play_file = os.path.join(tester_resources_path, 'sounds', 'hello8000.wav')
+        self.lc.user_certificates_path = os.getcwd()
+
+        if check_for_proxies:
             proxy_count = len(self.lc.proxy_config_list)
         else:
             proxy_count = 0
+            self.lc.network_reachable = False
         if proxy_count:
-            CoreManager.wait_for_until(self, None, lambda manager: manager.stats.number_of_LinphoneRegistrationOk == proxy_count, 5000 * proxy_count)
+            nb_seconds = 20
+            success = CoreManager.wait_for_until(self, None, lambda manager: manager.stats.number_of_LinphoneRegistrationOk == proxy_count, nb_seconds * 1000 * proxy_count)
+            if not success:
+                linphonetester_logger.info("[TESTER] Did not register after {nb_seconds} for {proxy_count} proxies".format(nb_seconds=nb_seconds, proxy_count=proxy_count))
         assert_equals(self.stats.number_of_LinphoneRegistrationOk, proxy_count)
         self.enable_audio_codec("PCMU", 8000)
 
         if self.lc.default_proxy_config is not None:
             self.lc.default_proxy_config.identity_address.clean()
+        if not check_for_proxies:
+            self.lc.network_reachable = True
 
     def enable_audio_codec(self, mime, rate):
         codecs = self.lc.audio_codecs

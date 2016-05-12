@@ -814,6 +814,28 @@ LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, cons
 	return lf;
 }
 
+LinphoneFriend *linphone_core_find_friend_by_out_subscribe(const LinphoneCore *lc, SalOp *op) {
+	MSList *lists = lc->friends_lists;
+	LinphoneFriend *lf = NULL;
+	while (lists && !lf) {
+		LinphoneFriendList *list = (LinphoneFriendList *)lists->data;
+		lf = linphone_friend_list_find_friend_by_out_subscribe(list, op);
+		lists = ms_list_next(lists);
+	}
+	return lf;
+}
+
+LinphoneFriend *linphone_core_find_friend_by_inc_subscribe(const LinphoneCore *lc, SalOp *op) {
+	MSList *lists = lc->friends_lists;
+	LinphoneFriend *lf = NULL;
+	while (lists && !lf) {
+		LinphoneFriendList *list = (LinphoneFriendList *)lists->data;
+		lf = linphone_friend_list_find_friend_by_inc_subscribe(list, op);
+		lists = ms_list_next(lists);
+	}
+	return lf;
+}
+
 #define key_compare(s1,s2)	strcmp(s1,s2)
 
 LinphoneSubscribePolicy __policy_str_to_enum(const char* pol){
@@ -1529,4 +1551,7 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 
 	ms_debug("friends migration successful: %i friends migrated", i);
 	lp_config_set_int(lpc, "misc", "friends_migration_done", 1);
+}
+LinphoneSubscriptionState linphone_friend_get_subscription_state(const LinphoneFriend *lf) {
+	return lf->out_sub_state;
 }

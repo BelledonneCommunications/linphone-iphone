@@ -389,6 +389,8 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 }
 
 static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize) {
+	LinphoneFriendListStatus status = LinphoneFriendListInvalidFriend;
+
 	if (!list || !lf->uri || lf->friend_list) {
 		if (!list)
 			ms_error("linphone_friend_list_add_friend(): invalid list, null");
@@ -396,7 +398,7 @@ static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendL
 			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
 		if (lf->friend_list)
 			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
-		return LinphoneFriendListInvalidFriend;
+		return status;
 	}
 	if (ms_list_find(list->friends, lf) != NULL) {
 		char *tmp = NULL;
@@ -405,11 +407,14 @@ static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendL
 		ms_warning("Friend %s already in list [%s], ignored.", tmp ? tmp : "unknown", list->display_name);
 		if (tmp) ms_free(tmp);
 	} else {
-		LinphoneFriendListStatus status = linphone_friend_list_import_friend(list, lf, synchronize);
+		status = linphone_friend_list_import_friend(list, lf, synchronize);
 		linphone_friend_save(lf, lf->lc);
-		return status;
 	}
-	return LinphoneFriendListInvalidFriend;
+	if (list->rls_uri == NULL) {
+		/* Mimic the behaviour of linphone_core_add_friend() when a resource list server is not in use */
+		linphone_friend_apply(lf, lf->lc);
+	}
+	return status;
 }
 
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
@@ -665,7 +670,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 		} else {
 			ms_message("Friends list [%p] subscription update skipped since subscriptions not enabled yet", list);
 		}
-	} else {
+	} else if (list->enable_subscriptions) {
 		for (elem = list->friends; elem != NULL; elem = elem->next) {
 			LinphoneFriend *lf = (LinphoneFriend *)elem->data;
 			linphone_friend_update_subscribes(lf, cfg, only_when_registered);

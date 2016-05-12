@@ -279,6 +279,14 @@ LINPHONE_PUBLIC	void linphone_friend_done(LinphoneFriend *fr);
 LINPHONE_PUBLIC LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
 
 /**
+ * Get subscription state of a friend
+ * @param[in] lf A #LinphoneFriend object
+ * @return #LinphoneSubscriptionState
+ */
+
+LINPHONE_PUBLIC LinphoneSubscriptionState linphone_friend_get_subscription_state(const LinphoneFriend *lf);
+	
+/**
  * Get the presence model of a friend
  * @param[in] lf A #LinphoneFriend object
  * @return A #LinphonePresenceModel object, or NULL if the friend do not have presence information (in which case he is considered offline)

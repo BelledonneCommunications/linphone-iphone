@@ -216,12 +216,16 @@ static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState
 
 
 	linphone_core_terminate_all_calls(marie->lc);
-
+	
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,2,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,2,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,10000));
 
-
+	linphone_call_params_unref(laure_params);
+	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
@@ -287,6 +291,9 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 			BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEnd, initial_marie_stat.number_of_LinphoneCallEnd+2, 10000));
 			BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, initial_pauline_stat.number_of_LinphoneCallEnd+1, 5000));
 			BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallEnd, initial_laure_stat.number_of_LinphoneCallEnd+1, 5000));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallReleased, initial_marie_stat.number_of_LinphoneCallReleased+3, 10000));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallReleased, initial_pauline_stat.number_of_LinphoneCallReleased+1, 5000));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallReleased, initial_laure_stat.number_of_LinphoneCallReleased+1, 5000));
 			goto end;
 		}
 	}
@@ -801,27 +808,29 @@ static void eject_from_4_participants_conference(void) {
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(laure->lc));
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(michelle->lc));
-	end_call(laure, marie);
-	end_call(pauline, marie);
-	end_call(michelle, marie);
-
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&michelle->stat.number_of_LinphoneCallEnd,1,10000));
-
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&michelle->stat.number_of_LinphoneCallReleased,1,10000));
-
-	ms_list_free(lcs);
-
+	
+	linphone_core_terminate_all_calls(laure->lc);
+	linphone_core_terminate_all_calls(pauline->lc);
+	linphone_core_terminate_all_calls(michelle->lc);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallEnd, 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &michelle->stat.number_of_LinphoneCallEnd, 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEnd, 3, 10000));
+	
+	BC_ASSERT_PTR_NULL(linphone_core_get_conference(marie->lc));
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallReleased, 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallReleased, 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &michelle->stat.number_of_LinphoneCallReleased, 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEnd, 3, 10000));
+	
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(michelle);
+	ms_list_free(lcs);
 }
 
 
@@ -923,20 +932,20 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Call waiting indication with privacy", call_waiting_indication_with_privacy),
 	TEST_NO_TAG("Second call rejected if first one in progress", second_call_rejected_if_first_one_in_progress),
 	TEST_NO_TAG("Second call allowed if not using audio", second_call_allowed_if_not_using_audio),
-	TEST_ONE_TAG("Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress, "LeaksMemory"),
-	TEST_ONE_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing, "LeaksMemory"),
-	TEST_ONE_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media, "LeaksMemory"),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media),
 	TEST_NO_TAG("Simple conference", simple_conference),
-	TEST_TWO_TAGS("Simple conference with ICE", simple_conference_with_ice, "ICE",),
-	TEST_TWO_TAGS("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE",),
+	TEST_ONE_TAG("Simple conference with ICE", simple_conference_with_ice, "ICE"),
+	TEST_ONE_TAG("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE"),
 	TEST_NO_TAG("Eject from 3 participants conference", eject_from_3_participants_local_conference),
-	TEST_ONE_TAG("Eject from 4 participants conference", eject_from_4_participants_conference, "LeaksMemory"),
+	TEST_NO_TAG("Eject from 4 participants conference", eject_from_4_participants_conference),
 	TEST_NO_TAG("Simple call transfer", simple_call_transfer),
 	TEST_NO_TAG("Unattended call transfer", unattended_call_transfer),
 	TEST_NO_TAG("Unattended call transfer with error", unattended_call_transfer_with_error),
 	TEST_NO_TAG("Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call),
 	TEST_NO_TAG("Simple remote conference", simple_remote_conference),
-	TEST_ONE_TAG("Simple remote conference with shut down focus", simple_remote_conference_shut_down_focus, "LeaksMemory"),
+	TEST_NO_TAG("Simple remote conference with shut down focus", simple_remote_conference_shut_down_focus),
 	TEST_NO_TAG("Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference),
 };
 

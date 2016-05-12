@@ -1421,14 +1421,19 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			if (sql_storage) {
 				MSList *marie_messages = linphone_chat_room_get_history(marie_chat_room, 0);
 				MSList *pauline_messages = linphone_chat_room_get_history(pauline_chat_room, 0);
+				LinphoneChatMessage *marie_msg = NULL;
+				LinphoneChatMessage *pauline_msg = NULL;
 				if (do_not_store_rtt_messages_in_sql_storage) {
 					BC_ASSERT_EQUAL(ms_list_size(marie_messages), 0, int , "%i");
 					BC_ASSERT_EQUAL(ms_list_size(pauline_messages), 0, int , "%i");
 				} else {
-					LinphoneChatMessage *marie_msg = (LinphoneChatMessage *)marie_messages->data;
-					LinphoneChatMessage *pauline_msg = (LinphoneChatMessage *)pauline_messages->data;
 					BC_ASSERT_EQUAL(ms_list_size(marie_messages), 1, int , "%i");
 					BC_ASSERT_EQUAL(ms_list_size(pauline_messages), 1, int , "%i");
+					if (!marie_messages || !pauline_messages) {
+						goto end;
+					}
+					marie_msg = (LinphoneChatMessage *)marie_messages->data;
+					pauline_msg = (LinphoneChatMessage *)pauline_messages->data;
 					BC_ASSERT_STRING_EQUAL(marie_msg->message, message);
 					BC_ASSERT_STRING_EQUAL(pauline_msg->message, message);
 					ms_list_free_with_data(marie_messages, (void (*)(void *))linphone_chat_message_unref);
@@ -1448,6 +1453,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 		}
 
+end:
 		end_call(marie, pauline);
 	}
 	linphone_call_params_destroy(marie_params);

@@ -101,7 +101,7 @@ struct SalOp{
 	int ref;
 	SalOpType type;
 	SalPrivacyMask privacy;
-	belle_sip_header_t *event; /*used by SalOpSubscribe kinds*/
+	belle_sip_header_event_t *event; /*used by SalOpSubscribe kinds*/
 	SalOpSDPHandling sdp_handling;
 	int auth_requests; /*number of auth requested for this op*/
 	bool_t cnx_ip_to_0000_if_sendonly_enabled;
@@ -173,5 +173,7 @@ SalBodyHandler * sal_op_get_body_handler(SalOp *op, belle_sip_message_t *msg);
 int sal_reason_to_sip_code(SalReason r);
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
+
+SalSubscribeStatus belle_sip_message_get_subscription_state(const belle_sip_message_t *msg);
 
 #endif /* SAL_IMPL_H_ */

@@ -61,7 +61,7 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	} else if (linphone_presence_model_get_basic_status(counters->last_received_presence) == LinphonePresenceBasicStatusClosed) {
 		counters->number_of_LinphonePresenceBasicStatusClosed++;
 	} else {
-		ms_error("unexpeted basioc status [%i]",linphone_presence_model_get_basic_status(counters->last_received_presence));
+		ms_error("Unexpected basic status [%i]",linphone_presence_model_get_basic_status(counters->last_received_presence));
 	}
 	for (i=0;i<linphone_presence_model_get_nb_activities(counters->last_received_presence); i++) {
 		LinphonePresenceActivity *activity = linphone_presence_model_get_nth_activity(counters->last_received_presence, i);
@@ -272,6 +272,53 @@ static void simple_subscribe(void) {
 
 	linphone_core_manager_destroy(pauline);
 }
+static void simple_subscribe_with_early_notify(void) {
+	
+	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
+	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
+	LinphoneAddress *marie_identity_addr = linphone_address_clone(marie->identity);
+	LpConfig *pauline_lp;
+	
+	char* pauline_identity=linphone_address_as_string_uri_only(pauline->identity);
+	char* marie_identity;
+	
+	LinphoneFriend* pauline_s_friend;
+	LinphoneFriend* marie_s_friend=linphone_core_create_friend_with_address(marie->lc,pauline_identity);
+	
+	pauline_lp = linphone_core_get_config(pauline->lc);
+	lp_config_set_int(pauline_lp,"sip","notify_pending_state",1);
+	
+	linphone_friend_edit(marie_s_friend);
+	linphone_friend_enable_subscribes(marie_s_friend,TRUE);
+	linphone_friend_done(marie_s_friend);
+	linphone_core_add_friend(marie->lc,marie_s_friend);
+	ms_free(pauline_identity);
+	
+	
+	/*to simulate pending state.*/
+
+	linphone_address_set_port(marie_identity_addr,0);
+	marie_identity=linphone_address_as_string_uri_only(marie_identity_addr);
+	pauline_s_friend=linphone_core_create_friend_with_address(pauline->lc,marie_identity);
+	linphone_core_add_friend(pauline->lc,pauline_s_friend);
+	
+	ms_free(marie_identity);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_NotifyPresenceReceived,1));
+	BC_ASSERT_EQUAL(linphone_friend_get_subscription_state(marie_s_friend), LinphoneSubscriptionPending,int, "%d");
+	
+	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,marie->stat.number_of_LinphonePresenceActivityOnline+1);
+	
+	BC_ASSERT_EQUAL(marie->stat.number_of_NotifyPresenceReceived,2, int, "%d");
+	
+	linphone_friend_unref(marie_s_friend);
+	linphone_friend_unref(pauline_s_friend);
+	linphone_address_unref(marie_identity_addr);
+	linphone_core_manager_destroy(marie);
+	
+	linphone_core_manager_destroy(pauline);
+}
+
 
 static void unsubscribe_while_subscribing(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -399,8 +446,8 @@ static void presence_information(void) {
 
 static void subscribe_presence_forked(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_tcp_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_tcp_rc" : "pauline_tcp_rc");
 	LinphoneFriend *lf;
 	MSList *lcs = NULL;
 
@@ -417,8 +464,10 @@ static void subscribe_presence_forked(void){
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_NewSubscriptionRequest,1, 10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline2->stat.number_of_NewSubscriptionRequest,1, 2000));
-	/*we should get two notifies*/
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,2, 10000));
+	
+	/*we should get only one notify*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,1, 10000));
+	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,2, 2000));
 
 	/*marie also shall receive two SUBSCRIBEs from the two paulines, but won't be notified to the app since
 	 Marie set Pauline as a friend.*/
@@ -501,6 +550,7 @@ static void simple_subscribe_with_friend_from_rc(void) {
 
 test_t presence_tests[] = {
 	TEST_ONE_TAG("Simple Subscribe", simple_subscribe,"presence"),
+	TEST_ONE_TAG("Simple Subscribe with early NOTIFY", simple_subscribe_with_early_notify,"presence"),
 	TEST_NO_TAG("Simple Subscribe with friend from rc", simple_subscribe_with_friend_from_rc),
 	TEST_ONE_TAG("Simple Publish", simple_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Simple Publish with expires", publish_with_expires, "LeaksMemory"),
