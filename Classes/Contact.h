@@ -18,6 +18,7 @@
 @property(nonatomic, strong) NSMutableArray *phoneNumbers;
 
 - (instancetype)initWithPerson:(ABRecordRef)person;
+- (instancetype)initWithFriend:(LinphoneFriend *) friend;
 
 - (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index;
 - (BOOL)setEmail:(NSString *)email atIndex:(NSInteger)index;

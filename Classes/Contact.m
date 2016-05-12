@@ -10,13 +10,30 @@
 
 @implementation Contact {
 	ABRecordRef person;
+	LinphoneFriend *friend;
 }
 
 - (instancetype)initWithPerson:(ABRecordRef)aperson {
+	return [self initWithPerson:aperson andFriend:NULL];
+}
+
+- (instancetype)initWithFriend:(LinphoneFriend *)afriend {
+	return [self initWithPerson:NULL andFriend:afriend];
+}
+
+- (instancetype)initWithPerson:(ABRecordRef)aperson andFriend:(LinphoneFriend *)afriend {
 	self = [super init];
 	person = aperson;
+	friend = afriend;
 
-	[self loadFields];
+	if (person) {
+		[self loadProperties];
+	} else if (friend) {
+		[self loadFriend];
+	} else {
+		LOGE(@"Contact cannot be initialized");
+		return nil;
+	}
 
 	LOGI(@"Contact %@ %@ initialized with %d phones, %d sip, %d emails", self.firstName ?: @"", self.lastName ?: @"",
 		 self.phoneNumbers.count, self.sipAddresses.count, self.emails.count);
@@ -27,9 +44,190 @@
 	if (person != nil && ABRecordGetRecordID(person) == kABRecordInvalidID) {
 		CFRelease(person);
 	}
+	person = nil;
+	friend = NULL;
 }
 
-- (void)loadFields {
+#pragma mark - Setters
+- (void)setFirstName:(NSString *)firstName {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = ([self replaceInProperty:kABPersonFirstNameProperty value:(__bridge CFTypeRef)(firstName)]);
+	} else {
+		ret = (linphone_friend_set_name(friend, firstName.UTF8String) == 0);
+	}
+
+	if (ret) {
+		_firstName = firstName;
+	}
+}
+
+- (void)setLastName:(NSString *)lastName {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = ([self replaceInProperty:kABPersonLastNameProperty value:(__bridge CFTypeRef)(lastName)]);
+	} else {
+		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
+	}
+
+	if (ret) {
+		_lastName = lastName;
+	}
+}
+
+- (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index {
+	BOOL ret = FALSE;
+	if (person) {
+		NSDictionary *lDict = @{
+			(NSString *) kABPersonInstantMessageUsernameKey : sip, (NSString *)
+			kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
+		};
+
+		ret = [self replaceInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict) atIndex:index];
+	} else {
+		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
+	}
+
+	if (ret) {
+		_sipAddresses[index] = sip;
+	}
+	return ret;
+}
+
+- (BOOL)setPhoneNumber:(NSString *)phone atIndex:(NSInteger)index {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = [self replaceInProperty:kABPersonPhoneProperty value:(__bridge CFTypeRef)(phone) atIndex:index];
+	} else {
+		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
+	}
+	if (ret) {
+		_phoneNumbers[index] = phone;
+	}
+	return ret;
+}
+
+- (BOOL)setEmail:(NSString *)email atIndex:(NSInteger)index {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = [self replaceInProperty:kABPersonEmailProperty value:(__bridge CFTypeRef)(email) atIndex:index];
+	} else {
+	}
+	if (ret) {
+		_emails[index] = email;
+	}
+	return ret;
+}
+
+- (BOOL)addSipAddress:(NSString *)sip {
+	BOOL ret = FALSE;
+	if (person) {
+		NSDictionary *lDict = @{
+			(NSString *) kABPersonInstantMessageUsernameKey : sip, (NSString *)
+			kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
+		};
+
+		ret = [self addInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict)];
+	} else {
+		LinphoneAddress *addr = linphone_core_interpret_url(LC, sip.UTF8String);
+		if (addr) {
+			ret = TRUE;
+			linphone_friend_add_address(friend, addr);
+			linphone_address_destroy(addr);
+			// ensure that it was added by checking list size
+			ret = (ms_list_size(linphone_friend_get_addresses(friend)) == _sipAddresses.count + 1);
+		}
+	}
+	if (ret) {
+		[_sipAddresses addObject:sip];
+	}
+	return ret;
+}
+
+- (BOOL)addPhoneNumber:(NSString *)phone {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = [self addInProperty:kABPersonPhoneProperty value:(__bridge CFTypeRef)(phone)];
+	} else {
+		char *cphone = linphone_proxy_config_normalize_phone_number(NULL, phone.UTF8String);
+		if (cphone) {
+			linphone_friend_add_phone_number(friend, cphone);
+			phone = [NSString stringWithUTF8String:cphone];
+			ms_free(cphone);
+			// ensure that it was added by checking list size
+			ret = (ms_list_size(linphone_friend_get_phone_numbers(friend)) == _phoneNumbers.count + 1);
+		}
+	}
+	if (ret) {
+		[_phoneNumbers addObject:phone];
+	}
+	return ret;
+}
+
+- (BOOL)addEmail:(NSString *)email {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = [self addInProperty:kABPersonEmailProperty value:(__bridge CFTypeRef)(email)];
+	} else {
+		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
+	}
+	if (ret) {
+		[_emails addObject:email];
+	}
+	return ret;
+}
+
+- (BOOL)removeSipAddressAtIndex:(NSInteger)index {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = [self removeInProperty:kABPersonInstantMessageProperty atIndex:index];
+	} else {
+		LinphoneAddress *addr = linphone_core_interpret_url(LC, ((NSString *)_sipAddresses[index]).UTF8String);
+		if (addr) {
+			linphone_friend_remove_address(friend, addr);
+			linphone_address_destroy(addr);
+			// ensure that it was destroyed by checking list size
+			ret = (ms_list_size(linphone_friend_get_addresses(friend)) == _sipAddresses.count - 1);
+		}
+	}
+	if (ret) {
+		[_sipAddresses removeObjectAtIndex:index];
+	}
+	return ret;
+}
+
+- (BOOL)removePhoneNumberAtIndex:(NSInteger)index {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = [self removeInProperty:kABPersonPhoneProperty atIndex:index];
+	} else {
+		const char *phone = ((NSString *)_phoneNumbers[index]).UTF8String;
+		linphone_friend_remove_phone_number(friend, phone);
+		// ensure that it was destroyed by checking list size
+		ret = (ms_list_size(linphone_friend_get_phone_numbers(friend)) == _phoneNumbers.count - 1);
+	}
+	if (ret) {
+		[_phoneNumbers removeObjectAtIndex:index];
+	}
+	return ret;
+}
+
+- (BOOL)removeEmailAtIndex:(NSInteger)index {
+	BOOL ret = FALSE;
+	if (person) {
+		ret = [self removeInProperty:kABPersonEmailProperty atIndex:index];
+	} else {
+		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
+	}
+	if (ret) {
+		[_emails removeObjectAtIndex:index];
+	}
+	return ret;
+}
+
+#pragma mark - ABPerson utils
+
+- (void)loadProperties {
 	// First and Last name
 	{
 		_firstName = (NSString *)CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty));
@@ -38,7 +236,7 @@
 
 	// Phone numbers
 	{
-		NSMutableArray *phones = [[NSMutableArray alloc] init];
+		_phoneNumbers = [[NSMutableArray alloc] init];
 		ABMultiValueRef map = ABRecordCopyValue(person, kABPersonPhoneProperty);
 		if (map) {
 			for (int i = 0; i < ABMultiValueGetCount(map); ++i) {
@@ -47,18 +245,17 @@
 				if (index != -1) {
 					NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(map, index));
 					if (valueRef != NULL) {
-						[phones addObject:[FastAddressBook localizedLabel:valueRef]];
+						[_phoneNumbers addObject:[FastAddressBook localizedLabel:valueRef]];
 					}
 				}
 			}
 			CFRelease(map);
 		}
-		_phoneNumbers = phones;
 	}
 
 	// SIP (IM)
 	{
-		NSMutableArray *sip = [[NSMutableArray alloc] init];
+		_sipAddresses = [[NSMutableArray alloc] init];
 		ABMultiValueRef map = ABRecordCopyValue(person, kABPersonInstantMessageProperty);
 		if (map) {
 			for (int i = 0; i < ABMultiValueGetCount(map); ++i) {
@@ -70,19 +267,18 @@
 						NSString *value = (NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
 						CFRelease(lDict);
 						if (value != NULL) {
-							[sip addObject:value];
+							[_sipAddresses addObject:value];
 						}
 					}
 				}
 			}
 			CFRelease(map);
 		}
-		_sipAddresses = sip;
 	}
 
 	// Email
 	{
-		NSMutableArray *emails = [[NSMutableArray alloc] init];
+		_emails = [[NSMutableArray alloc] init];
 		ABMultiValueRef map = ABRecordCopyValue(person, kABPersonEmailProperty);
 		if (map) {
 			for (int i = 0; i < ABMultiValueGetCount(map); ++i) {
@@ -91,26 +287,12 @@
 				if (index != -1) {
 					NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(map, index));
 					if (valueRef != NULL) {
-						[emails addObject:valueRef];
+						[_emails addObject:valueRef];
 					}
 				}
 			}
 			CFRelease(map);
 		}
-		_emails = emails;
-	}
-}
-
-#pragma mark - Setters
-- (void)setFirstName:(NSString *)firstName {
-	if ([self replaceInProperty:kABPersonFirstNameProperty value:(__bridge CFTypeRef)(firstName)]) {
-		_firstName = firstName;
-	}
-}
-
-- (void)setLastName:(NSString *)lastName {
-	if ([self replaceInProperty:kABPersonLastNameProperty value:(__bridge CFTypeRef)(lastName)]) {
-		_lastName = lastName;
 	}
 }
 
@@ -187,84 +369,40 @@
 	return ret;
 }
 
-- (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index {
-	NSDictionary *lDict = @{
-		(NSString *) kABPersonInstantMessageUsernameKey : sip, (NSString *)
-		kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
-	};
+#pragma mark - LinphoneFriend utils
 
-	BOOL ret = [self replaceInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict) atIndex:index];
-	if (ret) {
-		_sipAddresses[index] = sip;
+- (void)loadFriend {
+	// First and Last name
+	{ _firstName = [NSString stringWithUTF8String:linphone_friend_get_name(friend) ?: ""]; }
+
+	// Phone numbers
+	{
+		_phoneNumbers = [[NSMutableArray alloc] init];
+		MSList *numbers = linphone_friend_get_phone_numbers(friend);
+		while (numbers) {
+			NSString *phone = [NSString stringWithUTF8String:numbers->data];
+			[_phoneNumbers addObject:[FastAddressBook localizedLabel:phone]];
+			numbers = numbers->next;
+		}
 	}
-	return ret;
+
+	// SIP (IM)
+	{
+		_sipAddresses = [[NSMutableArray alloc] init];
+		MSList *sips = linphone_friend_get_addresses(friend);
+		while (sips) {
+			LinphoneAddress *addr = sips->data;
+			char *uri = linphone_address_as_string_uri_only(addr);
+			NSString *sipaddr = [NSString stringWithUTF8String:uri];
+			[_sipAddresses addObject:sipaddr];
+			ms_free(uri);
+
+			sips = sips->next;
+		}
+	}
+
+	// Email - no support for LinphoneFriend
+	{ _emails = [[NSMutableArray alloc] init]; }
 }
 
-- (BOOL)setPhoneNumber:(NSString *)phone atIndex:(NSInteger)index {
-	BOOL ret = [self replaceInProperty:kABPersonPhoneProperty value:(__bridge CFTypeRef)(phone) atIndex:index];
-	if (ret) {
-		_phoneNumbers[index] = phone;
-	}
-	return ret;
-}
-
-- (BOOL)addSipAddress:(NSString *)sip {
-	NSDictionary *lDict = @{
-		(NSString *) kABPersonInstantMessageUsernameKey : sip, (NSString *)
-		kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
-	};
-
-	BOOL ret = [self addInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict)];
-	if (ret) {
-		[_sipAddresses addObject:sip];
-	}
-	return ret;
-}
-
-- (BOOL)removeSipAddressAtIndex:(NSInteger)index {
-	BOOL ret = [self removeInProperty:kABPersonInstantMessageProperty atIndex:index];
-	if (ret) {
-		[_sipAddresses removeObjectAtIndex:index];
-	}
-	return ret;
-}
-- (BOOL)addPhoneNumber:(NSString *)phone {
-	BOOL ret = [self addInProperty:kABPersonPhoneProperty value:(__bridge CFTypeRef)(phone)];
-	if (ret) {
-		[_phoneNumbers addObject:phone];
-	}
-	return ret;
-}
-
-- (BOOL)removePhoneNumberAtIndex:(NSInteger)index {
-	BOOL ret = [self removeInProperty:kABPersonPhoneProperty atIndex:index];
-	if (ret) {
-		[_phoneNumbers removeObjectAtIndex:index];
-	}
-	return ret;
-}
-
-- (BOOL)setEmail:(NSString *)email atIndex:(NSInteger)index {
-	BOOL ret = [self replaceInProperty:kABPersonEmailProperty value:(__bridge CFTypeRef)(email) atIndex:index];
-	if (ret) {
-		_emails[index] = email;
-	}
-	return ret;
-}
-
-- (BOOL)addEmail:(NSString *)email {
-	BOOL ret = [self addInProperty:kABPersonEmailProperty value:(__bridge CFTypeRef)(email)];
-	if (ret) {
-		[_emails addObject:email];
-	}
-	return ret;
-}
-
-- (BOOL)removeEmailAtIndex:(NSInteger)index {
-	BOOL ret = [self removeInProperty:kABPersonEmailProperty atIndex:index];
-	if (ret) {
-		[_emails removeObjectAtIndex:index];
-	}
-	return ret;
-}
 @end
