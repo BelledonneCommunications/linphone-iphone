@@ -572,7 +572,7 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 
 static void stun_server_resolved(LinphoneCore *lc, const char *name, struct addrinfo *addrinfo){
 	if (lc->net_conf.stun_addrinfo){
-		belle_sip_freeaddrinfo(lc->net_conf.stun_addrinfo);
+		bctbx_freeaddrinfo(lc->net_conf.stun_addrinfo);
 		lc->net_conf.stun_addrinfo=NULL;
 	}
 	if (addrinfo){

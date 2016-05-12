@@ -37,6 +37,7 @@
 #include "ringtoneplayer.h"
 #include "vcard.h"
 
+#include <bctoolbox/port.h>
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
 
