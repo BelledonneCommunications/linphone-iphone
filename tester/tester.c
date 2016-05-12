@@ -436,7 +436,7 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 }
 
 int liblinphone_tester_ipv6_available(void){
-	struct addrinfo *ai=belle_sip_ip_address_to_addrinfo(AF_INET6,"2a01:e00::2",53);
+	struct addrinfo *ai=bctbx_ip_address_to_addrinfo(AF_INET6,"2a01:e00::2",53);
 	if (ai){
 		struct sockaddr_storage ss;
 		struct addrinfo src;
@@ -446,7 +446,7 @@ int liblinphone_tester_ipv6_available(void){
 		belle_sip_get_src_addr_for(ai->ai_addr,(socklen_t)ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
 		src.ai_addr=(struct sockaddr*) &ss;
 		src.ai_addrlen=slen;
-		belle_sip_addrinfo_to_ip(&src,localip, sizeof(localip),&port);
+		bctbx_addrinfo_to_ip_address(&src,localip, sizeof(localip),&port);
 		freeaddrinfo(ai);
 		return strcmp(localip,"::1")!=0;
 	}
