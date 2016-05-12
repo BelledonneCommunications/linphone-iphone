@@ -253,13 +253,9 @@ def check_tools():
         xcode_version = int(
             Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
         if xcode_version < 7:
-            sdk_platform_path = Popen(
-                "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "),
-                stdout=PIPE, stderr=devnull).stdout.read()[:-1]
-            sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
-            if not os.path.isfile(sdk_strings_path):
-                strings_path = find_executable("strings")
-                error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(strings_path, sdk_strings_path))
+            if not find_executable("strings"):
+                sdk_strings_path = Popen("xcrun --find strings".split(" "), stdout=PIPE).stdout.read().split("\n")[0]
+                error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(sdk_strings_path, package_manager_info[detect_package_manager() + "-binary-path"]))
                 reterr = 1
     return reterr
 
