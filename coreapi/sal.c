@@ -220,6 +220,10 @@ bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd) {
 	return FALSE;
 }
 
+bool_t sal_stream_description_has_ipv6(const SalStreamDescription *sd){
+	return strchr(sd->rtp_addr,':') != NULL;
+}
+
 bool_t sal_stream_description_has_implicit_avpf(const SalStreamDescription *sd){
 	return sd->implicit_rtcp_fb;
 }
@@ -305,6 +309,20 @@ bool_t sal_media_description_has_zrtp(const SalMediaDescription *md) {
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_zrtp(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_media_description_has_ipv6(const SalMediaDescription *md){
+	int i;
+	if (md->nb_streams == 0) return FALSE;
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (md->streams[i].rtp_addr[0] != '\0'){
+			if (!sal_stream_description_has_ipv6(&md->streams[i])) return FALSE;
+		}else{
+			if (strchr(md->addr,':') == NULL) return FALSE;
+		}
 	}
 	return TRUE;
 }

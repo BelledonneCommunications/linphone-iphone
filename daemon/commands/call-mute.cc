@@ -29,9 +29,9 @@ void CallMute::exec(Daemon* app, const char* args)
 	}
 
 	if (sscanf(args, "%i", &muted) == 1) {
-		linphone_core_enable_mic(lc, (muted != 0));
+		linphone_core_enable_mic(lc, !muted);
 	} else {
-		linphone_core_enable_mic(lc, (muted != 0));
+		linphone_core_enable_mic(lc, !muted);
 	}
 
 	app->sendResponse(Response(muted?"Microphone Muted"
