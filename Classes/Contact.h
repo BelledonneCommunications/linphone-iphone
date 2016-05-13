@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
 
+#include <linphone/linphonecore.h>
+
 @interface Contact : NSObject
 
 @property(nonatomic, assign) NSString *firstName;
