@@ -365,7 +365,7 @@ void lp_config_parse(LpConfig *lpconfig, bctbx_vfs_file* pFile){
 	LpSection* current_section = NULL;
 	int size  =0;
 	if (pFile==NULL) return;
-	while(( size = bctbx_file_get_nxtline(lpconfig->pFile, tmp, MAX_LEN)) > 0){
+	while(( size = bctbx_file_get_nxtline(pFile, tmp, MAX_LEN)) > 0){
 		tmp[size] = '\0';
 		current_section = lp_config_parse_line(lpconfig, tmp, current_section);
 	}
@@ -462,7 +462,7 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	int fd=-1;
 	bctbx_vfs_file* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
 	fd = pFile->fd;
-	if (fd < 0){
+	if (fd > 0){
 		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig, pFile);
 		bctbx_file_close(pFile);

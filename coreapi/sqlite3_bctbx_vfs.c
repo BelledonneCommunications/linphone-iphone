@@ -187,6 +187,20 @@ static int sqlite3bctbx_nolockUnlock(sqlite3_file *pUnused, int unused){
 }
 
 
+/**
+ * Simple sync the file contents to the persistent media.
+ * @param  pFile [description]
+ * @param  flags [description]
+ * @return       [description]
+ */
+static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
+  sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*)p;
+  int rc;
+
+  rc = fsync(pFile->bctbx_file.fd);
+  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+}
+
 
 /**
  * [sqlite3bctbx_Open description]
@@ -202,7 +216,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 		sqlite3bctbx_Read,                     /* xRead */
 		sqlite3bctbx_Write,                    /* xWrite */
 		0,
-		0,
+		sqlite3bctbx_Sync,
 		sqlite3bctbx_FileSize,                 /* xFileSize */
 		sqlite3bctbx_nolockLock,
 		sqlite3bctbx_nolockUnlock,
@@ -211,22 +225,24 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 		0,
 		sqlite3bctbx_DeviceCharacteristics,
 	};
-	int oflags = 0;
+
 	sqlite3_bctbx_file * pFile = (sqlite3_bctbx_file*)p;
+
+
+	int openFlags = 0;
+
 
 	if (pFile == NULL || fName == NULL){
 		return SQLITE_IOERR;
 	}
 
 
-	if( flags&SQLITE_OPEN_EXCLUSIVE ) oflags |= O_EXCL;
-	if( flags&SQLITE_OPEN_CREATE )    oflags |= O_CREAT;
-	if( flags&SQLITE_OPEN_READONLY )  oflags |= O_RDONLY;
-	if( flags&SQLITE_OPEN_READWRITE ) oflags |= O_RDWR;
+	if( flags&SQLITE_OPEN_EXCLUSIVE ) openFlags  |= (O_EXCL|O_NOFOLLOW);
+	if( flags&SQLITE_OPEN_CREATE )    openFlags |= O_CREAT;
+	if( flags&SQLITE_OPEN_READONLY )  openFlags |= O_RDONLY;
+	if( flags&SQLITE_OPEN_READWRITE ) openFlags |= O_RDWR;
 
-	
-
-	pFile->bctbx_file.fd = open(fName, flags, S_IRUSR | S_IWUSR);
+	pFile->bctbx_file.fd = open(fName, openFlags, S_IRUSR | S_IWUSR);
 	if( pFile->bctbx_file.fd < 0 ){
 		return SQLITE_CANTOPEN;
 	}
@@ -235,7 +251,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 //		return SQLITE_CANTOPEN;
 //	}
 	if( pOutFlags ){
-    	*pOutFlags = oflags;
+    	*pOutFlags = flags;
   	}
 	pFile->base.pMethods = &sqlite3_bctbx_io;
 	pFile->bctbx_file.pMethods = get_bcio();
