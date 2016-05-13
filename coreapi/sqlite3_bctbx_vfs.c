@@ -3,7 +3,7 @@
 #include <sqlite3.h>
 
 /**
- * Closes file by closing the associated file stream.
+ * Closes the file .
  * Sets the error errno in the argument pErrSrvd after allocating it
  * if an error occurrred.
  * @param  pFile File handle pointer.
@@ -23,7 +23,7 @@ static int sqlite3bctbx_Close(sqlite3_file *p){
 		// close(pFile->fd);
 		//free(p);
 		//p = NULL;
-		return 0;
+		return SQLITE_OK;
 	}
 	else{
 		printf("sqlite3bctbx_Close error %s", strerror(errno));
@@ -34,14 +34,17 @@ static int sqlite3bctbx_Close(sqlite3_file *p){
 
 
 /**
- * Read count bytes from the open file given by pFile, starting at offset.
- * Sets the error errno in the argument pErrSrvd after allocating it
- * if an error occurrred.
- * @param  pFile  File handle pointer.
- * @param  buf    buffer to write the read bytes to.
- * @param  count  number of bytes to read
- * @param  offset file offset where to start reading
- * @return BCTBX_VFS_ERROR if erroneous read, number of bytes read (count) otherwise
+ * Read count bytes from the open file given by p, starting at offset.
+ * Calls bctbx_vfs bcRead : the error type is set in pErrSvd if 
+ * something wrong happened. 
+ * 
+ * @param  p  		File handle pointer.
+ * @param  buf    	buffer to write the read bytes to.
+ * @param  count  	number of bytes to read
+ * @param  offset 	file offset where to start reading
+ * @return 			SQLITE_OK if read bytes equals count,  
+ *                  SQLITE_IOERR_SHORT_READ if the number of bytes read is inferior to count
+ *                  SQLITE_IOERR_READ if an error occurred. 
  */
 static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64 offset){
 	int* pErrSvd = NULL;
@@ -75,15 +78,14 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
 }
 
 /**
- * Writes directly to the open file given through the pFile argument.
- * Sets the error errno in the argument pErrSrvd after allocating it
- * if an error occurrred.
+ * Writes directly to the open file given through the p argument.
+ * Calls bctbx_vfs bcWrite : the error type is set in pErrSvd if 
+ * something went wrong. 
  * @param  p       File handle pointer.
  * @param  buf     Buffer containing data to write
  * @param  count   Size of data to write in bytes
  * @param  offset  File offset where to write to
- * @param  pErrSvd [description
- * @return         number of bytes written (can be 0), BCTBX_VFS_ERROR if an error occurred.
+ * @return         SQLITE_OK on success, SQLITE_IOERR_WRITE if an error occurred.
  */
 static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlite_int64 offset){
 	sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*) p;
@@ -107,9 +109,11 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
 		
 
 /**
- * Returns the file size associated with the file handle pFile.
- * @param  pFile File handle pointer.
- * @return       BCTBX_VFS_ERROR if an error occurred, BCTBX_VFS_OK otherwise.
+ * Saves the file size associated with the file handle p into the argument pSize.
+ * @param  p 	File handle pointer.
+ * @return 		SQLITE_OK if read bytes equals count,  
+ *              SQLITE_IOERR_FSTAT if the file size returned is negative 
+ *              SQLITE_ERROR if an error occurred. 
  */
 static int sqlite3bctbx_FileSize(sqlite3_file *p, sqlite_int64 *pSize){
 
@@ -124,8 +128,6 @@ static int sqlite3bctbx_FileSize(sqlite3_file *p, sqlite_int64 *pSize){
 			*pSize = rc;
 			return SQLITE_OK;
 		} 
-		else
-			return SQLITE_IOERR;
 	}
 	return SQLITE_ERROR;
 
@@ -144,7 +146,7 @@ static int sqlite3bctbx_DeviceCharacteristics(sqlite3_file *p){
 
 /**
  * [sqlite3bctbx_FileControl description]
- * @param  p    [description]
+ * @param  p    File handle pointer.
  * @param  op   [description]
  * @param  pArg [description]
  * @return      [description]
@@ -189,7 +191,7 @@ static int sqlite3bctbx_nolockUnlock(sqlite3_file *pUnused, int unused){
 
 /**
  * Simple sync the file contents to the persistent media.
- * @param  pFile [description]
+ * @param  p 	 File handle pointer.
  * @param  flags [description]
  * @return       [description]
  */
@@ -256,7 +258,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	pFile->base.pMethods = &sqlite3_bctbx_io;
 	pFile->bctbx_file.pMethods = get_bcio();
 	pFile->bctbx_file.filename = (char*)fName;
-	//p = (sqlite3_file*) pFile;
+
 	return SQLITE_OK;
 }
 
