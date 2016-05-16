@@ -205,8 +205,8 @@ static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSL
 				matched->avpf.features &= p2->avpf.features;
 				matched->avpf.rpsi_compatibility = p2->avpf.rpsi_compatibility;
 				/* Take bigger AVPF trr interval */
-				if (p2->avpf.trr_interval < matched->avpf.trr_interval) {
-					matched->avpf.trr_interval = matched->avpf.trr_interval;
+				if (p2->avpf.trr_interval > matched->avpf.trr_interval) {
+					matched->avpf.trr_interval = p2->avpf.trr_interval;
 				}
 			}else{
 				payload_type_unset_flag(matched, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);

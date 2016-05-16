@@ -1187,13 +1187,12 @@ static void linphone_call_incoming_select_ip_version(LinphoneCall *call, Linphon
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md) {
 	/* Handle AVPF, SRTP and DTLS. */
 	call->params->avpf_enabled = sal_media_description_has_avpf(md);
-	if (call->params->avpf_enabled == TRUE) {
-		if (call->dest_proxy != NULL) {
-			call->params->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(call->dest_proxy) * 1000;
-		} else {
-			call->params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(call->core)*1000;
-		}
+	if (call->dest_proxy != NULL) {
+		call->params->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(call->dest_proxy) * 1000;
+	} else {
+		call->params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(call->core)*1000;
 	}
+	
 	if ((sal_media_description_has_zrtp(md) == TRUE) && (ms_zrtp_available() == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionZRTP;
 	}else if ((sal_media_description_has_dtls(md) == TRUE) && (media_stream_dtls_supported() == TRUE)) {

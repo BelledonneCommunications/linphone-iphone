@@ -233,6 +233,17 @@ static void setup_sdp_handling(const LinphoneCallTestParams* params, LinphoneCor
 	}
 }
 
+/*
+ * CAUTION this function is error prone. you should not use it anymore in new tests.
+ * Creating callee call params before the call is actually received is not the good way
+ * to use the Liblinphone API. Indeed, call params used for receiving calls shall be created by linphone_core_create_call_params() by passing
+ * the call object for which params are to be created.
+ * This function should be used only in test case where the programmer exactly knows the caller params, and then can deduce how
+ * callee params will be set by linphone_core_create_call_params().
+ * This function was developped at a time where the use of the API about incoming params was not yet clarified.
+ * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so 
+ * it is not a so good idea to build new tests based on this function.
+**/
 bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 						,LinphoneCoreManager* callee_mgr
 						, const LinphoneCallTestParams *caller_test_params
@@ -382,6 +393,17 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	return result;
 }
 
+/*
+ * CAUTION this function is error prone. you should not use it anymore in new tests.
+ * Creating callee call params before the call is actually received is not the good way
+ * to use the Liblinphone API. Indeed, call params used for receiving calls shall be created by linphone_core_create_call_params() by passing
+ * the call object for which params are to be created.
+ * This function should be used only in test case where the programmer exactly knows the caller params, and then can deduce how
+ * callee params will be set by linphone_core_create_call_params().
+ * This function was developped at a time where the use of the API about incoming params was not yet clarified.
+ * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so 
+ * it is not a so good idea to build new tests based on this function.
+**/
 bool_t call_with_params(LinphoneCoreManager* caller_mgr
 						,LinphoneCoreManager* callee_mgr
 						,const LinphoneCallParams *caller_params
@@ -392,6 +414,17 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 	return call_with_params2(caller_mgr,callee_mgr,&caller_test_params,&callee_test_params,FALSE);
 }
 
+/*
+ * CAUTION this function is error prone. you should not use it anymore in new tests.
+ * Creating callee call params before the call is actually received is not the good way
+ * to use the Liblinphone API. Indeed, call params used for receiving calls shall be created by linphone_core_create_call_params() by passing
+ * the call object for which params are to be created.
+ * This function should be used only in test case where the programmer exactly knows the caller params, and then can deduce how
+ * callee params will be set by linphone_core_create_call_params().
+ * This function was developped at a time where the use of the API about incoming params was not yet clarified.
+ * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so 
+ * it is not a so good idea to build new tests based on this function.
+**/
 bool_t call_with_test_params(LinphoneCoreManager* caller_mgr
 				,LinphoneCoreManager* callee_mgr
 				,const LinphoneCallTestParams *caller_test_params
