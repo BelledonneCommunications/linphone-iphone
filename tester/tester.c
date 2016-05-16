@@ -727,7 +727,9 @@ static void linphone_conference_server_call_state_changed(LinphoneCore *lc, Linp
 
 		case LinphoneCallEnd:
 			if(call == conf_srv->first_call) {
-				linphone_core_terminate_conference(lc);
+				if(linphone_core_get_conference(lc)) {
+					linphone_core_terminate_conference(lc);
+				}
 				conf_srv->first_call = NULL;
 			}
 			break;
