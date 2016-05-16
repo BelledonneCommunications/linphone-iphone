@@ -937,8 +937,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		ms_error("Could not open %s for write", realfilepath);
 		goto end;
 	}
-
-	fprintf(pFile->file, "%s", data);
+	bctbx_file_fprintf(pFile, 0, "%s",data);
 	bctbx_file_close(pFile);
 
 end:
