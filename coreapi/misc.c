@@ -397,20 +397,20 @@ static int recv_stun_response(ortp_socket_t sock, char *ipaddr, int *port, int *
 	len = recv(sock, buf, len, 0);
 	if (len > 0) {
 		struct in_addr ia;
-		resp = ms_stun_message_create_from_buffer_parsing(buf, len);
+		resp = ms_stun_message_create_from_buffer_parsing((uint8_t *)buf, len);
 		if (resp != NULL) {
 			const MSStunAddress *stun_addr;
 			UInt96 tr_id = ms_stun_message_get_tr_id(resp);
 			*id = tr_id.octet[0];
 			stun_addr = ms_stun_message_get_xor_mapped_address(resp);
 			if (stun_addr != NULL) {
-				*port = stun_addr->ipv4.port;
-				ia.s_addr = htonl(stun_addr->ipv4.addr);
+				*port = stun_addr->ip.v4.port;
+				ia.s_addr = htonl(stun_addr->ip.v4.addr);
 			} else {
 				stun_addr = ms_stun_message_get_mapped_address(resp);
 				if (stun_addr != NULL) {
-					*port = stun_addr->ipv4.port;
-					ia.s_addr = htonl(stun_addr->ipv4.addr);
+					*port = stun_addr->ip.v4.port;
+					ia.s_addr = htonl(stun_addr->ip.v4.addr);
 				} else len = -1;
 			}
 			if (len > 0) strncpy(ipaddr, inet_ntoa(ia), LINPHONE_IPADDR_SIZE);
@@ -713,26 +713,27 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 
 	ice_session_enable_forced_relay(call->ice_session, lc->forced_ice_relay);
 
+	// TODO: Handle IPv6
 	/* Gather local host candidates. */
 	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
 		ms_error("Fail to get local ip");
 		return -1;
 	}
 	if ((ice_check_list_state(audio_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_check_list) == FALSE)) {
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[call->main_audio_stream_index].rtp_port, 1, NULL);
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[call->main_audio_stream_index].rtcp_port, 2, NULL);
+		ice_add_local_candidate(audio_check_list, "host", AF_INET, local_addr, call->media_ports[call->main_audio_stream_index].rtp_port, 1, NULL);
+		ice_add_local_candidate(audio_check_list, "host", AF_INET, local_addr, call->media_ports[call->main_audio_stream_index].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 	}
 	if (linphone_core_video_enabled(lc) && (video_check_list != NULL)
 		&& (ice_check_list_state(video_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(video_check_list) == FALSE)) {
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[call->main_video_stream_index].rtp_port, 1, NULL);
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[call->main_video_stream_index].rtcp_port, 2, NULL);
+		ice_add_local_candidate(video_check_list, "host", AF_INET, local_addr, call->media_ports[call->main_video_stream_index].rtp_port, 1, NULL);
+		ice_add_local_candidate(video_check_list, "host", AF_INET, local_addr, call->media_ports[call->main_video_stream_index].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
 	}
 	if (call->params->realtimetext_enabled && (text_check_list != NULL)
 		&& (ice_check_list_state(text_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(text_check_list) == FALSE)) {
-		ice_add_local_candidate(text_check_list, "host", local_addr, call->media_ports[call->main_text_stream_index].rtp_port, 1, NULL);
-		ice_add_local_candidate(text_check_list, "host", local_addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
+		ice_add_local_candidate(text_check_list, "host", AF_INET, local_addr, call->media_ports[call->main_text_stream_index].rtp_port, 1, NULL);
+		ice_add_local_candidate(text_check_list, "host", AF_INET, local_addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateInProgress;
 	}
 	if ((ai != NULL) && (nat_policy != NULL)
@@ -1124,7 +1125,8 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 					get_default_addr_and_port(candidate->componentID, md, stream, &addr, &port);
 					if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
 						default_candidate = TRUE;
-					ice_add_remote_candidate(cl, candidate->type, candidate->addr, candidate->port, candidate->componentID,
+					// TODO: Handle IPv6
+					ice_add_remote_candidate(cl, candidate->type, AF_INET, candidate->addr, candidate->port, candidate->componentID,
 						candidate->priority, candidate->foundation, default_candidate);
 				}
 				if (ice_restarted == FALSE) {
@@ -1140,7 +1142,8 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 							/* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
 							ice_check_list_unselect_valid_pairs(cl);
 						}
-						ice_add_losing_pair(cl, j + 1, remote_candidate->addr, remote_candidate->port, addr, port);
+						// TODO: Handle IPv6
+						ice_add_losing_pair(cl, j + 1, AF_INET, remote_candidate->addr, remote_candidate->port, addr, port);
 						losing_pairs_added = TRUE;
 					}
 					if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
