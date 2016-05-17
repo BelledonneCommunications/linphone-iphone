@@ -7296,6 +7296,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->privacy=LinphonePrivacyDefault;
 	params->avpf_enabled=linphone_core_get_avpf_mode(lc);
 	params->implicit_rtcp_fb = lp_config_get_int(lc->config,"rtp","rtcp_fb_implicit_rtcp_fb",TRUE);
+	params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(lc);
 	params->audio_dir=LinphoneMediaDirectionSendRecv;
 	params->video_dir=LinphoneMediaDirectionSendRecv;
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
@@ -7677,10 +7678,16 @@ LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {
 	return lc->ringtoneplayer;
 }
 
-static void linphone_core_conference_state_changed(LinphoneConference *conf, LinphoneConferenceState cstate, void *user_data) {
+static int _linphone_core_delayed_conference_destriction_cb(void *user_data, unsigned int event) {
+	LinphoneConference *conf = (LinphoneConference *)user_data;
+	linphone_conference_free(conf);
+	return 0;
+}
+
+static void _linphone_core_conference_state_changed(LinphoneConference *conf, LinphoneConferenceState cstate, void *user_data) {
 	LinphoneCore *lc = (LinphoneCore *)user_data;
 	if(cstate == LinphoneConferenceStartingFailed || cstate == LinphoneConferenceStopped) {
-		linphone_conference_free(lc->conf_ctx);
+		linphone_core_queue_task(lc, _linphone_core_delayed_conference_destriction_cb, conf, "Conference destruction task");
 		lc->conf_ctx = NULL;
 	}
 }
@@ -7689,7 +7696,7 @@ LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc
 	const char *conf_method_name;
 	if(lc->conf_ctx == NULL) {
 		LinphoneConferenceParams *params2 = linphone_conference_params_clone(params);
-		linphone_conference_params_set_state_changed_callback(params2, linphone_core_conference_state_changed, lc);
+		linphone_conference_params_set_state_changed_callback(params2, _linphone_core_conference_state_changed, lc);
 		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
 		if(strcasecmp(conf_method_name, "local") == 0) {
 			lc->conf_ctx = linphone_local_conference_new_with_params(lc, params2);
@@ -7712,7 +7719,6 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 	LinphoneConference *conference = linphone_core_get_conference(lc);
 	if(conference == NULL) {
 		LinphoneConferenceParams *params = linphone_conference_params_new(lc);
-		linphone_conference_params_set_state_changed_callback(params, linphone_core_conference_state_changed, lc);
 		conference = linphone_core_create_conference_with_params(lc, params);
 		linphone_conference_params_free(params);
 	}

@@ -615,9 +615,14 @@ void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc) {
 
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 	LinphonePresenceModel *model;
-
+	
 	if (!fr->uri) {
 		ms_warning("No sip url defined.");
+		return;
+	}
+	if (!linphone_core_ready(lc)) {
+		/* lc not ready, deffering subscription */
+		fr->commit=TRUE;
 		return;
 	}
 
@@ -693,8 +698,6 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
 		linphone_friend_unref(lf);
 	}
-	if (linphone_core_ready(lc)) linphone_friend_apply(lf, lc);
-	else lf->commit = TRUE;
 }
 
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *lf) {

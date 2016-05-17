@@ -431,7 +431,7 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 }
 
 int liblinphone_tester_ipv6_available(void){
-	struct addrinfo *ai=bctbx_ip_address_to_addrinfo(AF_INET6,"2a01:e00::2",53);
+	struct addrinfo *ai=bctbx_ip_address_to_addrinfo(AF_INET6,SOCK_STREAM,"2a01:e00::2",53);
 	if (ai){
 		struct sockaddr_storage ss;
 		struct addrinfo src;
@@ -727,7 +727,9 @@ static void linphone_conference_server_call_state_changed(LinphoneCore *lc, Linp
 
 		case LinphoneCallEnd:
 			if(call == conf_srv->first_call) {
-				linphone_core_terminate_conference(lc);
+				if(linphone_core_get_conference(lc)) {
+					linphone_core_terminate_conference(lc);
+				}
 				conf_srv->first_call = NULL;
 			}
 			break;

@@ -36,32 +36,59 @@ class Conference {
 public:
 	class Participant {
 	public:
-		Participant(LinphoneCall *call);
+		Participant(LinphoneCall *call) {
+			m_uri = linphone_address_clone(linphone_call_get_remote_address(call));
+			m_call = call;
+		}
+		
+		~Participant() {
+			linphone_address_unref(m_uri);
+			if(m_call) m_call->conf_ref = NULL;
+			
+		}
+		
+		const LinphoneAddress *getUri() const {
+			return m_uri;
+		}
+		
+		LinphoneCall *getCall() const {
+			return m_call;
+		}
+		
+	private:
 		Participant(const Participant &src);
-		~Participant();
-		bool operator==(const Participant &src) const;
-		const LinphoneAddress *getUri() const {return m_uri;}
-		LinphoneCall *getCall() const {return m_call;}
+		Participant &operator=(const Participant &src);
 		
 	private:
 		LinphoneAddress *m_uri;
 		LinphoneCall *m_call;
+		
+	friend class RemoteConference;
 	};
+	
 	
 	class Params {
 	public:
-		Params(const LinphoneCore *core = NULL);
+		Params(const LinphoneCore *core = NULL) {
+			m_enableVideo = false;
+			if(core) {
+				const LinphoneVideoPolicy *policy = linphone_core_get_video_policy(core);
+				if(policy->automatically_initiate) m_enableVideo = true;
+			}
+			m_stateChangedCb = NULL;
+			m_userData = NULL;
+		}
 		void enableVideo(bool enable) {m_enableVideo = enable;}
 		bool videoRequested() const {return m_enableVideo;}
-		void setStateChangedCallback(LinphoneConferenceStateChangedCb cb, void *user_data) {
-			m_state_changed_cb=cb;
-			m_user_data=user_data;
+		void setStateChangedCallback(LinphoneConferenceStateChangedCb cb, void *userData) {
+			m_stateChangedCb =cb;
+			m_userData = userData;
 		}
 		
 	private:
 		bool m_enableVideo;
-		LinphoneConferenceStateChangedCb m_state_changed_cb;
-		void *m_user_data;
+		LinphoneConferenceStateChangedCb m_stateChangedCb;
+		void *m_userData;
 		
 		friend class Conference;
 	};
@@ -86,7 +113,7 @@ public:
 	float getInputVolume() const;
 	
 	virtual int getSize() const {return m_participants.size() + (isIn()?1:0);}
-	const std::list<Participant> &getParticipants() const {return m_participants;}
+	const std::list<Participant *> &getParticipants() const {return m_participants;}
 	
 	virtual int startRecording(const char *path) = 0;
 	virtual int stopRecording() = 0;
@@ -99,13 +126,15 @@ public:
 	static const char *stateToString(LinphoneConferenceState state);
 	
 protected:
-	const Participant *findParticipant(const LinphoneAddress* uri) const;
 	void setState(LinphoneConferenceState state);
+	Participant *findParticipant(const LinphoneCall *call) const;
+	Participant *findParticipant(const LinphoneAddress *uri) const;
 	
+protected:
 	LinphoneCore *m_core;
 	AudioStream *m_localParticipantStream;
 	bool m_isMuted;
-	std::list<Participant> m_participants;
+	std::list<Participant *> m_participants;
 	Params m_currentParams;
 	LinphoneConferenceState m_state;
 };
@@ -144,7 +173,7 @@ private:
 	MSAudioEndpoint *m_localEndpoint;
 	MSAudioEndpoint *m_recordEndpoint;
 	RtpProfile *m_localDummyProfile;
-	bool_t m_terminated;
+	bool_t m_terminating;
 };
 
 class RemoteConference: public Conference {
@@ -180,9 +209,8 @@ private:
 	char *m_focusContact;
 	LinphoneCall *m_focusCall;
 	LinphoneCoreVTable *m_vtable;
-	MSList *m_pendingCalls;
-	MSList *m_transferingCalls;
-	bool m_isTerminating;
+	std::list<LinphoneCall *> m_pendingCalls;
+	std::list<LinphoneCall *> m_transferingCalls;
 };
 
 };
@@ -190,34 +218,6 @@ private:
 
 using namespace Linphone;
 using namespace std;
-
-
-Conference::Participant::Participant(LinphoneCall *call) {
-	m_uri = linphone_address_clone(linphone_call_get_remote_address(call));
-	m_call = call;
-}
-
-Conference::Participant::Participant(const Participant &src) {
-	m_uri = linphone_address_clone(src.m_uri);
-	m_call = src.m_call;
-}
-
-Conference::Participant::~Participant() {
-	linphone_address_unref(m_uri);
-}
-
-bool Conference::Participant::operator==(const Participant &src) const {
-	return linphone_address_equal(m_uri, src.m_uri);
-}
-
-
-
-Conference::Params::Params(const LinphoneCore *core): m_enableVideo(false) {
-	if(core) {
-		const LinphoneVideoPolicy *policy = linphone_core_get_video_policy(core);
-		if(policy->automatically_initiate) m_enableVideo = true;
-	}
-}
 
 
 Conference::Conference(LinphoneCore *core, const Conference::Params *params):
@@ -230,33 +230,33 @@ Conference::Conference(LinphoneCore *core, const Conference::Params *params):
 }
 
 int Conference::addParticipant(LinphoneCall *call) {
-	Participant participant(call);
-	m_participants.push_back(participant);
+	Participant *p =new Participant(call);
+	m_participants.push_back(p);
 	call->conf_ref = (LinphoneConference *)this;
 	return 0;
 }
 
 int Conference::removeParticipant(LinphoneCall *call) {
-	Participant participant(call);
-	m_participants.remove(participant);
-	call->conf_ref = NULL;
-	return 0;
-}
-
-int Conference::terminate() {
-	for(list<Participant>::iterator it = m_participants.begin(); it!=m_participants.end(); it++) {
-		it->getCall()->conf_ref = NULL;
-	}
-	m_participants.clear();
+	Participant *p = findParticipant(call);
+	if(p == NULL) return -1;
+	delete p;
+	m_participants.remove(p);
 	return 0;
 }
 
 int Conference::removeParticipant(const LinphoneAddress *uri) {
-	const Participant *participant = findParticipant(uri);
-	if(participant == NULL) return -1;
-	LinphoneCall *call = participant->getCall();
-	if(call) call->conf_ref = NULL;
-	m_participants.remove(Participant(*participant));
+	Participant *p = findParticipant(uri);
+	if(p == NULL) return -1;
+	delete p;
+	m_participants.remove(p);
+	return 0;
+}
+
+int Conference::terminate() {
+	for(list<Participant *>::iterator it = m_participants.begin(); it!=m_participants.end(); it++) {
+		delete *it;
+	}
+	m_participants.clear();
 	return 0;
 }
 
@@ -296,24 +296,28 @@ const char *Conference::stateToString(LinphoneConferenceState state) {
 
 
 
-const Conference::Participant *Conference::findParticipant(const LinphoneAddress *uri) const {
-	list<Participant>::const_iterator it = m_participants.begin();
-	while(it!=m_participants.end()) {
-		if(linphone_address_equal(uri, it->getUri())) break;
-		it++;
-	}
-	if(it == m_participants.end()) return NULL;
-	else return &*it;
-}
-
 void Conference::setState(LinphoneConferenceState state) {
 	if(m_state != state) {
 		ms_message("Switching conference [%p] into state '%s'", this, stateToString(state));
 		m_state = state;
-		if(m_currentParams.m_state_changed_cb) {
-			m_currentParams.m_state_changed_cb((LinphoneConference *)this, state, m_currentParams.m_user_data);
+		if(m_currentParams.m_stateChangedCb) {
+			m_currentParams.m_stateChangedCb((LinphoneConference *)this, state, m_currentParams.m_userData);
 		}
 	}
+}
+
+Conference::Participant *Conference::findParticipant(const LinphoneCall *call) const {
+	for(list<Participant *>::const_iterator it=m_participants.begin(); it!=m_participants.end(); it++) {
+		if((*it)->getCall() == call) return *it;
+	}
+	return NULL;
+}
+
+Conference::Participant *Conference::findParticipant(const LinphoneAddress *uri) const {
+	for(list<Participant *>::const_iterator it=m_participants.begin(); it!=m_participants.end(); it++) {
+		if(linphone_address_equal((*it)->getUri(), uri)) return *it;
+	}
+	return NULL;
 }
 
 
@@ -325,7 +329,7 @@ LocalConference::LocalConference(LinphoneCore *core, const Conference::Params *p
 	m_localEndpoint(NULL),
 	m_recordEndpoint(NULL),
 	m_localDummyProfile(NULL),
-	m_terminated(FALSE) {
+	m_terminating(FALSE) {
 
 	MSAudioConferenceParams ms_conf_params;
 	ms_conf_params.samplerate = lp_config_get_int(m_core->config, "sound","conference_rate",16000);
@@ -503,7 +507,7 @@ int LocalConference::removeParticipant(const LinphoneAddress *uri) {
 
 int LocalConference::terminate() {
 	MSList *calls=m_core->calls;
-	m_terminated=TRUE;
+	m_terminating =TRUE;
 
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
@@ -514,6 +518,7 @@ int LocalConference::terminate() {
 	}
 	
 	Conference::terminate();
+	m_terminating = FALSE;
 	
 	return 0;
 }
@@ -600,7 +605,7 @@ void LocalConference::onCallStreamStopping(LinphoneCall *call) {
 void LocalConference::onCallTerminating(LinphoneCall *call) {
 	int remote_count=remoteParticipantsCount();
 	ms_message("conference_check_uninit(): size=%i", getSize());
-	if (remote_count==1 && !m_terminated){
+	if (remote_count==1 && !m_terminating){
 		convertConferenceToCall();
 	}
 	if (remote_count==0){
@@ -616,15 +621,11 @@ void LocalConference::onCallTerminating(LinphoneCall *call) {
 
 
 
-RemoteConference::RemoteConference(LinphoneCore *core, const Conference::Params *params):
-	Conference(core, params),
-	m_focusAddr(NULL),
-	m_focusContact(NULL),
-	m_focusCall(NULL),
-	m_vtable(NULL),
-	m_pendingCalls(NULL),
-	m_transferingCalls(NULL),
-	m_isTerminating(false) {
+RemoteConference::RemoteConference(LinphoneCore *core, const Conference::Params *params): Conference(core, params) {
+	m_focusAddr = NULL;
+	m_focusContact = NULL;
+	m_focusCall = NULL;
+	m_vtable = NULL;
 	m_focusAddr = lp_config_get_string(m_core->config, "misc", "conference_focus_addr", "");
 	m_vtable = linphone_core_v_table_new();
 	m_vtable->call_state_changed = callStateChangedCb;
@@ -653,9 +654,8 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 				params = linphone_core_create_call_params(m_core, NULL);
 				linphone_call_params_enable_video(params, m_currentParams.videoRequested());
 				m_focusCall = linphone_core_invite_address_with_params(m_core, addr, params);
-				m_focusCall->conf_ref = (LinphoneConference *)this;
 				m_localParticipantStream = m_focusCall->audiostream;
-				m_pendingCalls = ms_list_append(m_pendingCalls, call);
+				m_pendingCalls.push_back(call);
 				LinphoneCallLog *callLog = linphone_call_get_call_log(m_focusCall);
 				callLog->was_conference = TRUE;
 				linphone_address_unref(addr);
@@ -669,7 +669,7 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 			if(focusIsReady()) {
 				transferToFocus(call);
 			} else {
-				m_pendingCalls = ms_list_append(m_pendingCalls, call);
+				m_pendingCalls.push_back(call);
 			}
 			return 0;
 			
@@ -698,7 +698,6 @@ int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
 				return -1;
 			}
 			
-// 			refer_to = ms_strdup_printf("%s;method=BYE", tmp);
 			refer_to_addr = linphone_address_clone(uri);
 			linphone_address_set_method_param(refer_to_addr, "BYE");
 			refer_to = linphone_address_as_string(refer_to_addr);
@@ -722,22 +721,14 @@ int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
 }
 
 int RemoteConference::terminate() {
-	m_isTerminating = true;
 	switch(m_state) {
 		case LinphoneConferenceRunning:
 		case LinphoneConferenceStarting:
 			linphone_core_terminate_call(m_core, m_focusCall);
-			reset();
-			Conference::terminate();
-			m_isTerminating = false;
-			setState(LinphoneConferenceStopped);
 			break;
 			
-		default:
-			m_isTerminating = false;
-			break;
+		default: break;
 	}
-	
 	return 0;
 }
 
@@ -792,7 +783,7 @@ bool RemoteConference::focusIsReady() const {
 
 bool RemoteConference::transferToFocus(LinphoneCall *call) {
 	if(linphone_core_transfer_call(m_core, call, m_focusContact) == 0) {
-		m_transferingCalls = ms_list_append(m_transferingCalls, call);
+		m_transferingCalls.push_back(call);
 		return true;
 	} else {
 		ms_error("Conference: could not transfer call [%p] to %s", call, m_focusContact);
@@ -808,27 +799,25 @@ void RemoteConference::reset() {
 		m_focusContact = NULL;
 	}
 	m_focusCall = NULL;
-	m_pendingCalls = ms_list_free(m_pendingCalls);
-	m_transferingCalls = ms_list_free(m_transferingCalls);
+	m_pendingCalls.clear();
+	m_transferingCalls.clear();
 }
 
 void RemoteConference::onFocusCallSateChanged(LinphoneCallState state) {
-	MSList *it;
+	list<LinphoneCall *>::iterator it;
 	
 	switch (state) {
 		case LinphoneCallConnected:
 			m_focusContact = ms_strdup(linphone_call_get_remote_contact(m_focusCall));
-			it = m_pendingCalls;
-			while (it) {
-				LinphoneCall *pendingCall = (LinphoneCall *)it->data;
+			it = m_pendingCalls.begin();
+			while (it != m_pendingCalls.end()) {
+				LinphoneCall *pendingCall = *it;
 				LinphoneCallState pendingCallState = linphone_call_get_state(pendingCall);
 				if(pendingCallState == LinphoneCallStreamsRunning || pendingCallState == LinphoneCallPaused) {
-					MSList *current_elem = it;
-					it = it->next;
-					m_pendingCalls = ms_list_remove_link(m_pendingCalls, current_elem);
+					it = m_pendingCalls.erase(it);
 					transferToFocus(pendingCall);
 				} else {
-					it = it->next;
+					it++;
 				}
 			}
 			setState(LinphoneConferenceRunning);
@@ -836,11 +825,14 @@ void RemoteConference::onFocusCallSateChanged(LinphoneCallState state) {
 
 		case LinphoneCallError:
 			reset();
+			Conference::terminate();
 			setState(LinphoneConferenceStartingFailed);
 			break;
 			
 		case LinphoneCallEnd:
-			if(!m_isTerminating) terminate();
+			reset();
+			Conference::terminate();
+			setState(LinphoneConferenceStopped);
 			break;
 
 		default: break;
@@ -852,16 +844,19 @@ void RemoteConference::onPendingCallStateChanged(LinphoneCall *call, LinphoneCal
 			case LinphoneCallStreamsRunning:
 			case LinphoneCallPaused:
 				if(m_state == LinphoneConferenceRunning) {
-					m_pendingCalls = ms_list_remove(m_pendingCalls, call);
-					m_transferingCalls = ms_list_append(m_transferingCalls, call);
+					m_pendingCalls.remove(call);
+					m_transferingCalls.push_back(call);
 					linphone_core_transfer_call(m_core, call, m_focusContact);
 				}
 				break;
 				
 			case LinphoneCallError:
 			case LinphoneCallEnd:
-				m_pendingCalls = ms_list_remove(m_pendingCalls, call);
+				m_pendingCalls.remove(call);
 				Conference::removeParticipant(call);
+				if(m_participants.size() + m_pendingCalls.size() + m_transferingCalls.size() == 0) {
+					terminate();
+				}
 				break;
 				
 			default: break;
@@ -871,9 +866,16 @@ void RemoteConference::onPendingCallStateChanged(LinphoneCall *call, LinphoneCal
 void RemoteConference::onTransferingCallStateChanged(LinphoneCall* transfered, LinphoneCallState newCallState) {
 	switch (newCallState) {
 		case LinphoneCallConnected:
+			m_transferingCalls.push_back(transfered);
+			findParticipant(transfered)->m_call = NULL;
+			break;
+			
 		case LinphoneCallError:
-			m_transferingCalls = ms_list_remove(m_transferingCalls, transfered);
-			if(newCallState == LinphoneCallError) Conference::removeParticipant(transfered);
+			m_transferingCalls.remove(transfered);
+			Conference::removeParticipant(transfered);
+			if(m_participants.size() + m_pendingCalls.size() + m_transferingCalls.size() == 0) {
+				terminate();
+			}
 			break;
 
 		default:
@@ -886,15 +888,19 @@ void RemoteConference::callStateChangedCb(LinphoneCore *lc, LinphoneCall *call, 
 	RemoteConference *conf = (RemoteConference *)linphone_core_v_table_get_user_data(vtable);
 	if (call == conf->m_focusCall) {
 		conf->onFocusCallSateChanged(cstate);
-	} else if(ms_list_find(conf->m_pendingCalls, call)) {
-		conf->onPendingCallStateChanged(call, cstate);
+	} else {
+		list<LinphoneCall *>::iterator it = find(conf->m_pendingCalls.begin(), conf->m_pendingCalls.end(), call);
+		if(it != conf->m_pendingCalls.end()) {
+			conf->onPendingCallStateChanged(call, cstate);
+		}
 	}
 }
 
 void RemoteConference::transferStateChanged(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
 	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(lc);
 	RemoteConference *conf = (RemoteConference *)linphone_core_v_table_get_user_data(vtable);
-	if (ms_list_find(conf->m_transferingCalls, transfered)) {
+	list<LinphoneCall *>::iterator it = find(conf->m_transferingCalls.begin(), conf->m_transferingCalls.end(), transfered);
+	if (it != conf->m_transferingCalls.end()) {
 		conf->onTransferingCallStateChanged(transfered, new_call_state);
 	}
 }
@@ -1004,10 +1010,10 @@ int linphone_conference_get_size(const LinphoneConference *obj) {
 }
 
 MSList *linphone_conference_get_participants(const LinphoneConference *obj) {
-	const list<Conference::Participant> &participants = ((Conference *)obj)->getParticipants();
+	const list<Conference::Participant *> &participants = ((Conference *)obj)->getParticipants();
 	MSList *participants_list = NULL;
-	for(list<Conference::Participant>::const_iterator it=participants.begin();it!=participants.end();it++) {
-		LinphoneAddress *uri = linphone_address_clone(it->getUri());
+	for(list<Conference::Participant *>::const_iterator it=participants.begin();it!=participants.end();it++) {
+		LinphoneAddress *uri = linphone_address_clone((*it)->getUri());
 		participants_list = ms_list_append(participants_list, uri);
 	}
 	return participants_list;
