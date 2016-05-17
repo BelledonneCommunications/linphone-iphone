@@ -662,24 +662,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
 	const char *errmsg;
 	sqlite3 *db = NULL;
-	sqlite3_vfs_register(sqlite3_bctbx_vfs_create(), 1);
-	sqlite3_vfs* t = sqlite3_vfs_find("sql3_bctbx_vfs");
-	sqlite3_vfs* pDefault = sqlite3_vfs_find("unix-none");
-	t->xAccess =  pDefault->xAccess;
-	t->xCurrentTime = pDefault->xCurrentTime;
-	t->xCurrentTimeInt64 = pDefault->xCurrentTimeInt64;
-	t->xFullPathname = pDefault->xFullPathname;
-	t->xDelete = pDefault->xDelete;
-	t->xSleep = pDefault->xSleep;
-	t->xRandomness = pDefault->xRandomness;
-	t->xGetLastError = pDefault->xGetLastError;
-	t->xGetSystemCall = pDefault->xGetSystemCall;
-	t->xSetSystemCall = pDefault->xSetSystemCall;
-	t->xNextSystemCall = pDefault->xNextSystemCall;
-	//t->xOpen = pDefault->xOpen;
-	//t->pAppData = pDefault->pAppData;
-	sqlite3_vfs_unregister(t);
-	sqlite3_vfs_register(t, 1);
+	sqlite3_bctbx_vfs_register(1);
 	linphone_core_message_storage_close(lc);
 
 	ret=_linphone_sqlite3_open(lc->chat_db_file,&db);

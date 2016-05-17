@@ -33,12 +33,11 @@ static int sqlite3bctbx_Close(sqlite3_file *p){
 	int ret;
 	sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*) p;
 
-	ret = close(pFile->bctbx_file.fd);
+	ret = bctbx_file_close(&pFile->bctbx_file);
 	if (!ret){
 		return SQLITE_OK;
 	}
 	else{
-		printf("sqlite3bctbx_Close error %s", strerror(errno));
 		free(pFile);
 		return SQLITE_IOERR_CLOSE ;
 	}
@@ -256,7 +255,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	};
 
 	sqlite3_bctbx_file * pFile = (sqlite3_bctbx_file*)p; /*File handle sqlite3_bctbx_file*/
-	sqlite_int64 size;									/* File size */
+//	sqlite_int64 size;									/* File size */
 
 	int openFlags = 0;
 
@@ -271,8 +270,8 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	if( flags&SQLITE_OPEN_READONLY )  openFlags |= O_RDONLY;
 	if( flags&SQLITE_OPEN_READWRITE ) openFlags |= O_RDWR;
 
-	pFile->bctbx_file.fd = open(fName, openFlags, S_IRUSR | S_IWUSR);
-	if( pFile->bctbx_file.fd == -1 ){
+	int ret = bctbx_file_open(bc_create_vfs(), &pFile->bctbx_file, fName, openFlags);
+	if( ret  == -1 ){
 		return SQLITE_CANTOPEN;
 	}
 
@@ -280,11 +279,11 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
     	*pOutFlags = flags;
   	}
 	pFile->base.pMethods = &sqlite3_bctbx_io;
-	pFile->bctbx_file.pMethods = get_bcio();
+//	pFile->bctbx_file.pMethods = get_bcio();
 	pFile->bctbx_file.filename = (char*)fName;
 
-	pFile->base.pMethods->xFileSize(p, &size);
-	pFile->bctbx_file.size =  size;
+//	pFile->base.pMethods->xFileSize(p, &size);
+//	pFile->bctbx_file.size =  size;
 
 	return SQLITE_OK;
 }

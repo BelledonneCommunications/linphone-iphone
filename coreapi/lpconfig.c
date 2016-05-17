@@ -428,7 +428,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
 		int fd;
-		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
+		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
 		fd  = pFile->fd;
 		lpconfig->pFile = pFile;
 		
@@ -440,9 +440,9 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 			}
 		}
 #endif
-		if (fd > 0){
+		if (fd != -1){
 		    lp_config_parse(lpconfig, pFile);
-			bctbx_file_close(pFile);
+			bctbx_file_close_and_free(pFile);
 			lpconfig->pFile = NULL;
 			lpconfig->modified=0;
 		}
@@ -460,12 +460,12 @@ fail:
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	int fd=-1;
-	bctbx_vfs_file* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
+	bctbx_vfs_file* pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs, path, "r");
 	fd = pFile->fd;
-	if (fd > 0){
+	if (fd != -1){
 		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig, pFile);
-		bctbx_file_close(pFile);
+		bctbx_file_close_and_free(pFile);
 		ms_free(path);
 		return 0;
 	}
@@ -756,7 +756,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	bctbx_vfs_file *pFile  = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
+	bctbx_vfs_file *pFile  = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
 	fd = pFile->fd;
 	if (fd < 0 ){
@@ -766,7 +766,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	}
 	
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)lpconfig);
-	bctbx_file_close(pFile);
+	bctbx_file_close_and_free(pFile);
 
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 	/* On windows, rename() does not accept that the newpath is an existing file, while it is accepted on Unix.
@@ -897,10 +897,10 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 
 		if(realfilepath == NULL) return FALSE;
 
-		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
+		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
 		ms_free(realfilepath);
-		if (pFile->fd > 0) {
-			bctbx_file_close(pFile);
+		if (pFile->fd != -1) {
+			bctbx_file_close_and_free(pFile);
 		}
 		return pFile->fd > 0;
 	}
@@ -930,7 +930,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 
-	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
+	pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
 	fd = pFile->fd;
 	
 	if(fd < 0) {
@@ -938,7 +938,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 	bctbx_file_fprintf(pFile, 0, "%s",data);
-	bctbx_file_close(pFile);
+	bctbx_file_close_and_free(pFile);
 
 end:
 	ms_free(dup_config_file);
@@ -966,7 +966,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		goto err;
 	}
 
-	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
+	pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
 	if (pFile !=NULL)
 		fd = pFile->fd;
 	
@@ -982,7 +982,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		
 	}
 
-	bctbx_file_close(pFile);
+	bctbx_file_close_and_free(pFile);
 
 	ms_free(dup_config_file);
 	ms_free(filepath);
