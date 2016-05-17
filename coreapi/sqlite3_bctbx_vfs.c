@@ -225,17 +225,18 @@ static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
 }
 
 
-
-
 /**
  * Opens the file fName and populates the structure pointed by p
  * with the necessary io_methods
- * Methods not implemented for version 1 : xTruncate, xSectorSize
- * 
- * @param  pVfs    [description]
- * @param  fName   [description]
- * @param  mode    [description]
- * @return         [description]
+ * Methods not implemented for version 1 : xTruncate, xSectorSize.
+ * Initializes some fields in the p structure, some of which where already
+ * initialized by SQLite.
+ * @param  pVfs      sqlite3_vfs VFS pointer.
+ * @param  fName     filename
+ * @param  p         file handle pointer
+ * @param  flags     db file access flags 
+ * @param  pOutFlags flags used by SQLite
+ * @return           SQLITE_CANTOPEN on error, SQLITE_OK on success.
  */
 static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file *p, int flags, int *pOutFlags ){
 	static const sqlite3_io_methods sqlite3_bctbx_io = {
@@ -255,7 +256,6 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	};
 
 	sqlite3_bctbx_file * pFile = (sqlite3_bctbx_file*)p; /*File handle sqlite3_bctbx_file*/
-//	sqlite_int64 size;									/* File size */
 
 	int openFlags = 0;
 
@@ -279,23 +279,14 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
     	*pOutFlags = flags;
   	}
 	pFile->base.pMethods = &sqlite3_bctbx_io;
-//	pFile->bctbx_file.pMethods = get_bcio();
 	pFile->bctbx_file.filename = (char*)fName;
-
-//	pFile->base.pMethods->xFileSize(p, &size);
-//	pFile->bctbx_file.size =  size;
 
 	return SQLITE_OK;
 }
 
-/*
-** This function returns a pointer to the VFS implemented in this file.
-** To make the VFS available to SQLite:
-
-*/
-
 /**
- * Returns a sqlite3_vfs pointer to the VFS implemented in this file.
+ * Returns a sqlite3_vfs pointer to the VFS named sqlite3bctbx_vfs 
+ * implemented in this file.
  * Methods not implemented:
  *			xDelete 
  *			xAccess 
