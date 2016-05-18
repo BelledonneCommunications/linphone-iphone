@@ -246,7 +246,7 @@ MSList* linphone_friend_get_addresses(LinphoneFriend *lf) {
 
 	vcard = linphone_friend_get_vcard(lf);
 	if (!vcard) {
-		return NULL;
+		return lf->uri ? ms_list_append(addresses, lf->uri) : NULL;
 	}
 
 	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
@@ -615,7 +615,7 @@ void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc) {
 
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 	LinphonePresenceModel *model;
-	
+
 	if (!fr->uri) {
 		ms_warning("No sip url defined.");
 		return;
