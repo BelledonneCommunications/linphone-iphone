@@ -81,13 +81,13 @@ typedef struct _LpSection{
 
 struct _LpConfig{
 	int refcnt;
-	bctbx_vfs_file* pFile;
+	bctbx_vfs_file_t* pFile;
 	char *filename;
 	char *tmpfilename;
 	MSList *sections;
 	int modified;
 	int readonly;
-	bctbx_vfs* g_bctbx_vfs;
+	bctbx_vfs_t* g_bctbx_vfs;
 };
 
 
@@ -360,7 +360,7 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 	return cur;
 }
 
-void lp_config_parse(LpConfig *lpconfig, bctbx_vfs_file* pFile){
+void lp_config_parse(LpConfig *lpconfig, bctbx_vfs_file_t* pFile){
 	char tmp[MAX_LEN]= {'\0'};
 	LpSection* current_section = NULL;
 	int size  =0;
@@ -399,7 +399,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	bctbx_vfs_register(bc_create_vfs(),&lpconfig->g_bctbx_vfs);
-	bctbx_vfs_file* pFile = NULL;
+	bctbx_vfs_file_t* pFile = NULL;
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
 		if(ortp_file_exist(config_filename) == 0) {
@@ -460,7 +460,7 @@ fail:
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	int fd=-1;
-	bctbx_vfs_file* pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs, path, "r");
+	bctbx_vfs_file_t* pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs, path, "r");
 	fd = pFile->fd;
 	if (fd != -1){
 		ms_message("Reading config information from %s", path);
@@ -756,7 +756,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	bctbx_vfs_file *pFile  = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
+	bctbx_vfs_file_t *pFile  = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
 	fd = pFile->fd;
 	if (fd < 0 ){
@@ -883,7 +883,7 @@ static const char *_lp_config_dirname(char *path) {
 }
 
 bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
-	bctbx_vfs_file *pFile = lpconfig->pFile;
+	bctbx_vfs_file_t *pFile = lpconfig->pFile;
 	if (lpconfig->filename == NULL) {
 		return FALSE;
 	} else {
@@ -913,7 +913,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	char *realfilepath = NULL;
 	int fd = 0;
 
-	bctbx_vfs_file *pFile = lpconfig->pFile;
+	bctbx_vfs_file_t *pFile = lpconfig->pFile;
 	if (lpconfig->filename == NULL) return;
 
 	if(strlen(data) == 0) {
@@ -951,7 +951,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	const char *dir = NULL;
 	char *filepath = NULL;
 	int fd = 0;
-	bctbx_vfs_file* pFile = NULL;
+	bctbx_vfs_file_t* pFile = NULL;
 
 	char* realfilepath = NULL;
 

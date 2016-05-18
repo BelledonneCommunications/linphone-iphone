@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct sqlite3_bctbx_file sqlite3_bctbx_file;
 struct sqlite3_bctbx_file {
 	sqlite3_file base;              /* Base class. Must be first. */
-	bctbx_vfs_file* pbctbx_file;
+	bctbx_vfs_file_t* pbctbx_file;
 };
 
 
