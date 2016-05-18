@@ -287,7 +287,7 @@ void linphone_vcard_compute_md5_hash(LinphoneVcard *vCard) {
 		return;
 	}
 	text = linphone_vcard_as_vcard4_string(vCard);
-	bctoolbox_md5((unsigned char *)text, strlen(text), digest);
+	bctbx_md5((unsigned char *)text, strlen(text), digest);
 	vCard->md5 = (unsigned char *)ms_malloc(sizeof(digest));
 	memcpy(vCard->md5, digest, sizeof(digest));
 }
