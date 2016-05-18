@@ -430,7 +430,7 @@ static int lime_deriveKey(limeKey_t *key) {
 	inputData[54] = 0x00;
 
 	/* derive the key in a temp buffer */
-	bctoolbox_hmacSha256(key->key, 32, inputData, 55, 32, derivedKey);
+	bctbx_hmacSha256(key->key, 32, inputData, 55, 32, derivedKey);
 
 	/* overwrite the old key with the derived one */
 	memcpy(key->key, derivedKey, 32);
@@ -469,7 +469,7 @@ int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageL
 
 	/* AES-GCM : key is 192 bits long, Init Vector 64 bits. 256 bits key given is AES key||IV */
 	/* tag is 16 bytes long and is set in the 16 first bytes of the encrypted message */
-	return bctoolbox_aes_gcm_encrypt_and_tag(key->key, 24,
+	return bctbx_aes_gcm_encrypt_and_tag(key->key, 24,
 			plainMessage, messageLength,
 			authenticatedData, 28,
 			key->key+24, 8, /* IV is at the end(last 64 bits) of the given key buffer */
@@ -480,20 +480,20 @@ int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageL
 }
 
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
-	bctoolbox_aes_gcm_context_t *gcmContext;
+	bctbx_aes_gcm_context_t *gcmContext;
 
 	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
 		/* key contains 192bits of key || 64 bits of Initialisation Vector, no additional data */
-		gcmContext = bctoolbox_aes_gcm_context_new(key, 24, NULL, 0, key+24, 8, BCTOOLBOX_GCM_ENCRYPT);
+		gcmContext = bctbx_aes_gcm_context_new(key, 24, NULL, 0, key+24, 8, BCTBX_GCM_ENCRYPT);
 		*cryptoContext = gcmContext;
 	} else { /* this is not the first call, get the context */
-		gcmContext = (bctoolbox_aes_gcm_context_t *)*cryptoContext;
+		gcmContext = (bctbx_aes_gcm_context_t *)*cryptoContext;
 	}
 
 	if (length != 0) {
-		bctoolbox_aes_gcm_process_chunk(gcmContext, (const uint8_t *)plain, length, (uint8_t *)cipher);
+		bctbx_aes_gcm_process_chunk(gcmContext, (const uint8_t *)plain, length, (uint8_t *)cipher);
 	} else { /* lenght is 0, finish the stream, no tag to be generated */
-		bctoolbox_aes_gcm_finish(gcmContext, NULL, 0);
+		bctbx_aes_gcm_finish(gcmContext, NULL, 0);
 		*cryptoContext = NULL;
 	}
 
@@ -501,20 +501,20 @@ int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
 }
 
 int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
-	bctoolbox_aes_gcm_context_t *gcmContext;
+	bctbx_aes_gcm_context_t *gcmContext;
 
 	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
 		/* key contains 192bits of key || 64 bits of Initialisation Vector, no additional data */
-		gcmContext = bctoolbox_aes_gcm_context_new(key, 24, NULL, 0, key+24, 8, BCTOOLBOX_GCM_DECRYPT);
+		gcmContext = bctbx_aes_gcm_context_new(key, 24, NULL, 0, key+24, 8, BCTBX_GCM_DECRYPT);
 		*cryptoContext = gcmContext;
 	} else { /* this is not the first call, get the context */
-		gcmContext = (bctoolbox_aes_gcm_context_t *)*cryptoContext;
+		gcmContext = (bctbx_aes_gcm_context_t *)*cryptoContext;
 	}
 
 	if (length != 0) {
-		bctoolbox_aes_gcm_process_chunk(gcmContext, (const unsigned char *)cipher, length, (unsigned char *)plain);
+		bctbx_aes_gcm_process_chunk(gcmContext, (const unsigned char *)cipher, length, (unsigned char *)plain);
 	} else { /* lenght is 0, finish the stream */
-		bctoolbox_aes_gcm_finish(gcmContext, NULL, 0);
+		bctbx_aes_gcm_finish(gcmContext, NULL, 0);
 		*cryptoContext = NULL;
 	}
 
@@ -536,7 +536,7 @@ int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t mess
 
 	/* AES-GCM : key is 192 bits long, Init Vector 64 bits. 256 bits key given is AES key||IV */
 	/* tag is 16 bytes long and is the 16 first bytes of the encrypted message */
-	retval = bctoolbox_aes_gcm_decrypt_and_auth(key->key, 24, /* key is 192 bits long */
+	retval = bctbx_aes_gcm_decrypt_and_auth(key->key, 24, /* key is 192 bits long */
 			encryptedMessage+16,  messageLength-16, /* encrypted message first 16 bytes store the authentication tag, then is the actual message */
 			authenticatedData, 28, /* additionnal data needed for authentication */
 			key->key+24, 8, /* last 8 bytes of key is the initialisation vector */
@@ -628,9 +628,9 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"index", sessionIndexHex);
 
 		/* convert the cipherText to base 64 */
-		bctoolbox_base64_encode(NULL, &b64Size, encryptedMessage, encryptedMessageLength); /* b64Size is 0, so it is set to the requested output buffer size */
+		bctbx_base64_encode(NULL, &b64Size, encryptedMessage, encryptedMessageLength); /* b64Size is 0, so it is set to the requested output buffer size */
 		encryptedMessageb64 = malloc(b64Size+1); /* allocate a buffer of requested size +1 for NULL termination */
-		bctoolbox_base64_encode(encryptedMessageb64, &b64Size, encryptedMessage, encryptedMessageLength); /* b64Size is 0, so it is set to the requested output buffer size */
+		bctbx_base64_encode(encryptedMessageb64, &b64Size, encryptedMessage, encryptedMessageLength); /* b64Size is 0, so it is set to the requested output buffer size */
 		encryptedMessageb64[b64Size] = '\0'; /* libxml need a null terminated string */
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"text", (const xmlChar *)encryptedMessageb64);
 		free(encryptedMessage);
@@ -732,9 +732,9 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 
 				/* convert the cipherText from base 64 */
 				encryptedMessageb64 = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
-				bctoolbox_base64_decode(NULL, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64)); /* encryptedMessageLength is 0, so it will be set to the requested buffer length */
+				bctbx_base64_decode(NULL, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64)); /* encryptedMessageLength is 0, so it will be set to the requested buffer length */
 				encryptedMessage = (uint8_t *)malloc(encryptedMessageLength);
-				bctoolbox_base64_decode(encryptedMessage, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64));
+				bctbx_base64_decode(encryptedMessage, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64));
 
 				xmlFree(encryptedMessageb64);
 				xmlFree(currentZidHex);

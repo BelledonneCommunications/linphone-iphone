@@ -62,7 +62,7 @@ void sal_op_set_privacy_from_message(SalOp* op,belle_sip_message_t* msg) {
 }
 static void set_tls_properties(Sal *ctx);
 
-void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
+void _belle_sip_log(const char *domain, belle_sip_log_level lev, const char *fmt, va_list args) {
 	int ortp_level;
 	switch(lev) {
 		case BELLE_SIP_LOG_FATAL:
