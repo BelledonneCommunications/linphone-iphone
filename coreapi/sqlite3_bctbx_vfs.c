@@ -326,12 +326,18 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 
 	pVfsToUse->xAccess =  pDefault->xAccess;
 	pVfsToUse->xCurrentTime = pDefault->xCurrentTime;
-	pVfsToUse->xCurrentTimeInt64 = pDefault->xCurrentTimeInt64;
+
 	pVfsToUse->xFullPathname = pDefault->xFullPathname;
 	pVfsToUse->xDelete = pDefault->xDelete;
 	pVfsToUse->xSleep = pDefault->xSleep;
 	pVfsToUse->xRandomness = pDefault->xRandomness;
 	pVfsToUse->xGetLastError = pDefault->xGetLastError; /* Not implemented by sqlite3 :place holder */
+	/*Functions below should not be a problem sincve we are declaring ourselves
+	 in version 1 */
+	
+	/* used in version 2 */
+	pVfsToUse->xCurrentTimeInt64 = pDefault->xCurrentTimeInt64;
+	/* used in version 3 */
 	pVfsToUse->xGetSystemCall = pDefault->xGetSystemCall;
 	pVfsToUse->xSetSystemCall = pDefault->xSetSystemCall;
 	pVfsToUse->xNextSystemCall = pDefault->xNextSystemCall;
