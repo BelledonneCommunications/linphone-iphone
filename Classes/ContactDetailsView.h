@@ -26,11 +26,10 @@
 #import "ImagePickerView.h"
 
 @interface ContactDetailsView : TPMultiLayoutViewController <UICompositeViewDelegate, ImagePickerDelegate> {
-	ABAddressBookRef addressBook;
 	BOOL inhibUpdate;
 }
 
-@property(nonatomic, assign, setter=setContact:) ABRecordRef contact;
+@property(nonatomic, assign, setter=setContact:) Contact *contact;
 @property(nonatomic, strong) IBOutlet ContactDetailsTableView *tableController;
 @property(nonatomic, strong) IBOutlet UIToggleButton *editButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
@@ -49,7 +48,7 @@
 
 - (void)newContact;
 - (void)newContact:(NSString *)address;
-- (void)editContact:(ABRecordRef)contact;
-- (void)editContact:(ABRecordRef)contact address:(NSString *)address;
-- (void)setContact:(ABRecordRef)contact;
+- (void)editContact:(Contact *)contact;
+- (void)editContact:(Contact *)contact address:(NSString *)address;
+- (void)setContact:(Contact *)contact;
 @end

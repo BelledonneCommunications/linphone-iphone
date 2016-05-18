@@ -21,34 +21,35 @@
 #import <AddressBook/AddressBook.h>
 
 #include "linphone/linphonecore.h"
+#include "Contact.h"
 
-@interface FastAddressBook :  NSObject {
-	ABAddressBookRef addressBook;
-}
+@interface FastAddressBook : NSObject
 
 @property(readonly, nonatomic) NSMutableDictionary *addressBookMap;
 
 - (void)reload;
 - (void)saveAddressBook;
-- (int)removeContact:(ABRecordRef)contact;
+- (int)removeContact:(Contact *)contact;
+- (BOOL)saveContact:(Contact *)contact;
 
 + (BOOL)isAuthorized;
 
 // TOOLS
 
-+ (ABRecordRef)getContactWithAddress:(const LinphoneAddress *)address;
++ (Contact *)getContactWithAddress:(const LinphoneAddress *)address;
 
-+ (UIImage *)imageForContact:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
++ (UIImage *)imageForContact:(Contact *)contact thumbnail:(BOOL)thumbnail;
 + (UIImage *)imageForAddress:(const LinphoneAddress *)addr thumbnail:(BOOL)thumbnail;
 
-+ (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
++ (BOOL)contactHasValidSipDomain:(Contact *)person;
 
-+ (NSString *)displayNameForContact:(ABRecordRef)person;
++ (NSString *)displayNameForContact:(Contact *)person;
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
 
 + (BOOL)isSipURI:(NSString *)address;						  // should be removed
 + (NSString *)normalizeSipURI:(NSString *)address;			  // should be removed
 
 + (NSString *)localizedLabel:(NSString *)label;
++ (void)setAvatar:(UIImage *)avatar forContact:(Contact *)contact;
 
 @end

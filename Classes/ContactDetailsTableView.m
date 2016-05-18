@@ -66,6 +66,8 @@
 	if (rmed) {
 		[tableview deleteRowsAtIndexPaths:@[ path ]
 						 withRowAnimation:animated ? UITableViewRowAnimationFade : UITableViewRowAnimationNone];
+	} else {
+		LOGW(@"Cannot remove entry at path %@, skipping", path);
 	}
 }
 
@@ -83,6 +85,8 @@
 		NSUInteger count = [self getSectionData:section].count;
 		[tableview insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:count - 1 inSection:section] ]
 						 withRowAnimation:animated ? UITableViewRowAnimationFade : UITableViewRowAnimationNone];
+	} else {
+		LOGW(@"Cannot add entry '%@' in section %d, skipping", value, section);
 	}
 }
 

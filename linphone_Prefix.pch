@@ -9,6 +9,7 @@
 
 #import "Log.h"
 #import "Utils.h"
+#import "Contact.h"
 
 #import "UIToggleButton.h"
 #import "UISpeakerButton.h"

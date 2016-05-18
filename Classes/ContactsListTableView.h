@@ -27,9 +27,6 @@
 @interface ContactsListTableView : UICheckBoxTableView {
   @private
 	OrderedDictionary *addressBookMap;
-	NSMutableDictionary *avatarMap;
-
-	ABAddressBookRef addressBook;
 }
 
 - (void)loadData;

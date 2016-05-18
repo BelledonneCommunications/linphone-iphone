@@ -49,7 +49,7 @@
 
 #pragma mark - Property Functions
 
-- (void)setContact:(ABRecordRef)acontact {
+- (void)setContact:(Contact *)acontact {
 	_contact = acontact;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 	_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:_contact]);

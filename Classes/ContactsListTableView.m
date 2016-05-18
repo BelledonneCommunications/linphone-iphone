@@ -25,17 +25,19 @@
 
 @implementation ContactsListTableView
 
-static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
-
 #pragma mark - Lifecycle Functions
 
 - (void)initContactsTableViewController {
 	addressBookMap = [[OrderedDictionary alloc] init];
-	avatarMap = [[NSMutableDictionary alloc] init];
 
-	addressBook = ABAddressBookCreateWithOptions(nil, nil);
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onAddressBookUpdate:)
+											   name:kLinphoneAddressBookUpdate
+											 object:nil];
+}
 
-	ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
+- (void)onAddressBookUpdate:(NSNotification *)k {
+	[self loadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -65,9 +67,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)dealloc {
-	if (addressBook) {
-		ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
-	}
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark -
@@ -92,7 +92,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	return (int)(within_sentence != NULL ? 0 : fuzzy_word + strlen(fuzzy_word) - c);
 }
 
-- (NSString *)displayNameForContact:(ABRecordRef)person {
+- (NSString *)displayNameForContact:(Contact *)person {
 	NSString *name = [FastAddressBook displayNameForContact:person];
 	if (name != nil && [name length] > 0 && ![name isEqualToString:NSLocalizedString(@"Unknown", nil)]) {
 		// Add the contact only if it fuzzy match filter too (if any)
@@ -116,27 +116,24 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		// Reset Address book
 		[addressBookMap removeAllObjects];
 
-		NSArray *lContacts = (NSArray *)CFBridgingRelease(ABAddressBookCopyArrayOfAllPeople(addressBook));
-		for (id lPerson in lContacts) {
+		for (NSString *addr in LinphoneManager.instance.fastAddressBook.addressBookMap) {
+			Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:addr];
+
 			BOOL add = true;
-			ABRecordRef person = (__bridge ABRecordRef)lPerson;
 
 			// Do not add the contact directly if we set some filter
 			if ([ContactSelection getSipFilter] || [ContactSelection emailFilterEnabled]) {
 				add = false;
 			}
-			if ([FastAddressBook contactHasValidSipDomain:person]) {
+			if ([FastAddressBook contactHasValidSipDomain:contact]) {
 				add = true;
 			}
 			if (!add && [ContactSelection emailFilterEnabled]) {
-				ABMultiValueRef personEmailAddresses = ABRecordCopyValue(person, kABPersonEmailProperty);
 				// Add this contact if it has an email
-				add = (ABMultiValueGetCount(personEmailAddresses) > 0);
-
-				CFRelease(personEmailAddresses);
+				add = (contact.emails.count > 0);
 			}
 
-			NSString *name = [self displayNameForContact:person];
+			NSString *name = [self displayNameForContact:contact];
 			if (add && name != nil) {
 				NSString *firstChar = [[name substringToIndex:1] uppercaseString];
 
@@ -149,7 +146,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 					subDic = [[OrderedDictionary alloc] init];
 					[addressBookMap insertObject:subDic forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
 				}
-				[subDic insertObject:lPerson forKey:name selector:@selector(caseInsensitiveCompare:)];
+				[subDic insertObject:contact forKey:name selector:@selector(caseInsensitiveCompare:)];
 			}
 		}
 		[super loadData];
@@ -164,13 +161,6 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		  }
 		});
 	}
-}
-
-static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
-	ContactsListTableView *controller = (__bridge ContactsListTableView *)context;
-	ABAddressBookRevert(addressBook);
-	[controller->avatarMap removeAllObjects];
-	[controller loadData];
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -200,14 +190,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	if (cell == nil) {
 		cell = [[UIContactCell alloc] initWithIdentifier:kCellId];
 	}
-	ABRecordRef contact = [self contactForIndexPath:indexPath];
+	Contact *contact = [self contactForIndexPath:indexPath];
 
 	// Cached avatar
-	UIImage *image = [avatarMap objectForKey:[NSNumber numberWithInt:ABRecordGetRecordID(contact)]];
-	if (image == nil) {
-		image = [FastAddressBook imageForContact:contact thumbnail:true];
-		[avatarMap setObject:image forKey:[NSNumber numberWithInt:ABRecordGetRecordID(contact)]];
-	}
+	UIImage *image = [FastAddressBook imageForContact:contact thumbnail:true];
 	[cell.avatarImage setImage:image bordered:NO withRoundedRadius:YES];
 	[cell setContact:contact];
 	[super accessoryForCell:cell atPath:indexPath];
@@ -236,15 +222,15 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if (![self isEditing]) {
 		OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
-		ABRecordRef lPerson = (__bridge ABRecordRef)([subDic objectForKey:[subDic keyAtIndex:[indexPath row]]]);
+		Contact *contact = [subDic objectForKey:[subDic keyAtIndex:[indexPath row]]];
 
 		// Go to Contact details view
 		ContactDetailsView *view = VIEW(ContactDetailsView);
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		if (([ContactSelection getSelectionMode] != ContactSelectionModeEdit) || !([ContactSelection getAddAddress])) {
-			[view setContact:lPerson];
+			[view setContact:contact];
 		} else {
-			[view editContact:lPerson address:[ContactSelection getAddAddress]];
+			[view editContact:contact address:[ContactSelection getAddAddress]];
 		}
 	}
 }
@@ -253,39 +239,49 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
+		[NSNotificationCenter.defaultCenter removeObserver:self];
 		[tableView beginUpdates];
+
 		NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
 		OrderedDictionary *subDic = [addressBookMap objectForKey:firstChar];
 		NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
-		ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
+		Contact *contact = [subDic objectForKey:key];
 		[[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 		if ([tableView numberOfRowsInSection:indexPath.section] == 1) {
 			[addressBookMap removeObjectForKey:firstChar];
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
 					 withRowAnimation:UITableViewRowAnimationFade];
 		}
-
 		[[LinphoneManager.instance fastAddressBook] removeContact:contact];
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];
 		[tableView endUpdates];
-		ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
+
+		[NSNotificationCenter.defaultCenter addObserver:self
+											   selector:@selector(onAddressBookUpdate:)
+												   name:kLinphoneAddressBookUpdate
+												 object:nil];
 	}
 }
 
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
-	  ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
+	  [NSNotificationCenter.defaultCenter removeObserver:self];
+
 	  NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
 	  OrderedDictionary *subDic = [addressBookMap objectForKey:firstChar];
 	  NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
-	  ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
+	  Contact *contact = [subDic objectForKey:key];
 	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];
 	  }
 	  [[LinphoneManager.instance fastAddressBook] removeContact:contact];
+
+	  [NSNotificationCenter.defaultCenter addObserver:self
+											 selector:@selector(onAddressBookUpdate:)
+												 name:kLinphoneAddressBookUpdate
+											   object:nil];
 	}];
 }
 

@@ -514,7 +514,7 @@
 
 @implementation ContactDisplay
 
-+ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact {
++ (void)setDisplayNameLabel:(UILabel *)label forContact:(Contact *)contact {
 	label.text = [FastAddressBook displayNameForContact:contact];
 #if 0
 	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
@@ -526,7 +526,7 @@
 }
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
-	const LinphoneFriend *contact = [FastAddressBook getContactWithAddress:addr];
+	Contact *contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
 	} else {

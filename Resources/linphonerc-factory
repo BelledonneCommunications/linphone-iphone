@@ -27,3 +27,6 @@ ringer_dev_id=AQ: Audio Queue Device
 
 [video]
 display_filter_auto_rotate=0
+
+[friend_0]
+url="gautier.pelloux" <sip:gautier.pelloux@sip.linphone.org>

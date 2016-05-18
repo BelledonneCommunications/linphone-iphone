@@ -26,7 +26,7 @@
 @property(nonatomic, strong) IBOutlet UILabel *nameLabel;
 @property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UIImageView *linphoneImage;
-@property (nonatomic, assign) ABRecordRef contact;
+@property(nonatomic, assign) Contact *contact;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

@@ -22,59 +22,52 @@
 
 @implementation ContactDetailsView
 
-static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
-
 #pragma mark - Lifecycle Functions
 
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
 		inhibUpdate = FALSE;
-		addressBook = ABAddressBookCreateWithOptions(nil, nil);
-		ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
+		[NSNotificationCenter.defaultCenter addObserver:self
+											   selector:@selector(onAddressBookUpdate:)
+												   name:kLinphoneAddressBookUpdate
+												 object:nil];
 	}
 	return self;
 }
 
 - (void)dealloc {
-	ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
-	CFRelease(addressBook);
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark -
+
+- (void)onAddressBookUpdate:(NSNotification *)k {
+	if (!inhibUpdate && ![_tableController isEditing]) {
+		[self resetData];
+	}
+}
 
 - (void)resetData {
 	if (self.isEditing) {
 		[self setEditing:FALSE];
 	}
 	if (_contact == NULL) {
-		ABAddressBookRevert(addressBook);
 		return;
 	}
-
-	ABRecordID recordID = ABRecordGetRecordID(_contact);
-	ABAddressBookRevert(addressBook);
-	_contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
 
 	if (_contact != NULL) {
 		LOGI(@"Reset data to contact %p", _contact);
 		[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO]
 					  bordered:NO
 			 withRoundedRadius:YES];
-		[_tableController setContact:[[Contact alloc] initWithPerson:_contact]];
+		[_tableController setContact:_contact];
 		_emptyLabel.hidden = YES;
 	} else {
 		_emptyLabel.hidden = NO;
 		if (!IPAD) {
 			[PhoneMainView.instance popCurrentView];
 		}
-	}
-}
-
-static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
-	ContactDetailsView *controller = (__bridge ContactDetailsView *)context;
-	if (!controller->inhibUpdate && ![[controller tableController] isEditing]) {
-		[controller resetData];
 	}
 }
 
@@ -94,41 +87,20 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	}
 
 	// Add contact to book
-	CFErrorRef error = NULL;
-	if (ABRecordGetRecordID(_contact) == kABRecordInvalidID) {
-		ABAddressBookAddRecord(addressBook, _contact, (CFErrorRef *)&error);
-		if (error != NULL) {
-			LOGE(@"Add contact %p: Fail(%@)", _contact, [(__bridge NSError *)error localizedDescription]);
-		} else {
-			LOGI(@"Add contact %p: Success!", _contact);
-		}
-	}
-
-	// Save address book
-	error = NULL;
-	inhibUpdate = TRUE;
-	ABAddressBookSave(addressBook, &error);
-	inhibUpdate = FALSE;
-	if (error != NULL) {
-		LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
-	} else {
-		LOGI(@"Save AddressBook: Success!");
-	}
-	[LinphoneManager.instance.fastAddressBook reload];
+	[LinphoneManager.instance.fastAddressBook saveContact:_contact];
 }
 
-- (void)selectContact:(ABRecordRef)acontact andReload:(BOOL)reload {
+- (void)selectContact:(Contact *)acontact andReload:(BOOL)reload {
 	if (self.isEditing) {
 		[self setEditing:FALSE];
 	}
-	ABAddressBookRevert(addressBook);
 
 	_contact = acontact;
 	_emptyLabel.hidden = (_contact != NULL);
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
-	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:acontact];
-	[_tableController setContact:[[Contact alloc] initWithPerson:_contact]];
+	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
+	[_tableController setContact:_contact];
 
 	if (reload) {
 		[self setEditing:TRUE animated:FALSE];
@@ -157,25 +129,25 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)newContact {
-	[self selectContact:ABPersonCreate() andReload:YES];
+	[self selectContact:[[Contact alloc] initWithPerson:ABPersonCreate()] andReload:YES];
 }
 
 - (void)newContact:(NSString *)address {
-	[self selectContact:ABPersonCreate() andReload:NO];
+	[self selectContact:[[Contact alloc] initWithPerson:ABPersonCreate()] andReload:NO];
 	[self addCurrentContactContactField:address];
 }
 
-- (void)editContact:(ABRecordRef)acontact {
-	[self selectContact:ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact)) andReload:YES];
+- (void)editContact:(Contact *)acontact {
+	[self selectContact:acontact andReload:YES];
 }
 
-- (void)editContact:(ABRecordRef)acontact address:(NSString *)address {
-	[self selectContact:ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact)) andReload:NO];
+- (void)editContact:(Contact *)acontact address:(NSString *)address {
+	[self selectContact:acontact andReload:NO];
 	[self addCurrentContactContactField:address];
 }
 
-- (void)setContact:(ABRecordRef)acontact {
-	[self selectContact:ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact)) andReload:NO];
+- (void)setContact:(Contact *)acontact {
+	[self selectContact:acontact andReload:NO];
 }
 
 #pragma mark - ViewController Functions
@@ -348,23 +320,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
 
-	FastAddressBook *fab = LinphoneManager.instance.fastAddressBook;
-	CFErrorRef error = NULL;
-	if (!ABPersonRemoveImageData(_contact, (CFErrorRef *)&error)) {
-		LOGI(@"Can't remove entry: %@", [(__bridge NSError *)error localizedDescription]);
-	}
-	NSData *dataRef = UIImageJPEGRepresentation(image, 0.9f);
-	CFDataRef cfdata = CFDataCreate(NULL, [dataRef bytes], [dataRef length]);
-
-	[fab saveAddressBook];
-
-	if (!ABPersonSetImageData(_contact, cfdata, (CFErrorRef *)&error)) {
-		LOGI(@"Can't add entry: %@", [(__bridge NSError *)error localizedDescription]);
-	} else {
-		[fab saveAddressBook];
-	}
-
-	CFRelease(cfdata);
+	[FastAddressBook setAvatar:image forContact:_contact];
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 }

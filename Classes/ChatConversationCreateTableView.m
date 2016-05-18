@@ -35,8 +35,7 @@
 
 	[_allContacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
 	  NSString *address = (NSString *)key;
-	  ABRecordRef person = (__bridge ABRecordRef)(value);
-	  NSString *name = [FastAddressBook displayNameForContact:person];
+	  NSString *name = [FastAddressBook displayNameForContact:value];
 	  if ((filter.length == 0) || ([name.lowercaseString containsSubstring:filter.lowercaseString]) ||
 		  ([address.lowercaseString containsSubstring:filter.lowercaseString])) {
 		  _contacts[address] = name;

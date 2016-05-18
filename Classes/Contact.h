@@ -13,11 +13,17 @@
 
 @interface Contact : NSObject
 
-@property(nonatomic, assign) NSString *firstName;
-@property(nonatomic, assign) NSString *lastName;
+@property(nonatomic, readonly) ABRecordRef person;
+@property(nonatomic, readonly) LinphoneFriend *friend;
+
+@property(nonatomic, retain) NSString *firstName;
+@property(nonatomic, retain) NSString *lastName;
 @property(nonatomic, strong) NSMutableArray *sipAddresses;
 @property(nonatomic, strong) NSMutableArray *emails;
 @property(nonatomic, strong) NSMutableArray *phoneNumbers;
+
+- (UIImage *)avatar:(BOOL)thumbnail;
+- (NSString *)displayName;
 
 - (instancetype)initWithPerson:(ABRecordRef)person;
 - (instancetype)initWithFriend:(LinphoneFriend *) friend;
@@ -33,5 +39,4 @@
 - (BOOL)removeSipAddressAtIndex:(NSInteger)index;
 - (BOOL)removePhoneNumberAtIndex:(NSInteger)index;
 - (BOOL)removeEmailAtIndex:(NSInteger)index;
-
 @end
