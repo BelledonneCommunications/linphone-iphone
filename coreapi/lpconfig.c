@@ -366,7 +366,7 @@ void lp_config_parse(LpConfig *lpconfig, bctbx_vfs_file* pFile){
 	int size  =0;
 	if (pFile==NULL) return;
 	while(( size = bctbx_file_get_nxtline(pFile, tmp, MAX_LEN)) > 0){
-		tmp[size] = '\0';
+		//tmp[size] = '\0';
 		current_section = lp_config_parse_line(lpconfig, tmp, current_section);
 	}
 }
@@ -442,7 +442,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 #endif
 		if (fd != -1){
 		    lp_config_parse(lpconfig, pFile);
-			bctbx_file_close_and_free(pFile);
+			bctbx_file_close(pFile);
 			lpconfig->pFile = NULL;
 			lpconfig->modified=0;
 		}
@@ -465,7 +465,7 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	if (fd != -1){
 		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig, pFile);
-		bctbx_file_close_and_free(pFile);
+		bctbx_file_close(pFile);
 		ms_free(path);
 		return 0;
 	}
@@ -766,7 +766,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	}
 	
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)lpconfig);
-	bctbx_file_close_and_free(pFile);
+	bctbx_file_close(pFile);
 
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 	/* On windows, rename() does not accept that the newpath is an existing file, while it is accepted on Unix.
@@ -900,7 +900,7 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
 		ms_free(realfilepath);
 		if (pFile->fd != -1) {
-			bctbx_file_close_and_free(pFile);
+			bctbx_file_close(pFile);
 		}
 		return pFile->fd > 0;
 	}
@@ -938,7 +938,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 	bctbx_file_fprintf(pFile, 0, "%s",data);
-	bctbx_file_close_and_free(pFile);
+	bctbx_file_close(pFile);
 
 end:
 	ms_free(dup_config_file);
@@ -970,19 +970,19 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	if (pFile !=NULL)
 		fd = pFile->fd;
 	
-	if(fd < 0 ) {
-		ms_error("Could not open %s for read. %s", realfilepath, strerror(errno));
+	if(fd == -1 ) {
+		ms_error("Could not open %s for read.", realfilepath);
 		goto err;
 	}
 
 
 	if(bctbx_file_read(pFile, data, 1, max_length) < 0){
-		ms_error("%s could not be loaded. %s", realfilepath, strerror(errno));
+		ms_error("%s could not be loaded.", realfilepath);
 		goto err;
 		
 	}
 
-	bctbx_file_close_and_free(pFile);
+	bctbx_file_close(pFile);
 
 	ms_free(dup_config_file);
 	ms_free(filepath);
