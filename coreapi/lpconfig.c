@@ -397,9 +397,12 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 
 LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 
+	int fd;
+	bctbx_vfs_file_t* pFile = NULL;
+
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	bctbx_vfs_register(bc_create_vfs(),&lpconfig->g_bctbx_vfs);
-	bctbx_vfs_file_t* pFile = NULL;
+	
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
 		if(ortp_file_exist(config_filename) == 0) {
@@ -427,13 +430,13 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		}
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
-		int fd;
+
 		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
 		fd  = pFile->fd;
 		lpconfig->pFile = pFile;
 		
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
-		if (fd < 0){
+		if (fd  == -1){
 			pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "r+");
 			if (fd){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
@@ -748,7 +751,8 @@ void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 }
 
 int lp_config_sync(LpConfig *lpconfig){
-	int fd = 0;	
+	int fd = -1;	
+	bctbx_vfs_file_t *pFile = NULL;
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
 
@@ -756,10 +760,10 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	bctbx_vfs_file_t *pFile  = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
+	pFile  = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
 	fd = pFile->fd;
-	if (fd < 0 ){
+	if (fd  == -1 ){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
 		lpconfig->readonly=1;
 		return -1;
@@ -933,7 +937,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
 	fd = pFile->fd;
 	
-	if(fd < 0) {
+	if(fd == -1) {
 		ms_error("Could not open %s for write", realfilepath);
 		goto end;
 	}
