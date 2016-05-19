@@ -437,7 +437,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 		if (fd  == -1){
-			pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "r+");
+			pFile = bctbx_filecreate_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "r+");
 			if (fd){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
 			}

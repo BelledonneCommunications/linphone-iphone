@@ -19,8 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "sqlite3_bctbx_vfs.h"
-#include <errno.h>
 #include <sqlite3.h>
+
+#ifndef _WIN32_WCE
+#include <errno.h>
+#endif /*_WIN32_WCE*/
+
 
 
 /**
@@ -248,7 +252,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	}
 
 	/* Set flags  to open the file with */
-	if( flags&SQLITE_OPEN_EXCLUSIVE ) openFlags  |= (O_EXCL|O_NOFOLLOW);
+	if( flags&SQLITE_OPEN_EXCLUSIVE ) openFlags  |= O_EXCL;
 	if( flags&SQLITE_OPEN_CREATE )    openFlags |= O_CREAT;
 	if( flags&SQLITE_OPEN_READONLY )  openFlags |= O_RDONLY;
 	if( flags&SQLITE_OPEN_READWRITE ) openFlags |= O_RDWR;

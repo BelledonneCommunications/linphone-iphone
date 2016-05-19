@@ -21,13 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <stdbool.h>
-#include <sys/stat.h>
 #include "sqlite3.h"
 
 #include <bctoolbox/bc_vfs.h>
+
 
 /*
 ** The maximum pathname length supported by this VFS.
