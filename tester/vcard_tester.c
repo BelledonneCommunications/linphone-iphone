@@ -182,6 +182,7 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	lvc = NULL;
 }
 
+#ifdef SQLITE_STORAGE_ENABLED
 static void friends_if_no_db_set(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
 	LinphoneFriend *lf = linphone_core_create_friend(manager->lc);
@@ -205,7 +206,6 @@ static void friends_if_no_db_set(void) {
 	linphone_core_manager_destroy(manager);
 }
 
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
 static void friends_migration(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("friends_rc", FALSE);
 	LpConfig *lpc = linphone_core_get_config(manager->lc);
@@ -770,7 +770,7 @@ test_t vcard_tests[] = {
 	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
 	{ "vCard creation for existing friends", linphone_vcard_update_existing_friends_test },
 	{ "vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses },
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	{ "Friends working if no db set", friends_if_no_db_set },
 	{ "Friends storage migration from rc to db", friends_migration },
 	{ "Friends storage in sqlite database", friends_sqlite_storage },
