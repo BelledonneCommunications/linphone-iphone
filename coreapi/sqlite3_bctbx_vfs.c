@@ -267,7 +267,6 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
     	*pOutFlags = flags;
   	}
 	pFile->base.pMethods = &sqlite3_bctbx_io;
-	pFile->pbctbx_file->filename = (char*)fName;
 
 	return SQLITE_OK;
 }
