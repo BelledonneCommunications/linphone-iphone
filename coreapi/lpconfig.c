@@ -25,6 +25,7 @@
 #define MAX_LEN 16384
 
 #include "linphonecore.h"
+#include "bctoolbox/bc_vfs.h"
 
 #include <stdio.h>
 #include <stdlib.h>

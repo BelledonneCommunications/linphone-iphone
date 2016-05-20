@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lime.h"
 #include "conference_private.h"
 
+#ifdef SQLITE_STORAGE_ENABLED
+#include "sqlite3_bctbx_vfs.h"
+#endif
+
 #include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1777,6 +1781,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
+#ifdef SQLITE_STORAGE_ENABLED
+	sqlite3_bctbx_vfs_register(1);
+#endif
 }
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,

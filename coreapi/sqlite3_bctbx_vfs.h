@@ -17,14 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifndef sqlite3_bctx_vfs_h
+#define sqlite3_bctx_vfs_h
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <stdbool.h>
-#include "sqlite3.h"
 
 #include <bctoolbox/bc_vfs.h>
+
+#include "sqlite3.h"
 
 
 /*
@@ -63,3 +66,5 @@ VFS API to register this VFS to sqlite3 VFS
 sqlite3_vfs *sqlite3_bctbx_vfs_create(void);
 void sqlite3_bctbx_vfs_register(int makeDefault);
 void sqlite3_bctbx_vfs_unregister(void);
+
+#endif

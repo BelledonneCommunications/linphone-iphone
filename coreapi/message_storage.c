@@ -662,7 +662,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
 	const char *errmsg;
 	sqlite3 *db = NULL;
-	sqlite3_bctbx_vfs_register(1);
+
 	linphone_core_message_storage_close(lc);
 
 	ret=_linphone_sqlite3_open(lc->chat_db_file,&db);

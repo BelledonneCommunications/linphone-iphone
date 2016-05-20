@@ -38,6 +38,7 @@
 #include "vcard.h"
 
 #include <bctoolbox/port.h>
+#include <bctoolbox/bc_vfs.h>
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
 
@@ -53,9 +54,6 @@
 #include "upnp.h"
 #endif //BUILD_UPNP
 
-#ifdef SQLITE_STORAGE_ENABLED
-#include "sqlite3.h"
-#endif
 
 #ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
@@ -122,6 +120,11 @@
 #include <libxml/xmlwriter.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+
+
+#ifdef SQLITE_STORAGE_ENABLED
+#include <sqlite3.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
