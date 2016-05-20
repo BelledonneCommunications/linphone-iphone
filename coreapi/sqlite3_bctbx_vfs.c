@@ -157,7 +157,9 @@ static int sqlite3bctbx_DeviceCharacteristics(sqlite3_file *p){
  * @return      SQLITE_OK on success, SALITE_NOTFOUND otherwise.
  */
 static int sqlite3bctbx_FileControl(sqlite3_file *p, int op, void *pArg){
+#ifdef SQLITE_FCNTL_MMAP_SIZE
 	if (op == SQLITE_FCNTL_MMAP_SIZE) return SQLITE_OK;
+#endif
 	return SQLITE_NOTFOUND;
 
 }

@@ -91,7 +91,6 @@ liblinphone_la_SOURCES=\
 	sal.c \
 	siplogin.c \
 	sipsetup.c \
-	sqlite3_bctbx_vfs.c \
 	xml2lpc.c \
 	xml.c \
 	xmlrpc.c \
