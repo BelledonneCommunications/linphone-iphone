@@ -71,11 +71,10 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
 			return SQLITE_OK;
 		}
 		else if( ret >= 0 ){
-
+			/*fill in unread portion of buffer, as requested by sqlite3 documentation*/
+			memset(((uint8_t*)buf) + ret, 0, count-ret); 
 			return SQLITE_IOERR_SHORT_READ;
-		}
-		
-		else {
+		}else {
 			
 			return SQLITE_IOERR_READ;
 		}
