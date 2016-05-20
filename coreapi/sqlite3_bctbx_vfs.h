@@ -63,8 +63,43 @@ struct sqlite3_bctbx_vfs {
 /****************************************************
 VFS API to register this VFS to sqlite3 VFS
 *****************************************************/
+
+/**
+ * Returns a sqlite3_vfs pointer to the VFS named sqlite3bctbx_vfs 
+ * implemented in this file.
+ * Methods not implemented:
+ *			xDelete 
+ *			xAccess 
+ *			xFullPathname 
+ *			xDlOpen 
+ *			xDlError 
+ *			xDlSym 
+ *			xDlClose 
+ *			xRandomness 
+ *			xSleep 
+ *			xCurrentTime , xCurrentTimeInt64,
+ *			xGetLastError
+ *			xGetSystemCall
+ *			xSetSystemCall
+ *			xNextSystemCall
+ *			To make the VFS available to SQLite
+ * @return  Pointer to bctbx_vfs.
+ */
 sqlite3_vfs *sqlite3_bctbx_vfs_create(void);
+
+/**
+ * Registers sqlite3bctbx_vfs to SQLite VFS. If makeDefault is 1,
+ * the VFS will be used by default.
+ * Methods not implemented by sqlite3_bctbx_vfs are initialized to the one 
+ * used by the unix-none VFS where all locking file operations are no-ops. 
+ * @param  makeDefault  set to 1 to make the newly registered VFS be the default one, set to 0 instead.
+ */
 void sqlite3_bctbx_vfs_register(int makeDefault);
+
+
+/**
+ * Unregisters sqlite3bctbx_vfs from SQLite.
+ */
 void sqlite3_bctbx_vfs_unregister(void);
 
 #endif

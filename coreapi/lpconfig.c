@@ -432,7 +432,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
 
-		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
+		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
 		fd  = pFile->fd;
 		lpconfig->pFile = pFile;
 		
@@ -464,7 +464,7 @@ fail:
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	int fd=-1;
-	bctbx_vfs_file_t* pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs, path, "r");
+	bctbx_vfs_file_t* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
 	fd = pFile->fd;
 	if (fd != -1){
 		ms_message("Reading config information from %s", path);
@@ -761,7 +761,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	pFile  = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
+	pFile  = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
 	fd = pFile->fd;
 	if (fd  == -1 ){
@@ -902,7 +902,7 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 
 		if(realfilepath == NULL) return FALSE;
 
-		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
+		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
 		ms_free(realfilepath);
 		if (pFile->fd != -1) {
 			bctbx_file_close(pFile);
@@ -935,7 +935,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 
-	pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
 	fd = pFile->fd;
 	
 	if(fd == -1) {
@@ -971,7 +971,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		goto err;
 	}
 
-	pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
 	if (pFile !=NULL)
 		fd = pFile->fd;
 	
