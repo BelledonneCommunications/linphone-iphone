@@ -259,7 +259,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	if( flags&SQLITE_OPEN_READONLY )  openFlags |= O_RDONLY;
 	if( flags&SQLITE_OPEN_READWRITE ) openFlags |= O_RDWR;
 
-	pFile->pbctbx_file = bctbx_file_create_and_open2(bc_create_vfs(), fName, openFlags);
+	pFile->pbctbx_file = bctbx_file_open2(bc_create_vfs(), fName, openFlags);
 	if( pFile->pbctbx_file == NULL){
 		return SQLITE_CANTOPEN;
 	}
