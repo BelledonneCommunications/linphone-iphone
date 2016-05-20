@@ -43,6 +43,7 @@ linphone_include_HEADERS=\
 	lpc2xml.h \
 	lpconfig.h \
 	sipsetup.h \
+	sqlite3_bctbx_vfs.h \
 	xml2lpc.h \
 	xmlrpc.h \
 	vcard.h \
@@ -90,6 +91,7 @@ liblinphone_la_SOURCES=\
 	sal.c \
 	siplogin.c \
 	sipsetup.c \
+	sqlite3_bctbx_vfs.c \
 	xml2lpc.c \
 	xml.c \
 	xmlrpc.c \
