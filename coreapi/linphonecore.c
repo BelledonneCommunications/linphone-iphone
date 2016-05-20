@@ -1386,7 +1386,7 @@ static void read_friends_from_rc(LinphoneCore *lc)
 
 static void ui_config_read(LinphoneCore *lc)
 {
-#ifndef FRIENDS_SQL_STORAGE_ENABLED
+#ifndef SQLITE_STORAGE_ENABLED
 	read_friends_from_rc(lc);
 #else
 	if (!lc->friends_db) {
@@ -2001,7 +2001,7 @@ LinphoneFriendList* linphone_core_get_default_friend_list(const LinphoneCore *lc
 void linphone_core_remove_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 	MSList *elem = ms_list_find(lc->friends_lists, list);
 	if (elem == NULL) return;
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	linphone_core_remove_friends_list_from_db(lc, list);
 #endif
 	linphone_core_notify_friend_list_removed(lc, list);
@@ -2016,7 +2016,7 @@ void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 			list->lc = lc;
 		}
 		lc->friends_lists = ms_list_append(lc->friends_lists, linphone_friend_list_ref(list));
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 		linphone_core_store_friends_list_in_db(lc, list);
 #endif
 		linphone_core_notify_friend_list_created(lc, list);
@@ -5247,7 +5247,7 @@ void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *pat
 }
 
 const MSList* linphone_core_get_call_logs(LinphoneCore *lc) {
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	if (lc->logs_db) {
 		linphone_core_get_call_history(lc);
 	}
@@ -5258,7 +5258,7 @@ const MSList* linphone_core_get_call_logs(LinphoneCore *lc) {
 void linphone_core_clear_call_logs(LinphoneCore *lc) {
 	bool_t call_logs_sqlite_db_found = FALSE;
 	lc->missed_calls=0;
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	if (lc->logs_db) {
 		call_logs_sqlite_db_found = TRUE;
 		linphone_core_delete_call_history(lc);
@@ -5281,7 +5281,7 @@ void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
 
 void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl) {
 	bool_t call_logs_sqlite_db_found = FALSE;
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	if (lc->logs_db) {
 		call_logs_sqlite_db_found = TRUE;
 		linphone_core_delete_call_log(lc, cl);
@@ -5300,7 +5300,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	int original_logs_count, migrated_logs_count;
 	int i;
 
-#ifndef CALL_LOGS_STORAGE_ENABLED
+#ifndef SQLITE_STORAGE_ENABLED
 	ms_warning("linphone has been compiled without sqlite, can't migrate call logs");
 	return;
 #endif

@@ -453,7 +453,7 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 	MSList *elem = ms_list_find(list->friends, lf);
 	if (elem == NULL) return LinphoneFriendListNonExistentFriend;
 
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	if (lf && lf->lc && lf->lc->friends_db) {
 		linphone_core_remove_friend_from_db(lf->lc, lf);
 	}

@@ -53,7 +53,7 @@
 #include "upnp.h"
 #endif //BUILD_UPNP
 
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 #include "sqlite3.h"
 #endif
 
@@ -984,17 +984,13 @@ struct _LinphoneCore
 	char* device_id;
 	MSList *last_recv_msg_ids;
 	char *chat_db_file;
-#ifdef MSG_STORAGE_ENABLED
-	sqlite3 *db;
-	bool_t debug_storage;
-#endif
 	char *logs_db_file;
-#ifdef CALL_LOGS_STORAGE_ENABLED
-	sqlite3 *logs_db;
-#endif
 	char *friends_db_file;
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
+	sqlite3 *db;
+	sqlite3 *logs_db;
 	sqlite3 *friends_db;
+	bool_t debug_storage;
 #endif
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
@@ -1127,11 +1123,8 @@ int linphone_core_get_edge_ptime(LinphoneCore *lc);
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);
 
-#if defined(MSG_STORAGE_ENABLED) || defined(CALL_LOGS_STORAGE_ENABLED)
+#ifdef SQLITE_STORAGE_ENABLED
 int _linphone_sqlite3_open(const char *db_file, sqlite3 **db);
-#endif
-
-#ifdef MSG_STORAGE_ENABLED
 sqlite3 * linphone_message_storage_init(void);
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif

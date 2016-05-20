@@ -4640,7 +4640,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 		ms_free(info);
 	}
 
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	if (lc->logs_db) {
 		call_logs_sqlite_db_found = TRUE;
 		linphone_core_store_call_log(lc, call->log);

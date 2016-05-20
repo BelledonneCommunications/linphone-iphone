@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 
 
-#if defined(MSG_STORAGE_ENABLED) || defined(CALL_LOGS_STORAGE_ENABLED)
+#ifdef SQLITE_STORAGE_ENABLED
 
 #ifndef PRIu64
 #define PRIu64 "I64u"
@@ -95,7 +95,7 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 
 
 
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 
 
 static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){

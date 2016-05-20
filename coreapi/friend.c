@@ -26,7 +26,7 @@
 #include "private.h"
 #include "lpconfig.h"
 
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 #ifndef _WIN32
 #if !defined(ANDROID) && !defined(__QNXNTO__)
 #	include <langinfo.h>
@@ -602,7 +602,7 @@ void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *
 
 void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc) {
 	if (!lc) return;
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	if (lc->friends_db_file) {
 		linphone_core_store_friend_in_db(lc, fr);
 	} else {
@@ -1092,7 +1092,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriend, belle_sip_object_t,
  * SQL storage related functions                                               *
  ******************************************************************************/
 
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 
 static void linphone_create_table(sqlite3* db) {
 	char* errmsg = NULL;
@@ -1503,7 +1503,7 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 	LinphoneFriend *lf = NULL;
 	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(lc);
 	int i;
-#ifndef FRIENDS_SQL_STORAGE_ENABLED
+#ifndef SQLITE_STORAGE_ENABLED
 	ms_warning("linphone has been compiled without sqlite, can't migrate friends");
 	return;
 #endif

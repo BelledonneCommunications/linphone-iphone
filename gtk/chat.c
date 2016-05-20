@@ -630,7 +630,7 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 		}
 	} else {
 	/* Chat window closed */
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 		send=FALSE;
 #else
 		send=TRUE;

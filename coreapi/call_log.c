@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <time.h>
 #include "private.h"
 
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 #ifndef _WIN32
 #if !defined(ANDROID) && !defined(__QNXNTO__)
 #	include <langinfo.h>
@@ -325,7 +325,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallLog, belle_sip_object_t,
  * SQL storage related functions                                               *
  ******************************************************************************/
 
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 
 static void linphone_create_table(sqlite3* db) {
 	char* errmsg=NULL;

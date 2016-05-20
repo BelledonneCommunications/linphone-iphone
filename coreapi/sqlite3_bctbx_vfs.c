@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifdef SQLITE_STORAGE_ENABLED
 
 #include "sqlite3_bctbx_vfs.h"
 #include <sqlite3.h>
@@ -360,5 +361,6 @@ void sqlite3_bctbx_vfs_unregister(void)
 	sqlite3_vfs_unregister(pVfs);
 }
 
+#endif
 
 
