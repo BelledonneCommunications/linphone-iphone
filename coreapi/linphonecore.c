@@ -1264,6 +1264,38 @@ static MSList *add_missing_supported_codecs(LinphoneCore *lc, const MSList *defa
 	return newlist;
 }
 
+/*
+ * This function adds missing codecs, if required by configuration.
+ * This 'l' list is entirely destroyed and a new list is returned.
+ */
+static MSList *handle_missing_codecs(LinphoneCore *lc, const MSList *default_list, MSList *l, MSFormatType ft){
+	const char *name = "unknown";
+	int add_missing;
+	MSList *ret;
+
+	switch(ft){
+		case MSAudio:
+			name = "add_missing_audio_codecs";
+		break;
+		case MSVideo:
+			name = "add_missing_video_codecs";
+		break;
+		case MSText:
+			name = "add_missing_text_codecs";
+		break;
+		case MSUnknownMedia:
+		break;
+	}
+	add_missing = lp_config_get_int(lc->config, "misc", name, 1);
+	if (add_missing){
+		ret = add_missing_supported_codecs(lc, default_list, l);
+	}else{
+		ret = ms_list_copy_with_data(l,(void *(*)(void*))payload_type_clone);
+		ms_list_free(l);
+	}
+	return ret;
+}
+
 static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
 	MSList *elem;
 	for (elem=l;elem!=NULL;elem=elem->next){
@@ -1275,8 +1307,7 @@ static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
 	return l;
 }
 
-static void codecs_config_read(LinphoneCore *lc)
-{
+static void codecs_config_read(LinphoneCore *lc){
 	int i;
 	PayloadType *pt;
 	MSList *audio_codecs=NULL;
@@ -1291,18 +1322,15 @@ static void codecs_config_read(LinphoneCore *lc)
 			audio_codecs=codec_append_if_new(audio_codecs, pt);
 		}
 	}
-	if( lp_config_get_int(lc->config, "misc", "add_missing_audio_codecs", 1) == 1 ){
-		audio_codecs=add_missing_supported_codecs(lc, lc->default_audio_codecs,audio_codecs);
-	}
+	audio_codecs = handle_missing_codecs(lc, lc->default_audio_codecs,audio_codecs, MSAudio);
 
 	for (i=0;get_codec(lc,SalVideo,i,&pt);i++){
 		if (pt){
 			video_codecs=codec_append_if_new(video_codecs, pt);
 		}
 	}
-	if( lp_config_get_int(lc->config, "misc", "add_missing_video_codecs", 1) == 1 ){
-		video_codecs=add_missing_supported_codecs(lc, lc->default_video_codecs,video_codecs);
-	}
+
+	video_codecs = handle_missing_codecs(lc, lc->default_video_codecs, video_codecs, MSVideo);
 
 	for (i=0;get_codec(lc,SalText,i,&pt);i++){
 		if (pt){
