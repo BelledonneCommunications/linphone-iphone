@@ -217,7 +217,7 @@ static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
 /**
  * Opens the file fName and populates the structure pointed by p
  * with the necessary io_methods
- * Methods not implemented for version 1 : xTruncate, xSectorSize.
+ * Methods not implemented for version 3 : xTruncate, xSectorSize.
  * Initializes some fields in the p structure, some of which where already
  * initialized by SQLite.
  * @param  pVfs      sqlite3_vfs VFS pointer.
@@ -229,7 +229,7 @@ static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
  */
 static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file *p, int flags, int *pOutFlags ){
 	static const sqlite3_io_methods sqlite3_bctbx_io = {
-		1,										/* iVersion         Structure version number */
+		3,										/* iVersion         Structure version number */
 		sqlite3bctbx_Close,                 	/* xClose */
 		sqlite3bctbx_Read,                  	/* xRead */
 		sqlite3bctbx_Write,                 	/* xWrite */
@@ -276,7 +276,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 
 sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
   static sqlite3_vfs bctbx_vfs = {
-    1,                            	/* iVersion */
+    3,                            	/* iVersion */
     sizeof(sqlite3_bctbx_file),   	/* szOsFile */
     MAXPATHNAME,                  	/* mxPathname */
     0,                            	/* pNext */
@@ -310,8 +310,6 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 	pVfsToUse->xSleep = pDefault->xSleep;
 	pVfsToUse->xRandomness = pDefault->xRandomness;
 	pVfsToUse->xGetLastError = pDefault->xGetLastError; /* Not implemented by sqlite3 :place holder */
-	/*Functions below should not be a problem sincve we are declaring ourselves
-	 in version 1 */
 	
 	/* used in version 2 */
 	pVfsToUse->xCurrentTimeInt64 = pDefault->xCurrentTimeInt64;
