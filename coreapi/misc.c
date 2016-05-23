@@ -894,7 +894,8 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDes
 }
 
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session, bool_t use_nortpproxy) {
-	const char *rtp_addr, *rtcp_addr;
+	IceCandidate *rtp_candidate = NULL;
+	IceCandidate *rtcp_candidate = NULL;
 	IceSessionState session_state = ice_session_state(session);
 	int nb_candidates;
 	int i, j;
@@ -902,9 +903,9 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 
 	if (session_state == IS_Completed) {
 		if (use_nortpproxy) desc->set_nortpproxy = TRUE;
-		result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
+		result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_candidate, NULL);
 		if (result == TRUE) {
-			strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
+			strncpy(desc->addr, rtp_candidate->taddr.ip, sizeof(desc->addr));
 		} else {
 			ms_warning("If ICE has completed successfully, rtp_addr should be set!");
 		}
@@ -921,14 +922,16 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 		if (!sal_stream_description_active(stream) || (cl == NULL)) continue;
 		if (ice_check_list_state(cl) == ICL_Completed) {
 			if (use_nortpproxy) stream->set_nortpproxy = TRUE;
-			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
+			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_candidate, &rtcp_candidate);
 		} else {
 			stream->set_nortpproxy = FALSE;
-			result = ice_check_list_default_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
+			result = ice_check_list_default_local_candidate(ice_session_check_list(session, i), &rtp_candidate, &rtcp_candidate);
 		}
 		if (result == TRUE) {
-			strncpy(stream->rtp_addr, rtp_addr, sizeof(stream->rtp_addr));
-			strncpy(stream->rtcp_addr, rtcp_addr, sizeof(stream->rtcp_addr));
+			strncpy(stream->rtp_addr, rtp_candidate->taddr.ip, sizeof(stream->rtp_addr));
+			strncpy(stream->rtcp_addr, rtcp_candidate->taddr.ip, sizeof(stream->rtcp_addr));
+			stream->rtp_port = rtp_candidate->taddr.port;
+			stream->rtcp_port = rtcp_candidate->taddr.port;
 		} else {
 			memset(stream->rtp_addr, 0, sizeof(stream->rtp_addr));
 			memset(stream->rtcp_addr, 0, sizeof(stream->rtcp_addr));
@@ -975,13 +978,12 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 			}
 		}
 		if ((ice_check_list_state(cl) == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
-			int rtp_port, rtcp_port;
 			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
-			if (ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port) == TRUE) {
-				strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
-				stream->ice_remote_candidates[0].port = rtp_port;
-				strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
-				stream->ice_remote_candidates[1].port = rtcp_port;
+			if (ice_check_list_selected_valid_remote_candidate(cl, &rtp_candidate, &rtcp_candidate) == TRUE) {
+				strncpy(stream->ice_remote_candidates[0].addr, rtp_candidate->taddr.ip, sizeof(stream->ice_remote_candidates[0].addr));
+				stream->ice_remote_candidates[0].port = rtp_candidate->taddr.port;
+				strncpy(stream->ice_remote_candidates[1].addr, rtcp_candidate->taddr.ip, sizeof(stream->ice_remote_candidates[1].addr));
+				stream->ice_remote_candidates[1].port = rtcp_candidate->taddr.port;
 			} else {
 				ms_error("ice: Selected valid remote candidates should be present if the check list is in the Completed state");
 			}
