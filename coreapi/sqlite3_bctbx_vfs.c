@@ -313,12 +313,12 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 	/*Functions below should not be a problem sincve we are declaring ourselves
 	 in version 1 */
 	
-	/* used in version 2 */
-	pVfsToUse->xCurrentTimeInt64 = pDefault->xCurrentTimeInt64;
-	/* used in version 3 */
-	pVfsToUse->xGetSystemCall = pDefault->xGetSystemCall;
-	pVfsToUse->xSetSystemCall = pDefault->xSetSystemCall;
-	pVfsToUse->xNextSystemCall = pDefault->xNextSystemCall;
+	/* used in version 2 
+	xCurrentTimeInt64;*/
+	/* used in version 3 
+	xGetSystemCall
+	xSetSystemCall
+	xNextSystemCall*/
 
 	sqlite3_vfs_register(pVfsToUse, makeDefault);
 
