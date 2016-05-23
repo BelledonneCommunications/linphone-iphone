@@ -206,11 +206,13 @@ static int sqlite3bctbx_nolockUnlock(sqlite3_file *pUnused, int unused){
  * @return       SQLITE_OK on success, SLITE_IOERR_FSYNC if an error occurred.
  */
 static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
-  sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*)p;
-  int rc;
-
-  rc = fsync(pFile->pbctbx_file->fd);
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+	sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*)p;
+#if _WIN32
+	return (FlushFileBuffers(pFile->pbctbx_file->fd) ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+#else
+	int rc = fsync(pFile->pbctbx_file->fd);
+	return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+#endif
 }
 
 
