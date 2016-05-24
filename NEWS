@@ -1,3 +1,6 @@
+linphone-3.10.0 -- May xxth, 2016
+	* Video conference support through a conference server (SDK only)
+
 linphone-3.9.1 -- November 16th, 2015
 	* Fix crash when recording video calls with the VP8 codec
 	* Fix H.264 codec support in Mac OS X package
