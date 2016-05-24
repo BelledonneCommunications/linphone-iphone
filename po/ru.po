@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 11:54+0200\n"
-"PO-Revision-Date: 2016-05-10 09:58+0000\n"
-"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
+"POT-Creation-Date: 2016-05-19 14:01+0200\n"
+"PO-Revision-Date: 2016-05-10 12:36+0000\n"
+"Last-Translator: AlexL <loginov.alex.valer@gmail.com>\n"
 "Language-Team: Russian (http://www.transifex.com/belledonne-communications/linphone-gtk/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2044,16 +2044,16 @@ msgstr "Сервис недоступен, повтор"
 msgid "Authentication token is %s"
 msgstr "Маркер проверки подлинности: %s"
 
-#: ../coreapi/linphonecall.c:1646
+#: ../coreapi/linphonecall.c:1663
 #, c-format
 msgid "Call parameters could not be modified: %s."
 msgstr "Параметры звонка не были изменены: %s."
 
-#: ../coreapi/linphonecall.c:1648
+#: ../coreapi/linphonecall.c:1665
 msgid "Call parameters were successfully modified."
 msgstr "Параметры звонка были успешно изменены."
 
-#: ../coreapi/linphonecall.c:4619
+#: ../coreapi/linphonecall.c:4636
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
@@ -2099,4 +2099,4 @@ msgstr "Невозможно воспроизвести %s."
 
 #: ../gtk/videowindow.c:252
 msgid "Take screenshot"
-msgstr ""
+msgstr "Сделать скриншот"
