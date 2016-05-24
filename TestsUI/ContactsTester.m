@@ -49,7 +49,7 @@
 - (void)setText:(NSString *)text forIndex:(NSInteger)idx inSection:(NSInteger)section {
 	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:section]
 		inTableViewWithAccessibilityIdentifier:@"Contact table"];
-	[tester enterTextIntoCurrentFirstResponder:text];
+	[tester clearTextFromAndThenEnterTextIntoCurrentFirstResponder:text];
 }
 
 - (void)addEntries:(NSArray *)numbers inSection:(NSInteger)section {
@@ -118,7 +118,7 @@
 
 - (void)testEditContact {
 	NSString *contactName = [self getUUID];
-	[self createContact:contactName lastName:@"dummy" phoneNumber:nil SIPAddress:nil];
+	[self createContact:contactName lastName:@"dummy" phoneNumber:@"111" SIPAddress:nil];
 
 	/* Phone number */
 	NSArray *phones = @[ @"01234", @"56789" ];

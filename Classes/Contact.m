@@ -296,13 +296,12 @@
 					NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(map, index));
 					char *normalizedPhone = linphone_proxy_config_normalize_phone_number(
 						linphone_core_get_default_proxy_config(LC), valueRef.UTF8String);
-					NSString *name = [FastAddressBook
-						normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : valueRef];
-					if (valueRef != NULL) {
-						[_phoneNumbers addObject:name ?: [FastAddressBook localizedLabel:valueRef]];
-					}
-					if (normalizedPhone)
+					if (normalizedPhone) {
+						valueRef = [NSString stringWithUTF8String:normalizedPhone];
 						ms_free(normalizedPhone);
+					}
+
+					[_phoneNumbers addObject:valueRef];
 				}
 			}
 			CFRelease(map);
@@ -323,7 +322,7 @@
 						NSString *value = (NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
 						CFRelease(lDict);
 						if (value != NULL) {
-							[_sipAddresses addObject:[FastAddressBook normalizeSipURI:value] ?: value];
+							[_sipAddresses addObject:value];
 						}
 					}
 				}
@@ -440,7 +439,7 @@
 		MSList *numbers = linphone_friend_get_phone_numbers(_friend);
 		while (numbers) {
 			NSString *phone = [NSString stringWithUTF8String:numbers->data];
-			[_phoneNumbers addObject:[FastAddressBook localizedLabel:phone]];
+			[_phoneNumbers addObject:phone];
 			numbers = numbers->next;
 		}
 	}

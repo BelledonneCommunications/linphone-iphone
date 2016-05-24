@@ -133,10 +133,18 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)registerAddrsFor:(Contact *)contact {
 	for (NSString *phone in contact.phoneNumbers) {
-		[_addressBookMap setObject:contact forKey:phone];
+		char *normalizedPhone =
+			linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
+		NSString *name =
+			[FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
+		if (phone != NULL) {
+			[_addressBookMap setObject:contact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
+		}
+		if (normalizedPhone)
+			ms_free(normalizedPhone);
 	}
 	for (NSString *sip in contact.sipAddresses) {
-		[_addressBookMap setObject:contact forKey:sip];
+		[_addressBookMap setObject:contact forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
 	}
 }
 

@@ -52,31 +52,17 @@
 	if (self.isEditing) {
 		[self setEditing:FALSE];
 	}
-	if (_contact == NULL) {
-		return;
-	}
 
-	if (_contact != NULL) {
-		LOGI(@"Reset data to contact %p", _contact);
-		[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO]
-					  bordered:NO
-			 withRoundedRadius:YES];
-		[_tableController setContact:_contact];
-		_emptyLabel.hidden = YES;
-	} else {
-		_emptyLabel.hidden = NO;
-		if (!IPAD) {
-			[PhoneMainView.instance popCurrentView];
-		}
-	}
+	LOGI(@"Reset data to contact %p", _contact);
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
+	[_tableController setContact:_contact];
+	_emptyLabel.hidden = YES;
 }
 
 - (void)removeContact {
-	if (_contact != NULL) {
-		inhibUpdate = TRUE;
-		[[LinphoneManager.instance fastAddressBook] removeContact:_contact];
-		inhibUpdate = FALSE;
-	}
+	inhibUpdate = TRUE;
+	[[LinphoneManager.instance fastAddressBook] removeContact:_contact];
+	inhibUpdate = FALSE;
 	[PhoneMainView.instance popCurrentView];
 }
 
@@ -262,8 +248,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onCancelClick:(id)event {
-	[self setEditing:FALSE];
-	[self resetData];
+	if (_contact.phoneNumbers.count + _contact.sipAddresses.count > 0) {
+		[self setEditing:FALSE];
+		[self resetData];
+		_emptyLabel.hidden = NO;
+		if (!IPAD) {
+			[PhoneMainView.instance popCurrentView];
+		}
+	}
 }
 
 - (IBAction)onBackClick:(id)event {
