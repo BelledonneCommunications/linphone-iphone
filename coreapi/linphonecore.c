@@ -6684,24 +6684,35 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ms_factory_destroy(lc->factory);
 }
 
+static void stop_refreshing_proxy_config(bool_t is_sip_reachable, LinphoneProxyConfig* cfg) {
+	if (linphone_proxy_config_register_enabled(cfg) ) {
+		if (!is_sip_reachable) {
+			linphone_proxy_config_stop_refreshing(cfg);
+			linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
+		}else{
+			cfg->commit=TRUE;
+		}
+	}
+}
 static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, time_t curtime){
 	// second get the list of available proxies
-	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	const MSList *elem = NULL;
 
 	if (lc->sip_network_reachable==is_sip_reachable) return; // no change, ignore.
 	lc->network_reachable_to_be_notified=TRUE;
 	ms_message("SIP network reachability state is now [%s]",is_sip_reachable?"UP":"DOWN");
-	for(;elem!=NULL;elem=elem->next){
+	for(elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		if (linphone_proxy_config_register_enabled(cfg) ) {
-			if (!is_sip_reachable) {
-				linphone_proxy_config_stop_refreshing(cfg);
-				linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
-			}else{
-				cfg->commit=TRUE;
-			}
-		}
+		stop_refreshing_proxy_config(is_sip_reachable, cfg);
 	}
+	for(elem=lc->sip_conf.deleted_proxies;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *deleted_cfg=(LinphoneProxyConfig*)elem->data;
+		stop_refreshing_proxy_config(is_sip_reachable, deleted_cfg);
+	}
+
+
+
+
 	lc->netup_time=curtime;
 	lc->sip_network_reachable=is_sip_reachable;
 
