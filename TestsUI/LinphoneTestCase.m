@@ -71,6 +71,10 @@
 	return @"test.linphone.org";
 }
 
+- (NSString *)accountProxyRoute {
+	return [[self accountDomain] stringByAppendingString:@";transport=tcp"];
+}
+
 - (NSString *)getUUID {
 	return [[[NSUUID UUID] UUIDString] substringToIndex:8].lowercaseString;
 }
@@ -122,10 +126,9 @@
 
 		LinphoneProxyConfig *testProxy = linphone_proxy_config_new();
 		linphone_proxy_config_set_identity_address(testProxy, testAddr);
-		char *server_addr = ms_strdup_printf("%s;transport=tcp", linphone_address_get_domain(testAddr));
-		linphone_proxy_config_set_server_addr(testProxy, server_addr);
-		linphone_proxy_config_set_route(testProxy, server_addr);
-		ms_free(server_addr);
+		linphone_proxy_config_set_server_addr(testProxy, [self accountProxyRoute].UTF8String);
+		linphone_proxy_config_set_route(testProxy, [self accountProxyRoute].UTF8String);
+		linphone_proxy_config_set_ref_key(testProxy, "push_notification");
 
 		LinphoneAuthInfo *testAuth = linphone_auth_info_new(linphone_address_get_username(testAddr), NULL,
 															linphone_address_get_username(testAddr), NULL, NULL,
