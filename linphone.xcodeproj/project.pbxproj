@@ -67,7 +67,6 @@
 		63058AD31B4E922500EFAE36 /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACC1B4E922500EFAE36 /* messages.db */; };
 		63058AD41B4E922500EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
 		63058AD51B4E922500EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
-		63058AD61B4E92D400EFAE36 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
 		63058ADA1B4E937300EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
 		63058ADB1B4E937300EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
 		63058ADC1B4E937300EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
@@ -518,9 +517,6 @@
 		6316A3DC1C5F64350073BFA4 /* waiting_time@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6316A22B1C5F64350073BFA4 /* waiting_time@2x.png */; };
 		63177FBF1C86E68C00ADE58D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
 		6334DDFA1BBAC97C00631900 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
-		6334DDFB1BBAC99400631900 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
-		6334DDFC1BBAC99B00631900 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
-		6334DDFD1BBAC9A200631900 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */; };
 		633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756381B67BAF400E21BAD /* SideMenuTableView.m */; };
 		633756451B67D2B200E21BAD /* SideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756431B67D2B100E21BAD /* SideMenuView.m */; };
@@ -624,8 +620,6 @@
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D8038D1C96E74100336B6F /* vcards in Resources */ = {isa = PBXBuildFile; fileRef = 635598811C96AFFA006ED99A /* vcards */; };
-		63D8038E1C96E75700336B6F /* libbctoolbox-tester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63F024B81C88792D00EACF1C /* libbctoolbox-tester.a */; };
-		63D8038F1C96E77400336B6F /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63DC36AB1C89E83100636979 /* libbelcard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36A91C89E83100636979 /* libbelcard.a */; };
 		63DC36AC1C89E83100636979 /* libbelr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36AA1C89E83100636979 /* libbelr.a */; };
 		63DC36B11C89E84000636979 /* libbelcard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36A91C89E83100636979 /* libbelcard.a */; };
@@ -641,13 +635,6 @@
 		63E27A5B1C51392A00D332AE /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A471C50EA7A00D332AE /* libmatroska2.a */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63E802DB1C625AEF000D5509 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
-		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
-		63EEE4041BBA9B010087D3AF /* libbellesip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E516D9255800EF1BEC /* libbellesip.a */; };
-		63EEE4051BBA9B010087D3AF /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
-		63EEE4061BBA9B010087D3AF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
-		63EEE4071BBA9B010087D3AF /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
-		63EEE4081BBA9B010087D3AF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
 		63F024B91C88792D00EACF1C /* libbctoolbox-tester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63F024B81C88792D00EACF1C /* libbctoolbox-tester.a */; };
 		63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */; };
 		63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */; };
@@ -1851,9 +1838,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63D8038F1C96E77400336B6F /* libcunit.a in Frameworks */,
-				63D8038E1C96E75700336B6F /* libbctoolbox-tester.a in Frameworks */,
-				63058AD61B4E92D400EFAE36 /* liblinphonetester.a in Frameworks */,
 				F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */,
 				F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */,
 			);
@@ -1919,16 +1903,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6334DDFD1BBAC9A200631900 /* libiconv.dylib in Frameworks */,
-				6334DDFC1BBAC99B00631900 /* libxml2.dylib in Frameworks */,
-				6334DDFB1BBAC99400631900 /* libsqlite3.dylib in Frameworks */,
-				63EEE4041BBA9B010087D3AF /* libbellesip.a in Frameworks */,
-				63EEE4051BBA9B010087D3AF /* liblinphone.a in Frameworks */,
-				63EEE4061BBA9B010087D3AF /* libmediastreamer_base.a in Frameworks */,
-				63EEE4071BBA9B010087D3AF /* libmediastreamer_voip.a in Frameworks */,
-				63EEE4081BBA9B010087D3AF /* libortp.a in Frameworks */,
-				63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */,
-				63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */,
 				63058A4F1B4E835200EFAE36 /* libKIF.a in Frameworks */,
 				F0FF66AC1ACAEF4F008A4486 /* IOKit.framework in Frameworks */,
 			);
@@ -3093,7 +3067,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0730;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = Z2V957B3D6;

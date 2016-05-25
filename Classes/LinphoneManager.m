@@ -2358,4 +2358,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	return NO;
 }
 
+// ugly hack to export symbol from liblinphone so that they are available for the linphoneTests target
+// linphoneTests target do not link with liblinphone but instead dynamically link with ourself which is
+// statically linked with liblinphone, so we must have exported required symbols from the library to
+// have them available in linphoneTests
+// DO NOT INVOKE THIS METHOD
+- (void)exportSymbolsForUITests {
+	linphone_address_set_header(NULL, NULL, NULL);
+}
 @end

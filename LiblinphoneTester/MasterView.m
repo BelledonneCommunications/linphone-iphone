@@ -55,6 +55,7 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 		(DetailTableView *)[[self.splitViewController.viewControllers lastObject] topViewController];
 
 	[self setupLogging];
+	liblinphone_tester_keep_accounts(TRUE);
 
 	bundlePath = [[NSBundle mainBundle] bundlePath];
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -76,6 +77,10 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 		const char *suite = bc_tester_suite_name(i);
 		[_objects addObject:[NSString stringWithUTF8String:suite]];
 	}
+}
+
+- (void)dealloc {
+	liblinphone_tester_clear_accounts();
 }
 
 - (void)displayLogs {
