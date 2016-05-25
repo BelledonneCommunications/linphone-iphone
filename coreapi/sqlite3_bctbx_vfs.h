@@ -1,5 +1,5 @@
 /*
-sqlite3_bctbx_vfs.h
+sqlite3_bctbx_vfs_t.h
 Copyright (C) 2016 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
@@ -37,10 +37,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 /**
- * sqlite3_bctbx_file VFS file structure.
+ * sqlite3_bctbx_file_t VFS file structure.
  */
-typedef struct sqlite3_bctbx_file sqlite3_bctbx_file;
-struct sqlite3_bctbx_file {
+typedef struct sqlite3_bctbx_file_t sqlite3_bctbx_file_t;
+struct sqlite3_bctbx_file_t {
 	sqlite3_file base;              /* Base class. Must be first. */
 	bctbx_vfs_file_t* pbctbx_file;
 };
@@ -51,9 +51,9 @@ struct sqlite3_bctbx_file {
  * Very simple VFS structure based on sqlite3_vfs. 
  * Only the Open function is implemented, 
  */
-typedef struct sqlite3_bctbx_vfs sqlite3_bctbx_vfs;
-struct sqlite3_bctbx_vfs {
-	sqlite3_bctbx_vfs *pNext;      /* Next registered VFS */
+typedef struct sqlite3_bctbx_vfs_t sqlite3_bctbx_vfs_t;
+struct sqlite3_bctbx_vfs_t {
+	sqlite3_bctbx_vfs_t *pNext;      /* Next registered VFS */
 	const char *vfsName;       /* Virtual file system name */
 	int (*xOpen)(sqlite3_vfs* pVfs, const char *fName, sqlite3_file *pFile,int flags, int *pOutFlags);
 	
@@ -90,7 +90,7 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void);
 /**
  * Registers sqlite3bctbx_vfs to SQLite VFS. If makeDefault is 1,
  * the VFS will be used by default.
- * Methods not implemented by sqlite3_bctbx_vfs are initialized to the one 
+ * Methods not implemented by sqlite3_bctbx_vfs_t are initialized to the one 
  * used by the unix-none VFS where all locking file operations are no-ops. 
  * @param  makeDefault  set to 1 to make the newly registered VFS be the default one, set to 0 instead.
  */

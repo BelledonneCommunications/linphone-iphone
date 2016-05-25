@@ -402,7 +402,6 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	bctbx_vfs_file_t* pFile = NULL;
 
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
-	bctbx_vfs_set_default(NULL);
 	lpconfig->g_bctbx_vfs = bctbx_vfs_get_default();
 	
 	lpconfig->refcnt=1;
