@@ -53,6 +53,7 @@ const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 const char *userhostsfile = "tester_hosts";
+bool_t liblinphonetester_ipv6 = FALSE;
 
 const char *liblinphone_tester_mire_id="Mire: Mire (synthetic moving picture)";
 
@@ -148,7 +149,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 		linphone_core_set_ringback(lc, ringbackpath);
 		linphone_core_set_root_ca(lc,rootcapath);
 	}
-
+	
+	linphone_core_enable_ipv6(lc, liblinphonetester_ipv6);
+	
 	sal_enable_test_features(lc->sal,TRUE);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 	linphone_core_set_static_picture(lc,nowebcampath);

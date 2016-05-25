@@ -106,7 +106,7 @@ extern const char* test_username;
 extern const char* test_password;
 extern const char* test_route;
 extern const char* userhostsfile;
-
+extern bool_t liblinphonetester_ipv6;
 
 typedef struct _stats {
 	int number_of_LinphoneRegistrationNone;

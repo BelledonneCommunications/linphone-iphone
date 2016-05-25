@@ -229,6 +229,8 @@ int main (int argc, char *argv[])
 			liblinphone_tester_keep_recorded_files(TRUE);
 		} else if (strcmp(argv[i],"--disable-leak-detector")==0){
 			liblinphone_tester_disable_leak_detector(TRUE);
+		} else if (strcmp(argv[i],"--6")==0){
+			liblinphonetester_ipv6=TRUE;
 		} else {
 			int bret = bc_tester_parse_args(argc, argv, i);
 			if (bret>0) {
