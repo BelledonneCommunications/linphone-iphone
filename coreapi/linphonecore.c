@@ -940,7 +940,10 @@ static void sip_config_read(LinphoneCore *lc)
 	const char *tmpstr;
 	LCSipTransports tr;
 	int i,tmp;
-	int ipv6;
+	int ipv6_default = FALSE;
+#if TARGET_OS_IPHONE
+	ipv6_default=TRUE;
+#endif
 
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
 		sal_use_session_timers(lc->sal,200);
@@ -949,11 +952,16 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_use_no_initial_route(lc->sal,lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 
-	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
-	if (ipv6==-1){
-		ipv6=0;
+#if TARGET_OS_IPHONE
+	if (!lp_config_get_int(lc->config,"sip","ipv6_migration_done",FALSE) && lp_config_has_entry(lc->config,"sip","use_ipv6")) {
+		lp_config_clean_entry(lc->config,"sip","use_ipv6");
+		lp_config_set_int(lc->config, "sip", "ipv6_migration_done", TRUE);
+		ms_message("IPV6 settings migration done.");
 	}
-	linphone_core_enable_ipv6(lc,ipv6);
+#endif
+	
+	lc->sip_conf.ipv6_enabled=lp_config_get_int(lc->config,"sip","use_ipv6",ipv6_default);
+	
 	memset(&tr,0,sizeof(tr));
 
 	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
@@ -2543,9 +2551,6 @@ bool_t linphone_core_ipv6_enabled(LinphoneCore *lc){
  *
  * @ingroup network_parameters
  *
- * @note IPv6 support is exclusive with IPv4 in liblinphone:
- * when IPv6 is turned on, IPv4 calls won't be possible anymore.
- * By default IPv6 support is off.
 **/
 void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 	if (lc->sip_conf.ipv6_enabled!=val){
@@ -6392,7 +6397,6 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
 	lp_config_set_int(lc->config,"sip","in_call_timeout",config->in_call_timeout);
 	lp_config_set_int(lc->config,"sip","delayed_timeout",config->delayed_timeout);
-	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	lp_config_set_int(lc->config,"sip","register_only_when_upnp_is_ok",config->register_only_when_upnp_is_ok);
 

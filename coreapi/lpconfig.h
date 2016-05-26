@@ -201,6 +201,26 @@ LINPHONE_PUBLIC int lp_config_has_section(const LpConfig *lpconfig, const char *
 LINPHONE_PUBLIC void lp_config_clean_section(LpConfig *lpconfig, const char *section);
 
 /**
+ * Returns 1 if a given section  with a given key is present in the configuration.
+ * @param[in] lpconfig The LpConfig object
+ * @param[in] section
+ * @param[in] key
+ *
+ * @ingroup misc
+ **/
+LINPHONE_PUBLIC int lp_config_has_entry(const LpConfig *lpconfig, const char *section, const char *key);
+
+/**
+ * Removes entries for key,value in a section.
+ * @param[in] lpconfig The LpConfig object
+ * @param[in] section
+ * @param[in] key
+ *
+ * @ingroup misc
+ **/
+LINPHONE_PUBLIC void lp_config_clean_entry(LpConfig *lpconfig, const char *section, const char *key);
+	
+/**
  * Returns the list of sections' names in the LpConfig.
  * @param[in] lpconfig The LpConfig object
  * @return a null terminated static array of strings

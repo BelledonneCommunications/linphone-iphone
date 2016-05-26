@@ -1056,3 +1056,24 @@ char* lp_config_dump(const LpConfig *lpconfig) {
 
 	return buffer;
 }
+
+void lp_config_clean_entry(LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	LpItem *item;
+	sec=lp_config_find_section(lpconfig,section);
+	if (sec!=NULL){
+		item=lp_section_find_item(sec,key);
+		if (item!=NULL)
+			lp_section_remove_item(sec,item);
+	}
+	return ;
+}
+int lp_config_has_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	sec=lp_config_find_section(lpconfig,section);
+	if (sec!=NULL){
+		return lp_section_find_item(sec,key) != NULL;
+	} else
+		return FALSE;
+	
+}
