@@ -584,10 +584,10 @@
 
 	//	2. side menu - fixed size, always starting below status bar (hack: except in fullscreen)
 	CGRect sideMenuFrame = viewFrame;
-	sideMenuFrame.origin.y = origin + (currentViewDescription.fullscreen ? 0 : statusBarFrame.size.height);
+	sideMenuFrame.origin.y = origin - (currentViewDescription.fullscreen ? statusBarFrame.size.height : 0);
 	sideMenuFrame.size.height -= sideMenuFrame.origin.y;
 	if (!currentViewDescription.sideMenuEnabled) {
-		// really hide; -width won't be enough since some animations may use this...
+		// hack bis: really hide; -width won't be enough since some animations may use this...
 		sideMenuFrame.origin.x = -3 * sideMenuFrame.size.width;
 	}
 

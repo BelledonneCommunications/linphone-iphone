@@ -277,21 +277,21 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 - (BOOL)saveContact:(Contact *)contact {
 	CFErrorRef error = NULL;
 	if (ABRecordGetRecordID(contact.person) == kABRecordInvalidID) {
-		ABAddressBookAddRecord(addressBook, contact.person, (CFErrorRef *)&error);
-		if (error != NULL) {
-			LOGE(@"Add contact %p: Fail(%@)", contact.person, [(__bridge NSError *)error localizedDescription]);
-		} else {
+		if (ABAddressBookAddRecord(addressBook, contact.person, (CFErrorRef *)&error)) {
 			LOGI(@"Add contact %p: Success!", contact.person);
+		} else {
+			LOGE(@"Add contact %p: Fail(%@)", contact.person, [(__bridge NSError *)error localizedDescription]);
+			return FALSE;
 		}
 	}
 
 	// Save address book
 	error = NULL;
-	ABAddressBookSave(addressBook, &error);
-	if (error != NULL) {
-		LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
-	} else {
+	if (ABAddressBookSave(addressBook, &error)) {
 		LOGI(@"Save AddressBook: Success!");
+	} else {
+		LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
+		return FALSE;
 	}
 	[self reload];
 
