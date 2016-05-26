@@ -215,6 +215,7 @@ static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
 #endif
 }
 
+/************************ END OF PLACE HOLDER FUNCTIONS ***********************/
 
 /**
  * Opens the file fName and populates the structure pointed by p
