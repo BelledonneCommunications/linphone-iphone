@@ -60,7 +60,9 @@ extern test_suite_t video_test_suite;
 extern test_suite_t multicast_call_test_suite;
 extern test_suite_t multi_call_test_suite;
 extern test_suite_t proxy_config_test_suite;
+#ifdef VCARD_ENABLED
 extern test_suite_t vcard_test_suite;
+#endif
 extern test_suite_t audio_bypass_suite;
 #if HAVE_SIPP
 extern test_suite_t complex_sip_call_test_suite;
@@ -193,7 +195,7 @@ typedef struct _stats {
 	int number_of_LinphonePresenceActivityWorking;
 	int number_of_LinphonePresenceActivityWorship;
 	const LinphonePresenceModel *last_received_presence;
-	
+
 	int number_of_LinphonePresenceBasicStatusOpen;
 	int number_of_LinphonePresenceBasicStatusClosed;
 

@@ -16,6 +16,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef VCARD_ENABLED
+
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -25,17 +27,12 @@
 
 #define CARDDAV_SERVER "http://dav.linphone.org/card.php/addressbooks/tester/default"
 
-#ifdef VCARD_ENABLED
-static char *create_filepath(const char *dir, const char *filename, const char *ext) {
-	return ms_strdup_printf("%s/%s.%s", dir, filename, ext);
-}
-
 static void linphone_vcard_import_export_friends_test(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
 	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
 	const MSList *friends = linphone_friend_list_get_friends(lfl);
 	char *import_filepath = bc_tester_res("vcards/vcards.vcf");
-	char *export_filepath = create_filepath(bc_tester_get_writable_dir_prefix(), "export_vcards", "vcf");
+	char *export_filepath = bc_tester_file("export_vcards.vcf");
 	int count = 0;
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 
@@ -212,7 +209,7 @@ static void friends_migration(void) {
 	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
 	const MSList *friends = linphone_friend_list_get_friends(lfl);
 	MSList *friends_from_db = NULL;
-	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
+	char *friends_db = bc_tester_file("friends.db");
 	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
 	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 0, int, "%i");
 
@@ -261,7 +258,7 @@ static void friends_sqlite_storage(void) {
 	const MSList *friends = NULL;
 	MSList *friends_from_db = NULL;
 	MSList *friends_lists_from_db = NULL;
-	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
+	char *friends_db = bc_tester_file("friends.db");
 	LinphoneFriendListStats *stats = (LinphoneFriendListStats *)ms_new0(LinphoneFriendListStats, 1);
 
 	v_table->friend_list_created = friend_list_created_cb;
@@ -414,7 +411,7 @@ static void carddav_sync_2(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
 	LinphoneFriend *lf = linphone_core_create_friend_with_address(manager->lc, "\"Sylvain\" <sip:sylvain@sip.linphone.org>");
-	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
+	char *friends_db = bc_tester_file("friends.db");
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
 	LinphoneCardDavContext *c = NULL;
 
@@ -456,7 +453,7 @@ static void carddav_sync_3(void) {
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
 	LinphoneVcard *lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nFN:Sylvain Berfini\r\nIMPP;TYPE=work:sip:sylvain@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
-	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
+	char *friends_db = bc_tester_file("friends.db");
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
 	LinphoneCardDavContext *c = NULL;
 
@@ -722,7 +719,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	LinphoneVcard *lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf2 = linphone_friend_new_from_vcard(lvc2);
 	MSList *friends = NULL, *friends_iterator = NULL;
-	
+
 	linphone_friend_list_cbs_set_user_data(cbs, stats);
 	linphone_friend_list_cbs_set_contact_created(cbs, carddav_contact_created);
 	linphone_friend_list_cbs_set_contact_deleted(cbs, carddav_contact_deleted);
@@ -730,7 +727,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	linphone_friend_list_cbs_set_sync_status_changed(cbs, carddav_sync_status_changed);
 	linphone_core_add_friend_list(manager->lc, lfl);
 	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
-	
+
 	linphone_friend_list_add_friend(lfl, lf1);
 	linphone_friend_unref(lf1);
 	linphone_friend_list_synchronize_friends_from_server(lfl);
@@ -738,7 +735,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	linphone_friend_unref(lf2);
 	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 15000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
-	
+
 	stats->sync_done_count = 0;
 	friends = ms_list_copy(lfl->friends);
 	friends_iterator = friends;
@@ -759,13 +756,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	linphone_core_manager_destroy(manager);
 }
 
-#else
-static void dummy_test(void) {
-}
-#endif
-
 test_t vcard_tests[] = {
-#ifdef VCARD_ENABLED
 	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
 	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
 	{ "vCard creation for existing friends", linphone_vcard_update_existing_friends_test },
@@ -783,9 +774,6 @@ test_t vcard_tests[] = {
 	{ "CardDAV integration", carddav_integration },
 	{ "CardDAV multiple synchronizations", carddav_multiple_sync },
 	{ "CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync },
-#else
-	{ "Dummy test", dummy_test }
-#endif
 };
 
 test_suite_t vcard_test_suite = {
@@ -793,3 +781,5 @@ test_suite_t vcard_test_suite = {
 	liblinphone_tester_before_each, liblinphone_tester_after_each,
 	sizeof(vcard_tests) / sizeof(vcard_tests[0]), vcard_tests
 };
+
+#endif
