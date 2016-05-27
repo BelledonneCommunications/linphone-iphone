@@ -39,7 +39,7 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 	LinphoneCoreManager *mgr;
 	const char * ua = linphone_event_get_custom_header(lev, "User-Agent");
 	if (!BC_ASSERT_PTR_NOT_NULL(content)) return;
-	if (!linphone_content_is_multipart(content) && (!ua ||  !strstr(ua, "flexisip"))) { /*disable check for full presence serveur support*/
+	if (!linphone_content_is_multipart(content) && (!ua ||  !strstr(ua, "flexisip"))) { /*disable check for full presence server support*/
 		/*hack to disable content checking for list notify */
 		BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
 	}
@@ -358,6 +358,35 @@ static void publish_without_expires(void){
 	publish_test_with_args(TRUE,-1);
 }
 
+static void out_of_dialog_notify(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneContent* content;
+	LinphoneEvent *lev;
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_buffer(content,notify_content,strlen(notify_content));
+
+	lev = linphone_core_create_notify(marie->lc,pauline->identity,"dodo");
+	linphone_event_ref(lev);
+	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
+	linphone_event_notify(lev,content);
+	
+
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,3000));
+
+	linphone_event_unref(lev);
+
+	linphone_content_unref(content);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t event_tests[] = {
 	TEST_ONE_TAG("Subscribe declined", subscribe_test_declined, "presence"),
 	TEST_ONE_TAG("Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber, "presence"),
@@ -367,7 +396,8 @@ test_t event_tests[] = {
 	TEST_ONE_TAG("Subscribe terminated by notifier", subscribe_test_terminated_by_notifier, "LeaksMemory"),
 	TEST_ONE_TAG("Publish", publish_test, "presence"),
 	TEST_ONE_TAG("Publish without expires", publish_without_expires, "presence"),
-	TEST_ONE_TAG("Publish without automatic refresh",publish_no_auto_test, "presence")
+	TEST_ONE_TAG("Publish without automatic refresh",publish_no_auto_test, "presence"),
+	TEST_ONE_TAG("Out of dialog notify", out_of_dialog_notify, "presence")
 };
 
 test_suite_t event_test_suite = {"Event", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

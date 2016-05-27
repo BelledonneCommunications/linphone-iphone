@@ -4387,6 +4387,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_multicast_enabled(const LinphoneCore 
  * @param lc the LinphoneCore
  * @param params the parameters used for the network simulation.
  * @return 0 if successful, -1 otherwise.
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC int linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params);
 
@@ -4395,6 +4396,7 @@ LINPHONE_PUBLIC int linphone_core_set_network_simulator_params(LinphoneCore *lc,
  * Get the previously set network simulation parameters.
  * @see linphone_core_set_network_simulator_params
  * @return a OrtpNetworkSimulatorParams structure.
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC const OrtpNetworkSimulatorParams *linphone_core_get_network_simulator_params(const LinphoneCore *lc);
 
@@ -4402,6 +4404,7 @@ LINPHONE_PUBLIC const OrtpNetworkSimulatorParams *linphone_core_get_network_simu
  * Set the video preset to be used for video calls.
  * @param[in] lc LinphoneCore object
  * @param[in] preset The name of the video preset to be used (can be NULL to use the default video preset).
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC void linphone_core_set_video_preset(LinphoneCore *lc, const char *preset);
 
@@ -4409,6 +4412,7 @@ LINPHONE_PUBLIC void linphone_core_set_video_preset(LinphoneCore *lc, const char
  * Get the video preset used for video calls.
  * @param[in] lc LinphoneCore object
  * @return The name of the video preset used for video calls (can be NULL if the default video preset is used).
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC const char * linphone_core_get_video_preset(const LinphoneCore *lc);
 
@@ -4416,6 +4420,7 @@ LINPHONE_PUBLIC const char * linphone_core_get_video_preset(const LinphoneCore *
  * Gets if realtime text is enabled or not
  * @param[in] lc LinphoneCore object
  * @return true if realtime text is enabled, false otherwise
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
 
@@ -4423,6 +4428,7 @@ LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
  * Set http proxy address to be used for signaling during next channel connection. Use #linphone_core_set_network_reachable FASLE/TRUE to force channel restart.
  * @param[in] lc LinphoneCore object
  * @param[in] hostname of IP adress of the http proxy (can be NULL to disable).
+ * @ingroup network_parameters
  */
 LINPHONE_PUBLIC	void linphone_core_set_http_proxy_host(LinphoneCore *lc, const char *host) ;
 
@@ -4430,6 +4436,7 @@ LINPHONE_PUBLIC	void linphone_core_set_http_proxy_host(LinphoneCore *lc, const c
  * Set http proxy port to be used for signaling.
  * @param[in] lc LinphoneCore object
  * @param[in] port of the http proxy.
+ * @ingroup network_parameters
  */
 LINPHONE_PUBLIC void linphone_core_set_http_proxy_port(LinphoneCore *lc, int port) ;
 
@@ -4437,6 +4444,7 @@ LINPHONE_PUBLIC void linphone_core_set_http_proxy_port(LinphoneCore *lc, int por
  * Get http proxy address to be used for signaling.
  * @param[in] lc LinphoneCore object
  * @return hostname of IP adress of the http proxy (can be NULL to disable).
+ * @ingroup network_parameters
  */
 LINPHONE_PUBLIC	const char *linphone_core_get_http_proxy_host(const LinphoneCore *lc);
 
@@ -4444,6 +4452,7 @@ LINPHONE_PUBLIC	const char *linphone_core_get_http_proxy_host(const LinphoneCore
  * Get http proxy port to be used for signaling.
  * @param[in] lc LinphoneCore object
  * @return port of the http proxy.
+ * @ingroup network_parameters
  */
 LINPHONE_PUBLIC	int linphone_core_get_http_proxy_port(const LinphoneCore *lc);
 
