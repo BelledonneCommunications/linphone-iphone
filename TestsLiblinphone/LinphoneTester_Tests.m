@@ -37,6 +37,9 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 + (void)initialize {
 	static char *bundle = NULL;
 	static char *documents = NULL;
+
+	[Log enableLogs:ORTP_WARNING];
+
 	bc_tester_init(tester_logs_handler, ORTP_MESSAGE, ORTP_ERROR, "rcfiles");
 	liblinphone_tester_add_suites();
 

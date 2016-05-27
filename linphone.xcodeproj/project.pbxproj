@@ -2129,8 +2129,8 @@
 				633E388219FFB0F400936D1C /* README.md */,
 				63AADBC31B6A0FF200AA16FD /* Resources */,
 				D398D3031594B0FB00FD553C /* Settings */,
-				63058A301B4E822F00EFAE36 /* TestsLiblinphone */,
-				630589DD1B4E810900EFAE36 /* TestsUI */,
+				63058A301B4E822F00EFAE36 /* TestsLiblinphoneTester */,
+				630589DD1B4E810900EFAE36 /* TestsLinphone */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2234,7 +2234,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		630589DD1B4E810900EFAE36 /* TestsUI */ = {
+		630589DD1B4E810900EFAE36 /* TestsLinphone */ = {
 			isa = PBXGroup;
 			children = (
 				630589F21B4E816900EFAE36 /* KIF.xcodeproj */,
@@ -2252,6 +2252,7 @@
 				63510D971CB2752600FB5E90 /* CallTester.h */,
 				63510D981CB2752600FB5E90 /* CallTester.m */,
 			);
+			name = TestsLinphone;
 			path = TestsUI;
 			sourceTree = "<group>";
 		};
@@ -2305,7 +2306,7 @@
 			path = LiblinphoneTester;
 			sourceTree = "<group>";
 		};
-		63058A301B4E822F00EFAE36 /* TestsLiblinphone */ = {
+		63058A301B4E822F00EFAE36 /* TestsLiblinphoneTester */ = {
 			isa = PBXGroup;
 			children = (
 				63058A311B4E822F00EFAE36 /* InfoPlist.strings */,
@@ -2317,6 +2318,7 @@
 				63058A391B4E822F00EFAE36 /* NSObject+DTRuntime.h */,
 				63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */,
 			);
+			name = TestsLiblinphoneTester;
 			path = TestsLiblinphone;
 			sourceTree = "<group>";
 		};
