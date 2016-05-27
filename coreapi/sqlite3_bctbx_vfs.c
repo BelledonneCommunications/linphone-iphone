@@ -303,8 +303,11 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
 
 void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pVfsToUse = sqlite3_bctbx_vfs_create();
+	#if _WIN32
+	sqlite3_vfs* pDefault = sqlite3_vfs_find("win32");
+	#else
 	sqlite3_vfs* pDefault = sqlite3_vfs_find("unix-none");
-
+	#endif
 	pVfsToUse->xAccess =  pDefault->xAccess;
 	pVfsToUse->xCurrentTime = pDefault->xCurrentTime;
 
