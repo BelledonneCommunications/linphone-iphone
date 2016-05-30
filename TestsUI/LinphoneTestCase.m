@@ -31,6 +31,10 @@
 - (void)beforeAll {
 	[super beforeAll];
 
+	// turn off logs since jenkins fails to parse output otherwise. If
+	// you want to debug a specific test, comment this temporary
+	[Log enableLogs:ORTP_WARNING];
+
 #if TARGET_IPHONE_SIMULATOR
 	while ([tester acknowledgeSystemAlert]) {
 		[tester waitForTimeInterval:.5f];

@@ -38,6 +38,8 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	static char *bundle = NULL;
 	static char *documents = NULL;
 
+	// turn off logs since jenkins fails to parse output otherwise. If
+	// you want to debug a specific test, comment this temporary
 	[Log enableLogs:ORTP_WARNING];
 
 	bc_tester_init(tester_logs_handler, ORTP_MESSAGE, ORTP_ERROR, "rcfiles");
