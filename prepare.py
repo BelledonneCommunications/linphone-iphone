@@ -22,14 +22,12 @@
 #
 ############################################################################
 
-import argparse
 import os
 import re
 import shutil
-import tempfile
 import sys
-from logging import error, warning, info, INFO, basicConfig
 from distutils.spawn import find_executable
+from logging import error, warning, info
 from subprocess import Popen, PIPE
 sys.dont_write_bytecode = True
 sys.path.insert(0, 'submodules/cmake-builder')
@@ -42,6 +40,7 @@ except Exception as e:
     exit(1)
 
 
+
 class IOSTarget(prepare.Target):
 
     def __init__(self, arch):
@@ -50,19 +49,7 @@ class IOSTarget(prepare.Target):
         self.config_file = 'configs/config-ios-' + arch + '.cmake'
         self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
         self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
-        self.additional_args = [
-            '-DCMAKE_INSTALL_MESSAGE=LAZY',
-            '-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' +
-            current_path + '/submodules'
-        ]
-
-    def clean(self):
-        if os.path.isdir('WORK'):
-            shutil.rmtree(
-                'WORK', ignore_errors=False, onerror=self.handle_remove_read_only)
-        if os.path.isdir('liblinphone-sdk'):
-            shutil.rmtree(
-                'liblinphone-sdk', ignore_errors=False, onerror=self.handle_remove_read_only)
+	self.external_source_path = os.path.join(current_path, 'submodules')
 
 
 class IOSi386Target(IOSTarget):
@@ -89,206 +76,176 @@ class IOSarm64Target(IOSTarget):
         IOSTarget.__init__(self, 'arm64')
 
 
-targets = {
+
+ios_targets = {
     'i386': IOSi386Target(),
     'x86_64': IOSx8664Target(),
     'armv7': IOSarmv7Target(),
     'arm64': IOSarm64Target()
 }
-archs_device = ['arm64', 'armv7']
-archs_simu = ['i386', 'x86_64']
-platforms = ['all', 'devices', 'simulators'] + archs_device + archs_simu
 
+class IOSPreparator(prepare.Preparator):
 
-class PlatformListAction(argparse.Action):
+    def __init__(self, targets=ios_targets):
+        prepare.Preparator.__init__(self, targets)
+        self.veryclean = True
+        self.show_gpl_disclaimer = True
+        self.argparser.add_argument('-ac', '--all-codecs', help="Enable all codecs, including the non-free ones. Final application must comply with their respective license (see README.md).", action='store_true')
 
-    def __call__(self, parser, namespace, values, option_string=None):
-        if values:
-            for value in values:
-                if value not in platforms:
-                    message = ("invalid platform: {0!r} (choose from {1})".format(
-                        value, ', '.join([repr(platform) for platform in platforms])))
-                    raise argparse.ArgumentError(self, message)
-            setattr(namespace, self.dest, values)
+    def parse_args(self):
+        prepare.Preparator.parse_args(self)
 
+        self.additional_args += ["-DLINPHONE_IOS_DEPLOYMENT_TARGET=" + self.extract_deployment_target()]
+        self.additional_args += ["-DLINPHONE_BUILDER_DUMMY_LIBRARIES=" + ' '.join(self.extract_libs_list())]
+        if self.args.all_codecs:
+            self.additional_args += ["-DENABLE_GPL_THIRD_PARTIES=YES"]
+            self.additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
+            self.additional_args += ["-DENABLE_AMRNB=YES"]
+            self.additional_args += ["-DENABLE_AMRWB=YES"]
+            self.additional_args += ["-DENABLE_G729=YES"]
+            self.additional_args += ["-DENABLE_GSM=YES"]
+            self.additional_args += ["-DENABLE_ILBC=YES"]
+            self.additional_args += ["-DENABLE_ISAC=YES"]
+            self.additional_args += ["-DENABLE_OPUS=YES"]
+            self.additional_args += ["-DENABLE_SILK=YES"]
+            self.additional_args += ["-DENABLE_SPEEX=YES"]
+            self.additional_args += ["-DENABLE_FFMPEG=YES"]
+            self.additional_args += ["-DENABLE_H263=YES"]
+            self.additional_args += ["-DENABLE_H263P=YES"]
+            self.additional_args += ["-DENABLE_MPEG4=YES"]
+            self.additional_args += ["-DENABLE_OPENH264=YES"]
+            self.additional_args += ["-DENABLE_VPX=YES"]
+            self.additional_args += ["-DENABLE_X264=YES"]
 
-def gpl_disclaimer(platforms):
-    cmakecache = 'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0])
-    gpl_third_parties_enabled = "ENABLE_GPL_THIRD_PARTIES:BOOL=YES" in open(
-        cmakecache).read() or "ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read()
+    def clean(self):
+        prepare.Preparator.clean(self)
+        if os.path.isfile('Makefile'):
+            os.remove('Makefile')
+        if os.path.isdir('WORK') and not os.listdir('WORK'):
+            os.rmdir('WORK')
+        if os.path.isdir('liblinphone-sdk'):
+            l = os.listdir('liblinphone-sdk')
+            if len(l) == 1 and l[0] == 'apple-darwin':
+                shutil.rmtree('liblinphone-sdk', ignore_errors=False)
 
-    if gpl_third_parties_enabled:
-        warning("\n***************************************************************************"
-                "\n***************************************************************************"
-                "\n***** CAUTION, this liblinphone SDK is built using 3rd party GPL code *****"
-                "\n***** Even if you acquired a proprietary license from Belledonne      *****"
-                "\n***** Communications, this SDK is GPL and GPL only.                   *****"
-                "\n***** To disable 3rd party gpl code, please use:                      *****"
-                "\n***** $ ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO                    *****"
-                "\n***************************************************************************"
-                "\n***************************************************************************")
-    else:
-        warning("\n***************************************************************************"
-                "\n***************************************************************************"
-                "\n***** Linphone SDK without 3rd party GPL software                     *****"
-                "\n***** If you acquired a proprietary license from Belledonne           *****"
-                "\n***** Communications, this SDK can be used to create                  *****"
-                "\n***** a proprietary linphone-based application.                       *****"
-                "\n***************************************************************************"
-                "\n***************************************************************************")
+    def extract_from_xcode_project_with_regex(self, regex):
+        l = []
+        f = open('linphone.xcodeproj/project.pbxproj', 'r')
+        lines = f.readlines()
+        f.close()
+        for line in lines:
+            m = regex.search(line)
+            if m is not None:
+                l += [m.group(1)]
+        return list(set(l))
 
+    def extract_deployment_target(self):
+        regex = re.compile("IPHONEOS_DEPLOYMENT_TARGET = (.*);")
+        return self.extract_from_xcode_project_with_regex(regex)[0]
 
-def extract_from_xcode_project_with_regex(regex):
-    l = []
-    f = open('linphone.xcodeproj/project.pbxproj', 'r')
-    lines = f.readlines()
-    f.close()
-    for line in lines:
-        m = regex.search(line)
-        if m is not None:
-            l += [m.group(1)]
-    return list(set(l))
+    def extract_libs_list(self):
+        # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+        regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
+        return self.extract_from_xcode_project_with_regex(regex)
 
+    def detect_package_manager(self):
+        if find_executable("brew"):
+            return "brew"
+        elif find_executable("port"):
+            return "sudo port"
+        else:
+            error("No package manager found. Please README or install brew using:\n\truby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"")
+            return "brew"
 
-def extract_deployment_target():
-    regex = re.compile("IPHONEOS_DEPLOYMENT_TARGET = (.*);")
-    return extract_from_xcode_project_with_regex(regex)[0]
+    def check_tools(self):
+        reterr = 0
+        reterr |= prepare.Preparator.check_tools(self)
+        package_manager_info = {"brew-pkg-config": "pkg-config",
+                                "sudo port-pkg-config": "pkgconfig",
+                                "brew-binary-path": "/usr/local/bin/",
+                                "sudo port-binary-path": "/opt/local/bin/"
+                                }
 
+        for prog in ["autoconf", "automake", "doxygen", "java", "nasm", "cmake", "wget", "yasm", "optipng"]:
+            reterr |= not self.check_is_installed(prog, prog)
 
-def extract_libs_list():
-    # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-    regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
-    return extract_from_xcode_project_with_regex(regex)
+        reterr |= not self.check_is_installed("pkg-config", package_manager_info[self.detect_package_manager() + "-pkg-config"])
+        reterr |= not self.check_is_installed("ginstall", "coreutils")
+        reterr |= not self.check_is_installed("intltoolize", "intltool")
+        reterr |= not self.check_is_installed("convert", "imagemagick")
 
-
-missing_dependencies = {}
-
-
-def check_is_installed(binary, prog=None, warn=True):
-    if not find_executable(binary):
-        if warn:
-            missing_dependencies[binary] = prog
-            # error("Could not find {}. Please install {}.".format(binary, prog))
-        return False
-    return True
-
-
-def detect_package_manager():
-    if find_executable("brew"):
-        return "brew"
-    elif find_executable("port"):
-        return "sudo port"
-    else:
-        error(
-            "No package manager found. Please README or install brew using:\n\truby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"")
-        return "brew"
-
-
-def check_tools():
-    package_manager_info = {"brew-pkg-config": "pkg-config",
-                            "sudo port-pkg-config": "pkgconfig",
-                            "brew-binary-path": "/usr/local/bin/",
-                            "sudo port-binary-path": "/opt/local/bin/"
-                            }
-    reterr = 0
-
-    if " " in os.path.dirname(os.path.realpath(__file__)):
-        error("Invalid location: linphone-iphone path should not contain any spaces.")
-        reterr = 1
-
-    for prog in ["autoconf", "automake", "doxygen", "java", "nasm", "cmake", "wget", "yasm", "optipng"]:
-        reterr |= not check_is_installed(prog, prog)
-
-    reterr |= not check_is_installed("pkg-config", package_manager_info[detect_package_manager() + "-pkg-config"])
-    reterr |= not check_is_installed("ginstall", "coreutils")
-    reterr |= not check_is_installed("intltoolize", "intltool")
-    reterr |= not check_is_installed("convert", "imagemagick")
-
-    if find_executable("nasm"):
-        nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
-        if "fatal: unrecognised output format" in nasm_output:
-            missing_dependencies["nasm"] = "nasm"
-            reterr = 1
-
-    if check_is_installed("libtoolize", warn=False):
-        if not check_is_installed("glibtoolize", "libtool"):
-            glibtoolize_path = find_executable("glibtoolize")
-            reterr = 1
-            msg = "Please do a symbolic link from glibtoolize to libtoolize:\n\tln -s {} ${}"
-            error(msg.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
-
-    # list all missing packages to install
-    if missing_dependencies:
-        error("The following binaries are missing: {}. Please install them using:\n\t{} install {}".format(
-            " ".join(missing_dependencies.keys()),
-            detect_package_manager(),
-            " ".join(missing_dependencies.values())))
-
-    devnull = open(os.devnull, 'wb')
-    # just ensure that JDK is installed - if not, it will automatically display a popup to user
-    p = Popen("java -version".split(" "), stderr=devnull, stdout=devnull)
-    p.wait()
-    if p.returncode != 0:
-        error("Please install Java JDK (not just JRE).")
-        reterr = 1
-
-    # needed by x264
-    if not find_executable("gas-preprocessor.pl"):
-        error("""Could not find gas-preprocessor.pl, please install it:
-        wget --no-check-certificate https://raw.githubusercontent.com/FFmpeg/gas-preprocessor/master/gas-preprocessor.pl && \\
-        chmod +x gas-preprocessor.pl && \\
-        sudo mv gas-preprocessor.pl {}""".format(package_manager_info[detect_package_manager() + "-binary-path"]))
-        reterr = 1
-
-    if not os.path.isdir("submodules/linphone/mediastreamer2/src") or not os.path.isdir("submodules/linphone/oRTP/src"):
-        error("Missing some git submodules. Did you run:\n\tgit submodule update --init --recursive")
-        reterr = 1
-
-    p = Popen("xcrun --sdk iphoneos --show-sdk-path".split(" "), stdout=devnull, stderr=devnull)
-    p.wait()
-    if p.returncode != 0:
-        error("iOS SDK not found, please install Xcode from AppStore or equivalent.")
-        reterr = 1
-    else:
-        xcode_version = int(
-            Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
-        if xcode_version < 7:
-            if not find_executable("strings"):
-                sdk_strings_path = Popen("xcrun --find strings".split(" "), stdout=PIPE).stdout.read().split("\n")[0]
-                error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(sdk_strings_path, package_manager_info[detect_package_manager() + "-binary-path"]))
+        if find_executable("nasm"):
+            nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
+            if "fatal: unrecognised output format" in nasm_output:
+                missing_dependencies["nasm"] = "nasm"
                 reterr = 1
-    return reterr
 
+        if self.check_is_installed("libtoolize", warn=False):
+            if not self.check_is_installed("glibtoolize", "libtool"):
+                glibtoolize_path = find_executable("glibtoolize")
+                reterr = 1
+                msg = "Please do a symbolic link from glibtoolize to libtoolize:\n\tln -s {} ${}"
+                error(msg.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
 
-def install_git_hook():
-    git_hook_path = ".git{sep}hooks{sep}pre-commit".format(sep=os.sep)
-    if os.path.isdir(".git{sep}hooks".format(sep=os.sep)) and not os.path.isfile(git_hook_path):
-        info("Installing Git pre-commit hook")
-        shutil.copyfile(".git-pre-commit", git_hook_path)
-        os.chmod(git_hook_path, 0755)
+        devnull = open(os.devnull, 'wb')
+        # just ensure that JDK is installed - if not, it will automatically display a popup to user
+        p = Popen("java -version".split(" "), stderr=devnull, stdout=devnull)
+        p.wait()
+        if p.returncode != 0:
+            error("Please install Java JDK (not just JRE).")
+            reterr = 1
 
+        p = Popen("xcrun --sdk iphoneos --show-sdk-path".split(" "), stdout=devnull, stderr=devnull)
+        p.wait()
+        if p.returncode != 0:
+            error("iOS SDK not found, please install Xcode from AppStore or equivalent.")
+            reterr = 1
+        else:
+            xcode_version = int(
+                Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
+            if xcode_version < 7:
+                if not find_executable("strings"):
+                    sdk_strings_path = Popen("xcrun --find strings".split(" "), stdout=PIPE).stdout.read().split("\n")[0]
+                    error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(sdk_strings_path, package_manager_info[detect_package_manager() + "-binary-path"]))
+                    reterr = 1
+        return reterr
 
-def generate_makefile(platforms, generator):
-    arch_targets = ""
-    for arch in platforms:
-        arch_targets += """
+    def show_missing_dependencies(self):
+        if self.missing_dependencies:
+            error("The following binaries are missing: {}. Please install them using:\n\t{} install {}".format(
+                " ".join(self.missing_dependencies.keys()),
+                self.detect_package_manager(),
+                " ".join(self.missing_dependencies.values())))
+
+    def install_git_hook(self):
+        git_hook_path = ".git{sep}hooks{sep}pre-commit".format(sep=os.sep)
+        if os.path.isdir(".git{sep}hooks".format(sep=os.sep)) and not os.path.isfile(git_hook_path):
+            info("Installing Git pre-commit hook")
+            shutil.copyfile(".git-pre-commit", git_hook_path)
+            os.chmod(git_hook_path, 0755)
+
+    def generate_makefile(self, generator):
+        platforms = self.args.target
+        arch_targets = ""
+        for arch in platforms:
+            arch_targets += """
 {arch}: {arch}-build
 
 {arch}-build:
 \t{generator} WORK/ios-{arch}/cmake
 \t@echo "Done"
 """.format(arch=arch, generator=generator)
-    multiarch = ""
-    for arch in platforms[1:]:
-        multiarch += \
-            """\tif test -f "$${arch}_path"; then \\
+        multiarch = ""
+        for arch in platforms[1:]:
+            multiarch += \
+                """\tif test -f "$${arch}_path"; then \\
 \t\tall_paths=`echo $$all_paths $${arch}_path`; \\
 \t\tall_archs="$$all_archs,{arch}" ; \\
 \telse \\
 \t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
 \tfi; \\
 """.format(first_arch=platforms[0], arch=arch)
-    makefile = """
+        makefile = """
 archs={archs}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
@@ -369,195 +326,21 @@ help: help-prepare-options
            first_arch=platforms[0], options=' '.join(sys.argv),
            arch_targets=arch_targets,
            multiarch=multiarch, generator=generator)
-    f = open('Makefile', 'w')
-    f.write(makefile)
-    f.close()
-    gpl_disclaimer(platforms)
+        f = open('Makefile', 'w')
+        f.write(makefile)
+        f.close()
 
 
-def list_features_with_args(debug, additional_args):
-    tmpdir = tempfile.mkdtemp(prefix="linphone-iphone")
-    tmptarget = IOSarm64Target()
-    tmptarget.abs_cmake_dir = tmpdir
 
-    option_regex = re.compile("ENABLE_(.*):(.*)=(.*)")
-    options = {}
-    ended = True
-    build_type = 'Debug' if debug else 'Release'
-
-    for line in Popen(tmptarget.cmake_command(build_type, False, True, additional_args, verbose=False),
-                      cwd=tmpdir, shell=False, stdout=PIPE).stdout.readlines():
-        match = option_regex.match(line)
-        if match is not None:
-            (name, typeof, value) = match.groups()
-            options["ENABLE_{}".format(name)] = value
-            ended &= (value == 'ON')
-    shutil.rmtree(tmpdir)
-    return (options, ended)
-
-
-def list_features(debug, args):
-    additional_args = args
-    options = {}
-    info("Searching for available features...")
-    # We have to iterate multiple times to activate ALL options, so that options depending
-    # of others are also listed (cmake_dependent_option macro will not output options if
-    # prerequisite is not met)
-    while True:
-        (options, ended) = list_features_with_args(debug, additional_args)
-        if ended:
-            break
-        else:
-            additional_args = []
-            # Activate ALL available options
-            for k in options.keys():
-                additional_args.append("-D{}=ON".format(k))
-
-    # Now that we got the list of ALL available options, we must correct default values
-    # Step 1: all options are turned off by default
-    for x in options.keys():
-        options[x] = 'OFF'
-    # Step 2: except options enabled when running with default args
-    (options_tmp, ended) = list_features_with_args(debug, args)
-    final_dict = dict(options.items() + options_tmp.items())
-
-    notice_features = "Here are available features:"
-    for k, v in final_dict.items():
-        notice_features += "\n\t{}={}".format(k, v)
-    info(notice_features)
-    info("To enable some feature, please use -DENABLE_SOMEOPTION=ON (example: -DENABLE_OPUS=ON)")
-    info("Similarly, to disable some feature, please use -DENABLE_SOMEOPTION=OFF (example: -DENABLE_OPUS=OFF)")
-
-
-def main(argv=None):
-    basicConfig(format="%(levelname)s: %(message)s", level=INFO)
-
-    if argv is None:
-        argv = sys.argv
-    argparser = argparse.ArgumentParser(
-        description="Prepare build of Linphone and its dependencies.")
-    argparser.add_argument(
-        '-c', '-C', '--clean', help="Clean a previous build instead of preparing a build.", action='store_true')
-    argparser.add_argument(
-        '-d', '--debug', help="Prepare a debug build, eg. add debug symbols and use no optimizations.", action='store_true')
-    argparser.add_argument(
-        '-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
-    argparser.add_argument(
-        '--build-all-codecs', help="Build all codecs including non-free. Final application must comply with their respective license (see README.md).", action='store_true')
-    argparser.add_argument(
-        '-G', '--generator', help="CMake build system generator (default: Unix Makefiles, use cmake -h to get the complete list).", default='Unix Makefiles', dest='generator')
-    argparser.add_argument(
-        '-lf', '--list-features', help="List optional features and their default values.", action='store_true', dest='list_features')
-    argparser.add_argument(
-        '-t', '--tunnel', help="Enable Tunnel.", action='store_true')
-    argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=[
-                           'x86_64', 'devices'], help="The platform to build for (default is 'x86_64 devices'). Space separated architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
-    argparser.add_argument(
-        '-L', '--list-cmake-variables', help="(debug) List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
-
-    args, additional_args2 = argparser.parse_known_args()
-
-    additional_args = []
-
-    additional_args += ["-G", args.generator]
-
-    if check_tools() != 0:
+def main():
+    preparator = IOSPreparator()
+    preparator.parse_args()
+    if preparator.check_tools() != 0:
+        show_missing_dependencies()
         return 1
-
-    additional_args += ["-DLINPHONE_IOS_DEPLOYMENT_TARGET=" + extract_deployment_target()]
-    additional_args += ["-DLINPHONE_BUILDER_DUMMY_LIBRARIES=" + ' '.join(extract_libs_list())]
-    if args.build_all_codecs is True:
-        additional_args += ["-DENABLE_GPL_THIRD_PARTIES=YES"]
-        additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
-        additional_args += ["-DENABLE_AMRNB=YES"]
-        additional_args += ["-DENABLE_AMRWB=YES"]
-        additional_args += ["-DENABLE_G729=YES"]
-        additional_args += ["-DENABLE_GSM=YES"]
-        additional_args += ["-DENABLE_ILBC=YES"]
-        additional_args += ["-DENABLE_ISAC=YES"]
-        additional_args += ["-DENABLE_OPUS=YES"]
-        additional_args += ["-DENABLE_SILK=YES"]
-        additional_args += ["-DENABLE_SPEEX=YES"]
-        additional_args += ["-DENABLE_FFMPEG=YES"]
-        additional_args += ["-DENABLE_H263=YES"]
-        additional_args += ["-DENABLE_H263P=YES"]
-        additional_args += ["-DENABLE_MPEG4=YES"]
-        additional_args += ["-DENABLE_OPENH264=YES"]
-        additional_args += ["-DENABLE_VPX=YES"]
-        additional_args += ["-DENABLE_X264=YES"]
-
-    if args.tunnel:
-        if not os.path.isdir("submodules/tunnel"):
-            info("Tunnel wanted but not found yet, trying to clone it...")
-            p = Popen("git submodule add -f gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" "))
-            p.wait()
-            if p.returncode != 0:
-                error("Could not clone tunnel. Please see http://www.belledonne-communications.com/voiptunnel.html")
-                return 1
-        warning("Tunnel enabled, disabling GPL third parties.")
-        additional_args += ["-DENABLE_TUNNEL=ON", "-DENABLE_GPL_THIRD_PARTIES=OFF", "-DENABLE_FFMPEG=NO"]
-
-    # User's options are priority upon all automatic options
-    additional_args += additional_args2
-
-    if args.list_features:
-        list_features(args.debug, additional_args)
-        return 0
-
-    selected_platforms_dup = []
-    for platform in args.platform:
-        if platform == 'all':
-            selected_platforms_dup += archs_device + archs_simu
-        elif platform == 'devices':
-            selected_platforms_dup += archs_device
-        elif platform == 'simulators':
-            selected_platforms_dup += archs_simu
-        else:
-            selected_platforms_dup += [platform]
-    # unify platforms but keep provided order
-    selected_platforms = []
-    for x in selected_platforms_dup:
-        if x not in selected_platforms:
-            selected_platforms.append(x)
-
-    if os.path.isdir('WORK') and not args.clean and not args.force:
-        warning("Working directory WORK already exists. Please remove it (option -C or -c) before re-executing CMake "
-                "to avoid conflicts between executions, or force execution (option -f) if you are aware of consequences.")
-        if os.path.isfile('Makefile'):
-            Popen("make help-prepare-options".split(" "))
-        return 0
-
-    for platform in selected_platforms:
-        target = targets[platform]
-
-        if args.clean:
-            target.clean()
-        else:
-            retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
-            if retcode != 0:
-                error("Configuration failed, please check errors and rerun prepare.py.")
-                error("Aborting now.")
-                return retcode
-
-    if args.clean:
-        if os.path.isfile('Makefile'):
-            os.remove('Makefile')
-    elif selected_platforms:
-        install_git_hook()
-
-        # only generated makefile if we are using Ninja or Makefile
-        if args.generator == 'Ninja':
-            if not check_is_installed("ninja", "it"):
-                return 1
-            generate_makefile(selected_platforms, 'ninja -C')
-        elif args.generator == "Unix Makefiles":
-            generate_makefile(selected_platforms, '$(MAKE) -C')
-        elif args.generator == "Xcode":
-            info("You can now open Xcode project with: open WORK/cmake/Project.xcodeproj")
-        else:
-            info("Not generating meta-makefile for generator {}.".format(args.generator))
-
-    return 0
+    preparator.install_git_hook()
+    return preparator.run()
 
 if __name__ == "__main__":
     sys.exit(main())
+
