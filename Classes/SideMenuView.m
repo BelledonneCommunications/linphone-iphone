@@ -124,8 +124,25 @@
 	}
 
 	NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
-	[LinphoneManager.instance lpConfigSetString:url.absoluteString forKey:@"avatar"];
-	_avatarImage.image = [LinphoneUtils selfAvatar];
+
+	// taken from camera, must be saved to device first
+	if (!url) {
+		[LinphoneManager.instance.photoLibrary
+			writeImageToSavedPhotosAlbum:image.CGImage
+							 orientation:(ALAssetOrientation)[image imageOrientation]
+						 completionBlock:^(NSURL *assetURL, NSError *error) {
+						   if (error) {
+							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+						   } else {
+							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
+						   }
+						   [LinphoneManager.instance lpConfigSetString:assetURL.absoluteString forKey:@"avatar"];
+						   _avatarImage.image = [LinphoneUtils selfAvatar];
+						 }];
+	} else {
+		[LinphoneManager.instance lpConfigSetString:url.absoluteString forKey:@"avatar"];
+		_avatarImage.image = [LinphoneUtils selfAvatar];
+	}
 }
 
 @end
