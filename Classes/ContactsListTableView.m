@@ -252,7 +252,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
 					 withRowAnimation:UITableViewRowAnimationFade];
 		}
-		[[LinphoneManager.instance fastAddressBook] removeContact:contact];
+		[contact remove];
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];
 		[tableView endUpdates];
@@ -276,7 +276,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];
 	  }
-	  [[LinphoneManager.instance fastAddressBook] removeContact:contact];
+	  [contact remove];
 
 	  [NSNotificationCenter.defaultCenter addObserver:self
 											 selector:@selector(onAddressBookUpdate:)

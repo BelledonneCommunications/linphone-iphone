@@ -61,7 +61,7 @@
 
 - (void)removeContact {
 	inhibUpdate = TRUE;
-	[[LinphoneManager.instance fastAddressBook] removeContact:_contact];
+	[_contact remove];
 	inhibUpdate = FALSE;
 	[PhoneMainView.instance popCurrentView];
 }
@@ -73,7 +73,7 @@
 	}
 
 	// Add contact to book
-	[LinphoneManager.instance.fastAddressBook saveContact:_contact];
+	[_contact save];
 }
 
 - (void)selectContact:(Contact *)acontact andReload:(BOOL)reload {
@@ -312,7 +312,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
 
-	[FastAddressBook setAvatar:image forContact:_contact];
+	[_contact setAvatar:image];
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 }

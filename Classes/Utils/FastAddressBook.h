@@ -28,9 +28,6 @@
 @property(readonly, nonatomic) NSMutableDictionary *addressBookMap;
 
 - (void)reload;
-- (void)saveAddressBook;
-- (int)removeContact:(Contact *)contact;
-- (BOOL)saveContact:(Contact *)contact;
 
 + (BOOL)isAuthorized;
 
@@ -50,6 +47,5 @@
 + (NSString *)normalizeSipURI:(NSString *)address;			  // should be removed
 
 + (NSString *)localizedLabel:(NSString *)label;
-+ (void)setAvatar:(UIImage *)avatar forContact:(Contact *)contact;
 
 @end

@@ -25,6 +25,7 @@ Group changes to describe their impact on the project, as follows:
 
 ### Fixed
 - Fix invalid photo rotation when using Camera for avatars
+- Fix self avatar save when using camera
 - Parse user input as SIP address or phone number depending on default account settings: if "substitute + by country code" is set,
 consider inputs to be phone numbers, otherwise SIP addresses.
 - Automatically start call when answering from within notification in iOS9+
