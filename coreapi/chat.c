@@ -27,6 +27,7 @@
 #include "lpconfig.h"
 #include "belle-sip/belle-sip.h"
 #include "ortp/b64.h"
+#include "lime.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -264,8 +265,50 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
-bool_t linphone_chat_room_lime_enabled(LinphoneChatRoom *cr) {
-	return linphone_core_lime_enabled(cr->lc) != LinphoneLimeDisabled/*&& TODO: check that cr->peer_url has a verified token */;
+bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
+	if (cr) {
+		switch (linphone_core_lime_enabled(cr->lc)) {
+			case LinphoneLimeDisabled: return FALSE;
+			case LinphoneLimeMandatory: return TRUE;
+			case LinphoneLimePreferred: {
+				FILE *CACHEFD = NULL;
+				if (cr->lc->zrtp_secrets_cache != NULL) {
+					CACHEFD = fopen(cr->lc->zrtp_secrets_cache, "rb+");
+					if (CACHEFD) {
+						size_t cacheSize;
+						xmlDocPtr cacheXml;
+						char *cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+						if (!cacheString){
+							ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
+							return FALSE;
+						}
+						cacheString[cacheSize] = '\0';
+						cacheSize += 1;
+						fclose(CACHEFD);
+						cacheXml = xmlParseDoc((xmlChar*)cacheString);
+						ms_free(cacheString);
+						if (cacheXml) {
+							limeURIKeys_t associatedKeys;
+							/* retrieve keys associated to the peer URI */
+							associatedKeys.peerURI = (uint8_t *)malloc(strlen(cr->peer)+1);
+							strcpy((char *)(associatedKeys.peerURI), cr->peer);
+							associatedKeys.associatedZIDNumber  = 0;
+							associatedKeys.peerKeys = NULL;
+
+							if (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) != 0) {
+								lime_freeKeys(associatedKeys);
+								return FALSE;
+							}
+
+							xmlFreeDoc(cacheXml);
+							return TRUE;
+						}
+					}
+				}
+			}
+		}
+	}
+	return FALSE;
 }
 
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
@@ -380,7 +423,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 			const char *content_type;
 
-			if (linphone_chat_room_lime_enabled(cr)) {
+			if (linphone_chat_room_lime_available(cr)) {
 				/* ref the msg or it may be destroyed by callback if the encryption failed */
 				if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
 					/* it's a file transfer, content type shall be set to
@@ -877,7 +920,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 			msg->state = LinphoneChatMessageStateDelivered;
 			msg->is_read = FALSE;
 			msg->dir = LinphoneChatMessageIncoming;
-			
+
 			if (lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
 				msg->storage_id = linphone_chat_message_store(msg);
 			}
@@ -924,7 +967,7 @@ int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character)
 	if (!call || !call->textstream) {
 		return -1;
 	}
-	
+
 	if (character == new_line || character == crlf || character == lf) {
 		if (lc && lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
 			ms_debug("New line sent, forge a message with content %s", msg->message);
@@ -944,7 +987,7 @@ int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character)
 		ms_debug("Sent RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, msg->message);
 		ms_free(value);
 	}
-	
+
 	text_stream_putchar32(call->textstream, character);
 	return 0;
 }

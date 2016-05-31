@@ -591,7 +591,7 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
-bool_t linphone_chat_room_lime_enabled(LinphoneChatRoom *cr);
+bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 /**/
 
 struct _LinphoneProxyConfig
