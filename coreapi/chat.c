@@ -288,6 +288,7 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 						cacheXml = xmlParseDoc((xmlChar*)cacheString);
 						ms_free(cacheString);
 						if (cacheXml) {
+							bool_t res;
 							limeURIKeys_t associatedKeys;
 							/* retrieve keys associated to the peer URI */
 							associatedKeys.peerURI = (uint8_t *)malloc(strlen(cr->peer)+1);
@@ -295,13 +296,10 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 							associatedKeys.associatedZIDNumber  = 0;
 							associatedKeys.peerKeys = NULL;
 
-							if (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) != 0) {
-								lime_freeKeys(associatedKeys);
-								return FALSE;
-							}
-
+							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0 && associatedKeys.associatedZIDNumber != 0);
+							lime_freeKeys(associatedKeys);
 							xmlFreeDoc(cacheXml);
-							return TRUE;
+							return res;
 						}
 					}
 				}
