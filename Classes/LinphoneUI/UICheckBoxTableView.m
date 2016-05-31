@@ -149,7 +149,13 @@
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
 			if (!_toggleSelectionButton.selected) {
 				[_selectedItems addObject:indexPath];
+				[self.tableView selectRowAtIndexPath:indexPath
+											animated:NO
+									  scrollPosition:UITableViewScrollPositionNone];
+			} else {
+				[self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 			}
+
 			[self accessoryForCell:cell atPath:indexPath];
 		}
 	}
