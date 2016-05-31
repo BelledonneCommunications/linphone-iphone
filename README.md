@@ -34,7 +34,7 @@ Interested in helping translate Linphone? Contribute [on Transifex](https://www.
 
 ## Report bugs and submit patchs
 
-If you want to dig through Linphone code or report a bug, please read CONTRIBUTING.md first. You should also read this README entirely ;-).
+If you want to dig through Linphone code or report a bug, please read `CONTRIBUTING.md` first. You should also read this `README` entirely ;-).
 
 # Building the SDK
 
@@ -50,7 +50,7 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 This SDK can be generated in 2 flavors:
 
-* GPL third parties enabled means that liblinphone includes GPL third parties like FFmpeg or X264. If you choose this flavor, your final application **must comply with GPL in any case**. This is the default mode.
+* GPL third parties enabled means that liblinphone includes GPL third parties like FFmpeg. If you choose this flavor, your final application **must comply with GPL in any case**. This is the default mode.
 
 * NO GPL third parties means that Linphone will only use non GPL code except for `liblinphone`, `mediastreamer2`, `oRTP` and `belle-sip`. If you choose this flavor, your final application is **still subject to GPL except if you have a [commercial license for the mentioned libraries](http://www.belledonne-communications.com/products.html)**.
  To generate the liblinphone multi arch SDK without GPL third parties, invoke:
@@ -63,7 +63,7 @@ You can enable non-free codecs by using `-DENABLE_NON_FREE_CODECS=ON` and `-DENA
 
         ./prepare.py --list-features
 
-You can for instance enable X264 by using:
+You can for instance enable X264 using:
 
         ./prepare.py -DENABLE_NON_FREE_CODECS=ON -DENABLE_X264=ON [other options]
 

@@ -86,13 +86,14 @@ ios_targets = {
 
 ios_virtual_targets = {
     'devices': ['armv7', 'arm64'],
-    'simulators': ['i386', 'x86_64']
+    'simulators': ['i386', 'x86_64'],
+    'all': ['i386', 'x86_64', 'armv7', 'arm64']
 }
 
 class IOSPreparator(prepare.Preparator):
 
     def __init__(self, targets=ios_targets, virtual_targets=ios_virtual_targets):
-        prepare.Preparator.__init__(self, targets, virtual_targets=virtual_targets)
+        prepare.Preparator.__init__(self, targets, default_targets=['armv7', 'arm64', 'x86_64'], virtual_targets=virtual_targets)
         self.veryclean = True
         self.show_gpl_disclaimer = True
         self.argparser.add_argument('-ac', '--all-codecs', help="Enable all codecs, including the non-free ones. Final application must comply with their respective license (see README.md).", action='store_true')
@@ -103,24 +104,25 @@ class IOSPreparator(prepare.Preparator):
         self.additional_args += ["-DLINPHONE_IOS_DEPLOYMENT_TARGET=" + self.extract_deployment_target()]
         self.additional_args += ["-DLINPHONE_BUILDER_DUMMY_LIBRARIES=" + ' '.join(self.extract_libs_list())]
         if self.args.all_codecs:
-            self.additional_args += ["-DENABLE_GPL_THIRD_PARTIES=YES"]
-            self.additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
-            self.additional_args += ["-DENABLE_AMRNB=YES"]
-            self.additional_args += ["-DENABLE_AMRWB=YES"]
-            self.additional_args += ["-DENABLE_G729=YES"]
-            self.additional_args += ["-DENABLE_GSM=YES"]
-            self.additional_args += ["-DENABLE_ILBC=YES"]
-            self.additional_args += ["-DENABLE_ISAC=YES"]
-            self.additional_args += ["-DENABLE_OPUS=YES"]
-            self.additional_args += ["-DENABLE_SILK=YES"]
-            self.additional_args += ["-DENABLE_SPEEX=YES"]
-            self.additional_args += ["-DENABLE_FFMPEG=YES"]
-            self.additional_args += ["-DENABLE_H263=YES"]
-            self.additional_args += ["-DENABLE_H263P=YES"]
-            self.additional_args += ["-DENABLE_MPEG4=YES"]
-            self.additional_args += ["-DENABLE_OPENH264=YES"]
-            self.additional_args += ["-DENABLE_VPX=YES"]
-            self.additional_args += ["-DENABLE_X264=YES"]
+            self.additional_args += ["-DENABLE_GPL_THIRD_PARTIES=ON"]
+            self.additional_args += ["-DENABLE_NON_FREE_CODECS=ON"]
+            self.additional_args += ["-DENABLE_AMRNB=ON"]
+            self.additional_args += ["-DENABLE_AMRWB=ON"]
+            self.additional_args += ["-DENABLE_BV16=ON"]
+            self.additional_args += ["-DENABLE_G729=ON"]
+            self.additional_args += ["-DENABLE_GSM=ON"]
+            self.additional_args += ["-DENABLE_ILBC=ON"]
+            self.additional_args += ["-DENABLE_ISAC=ON"]
+            self.additional_args += ["-DENABLE_OPUS=ON"]
+            self.additional_args += ["-DENABLE_SILK=ON"]
+            self.additional_args += ["-DENABLE_SPEEX=ON"]
+            self.additional_args += ["-DENABLE_FFMPEG=ON"]
+            self.additional_args += ["-DENABLE_H263=ON"]
+            self.additional_args += ["-DENABLE_H263P=ON"]
+            self.additional_args += ["-DENABLE_MPEG4=ON"]
+            self.additional_args += ["-DENABLE_OPENH264=ON"]
+            self.additional_args += ["-DENABLE_VPX=ON"]
+            self.additional_args += ["-DENABLE_X264=ON"]
 
     def clean(self):
         prepare.Preparator.clean(self)
