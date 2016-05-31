@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef SQLITE_STORAGE_ENABLED
+#include "private.h"
 
 #include "sqlite3_bctbx_vfs.h"
 #include <sqlite3.h>
@@ -283,7 +284,7 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
     sizeof(sqlite3_bctbx_file_t),   	/* szOsFile */
     MAXPATHNAME,                  	/* mxPathname */
     0,                            	/* pNext */
-    "sqlite3bctbx_vfs",              /* zName */
+    LINPHONE_SQLITE3_VFS,              /* zName */
     0,                            	/* pAppData */
     sqlite3bctbx_Open,            	/* xOpen */
     0,                   			/* xDelete */
@@ -333,7 +334,7 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 
 void sqlite3_bctbx_vfs_unregister(void)
 {
-	sqlite3_vfs* pVfs = sqlite3_vfs_find("sqlite3bctbx_vfs");
+	sqlite3_vfs* pVfs = sqlite3_vfs_find(LINPHONE_SQLITE3_VFS);
 	sqlite3_vfs_unregister(pVfs);
 }
 

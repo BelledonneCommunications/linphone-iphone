@@ -1521,6 +1521,8 @@ int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
 
 char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
 
+#define LINPHONE_SQLITE3_VFS "sqlite3bctbx_vfs"
+
 #ifdef __cplusplus
 }
 #endif
