@@ -180,7 +180,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		g_object_set_data(G_OBJECT(w),"from_message",g_strdup(from_str));
 	}
 	ms_free(from_str);
-	
+
 	if (!message) {
 		const char *external_body_url = linphone_chat_message_get_external_body_url(msg);
 		if (external_body_url) message = external_body_url;
@@ -216,7 +216,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 			if(tnow_day != tm->tm_yday || (tnow_day == tm->tm_yday && tnow_year != tm->tm_year)) {
 				strftime(buf,80,"%a %x, %H:%M",tm);
 			} else {
-				strftime(buf,80,"%H:%M",tm);
+				strftime(buf,80,"%H:%M:%S",tm);
 			}
 			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,"status", me ? "me" : NULL, NULL);
 			break;
@@ -267,7 +267,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 				case LinphoneChatMessageStateDelivered:
 					t=time(NULL);
 					tm=localtime(&t);
-					strftime(buf,80,"%H:%M",tm);
+					strftime(buf,80,"%H:%M:%S",tm);
 					gtk_text_buffer_insert_with_tags_by_name(b,&iter,(gchar*)buf,-1,"status", "me", NULL);
 					break;
 				case LinphoneChatMessageStateNotDelivered:
