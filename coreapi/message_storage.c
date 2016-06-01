@@ -28,8 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifndef _WIN32
-#if !defined(ANDROID) && !defined(__QNXNTO__)
+#if !defined(__QNXNTO__)
 #	include <langinfo.h>
+#	include <locale.h>
 #	include <iconv.h>
 #	include <string.h>
 #endif
