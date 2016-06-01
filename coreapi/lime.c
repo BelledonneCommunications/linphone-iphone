@@ -1,3 +1,22 @@
+/*
+linphone
+Copyright (C) 2015  Belledonne Communications SARL
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 #include "lime.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -12,7 +31,7 @@
  *
  * @return TRUE when Lime was fully compiled, FALSE when it wasn't
  */
-bool_t lime_is_available() { return TRUE; }
+bool_t lime_is_available(void) { return TRUE; }
 
 /**
  * @brief	convert an hexa char [0-9a-fA-F] into the corresponding unsigned integer value
@@ -798,6 +817,11 @@ int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
 int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) { return LIME_NOT_ENABLED;}
 int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {return LIME_NOT_ENABLED;}
+void lime_freeKeys(limeURIKeys_t associatedKeys){
+}
+int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys){
+	return LIME_NOT_ENABLED;
+}
 
 
 #endif /* HAVE_LIME */
