@@ -38,6 +38,7 @@
 #include "vcard.h"
 
 #include <bctoolbox/port.h>
+#include <bctoolbox/bc_vfs.h>
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
 
@@ -53,9 +54,6 @@
 #include "upnp.h"
 #endif //BUILD_UPNP
 
-#ifdef SQLITE_STORAGE_ENABLED
-#include "sqlite3.h"
-#endif
 
 #ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
@@ -122,6 +120,11 @@
 #include <libxml/xmlwriter.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+
+
+#ifdef SQLITE_STORAGE_ENABLED
+#include <sqlite3.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -589,7 +592,6 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
-bool_t linphone_chat_room_lime_enabled(LinphoneChatRoom *cr);
 /**/
 
 struct _LinphoneProxyConfig
@@ -1539,6 +1541,8 @@ BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
 
 char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
+
+#define LINPHONE_SQLITE3_VFS "sqlite3bctbx_vfs"
 
 #ifdef __cplusplus
 }

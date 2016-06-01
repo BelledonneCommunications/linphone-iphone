@@ -44,6 +44,7 @@ linphone_include_HEADERS=\
 	lpconfig.h \
 	nat_policy.h \
 	sipsetup.h \
+	sqlite3_bctbx_vfs.h \
 	xml2lpc.h \
 	xmlrpc.h \
 	vcard.h \

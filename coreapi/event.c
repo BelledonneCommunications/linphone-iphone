@@ -161,12 +161,20 @@ LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAd
 	return lev;
 }
 
+LinphoneEvent *linphone_core_create_notify(LinphoneCore *lc, const LinphoneAddress *resource, const char *event){
+	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionIncoming, event, -1);
+	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
+	lev->subscription_state = LinphoneSubscriptionIncomingReceived;
+	sal_op_set_event(lev->op, event);
+	lev->is_out_of_dialog_op = TRUE;
+	return lev;
+}
+
 LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires, const LinphoneContent *body){
 	LinphoneEvent *lev=linphone_core_create_subscribe(lc,resource,event,expires);
 	linphone_event_send_subscribe(lev,body);
 	return lev;
 }
-
 
 int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBodyHandler *body_handler;
@@ -241,7 +249,7 @@ int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
 
 int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBodyHandler *body_handler;
-	if (lev->subscription_state!=LinphoneSubscriptionActive){
+	if (lev->subscription_state!=LinphoneSubscriptionActive && lev->subscription_state!=LinphoneSubscriptionIncomingReceived){
 		ms_error("linphone_event_notify(): cannot notify if subscription is not active.");
 		return -1;
 	}
@@ -392,7 +400,7 @@ const char *linphone_event_get_name(const LinphoneEvent *lev){
 }
 
 const LinphoneAddress *linphone_event_get_from(const LinphoneEvent *lev){
-	if (lev->is_out_of_dialog_op){
+	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing){
 		return (LinphoneAddress*)sal_op_get_to_address(lev->op);
 	}else{
 		return (LinphoneAddress*)sal_op_get_from_address(lev->op);
@@ -400,7 +408,7 @@ const LinphoneAddress *linphone_event_get_from(const LinphoneEvent *lev){
 }
 
 const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev){
-	if (lev->is_out_of_dialog_op){
+	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing){
 		return (LinphoneAddress*)sal_op_get_from_address(lev->op);
 	}else{
 		return (LinphoneAddress*)sal_op_get_to_address(lev->op);

@@ -129,6 +129,18 @@ LINPHONE_PUBLIC LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const L
 **/
 LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires);
 
+
+/**
+ * Create an out-of-dialog notification, specifying the destination resource, the event name.
+ * The notification can be send with linphone_event_notify().
+ * @param lc the #LinphoneCore
+ * @param resource the destination resource
+ * @param event the event name
+ * @return a LinphoneEvent holding the context of the notification.
+**/
+LinphoneEvent *linphone_core_create_notify(LinphoneCore *lc, const LinphoneAddress *resource, const char *event);
+
+
 /**
  * Send a subscription previously created by linphone_core_create_subscribe().
  * @param ev the LinphoneEvent

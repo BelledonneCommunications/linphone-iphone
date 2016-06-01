@@ -5799,6 +5799,9 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	/*pauline shall be able to end the call without problem now*/
 	end_call(pauline, marie);
 end:
+	if (pauline_params) {
+		linphone_call_params_unref(pauline_params);
+	}
 	ms_list_free(lcs);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

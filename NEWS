@@ -1,3 +1,16 @@
+linphone-3.10.0 -- May xxth, 2016
+	* Video conference support through a conference server (SDK only)
+	* Disable dummy STUN packets sending when ICE is activated.
+	* Signal AVPF support as AVP : Enable rtcp feedback on RTP/AVP by default
+	* Adding linphone daemon
+	* gtk - Show links to files received in chat by file transfer
+	* gtk - Debug window now stores “scroll to end” preference
+	* gtk - Added button to take screenshot of video call
+ 	* Fix - gtk : Fixed issue busy presence not displayed in red 
+	* Fix 0002832: Date/time of calls not shown in call history on Windows.
+	* Fix 0002690: Bad SDP when no audio codec has been enabled
+	* Fix 0000750: DTMF RFC2833 event always goes up in the same LinphoneCoreListener 
+
 linphone-3.9.1 -- November 16th, 2015
 	* Fix crash when recording video calls with the VP8 codec
 	* Fix H.264 codec support in Mac OS X package

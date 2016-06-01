@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 11:54+0200\n"
+"POT-Creation-Date: 2016-05-19 14:01+0200\n"
 "PO-Revision-Date: 2016-05-10 09:58+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/belledonne-communications/linphone-gtk/language/tr/)\n"
@@ -2035,16 +2035,16 @@ msgstr "Servis kullanımdışı, tekrar deneyin"
 msgid "Authentication token is %s"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:1646
+#: ../coreapi/linphonecall.c:1663
 #, c-format
 msgid "Call parameters could not be modified: %s."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:1648
+#: ../coreapi/linphonecall.c:1665
 msgid "Call parameters were successfully modified."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:4619
+#: ../coreapi/linphonecall.c:4636
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

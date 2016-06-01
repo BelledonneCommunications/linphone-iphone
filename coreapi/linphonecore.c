@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lime.h"
 #include "conference_private.h"
 
+#ifdef SQLITE_STORAGE_ENABLED
+#include "sqlite3_bctbx_vfs.h"
+#endif
+
 #include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -946,7 +950,10 @@ static void sip_config_read(LinphoneCore *lc)
 	const char *tmpstr;
 	LCSipTransports tr;
 	int i,tmp;
-	int ipv6;
+	int ipv6_default = FALSE;
+#if TARGET_OS_IPHONE
+	ipv6_default=TRUE;
+#endif
 
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
 		sal_use_session_timers(lc->sal,200);
@@ -955,11 +962,16 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_use_no_initial_route(lc->sal,lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 
-	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
-	if (ipv6==-1){
-		ipv6=0;
+#if TARGET_OS_IPHONE
+	if (!lp_config_get_int(lc->config,"sip","ipv6_migration_done",FALSE) && lp_config_has_entry(lc->config,"sip","use_ipv6")) {
+		lp_config_clean_entry(lc->config,"sip","use_ipv6");
+		lp_config_set_int(lc->config, "sip", "ipv6_migration_done", TRUE);
+		ms_message("IPV6 settings migration done.");
 	}
-	linphone_core_enable_ipv6(lc,ipv6);
+#endif
+	
+	lc->sip_conf.ipv6_enabled=lp_config_get_int(lc->config,"sip","use_ipv6",ipv6_default);
+	
 	memset(&tr,0,sizeof(tr));
 
 	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
@@ -1270,6 +1282,38 @@ static MSList *add_missing_supported_codecs(LinphoneCore *lc, const MSList *defa
 	return newlist;
 }
 
+/*
+ * This function adds missing codecs, if required by configuration.
+ * This 'l' list is entirely destroyed and a new list is returned.
+ */
+static MSList *handle_missing_codecs(LinphoneCore *lc, const MSList *default_list, MSList *l, MSFormatType ft){
+	const char *name = "unknown";
+	int add_missing;
+	MSList *ret;
+
+	switch(ft){
+		case MSAudio:
+			name = "add_missing_audio_codecs";
+		break;
+		case MSVideo:
+			name = "add_missing_video_codecs";
+		break;
+		case MSText:
+			name = "add_missing_text_codecs";
+		break;
+		case MSUnknownMedia:
+		break;
+	}
+	add_missing = lp_config_get_int(lc->config, "misc", name, 1);
+	if (add_missing){
+		ret = add_missing_supported_codecs(lc, default_list, l);
+	}else{
+		ret = ms_list_copy_with_data(l,(void *(*)(void*))payload_type_clone);
+		ms_list_free(l);
+	}
+	return ret;
+}
+
 static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
 	MSList *elem;
 	for (elem=l;elem!=NULL;elem=elem->next){
@@ -1281,8 +1325,7 @@ static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
 	return l;
 }
 
-static void codecs_config_read(LinphoneCore *lc)
-{
+static void codecs_config_read(LinphoneCore *lc){
 	int i;
 	PayloadType *pt;
 	MSList *audio_codecs=NULL;
@@ -1297,18 +1340,15 @@ static void codecs_config_read(LinphoneCore *lc)
 			audio_codecs=codec_append_if_new(audio_codecs, pt);
 		}
 	}
-	if( lp_config_get_int(lc->config, "misc", "add_missing_audio_codecs", 1) == 1 ){
-		audio_codecs=add_missing_supported_codecs(lc, lc->default_audio_codecs,audio_codecs);
-	}
+	audio_codecs = handle_missing_codecs(lc, lc->default_audio_codecs,audio_codecs, MSAudio);
 
 	for (i=0;get_codec(lc,SalVideo,i,&pt);i++){
 		if (pt){
 			video_codecs=codec_append_if_new(video_codecs, pt);
 		}
 	}
-	if( lp_config_get_int(lc->config, "misc", "add_missing_video_codecs", 1) == 1 ){
-		video_codecs=add_missing_supported_codecs(lc, lc->default_video_codecs,video_codecs);
-	}
+
+	video_codecs = handle_missing_codecs(lc, lc->default_video_codecs, video_codecs, MSVideo);
 
 	for (i=0;get_codec(lc,SalText,i,&pt);i++){
 		if (pt){
@@ -1787,6 +1827,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
+#ifdef SQLITE_STORAGE_ENABLED
+	sqlite3_bctbx_vfs_register(0);
+#endif
 }
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
@@ -2518,9 +2561,6 @@ bool_t linphone_core_ipv6_enabled(LinphoneCore *lc){
  *
  * @ingroup network_parameters
  *
- * @note IPv6 support is exclusive with IPv4 in liblinphone:
- * when IPv6 is turned on, IPv4 calls won't be possible anymore.
- * By default IPv6 support is off.
 **/
 void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 	if (lc->sip_conf.ipv6_enabled!=val){
@@ -6392,7 +6432,6 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
 	lp_config_set_int(lc->config,"sip","in_call_timeout",config->in_call_timeout);
 	lp_config_set_int(lc->config,"sip","delayed_timeout",config->delayed_timeout);
-	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	lp_config_set_int(lc->config,"sip","register_only_when_upnp_is_ok",config->register_only_when_upnp_is_ok);
 
@@ -6684,24 +6723,35 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ms_factory_destroy(lc->factory);
 }
 
+static void stop_refreshing_proxy_config(bool_t is_sip_reachable, LinphoneProxyConfig* cfg) {
+	if (linphone_proxy_config_register_enabled(cfg) ) {
+		if (!is_sip_reachable) {
+			linphone_proxy_config_stop_refreshing(cfg);
+			linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
+		}else{
+			cfg->commit=TRUE;
+		}
+	}
+}
 static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, time_t curtime){
 	// second get the list of available proxies
-	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	const MSList *elem = NULL;
 
 	if (lc->sip_network_reachable==is_sip_reachable) return; // no change, ignore.
 	lc->network_reachable_to_be_notified=TRUE;
 	ms_message("SIP network reachability state is now [%s]",is_sip_reachable?"UP":"DOWN");
-	for(;elem!=NULL;elem=elem->next){
+	for(elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		if (linphone_proxy_config_register_enabled(cfg) ) {
-			if (!is_sip_reachable) {
-				linphone_proxy_config_stop_refreshing(cfg);
-				linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
-			}else{
-				cfg->commit=TRUE;
-			}
-		}
+		stop_refreshing_proxy_config(is_sip_reachable, cfg);
 	}
+	for(elem=lc->sip_conf.deleted_proxies;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *deleted_cfg=(LinphoneProxyConfig*)elem->data;
+		stop_refreshing_proxy_config(is_sip_reachable, deleted_cfg);
+	}
+
+
+
+
 	lc->netup_time=curtime;
 	lc->sip_network_reachable=is_sip_reachable;
 

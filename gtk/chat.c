@@ -180,7 +180,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		g_object_set_data(G_OBJECT(w),"from_message",g_strdup(from_str));
 	}
 	ms_free(from_str);
-	
+
 	if (!message) {
 		const char *external_body_url = linphone_chat_message_get_external_body_url(msg);
 		if (external_body_url) message = external_body_url;
@@ -216,7 +216,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 			if(tnow_day != tm->tm_yday || (tnow_day == tm->tm_yday && tnow_year != tm->tm_year)) {
 				strftime(buf,80,"%a %x, %H:%M",tm);
 			} else {
-				strftime(buf,80,"%H:%M",tm);
+				strftime(buf,80,"%H:%M:%S",tm);
 			}
 			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,"status", me ? "me" : NULL, NULL);
 			break;
@@ -267,7 +267,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 				case LinphoneChatMessageStateDelivered:
 					t=time(NULL);
 					tm=localtime(&t);
-					strftime(buf,80,"%H:%M",tm);
+					strftime(buf,80,"%H:%M:%S",tm);
 					gtk_text_buffer_insert_with_tags_by_name(b,&iter,(gchar*)buf,-1,"status", "me", NULL);
 					break;
 				case LinphoneChatMessageStateNotDelivered:
@@ -468,6 +468,15 @@ static gboolean copy_uri_into_clipboard_handler(GtkMenuItem *menuitem, gpointer 
 	return FALSE;
 }
 
+static void refresh_lime_icon(GtkWidget* chat_view, LinphoneChatRoom*cr) {
+	GtkWidget *lime_icon = linphone_gtk_get_widget(chat_view, "lime_icon");
+	if (linphone_chat_room_lime_available(cr)) {
+		gtk_widget_show(lime_icon);
+	} else {
+		gtk_widget_hide(lime_icon);
+	}
+}
+
 static gint linphone_gtk_window_focused(GtkWidget* widget, GdkEvent *event, gpointer user_data) {
 	// if we are in a chat, mark it as read
 	GtkWidget *main_window=linphone_gtk_get_main_window();
@@ -477,6 +486,7 @@ static gint linphone_gtk_window_focused(GtkWidget* widget, GdkEvent *event, gpoi
 	if (cr) {
 		linphone_gtk_mark_chat_read(cr);
 	}
+	refresh_lime_icon(w, cr);
 	return FALSE;
 }
 
@@ -559,6 +569,8 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 
 	gtk_signal_connect(GTK_OBJECT(main_window), "focus-in-event", GTK_SIGNAL_FUNC(linphone_gtk_window_focused), NULL);
 
+	refresh_lime_icon(chat_view, cr);
+
 	return chat_view;
 }
 
@@ -595,6 +607,8 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 		gtk_text_buffer_get_end_iter(text_buffer,&end);
 		gtk_text_view_scroll_to_iter(text_view,&end,0,FALSE,1.0,0);
 	}
+	refresh_lime_icon(chat_view, cr);
+
 	ms_free(from_str);
 	ms_free(uri_str);
 	ms_free(uri_only);

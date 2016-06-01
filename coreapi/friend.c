@@ -1138,7 +1138,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	const char *errmsg;
 	sqlite3 *db;
 	const MSList *friends_lists = NULL;
-	sqlite3_bctbx_vfs_register(1);
+
 	linphone_core_friends_storage_close(lc);
 
 	ret = _linphone_sqlite3_open(lc->friends_db_file, &db);

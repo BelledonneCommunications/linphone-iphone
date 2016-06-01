@@ -155,7 +155,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 static void linphone_chat_message_process_response_from_post_file(void *data,
 																  const belle_http_response_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
-	
+
 	if (msg->http_request && !file_transfer_in_progress_and_valid(msg)) {
 		ms_warning("Cancelled request for %s msg [%p], ignoring %s", msg->chat_room?"":"ORPHAN", msg, __FUNCTION__);
 		_release_http_request(msg);
@@ -172,7 +172,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			belle_sip_body_handler_t *first_part_bh;
 
 			/* shall we encrypt the file */
-			if (linphone_chat_room_lime_enabled(msg->chat_room) &&
+			if (linphone_chat_room_lime_available(msg->chat_room) &&
 			 linphone_core_lime_for_file_sharing_enabled(msg->chat_room->lc)) {
 				char keyBuffer
 					[FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of
@@ -317,22 +317,22 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 						 const uint8_t *buffer, size_t size) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 	LinphoneCore *lc;
-	
+
 	if (!msg->chat_room) {
 		linphone_chat_message_cancel_file_transfer(msg);
 		return;
 	}
 	lc = msg->chat_room->lc;
-	
+
 	if (lc == NULL){
 		return; /*might happen during linphone_core_destroy()*/
 	}
-	
+
 	if (!msg->http_request || belle_http_request_is_cancelled(msg->http_request)) {
 		ms_warning("Cancelled request for msg [%p], ignoring %s", msg, __FUNCTION__);
 		return;
 	}
-	
+
 	/* first call may be with a zero size, ignore it */
 	if (size == 0) {
 		return;

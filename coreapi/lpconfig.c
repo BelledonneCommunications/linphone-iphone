@@ -25,6 +25,7 @@
 #define MAX_LEN 16384
 
 #include "linphonecore.h"
+#include "bctoolbox/bc_vfs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -401,7 +402,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	bctbx_vfs_file_t* pFile = NULL;
 
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
-	bctbx_vfs_register(bc_create_vfs(),&lpconfig->g_bctbx_vfs);
+	lpconfig->g_bctbx_vfs = bctbx_vfs_get_default();
 	
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
@@ -431,13 +432,13 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 #endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
 
-		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
+		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
 		fd  = pFile->fd;
 		lpconfig->pFile = pFile;
 		
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 		if (fd  == -1){
-			pFile = bctbx_filecreate_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "r+");
+			pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "r+");
 			if (fd){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
 			}
@@ -463,7 +464,7 @@ fail:
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	int fd=-1;
-	bctbx_vfs_file_t* pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs, path, "r");
+	bctbx_vfs_file_t* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
 	fd = pFile->fd;
 	if (fd != -1){
 		ms_message("Reading config information from %s", path);
@@ -801,7 +802,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	pFile  = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
+	pFile  = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
 	fd = pFile->fd;
 	if (fd  == -1 ){
@@ -942,7 +943,7 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 
 		if(realfilepath == NULL) return FALSE;
 
-		pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
+		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
 		ms_free(realfilepath);
 		if (pFile->fd != -1) {
 			bctbx_file_close(pFile);
@@ -975,7 +976,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		goto end;
 	}
 
-	pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,  "w");
 	fd = pFile->fd;
 	
 	if(fd == -1) {
@@ -1011,7 +1012,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		goto err;
 	}
 
-	pFile = bctbx_file_create_and_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
 	if (pFile !=NULL)
 		fd = pFile->fd;
 	
@@ -1095,4 +1096,25 @@ char* lp_config_dump(const LpConfig *lpconfig) {
 	lp_config_for_each_section(lpconfig, dump_section, &d);
 
 	return buffer;
+}
+
+void lp_config_clean_entry(LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	LpItem *item;
+	sec=lp_config_find_section(lpconfig,section);
+	if (sec!=NULL){
+		item=lp_section_find_item(sec,key);
+		if (item!=NULL)
+			lp_section_remove_item(sec,item);
+	}
+	return ;
+}
+int lp_config_has_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	sec=lp_config_find_section(lpconfig,section);
+	if (sec!=NULL){
+		return lp_section_find_item(sec,key) != NULL;
+	} else
+		return FALSE;
+	
 }

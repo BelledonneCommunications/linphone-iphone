@@ -28,8 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifndef _WIN32
-#if !defined(ANDROID) && !defined(__QNXNTO__)
+#if !defined(__QNXNTO__)
 #	include <langinfo.h>
+#	include <locale.h>
 #	include <iconv.h>
 #	include <string.h>
 #endif
@@ -42,28 +43,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sqlite3.h"
 #include <assert.h>
 
-int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
-	char* errmsg = NULL;
-	int ret;
-#if defined(ANDROID) || defined(__QNXNTO__)
-	ret = sqlite3_open(db_file, db);
-#elif TARGET_OS_IPHONE
-	/* the secured filesystem of the iPHone doesn't allow writing while the app is in background mode, which is problematic.
-	 * We workaround by asking that the open is made with no protection*/
-	ret = sqlite3_open_v2(db_file, db, SQLITE_OPEN_FILEPROTECTION_NONE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, NULL);
-#elif defined(_WIN32)
-	wchar_t db_file_utf16[MAX_PATH_SIZE];
-	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, -1, db_file_utf16, MAX_PATH_SIZE);
-	if(ret == 0) db_file_utf16[0] = '\0';
-	ret = sqlite3_open16(db_file_utf16, db);
+static char *utf8_convert(const char *filename){
+	char db_file_utf8[MAX_PATH_SIZE] = "";
+#if defined(_WIN32)
+	wchar_t db_file_utf16[MAX_PATH_SIZE]={0};
+	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, filename, -1, db_file_utf16, MAX_PATH_SIZE);
+	WideCharToMultiByte(CP_UTF8, 0, db_file_utf16, -1, db_file_utf8, sizeof(db_file_utf8), NULL, NULL);
 #else
 	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
-	char db_file_utf8[MAX_PATH_SIZE] = "";
 	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
 	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
 	iconv_t cb;
 
-	strncpy(db_file_locale, db_file, MAX_PATH_SIZE-1);
+	strncpy(db_file_locale, filename, MAX_PATH_SIZE-1);
 	cb = iconv_open("UTF-8", nl_langinfo(CODESET));
 	if(cb != (iconv_t)-1) {
 		int ret;
@@ -71,8 +63,26 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 		if(ret == -1) db_file_utf8[0] = '\0';
 		iconv_close(cb);
 	}
-	ret = sqlite3_open(db_file_utf8, db);
 #endif
+	return ms_strdup(db_file_utf8);
+}
+
+
+int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
+	char* errmsg = NULL;
+	int ret;
+	int flags = SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE;
+
+#if TARGET_OS_IPHONE
+	/* the secured filesystem of the iPHone doesn't allow writing while the app is in background mode, which is problematic.
+	 * We workaround by asking that the open is made with no protection*/
+	flags |= SQLITE_OPEN_FILEPROTECTION_NONE;
+#endif
+	
+	char *utf8_filename = utf8_convert(db_file);
+	ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
+	ms_free(utf8_filename);
+
 	if (ret != SQLITE_OK) return ret;
 	// Some platforms do not provide a way to create temporary files which are needed
 	// for transactions... so we work in memory only
@@ -662,7 +672,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
 	const char *errmsg;
 	sqlite3 *db = NULL;
-	sqlite3_bctbx_vfs_register(1);
+
 	linphone_core_message_storage_close(lc);
 
 	ret=_linphone_sqlite3_open(lc->chat_db_file,&db);

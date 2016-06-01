@@ -1315,8 +1315,8 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalB
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	bool_t out_of_dialog = (lev==NULL);
 	if (out_of_dialog) {
-		/*out of subscribe notify */
-		lev=linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
+		/*out of dialog notify */
+		lev = linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
 	{
 		LinphoneContent *ct=linphone_content_from_sal_body_handler(body_handler);
@@ -1325,14 +1325,12 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalB
 			linphone_content_unref(ct);
 		}
 	}
-	if (st!=SalSubscribeNone){
+	if (out_of_dialog){
+		/*out of dialog NOTIFY do not create an implicit subscription*/
+		linphone_event_set_state(lev, LinphoneSubscriptionTerminated);
+	}else if (st!=SalSubscribeNone){ 
 		linphone_event_set_state(lev,linphone_subscription_state_from_sal(st));
 	}
-
-	if (out_of_dialog) {
-		linphone_event_unref(lev);
-	}
-
 }
 
 static void subscribe_received(SalOp *op, const char *eventname, const SalBodyHandler *body_handler){
@@ -1373,6 +1371,7 @@ static void on_publish_response(SalOp* op){
 	}
 }
 
+
 static void on_expire(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 
@@ -1382,6 +1381,25 @@ static void on_expire(SalOp *op){
 		linphone_event_set_publish_state(lev,LinphonePublishExpiring);
 	}else if (linphone_event_get_subscription_state(lev)==LinphoneSubscriptionActive){
 		linphone_event_set_state(lev,LinphoneSubscriptionExpiring);
+	}
+}
+
+static void on_notify_response(SalOp *op){
+	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
+
+	if (lev==NULL) return;
+	/*this is actually handling out of dialogs notify - for the moment*/
+	if (!lev->is_out_of_dialog_op) return;
+	switch (linphone_event_get_subscription_state(lev)){
+		case LinphoneSubscriptionIncomingReceived:
+			if (sal_op_get_error_info(op)->reason == SalReasonNone){
+				linphone_event_set_state(lev, LinphoneSubscriptionTerminated);
+			}else{
+				linphone_event_set_state(lev, LinphoneSubscriptionError);
+			}
+		break;
+		default:
+			ms_warning("Unhandled on_notify_response() case %s", linphone_subscription_state_to_string(linphone_event_get_subscription_state(lev)));
 	}
 }
 
@@ -1417,7 +1435,8 @@ SalCallbacks linphone_sal_callbacks={
 	auth_requested,
 	info_received,
 	on_publish_response,
-	on_expire
+	on_expire,
+	on_notify_response
 };
 
 

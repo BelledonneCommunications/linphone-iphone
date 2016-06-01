@@ -799,3 +799,13 @@ int sal_op_refresh(SalOp *op) {
 	ms_warning("sal_refresh on op [%p] of type [%s] no refresher",op,sal_op_type_to_string(op->type));
 	return -1;
 }
+
+void sal_op_set_event(SalOp *op, const char *eventname){
+	belle_sip_header_event_t *header = NULL;
+	if (op->event) belle_sip_object_unref(op->event);
+	if (eventname){
+		header = belle_sip_header_event_create(eventname);
+		belle_sip_object_ref(header);
+	}
+	op->event = header;
+}

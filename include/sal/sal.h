@@ -508,6 +508,7 @@ typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
 typedef void (*SalOnInfoReceived)(SalOp *salop, SalBodyHandler *body);
 typedef void (*SalOnPublishResponse)(SalOp *salop);
+typedef void (*SalOnNotifyResponse)(SalOp *salop);
 typedef void (*SalOnExpire)(SalOp *salop);
 /*allows sal implementation to access auth info if available, return TRUE if found*/
 
@@ -546,6 +547,7 @@ typedef struct SalCallbacks{
 	SalOnInfoReceived info_received;
 	SalOnPublishResponse on_publish_response;
 	SalOnExpire on_expire;
+	SalOnNotifyResponse on_notify_response;
 }SalCallbacks;
 
 
@@ -700,6 +702,8 @@ void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char
 /*entity tag used for publish (see RFC 3903)*/
 const char *sal_op_get_entity_tag(const SalOp* op);
 void sal_op_set_entity_tag(SalOp *op, const char* entity_tag);
+/*set the event header, for used with out of dialog SIP notify*/
+void sal_op_set_event(SalOp *op, const char *event);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

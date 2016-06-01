@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef SQLITE_STORAGE_ENABLED
+#include "private.h"
 
 #include "sqlite3_bctbx_vfs.h"
 #include <sqlite3.h>
@@ -36,7 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static int sqlite3bctbx_Close(sqlite3_file *p){
 
 	int ret;
-	sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*) p;
+	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 
 	ret = bctbx_file_close(pFile->pbctbx_file);
 	if (!ret){
@@ -64,18 +65,17 @@ static int sqlite3bctbx_Close(sqlite3_file *p){
  */
 static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64 offset){
 	int ret;
-	sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*) p;
+	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile){
 		ret = bctbx_file_read(pFile->pbctbx_file, buf, count, offset);
 		if( ret==count ){
 			return SQLITE_OK;
 		}
 		else if( ret >= 0 ){
-
+			/*fill in unread portion of buffer, as requested by sqlite3 documentation*/
+			memset(((uint8_t*)buf) + ret, 0, count-ret); 
 			return SQLITE_IOERR_SHORT_READ;
-		}
-		
-		else {
+		}else {
 			
 			return SQLITE_IOERR_READ;
 		}
@@ -93,7 +93,7 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
  * @return         SQLITE_OK on success, SQLITE_IOERR_WRITE if an error occurred.
  */
 static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlite_int64 offset){
-	sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*) p;
+	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	int ret;
 	if (pFile ){
 		ret = bctbx_file_write(pFile->pbctbx_file, buf, count, offset);
@@ -116,7 +116,7 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
 static int sqlite3bctbx_FileSize(sqlite3_file *p, sqlite_int64 *pSize){
 
 	int rc;                         /* Return code from fstat() call */
-	sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*) p;
+	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile->pbctbx_file){
 		rc = bctbx_file_size(pFile->pbctbx_file);
 		if( rc < 0 ) {
@@ -157,7 +157,9 @@ static int sqlite3bctbx_DeviceCharacteristics(sqlite3_file *p){
  * @return      SQLITE_OK on success, SALITE_NOTFOUND otherwise.
  */
 static int sqlite3bctbx_FileControl(sqlite3_file *p, int op, void *pArg){
+#ifdef SQLITE_FCNTL_MMAP_SIZE
 	if (op == SQLITE_FCNTL_MMAP_SIZE) return SQLITE_OK;
+#endif
 	return SQLITE_NOTFOUND;
 
 }
@@ -205,13 +207,16 @@ static int sqlite3bctbx_nolockUnlock(sqlite3_file *pUnused, int unused){
  * @return       SQLITE_OK on success, SLITE_IOERR_FSYNC if an error occurred.
  */
 static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
-  sqlite3_bctbx_file *pFile = (sqlite3_bctbx_file*)p;
-  int rc;
-
-  rc = fsync(pFile->pbctbx_file->fd);
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*)p;
+#if _WIN32
+	return (FlushFileBuffers(pFile->pbctbx_file->fd) ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+#else
+	int rc = fsync(pFile->pbctbx_file->fd);
+	return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+#endif
 }
 
+/************************ END OF PLACE HOLDER FUNCTIONS ***********************/
 
 /**
  * Opens the file fName and populates the structure pointed by p
@@ -243,7 +248,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 		sqlite3bctbx_DeviceCharacteristics,
 	};
 
-	sqlite3_bctbx_file * pFile = (sqlite3_bctbx_file*)p; /*File handle sqlite3_bctbx_file*/
+	sqlite3_bctbx_file_t * pFile = (sqlite3_bctbx_file_t*)p; /*File handle sqlite3_bctbx_file_t*/
 
 	int openFlags = 0;
 
@@ -258,7 +263,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	if( flags&SQLITE_OPEN_READONLY )  openFlags |= O_RDONLY;
 	if( flags&SQLITE_OPEN_READWRITE ) openFlags |= O_RDWR;
 
-	pFile->pbctbx_file = bctbx_file_create_and_open2(bc_create_vfs(), fName, openFlags);
+	pFile->pbctbx_file = bctbx_file_open2(bctbx_vfs_get_default(), fName, openFlags);
 	if( pFile->pbctbx_file == NULL){
 		return SQLITE_CANTOPEN;
 	}
@@ -267,40 +272,19 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
     	*pOutFlags = flags;
   	}
 	pFile->base.pMethods = &sqlite3_bctbx_io;
-	pFile->pbctbx_file->filename = (char*)fName;
 
 	return SQLITE_OK;
 }
 
-/**
- * Returns a sqlite3_vfs pointer to the VFS named sqlite3bctbx_vfs 
- * implemented in this file.
- * Methods not implemented:
- *			xDelete 
- *			xAccess 
- *			xFullPathname 
- *			xDlOpen 
- *			xDlError 
- *			xDlSym 
- *			xDlClose 
- *			xRandomness 
- *			xSleep 
- *			xCurrentTime , xCurrentTimeInt64,
- *			xGetLastError
- *			xGetSystemCall
- *			xSetSystemCall
- *			xNextSystemCall
- *			To make the VFS available to SQLite
- * @return  Pointer to bctbx_vfs.
- */
+
 
 sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
   static sqlite3_vfs bctbx_vfs = {
     1,                            	/* iVersion */
-    sizeof(sqlite3_bctbx_file),   	/* szOsFile */
+    sizeof(sqlite3_bctbx_file_t),   	/* szOsFile */
     MAXPATHNAME,                  	/* mxPathname */
     0,                            	/* pNext */
-    "sqlite3bctbx_vfs",              /* zName */
+    LINPHONE_SQLITE3_VFS,              /* zName */
     0,                            	/* pAppData */
     sqlite3bctbx_Open,            	/* xOpen */
     0,                   			/* xDelete */
@@ -318,17 +302,13 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
 }
 
 
-/**
- * Registers sqlite3bctbx_vfs to SQLite VFS. If makeDefault is 1,
- * the VFS will be used by default.
- * Methods not implemented by sqlite3_bctbx_vfs are initialized to the one 
- * used by the unix-none VFS where all locking file operations are no-ops. 
- * @param  makeDefault  set to 1 to make the newly registered VFS be the default one, set to 0 instead.
- */
 void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pVfsToUse = sqlite3_bctbx_vfs_create();
+	#if _WIN32
+	sqlite3_vfs* pDefault = sqlite3_vfs_find("win32");
+	#else
 	sqlite3_vfs* pDefault = sqlite3_vfs_find("unix-none");
-
+	#endif
 	pVfsToUse->xAccess =  pDefault->xAccess;
 	pVfsToUse->xCurrentTime = pDefault->xCurrentTime;
 
@@ -340,24 +320,21 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 	/*Functions below should not be a problem sincve we are declaring ourselves
 	 in version 1 */
 	
-	/* used in version 2 */
-	pVfsToUse->xCurrentTimeInt64 = pDefault->xCurrentTimeInt64;
-	/* used in version 3 */
-	pVfsToUse->xGetSystemCall = pDefault->xGetSystemCall;
-	pVfsToUse->xSetSystemCall = pDefault->xSetSystemCall;
-	pVfsToUse->xNextSystemCall = pDefault->xNextSystemCall;
+	/* used in version 2 
+	xCurrentTimeInt64;*/
+	/* used in version 3 
+	xGetSystemCall
+	xSetSystemCall
+	xNextSystemCall*/
 
 	sqlite3_vfs_register(pVfsToUse, makeDefault);
 
 }
 
 
-/**
- * Unregisters sqlite3bctbx_vfs from SQLite.
- */
 void sqlite3_bctbx_vfs_unregister(void)
 {
-	sqlite3_vfs* pVfs = sqlite3_vfs_find("sqlite3bctbx_vfs");
+	sqlite3_vfs* pVfs = sqlite3_vfs_find(LINPHONE_SQLITE3_VFS);
 	sqlite3_vfs_unregister(pVfs);
 }
 

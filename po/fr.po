@@ -4,15 +4,15 @@
 # 
 # Translators:
 # Belledonne Communications <support@belledonne-communications.com>, 2015-2016
-# Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>, 2014
-# Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>, 2014
-# Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>, 2014-2016
+# Gautier Pelloux <gautier.pelloux@gmail.com>, 2014
+# Gautier Pelloux <gautier.pelloux@gmail.com>, 2014
+# Gautier Pelloux <gautier.pelloux@gmail.com>, 2014-2016
 # Simon Morlat <simon.morlat@linphone.org>, 2001
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 11:54+0200\n"
+"POT-Creation-Date: 2016-05-19 14:01+0200\n"
 "PO-Revision-Date: 2016-05-10 09:59+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: French (http://www.transifex.com/belledonne-communications/linphone-gtk/language/fr/)\n"
@@ -2038,16 +2038,16 @@ msgstr "Service indisponible, nouvelle tentative"
 msgid "Authentication token is %s"
 msgstr "Le jeton d'authentification est %s"
 
-#: ../coreapi/linphonecall.c:1646
+#: ../coreapi/linphonecall.c:1663
 #, c-format
 msgid "Call parameters could not be modified: %s."
 msgstr "Les paramètres d'appel n'ont pas pu être modifiés : %s."
 
-#: ../coreapi/linphonecall.c:1648
+#: ../coreapi/linphonecall.c:1665
 msgid "Call parameters were successfully modified."
 msgstr "Les paramètres d'appel ont été modifiés avec succès."
 
-#: ../coreapi/linphonecall.c:4619
+#: ../coreapi/linphonecall.c:4636
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

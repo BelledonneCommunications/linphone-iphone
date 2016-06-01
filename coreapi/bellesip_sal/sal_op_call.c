@@ -68,9 +68,10 @@ static void sdp_process(SalOp *h){
 		if(h->cnx_ip_to_0000_if_sendonly_enabled && sal_media_description_has_dir(h->result,SalStreamSendOnly)) {
 			set_addr_to_0000(h->result->addr);
 			for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
-				if (h->result->streams[i].dir == SalStreamSendOnly)
-						set_addr_to_0000(h->result->streams[i].rtp_addr);
-						set_addr_to_0000(h->result->streams[i].rtcp_addr);
+				if (h->result->streams[i].dir == SalStreamSendOnly) {
+					set_addr_to_0000(h->result->streams[i].rtp_addr);
+					set_addr_to_0000(h->result->streams[i].rtcp_addr);
+				}
 			}
 		}
 		h->sdp_answer=(belle_sdp_session_description_t *)belle_sip_object_ref(media_description_to_sdp(h->result));

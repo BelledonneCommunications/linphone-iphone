@@ -69,7 +69,7 @@ LINPHONE_PUBLIC int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *
  *
  * @param[out]		cacheBuffer		The xmlDoc containing current cache to be updated
  * @param[in/out]	associatedKey	Structure containing the key and ZID to identify the peer node to be updated
- * @param[in]		role			Can be LIME_SENDER or LIME_RECEIVER, specify which key we want to update 
+ * @param[in]		role			Can be LIME_SENDER or LIME_RECEIVER, specify which key we want to update
  *
  * @return 0 on success, error code otherwise
  */
@@ -87,7 +87,7 @@ LINPHONE_PUBLIC void lime_freeKeys(limeURIKeys_t associatedKeys);
 
 /**
  * @brief encrypt a message with the given key
- * 
+ *
  * @param[in]	key					Key to use: first 192 bits are used as key, last 64 bits as init vector
  * @param[in]	message				The string to be encrypted
  * @param[in]	messageLength		The length in bytes of the message to be encrypted
@@ -96,7 +96,7 @@ LINPHONE_PUBLIC void lime_freeKeys(limeURIKeys_t associatedKeys);
  * 									Authentication tag is set at the begining of the encrypted Message
  *
  * @return 0 on success, error code otherwise
- * 
+ *
  */
 LINPHONE_PUBLIC int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage);
 
@@ -130,7 +130,7 @@ LINPHONE_PUBLIC int lime_decryptFile(void **cryptoContext, unsigned char *key, s
 
 /**
  * @brief decrypt and authentify a message with the given key
- * 
+ *
  * @param[in]	key					Key to use: first 192 bits are used as key, last 64 bits as init vector
  * @param[in]	message				The string to be decrypted
  * @param[in]	messageLength		The length in bytes of the message to be decrypted (this include the 16 bytes tag at the begining of the message)
@@ -139,7 +139,7 @@ LINPHONE_PUBLIC int lime_decryptFile(void **cryptoContext, unsigned char *key, s
  * 									Authentication tag is retrieved at the begining of the encrypted Message
  *
  * @return 0 on success, error code otherwise
- * 
+ *
  */
 
 LINPHONE_PUBLIC int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage);
