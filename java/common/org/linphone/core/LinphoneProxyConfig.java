@@ -335,4 +335,20 @@ public interface LinphoneProxyConfig {
 	 * @return an Object.
 	 */
 	Object getUserData();
+	
+	/** 
+	 * Set a custom header
+	 * @param a string containing the name of the header
+	 * @param a string containing the value of the header
+	 **/
+	public void setCustomHeader(String name, String value);
+	
+	/**
+	 * Return the value of a header
+	 * @param name a string containing the name of the header
+	 * @retur the value of the header
+	 **/
+	public String getCustomHeader(String name);
+	
+	
 }

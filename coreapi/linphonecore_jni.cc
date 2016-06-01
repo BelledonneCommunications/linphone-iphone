@@ -4697,6 +4697,22 @@ JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_isPhon
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setCustomHeader(JNIEnv *env, jobject thiz, jlong prt, jstring jname, jstring jvalue) {
+	const char *name = jname ? env->GetStringUTFChars(jname, NULL) : NULL;
+	const char *value = jvalue ? env->GetStringUTFChars(jvalue, NULL) : NULL;
+	linphone_proxy_config_set_custom_header((LinphoneProxyConfig*) prt, name, value);
+	if (jname) env->ReleaseStringUTFChars(jname, name);
+	if (jvalue) env->ReleaseStringUTFChars(jvalue, value);
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getCustomHeader(JNIEnv *env, jobject thiz, jlong ptr, jstring jname) {
+	const char *name = jname ? env->GetStringUTFChars(jname, NULL) : NULL;
+	jstring jvalue = env->NewStringUTF(linphone_proxy_config_get_custom_header((LinphoneProxyConfig *)ptr, name));
+	if (jname) env->ReleaseStringUTFChars(jname, name);
+	return jvalue;
+}
+
+
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return (jint)linphone_call_get_duration((LinphoneCall *) ptr);
 }
