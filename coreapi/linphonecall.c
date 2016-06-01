@@ -2475,13 +2475,15 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 		/* init zrtp even if we didn't explicitely set it, just in case peer offers it */
 		if (ms_zrtp_available()) {
+			char *uri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
 			MSZrtpParams params;
 			memset(&params,0,sizeof(MSZrtpParams));
 			/*call->current_params.media_encryption will be set later when zrtp is activated*/
 			params.zid_file=lc->zrtp_secrets_cache;
-			params.uri= linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
+			params.uri=uri;
 			setZrtpCryptoTypesParameters(&params,call->core);
 			audio_stream_enable_zrtp(call->audiostream,&params);
+			if (uri != NULL) ms_free(uri);
 		}
 
 		media_stream_reclaim_sessions(&audiostream->ms, &call->sessions[call->main_audio_stream_index]);

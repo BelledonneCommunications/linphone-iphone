@@ -3997,10 +3997,10 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 
 			if (video_dir != LinphoneMediaDirectionInactive){
 				BC_ASSERT_TRUE(linphone_call_params_video_enabled(params));
+				BC_ASSERT_EQUAL(linphone_call_params_get_video_direction(params), video_dir, int, "%d");
+				linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
+				linphone_call_send_vfu_request(call);
 			}
-			BC_ASSERT_EQUAL(linphone_call_params_get_video_direction(params), video_dir, int, "%d");
-			linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
-			linphone_call_send_vfu_request(call);
 
 			switch (video_dir) {
 			case LinphoneMediaDirectionInactive:

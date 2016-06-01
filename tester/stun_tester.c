@@ -104,6 +104,8 @@ static void configure_nat_policy(LinphoneCore *lc, bool_t turn_enabled) {
 	}
 	linphone_core_set_nat_policy(lc, nat_policy);
 	linphone_core_add_auth_info(lc, auth_info);
+	linphone_nat_policy_unref(nat_policy);
+	linphone_auth_info_destroy(auth_info);
 }
 
 static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, bool_t callee_turn_enabled) {

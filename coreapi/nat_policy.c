@@ -77,6 +77,7 @@ static void _linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy,
 	}
 	lp_config_set_string_list(config, section, "protocols", l);
 	belle_sip_free(section);
+	ms_list_free(l);
 }
 
 void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy) {

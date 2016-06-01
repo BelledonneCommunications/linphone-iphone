@@ -641,7 +641,7 @@ static void stun_auth_requested_cb(LinphoneCall *call, const char *realm, const 
 	const LinphoneAddress *addr = NULL;
 	const LinphoneAuthInfo *auth_info = NULL;
 	LinphoneCore *lc = call->core;
-	const char *user;
+	const char *user = NULL;
 
 	// Get the username from the nat policy or the proxy config
 	if (call->dest_proxy != NULL) proxy = call->dest_proxy;

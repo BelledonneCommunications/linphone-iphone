@@ -556,6 +556,7 @@ int liblinphone_tester_after_each(void) {
 			ms_error("%s", format);
 
 			all_leaks_buffer = ms_strcat_printf(all_leaks_buffer, "\n%s", format);
+			ms_free(format);
 		}
 
 		// prevent any future leaks

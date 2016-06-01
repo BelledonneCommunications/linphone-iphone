@@ -221,6 +221,9 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->sent_headers!=NULL) sal_custom_header_free(cfg->sent_headers);
 	if (cfg->pending_contact) linphone_address_unref(cfg->pending_contact);
 	if (cfg->refkey) ms_free(cfg->refkey);
+	if (cfg->nat_policy != NULL) {
+		linphone_nat_policy_unref(cfg->nat_policy);
+	}
 	_linphone_proxy_config_release_ops(cfg);
 }
 
@@ -1694,9 +1697,7 @@ LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConf
 }
 
 void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy) {
-	if (cfg->nat_policy != NULL) {
-		linphone_nat_policy_unref(cfg->nat_policy);
-		cfg->nat_policy = NULL;
-	}
-	if (policy != NULL) cfg->nat_policy = linphone_nat_policy_ref(policy);
+	if (policy != NULL) policy = linphone_nat_policy_ref(policy); /* Prevent object destruction if the same policy is used */
+	if (cfg->nat_policy != NULL) linphone_nat_policy_unref(cfg->nat_policy);
+	if (policy != NULL) cfg->nat_policy = policy;
 }
