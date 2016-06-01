@@ -1984,24 +1984,11 @@ const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call){
 	}else return linphone_error_info_from_sal_op(call->op);
 }
 
-/**
- * Get the user pointer associated with the LinphoneCall
- *
- * @ingroup call_control
- * @return  an opaque user pointer that can be retrieved at any time
-**/
 void *linphone_call_get_user_data(const LinphoneCall *call)
 {
 	return call->user_data;
 }
 
-/**
- * Set the user pointer associated with the LinphoneCall
- *
- * @ingroup call_control
- *
- * the user pointer is an opaque user pointer that can be retrieved at any time in the LinphoneCall
-**/
 void linphone_call_set_user_data(LinphoneCall *call, void *user_pointer)
 {
 	call->user_data = user_pointer;

@@ -82,9 +82,11 @@ static const char *person_prefix = "/pidf:presence/dm:person";
 /*****************************************************************************
  * PRIVATE FUNCTIONS                                                         *
  ****************************************************************************/
-/*defined in http://www.w3.org/TR/REC-xml/*/
+
+/* Defined in http://www.w3.org/TR/REC-xml/ */
 static char presence_id_valid_characters[] = "0123456789abcdefghijklmnopqrstuvwxyz-.";
-/*NameStartChar (NameChar)**/
+
+/* NameStartChar (NameChar)* */
 static char presence_id_valid_start_characters[] = ":_abcdefghijklmnopqrstuvwxyz";
 
 static char * generate_presence_id(void) {

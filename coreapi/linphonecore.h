@@ -710,7 +710,7 @@ LINPHONE_PUBLIC void *linphone_call_get_user_data(const LinphoneCall *call);
 
 /**
  * Assign a user pointer to the call.
- * @param[in] cfg The call.
+ * @param[in] call The call.
  * @param[in] ud The user pointer to associate with the call.
  * @ingroup call_control
 **/
@@ -848,7 +848,7 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
  * @return 0 if successful, -1 on error.
  * @ingroup call_control
 **/
-LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
+LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *call,char dtmf);
 
 /**
  * Send a list of dtmf.
@@ -1049,6 +1049,9 @@ LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegist
 /**
  * @addtogroup authentication
  * @{
+ */
+
+/**
  * Object holding authentication information.
  *
  * @note The object's fields should not be accessed directly. Prefer using
@@ -1074,7 +1077,7 @@ LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegist
 typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
 /**
- * Creates a #_LinphoneAuthInfo object with supplied information.
+ * Creates a #LinphoneAuthInfo object with supplied information.
  * The object can be created empty, that is with all arguments set to NULL.
  * Username, userid, password, realm and domain can be set later using specific methods.
  * At the end, username and passwd (or ha1) are required.
@@ -1084,51 +1087,50 @@ typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
  * @param ha1 The ha1-encrypted password if password is not given in clear text.
  * @param realm The authentication domain (which can be larger than the sip domain. Unfortunately many SIP servers don't use this parameter.
  * @param domain The SIP domain for which this authentication information is valid, if it has to be restricted for a single SIP domain.
- * @return A #_LinphoneAuthInfo object. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The LinphoneCore makes a copy of LinphoneAuthInfo
+ * @return A #LinphoneAuthInfo object. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The LinphoneCore makes a copy of LinphoneAuthInfo
  * passed through linphone_core_add_auth_info().
 **/
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
 	const char *passwd, const char *ha1,const char *realm, const char *domain);
 
 /**
- * @addtogroup authentication
  * Instantiates a new auth info with values from source.
- * @param[in] source The #_LinphoneAuthInfo object to be cloned
- * @return The newly created #_LinphoneAuthInfo object.
+ * @param[in] source The #LinphoneAuthInfo object to be cloned
+ * @return The newly created #LinphoneAuthInfo object.
  */
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo* source);
 
 /**
  * Sets the password.
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @param[in] passwd The password.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
 
 /**
  * Sets the username.
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @param[in] username The username.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
 
 /**
  * Sets the userid.
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @param[in] userid The userid.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
 
 /**
  * Sets the realm.
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @param[in] realm The realm.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm);
 
 /**
  * Sets the domain for which this authentication is valid.
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @param[in] domain The domain.
  * This should not be necessary because realm is supposed to be unique and sufficient.
  * However, many SIP servers don't set realm correctly, then domain has to be used to distinguish between several SIP account bearing the same username.
@@ -1137,7 +1139,7 @@ LINPHONE_PUBLIC void linphone_auth_info_set_domain(LinphoneAuthInfo *info, const
 
 /**
  * Sets the ha1.
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @param[in] ha1 The ha1.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
@@ -1145,7 +1147,7 @@ LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const ch
 /**
  * Gets the username.
  *
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The username.
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *info);
@@ -1153,7 +1155,7 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthIn
 /**
  * Gets the password.
  *
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The password.
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *info);
@@ -1161,7 +1163,7 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo
 /**
  * Gets the userid.
  *
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The userid.
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *info);
@@ -1169,7 +1171,7 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo
 /**
  * Gets the realm.
  *
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The realm.
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *info);
@@ -1177,7 +1179,7 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo 
 /**
  * Gets the domain.
  *
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The domain.
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *info);
@@ -1185,7 +1187,7 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo
 /**
  * Gets the ha1.
  *
- * @param[in] info The #_LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The ha1.
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *info);
@@ -1309,7 +1311,7 @@ LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, 
 /**
  * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
  * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
- * @param lc The linphone core
+ * @param lc A #LinphoneCore object
  * @param to The destination address for messages.
  * @return #LinphoneChatRoom where messaging can take place.
 **/
@@ -1317,25 +1319,26 @@ LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneC
 
 /**
  * Removes a chatroom including all message history from the LinphoneCore.
- * @param lc The linphone core
- * @param to The chatroom.
+ * @param lc A #LinphoneCore object
+ * @param cr A #LinphoneChatRoom object
 **/
 LINPHONE_PUBLIC void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr);
 
 /**
  * Inconditionnaly disable incoming chat messages.
- * @param lc the core
+ * @param lc A #LinphoneCore object
  * @param deny_reason the deny reason (#LinphoneReasonNone has no effect).
 **/
 LINPHONE_PUBLIC void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason);
 /**
  * Enable reception of incoming chat messages.
  * By default it is enabled but it can be disabled with linphone_core_disable_chat().
- * @param lc the core
+ * @param lc A #LinphoneCore object
 **/
 LINPHONE_PUBLIC void linphone_core_enable_chat(LinphoneCore *lc);
 /**
  * Returns whether chat is enabled.
+ * @param lc A #LinphoneCore object
 **/
 LINPHONE_PUBLIC bool_t linphone_core_chat_enabled(const LinphoneCore *lc);
 /**
@@ -1484,31 +1487,31 @@ LINPHONE_PUBLIC void linphone_chat_room_compose(LinphoneChatRoom *cr);
 
 /**
  * Tells whether the remote is currently composing a message.
- * @param[in] cr The "LinphoneChatRoom object corresponding to the conversation.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
  * @return TRUE if the remote is currently composing a message, FALSE otherwise.
  */
 LINPHONE_PUBLIC bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr);
 
 /**
  * Gets the number of unread messages in the chatroom.
- * @param[in] cr The "LinphoneChatRoom object corresponding to the conversation.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
  * @return the number of unread messages.
  */
 LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr);
 /**
- * Returns back pointer to LinphoneCore object.
+ * Returns back pointer to #LinphoneCore object.
  * @deprecated use linphone_chat_room_get_core()
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 /**
- * Returns back pointer to LinphoneCore object.
+ * Returns back pointer to #LinphoneCore object.
 **/
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
 
 /**
  * When realtime text is enabled #linphone_call_params_realtime_text_enabled, #LinphoneCoreIsComposingReceivedCb is call everytime a char is received from peer.
  * At the end of remote typing a regular #LinphoneChatMessage is received with committed data from #LinphoneCoreMessageReceivedCb.
- * @param[in] msg LinphoneChatMessage
+ * @param[in] cr #LinphoneChatRoom object
  * @returns  RFC 4103/T.140 char
  */
 LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr);
@@ -1564,7 +1567,7 @@ LINPHONE_PUBLIC void linphone_chat_message_destroy(LinphoneChatMessage* msg);
  * @param[in] message #LinphoneChatMessage obj
  * @param[in] from #LinphoneAddress origin of this message (copied)
  */
-LINPHONE_PUBLIC void linphone_chat_message_set_from_address(LinphoneChatMessage* message, const LinphoneAddress* addr);
+LINPHONE_PUBLIC void linphone_chat_message_set_from_address(LinphoneChatMessage* message, const LinphoneAddress* from);
 /** @deprecated Use linphone_chat_message_get_from_address() instead. */
 #define linphone_chat_message_get_from(msg) linphone_chat_message_get_from_address(msg)
 /**
@@ -1613,6 +1616,7 @@ LINPHONE_PUBLIC	const LinphoneContent* linphone_chat_message_get_file_transfer_i
  *
  * @param message #LinphoneChatMessage
  * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
+ * @param ud user data
  * @deprecated Use linphone_chat_message_download_file() instead.
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_message_start_file_download(LinphoneChatMessage* message, LinphoneChatMessageStateChangedCb status_cb, void* ud);
@@ -1729,7 +1733,7 @@ LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(Li
  * @param[in] character T.140 char
  * @returns 0 if succeed.
  */
-LINPHONE_PUBLIC int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t charater);
+LINPHONE_PUBLIC int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t character);
 
 /**
  * get Curent Call associated to this chatroom if any
@@ -2203,6 +2207,11 @@ typedef void * (*LinphoneCoreWaitingCallback)(LinphoneCore *lc, void *context, L
 
 /* THE main API */
 
+/**
+ * @addtogroup initializing
+ * @{
+**/
+
 typedef enum _LinphoneLogCollectionState {
 	LinphoneLogCollectionDisabled,
 	LinphoneLogCollectionEnabled,
@@ -2211,49 +2220,42 @@ typedef enum _LinphoneLogCollectionState {
 
 /**
  * Tells whether the linphone core log collection is enabled.
- * @ingroup misc
  * @return The state of the linphone core log collection.
  */
 LINPHONE_PUBLIC LinphoneLogCollectionState linphone_core_log_collection_enabled(void);
 
 /**
  * Enable the linphone core log collection to upload logs on a server.
- * @ingroup misc
  * @param[in] state LinphoneLogCollectionState value telling whether to enable log collection or not.
  */
 LINPHONE_PUBLIC void linphone_core_enable_log_collection(LinphoneLogCollectionState state);
 
 /**
  * Get the path where the log files will be written for log collection.
- * @ingroup misc
  * @return The path where the log files will be written.
  */
 LINPHONE_PUBLIC const char * linphone_core_get_log_collection_path(void);
 
 /**
  * Set the path where the log files will be written for log collection.
- * @ingroup misc
  * @param[in] path The path where the log files will be written.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_collection_path(const char *path);
 
 /**
  * Get the prefix of the filenames that will be used for log collection.
- * @ingroup misc
  * @return The prefix of the filenames used for log collection.
  */
 LINPHONE_PUBLIC const char * linphone_core_get_log_collection_prefix(void);
 
 /**
  * Set the prefix of the filenames that will be used for log collection.
- * @ingroup misc
  * @param[in] prefix The prefix to use for the filenames for log collection.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_collection_prefix(const char *prefix);
 
 /**
  * Get the max file size in bytes of the files used for log collection.
- * @ingroup misc
  * @return The max file size in bytes of the files used for log collection.
  */
 LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
@@ -2264,14 +2266,12 @@ LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
  * dynamically but instead only before calling @see
  * linphone_core_enable_log_collection. If you increase max size
   * on runtime, logs chronological order COULD be broken.
- * @ingroup misc
  * @param[in] size The max file size in bytes of the files used for log collection.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_collection_max_file_size(int size);
 
 /**
  * Set the url of the server where to upload the collected log files.
- * @ingroup misc
  * @param[in] core LinphoneCore object
  * @param[in] server_url The url of the server where to upload the collected log files.
  */
@@ -2279,36 +2279,30 @@ LINPHONE_PUBLIC void linphone_core_set_log_collection_upload_server_url(Linphone
 
 /**
  * Upload the log collection to the configured server url.
- * @ingroup misc
  * @param[in] core LinphoneCore object
  */
 LINPHONE_PUBLIC void linphone_core_upload_log_collection(LinphoneCore *core);
 
 /**
  * Compress the log collection in a single file.
- * @ingroup misc
  * @return The path of the compressed log collection file (to be freed calling ms_free()).
  */
 LINPHONE_PUBLIC char * linphone_core_compress_log_collection(void);
 
 /**
  * Reset the log collection by removing the log files.
- * @ingroup misc
  */
 LINPHONE_PUBLIC void linphone_core_reset_log_collection(void);
 
 /**
  * Define a log handler.
  *
- * @ingroup misc
- *
  * @param logfunc The function pointer of the log handler.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
+
 /**
  * Define a log file.
- *
- * @ingroup misc
  *
  * If the file pointer passed as an argument is NULL, stdout is used instead.
  *
@@ -2322,10 +2316,9 @@ LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
  * @param loglevel Minimum level for logging messages.
 **/
 LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
+
 /**
  * Define the log level using mask.
- *
- * @ingroup misc
  *
  * The loglevel parameter is a bitmask parameter. Therefore to enable only warning and error
  * messages, use ORTP_WARNING | ORTP_ERROR. To disable logs, simply set loglevel to 0.
@@ -2337,7 +2330,6 @@ LINPHONE_PUBLIC void linphone_core_set_log_level_mask(OrtpLogLevel loglevel);
 /**
  * Enable logs in supplied FILE*.
  *
- * @ingroup misc
  * @deprecated Use #linphone_core_set_log_file and #linphone_core_set_log_level instead.
  *
  * @param file a C FILE* where to fprintf logs. If null stdout is used.
@@ -2348,7 +2340,6 @@ LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
 /**
  * Enable logs through the user's supplied log callback.
  *
- * @ingroup misc
  * @deprecated Use #linphone_core_set_log_handler and #linphone_core_set_log_level instead.
  *
  * @param logfunc The address of a OrtpLogFunc callback whose protoype is
@@ -2360,7 +2351,6 @@ LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 /**
  * Entirely disable logging.
  *
- * @ingroup misc
  * @deprecated Use #linphone_core_set_log_level instead.
 **/
 LINPHONE_PUBLIC void linphone_core_disable_logs(void);
@@ -2368,15 +2358,11 @@ LINPHONE_PUBLIC void linphone_core_disable_logs(void);
 /**
  * Enable logs serialization (output logs from either the thread that creates the linphone core or the thread that calls linphone_core_iterate()).
  * Must be called before creating the linphone core.
- * @ingroup misc
  */
 LINPHONE_PUBLIC void linphone_core_serialize_logs(void);
 
 /**
  * Returns liblinphone's version as a string.
- *
- * @ingroup misc
- *
 **/
 LINPHONE_PUBLIC	const char *linphone_core_get_version(void);
 
@@ -2392,6 +2378,10 @@ LINPHONE_PUBLIC	LINPHONE_DEPRECATED const char *linphone_core_get_user_agent_nam
  * @deprecated Use #linphone_core_get_user_agent instead.
 **/
 LINPHONE_PUBLIC	LINPHONE_DEPRECATED const char *linphone_core_get_user_agent_version(void);
+
+/**
+ * @}
+**/
 
 /**
  * Instanciates a LinphoneCore object.
@@ -2758,7 +2748,7 @@ LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
 /**
  * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.
  * @param[in] lc #LinphoneCore object.
- * @param[in] a #MSList of strings containing the IP addresses of DNS servers to be used.
+ * @param[in] servers A #MSList of strings containing the IP addresses of DNS servers to be used.
  * Setting to NULL restores default behaviour, which is to use the DNS server list provided by the system.
  * The list is copied internally.
  * @ingroup media_parameters
@@ -2980,7 +2970,7 @@ LINPHONE_PUBLIC void linphone_core_set_default_proxy_config(LinphoneCore *lc, Li
  * @param[in] ha1 String containing a ha1 hash of the password (optional, either passwd or ha1 must be set)
  * @param[in] realm String used to discriminate different SIP authentication domains (optional)
  * @param[in] domain String containing the SIP domain for which this authentication information is valid, if it has to be restricted for a single SIP domain.
- * @return #_LinphoneAuthInfo with default values set
+ * @return #LinphoneAuthInfo with default values set
  * @ingroup authentication
  */
 LINPHONE_PUBLIC LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain);
@@ -2997,8 +2987,8 @@ LINPHONE_PUBLIC const MSList *linphone_core_get_auth_info_list(const LinphoneCor
  * @param lc the LinphoneCore
  * @param realm the authentication 'realm' (optional)
  * @param username the SIP username to be authenticated (mandatory)
- * @param domain the SIP domain name (optional)
- * @return a #_LinphoneAuthInfo
+ * @param sip_domain the SIP domain name (optional)
+ * @return a #LinphoneAuthInfo
 **/
 LINPHONE_PUBLIC const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *sip_domain);
 
@@ -3375,6 +3365,7 @@ LINPHONE_PUBLIC const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
  * Get the list of call logs (past calls) that matches the given #LinphoneAddress.
  * At the contrary of linphone_core_get_call_logs, it is your responsability to unref the logs and free this list once you are done using it.
  * @param[in] lc LinphoneCore object
+ * @param[in] addr LinphoneAddress object
  * @return \mslist{LinphoneCallLog}
 **/
 LINPHONE_PUBLIC MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr);
@@ -3933,7 +3924,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_user_certificates_path(LinphoneCor
 /**
  * Reload mediastreamer2 plugins from specified directory.
  * @param[in] lc #LinphoneCore object.
- * @param[in] directory the path from where plugins are to be loaded, pass NULL to use default (compile-time determined) plugin directory.
+ * @param[in] path the path from where plugins are to be loaded, pass NULL to use default (compile-time determined) plugin directory.
  * @ingroup initializing
  */
 LINPHONE_PUBLIC void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path);
@@ -3955,7 +3946,7 @@ LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCor
 /**
  * Create a conference
  * @param lc The #LinphoneCore instance where the conference will be created inside.
- * @param params Parameters of the conference. See #LinphoneConferenceParms.
+ * @param params Parameters of the conference. See #LinphoneConferenceParams.
  * @return A pointer on the freshly created conference. That object will be automatically
  * freed by the core after calling linphone_core_terminate_conference().
  */
@@ -4045,7 +4036,7 @@ LINPHONE_PUBLIC int linphone_core_get_conference_size(LinphoneCore *lc);
 LINPHONE_PUBLIC int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path);
 /**
  * Stop recording the running conference
- * @param #LinphoneCore
+ * @param lc #LinphoneCore
  * @return 0 if succeeded. Negative number if failed
  */
 LINPHONE_PUBLIC int linphone_core_stop_conference_recording(LinphoneCore *lc);
@@ -4264,8 +4255,8 @@ LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneC
 /**
  * Returns whether a specific file format is supported.
  * @see linphone_core_get_supported_file_formats
- * @param lc the core
- * @param the format extension (wav, mkv).
+ * @param lc A #LinphoneCore object
+ * @param fmt The format extension (wav, mkv).
  * @ingroup media_paramaters
 **/
 LINPHONE_PUBLIC bool_t linphone_core_file_format_supported(LinphoneCore *lc, const char *fmt);
@@ -4323,9 +4314,10 @@ LINPHONE_PUBLIC const char* linphone_core_get_video_multicast_addr(const Linphon
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC int linphone_core_set_audio_multicast_ttl(LinphoneCore *core, int ttl);
+
 /**
  * Use to set multicast ttl to be used for video stream.
- * @param core #LinphoneCore
+ * @param lc #LinphoneCore
  * @param  ttl value or -1 if not used. [0..255] default value is 1
  * @return 0 in case of success
  * @ingroup media_parameters
@@ -4434,7 +4426,7 @@ LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
 /**
  * Set http proxy address to be used for signaling during next channel connection. Use #linphone_core_set_network_reachable FASLE/TRUE to force channel restart.
  * @param[in] lc LinphoneCore object
- * @param[in] hostname of IP adress of the http proxy (can be NULL to disable).
+ * @param[in] host Hostname of IP adress of the http proxy (can be NULL to disable).
  * @ingroup network_parameters
  */
 LINPHONE_PUBLIC	void linphone_core_set_http_proxy_host(LinphoneCore *lc, const char *host) ;

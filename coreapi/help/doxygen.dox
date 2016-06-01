@@ -55,9 +55,10 @@
  * @defgroup media_parameters Controlling media parameters
  *<b> Multicast </b>
  *<br> Call using rtp multicast addresses are supported for both audio and video with some limitations. Limitations are, no stun, no ice, no encryption.
- *<br><li> Incoming call with multicast address are automatically accepted. The called party switches in a media receive only mode.
+ *<br><ul><li> Incoming call with multicast address are automatically accepted. The called party switches in a media receive only mode.</li>
  *<br><li> Outgoing call willing to send media to a multicast address can activate multicast using \link linphone_core_enable_video_multicast\endlink or
- *\link linphone_core_enable_audio_multicast\endlink . The calling party switches in a media listen send only mode.
+ *\link linphone_core_enable_audio_multicast\endlink . The calling party switches in a media listen send only mode.</li>
+ *</ul>
 **/
 
 /**
@@ -171,13 +172,13 @@ linphone_friend_done(my_friend); /*commit changes triggering an UNSUBSCRIBE mess
 /**
 * @defgroup chatroom Chat room and Messaging
 <b> Exchanging text messages</b>
-<br> Messages are sent using #LinphoneChatRoom object. First step is to create a \link linphone_core_create_chat_room() chat room \endlink
+<br> Messages are sent using #LinphoneChatRoom object. First step is to create a \link linphone_core_get_chat_room() chat room \endlink
 from a peer sip uri.
 \code
-LinphoneChatRoom* chat_room = linphone_core_create_chat_room(lc,"sip:joe@sip.linphone.org");
+LinphoneChatRoom* chat_room = linphone_core_get_chat_room(lc,"sip:joe@sip.linphone.org");
 \endcode
 
-<br>Once created, messages are sent using function linphone_chat_room_send_message()  .
+<br>Once created, messages are sent using function linphone_chat_room_send_message().
 \code
 linphone_chat_room_send_message(chat_room,"Hello world"); /*sending message*/
 \endcode

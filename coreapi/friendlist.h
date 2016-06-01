@@ -156,7 +156,7 @@ LINPHONE_PUBLIC void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, 
 /**
  * Add a friend to a friend list. If or when a remote CardDAV server will be attached to the list, the friend will be sent to the server.
  * @param[in] list LinphoneFriendList object.
- * @param[in] friend LinphoneFriend object to add to the friend list.
+ * @param[in] lf LinphoneFriend object to add to the friend list.
  * @return LinphoneFriendListOK if successfully added, LinphoneFriendListInvalidFriend if the friend is not valid.
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf);
@@ -165,7 +165,7 @@ LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(Linphon
  * Add a friend to a friend list. The friend will never be sent to a remote CardDAV server.
  * Warning! LinphoneFriends added this way will be removed on the next synchronization, and the callback contact_deleted will be called.
  * @param[in] list LinphoneFriendList object.
- * @param[in] friend LinphoneFriend object to add to the friend list.
+ * @param[in] lf LinphoneFriend object to add to the friend list.
  * @return LinphoneFriendListOK if successfully added, LinphoneFriendListInvalidFriend if the friend is not valid.
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_local_friend(LinphoneFriendList *list, LinphoneFriend *lf);
@@ -173,10 +173,10 @@ LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_local_friend(L
 /**
  * Remove a friend from a friend list.
  * @param[in] list LinphoneFriendList object.
- * @param[in] friend LinphoneFriend object to remove from the friend list.
+ * @param[in] lf LinphoneFriend object to remove from the friend list.
  * @return LinphoneFriendListOK if removed successfully, LinphoneFriendListNonExistentFriend if the friend is not in the list.
 **/
-LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
+LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *lf);
 
 /**
  * Retrieves the list of LinphoneFriend from this LinphoneFriendList.
@@ -228,7 +228,7 @@ LINPHONE_PUBLIC const char * linphone_friend_list_get_uri(const LinphoneFriendLi
 /**
  * Set the URI associated with the friend list.
  * @param[in] list LinphoneFriendList object.
- * @param[in] rls_uri The URI to associate with the friend list.
+ * @param[in] uri The URI to associate with the friend list.
 **/
 LINPHONE_PUBLIC void linphone_friend_list_set_uri(LinphoneFriendList *list, const char *uri);
 
@@ -276,7 +276,7 @@ typedef void (*LinphoneFriendListCbsSyncStateChangedCb)(LinphoneFriendList *list
 
 /**
  * Get the LinphoneFriendListCbs object associated with a LinphoneFriendList.
- * @param[in] request LinphoneXmlRpcRequest object
+ * @param[in] list LinphoneFriendList object
  * @return The LinphoneFriendListCbs object associated with the LinphoneFriendList.
 **/
 LINPHONE_PUBLIC LinphoneFriendListCbs * linphone_friend_list_get_callbacks(const LinphoneFriendList *list);

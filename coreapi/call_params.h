@@ -251,7 +251,7 @@ LINPHONE_PUBLIC void linphone_call_params_set_media_encryption(LinphoneCallParam
  * @param[in] cp LinphoneCallParams object
  * @param[in] privacy The privacy mode to used for the call.
 **/
-LINPHONE_PUBLIC void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy);
+LINPHONE_PUBLIC void linphone_call_params_set_privacy(LinphoneCallParams *cp, LinphonePrivacyMask privacy);
 
 /**
  * Enable recording of the call.
@@ -288,29 +288,29 @@ LINPHONE_PUBLIC bool_t linphone_call_params_video_enabled(const LinphoneCallPara
 
 /**
  * Get the audio stream direction.
- * @param[in] cl LinphoneCallParams object
+ * @param[in] cp LinphoneCallParams object
  * @return The audio stream direction associated with the call params.
 **/
 LINPHONE_PUBLIC  LinphoneMediaDirection linphone_call_params_get_audio_direction(const LinphoneCallParams *cp);
 
 /**
  * Get the video stream direction.
- * @param[in] cl LinphoneCallParams object
+ * @param[in] cp LinphoneCallParams object
  * @return The video stream direction associated with the call params.
 **/
 LINPHONE_PUBLIC  LinphoneMediaDirection linphone_call_params_get_video_direction(const LinphoneCallParams *cp);
 
 /**
  * Set the audio stream direction.
- * @param[in] cl LinphoneCallParams object
- * @param[in] The audio stream direction associated with this call params.
+ * @param[in] cp LinphoneCallParams object
+ * @param[in] dir The audio stream direction associated with this call params.
 **/
 LINPHONE_PUBLIC void linphone_call_params_set_audio_direction(LinphoneCallParams *cp, LinphoneMediaDirection dir);
 
 /**
  * Set the video stream direction.
- * @param[in] cl LinphoneCallParams object
- * @param[in] The video stream direction associated with this call params.
+ * @param[in] cp LinphoneCallParams object
+ * @param[in] dir The video stream direction associated with this call params.
 **/
 LINPHONE_PUBLIC void linphone_call_params_set_video_direction(LinphoneCallParams *cp, LinphoneMediaDirection dir);
 
@@ -321,28 +321,28 @@ LINPHONE_PUBLIC void linphone_call_params_set_video_direction(LinphoneCallParams
 
 /**
  * Get the user data associated with the call params.
- * @param[in] cl LinphoneCallParams object
+ * @param[in] cp LinphoneCallParams object
  * @return The user data associated with the call params.
 **/
 LINPHONE_PUBLIC void *linphone_call_params_get_user_data(const LinphoneCallParams *cp);
 
 /**
  * Assign a user data to the call params.
- * @param[in] cl LinphoneCallParams object
+ * @param[in] cp LinphoneCallParams object
  * @param[in] ud The user data to associate with the call params.
 **/
 LINPHONE_PUBLIC void linphone_call_params_set_user_data(LinphoneCallParams *cp, void *ud);
 
 /**
  * Acquire a reference to the call params.
- * @param[in] cl LinphoneCallParams object
+ * @param[in] cp LinphoneCallParams object
  * @return The same LinphoneCallParams object
 **/
 LINPHONE_PUBLIC LinphoneCallParams * linphone_call_params_ref(LinphoneCallParams *cp);
 
 /**
  * Release a reference to the call params.
- * @param[in] cl LinphoneCallParams object
+ * @param[in] cp LinphoneCallParams object
 **/
 LINPHONE_PUBLIC void linphone_call_params_unref(LinphoneCallParams *cp);
 
@@ -351,29 +351,30 @@ LINPHONE_PUBLIC void linphone_call_params_unref(LinphoneCallParams *cp);
  * Use to enable multicast rtp for audio stream.
  * * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into audio cline. In case of outgoing call audio stream is sent to this multicast address.
  * <br> For incoming calls behavior is unchanged.
- * @param core #LinphoneCallParams
+ * @param params #LinphoneCallParams
  * @param yesno if yes, subsequent calls will propose multicast ip set by #linphone_core_set_audio_multicast_addr
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC void linphone_call_params_enable_audio_multicast(LinphoneCallParams *param, bool_t yesno);
+LINPHONE_PUBLIC void linphone_call_params_enable_audio_multicast(LinphoneCallParams *params, bool_t yesno);
 
 /**
  * Use to get multicast state of audio stream.
- * @param core #LinphoneCallParams
+ * @param params #LinphoneCallParams
  * @return true if  subsequent calls will propose multicast ip set by #linphone_core_set_audio_multicast_addr
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC bool_t linphone_call_params_audio_multicast_enabled(const LinphoneCallParams *param);
+LINPHONE_PUBLIC bool_t linphone_call_params_audio_multicast_enabled(const LinphoneCallParams *params);
 
 /**
  * Use to enable multicast rtp for video stream.
  * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into video cline. In case of outgoing call video stream is sent to this  multicast address.
  * <br> For incoming calls behavior is unchanged.
- * @param core #LinphoneCallParams
+ * @param params #LinphoneCallParams
  * @param yesno if yes, subsequent outgoing calls will propose multicast ip set by #linphone_core_set_video_multicast_addr
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC void linphone_call_params_enable_video_multicast(LinphoneCallParams *params, bool_t yesno);
+
 /**
  * Use to get multicast state of video stream.
  * @param params #LinphoneCallParams

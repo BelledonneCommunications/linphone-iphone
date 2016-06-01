@@ -197,7 +197,8 @@ bool_t linphone_address_get_secure(const LinphoneAddress *uri){
 
 /**
  * Make the address refer to a secure location (sips scheme)
- * @param enabled TRUE if address is requested to be secure.
+ * @param[in] addr A #LinphoneAddress object
+ * @param[in] enabled TRUE if address is requested to be secure.
 **/
 void linphone_address_set_secure(LinphoneAddress *addr, bool_t enabled){
 	sal_address_set_secure(addr, enabled);

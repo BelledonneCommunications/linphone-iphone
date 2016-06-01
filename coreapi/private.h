@@ -1473,10 +1473,12 @@ const char *linphone_content_get_key(const LinphoneContent *content);
  * @return The key size in bytes
  */
 size_t linphone_content_get_key_size(const LinphoneContent *content);
+
 /**
  * Set the key associated with a RCS file transfer message if encrypted
  * @param[in] content LinphoneContent object.
  * @param[in] key The key to be used to encrypt/decrypt file associated to this content.
+ * @param[in] keyLength The lengh of the key.
  */
 void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength);
 

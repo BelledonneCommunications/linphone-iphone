@@ -125,14 +125,14 @@ LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vC
 /**
  * Adds a phone number in the vCard, using the TEL property
  * @param[in] vCard the LinphoneVcard
- * @param[in] sip_address the phone number to add
+ * @param[in] phone the phone number to add
  */
 void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone);
 
 /**
  * Removes a phone number in the vCard (if it exists), using the TEL property
  * @param[in] vCard the LinphoneVcard
- * @param[in] sip_address the phone number to remove
+ * @param[in] phone the phone number to remove
  */
 void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone);
 
@@ -153,7 +153,7 @@ LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vC
 /**
  * Fills the Organization field of the vCard
  * @param[in] vCard the LinphoneVcard
- * @param[in] url the Organization
+ * @param[in] organization the Organization
  */
 LINPHONE_PUBLIC void linphone_vcard_set_organization(LinphoneVcard *vCard, const char *organization);
 
