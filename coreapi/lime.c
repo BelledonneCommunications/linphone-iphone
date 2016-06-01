@@ -459,21 +459,21 @@ static int lime_deriveKey(limeKey_t *key) {
 	return 0;
 }
 
-void lime_freeKeys(limeURIKeys_t associatedKeys) {
+void lime_freeKeys(limeURIKeys_t *associatedKeys) {
 	int i;
 
 	/* free all associated keys */
-	for (i=0; i< associatedKeys.associatedZIDNumber; i++) {
-		if (associatedKeys.peerKeys[i] != NULL) {
-			free(associatedKeys.peerKeys[i]);
-			associatedKeys.peerKeys[i] = NULL;
+	for (i=0; i< associatedKeys->associatedZIDNumber; i++) {
+		if (associatedKeys->peerKeys[i] != NULL) {
+			free(associatedKeys->peerKeys[i]);
+			associatedKeys->peerKeys[i] = NULL;
 		}
 	}
 
-	free(associatedKeys.peerKeys);
+	free(associatedKeys->peerKeys);
 
 	/* free sipURI string */
-	free(associatedKeys.peerURI);
+	free(associatedKeys->peerURI);
 }
 
 int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
@@ -594,12 +594,12 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	associatedKeys.peerKeys = NULL;
 
 	if (lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys) != 0) {
-		lime_freeKeys(associatedKeys);
+		lime_freeKeys(&associatedKeys);
 		return LIME_UNABLE_TO_ENCRYPT_MESSAGE;
 	}
 
 	if (associatedKeys.associatedZIDNumber == 0) {
-		lime_freeKeys(associatedKeys);
+		lime_freeKeys(&associatedKeys);
 		return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
 	}
 
@@ -667,7 +667,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	xmlDocDumpFormatMemoryEnc(xmlOutputMessage, output, &xmlStringLength, "UTF-8", 0);
 	xmlFreeDoc(xmlOutputMessage);
 
-	lime_freeKeys(associatedKeys);
+	lime_freeKeys(&associatedKeys);
 
 	return 0;
 }
@@ -817,7 +817,7 @@ int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
 int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) { return LIME_NOT_ENABLED;}
 int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {return LIME_NOT_ENABLED;}
-void lime_freeKeys(limeURIKeys_t associatedKeys){
+void lime_freeKeys(limeURIKeys_t *associatedKeys){
 }
 int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys){
 	return LIME_NOT_ENABLED;

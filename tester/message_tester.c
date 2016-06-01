@@ -1010,7 +1010,7 @@ static void lime_unit(void) {
 	BC_ASSERT_EQUAL(retval, 0, int, "%d");
 
 	/* free memory */
-	lime_freeKeys(associatedKeys);
+	lime_freeKeys(&associatedKeys);
 
 	/* write the file */
 	/* dump the xml document into a string */

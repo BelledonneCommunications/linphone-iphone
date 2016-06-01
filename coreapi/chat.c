@@ -297,7 +297,7 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 							associatedKeys.peerKeys = NULL;
 
 							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0 && associatedKeys.associatedZIDNumber != 0);
-							lime_freeKeys(associatedKeys);
+							lime_freeKeys(&associatedKeys);
 							xmlFreeDoc(cacheXml);
 							return res;
 						}

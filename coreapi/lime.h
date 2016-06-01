@@ -98,11 +98,12 @@ LINPHONE_PUBLIC int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associat
 /**
  * @brief Free all allocated data in the associated keys structure
  * Note, this will also free the peerURI string which then must have been allocated
+ * This does not free the memory area pointed by associatedKeys.
  *
  * @param[in,out]	associatedKeys	The structure to be cleaned
  *
  */
-LINPHONE_PUBLIC void lime_freeKeys(limeURIKeys_t associatedKeys);
+LINPHONE_PUBLIC void lime_freeKeys(limeURIKeys_t *associatedKeys);
 
 /**
  * @brief encrypt a message with the given key
