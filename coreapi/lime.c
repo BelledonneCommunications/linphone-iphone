@@ -465,15 +465,18 @@ void lime_freeKeys(limeURIKeys_t *associatedKeys) {
 	/* free all associated keys */
 	for (i=0; i< associatedKeys->associatedZIDNumber; i++) {
 		if (associatedKeys->peerKeys[i] != NULL) {
+			/*shouldn't we memset to zero the content of peerKeys[i] in order clear keys?*/
 			free(associatedKeys->peerKeys[i]);
 			associatedKeys->peerKeys[i] = NULL;
 		}
 	}
 
 	free(associatedKeys->peerKeys);
+	associatedKeys->peerKeys = NULL;
 
 	/* free sipURI string */
 	free(associatedKeys->peerURI);
+	associatedKeys->peerURI = NULL;
 }
 
 int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
