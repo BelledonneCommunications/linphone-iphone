@@ -5199,7 +5199,7 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	char *stun_server_username = NULL;
 	
 	if (lc->nat_policy != NULL) {
-		nat_policy = lc->nat_policy;
+		nat_policy = linphone_nat_policy_ref(lc->nat_policy);
 		stun_server = ms_strdup(linphone_nat_policy_get_stun_server(nat_policy));
 		stun_server_username = ms_strdup(linphone_nat_policy_get_stun_server_username(nat_policy));
 		linphone_nat_policy_clear(nat_policy);
