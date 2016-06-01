@@ -4707,9 +4707,9 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setCustomH
 
 JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getCustomHeader(JNIEnv *env, jobject thiz, jlong ptr, jstring jname) {
 	const char *name = jname ? env->GetStringUTFChars(jname, NULL) : NULL;
-	jstring jvalue = env->NewStringUTF(linphone_proxy_config_get_custom_header((LinphoneProxyConfig *)ptr, name));
+	const char *value = linphone_proxy_config_get_custom_header((LinphoneProxyConfig *)ptr, name);
 	if (jname) env->ReleaseStringUTFChars(jname, name);
-	return jvalue;
+	return value ? env->NewStringUTF(value) : NULL;
 }
 
 
