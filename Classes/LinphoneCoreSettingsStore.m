@@ -325,7 +325,7 @@
 			else
 				[self setObject:[NSString stringWithFormat:@"%d", minPort] forKey:@"video_port_preference"];
 		}
-		[self setBool:[lm lpConfigBoolForKey:@"use_ipv6" withDefault:NO] forKey:@"use_ipv6"];
+		[self setBool:linphone_core_ipv6_enabled(LC) forKey:@"use_ipv6"];
 		LinphoneMediaEncryption menc = linphone_core_get_media_encryption(LC);
 		const char *val;
 		switch (menc) {
@@ -378,8 +378,8 @@
 		if (parsed != NULL) {
 			[self setCString:linphone_address_get_display_name(parsed) forKey:@"primary_displayname_preference"];
 			[self setCString:linphone_address_get_username(parsed) forKey:@"primary_username_preference"];
+			linphone_address_destroy(parsed);
 		}
-		linphone_address_destroy(parsed);
 		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
 	}
 
@@ -425,10 +425,8 @@
 
 	BOOL enable_ipv6 = [self boolForKey:@"use_ipv6"];
 	[lm lpConfigSetBool:enable_ipv6 forKey:@"use_ipv6" inSection:@"sip"];
-	if (linphone_core_ipv6_enabled(LC) != enable_ipv6) {
-		LOGD(@"%@ IPV6", enable_ipv6 ? @"ENABLING" : @"DISABLING");
-		linphone_core_enable_ipv6(LC, enable_ipv6);
-	}
+	LOGD(@"%@ IPV6", enable_ipv6 ? @"ENABLING" : @"DISABLING");
+	linphone_core_enable_ipv6(LC, enable_ipv6);
 
 	// configure sip account
 
