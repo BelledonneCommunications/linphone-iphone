@@ -70,6 +70,8 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	LOGI(@"Bundle path: %@", bundlePath);
 	LOGI(@"Document path: %@", documentPath);
 
+	liblinphonetester_ipv6 = true;
+
 	int count = bc_tester_nb_suites();
 	_objects = [[NSMutableArray alloc] initWithCapacity:count + 1];
 	[_objects addObject:@"All"];
