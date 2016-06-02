@@ -28,6 +28,9 @@
 @property(readonly, nonatomic) NSMutableDictionary *addressBookMap;
 
 - (void)reload;
+- (void)saveAddressBook;
+- (int)removeContact:(Contact *)contact;
+- (BOOL)saveContact:(Contact *)contact;
 
 + (BOOL)isAuthorized;
 

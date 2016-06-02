@@ -47,73 +47,6 @@
 	_person = nil;
 	_friend = NULL;
 }
-#pragma mark - Misc
-- (int)remove {
-	// Remove contact from book
-	if (_person && ABRecordGetRecordID(_person) != kABRecordInvalidID) {
-		CFErrorRef error = NULL;
-		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
-		if (!addressBook) {
-			LOGE(@"Cannot retrieve address book");
-			return -3;
-		}
-		ABAddressBookGetAuthorizationStatus();
-
-		ABAddressBookRemoveRecord(addressBook, _person, &error);
-		if (error != NULL) {
-			LOGE(@"Remove contact %p: Fail(%@)", self, [(__bridge NSError *)error localizedDescription]);
-			CFRelease(addressBook);
-			return -3;
-		} else {
-			LOGI(@"Remove contact %p: Success!", self);
-		}
-
-		// Save address book
-		error = NULL;
-		ABAddressBookSave(addressBook, &error);
-
-		_person = nil;
-
-		if (error != NULL) {
-			LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
-		} else {
-			LOGI(@"Save AddressBook: Success!");
-		}
-		CFRelease(addressBook);
-		return error ? -1 : 0;
-	}
-	return -2;
-}
-
-- (BOOL)save {
-	CFErrorRef error = NULL;
-	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
-	if (!addressBook) {
-		LOGE(@"Cannot retrieve address book");
-		return FALSE;
-	}
-	if (ABRecordGetRecordID(_person) == kABRecordInvalidID) {
-		if (ABAddressBookAddRecord(addressBook, _person, &error)) {
-			LOGI(@"Add contact %p: Success!", _person);
-		} else {
-			LOGE(@"Add contact %p: Fail(%@)", _person, [(__bridge NSError *)error localizedDescription]);
-			CFRelease(addressBook);
-			return FALSE;
-		}
-	}
-
-	// Save address book
-	error = NULL;
-	if (ABAddressBookSave(addressBook, &error)) {
-		LOGI(@"Save AddressBook: Success!");
-	} else {
-		LOGE(@"Save AddressBook: Fail(%@)",
-			 error ? [(__bridge NSError *)error localizedDescription] : @"unknown error");
-		return FALSE;
-	}
-	CFRelease(addressBook);
-	return error == NULL;
-}
 
 #pragma mark - Getters
 - (UIImage *)avatar:(BOOL)thumbnail {
@@ -165,6 +98,25 @@
 
 #pragma mark - Setters
 
+- (void)setAvatar:(UIImage *)avatar {
+	if (_person) {
+		CFErrorRef error = NULL;
+		if (!ABPersonRemoveImageData(_person, &error)) {
+			LOGW(@"Can't remove entry: %@", [(__bridge NSError *)error localizedDescription]);
+		}
+		NSData *dataRef = UIImageJPEGRepresentation(avatar, 0.9f);
+		CFDataRef cfdata = CFDataCreate(NULL, [dataRef bytes], [dataRef length]);
+
+		if (!ABPersonSetImageData(_person, cfdata, &error)) {
+			LOGW(@"Can't add entry: %@", [(__bridge NSError *)error localizedDescription]);
+		}
+
+		CFRelease(cfdata);
+	} else {
+		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
+	}
+}
+
 - (void)setFirstName:(NSString *)firstName {
 	BOOL ret = FALSE;
 	if (_person) {
@@ -188,25 +140,6 @@
 
 	if (ret) {
 		_lastName = lastName;
-	}
-}
-
-- (void)setAvatar:(UIImage *)avatar {
-	if (_person) {
-		CFErrorRef error = NULL;
-		if (!ABPersonRemoveImageData(_person, &error)) {
-			LOGW(@"Can't remove entry: %@", [(__bridge NSError *)error localizedDescription]);
-		}
-		NSData *dataRef = UIImageJPEGRepresentation(avatar, 0.9f);
-		CFDataRef cfdata = CFDataCreate(NULL, [dataRef bytes], [dataRef length]);
-
-		if (!ABPersonSetImageData(_person, cfdata, &error)) {
-			LOGW(@"Can't add entry: %@", [(__bridge NSError *)error localizedDescription]);
-		}
-
-		CFRelease(cfdata);
-	} else {
-		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
 	}
 }
 

@@ -22,13 +22,13 @@
 @property(nonatomic, strong) NSMutableArray *emails;
 @property(nonatomic, strong) NSMutableArray *phoneNumbers;
 
+- (void)setAvatar:(UIImage *)avatar;
 - (UIImage *)avatar:(BOOL)thumbnail;
 - (NSString *)displayName;
 
 - (instancetype)initWithPerson:(ABRecordRef)person;
 - (instancetype)initWithFriend:(LinphoneFriend *) friend;
 
-- (void)setAvatar:(UIImage *)avatar;
 - (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index;
 - (BOOL)setEmail:(NSString *)email atIndex:(NSInteger)index;
 - (BOOL)setPhoneNumber:(NSString *)phone atIndex:(NSInteger)index;
@@ -40,7 +40,4 @@
 - (BOOL)removeSipAddressAtIndex:(NSInteger)index;
 - (BOOL)removePhoneNumberAtIndex:(NSInteger)index;
 - (BOOL)removeEmailAtIndex:(NSInteger)index;
-
-- (int)remove;
-- (BOOL)save;
 @end

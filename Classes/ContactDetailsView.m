@@ -61,7 +61,7 @@
 
 - (void)removeContact {
 	inhibUpdate = TRUE;
-	[_contact remove];
+	[[LinphoneManager.instance fastAddressBook] removeContact:_contact];
 	inhibUpdate = FALSE;
 	[PhoneMainView.instance popCurrentView];
 }
@@ -73,7 +73,7 @@
 	}
 
 	// Add contact to book
-	[_contact save];
+	[LinphoneManager.instance.fastAddressBook saveContact:_contact];
 }
 
 - (void)selectContact:(Contact *)acontact andReload:(BOOL)reload {
