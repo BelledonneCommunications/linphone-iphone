@@ -757,23 +757,23 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 }
 
 test_t vcard_tests[] = {
-	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
-	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
-	{ "vCard creation for existing friends", linphone_vcard_update_existing_friends_test },
-	{ "vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses },
+	TEST_NO_TAG("Import / Export friends from vCards", linphone_vcard_import_export_friends_test),
+	TEST_NO_TAG("Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test),
+	TEST_NO_TAG("vCard creation for existing friends", linphone_vcard_update_existing_friends_test),
+	TEST_NO_TAG("vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses),
 #ifdef SQLITE_STORAGE_ENABLED
-	{ "Friends working if no db set", friends_if_no_db_set },
-	{ "Friends storage migration from rc to db", friends_migration },
-	{ "Friends storage in sqlite database", friends_sqlite_storage },
+	TEST_ONE_TAG("Friends working if no db set", friends_if_no_db_set, "LeaksMemory"),
+	TEST_ONE_TAG("Friends storage migration from rc to db", friends_migration, "LeaksMemory"),
+	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 #endif
-	{ "CardDAV clean", carddav_clean }, // This is to ensure the content of the test addressbook is in the correct state for the following tests
-	{ "CardDAV synchronization", carddav_sync },
-	{ "CardDAV synchronization 2", carddav_sync_2 },
-	{ "CardDAV synchronization 3", carddav_sync_3 },
-	{ "CardDAV synchronization 4", carddav_sync_4 },
-	{ "CardDAV integration", carddav_integration },
-	{ "CardDAV multiple synchronizations", carddav_multiple_sync },
-	{ "CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync },
+	TEST_NO_TAG("CardDAV clean", carddav_clean), // This is to ensure the content of the test addressbook is in the correct state for the following tests
+	TEST_NO_TAG("CardDAV synchronization", carddav_sync),
+	TEST_NO_TAG("CardDAV synchronization 2", carddav_sync_2),
+	TEST_NO_TAG("CardDAV synchronization 3", carddav_sync_3),
+	TEST_NO_TAG("CardDAV synchronization 4", carddav_sync_4),
+	TEST_NO_TAG("CardDAV integration", carddav_integration),
+	TEST_NO_TAG("CardDAV multiple synchronizations", carddav_multiple_sync),
+	TEST_NO_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync)
 };
 
 test_suite_t vcard_test_suite = {
