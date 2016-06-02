@@ -215,7 +215,6 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 
 
 		timediff = labs((long int)log_time - (long int)cur_time);
-		(void)timediff;
 #ifndef _WIN32
 		BC_ASSERT_LOWER(timediff, 1, unsigned, "%u");
 		if( !(timediff <= 1) ){
@@ -230,6 +229,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 			);
 		}
 #else
+		(void)timediff;
 		ms_warning("strptime() not available for this platform, test is incomplete.");
 #endif
 	}
