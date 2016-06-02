@@ -190,6 +190,8 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 	}while (!liblinphone_tester_clock_elapsed(&ts,max_time_to_wait));
 
 	if (linphone_core_rtcp_enabled(caller->lc) && linphone_core_rtcp_enabled(callee->lc)) {
+		BC_ASSERT_GREATER(caller->stat.number_of_rtcp_received, 1, int, "%i");
+		BC_ASSERT_GREATER(callee->stat.number_of_rtcp_received, 1, int, "%i");
 		BC_ASSERT_GREATER(linphone_call_get_audio_stats(c1)->round_trip_delay,0.0,float,"%f");
 		BC_ASSERT_GREATER(linphone_call_get_audio_stats(c2)->round_trip_delay,0.0,float,"%f");
 		if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
@@ -6164,12 +6166,12 @@ static void _call_with_rtcp_mux(bool_t caller_rtcp_mux, bool_t callee_rtcp_mux, 
 		check_ice(marie, pauline, LinphoneIceStateHostConnection);
 	}
 	liblinphone_tester_check_rtcp(marie,pauline);
-
+	
 	if (caller_rtcp_mux && callee_rtcp_mux){
 		BC_ASSERT_EQUAL(marie->stat.number_of_rtcp_received_via_mux, marie->stat.number_of_rtcp_received, int, "%i");
-		BC_ASSERT_GREATER(marie->stat.number_of_rtcp_received, 0, int, "%i");
+		
 		BC_ASSERT_EQUAL(pauline->stat.number_of_rtcp_received_via_mux, pauline->stat.number_of_rtcp_received, int, "%i");
-		BC_ASSERT_GREATER(pauline->stat.number_of_rtcp_received, 0, int, "%i");
+		
 	}else{
 		BC_ASSERT_TRUE(marie->stat.number_of_rtcp_received_via_mux == 0);
 		BC_ASSERT_TRUE(pauline->stat.number_of_rtcp_received_via_mux == 0);
