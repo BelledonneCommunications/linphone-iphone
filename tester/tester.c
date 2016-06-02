@@ -149,9 +149,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 		linphone_core_set_ringback(lc, ringbackpath);
 		linphone_core_set_root_ca(lc,rootcapath);
 	}
-	
+
 	linphone_core_enable_ipv6(lc, liblinphonetester_ipv6);
-	
+
 	sal_enable_test_features(lc->sal,TRUE);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 	linphone_core_set_static_picture(lc,nowebcampath);
@@ -375,7 +375,11 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 
 	if (linphone_core_get_stun_server(mgr->lc) != NULL){
 		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
-		BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
+		const char **tags = bc_tester_current_test_tags();
+		int ice_test = (tags && ((tags[0] && !strcmp(tags[0], "ICE")) || (tags[1] && !strcmp(tags[1], "ICE"))));
+		if (ice_test) {
+			BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
+		}
 	}
 	if (!check_for_proxies){
 		/*now that stun server resolution is done, we can start registering*/
