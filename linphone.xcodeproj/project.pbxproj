@@ -579,6 +579,7 @@
 		63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
 		63B8D68C1BCBE65600C12B09 /* ChatConversationCreateView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */; };
 		63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */; };
+		63BB26A31D006F4B00DA1F83 /* libbv16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 637835A41CFD971D00599382 /* libbv16.a */; };
 		63BC49E21BA2CDFC004EC273 /* UICallPausedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */; };
 		63C441C31BBC23ED0053DC5E /* UIAssistantTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */; };
 		63CAACDB1C91D10200216F8D /* NotificationTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CAACD51C91D0D100216F8D /* NotificationTester.m */; };
@@ -1850,6 +1851,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63BB26A31D006F4B00DA1F83 /* libbv16.a in Frameworks */,
 				63FD3F101CA17FA400E9AECC /* libmbedcrypto.a in Frameworks */,
 				63FD3F111CA17FA400E9AECC /* libmbedtls.a in Frameworks */,
 				63FD3F121CA17FA400E9AECC /* libmbedx509.a in Frameworks */,
