@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sqlite3.h"
 #include <assert.h>
 
+#if 0
 static char *utf8_convert(const char *filename){
 	char db_file_utf8[MAX_PATH_SIZE] = "";
 #if defined(_WIN32)
@@ -66,7 +67,7 @@ static char *utf8_convert(const char *filename){
 #endif
 	return ms_strdup(db_file_utf8);
 }
-
+#endif
 
 int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 	char* errmsg = NULL;
@@ -79,9 +80,9 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 	flags |= SQLITE_OPEN_FILEPROTECTION_NONE;
 #endif
 	
-	char *utf8_filename = utf8_convert(db_file);
-	ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
-	ms_free(utf8_filename);
+	/*since we plug our vfs into sqlite, there is no need to convert to UTF-8.
+	 * Indeed, our filesystem wrapper uses the default system encoding*/
+	ret = sqlite3_open_v2(db_file, db, flags, LINPHONE_SQLITE3_VFS);
 
 	if (ret != SQLITE_OK) return ret;
 	// Some platforms do not provide a way to create temporary files which are needed
