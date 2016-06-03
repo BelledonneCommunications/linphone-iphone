@@ -121,11 +121,12 @@ static void check_turn_context_statistics(MSTurnContext *turn_context, bool_t fo
 	}
 }
 
-static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, bool_t callee_turn_enabled, bool_t rtcp_mux_enabled) {
+static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t caller_turn_enabled, bool_t callee_turn_enabled, bool_t rtcp_mux_enabled) {
 	LinphoneCoreManager *marie;
 	LinphoneCoreManager *pauline;
 	LinphoneCall *lcall;
 	LinphoneIceState expected_ice_state = LinphoneIceStateHostConnection;
+	LinphoneMediaDirection expected_video_dir = LinphoneMediaDirectionInactive;
 	MSList *lcs = NULL;
 
 	marie = linphone_core_manager_new("marie_rc");
@@ -147,15 +148,20 @@ static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, 
 		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "rtcp_mux", 1);
 	}
 
-	BC_ASSERT_TRUE(call(marie, pauline));
+	if (video_enabled) {
+		video_call_base_2(marie, pauline, FALSE, LinphoneMediaEncryptionNone, TRUE, TRUE);
+		expected_video_dir = LinphoneMediaDirectionSendRecv;
+	} else {
+		BC_ASSERT_TRUE(call(marie, pauline));
+	}
 
 	/* Wait for the ICE reINVITE to complete */
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
 	BC_ASSERT_TRUE(check_ice(pauline, marie, expected_ice_state));
 	check_nb_media_starts(pauline, marie, 1, 1);
-	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInactive);
-	check_media_direction(pauline, linphone_core_get_current_call(pauline->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInactive);
+	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, expected_video_dir);
+	check_media_direction(pauline, linphone_core_get_current_call(pauline->lc), lcs, LinphoneMediaDirectionSendRecv, expected_video_dir);
 	liblinphone_tester_check_rtcp(marie, pauline);
 	lcall = linphone_core_get_current_call(marie->lc);
 	BC_ASSERT_PTR_NOT_NULL(lcall->ice_session);
@@ -176,19 +182,27 @@ static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, 
 }
 
 static void basic_ice_turn_call(void) {
-	ice_turn_call_base(FALSE, TRUE, TRUE, FALSE);
+	ice_turn_call_base(FALSE, FALSE, TRUE, TRUE, FALSE);
+}
+
+static void video_ice_turn_call(void) {
+	ice_turn_call_base(TRUE, FALSE, TRUE, TRUE, FALSE);
 }
 
 static void relayed_ice_turn_call(void) {
-	ice_turn_call_base(TRUE, TRUE, TRUE, FALSE);
+	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, FALSE);
+}
+
+static void relayed_video_ice_turn_call(void) {
+	ice_turn_call_base(TRUE, TRUE, TRUE, TRUE, FALSE);
 }
 
 static void relayed_ice_turn_call_with_rtcp_mux(void) {
-	ice_turn_call_base(TRUE, TRUE, TRUE, TRUE);
+	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, TRUE);
 }
 
 static void relayed_ice_turn_to_ice_stun_call(void) {
-	ice_turn_call_base(TRUE, TRUE, FALSE, FALSE);
+	ice_turn_call_base(FALSE, TRUE, TRUE, FALSE, FALSE);
 }
 
 
@@ -196,7 +210,9 @@ test_t stun_tests[] = {
 	TEST_ONE_TAG("Basic Stun test (Ping/public IP)", linphone_stun_test_grab_ip, "STUN"),
 	TEST_ONE_TAG("STUN encode", linphone_stun_test_encode, "STUN"),
 	TEST_TWO_TAGS("Basic ICE+TURN call", basic_ice_turn_call, "ICE", "TURN"),
+	TEST_TWO_TAGS("Video ICE+TURN call", video_ice_turn_call, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed ICE+TURN call", relayed_ice_turn_call, "ICE", "TURN"),
+	TEST_TWO_TAGS("Relayed video ICE+TURN call", relayed_video_ice_turn_call, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed ICE+TURN call with rtcp-mux", relayed_ice_turn_call_with_rtcp_mux, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed ICE+TURN to ICE+STUN call", relayed_ice_turn_to_ice_stun_call, "ICE", "TURN")
 };
