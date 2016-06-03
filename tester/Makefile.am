@@ -33,7 +33,7 @@ CERTIFICATE_FILES = $(CERTIFICATE_ALT_FILES) $(CERTIFICATE_CN_FILES)
 RCFILES = \
 					rcfiles/empty_rc\
 					rcfiles/laure_call_logs_rc\
-					rcfiles/laure_rc\
+					rcfiles/laure_rc_udp\
 					rcfiles/marie_early_rc\
 					rcfiles/marie_h264_rc\
 					rcfiles/marie_quality_reporting_rc\
@@ -54,7 +54,7 @@ RCFILES = \
 					rcfiles/marie_zrtp_aes256_rc\
 					rcfiles/marie_zrtp_b256_rc\
 					rcfiles/marie_zrtp_srtpsuite_aes256_rc\
-					rcfiles/michelle_rc\
+					rcfiles/michelle_rc_udp\
 					rcfiles/multi_account_rc\
 					rcfiles/pauline_alt_rc\
 					rcfiles/pauline_h264_rc\

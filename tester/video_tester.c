@@ -257,7 +257,7 @@ static void early_media_video_during_video_call_test(void) {
 
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new("pauline_tcp_rc");
-	laure = linphone_core_manager_new("laure_rc");
+	laure = linphone_core_manager_new("laure_rc_udp");
 	marie_params = configure_for_early_media_video_receiving(marie);
 	pauline_params = configure_for_video(pauline);
 	laure_params = configure_for_early_media_video_sending(laure);
@@ -307,7 +307,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new("pauline_tcp_rc");
-	laure = linphone_core_manager_new("laure_rc");
+	laure = linphone_core_manager_new("laure_rc_udp");
 	marie_params = configure_for_early_media_video_receiving(marie);
 	pauline_params = configure_for_early_media_video_sending(pauline);
 	laure_params = configure_for_early_media_video_sending(laure);
