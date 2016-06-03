@@ -149,8 +149,10 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 	}
 
 	if (video_enabled) {
+#ifdef VIDEO_ENABLED
 		video_call_base_2(marie, pauline, FALSE, LinphoneMediaEncryptionNone, TRUE, TRUE);
 		expected_video_dir = LinphoneMediaDirectionSendRecv;
+#endif
 	} else {
 		BC_ASSERT_TRUE(call(marie, pauline));
 	}
@@ -185,17 +187,21 @@ static void basic_ice_turn_call(void) {
 	ice_turn_call_base(FALSE, FALSE, TRUE, TRUE, FALSE);
 }
 
+#ifdef VIDEO_ENABLED
 static void video_ice_turn_call(void) {
 	ice_turn_call_base(TRUE, FALSE, TRUE, TRUE, FALSE);
 }
+#endif
 
 static void relayed_ice_turn_call(void) {
 	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, FALSE);
 }
 
+#ifdef VIDEO_ENABLED
 static void relayed_video_ice_turn_call(void) {
 	ice_turn_call_base(TRUE, TRUE, TRUE, TRUE, FALSE);
 }
+#endif
 
 static void relayed_ice_turn_call_with_rtcp_mux(void) {
 	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, TRUE);
@@ -210,9 +216,11 @@ test_t stun_tests[] = {
 	TEST_ONE_TAG("Basic Stun test (Ping/public IP)", linphone_stun_test_grab_ip, "STUN"),
 	TEST_ONE_TAG("STUN encode", linphone_stun_test_encode, "STUN"),
 	TEST_TWO_TAGS("Basic ICE+TURN call", basic_ice_turn_call, "ICE", "TURN"),
+#ifdef VIDEO_ENABLED
 	TEST_TWO_TAGS("Video ICE+TURN call", video_ice_turn_call, "ICE", "TURN"),
-	TEST_TWO_TAGS("Relayed ICE+TURN call", relayed_ice_turn_call, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed video ICE+TURN call", relayed_video_ice_turn_call, "ICE", "TURN"),
+#endif
+	TEST_TWO_TAGS("Relayed ICE+TURN call", relayed_ice_turn_call, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed ICE+TURN call with rtcp-mux", relayed_ice_turn_call_with_rtcp_mux, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed ICE+TURN to ICE+STUN call", relayed_ice_turn_to_ice_stun_call, "ICE", "TURN")
 };
