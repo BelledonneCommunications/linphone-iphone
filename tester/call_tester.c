@@ -243,7 +243,7 @@ static void setup_sdp_handling(const LinphoneCallTestParams* params, LinphoneCor
  * This function should be used only in test case where the programmer exactly knows the caller params, and then can deduce how
  * callee params will be set by linphone_core_create_call_params().
  * This function was developped at a time where the use of the API about incoming params was not yet clarified.
- * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so 
+ * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so
  * it is not a so good idea to build new tests based on this function.
 **/
 bool_t call_with_params2(LinphoneCoreManager* caller_mgr
@@ -403,7 +403,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
  * This function should be used only in test case where the programmer exactly knows the caller params, and then can deduce how
  * callee params will be set by linphone_core_create_call_params().
  * This function was developped at a time where the use of the API about incoming params was not yet clarified.
- * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so 
+ * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so
  * it is not a so good idea to build new tests based on this function.
 **/
 bool_t call_with_params(LinphoneCoreManager* caller_mgr
@@ -424,7 +424,7 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
  * This function should be used only in test case where the programmer exactly knows the caller params, and then can deduce how
  * callee params will be set by linphone_core_create_call_params().
  * This function was developped at a time where the use of the API about incoming params was not yet clarified.
- * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so 
+ * Tests relying on this function are then not testing the correct way to use the api (through linphone_core_create_call_params()), and so
  * it is not a so good idea to build new tests based on this function.
 **/
 bool_t call_with_test_params(LinphoneCoreManager* caller_mgr
@@ -496,7 +496,6 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 		}
 	}
 
-
 	liblinphone_tester_check_rtcp(marie,pauline);
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(pauline);
@@ -505,6 +504,54 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 
 static void simple_call(void) {
 	simple_call_base(FALSE);
+}
+
+static void simple_call_with_udp(void) {
+	LinphoneCoreManager* michelle;
+	LinphoneCoreManager* laure;
+	const LinphoneAddress *from;
+	LinphoneCall *laure_call;
+	LinphoneProxyConfig* michelle_cfg;
+
+	michelle = linphone_core_manager_new( "michelle_rc_udp");
+	laure = linphone_core_manager_new("laure_rc_udp");
+
+	/* with the account manager, we might lose the identity */
+	michelle_cfg = linphone_core_get_default_proxy_config(michelle->lc);
+	{
+		LinphoneAddress* michelle_addr = linphone_address_clone(linphone_proxy_config_get_identity_address(michelle_cfg));
+		char* michelle_tmp_id = NULL;
+		linphone_address_set_display_name(michelle_addr, "Super michelle");
+		michelle_tmp_id = linphone_address_as_string(michelle_addr);
+
+		linphone_proxy_config_edit(michelle_cfg);
+		linphone_proxy_config_set_identity(michelle_cfg,michelle_tmp_id);
+		linphone_proxy_config_done(michelle_cfg);
+
+		ms_free(michelle_tmp_id);
+		linphone_address_destroy(michelle_addr);
+	}
+
+	BC_ASSERT_TRUE(call(michelle,laure));
+	laure_call=linphone_core_get_current_call(laure->lc);
+	BC_ASSERT_PTR_NOT_NULL(laure_call);
+	/*check that display name is correctly propagated in From */
+	if (laure_call){
+		from=linphone_call_get_remote_address(linphone_core_get_current_call(laure->lc));
+		BC_ASSERT_PTR_NOT_NULL(from);
+		if (from){
+			const char *dname=linphone_address_get_display_name(from);
+			BC_ASSERT_PTR_NOT_NULL(dname);
+			if (dname){
+				BC_ASSERT_STRING_EQUAL(dname, "Super michelle");
+			}
+		}
+	}
+
+	liblinphone_tester_check_rtcp(michelle,laure);
+	end_call(michelle,laure);
+	linphone_core_manager_destroy(laure);
+	linphone_core_manager_destroy(michelle);
 }
 
 static void automatic_call_termination(void) {
@@ -1440,7 +1487,7 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_losses) {
 	}
 	linphone_core_pause_call(pauline->lc,call_pauline);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
-	
+
 	if (with_losses) {
 		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1,1000));
 		sal_set_send_error(marie->lc->sal,0); /*to trash 200ok without generating error*/
@@ -1483,10 +1530,10 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_losses) {
 		linphone_core_resume_call(pauline->lc,call_pauline);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
-		
+
 	}
 
-	
+
 	end_call(pauline, marie);
 end:
 	linphone_core_manager_destroy(marie);
@@ -3728,7 +3775,7 @@ static void call_established_with_rejected_incoming_reinvite(void) {
 static void call_redirect(void){
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* laure   = linphone_core_manager_new("laure_rc");
+	LinphoneCoreManager* laure   = linphone_core_manager_new("laure_rc_udp");
 	MSList* lcs = NULL;
 	char *laure_url = NULL;
 	LinphoneCall* marie_call;
@@ -4137,7 +4184,7 @@ void two_accepted_call_in_send_only(void) {
 	marie = linphone_core_manager_new("marie_rc");
 	linphone_core_use_files(marie->lc, TRUE);
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	laure = linphone_core_manager_new("laure_rc");
+	laure = linphone_core_manager_new("laure_rc_udp");
 
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie->lc);
@@ -4307,16 +4354,16 @@ static void call_with_very_early_call_update(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCallParams *params;
-	
+
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_invite_address(marie->lc,pauline->identity);
-	
+
 	BC_ASSERT_TRUE (wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallIncomingReceived,1));
 	BC_ASSERT_TRUE(linphone_core_inc_invite_pending(pauline->lc));
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1, int, "%d");
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallOutgoingRinging,1));
-	
+
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(pauline->lc));
 	if (linphone_core_get_current_call_remote_address(pauline->lc)) {
 		linphone_core_accept_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
@@ -4328,13 +4375,13 @@ static void call_with_very_early_call_update(void) {
 		linphone_core_update_call(pauline->lc,linphone_core_get_current_call(pauline->lc),params);
 		linphone_call_params_destroy(params);
 	}
-	
+
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdatedByRemote,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	end_call(marie,pauline);
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -6166,12 +6213,12 @@ static void _call_with_rtcp_mux(bool_t caller_rtcp_mux, bool_t callee_rtcp_mux, 
 		check_ice(marie, pauline, LinphoneIceStateHostConnection);
 	}
 	liblinphone_tester_check_rtcp(marie,pauline);
-	
+
 	if (caller_rtcp_mux && callee_rtcp_mux){
 		BC_ASSERT_EQUAL(marie->stat.number_of_rtcp_received_via_mux, marie->stat.number_of_rtcp_received, int, "%i");
-		
+
 		BC_ASSERT_EQUAL(pauline->stat.number_of_rtcp_received_via_mux, pauline->stat.number_of_rtcp_received, int, "%i");
-		
+
 	}else{
 		BC_ASSERT_TRUE(marie->stat.number_of_rtcp_received_via_mux == 0);
 		BC_ASSERT_TRUE(pauline->stat.number_of_rtcp_received_via_mux == 0);
@@ -6339,6 +6386,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Cancelled ringing call", cancelled_ringing_call),
 	TEST_NO_TAG("Call busy when calling self", call_busy_when_calling_self),
 	TEST_NO_TAG("Simple call", simple_call),
+	TEST_NO_TAG("Simple call with UDP", simple_call_with_udp),
 	TEST_ONE_TAG("Call terminated automatically by linphone_core_destroy", automatic_call_termination, "LeaksMemory"),
 	TEST_NO_TAG("Call with http proxy", call_with_http_proxy),
 	TEST_NO_TAG("Call with timeouted bye", call_with_timeouted_bye),

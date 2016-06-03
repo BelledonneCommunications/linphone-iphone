@@ -1066,7 +1066,7 @@ static void test_publish_unpublish(void) {
 static void test_list_subscribe (void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
 
 	char *list =	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 					"<resource-lists xmlns=\"urn:ietf:params:xml:ns:resource-lists\"\n"
