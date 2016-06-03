@@ -108,9 +108,23 @@ static void configure_nat_policy(LinphoneCore *lc, bool_t turn_enabled) {
 	linphone_auth_info_destroy(auth_info);
 }
 
-static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, bool_t callee_turn_enabled) {
+static void check_turn_context_statistics(MSTurnContext *turn_context, bool_t forced_relay) {
+	BC_ASSERT_TRUE(turn_context->stats.nb_successful_allocate > 1);
+	if (forced_relay == TRUE) {
+		BC_ASSERT_TRUE(turn_context->stats.nb_send_indication > 0);
+		BC_ASSERT_TRUE(turn_context->stats.nb_data_indication > 0);
+		BC_ASSERT_TRUE(turn_context->stats.nb_received_channel_msg > 0);
+		BC_ASSERT_TRUE(turn_context->stats.nb_sent_channel_msg > 0);
+		BC_ASSERT_TRUE(turn_context->stats.nb_successful_refresh > 0);
+		BC_ASSERT_TRUE(turn_context->stats.nb_successful_create_permission > 1);
+		BC_ASSERT_TRUE(turn_context->stats.nb_successful_channel_bind > 1);
+	}
+}
+
+static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, bool_t callee_turn_enabled, bool_t rtcp_mux_enabled) {
 	LinphoneCoreManager *marie;
 	LinphoneCoreManager *pauline;
+	LinphoneCall *lcall;
 	LinphoneIceState expected_ice_state = LinphoneIceStateHostConnection;
 	MSList *lcs = NULL;
 
@@ -124,7 +138,13 @@ static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, 
 	if (forced_relay == TRUE) {
 		linphone_core_enable_forced_ice_relay(marie->lc, TRUE);
 		linphone_core_enable_forced_ice_relay(pauline->lc, TRUE);
+		linphone_core_enable_short_turn_refresh(marie->lc, TRUE);
+		linphone_core_enable_short_turn_refresh(pauline->lc, TRUE);
 		expected_ice_state = LinphoneIceStateRelayConnection;
+	}
+	if (rtcp_mux_enabled == TRUE) {
+		lp_config_set_int(linphone_core_get_config(marie->lc), "rtp", "rtcp_mux", 1);
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "rtcp_mux", 1);
 	}
 
 	BC_ASSERT_TRUE(call(marie, pauline));
@@ -137,18 +157,14 @@ static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, 
 	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInactive);
 	check_media_direction(pauline, linphone_core_get_current_call(pauline->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInactive);
 	liblinphone_tester_check_rtcp(marie, pauline);
-	if (forced_relay == TRUE) {
-		LinphoneCall *call = linphone_core_get_current_call(marie->lc);
-		BC_ASSERT_PTR_NOT_NULL(call->ice_session);
-		if (call->ice_session != NULL) {
-			IceCheckList *cl = ice_session_check_list(call->ice_session, 0);
-			BC_ASSERT_PTR_NOT_NULL(cl);
-			if (cl != NULL) {
-				BC_ASSERT_TRUE(cl->rtp_turn_context->stats_nb_send_indication > 0);
-				BC_ASSERT_TRUE(cl->rtp_turn_context->stats_nb_data_indication > 0);
-				BC_ASSERT_TRUE(cl->rtp_turn_context->stats_nb_received_channel_msg > 0);
-				BC_ASSERT_TRUE(cl->rtp_turn_context->stats_nb_sent_channel_msg > 0);
-			}
+	lcall = linphone_core_get_current_call(marie->lc);
+	BC_ASSERT_PTR_NOT_NULL(lcall->ice_session);
+	if (lcall->ice_session != NULL) {
+		IceCheckList *cl = ice_session_check_list(lcall->ice_session, 0);
+		BC_ASSERT_PTR_NOT_NULL(cl);
+		if (cl != NULL) {
+			check_turn_context_statistics(cl->rtp_turn_context, forced_relay);
+			if (!rtcp_mux_enabled) check_turn_context_statistics(cl->rtcp_turn_context, forced_relay);
 		}
 	}
 
@@ -160,15 +176,19 @@ static void ice_turn_call_base(bool_t forced_relay, bool_t caller_turn_enabled, 
 }
 
 static void basic_ice_turn_call(void) {
-	ice_turn_call_base(FALSE, TRUE, TRUE);
+	ice_turn_call_base(FALSE, TRUE, TRUE, FALSE);
 }
 
 static void relayed_ice_turn_call(void) {
-	ice_turn_call_base(TRUE, TRUE, TRUE);
+	ice_turn_call_base(TRUE, TRUE, TRUE, FALSE);
+}
+
+static void relayed_ice_turn_call_with_rtcp_mux(void) {
+	ice_turn_call_base(TRUE, TRUE, TRUE, TRUE);
 }
 
 static void relayed_ice_turn_to_ice_stun_call(void) {
-	ice_turn_call_base(TRUE, TRUE, FALSE);
+	ice_turn_call_base(TRUE, TRUE, FALSE, FALSE);
 }
 
 
@@ -177,6 +197,7 @@ test_t stun_tests[] = {
 	TEST_ONE_TAG("STUN encode", linphone_stun_test_encode, "STUN"),
 	TEST_TWO_TAGS("Basic ICE+TURN call", basic_ice_turn_call, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed ICE+TURN call", relayed_ice_turn_call, "ICE", "TURN"),
+	TEST_TWO_TAGS("Relayed ICE+TURN call with rtcp-mux", relayed_ice_turn_call_with_rtcp_mux, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed ICE+TURN to ICE+STUN call", relayed_ice_turn_to_ice_stun_call, "ICE", "TURN")
 };
 

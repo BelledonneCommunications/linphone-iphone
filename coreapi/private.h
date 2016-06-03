@@ -505,6 +505,7 @@ LINPHONE_PUBLIC const struct addrinfo *linphone_core_get_stun_server_addrinfo(Li
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params);
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable);
+LINPHONE_PUBLIC void linphone_core_enable_short_turn_refresh(LinphoneCore *lc, bool_t enable);
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev);
 void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *result);
@@ -980,7 +981,7 @@ struct _LinphoneCore
 	bool_t vtables_running;
 	bool_t send_call_stats_periodical_updates;
 	bool_t forced_ice_relay;
-	bool_t pad;
+	bool_t short_turn_refresh;
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
