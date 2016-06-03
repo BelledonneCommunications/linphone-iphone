@@ -448,6 +448,7 @@ int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphoneP
 			return -1;
 
 		presence_model_add_person(model, person);
+		linphone_presence_person_unref(person);
 	} else {
 		/* Add the activity to the first person in the model. */
 		person = (LinphonePresencePerson *)ms_list_nth_data(model->persons, 0);

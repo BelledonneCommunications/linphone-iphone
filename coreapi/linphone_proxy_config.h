@@ -548,6 +548,24 @@ LINPHONE_PUBLIC const char * linphone_proxy_config_get_ref_key(const LinphonePro
 LINPHONE_PUBLIC void linphone_proxy_config_set_ref_key(LinphoneProxyConfig *cfg, const char *refkey);
 
 /**
+ * Get The policy that is used to pass through NATs/firewalls when using this proxy config.
+ * If it is set to NULL, the default NAT policy from the core will be used instead.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return LinphoneNatPolicy object in use.
+ * @see linphone_core_get_nat_policy()
+ */
+LINPHONE_PUBLIC LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg);
+
+/**
+ * Set the policy to use to pass through NATs/firewalls when using this proxy config.
+ * If it is set to NULL, the default NAT policy from the core will be used instead.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] policy LinphoneNatPolicy object
+ * @see linphone_core_set_nat_policy()
+ */
+LINPHONE_PUBLIC void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy);
+
+/**
  * @}
  */
 

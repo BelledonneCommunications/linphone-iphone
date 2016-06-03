@@ -1175,7 +1175,7 @@ static void call_with_no_sdp_ack_without_sdp(void){
 	linphone_core_manager_destroy(pauline);
 }
 
-static void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts) {
+void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts) {
 	LinphoneCall *c1 = linphone_core_get_current_call(caller->lc);
 	LinphoneCall *c2 = linphone_core_get_current_call(callee->lc);
 	BC_ASSERT_PTR_NOT_NULL(c1);
@@ -3999,10 +3999,10 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 
 			if (video_dir != LinphoneMediaDirectionInactive){
 				BC_ASSERT_TRUE(linphone_call_params_video_enabled(params));
+				BC_ASSERT_EQUAL(linphone_call_params_get_video_direction(params), video_dir, int, "%d");
+				linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
+				linphone_call_send_vfu_request(call);
 			}
-			BC_ASSERT_EQUAL(linphone_call_params_get_video_direction(params), video_dir, int, "%d");
-			linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
-			linphone_call_send_vfu_request(call);
 
 			switch (video_dir) {
 			case LinphoneMediaDirectionInactive:

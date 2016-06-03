@@ -406,6 +406,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "content.h"
 #include "event.h"
 #include "linphonefriend.h"
+#include "nat_policy.h"
 #include "xmlrpc.h"
 #include "conference.h"
 #else
@@ -415,6 +416,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphone/content.h"
 #include "linphone/event.h"
 #include "linphone/linphonefriend.h"
+#include "linphone/nat_policy.h"
 #include "linphone/xmlrpc.h"
 #include "linphone/conference.h"
 #endif
@@ -2188,6 +2190,7 @@ typedef struct _LCCallbackObj
 /**
  * Policy to use to pass through firewalls.
  * @ingroup network_parameters
+ * @deprecated Use LinphoneNatPolicy instead
 **/
 typedef enum _LinphoneFirewallPolicy {
 	LinphonePolicyNoFirewall, /**< Do not use any mechanism to pass through firewalls */
@@ -3186,6 +3189,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_nat_address(const LinphoneCore *lc
  * @param[in] lc #LinphoneCore object.
  * @param[in] pol The #LinphoneFirewallPolicy to use.
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_set_nat_policy() instead.
  */
 LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol);
 
@@ -3194,8 +3198,29 @@ LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, Linphon
  * @param[in] lc #LinphoneCore object.
  * @return The #LinphoneFirewallPolicy that is being used.
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_get_nat_policy() instead.
  */
 LINPHONE_PUBLIC	LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc);
+
+/**
+ * Set the policy to use to pass through NATs/firewalls.
+ * It may be overridden by a NAT policy for a specific proxy config.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] policy LinphoneNatPolicy object
+ * @ingroup network_parameters
+ * @see linphone_proxy_config_set_nat_policy()
+ */
+LINPHONE_PUBLIC void linphone_core_set_nat_policy(LinphoneCore *lc, LinphoneNatPolicy *policy);
+
+/**
+ * Get The policy that is used to pass through NATs/firewalls.
+ * It may be overridden by a NAT policy for a specific proxy config.
+ * @param[in] lc #LinphoneCore object
+ * @return LinphoneNatPolicy object in use.
+ * @ingroup network_parameters
+ * @see linphone_proxy_config_get_nat_policy()
+ */
+LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_get_nat_policy(const LinphoneCore *lc);
 
 /* sound functions */
 /* returns a null terminated static array of string describing the sound devices */

@@ -759,13 +759,22 @@ static void net_config_read (LinphoneCore *lc)
 	int tmp;
 	const char *tmpstr;
 	LpConfig *config=lc->config;
+	const char *nat_policy_ref;
+
+	nat_policy_ref = lp_config_get_string(lc->config, "net", "nat_policy_ref", NULL);
+	if (nat_policy_ref != NULL) {
+		lc->nat_policy = linphone_core_create_nat_policy_from_config(lc, nat_policy_ref);
+	}
 
 	lc->net_conf.nat_address_ip = NULL;
 	tmp=lp_config_get_int(config,"net","download_bw",0);
 	linphone_core_set_download_bandwidth(lc,tmp);
 	tmp=lp_config_get_int(config,"net","upload_bw",0);
 	linphone_core_set_upload_bandwidth(lc,tmp);
-	linphone_core_set_stun_server(lc,lp_config_get_string(config,"net","stun_server",NULL));
+	if (lc->nat_policy == NULL) /* For compatibility, now the STUN server is stored in the NAT policy. */
+		linphone_core_set_stun_server(lc,lp_config_get_string(config,"net","stun_server",NULL));
+	else
+		linphone_core_set_stun_server(lc, linphone_nat_policy_get_stun_server(lc->nat_policy));
 	tmpstr=lp_config_get_string(lc->config,"net","nat_address",NULL);
 	if (tmpstr!=NULL && (strlen(tmpstr)<1)) tmpstr=NULL;
 	linphone_core_set_nat_address(lc,tmpstr);
@@ -782,7 +791,8 @@ static void net_config_read (LinphoneCore *lc)
 	linphone_core_enable_dns_srv(lc, tmp);
 
 	/* This is to filter out unsupported firewall policies */
-	linphone_core_set_firewall_policy(lc, linphone_core_get_firewall_policy(lc));
+	if (nat_policy_ref == NULL)
+		linphone_core_set_firewall_policy(lc, linphone_core_get_firewall_policy(lc));
 }
 
 static void build_sound_devices_table(LinphoneCore *lc){
@@ -5103,29 +5113,18 @@ void linphone_core_send_dtmf(LinphoneCore *lc, char dtmf)
 	linphone_call_send_dtmf(call, dtmf);
 }
 
-void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){
-	if (lc->net_conf.stun_server!=NULL)
-		ms_free(lc->net_conf.stun_server);
-	if (server)
-		lc->net_conf.stun_server=ms_strdup(server);
-	else lc->net_conf.stun_server=NULL;
-
-	/* each time the stun server is changed, we must clean the resolved cached addrinfo*/
-	if (lc->net_conf.stun_addrinfo){
-		freeaddrinfo(lc->net_conf.stun_addrinfo);
-		lc->net_conf.stun_addrinfo=NULL;
-	}
-	/*if a stun server is set, we must request asynchronous resolution immediately to be ready for call*/
-	if (lc->net_conf.stun_server){
-		linphone_core_resolve_stun_server(lc);
-	}
-
-	if (linphone_core_ready(lc))
-		lp_config_set_string(lc->config,"net","stun_server",lc->net_conf.stun_server);
+void linphone_core_set_stun_server(LinphoneCore *lc, const char *server) {
+	if (lc->nat_policy != NULL)
+		linphone_nat_policy_set_stun_server(lc->nat_policy, server);
+	else
+		lp_config_set_string(lc->config, "net", "stun_server", server);
 }
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc){
-	return lc->net_conf.stun_server;
+	if (lc->nat_policy != NULL)
+		return linphone_nat_policy_get_stun_server(lc->nat_policy);
+	else
+		return lp_config_get_string(lc->config, "net", "stun_server", NULL);
 }
 
 
@@ -5194,66 +5193,71 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 	return lc->net_conf.nat_address_ip;
 }
 
-void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
-	const char *policy = "none";
+void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol) {
+	LinphoneNatPolicy *nat_policy;
+	char *stun_server = NULL;
+	char *stun_server_username = NULL;
+	
+	if (lc->nat_policy != NULL) {
+		nat_policy = linphone_nat_policy_ref(lc->nat_policy);
+		stun_server = ms_strdup(linphone_nat_policy_get_stun_server(nat_policy));
+		stun_server_username = ms_strdup(linphone_nat_policy_get_stun_server_username(nat_policy));
+		linphone_nat_policy_clear(nat_policy);
+	} else {
+		nat_policy = linphone_core_create_nat_policy(lc);
+		stun_server = ms_strdup(linphone_core_get_stun_server(lc));
+	}
 
 	switch (pol) {
 		default:
 		case LinphonePolicyNoFirewall:
-			policy = "none";
-			break;
 		case LinphonePolicyUseNatAddress:
-			policy = "nat_address";
 			break;
 		case LinphonePolicyUseStun:
-			policy = "stun";
+			linphone_nat_policy_enable_stun(nat_policy, TRUE);
 			break;
 		case LinphonePolicyUseIce:
-			policy = "ice";
+			linphone_nat_policy_enable_ice(nat_policy, TRUE);
+			linphone_nat_policy_enable_stun(nat_policy, TRUE);
 			break;
 		case LinphonePolicyUseUpnp:
 #ifdef BUILD_UPNP
-			policy = "upnp";
+			linphone_nat_policy_enable_upnp(nat_policy);
 #else
 			ms_warning("UPNP is not available, reset firewall policy to no firewall");
-			pol = LinphonePolicyNoFirewall;
-			policy = "none";
 #endif //BUILD_UPNP
 			break;
 	}
-#ifdef BUILD_UPNP
-	if(pol == LinphonePolicyUseUpnp) {
-		if(lc->upnp == NULL) {
-			lc->upnp = linphone_upnp_context_new(lc);
-		}
-	} else {
-		if(lc->upnp != NULL) {
-			linphone_upnp_context_destroy(lc->upnp);
-			lc->upnp = NULL;
-		}
+
+	if (stun_server_username != NULL) {
+		linphone_nat_policy_set_stun_server_username(nat_policy, stun_server_username);
+		ms_free(stun_server_username);
 	}
-	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
-#endif //BUILD_UPNP
-	switch(pol) {
-	case LinphonePolicyUseUpnp:
-		sal_nat_helper_enable(lc->sal, FALSE);
-		sal_enable_auto_contacts(lc->sal,FALSE);
-		sal_use_rport(lc->sal, FALSE);
-		break;
-	default:
-		sal_nat_helper_enable(lc->sal, lp_config_get_int(lc->config,"net","enable_nat_helper",1));
-		sal_enable_auto_contacts(lc->sal,TRUE);
-		sal_use_rport(lc->sal, lp_config_get_int(lc->config,"sip","use_rport",1));
-		break;
+	if (stun_server != NULL) {
+		linphone_nat_policy_set_stun_server(nat_policy, stun_server);
+		ms_free(stun_server);
 	}
-	if (lc->sip_conf.contact) update_primary_contact(lc);
-	if (linphone_core_ready(lc))
-		lp_config_set_string(lc->config,"net","firewall_policy",policy);
+	linphone_core_set_nat_policy(lc, nat_policy);
+	linphone_nat_policy_unref(nat_policy);
 }
-LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
+
+LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
 	const char *policy;
+
 	policy = lp_config_get_string(lc->config, "net", "firewall_policy", NULL);
-	if ((policy == NULL) || (strcmp(policy, "0") == 0))
+	if (policy == NULL) {
+		LinphoneNatPolicy *nat_policy = linphone_core_get_nat_policy(lc);
+		if (nat_policy == NULL) {
+			return LinphonePolicyNoFirewall;
+		} else if (linphone_nat_policy_upnp_enabled(nat_policy))
+			return LinphonePolicyUseUpnp;
+		else if (linphone_nat_policy_ice_enabled(nat_policy))
+			return LinphonePolicyUseIce;
+		else if (linphone_nat_policy_stun_enabled(nat_policy))
+			return LinphonePolicyUseStun;
+		else
+			return LinphonePolicyNoFirewall;
+	} else if (strcmp(policy, "0") == 0)
 		return LinphonePolicyNoFirewall;
 	else if ((strcmp(policy, "nat_address") == 0) || (strcmp(policy, "1") == 0))
 		return LinphonePolicyUseNatAddress;
@@ -5267,6 +5271,38 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
 		return LinphonePolicyNoFirewall;
 }
 
+void linphone_core_set_nat_policy(LinphoneCore *lc, LinphoneNatPolicy *policy) {
+	if (policy != NULL) policy = linphone_nat_policy_ref(policy); /* Prevent object destruction if the same policy is used */
+	if (lc->nat_policy != NULL) linphone_nat_policy_unref(lc->nat_policy);
+	if (policy != NULL) lc->nat_policy = policy;
+
+#ifdef BUILD_UPNP
+	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
+	if (linphone_nat_policy_upnp_enabled(policy)) {
+		if (lc->upnp == NULL) {
+			lc->upnp = linphone_upnp_context_new(lc);
+		}
+		sal_nat_helper_enable(lc->sal, FALSE);
+		sal_enable_auto_contacts(lc->sal, FALSE);
+		sal_use_rport(lc->sal, FALSE);
+	} else {
+		if (lc->upnp != NULL) {
+			linphone_upnp_context_destroy(lc->upnp);
+			lc->upnp = NULL;
+		}
+#endif
+		sal_nat_helper_enable(lc->sal, lp_config_get_int(lc->config, "net", "enable_nat_helper", 1));
+		sal_enable_auto_contacts(lc->sal, TRUE);
+		sal_use_rport(lc->sal, lp_config_get_int(lc->config, "sip", "use_rport", 1));
+		if (lc->sip_conf.contact) update_primary_contact(lc);
+#ifdef BUILD_UPNP
+	}
+#endif
+}
+
+LinphoneNatPolicy * linphone_core_get_nat_policy(const LinphoneCore *lc) {
+	return lc->nat_policy;
+}
 
 
 /*******************************************************************************
@@ -6367,13 +6403,6 @@ void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;
 
-	if (config->stun_server!=NULL){
-		ms_free(config->stun_server);
-	}
-	if (config->stun_addrinfo){
-		freeaddrinfo(config->stun_addrinfo);
-		config->stun_addrinfo=NULL;
-	}
 	if (config->nat_address!=NULL){
 		lp_config_set_string(lc->config,"net","nat_address",config->nat_address);
 		ms_free(lc->net_conf.nat_address);
@@ -6382,6 +6411,12 @@ void net_config_uninit(LinphoneCore *lc)
 		ms_free(lc->net_conf.nat_address_ip);
 	}
 	lp_config_set_int(lc->config,"net","mtu",config->mtu);
+	if (lc->nat_policy != NULL) {
+		lp_config_set_string(lc->config, "net", "nat_policy_ref", lc->nat_policy->ref);
+		linphone_nat_policy_save_to_config(lc->nat_policy);
+		linphone_nat_policy_unref(lc->nat_policy);
+		lc->nat_policy = NULL;
+	}
 }
 
 

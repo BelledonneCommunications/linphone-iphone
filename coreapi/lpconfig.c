@@ -530,6 +530,31 @@ const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, 
 	return default_string;
 }
 
+MSList * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, MSList *default_list) {
+	LpItem *item;
+	LpSection *sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) {
+			MSList *l = NULL;
+			char *str;
+			char *ptr;
+			str = ptr = ms_strdup(item->value);
+			while (ptr != NULL) {
+				char *next = strstr(ptr, ",");
+				if (next != NULL) {
+					*(next++) = '\0';
+				}
+				l = ms_list_append(l, ms_strdup(ptr));
+				ptr = next;
+			}
+			ms_free(str);
+			return l;
+		}
+	}
+	return default_list;
+}
+
 bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
 	const char *str = lp_config_get_string(lpconfig, section, key, NULL);
 	if (str != NULL) {
@@ -643,6 +668,22 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 		lp_section_add_item(sec,lp_item_new(key,value));
 	}
 	lpconfig->modified++;
+}
+
+void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const MSList *value) {
+	char *strvalue = NULL;
+	char *tmp = NULL;
+	const MSList *elem;
+	for (elem = value; elem != NULL; elem = elem->next) {
+		if (strvalue) {
+			tmp = ms_strdup_printf("%s,%s", strvalue, (const char *)elem->data);
+			ms_free(strvalue);
+			strvalue = tmp;
+		}
+		else strvalue = ms_strdup((const char *)elem->data);
+	}
+	lp_config_set_string(lpconfig, section, key, strvalue);
+	if (strvalue) ms_free(strvalue);
 }
 
 void lp_config_set_range(LpConfig *lpconfig, const char *section, const char *key, int min_value, int max_value) {

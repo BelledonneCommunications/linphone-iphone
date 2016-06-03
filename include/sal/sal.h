@@ -811,6 +811,7 @@ typedef void (*SalResolverCallback)(void *data, const char *name, struct addrinf
 typedef struct SalResolverContext SalResolverContext;
 
 LINPHONE_PUBLIC SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data);
+LINPHONE_PUBLIC SalResolverContext * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, SalResolverCallback cb, void *data);
 //void sal_resolve_cancel(Sal *sal, SalResolverContext *ctx);
 
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);

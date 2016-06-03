@@ -42,6 +42,7 @@ linphone_include_HEADERS=\
 	linphone_tunnel.h \
 	lpc2xml.h \
 	lpconfig.h \
+	nat_policy.h \
 	sipsetup.h \
 	sqlite3_bctbx_vfs.h \
 	xml2lpc.h \
@@ -81,6 +82,7 @@ liblinphone_la_SOURCES=\
 	lsd.c \
 	message_storage.c \
 	misc.c  \
+	nat_policy.c \
 	offeranswer.c offeranswer.h\
 	player.c \
 	presence.c \
