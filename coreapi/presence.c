@@ -1496,9 +1496,15 @@ void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){
 void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence){
 	LinphonePresenceActivity *activity = linphone_presence_model_get_activity(presence);
 	char *activity_str = linphone_presence_activity_to_string(activity);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(lc);
 	ms_message("Notifying all friends that we are [%s]", activity_str);
 	if (activity_str != NULL) ms_free(activity_str);
-	linphone_friend_list_notify_presence(linphone_core_get_default_friend_list(lc), presence);
+	
+	if (lfl) {
+		linphone_friend_list_notify_presence(lfl, presence);
+	} else {
+		ms_error("Default friend list is null, skipping...");
+	}
 }
 
 void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
