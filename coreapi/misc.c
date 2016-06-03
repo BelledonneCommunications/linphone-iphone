@@ -397,7 +397,7 @@ static int recv_stun_response(ortp_socket_t sock, char *ipaddr, int *port, int *
 	len = recv(sock, buf, len, 0);
 	if (len > 0) {
 		struct in_addr ia;
-		resp = ms_stun_message_create_from_buffer_parsing((uint8_t *)buf, len);
+		resp = ms_stun_message_create_from_buffer_parsing((uint8_t *)buf, (ssize_t)len);
 		if (resp != NULL) {
 			const MSStunAddress *stun_addr;
 			UInt96 tr_id = ms_stun_message_get_tr_id(resp);
