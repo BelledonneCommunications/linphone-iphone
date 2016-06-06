@@ -5222,7 +5222,7 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 			break;
 		case LinphonePolicyUseUpnp:
 #ifdef BUILD_UPNP
-			linphone_nat_policy_enable_upnp(nat_policy);
+			linphone_nat_policy_enable_upnp(nat_policy, TRUE);
 #else
 			ms_warning("UPNP is not available, reset firewall policy to no firewall");
 #endif //BUILD_UPNP
