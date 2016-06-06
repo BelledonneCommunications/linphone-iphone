@@ -917,13 +917,11 @@ static void sound_config_read(LinphoneCore *lc)
 
 static void certificates_config_read(LinphoneCore *lc)
 {
-	const char *rootca;
-
-	struct stat sb;
-	rootca=lp_config_get_string(lc->config,"sip","root_ca", NULL);
+	const char *rootca = lp_config_get_string(lc->config,"sip","root_ca", NULL);
 	// If rootca is not existing anymore, we reset it to the default value
 	if (rootca == NULL || !bctbx_file_exist(rootca)) {
 #ifdef __linux
+		struct stat sb;
 		if (stat("/etc/ssl/certs", &sb) == 0 && S_ISDIR(sb.st_mode)) {
 			rootca = "/etc/ssl/certs";
 		} else
