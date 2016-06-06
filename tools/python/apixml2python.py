@@ -63,6 +63,7 @@ blacklisted_functions = [
 	'linphone_core_set_log_level_mask',	# There is no use to wrap this function
 	'linphone_core_set_network_simulator_params',	# missing OrtpNetworkSimulatorParams
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
+	'linphone_nat_policy_get_stun_server_addrinfo',
 	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
