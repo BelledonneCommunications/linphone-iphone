@@ -1813,13 +1813,14 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 	lc->ringtoneplayer = linphone_ringtoneplayer_new();
 
+#ifdef SQLITE_STORAGE_ENABLED
+	sqlite3_bctbx_vfs_register(0);
+#endif
+	
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
-#ifdef SQLITE_STORAGE_ENABLED
-	sqlite3_bctbx_vfs_register(0);
-#endif
 }
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
