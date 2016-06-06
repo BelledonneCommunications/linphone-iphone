@@ -912,7 +912,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 		if (result == TRUE) {
 			strncpy(desc->addr, rtp_candidate->taddr.ip, sizeof(desc->addr));
 		} else {
-			ms_warning("If ICE has completed successfully, rtp_addr should be set!");
+			ms_warning("If ICE has completed successfully, rtp_candidate should be set!");
 		}
 	}
 	else {
@@ -924,6 +924,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 		SalStreamDescription *stream = &desc->streams[i];
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
+		rtp_candidate = rtcp_candidate = NULL;
 		if (!sal_stream_description_active(stream) || (cl == NULL)) continue;
 		if (ice_check_list_state(cl) == ICL_Completed) {
 			if (use_nortpproxy) stream->set_nortpproxy = TRUE;
