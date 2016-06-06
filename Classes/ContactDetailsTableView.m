@@ -118,8 +118,8 @@
 }
 
 - (BOOL)isValid {
-	BOOL hasName = (_contact.firstName.length + _contact.lastName.length > 0)BOOL hasAddr =
-		((NSString *)_contact.phoneNumbers[0]).length + ((NSString *)_contact.sipAddresses[0]).length > 0;
+	BOOL hasName = (_contact.firstName.length + _contact.lastName.length > 0);
+	BOOL hasAddr = ((NSString *)_contact.phoneNumbers[0]).length + ((NSString *)_contact.sipAddresses[0]).length > 0;
 	return hasName && hasAddr;
 }
 
