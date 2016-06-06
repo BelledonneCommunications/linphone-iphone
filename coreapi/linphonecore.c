@@ -918,17 +918,21 @@ static void sound_config_read(LinphoneCore *lc)
 static void certificates_config_read(LinphoneCore *lc)
 {
 	const char *rootca;
-#ifdef __linux
+
 	struct stat sb;
-	rootca=lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs");
-	if (stat("/etc/ssl/certs", &sb) != 0 || !S_ISDIR(sb.st_mode))
-	{
-		ms_warning("/etc/ssl/certs not found, using %s instead", ROOT_CA_FILE);
-		rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
-	}
-#else
-	rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
+	rootca=lp_config_get_string(lc->config,"sip","root_ca", NULL);
+	// If rootca is not existing anymore, we reset it to the default value
+	if (rootca == NULL || !bctbx_file_exist(rootca)) {
+#ifdef __linux
+		if (stat("/etc/ssl/certs", &sb) == 0 && S_ISDIR(sb.st_mode)) {
+			rootca = "/etc/ssl/certs";
+		} else
 #endif
+		if (bctbx_file_exist(ROOT_CA_FILE)) {
+			ms_warning("/etc/ssl/certs not found, using %s instead", ROOT_CA_FILE);
+			rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
+		}
+	}
 	linphone_core_set_root_ca(lc,rootca);
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
