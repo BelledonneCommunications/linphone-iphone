@@ -5700,8 +5700,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		rtp_stats_t pauline_rtp_stats = linphone_call_stats_get_rtp_stats(pauline_stats);
 		ms_message("Marie sent %i RTP packets and received %i (for real)", (int)marie_rtp_stats.packet_sent, (int)marie_rtp_stats.packet_recv);
 		ms_message("Pauline sent %i RTP packets and received %i (for real)", (int)pauline_rtp_stats.packet_sent, (int)pauline_rtp_stats.packet_recv);
-		BC_ASSERT_TRUE(data_marie->packetReceivedCount == marie_rtp_stats.packet_recv);
-		BC_ASSERT_TRUE(data_marie->packetSentCount == marie_rtp_stats.packet_sent);
+		BC_ASSERT_EQUAL(data_marie->packetReceivedCount, marie_rtp_stats.packet_recv, int,  "%i");
+		BC_ASSERT_EQUAL(data_marie->packetSentCount, marie_rtp_stats.packet_sent, int, "%i");
 		// There can be a small difference between the number of packets received in the modifier and the number processed in reception because the processing is asynchronous
 		BC_ASSERT_TRUE(data_pauline->packetReceivedCount - pauline_rtp_stats.packet_recv < 20);
 		BC_ASSERT_TRUE(data_pauline->packetSentCount == pauline_rtp_stats.packet_sent);
