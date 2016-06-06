@@ -184,7 +184,7 @@ class IOSPreparator(prepare.Preparator):
         if find_executable("nasm"):
             nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
             if "fatal: unrecognised output format" in nasm_output:
-                missing_dependencies["nasm"] = "nasm"
+                self.missing_dependencies["nasm"] = "nasm"
                 reterr = 1
 
         if self.check_is_installed("libtoolize", warn=False):
@@ -343,7 +343,7 @@ def main():
     preparator = IOSPreparator()
     preparator.parse_args()
     if preparator.check_tools() != 0:
-        show_missing_dependencies()
+        preparator.show_missing_dependencies()
         return 1
     preparator.install_git_hook()
     return preparator.run()
