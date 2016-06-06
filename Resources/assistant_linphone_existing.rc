@@ -12,6 +12,7 @@
 		<entry name="reg_identity" overwrite="true">sip:?@sip.linphone.org</entry>
 		<entry name="reg_sendregister" overwrite="true">1</entry>
 		<entry name="refkey" overwrite="true">push_notification</entry>
+		<entry name="realm" overwrite="true">sip.linphone.org</entry>
 	</section>
 
 	<section name="assistant">
