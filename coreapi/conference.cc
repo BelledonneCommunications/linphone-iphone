@@ -924,7 +924,7 @@ LinphoneConferenceParams *linphone_conference_params_clone(const LinphoneConfere
 }
 
 void linphone_conference_params_enable_video(LinphoneConferenceParams *params, bool_t enable) {
-	((Conference::Params *)params)->enableVideo(enable);
+	((Conference::Params *)params)->enableVideo((enable == TRUE) ? true : false);
 }
 
 bool_t linphone_conference_params_video_requested(const LinphoneConferenceParams *params) {
@@ -994,7 +994,7 @@ AudioStream *linphone_conference_get_audio_stream(const LinphoneConference *obj)
 }
 
 int linphone_conference_mute_microphone(LinphoneConference *obj, bool_t val) {
-	return ((Conference *)obj)->muteMicrophone(val);
+	return ((Conference *)obj)->muteMicrophone((val == TRUE) ? true : false);
 }
 
 bool_t linphone_conference_microphone_is_muted(const LinphoneConference *obj) {
@@ -1028,7 +1028,7 @@ int linphone_conference_stop_recording(LinphoneConference *obj) {
 }
 
 void linphone_conference_on_call_stream_starting(LinphoneConference *obj, LinphoneCall *call, bool_t is_paused_by_remote) {
-	((Conference *)obj)->onCallStreamStarting(call, is_paused_by_remote);
+	((Conference *)obj)->onCallStreamStarting(call, (is_paused_by_remote == TRUE) ? true : false);
 }
 
 void linphone_conference_on_call_stream_stopping(LinphoneConference *obj, LinphoneCall *call) {
