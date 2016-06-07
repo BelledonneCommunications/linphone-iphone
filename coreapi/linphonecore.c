@@ -929,15 +929,14 @@ static void certificates_config_read(LinphoneCore *lc)
 {
 	const char *rootca = lp_config_get_string(lc->config,"sip","root_ca", NULL);
 	// If rootca is not existing anymore, we reset it to the default value
-	if (rootca == NULL || (bctbx_file_exist(rootca) < 0)) {
+	if (rootca == NULL || (bctbx_file_exist(rootca) != 0)) {
 #ifdef __linux
 		struct stat sb;
 		if (stat("/etc/ssl/certs", &sb) == 0 && S_ISDIR(sb.st_mode)) {
 			rootca = "/etc/ssl/certs";
 		} else
 #endif
-		if (bctbx_file_exist(ROOT_CA_FILE) < 0) {
-			ms_warning("/etc/ssl/certs not found, using %s instead", ROOT_CA_FILE);
+		if (bctbx_file_exist(ROOT_CA_FILE) == 0) {
 			rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
 		}
 	}
