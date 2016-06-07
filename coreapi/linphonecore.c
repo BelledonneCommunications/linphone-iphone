@@ -5241,6 +5241,9 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	}
 	linphone_core_set_nat_policy(lc, nat_policy);
 	linphone_nat_policy_unref(nat_policy);
+
+	/* Ensure that the firewall policy is cleared in the config because it has been replaced by the nat_policy. */
+	lp_config_set_string(lc->config, "net", "firewall_policy", NULL);
 }
 
 LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
