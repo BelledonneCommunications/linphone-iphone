@@ -67,8 +67,6 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	bc_tester_set_resource_dir_prefix([bundlePath UTF8String]);
 	bc_tester_set_writable_dir_prefix([writablePath UTF8String]);
 
-	liblinphonetester_ipv6 = true;
-
 	LOGI(@"Bundle path: %@", bundlePath);
 	LOGI(@"Writable path: %@", writablePath);
 
