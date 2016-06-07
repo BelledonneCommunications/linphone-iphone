@@ -67,6 +67,8 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	bc_tester_set_resource_dir_prefix([bundlePath UTF8String]);
 	bc_tester_set_writable_dir_prefix([documentPath UTF8String]);
 
+	liblinphonetester_ipv6 = true;
+
 	LOGI(@"Bundle path: %@", bundlePath);
 	LOGI(@"Document path: %@", documentPath);
 
@@ -74,11 +76,12 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 
 	int count = bc_tester_nb_suites();
 	_objects = [[NSMutableArray alloc] initWithCapacity:count + 1];
-	[_objects addObject:@"All"];
 	for (int i = 0; i < count; i++) {
 		const char *suite = bc_tester_suite_name(i);
 		[_objects addObject:[NSString stringWithUTF8String:suite]];
 	}
+	[_objects sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+	[_objects insertObject:@"All" atIndex:0];
 }
 
 - (void)dealloc {

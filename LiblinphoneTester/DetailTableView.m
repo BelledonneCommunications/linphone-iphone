@@ -79,16 +79,19 @@ static NSString *const kAllTestsName = @"Run All tests";
 		return;
 	}
 
-	[_tests
-		addObject:[TestItem testWithName:kAllTestsName fromSuite:self.detailItem]]; // suite name not used for this one
-
 	if ([self.detailItem isEqualToString:@"All"]) {
+		// dont sort tests if we use all suites at once
 		for (int i = 0; i < bc_tester_nb_suites(); i++) {
 			[self addTestsFromSuite:[NSString stringWithUTF8String:bc_tester_suite_name(i)]];
 		}
 	} else {
 		[self addTestsFromSuite:self.detailItem];
+		[_tests sortUsingComparator:^(TestItem *obj1, TestItem *obj2) {
+		  return [obj1.name compare:obj2.name];
+		}];
 	}
+	// suite name not used for this one
+	[_tests insertObject:[TestItem testWithName:kAllTestsName fromSuite:self.detailItem] atIndex:0];
 }
 
 - (void)viewDidLoad {
