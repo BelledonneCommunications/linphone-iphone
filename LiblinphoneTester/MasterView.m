@@ -17,7 +17,7 @@
 @interface MasterView () {
 	NSMutableArray *_objects;
 	NSString *bundlePath;
-	NSString *documentPath;
+	NSString *writablePath;
 }
 @end
 
@@ -58,19 +58,19 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	liblinphone_tester_keep_accounts(TRUE);
 
 	bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	documentPath = [paths objectAtIndex:0];
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	writablePath = [paths objectAtIndex:0];
 
 	bc_tester_init(tester_logs_handler, ORTP_MESSAGE, ORTP_ERROR, "rcfiles");
 	liblinphone_tester_add_suites();
 
 	bc_tester_set_resource_dir_prefix([bundlePath UTF8String]);
-	bc_tester_set_writable_dir_prefix([documentPath UTF8String]);
+	bc_tester_set_writable_dir_prefix([writablePath UTF8String]);
 
 	liblinphonetester_ipv6 = true;
 
 	LOGI(@"Bundle path: %@", bundlePath);
-	LOGI(@"Document path: %@", documentPath);
+	LOGI(@"Writable path: %@", writablePath);
 
 	liblinphonetester_ipv6 = true;
 

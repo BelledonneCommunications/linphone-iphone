@@ -31,10 +31,12 @@
 	NSError *error;
 	// cache directory must be created if not existing
 	if (![[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
-		[[NSFileManager defaultManager] createDirectoryAtPath:cachePath
-								  withIntermediateDirectories:NO
-												   attributes:nil
-														error:&error];
+		if (![[NSFileManager defaultManager] createDirectoryAtPath:cachePath
+									   withIntermediateDirectories:NO
+														attributes:nil
+															 error:&error]) {
+			LOGE(@"Could not create cache directory: %@", error);
+		}
 	}
 	return cachePath;
 }

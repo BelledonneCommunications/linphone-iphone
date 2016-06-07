@@ -35,9 +35,6 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 }
 
 + (void)initialize {
-	static char *bundle = NULL;
-	static char *documents = NULL;
-
 	// turn off logs since jenkins fails to parse output otherwise. If
 	// you want to debug a specific test, comment this temporary
 	[Log enableLogs:ORTP_WARNING];
@@ -46,16 +43,14 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	liblinphone_tester_add_suites();
 
 	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentPath = [paths objectAtIndex:0];
-	bundle = ms_strdup([bundlePath UTF8String]);
-	documents = ms_strdup([documentPath UTF8String]);
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *writablePath = [paths objectAtIndex:0];
 
 	LOGI(@"Bundle path: %@", bundlePath);
-	LOGI(@"Document path: %@", documentPath);
+	LOGI(@"Document path: %@", writablePath);
 
-	bc_tester_set_resource_dir_prefix(bundle);
-	bc_tester_set_writable_dir_prefix(documents);
+	bc_tester_set_resource_dir_prefix(bundlePath.UTF8String);
+	bc_tester_set_writable_dir_prefix(writablePath.UTF8String);
 
 	liblinphone_tester_keep_accounts(TRUE);
 	int count = bc_tester_nb_suites();
