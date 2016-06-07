@@ -106,17 +106,8 @@ int linphone_address_set_username(LinphoneAddress *uri, const char *username){
  * Sets the domain.
 **/
 int linphone_address_set_domain(LinphoneAddress *uri, const char *host){
-	if (host) {
-		char *identity = ms_strdup_printf("sip:%s", host);
-		LinphoneAddress* test = linphone_address_new(identity);
-		ms_free(identity);
-		if (test) {
-			sal_address_set_domain(uri,host);
-			linphone_address_destroy(test);
-			return 0;
-		}
-	}
-	return -1;
+	sal_address_set_domain(uri,host);
+	return 0;
 }
 
 
