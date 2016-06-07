@@ -70,6 +70,7 @@ extern test_suite_t complex_sip_call_test_suite;
 extern int manager_count;
 
 extern int liblinphone_tester_ipv6_available(void);
+extern int liblinphone_tester_ipv4_available(void);
 
 /**
  * @brief Tells the tester whether or not to clean the accounts it has created between runs.

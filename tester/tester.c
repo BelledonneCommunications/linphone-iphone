@@ -457,6 +457,25 @@ int liblinphone_tester_ipv6_available(void){
 	return FALSE;
 }
 
+int liblinphone_tester_ipv4_available(void){
+	struct addrinfo *ai=bctbx_ip_address_to_addrinfo(AF_INET,SOCK_STREAM,"212.27.40.240",53);
+	if (ai){
+		struct sockaddr_storage ss;
+		struct addrinfo src;
+		socklen_t slen=sizeof(ss);
+		char localip[128];
+		int port=0;
+		belle_sip_get_src_addr_for(ai->ai_addr,(socklen_t)ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
+		src.ai_addr=(struct sockaddr*) &ss;
+		src.ai_addrlen=slen;
+		bctbx_addrinfo_to_ip_address(&src,localip, sizeof(localip),&port);
+		freeaddrinfo(ai);
+		return strcmp(localip,"127.0.0.1")!=0;
+	}
+	return FALSE;
+}
+
+
 void liblinphone_tester_keep_accounts( int keep ){
 	liblinphone_tester_keep_accounts_flag = keep;
 }
