@@ -927,7 +927,7 @@ static void certificates_config_read(LinphoneCore *lc)
 		} else
 #endif
 		if (bctbx_file_exist(ROOT_CA_FILE) == 0) {
-			rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
+			rootca = ROOT_CA_FILE;
 		}
 	}
 	linphone_core_set_root_ca(lc,rootca);
