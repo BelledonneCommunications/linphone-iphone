@@ -1258,24 +1258,26 @@ static SalStreamType payload_type_get_stream_type(const PayloadType *pt){
 static MSList *add_missing_supported_codecs(LinphoneCore *lc, const MSList *default_list, MSList *l){
 	const MSList *elem;
 	MSList *newlist;
-	PayloadType *last_inserted = NULL;
+	PayloadType *last_seen = NULL;
 
 	for(elem=default_list; elem!=NULL; elem=elem->next){
 		MSList *elem2=ms_list_find(l,elem->data);
 		if (!elem2){
 			PayloadType *pt=(PayloadType*)elem->data;
-			/*this codec from default list should be inserted in the list*/
+			/*this codec from default list should be inserted in the list, with respect to the default_list order*/
 
 			if (!linphone_core_codec_supported(lc, payload_type_get_stream_type(pt), pt->mime_type)) continue;
-			if (!last_inserted){
+			if (!last_seen){
 				l=ms_list_prepend(l,pt);
 			}else{
-				const MSList *after=ms_list_find(l,last_inserted);
+				const MSList *after=ms_list_find(l,last_seen);
 				l=ms_list_insert(l, after->next, pt);
 			}
-			last_inserted = pt;
+			last_seen = pt;
 			ms_message("Supported codec %s/%i fmtp=%s automatically added to codec list.", pt->mime_type,
 				   pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : "");
+		}else{
+			last_seen = (PayloadType*)elem2->data;
 		}
 	}
 	newlist=ms_list_copy_with_data(l,(void *(*)(void*))payload_type_clone);
