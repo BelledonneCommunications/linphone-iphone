@@ -4965,7 +4965,7 @@ static void video_call_ice_params(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void audio_call_with_video_policy_enabled(void){
+static void audio_call_with_ice_with_video_policy_enabled(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneVideoPolicy vpol;
@@ -5347,8 +5347,8 @@ static void call_with_rtp_io_mode(void) {
 		/* The callee uses the RTP IO mode with the PCMU codec to send back audio to the caller. */
 		disable_all_audio_codecs_except_one(pauline->lc, "pcmu", -1);
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_io", 1);
-		lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", "127.0.0.1");
-		lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", "127.0.0.1");
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", "localhost");
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", "localhost");
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_local_port", 17076);
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_remote_port", 17076);
 		lp_config_set_string(pauline->lc->config, "sound", "rtp_map", "pcmu/8000/1");
@@ -6379,30 +6379,30 @@ static void call_with_zrtp_configured_callee_side(void) {
 static void v6_call_over_nat_64(void){
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
-	
+
 	if (!liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
-		
+
 		bool_t liblinphonetester_ipv6_save=liblinphonetester_ipv6; /*this test nee v6*/
 		liblinphonetester_ipv6=TRUE;
-		
+
 		marie = linphone_core_manager_new("marie_nat64_rc");
 		pauline = linphone_core_manager_new("pauline_nat64_rc");
-		
+
 		linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
 		linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
 
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 1, 2000));
-		
-		
+
+
 		BC_ASSERT_TRUE(call(marie,pauline));
-		
+
 		liblinphone_tester_check_rtcp(marie,pauline);
 		end_call(marie,pauline);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 		liblinphonetester_ipv6=liblinphonetester_ipv6_save; /*this test nee v6*/
-		
+
 	}else ms_warning("Test skipped, no ipv6 nat64 available");
 }
 
@@ -6500,7 +6500,7 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE, video and realtime text", call_with_ice_video_and_rtt, "ICE"),
 #endif
 	TEST_ONE_TAG("Video call with ICE accepted using call params", video_call_ice_params, "ICE"),
-	TEST_NO_TAG("Audio call paused with caller video policy enabled", audio_call_with_video_policy_enabled),
+	TEST_ONE_TAG("Audio call with ICE paused with caller video policy enabled", audio_call_with_ice_with_video_policy_enabled, "ICE"),
 	TEST_NO_TAG("Video call recording (H264)", video_call_recording_h264_test),
 	TEST_NO_TAG("Video call recording (VP8)", video_call_recording_vp8_test),
 	TEST_NO_TAG("Snapshot", video_call_snapshot),
