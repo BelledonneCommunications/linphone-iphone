@@ -53,3 +53,8 @@ echocancellation=0 #to not overload cpu in case of VG
 dns_srv_enabled=0 #no srv needed in general
 stun_server=stun.linphone.org
 
+#leave this section, which is used by "Codec setup" test of "Setup" suite.
+[video_codec_0]
+mime=VP8
+rate=90000
+enabled=1
