@@ -187,6 +187,7 @@ void linphone_content_set_key(LinphoneContent *content, const char *key, const s
 	if (key != NULL) {
 		content->key = belle_sip_malloc(keyLength);
 		memcpy(content->key, key, keyLength);
+		content->keyLength = keyLength;
 	}
 }
 
