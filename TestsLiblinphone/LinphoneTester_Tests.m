@@ -35,9 +35,13 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 }
 
 + (void)initialize {
-	// turn off logs since jenkins fails to parse output otherwise. If
-	// you want to debug a specific test, comment this temporary
-	[Log enableLogs:ORTP_WARNING];
+#if TARGET_IPHONE_SIMULATOR
+	[Log enableLogs:ORTP_DEBUG];
+#else
+	// turn off logs since xcodebuild fails to retrieve whole output otherwise on
+	// real device. If you need to debug, comment this line temporary
+	[Log enableLogs:NO];
+#endif
 
 	bc_tester_init(tester_logs_handler, ORTP_MESSAGE, ORTP_ERROR, "rcfiles");
 	liblinphone_tester_add_suites();
