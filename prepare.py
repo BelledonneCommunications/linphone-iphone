@@ -123,6 +123,7 @@ class IOSPreparator(prepare.Preparator):
             self.additional_args += ["-DENABLE_OPENH264=ON"]
             self.additional_args += ["-DENABLE_VPX=ON"]
             self.additional_args += ["-DENABLE_X264=ON"]
+            self.additional_args += ["-DENABLE_CODEC2=ON"]
 
     def clean(self):
         prepare.Preparator.clean(self)

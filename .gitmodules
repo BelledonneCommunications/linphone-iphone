@@ -97,3 +97,9 @@
 [submodule "submodules/externals/mbedtls"]
 	path = submodules/externals/mbedtls
 	url = git://git.linphone.org/mbedtls.git
+[submodule "submodules/externals/codec2"]
+	path = submodules/externals/codec2
+	url = git://git.linphone.org/codec2.git
+[submodule "submodules/mscodec2"]
+	path = submodules/mscodec2
+	url = git://git.linphone.org/mscodec2.git
