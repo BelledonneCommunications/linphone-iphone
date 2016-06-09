@@ -1299,7 +1299,13 @@ typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneC
 
 LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
 
-
+/**
+ * Get path to the database file used for storing chat messages.
+ * @param lc the linphone core
+ * @return file path or NULL if not exist
+ **/
+	
+LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneCore *lc);
 /**
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
  * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.

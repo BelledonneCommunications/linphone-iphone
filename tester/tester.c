@@ -117,6 +117,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	char *rootcapath       = NULL;
 	char *dnsuserhostspath = NULL;
 	char *nowebcampath     = NULL;
+	char *chatdb     = NULL;
 
 	if (path==NULL) path=".";
 
@@ -134,8 +135,8 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	ringbackpath     = ms_strdup_printf("%s/sounds/ringback.wav", path);
 	nowebcampath     = ms_strdup_printf("%s/images/nowebcamCIF.jpg", path);
 	rootcapath       = ms_strdup_printf("%s/certificates/cn/cafile.pem", path);
-	dnsuserhostspath = ms_strdup_printf( "%s/%s", path, userhostsfile);
-
+	dnsuserhostspath = ms_strdup_printf("%s/%s", path, userhostsfile);
+	
 
 	if( config != NULL ) {
 		lp_config_set_string(config, "sound", "remote_ring", ringbackpath);
@@ -149,18 +150,22 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 		linphone_core_set_ringback(lc, ringbackpath);
 		linphone_core_set_root_ca(lc,rootcapath);
 	}
-
+	chatdb = ms_strdup_printf("%s/messages-%p.db",bc_tester_get_writable_dir_prefix(),lc);
+	
 	linphone_core_enable_ipv6(lc, liblinphonetester_ipv6);
 
 	sal_enable_test_features(lc->sal,TRUE);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 	linphone_core_set_static_picture(lc,nowebcampath);
 
+	linphone_core_set_chat_database_path(lc, chatdb);
+	
 	ms_free(ringpath);
 	ms_free(ringbackpath);
 	ms_free(nowebcampath);
 	ms_free(rootcapath);
 	ms_free(dnsuserhostspath);
+	ms_free(chatdb);
 
 	if( filepath ) ms_free(filepath);
 
@@ -415,7 +420,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
-
+		const char *chatdb = linphone_core_get_chat_database_path(mgr->lc);
 		if (!liblinphone_tester_keep_record_files && record_file){
 			if ((bc_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
 				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
@@ -424,6 +429,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 			}
 		}
 		linphone_core_destroy(mgr->lc);
+		if (chatdb) unlink(chatdb);
 	}
 	if (mgr->identity) {
 		linphone_address_destroy(mgr->identity);

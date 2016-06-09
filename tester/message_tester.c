@@ -774,6 +774,10 @@ static void lime_text_message(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
+	if (!linphone_core_lime_available(marie->lc)) {
+		ms_warning("Lime not available, skiping");
+		goto end;
+	}
 	/* make sure lime is enabled */
 	linphone_core_enable_lime(marie->lc, 1);
 	linphone_core_enable_lime(pauline->lc, 1);
@@ -802,7 +806,7 @@ static void lime_text_message(void) {
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 	/* TODO : check the msg arrived correctly deciphered */
-
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -813,7 +817,11 @@ static void lime_text_message_to_non_lime(void) {
 	char* filepath;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-
+	
+	if (!linphone_core_lime_available(marie->lc)) {
+		ms_warning("Lime not available, skiping");
+		goto end;
+	}
 	/* make sure lime is enabled */
 	linphone_core_enable_lime(marie->lc, 0);
 	linphone_core_enable_lime(pauline->lc, 1);
@@ -835,10 +843,11 @@ static void lime_text_message_to_non_lime(void) {
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,0, int, "%d");
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-void lime_transfer_message_base(bool_t encrypt_file) {
+void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_stored_msg) {
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
 	LinphoneChatMessage *msg;
@@ -848,7 +857,11 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
-
+	
+	if (!linphone_core_lime_available(marie->lc)) {
+		ms_warning("Lime not available, skiping");
+		goto end;
+	}
 	/* make sure lime is enabled */
 	linphone_core_enable_lime(marie->lc, 1);
 	linphone_core_enable_lime(pauline->lc, 1);
@@ -886,26 +899,49 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 	linphone_chat_room_send_chat_message(msg->chat_room, msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 	if (marie->stat.last_received_chat_message ) {
-		cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
+		LinphoneChatMessage *recv_msg;
+		const LinphoneContent* content;
+		if (download_file_from_stored_msg) {
+			LinphoneChatRoom *marie_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
+			MSList * msgs = linphone_chat_room_get_history(marie_room,1);
+			BC_ASSERT_PTR_NOT_NULL(msgs);
+			if (!msgs)  goto end;
+			recv_msg = (LinphoneChatMessage *)msgs->data;
+			ms_list_free(msgs);
+		} else {
+			recv_msg = marie->stat.last_received_chat_message;
+		}
+		cbs = linphone_chat_message_get_callbacks(recv_msg);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
-		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
+		content = linphone_chat_message_get_file_transfer_information(recv_msg);
+		if (!content) goto end;
+		if (encrypt_file)
+			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_key(content));
+		else
+			BC_ASSERT_PTR_NULL(linphone_content_get_key(content));
+		linphone_chat_message_download_file(recv_msg);
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 	}
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); // file transfer
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
 static  void lime_transfer_message(void) {
-	lime_transfer_message_base(TRUE);
+	lime_transfer_message_base(TRUE,FALSE);
+}
+
+static  void lime_transfer_message_from_history(void) {
+	lime_transfer_message_base(TRUE,TRUE);
 }
 
 static  void lime_transfer_message_without_encryption(void) {
-	lime_transfer_message_base(FALSE);
+	lime_transfer_message_base(FALSE,FALSE);
 }
 
 static void printHex(char *title, uint8_t *data, uint32_t length) {
@@ -1091,8 +1127,6 @@ static void lime_unit(void) {
 
 
 #endif /* HAVE_LIME */
-
-#ifdef MSG_STORAGE_ENABLED
 
 /*
  * Copy file "from" to file "to".
@@ -1285,7 +1319,6 @@ static void history_count(void) {
 	ms_free(src_db);
 	bc_free(tmp_db);
 }
-#endif
 
 static void text_status_after_destroying_chat_room(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -1759,7 +1792,7 @@ void file_transfer_with_http_proxy(void) {
 
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
-	TEST_ONE_TAG("Text message within call dialog", text_message_within_call_dialog, "LeaksMemory"),
+	TEST_NO_TAG("Text message within call dialog", text_message_within_call_dialog),
 	TEST_NO_TAG("Text message with credentials from auth callback", text_message_with_credential_from_auth_callback),
 	TEST_NO_TAG("Text message with privacy", text_message_with_privacy),
 	TEST_NO_TAG("Text message compatibility mode", text_message_compatibility_mode),
@@ -1778,18 +1811,15 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Info message", info_message),
 	TEST_NO_TAG("Info message with body", info_message_with_body),
 	TEST_NO_TAG("IsComposing notification", is_composing_notification),
-#ifdef HAVE_LIME
 	TEST_NO_TAG("Lime text message", lime_text_message),
 	TEST_NO_TAG("Lime text message to non lime", lime_text_message_to_non_lime),
 	TEST_NO_TAG("Lime transfer message", lime_transfer_message),
+	TEST_ONE_TAG("Lime transfer message from history", lime_transfer_message_from_history,"LeaksMemory"),
 	TEST_NO_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption),
 	TEST_NO_TAG("Lime unitary", lime_unit),
-#endif /* HAVE_LIME */
-#ifdef MSG_STORAGE_ENABLED
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
 	TEST_NO_TAG("History count", history_count),
-#endif
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
 	TEST_ONE_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url, "LeaksMemory"),
 	TEST_ONE_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found, "LeaksMemory"),
