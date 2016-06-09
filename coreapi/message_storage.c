@@ -129,7 +129,9 @@ static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* 
  * | 3  | name
  * | 4  | encoding
  * | 5  | size
- * | 6  | data
+ * | 6  | data (currently not stored)
+ * | 7  | size
+ * | 8  | size
  */
 // Callback for sql request when getting linphone content
 static int callback_content(void *data, int argc, char **argv, char **colName) {
@@ -145,6 +147,7 @@ static int callback_content(void *data, int argc, char **argv, char **colName) {
 	if (argv[3]) linphone_content_set_name(message->file_transfer_information, argv[3]);
 	if (argv[4]) linphone_content_set_encoding(message->file_transfer_information, argv[4]);
 	linphone_content_set_size(message->file_transfer_information, (size_t)atoi(argv[5]));
+	if (argv[8]) linphone_content_set_key(message->file_transfer_information, argv[8], (size_t)atol(argv[7]));
 
 	return 0;
 }
@@ -267,13 +270,15 @@ static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
 	int id = -1;
 	if (lc->db) {
 		LinphoneContent *content = msg->file_transfer_information;
-		char *buf = sqlite3_mprintf("INSERT INTO content VALUES(NULL,%Q,%Q,%Q,%Q,%i,%Q);",
+		char *buf = sqlite3_mprintf("INSERT INTO content VALUES(NULL,%Q,%Q,%Q,%Q,%i,%Q,%lld,%Q);",
 						linphone_content_get_type(content),
 						linphone_content_get_subtype(content),
 						linphone_content_get_name(content),
 						linphone_content_get_encoding(content),
 						linphone_content_get_size(content),
-						NULL
+						NULL,
+						(int64_t)linphone_content_get_key_size(content),
+						linphone_content_get_key(content)
 					);
 		linphone_sql_request(lc->db, buf);
 		sqlite3_free(buf);
@@ -635,6 +640,21 @@ void linphone_update_table(sqlite3* db) {
 			sqlite3_free(errmsg);
 		} else {
 			ms_debug("Table content successfully created.");
+		}
+	}
+	
+	// new fields for content key storage when using lime
+	ret=sqlite3_exec(db,"ALTER TABLE content ADD COLUMN key_size INTEGER;",NULL,NULL,&errmsg);
+	if(ret != SQLITE_OK) {
+		ms_message("Table already up to date: %s.", errmsg);
+		sqlite3_free(errmsg);
+	} else {
+		ret=sqlite3_exec(db,"ALTER TABLE content ADD COLUMN key TEXT;",NULL,NULL,&errmsg);
+		if(ret != SQLITE_OK) {
+			ms_message("Table already up to date: %s.", errmsg);
+			sqlite3_free(errmsg);
+		} else {
+			ms_debug("Table history content successfully for lime key storage data.");
 		}
 	}
 }
