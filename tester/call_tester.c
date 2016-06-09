@@ -6409,10 +6409,10 @@ static void v6_call_over_nat_64(void){
 static void call_with_ice_in_ipv4_with_v6_enabled(void) {
 	if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
 		bool_t liblinphonetester_ipv6_save=liblinphonetester_ipv6; /*this test nee v6*/
-		liblinphonetester_ipv6=TRUE;
-
 		LinphoneCoreManager* marie = linphone_core_manager_new("marie_v4proxy_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_v4proxy_rc");
+		
+		liblinphonetester_ipv6=TRUE;
 		_call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE,FALSE);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
