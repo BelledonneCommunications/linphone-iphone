@@ -840,12 +840,12 @@ end:
 
 static void disable_all_codecs(const MSList* elem, LinphoneCoreManager* call){
 
-    PayloadType *pt;
+	PayloadType *pt;
 
-    for(;elem!=NULL;elem=elem->next){
-        pt=(PayloadType*)elem->data;
-        linphone_core_enable_payload_type(call->lc,pt,FALSE);
-    }
+	for(;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		linphone_core_enable_payload_type(call->lc,pt,FALSE);
+	}
 }
 /***
  Disable all audio codecs , sends an INVITE with RTP port 0 and payload 0.
@@ -3220,6 +3220,12 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 	LinphoneCoreManager* pauline = linphone_core_manager_new(pauline_rc);
 	bool_t call_ok;
 
+	// important: VP8 has really poor performances with the mire camera, at least
+	// on iOS - so when ever h264 is available, let's use it instead
+	if (linphone_core_find_payload_type(pauline->lc,"h264", -1, -1)!=NULL) {
+		disable_all_video_codecs_except_one(pauline->lc,"h264");
+		disable_all_video_codecs_except_one(marie->lc,"h264");
+	}
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 
@@ -4104,6 +4110,13 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
 
+	// important: VP8 has really poor performances with the mire camera, at least
+	// on iOS - so when ever h264 is available, let's use it instead
+	if (linphone_core_find_payload_type(pauline->lc,"h264", -1, -1)!=NULL) {
+		disable_all_video_codecs_except_one(pauline->lc,"h264");
+		disable_all_video_codecs_except_one(marie->lc,"h264");
+	}
+
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, TRUE);
 	linphone_core_set_video_policy(pauline->lc,&pol);
@@ -4222,6 +4235,13 @@ static void record_call(const char *filename, bool_t enableVideo, const char *vi
 
 	marie = linphone_core_manager_new("marie_h264_rc");
 	pauline = linphone_core_manager_new("pauline_h264_rc");
+
+	// important: VP8 has really poor performances with the mire camera, at least
+	// on iOS - so when ever h264 is available, let's use it instead
+	if (linphone_core_find_payload_type(pauline->lc,"h264", -1, -1)!=NULL) {
+		disable_all_video_codecs_except_one(pauline->lc,"h264");
+		disable_all_video_codecs_except_one(marie->lc,"h264");
+	}
 
 #if defined(HAVE_OPENH264) && defined(ANDROID)
 	libmsopenh264_init(linphone_core_get_ms_factory(marie->lc));
@@ -4877,7 +4897,15 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
 	linphone_core_set_avpf_mode(pauline->lc,TRUE);
+
+	// important: VP8 has really poor performances with the mire camera, at least
+	// on iOS - so when ever h264 is available, let's use it instead
+	if (linphone_core_find_payload_type(pauline->lc,"h264", -1, -1)!=NULL) {
+		disable_all_video_codecs_except_one(pauline->lc,"h264");
+		disable_all_video_codecs_except_one(marie->lc,"h264");
+	}
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 	linphone_core_set_avpf_mode(marie->lc,TRUE);
@@ -5030,6 +5058,14 @@ static void classic_video_entry_phone_setup(void) {
 	linphone_core_set_avpf_mode(callee_mgr->lc, LinphoneAVPFEnabled);
 	linphone_core_set_video_policy(caller_mgr->lc, &vpol);
 	linphone_core_set_video_policy(callee_mgr->lc, &vpol);
+
+	// important: VP8 has really poor performances with the mire camera, at least
+	// on iOS - so when ever h264 is available, let's use it instead
+	if (linphone_core_find_payload_type(caller_mgr->lc,"h264", -1, -1)!=NULL) {
+		disable_all_video_codecs_except_one(caller_mgr->lc,"h264");
+		disable_all_video_codecs_except_one(callee_mgr->lc,"h264");
+	}
+
 	linphone_core_set_video_device(caller_mgr->lc, liblinphone_tester_mire_id);
 	linphone_core_set_video_device(callee_mgr->lc, liblinphone_tester_mire_id);
 
@@ -5195,6 +5231,14 @@ static void call_with_complex_late_offering(void){
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_set_video_policy(pauline->lc, &vpol);
 	linphone_core_set_video_policy(marie->lc, &vpol);
+
+		// important: VP8 has really poor performances with the mire camera, at least
+	// on iOS - so when ever h264 is available, let's use it instead
+	if (linphone_core_find_payload_type(pauline->lc,"h264", -1, -1)!=NULL) {
+		disable_all_video_codecs_except_one(pauline->lc,"h264");
+		disable_all_video_codecs_except_one(marie->lc,"h264");
+	}
+
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 
@@ -6465,12 +6509,12 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Audio call with ICE no matching audio codecs", audio_call_with_ice_no_matching_audio_codecs, "ICE"),
 #ifdef VIDEO_ENABLED
 	TEST_NO_TAG("Simple video call AVPF", video_call_avpf),
-    TEST_NO_TAG("Simple video call implicit AVPF both", video_call_using_policy_AVPF_implicit_caller_and_callee),
-    TEST_NO_TAG("Simple video call disable implicit AVPF on callee", video_call_disable_implicit_AVPF_on_callee),
-    TEST_NO_TAG("Simple video call disable implicit AVPF on caller", video_call_disable_implicit_AVPF_on_caller),
-    TEST_NO_TAG("Simple video call AVPF to implicit AVPF", video_call_AVPF_to_implicit_AVPF),
-    TEST_NO_TAG("Simple video call implicit AVPF to AVPF", video_call_implicit_AVPF_to_AVPF),
-    TEST_NO_TAG("Simple video call", video_call),
+	TEST_NO_TAG("Simple video call implicit AVPF both", video_call_using_policy_AVPF_implicit_caller_and_callee),
+	TEST_NO_TAG("Simple video call disable implicit AVPF on callee", video_call_disable_implicit_AVPF_on_callee),
+	TEST_NO_TAG("Simple video call disable implicit AVPF on caller", video_call_disable_implicit_AVPF_on_caller),
+	TEST_NO_TAG("Simple video call AVPF to implicit AVPF", video_call_AVPF_to_implicit_AVPF),
+	TEST_NO_TAG("Simple video call implicit AVPF to AVPF", video_call_implicit_AVPF_to_AVPF),
+	TEST_NO_TAG("Simple video call", video_call),
 	TEST_NO_TAG("Simple video call without rtcp",video_call_without_rtcp),
 	TEST_NO_TAG("Simple ZRTP video call", video_call_zrtp),
 	TEST_NO_TAG("Simple DTLS video call", video_call_dtls),
