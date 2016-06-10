@@ -1167,6 +1167,8 @@ static void database_migration(void) {
 	// the messages.db has 10000 dummy messages with the very first DB scheme.
 	// This will test the migration procedure
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
+	if (!marie->lc->db) goto end;
 
 	chatrooms = linphone_core_get_chat_rooms(marie->lc);
 	BC_ASSERT(ms_list_size(chatrooms) > 0);
@@ -1174,6 +1176,7 @@ static void database_migration(void) {
 	// check that all messages have been migrated to the UTC time storage
 	BC_ASSERT(sqlite3_exec(marie->lc->db, "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
 
+end:
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
 	ms_free(src_db);
@@ -1190,6 +1193,8 @@ static void history_range(void){
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
+	if (!marie->lc->db) goto end;
 
 	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
 	BC_ASSERT_PTR_NOT_NULL(chatroom);
@@ -1213,6 +1218,8 @@ static void history_range(void){
 		history_message_count_helper(chatroom, -2, 2, 3);
 		history_message_count_helper(chatroom, -3, 1, 2);
 	}
+	
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
@@ -1231,6 +1238,8 @@ static void history_count(void) {
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
+	if (!marie->lc->db) goto end;
 
 	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
 	BC_ASSERT_PTR_NOT_NULL(chatroom);
@@ -1279,6 +1288,8 @@ static void history_count(void) {
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270-1265, int, "%d");
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 	}
+	
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
@@ -1345,7 +1356,9 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	
 	if (sql_storage) {
 		linphone_core_set_chat_database_path(marie->lc, marie_db);
+		BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
 		linphone_core_set_chat_database_path(pauline->lc, pauline_db);
+		BC_ASSERT_PTR_NOT_NULL(pauline->lc->db);
 		if (do_not_store_rtt_messages_in_sql_storage) {
 			lp_config_set_int(marie->lc->config, "misc", "store_rtt_messages", 0);
 			lp_config_set_int(pauline->lc->config, "misc", "store_rtt_messages", 0);
