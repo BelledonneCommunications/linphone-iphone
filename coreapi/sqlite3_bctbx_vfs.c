@@ -389,7 +389,7 @@ static int sqlite3bctbx_winFullPathname(
 		sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zTemp);
 		bctbx_free(zTemp);
 		return SQLITE_OK;
-	 /*}
+	 }
 	 else{
 		return SQLITE_IOERR_NOMEM;
 	 }*/
