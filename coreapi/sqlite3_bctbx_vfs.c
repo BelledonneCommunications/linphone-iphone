@@ -115,7 +115,7 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
  */
 static int sqlite3bctbx_FileSize(sqlite3_file *p, sqlite_int64 *pSize){
 
-	int rc;                         /* Return code from fstat() call */
+	int64_t rc;                         /* Return code from fstat() call */
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile->pbctbx_file){
 		rc = bctbx_file_size(pFile->pbctbx_file);
@@ -209,7 +209,9 @@ static int sqlite3bctbx_nolockUnlock(sqlite3_file *pUnused, int unused){
 static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*)p;
 #if _WIN32
-	return (FlushFileBuffers(pFile->pbctbx_file->fd) ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+	int ret;
+	ret = FlushFileBuffers(pFile->pbctbx_file->h);
+	return (ret!=0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
 #else
 	int rc = fsync(pFile->pbctbx_file->fd);
 	return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
@@ -300,7 +302,102 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
   };
   return &bctbx_vfs;
 }
+#if _WIN32
+static int sqlite3bctbx_winAccess(
+								  sqlite3_vfs *pVfs,         /* Not used on win32 */
+								  const char *zFilename,     /* Name of file to check */
+								  int flags,                 /* Type of test to make on this file */
+								  int *pResOut               /* OUT: Result */
+){
+	DWORD attr;
+	int rc = 0;
+	
+	
+	//SimulateIOError(return SQLITE_IOERR_ACCESS;);
+	int cnt = 0;
+	WIN32_FILE_ATTRIBUTE_DATA sAttrData;
+	memset(&sAttrData, 0, sizeof(sAttrData));
+	rc = GetFileAttributesExW((LPCWSTR)zFilename,
+							  GetFileExInfoStandard,
+							  &sAttrData);
+	
+	if (rc){
+		/* For an SQLITE_ACCESS_EXISTS query, treat a zero-length file
+		 ** as if it does not exist.
+		 */
+		if (flags == SQLITE_ACCESS_EXISTS
+			&& sAttrData.nFileSizeHigh == 0
+			&& sAttrData.nFileSizeLow == 0){
+			attr = INVALID_FILE_ATTRIBUTES;
+		}
+		else{
+			attr = sAttrData.dwFileAttributes;
+		}
+	}
+	else{
+		attr = INVALID_FILE_ATTRIBUTES;
+	}
+	
+	switch (flags){
+		case SQLITE_ACCESS_READ:
+		case SQLITE_ACCESS_EXISTS:
+			rc = attr != INVALID_FILE_ATTRIBUTES;
+			break;
+		case SQLITE_ACCESS_READWRITE:
+			rc = attr != INVALID_FILE_ATTRIBUTES &&
+			(attr & FILE_ATTRIBUTE_READONLY) == 0;
+			break;
+		default:
+			break;
+			//assert(!"Invalid flags argument");
+			
+	}
+	*pResOut = rc;
+	return SQLITE_OK;
+}
 
+static int sqlite3bctbx_winFullPathname(
+										sqlite3_vfs *pVfs,            /* Pointer to vfs object */
+										const char *zRelative,        /* Possibly relative input path */
+										int nFull,                    /* Size of output buffer in bytes */
+										char *zFull){
+	//LPWSTR zTemp;
+	//DWORD nByte;
+	///* If this path name begins with "/X:", where "X" is any alphabetic
+	//** character, discard the initial "/" from the pathname.
+	//*/
+	//if (zRelative[0] == '/' && sqlite3Isalpha(zRelative[1]) && zRelative[2] == ':'){
+	//	zRelative++;
+	//}
+	
+	/*nByte = GetFullPathNameW((LPCWSTR)zRelative, 0, 0, 0);
+	 if (nByte == 0){
+		return SQLITE_CANTOPEN_FULLPATH;
+	 }
+	 nByte += 3;
+	 zTemp = bctbx_malloc(nByte*sizeof(zTemp[0]));
+	 memset(zTemp, 0, nByte*sizeof(zTemp[0]));
+	 if (zTemp == 0){
+		return SQLITE_IOERR_NOMEM;
+	 }
+	 nByte = GetFullPathNameW((LPCWSTR)zRelative, nByte, zTemp, 0);
+	 if (nByte == 0){
+		bctbx_free(zTemp);
+		return SQLITE_CANTOPEN_FULLPATH;
+	 }
+	 if (zTemp){
+		sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zTemp);
+		bctbx_free(zTemp);
+		return SQLITE_OK;
+	 /*}
+	 else{
+		return SQLITE_IOERR_NOMEM;
+	 }*/
+	sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zRelative);
+	return SQLITE_OK;
+}
+
+#endif
 
 void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pVfsToUse = sqlite3_bctbx_vfs_create();
@@ -309,10 +406,15 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 	#else
 	sqlite3_vfs* pDefault = sqlite3_vfs_find("unix-none");
 	#endif
-	pVfsToUse->xAccess =  pDefault->xAccess;
 	pVfsToUse->xCurrentTime = pDefault->xCurrentTime;
 
+#if _WIN32
+	pVfsToUse->xFullPathname = sqlite3bctbx_winFullPathname;
+	pVfsToUse->xAccess = sqlite3bctbx_winAccess;
+#else
+	pVfsToUse->xAccess =  pDefault->xAccess;
 	pVfsToUse->xFullPathname = pDefault->xFullPathname;
+#endif
 	pVfsToUse->xDelete = pDefault->xDelete;
 	pVfsToUse->xSleep = pDefault->xSleep;
 	pVfsToUse->xRandomness = pDefault->xRandomness;
