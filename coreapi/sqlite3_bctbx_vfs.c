@@ -51,17 +51,17 @@ static int sqlite3bctbx_Close(sqlite3_file *p){
 
 
 /**
- * Read count bytes from the open file given by p, starting at offset and puts them in 
+ * Read count bytes from the open file given by p, starting at offset and puts them in
  * the buffer pointed by buf.
  * Calls bctbx_file_read.
- * 
+ *
  * @param  p  		sqlite3_file file handle pointer.
  * @param  buf    	buffer to write the read bytes to.
  * @param  count  	number of bytes to read
  * @param  offset 	file offset where to start reading
- * @return 			SQLITE_OK if read bytes equals count,  
+ * @return 			SQLITE_OK if read bytes equals count,
  *                  SQLITE_IOERR_SHORT_READ if the number of bytes read is inferior to count
- *                  SQLITE_IOERR_READ if an error occurred. 
+ *                  SQLITE_IOERR_READ if an error occurred.
  */
 static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64 offset){
 	int ret;
@@ -73,10 +73,10 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
 		}
 		else if( ret >= 0 ){
 			/*fill in unread portion of buffer, as requested by sqlite3 documentation*/
-			memset(((uint8_t*)buf) + ret, 0, count-ret); 
+			memset(((uint8_t*)buf) + ret, 0, count-ret);
 			return SQLITE_IOERR_SHORT_READ;
 		}else {
-			
+
 			return SQLITE_IOERR_READ;
 		}
 	}
@@ -104,14 +104,14 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
 	}
 	return SQLITE_IOERR_WRITE;
 }
-		
+
 
 /**
  * Saves the file size associated with the file handle p into the argument pSize.
  * @param  p 	sqlite3_file file handle pointer.
- * @return 		SQLITE_OK if read bytes equals count,  
- *              SQLITE_IOERR_FSTAT if the file size returned is negative 
- *              SQLITE_ERROR if an error occurred. 
+ * @return 		SQLITE_OK if read bytes equals count,
+ *              SQLITE_IOERR_FSTAT if the file size returned is negative
+ *              SQLITE_ERROR if an error occurred.
  */
 static int sqlite3bctbx_FileSize(sqlite3_file *p, sqlite_int64 *pSize){
 
@@ -125,7 +125,7 @@ static int sqlite3bctbx_FileSize(sqlite3_file *p, sqlite_int64 *pSize){
 		if (pSize){
 			*pSize = rc;
 			return SQLITE_OK;
-		} 
+		}
 	}
 	return SQLITE_ERROR;
 
@@ -134,7 +134,7 @@ static int sqlite3bctbx_FileSize(sqlite3_file *p, sqlite_int64 *pSize){
 
 
 /************************ PLACE HOLDER FUNCTIONS ***********************/
-/** These functions were implemented to please the SQLite VFS 
+/** These functions were implemented to please the SQLite VFS
 implementation. Some of them are just stubs, some do a very limited job. */
 
 
@@ -177,7 +177,7 @@ static int sqlite3bctbx_nolockCheckReservedLock(sqlite3_file *pUnused, int *pRes
 }
 
 /**
- * The lock file mechanism is not used with this VFS : locking the file 
+ * The lock file mechanism is not used with this VFS : locking the file
  * is always OK.
  * @param  pUnused sqlite3_file file handle pointer.
  * @param  unused  unused
@@ -227,7 +227,7 @@ static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
  * @param  pVfs      sqlite3_vfs VFS pointer.
  * @param  fName     filename
  * @param  p         file handle pointer
- * @param  flags     db file access flags 
+ * @param  flags     db file access flags
  * @param  pOutFlags flags used by SQLite
  * @return           SQLITE_CANTOPEN on error, SQLITE_OK on success.
  */
@@ -239,7 +239,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 		sqlite3bctbx_Write,                 	/* xWrite */
 		0,										/*xTruncate*/
 		sqlite3bctbx_Sync,
-		sqlite3bctbx_FileSize,                
+		sqlite3bctbx_FileSize,
 		sqlite3bctbx_nolockLock,
 		sqlite3bctbx_nolockUnlock,
 		sqlite3bctbx_nolockCheckReservedLock,
@@ -301,6 +301,48 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
   return &bctbx_vfs;
 }
 
+static int sqlite3bctbx_winFullPathname(
+										sqlite3_vfs *pVfs,            /* Pointer to vfs object */
+										const char *zRelative,        /* Possibly relative input path */
+										int nFull,                    /* Size of output buffer in bytes */
+										char *zFull){
+	//LPWSTR zTemp;
+	//DWORD nByte;
+	///* If this path name begins with "/X:", where "X" is any alphabetic
+	//** character, discard the initial "/" from the pathname.
+	//*/
+	//if (zRelative[0] == '/' && sqlite3Isalpha(zRelative[1]) && zRelative[2] == ':'){
+	//	zRelative++;
+	//}
+
+	/*nByte = GetFullPathNameW((LPCWSTR)zRelative, 0, 0, 0);
+	 if (nByte == 0){
+		return SQLITE_CANTOPEN_FULLPATH;
+	 }
+	 nByte += 3;
+	 zTemp = bctbx_malloc(nByte*sizeof(zTemp[0]));
+	 memset(zTemp, 0, nByte*sizeof(zTemp[0]));
+	 if (zTemp == 0){
+		return SQLITE_IOERR_NOMEM;
+	 }
+	 nByte = GetFullPathNameW((LPCWSTR)zRelative, nByte, zTemp, 0);
+	 if (nByte == 0){
+		bctbx_free(zTemp);
+		return SQLITE_CANTOPEN_FULLPATH;
+	 }
+	 if (zTemp){
+		sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zTemp);
+		bctbx_free(zTemp);
+		return SQLITE_OK;
+	 }
+	 else{
+		return SQLITE_IOERR_NOMEM;
+	 }*/
+	sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zRelative);
+	return SQLITE_OK;
+}
+
+#endif
 
 void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pVfsToUse = sqlite3_bctbx_vfs_create();
@@ -319,10 +361,10 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 	pVfsToUse->xGetLastError = pDefault->xGetLastError; /* Not implemented by sqlite3 :place holder */
 	/*Functions below should not be a problem sincve we are declaring ourselves
 	 in version 1 */
-	
-	/* used in version 2 
+
+	/* used in version 2
 	xCurrentTimeInt64;*/
-	/* used in version 3 
+	/* used in version 3
 	xGetSystemCall
 	xSetSystemCall
 	xNextSystemCall*/
