@@ -30,7 +30,7 @@
 	[tester tapViewWithAccessibilityLabel:@"Chat"];
 
 	// it can take several seconds to receive the remote push notification...
-	int timeout = 15;
+	int timeout = 35;
 	while (timeout > 0) {
 		[tester tryFindingViewWithAccessibilityLabel:@"Contact name, Message" error:nil];
 		timeout--;
