@@ -1028,8 +1028,8 @@ void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int
 	}
 }
 
-#ifdef VIDEO_ENABLED
 void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
+#ifdef VIDEO_ENABLED
 	const MSList *codecs = linphone_core_get_video_codecs(lc);
 	const MSList *it = NULL;
 	PayloadType *pt = NULL;
@@ -1041,8 +1041,8 @@ void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
 	if (BC_ASSERT_PTR_NOT_NULL(pt)) {
 		linphone_core_enable_payload_type(lc, pt, TRUE);
 	}
-}
 #endif
+}
 
 static void call_with_dns_time_out(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2( "empty_rc", FALSE);
