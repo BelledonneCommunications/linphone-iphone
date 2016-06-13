@@ -342,8 +342,6 @@ static int sqlite3bctbx_winFullPathname(
 	return SQLITE_OK;
 }
 
-#endif
-
 void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pVfsToUse = sqlite3_bctbx_vfs_create();
 	#if _WIN32
