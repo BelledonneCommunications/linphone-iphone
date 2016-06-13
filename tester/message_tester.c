@@ -453,8 +453,10 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 				BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneMessageNotDelivered,1, 10000));
 				belle_http_provider_set_recv_error(marie->lc->http_provider, 0);
 			} else {
-				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
-				compare_files(send_filepath, receive_filepath);
+				/* wait for a long time in case the DNS SRV resolution takes times - it should be immediate though */
+				if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1,55000))) {
+					compare_files(send_filepath, receive_filepath);
+				}
 			}
 		}
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
@@ -1218,7 +1220,7 @@ static void history_range(void){
 		history_message_count_helper(chatroom, -2, 2, 3);
 		history_message_count_helper(chatroom, -3, 1, 2);
 	}
-	
+
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
@@ -1288,7 +1290,7 @@ static void history_count(void) {
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270-1265, int, "%d");
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 	}
-	
+
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
@@ -1344,7 +1346,7 @@ static void file_transfer_io_error_after_destroying_chatroom(void) {
 	file_transfer_io_error_base("https://www.linphone.org:444/lft.php", TRUE);
 }
 
-static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, bool_t mess_with_marie_payload_number, bool_t mess_with_pauline_payload_number, 
+static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, bool_t mess_with_marie_payload_number, bool_t mess_with_pauline_payload_number,
 						   bool_t ice_enabled, bool_t sql_storage, bool_t do_not_store_rtt_messages_in_sql_storage) {
 	LinphoneChatRoom *pauline_chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -1353,7 +1355,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	LinphoneCall *pauline_call, *marie_call;
 	char *marie_db  = bc_tester_file("marie.db");
 	char *pauline_db  = bc_tester_file("pauline.db");
-	
+
 	if (sql_storage) {
 		linphone_core_set_chat_database_path(marie->lc, marie_db);
 		BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
@@ -1430,7 +1432,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
-			
+
 			if (sql_storage) {
 				MSList *marie_messages = linphone_chat_room_get_history(marie_chat_room, 0);
 				MSList *pauline_messages = linphone_chat_room_get_history(pauline_chat_room, 0);
