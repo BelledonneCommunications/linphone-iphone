@@ -80,7 +80,8 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 #endif
 	
 	char *utf8_filename = utf8_convert(db_file);
-	ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
+	//ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
+	ret = sqlite3_open_v2(utf8_filename, db, flags, NULL); // Do not use VFS until all issues are resolved
 	ms_free(utf8_filename);
 
 	if (ret != SQLITE_OK) return ret;
@@ -695,8 +696,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 
 	linphone_core_message_storage_close(lc);
 
-	//ret=_linphone_sqlite3_open(lc->chat_db_file,&db);
-	ret = sqlite3_open(lc->chat_db_file,&db);
+	ret=_linphone_sqlite3_open(lc->chat_db_file,&db);
 	if(ret != SQLITE_OK) {
 		errmsg=sqlite3_errmsg(db);
 		ms_error("Error in the opening: %s.\n", errmsg);
