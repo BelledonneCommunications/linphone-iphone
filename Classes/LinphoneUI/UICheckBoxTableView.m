@@ -54,8 +54,8 @@
 	_emptyView.hidden = _editButton.enabled = ([self totalNumberOfItems] != 0);
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+- (void)toggleRowSelectionForRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
 	if ([_selectedItems containsObject:indexPath]) {
 		[_selectedItems removeObject:indexPath];
 	} else {
@@ -63,6 +63,14 @@
 	}
 	[self accessoryForCell:cell atPath:indexPath];
 	[self selectToggleButton:(_selectedItems.count != [self totalNumberOfItems])];
+}
+
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[self toggleRowSelectionForRowAtIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[self toggleRowSelectionForRowAtIndexPath:indexPath];
 }
 
 - (void)selectToggleButton:(BOOL)select {
