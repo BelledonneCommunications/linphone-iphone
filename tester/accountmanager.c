@@ -160,8 +160,9 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_proxy_config_set_expires(cfg,3*3600); //accounts are valid 3 hours
 
 	linphone_core_add_proxy_config(lc,cfg);
-	/*wait 15 seconds, since the DNS SRV resolution make time a while*/
-	if (wait_for_until(lc,NULL,&account->created,1,15000)==FALSE){
+	/*wait 25 seconds, since the DNS SRV resolution may take a while - and
+	especially if router does NOT support DNS SRV and we have to wait its timeout*/
+	if (wait_for_until(lc,NULL,&account->created,1,25000)==FALSE){
 		ms_fatal("Account for %s could not be created on server.", linphone_proxy_config_get_identity(refcfg));
 	}
 	linphone_proxy_config_edit(cfg);
