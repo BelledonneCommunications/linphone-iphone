@@ -301,7 +301,7 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
   return &bctbx_vfs;
 }
 
-static int sqlite3bctbx_winFullPathname(
+/*static int sqlite3bctbx_winFullPathname(
 										sqlite3_vfs *pVfs,            /* Pointer to vfs object */
 										const char *zRelative,        /* Possibly relative input path */
 										int nFull,                    /* Size of output buffer in bytes */
@@ -337,10 +337,10 @@ static int sqlite3bctbx_winFullPathname(
 	 }
 	 else{
 		return SQLITE_IOERR_NOMEM;
-	 }*/
+	 }*\/
 	sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zRelative);
 	return SQLITE_OK;
-}
+}*/
 
 void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pVfsToUse = sqlite3_bctbx_vfs_create();
