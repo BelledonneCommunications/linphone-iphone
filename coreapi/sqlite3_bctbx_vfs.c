@@ -302,20 +302,20 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
 }
 
 /*static int sqlite3bctbx_winFullPathname(
-										sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-										const char *zRelative,        /* Possibly relative input path */
-										int nFull,                    /* Size of output buffer in bytes */
+										sqlite3_vfs *pVfs,            // Pointer to vfs object
+										const char *zRelative,        // Possibly relative input path
+										int nFull,                    // Size of output buffer in bytes
 										char *zFull){
 	//LPWSTR zTemp;
 	//DWORD nByte;
-	///* If this path name begins with "/X:", where "X" is any alphabetic
-	//** character, discard the initial "/" from the pathname.
-	//*/
+	// If this path name begins with "/X:", where "X" is any alphabetic
+	// character, discard the initial "/" from the pathname.
+	//
 	//if (zRelative[0] == '/' && sqlite3Isalpha(zRelative[1]) && zRelative[2] == ':'){
 	//	zRelative++;
 	//}
 
-	/*nByte = GetFullPathNameW((LPCWSTR)zRelative, 0, 0, 0);
+	 nByte = GetFullPathNameW((LPCWSTR)zRelative, 0, 0, 0);
 	 if (nByte == 0){
 		return SQLITE_CANTOPEN_FULLPATH;
 	 }
@@ -337,7 +337,7 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
 	 }
 	 else{
 		return SQLITE_IOERR_NOMEM;
-	 }*\/
+	 }
 	sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zRelative);
 	return SQLITE_OK;
 }*/
