@@ -82,6 +82,19 @@ static void liblinphone_android_ortp_log_handler(const char *domain, OrtpLogLeve
 	liblinphone_android_log_handler(prio, fmt, args);
 }
 
+static void liblinphone_android_bctbx_log_handler(const char *domain, BctbxLogLevel lev, const char *fmt, va_list args) {
+	int prio;
+	switch(lev){
+		case BCTBX_LOG_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
+		case BCTBX_LOG_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
+		case BCTBX_LOG_WARNING:	prio = ANDROID_LOG_WARN;	break;
+		case BCTBX_LOG_ERROR:	prio = ANDROID_LOG_ERROR;	break;
+		case BCTBX_LOG_FATAL:	prio = ANDROID_LOG_FATAL;	break;
+		default:			prio = ANDROID_LOG_DEFAULT;	break;
+	}
+	liblinphone_android_log_handler(prio, fmt, args);
+}
+
 void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	char buffer[CALLBACK_BUFFER_SIZE];
 	jstring javaString;
@@ -158,6 +171,7 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 	if (! log_file) {
 #if defined(ANDROID)
 		linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
+		bctbx_set_log_handler(liblinphone_android_bctbx_log_handler);
 #endif
 	}
 
