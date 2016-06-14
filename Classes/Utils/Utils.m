@@ -408,7 +408,11 @@
 	else if ([machine isEqual:@"iPhone2,1"])
 		return @"iPhone 3GS";
 	else if ([machine isEqual:@"iPhone3,1"])
-		return @"iPhone3,2 iPhone3,3	iPhone 4";
+		return @"iPhone 4";
+	else if ([machine isEqual:@"iPhone3,2"])
+		return @"iPhone 4";
+	else if ([machine isEqual:@"iPhone3,3"])
+		return @"iPhone 4";
 	else if ([machine isEqual:@"iPhone4,1"])
 		return @"iPhone 4S";
 	else if ([machine isEqual:@"iPhone5,1"])

@@ -16,6 +16,7 @@ Group changes to describe their impact on the project, as follows:
 - Added "Forgot your password?" link in Linphone account assistant
 - [Full IPv6 support to comply Apple requirements]
 - Hardware accelerated H264 codec
+- Full video HD support for newest devices (iPhone 6, iPhone SE, etc.)
 
 ### Changed
 - Enable Neon intrinsics optimizations for speex resampler (ENABLE_ARM_NEON_INTRINSICS)
