@@ -209,6 +209,7 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 
 void linphone_core_set_log_level_mask(OrtpLogLevel loglevel) {
 	ortp_set_log_level_mask(NULL, loglevel);
+	bctbx_set_log_level_mask(NULL, loglevel);
 	if (loglevel == 0) {
 		sal_disable_log();
 	} else {

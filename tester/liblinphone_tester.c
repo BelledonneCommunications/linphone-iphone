@@ -213,10 +213,8 @@ int main (int argc, char *argv[])
 
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
-			bctbx_set_log_level(NULL, BCTBX_LOG_MESSAGE);
 			linphone_core_set_log_level(ORTP_MESSAGE);
 		} else if (strcmp(argv[i], "--silent") == 0) {
-			bctbx_set_log_level(NULL, BCTBX_LOG_FATAL);
 			linphone_core_set_log_level(ORTP_FATAL);
 		} else if (strcmp(argv[i],"--log-file")==0){
 			CHECK_ARG("--log-file", ++i, argc);
