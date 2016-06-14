@@ -233,7 +233,7 @@ static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t e
 	for (codecs_it=codecs;codecs_it!=NULL;codecs_it=codecs_it->next) {
 		linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
 	}
-	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
+	if ((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, enable);
 	}
 	ms_list_free(codecs);

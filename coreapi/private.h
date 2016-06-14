@@ -1552,6 +1552,8 @@ char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
 
 #define LINPHONE_SQLITE3_VFS "sqlite3bctbx_vfs"
 
+void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite);
+
 #ifdef __cplusplus
 }
 #endif

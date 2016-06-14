@@ -1113,7 +1113,15 @@ void linphone_call_fill_media_multicast_addr(LinphoneCall *call) {
 		call->media_ports[call->main_video_stream_index].multicast_ip[0]='\0';
 }
 
-static void linphone_call_create_ice_session(LinphoneCall *call, IceRole role){
+void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite){
+	if (call->ice_session) return; /*already created*/
+	
+	if (!linphone_nat_policy_ice_enabled(linphone_core_get_nat_policy(call->core))){
+		return;
+	}
+		
+	if (is_reinvite && lp_config_get_int(call->core->config, "net", "allow_late_ice", 0) == 0) return;
+	
 	call->ice_session = ice_session_new();
 	/*for backward compatibility purposes, shall be enabled by default in futur*/
 	ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(call->core->config,"net","ice_session_enable_message_integrity_check",1));
@@ -1124,7 +1132,6 @@ static void linphone_call_create_ice_session(LinphoneCall *call, IceRole role){
 		types[2] = ICT_CandidateInvalid;
 		ice_session_set_default_candidates_types(call->ice_session, types);
 	}
-	
 	ice_session_set_role(call->ice_session, role);
 }
 
@@ -1142,9 +1149,8 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 	linphone_call_fill_media_multicast_addr(call);
 
-	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
-		linphone_call_create_ice_session(call, IR_Controlling);
-	}
+	linphone_call_check_ice_session(call, IR_Controlling, FALSE);
+	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
@@ -1393,7 +1399,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	if ((nat_policy != NULL) && linphone_nat_policy_ice_enabled(nat_policy)) {
 		/* Create the ice session now if ICE is required */
 		if (md){
-			linphone_call_create_ice_session(call, IR_Controlled);
+			linphone_call_check_ice_session(call, IR_Controlled, FALSE);
 		}else{
 			nat_policy = NULL;
 			ms_warning("ICE not supported for incoming INVITE without SDP.");

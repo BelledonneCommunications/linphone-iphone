@@ -40,6 +40,7 @@ static void linphone_nat_policy_destroy(LinphoneNatPolicy *policy) {
 	if (policy->stun_server) belle_sip_free(policy->stun_server);
 	if (policy->stun_server_username) belle_sip_free(policy->stun_server_username);
 	if (policy->stun_addrinfo) bctbx_freeaddrinfo(policy->stun_addrinfo);
+	//if (policy->stun_resolver_context) sal_resolve_cancel(policy->stun_resolver_context);
 }
 
 static bool_t linphone_nat_policy_stun_server_activated(LinphoneNatPolicy *policy) {

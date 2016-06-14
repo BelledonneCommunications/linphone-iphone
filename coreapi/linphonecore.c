@@ -3615,6 +3615,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		ms_error("linphone_core_update_call() is not allowed in [%s] state",linphone_call_state_to_string(call->state));
 		return -1;
 	}
+	
+	linphone_call_check_ice_session(call, IR_Controlling, TRUE);
 
 	if (params!=NULL){
 		call->broken = FALSE;
@@ -3798,11 +3800,10 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 	/*update multicast params according to call params*/
 	linphone_call_fill_media_multicast_addr(call);
 
+	linphone_call_check_ice_session(call, IR_Controlled, TRUE);
 	linphone_call_init_media_streams(call); /*so that video stream is initialized if necessary*/
-	if (call->ice_session != NULL) {
-		if (linphone_call_prepare_ice(call,TRUE)==1)
-			return 0;/*deferred to completion of ICE gathering*/
-	}
+	if (linphone_call_prepare_ice(call,TRUE)==1)
+		return 0;/*deferred to completion of ICE gathering*/
 
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
@@ -5281,8 +5282,19 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
 
 void linphone_core_set_nat_policy(LinphoneCore *lc, LinphoneNatPolicy *policy) {
 	if (policy != NULL) policy = linphone_nat_policy_ref(policy); /* Prevent object destruction if the same policy is used */
-	if (lc->nat_policy != NULL) linphone_nat_policy_unref(lc->nat_policy);
-	if (policy != NULL) lc->nat_policy = policy;
+	else{
+		ms_error("linphone_core_set_nat_policy() setting to NULL is not allowed");
+		return ;
+	}
+	if (lc->nat_policy != NULL) {
+		linphone_nat_policy_unref(lc->nat_policy);
+		lc->nat_policy = NULL;
+	}
+	if (policy != NULL){
+		lc->nat_policy = policy;
+		/*start an immediate (but asynchronous) resolution.*/
+		linphone_nat_policy_resolve_stun_server(policy);
+	}
 
 #ifdef BUILD_UPNP
 	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));

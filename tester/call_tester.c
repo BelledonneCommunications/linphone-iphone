@@ -1304,7 +1304,7 @@ static void call_with_ice_no_sdp(void){
 
 	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
 
-	call(pauline,marie);
+	BC_ASSERT_TRUE(call(pauline,marie));
 
 	liblinphone_tester_check_rtcp(marie,pauline);
 
@@ -1327,6 +1327,55 @@ static void ice_to_not_ice(void){
 
 static void not_ice_to_ice(void){
 	_call_with_ice(FALSE,TRUE,FALSE,FALSE);
+}
+
+static void ice_added_by_reinvite(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneNatPolicy *pol;
+	LinphoneCallParams *params;
+	LinphoneCall *c;
+	bool_t call_ok;
+	
+	lp_config_set_int(linphone_core_get_config(marie->lc), "net", "allow_late_ice", 1);
+	lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "allow_late_ice", 1);
+	
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	if (!call_ok) goto end;
+	liblinphone_tester_check_rtcp(marie,pauline);
+	
+	/*enable ICE on both ends*/
+	pol = linphone_core_get_nat_policy(marie->lc);
+	linphone_nat_policy_enable_ice(pol, TRUE);
+	linphone_nat_policy_enable_stun(pol, TRUE);
+	linphone_core_set_nat_policy(marie->lc, pol);
+	
+	pol = linphone_core_get_nat_policy(pauline->lc);
+	linphone_nat_policy_enable_ice(pol, TRUE);
+	linphone_nat_policy_enable_stun(pol, TRUE);
+	linphone_core_set_nat_policy(pauline->lc, pol);
+	
+	c = linphone_core_get_current_call(marie->lc);
+	params = linphone_core_create_call_params(marie->lc, c);
+	linphone_core_update_call(marie->lc, c, params);
+	linphone_call_params_destroy(params);
+	
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	
+	BC_ASSERT_TRUE(check_ice(marie, pauline, LinphoneIceStateHostConnection));
+	
+	/*wait for the ICE reINVITE*/
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
+	
+	
+	end_call(pauline, marie);
+	
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 static void call_with_custom_headers(void) {
@@ -6371,6 +6420,18 @@ static void call_with_ice_without_stun(void){
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_ice_without_stun2(void){
+	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	//linphone_core_set_stun_server(marie->lc, NULL);
+	linphone_core_set_stun_server(pauline->lc, NULL);
+	_call_with_ice_base(marie, pauline, TRUE, TRUE, TRUE, FALSE);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void call_with_zrtp_configured_calling_side(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -6578,6 +6639,7 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE (forced relay)", call_with_ice_forced_relay, "ICE"),
 	TEST_ONE_TAG("Call from ICE to not ICE", ice_to_not_ice, "ICE"),
 	TEST_ONE_TAG("Call from not ICE to ICE", not_ice_to_ice, "ICE"),
+	TEST_ONE_TAG("Call with ICE added by reINVITE", ice_added_by_reinvite, "ICE"),
 	TEST_NO_TAG("Call with custom headers", call_with_custom_headers),
 	TEST_NO_TAG("Call with custom SDP attributes", call_with_custom_sdp_attributes),
 	TEST_NO_TAG("Call established with rejected INFO", call_established_with_rejected_info),
@@ -6636,6 +6698,7 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE and rtcp-mux without ICE re-invite", call_with_ice_and_rtcp_mux_without_reinvite, "ICE"),
 	TEST_ONE_TAG("Call with ICE with default candidate not stun", call_with_ice_with_default_candidate_not_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server", call_with_ice_without_stun, "ICE"),
+	TEST_ONE_TAG("Call with ICE without stun server one side", call_with_ice_without_stun2, "ICE"),
 	TEST_NO_TAG("call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
 	TEST_NO_TAG("call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side)
 };
