@@ -210,7 +210,7 @@ static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*)p;
 #if _WIN32
 	int ret;
-	ret = FlushFileBuffers(pFile->pbctbx_file->h);
+	ret = FlushFileBuffers((HANDLE)_get_osfhandle(pFile->pbctbx_file->fd));
 	return (ret!=0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
 #else
 	int rc = fsync(pFile->pbctbx_file->fd);
