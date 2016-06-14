@@ -23,6 +23,7 @@ Group changes to describe their impact on the project, as follows:
 - Push notifications are now configurable per account
 - Update to latest OpenH264 version to fix issue with Xcode 7.3 and arm64 devices [openh264 issue 2434]
 - Default transport reset to "UDP" for external accounts in assistant since most providers only support that
+- Removed deprecated polarssl submodule, using mbedtls instead
 
 ### Fixed
 - Fix invalid photo rotation when using Camera for avatars
