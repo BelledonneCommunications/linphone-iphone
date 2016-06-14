@@ -35,7 +35,7 @@ static void linphone_vcard_import_export_friends_test(void) {
 	char *export_filepath = bc_tester_file("export_vcards.vcf");
 	int count = 0;
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
-
+	
 	count = linphone_friend_list_import_friends_from_vcard4_file(lfl, import_filepath);
 	BC_ASSERT_EQUAL(count, 3, int, "%d");
 	friends = linphone_friend_list_get_friends(lfl);

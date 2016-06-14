@@ -768,24 +768,28 @@ LinphoneCore* linphone_friend_list_get_core(LinphoneFriendList *list) {
 }
 
 int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
-	MSList *vcards = linphone_vcard_list_from_vcard4_file(vcard_file);
+	MSList *vcards = NULL;
+	MSList *vcards_iterator = NULL;
 	int count = 0;
 
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
 	return -1;
 #endif
-	if (!vcards) {
-		ms_error("Failed to parse the file %s", vcard_file);
-		return -1;
-	}
 	if (!list) {
 		ms_error("Can't import into a NULL list");
 		return -1;
 	}
+	
+	vcards = linphone_vcard_list_from_vcard4_file(vcard_file);
+	vcards_iterator = vcards;
+	if (!vcards) {
+		ms_error("Failed to parse the file %s", vcard_file);
+		return -1;
+	}
 
-	while (vcards != NULL && vcards->data != NULL) {
-		LinphoneVcard *vcard = (LinphoneVcard *)vcards->data;
+	while (vcards_iterator != NULL && vcards_iterator->data != NULL) {
+		LinphoneVcard *vcard = (LinphoneVcard *)vcards_iterator->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
@@ -795,31 +799,36 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 		} else {
 			linphone_vcard_free(vcard);
 		}
-		vcards = ms_list_next(vcards);
+		vcards_iterator = ms_list_next(vcards_iterator);
 	}
+	ms_list_free(vcards);
 	linphone_core_store_friends_list_in_db(list->lc, list);
 	return count;
 }
 
 int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *list, const char *vcard_buffer) {
-	MSList *vcards = linphone_vcard_list_from_vcard4_buffer(vcard_buffer);
+	MSList *vcards = NULL;
+	MSList *vcards_iterator = NULL;
 	int count = 0;
 
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
 	return -1;
 #endif
-	if (!vcards) {
-		ms_error("Failed to parse the buffer");
-		return -1;
-	}
 	if (!list) {
 		ms_error("Can't import into a NULL list");
 		return -1;
 	}
+	
+	vcards = linphone_vcard_list_from_vcard4_buffer(vcard_buffer);
+	vcards_iterator = vcards;
+	if (!vcards) {
+		ms_error("Failed to parse the buffer");
+		return -1;
+	}
 
-	while (vcards != NULL && vcards->data != NULL) {
-		LinphoneVcard *vcard = (LinphoneVcard *)vcards->data;
+	while (vcards_iterator != NULL && vcards_iterator->data != NULL) {
+		LinphoneVcard *vcard = (LinphoneVcard *)vcards_iterator->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
@@ -829,8 +838,9 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 		} else {
 			linphone_vcard_free(vcard);
 		}
-		vcards = ms_list_next(vcards);
+		vcards_iterator = ms_list_next(vcards_iterator);
 	}
+	ms_list_free(vcards);
 	linphone_core_store_friends_list_in_db(list->lc, list);
 	return count;
 }
