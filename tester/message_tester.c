@@ -23,7 +23,7 @@
 #include "liblinphone_tester.h"
 #include "lime.h"
 
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 #include <sqlite3.h>
 #endif
 
@@ -1129,7 +1129,6 @@ static void lime_unit(void) {
 
 
 #endif /* HAVE_LIME */
-
 /*
  * Copy file "from" to file "to".
  * Destination file is truncated if existing.

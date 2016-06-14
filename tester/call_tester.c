@@ -5994,7 +5994,7 @@ end:
 }
 
 
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 
 static void call_logs_if_no_db_set(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -6630,7 +6630,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with RTP IO mode", call_with_rtp_io_mode),
 	TEST_NO_TAG("Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback),
 	TEST_NO_TAG("Call with complex late offering", call_with_complex_late_offering),
-#ifdef CALL_LOGS_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	TEST_NO_TAG("Call log working if no db set", call_logs_if_no_db_set),
 	TEST_NO_TAG("Call log storage migration from rc to db", call_logs_migrate),
 	TEST_NO_TAG("Call log storage in sqlite database", call_logs_sqlite_storage),
