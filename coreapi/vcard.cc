@@ -40,6 +40,12 @@ LinphoneVcard* linphone_vcard_new(void) {
 	return vCard;
 }
 
+static LinphoneVcard* linphone_vcard_new_from_belcard(shared_ptr<belcard::BelCard> belcard) {
+	LinphoneVcard* vCard = (LinphoneVcard*) ms_new0(LinphoneVcard, 1);
+	vCard->belCard = belcard;
+	return vCard;
+}
+
 void linphone_vcard_free(LinphoneVcard *vCard) {
 	if (!vCard) return;
 	
@@ -49,14 +55,13 @@ void linphone_vcard_free(LinphoneVcard *vCard) {
 
 MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
 	MSList *result = NULL;
-	if (filename && ortp_file_exist(filename) == 0) {
+	if (filename) {
 		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
 		shared_ptr<belcard::BelCardList> belCards = parser.parseFile(filename);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
-				shared_ptr<belcard::BelCard> belcard = (*it);
-				LinphoneVcard *vCard = linphone_vcard_new();
-				vCard->belCard = belcard;
+				shared_ptr<belcard::BelCard> belCard = (*it);
+				LinphoneVcard *vCard = linphone_vcard_new_from_belcard(belCard);
 				result = ms_list_append(result, vCard);
 			}
 		}
@@ -72,8 +77,7 @@ MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belCard = (*it);
-				LinphoneVcard *vCard = linphone_vcard_new();
-				vCard->belCard = belCard;
+				LinphoneVcard *vCard = linphone_vcard_new_from_belcard(belCard);
 				result = ms_list_append(result, vCard);
 			}
 		}
@@ -87,8 +91,7 @@ LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
 		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
 		shared_ptr<belcard::BelCard> belCard = parser.parseOne(buffer);
 		if (belCard) {
-			vCard = linphone_vcard_new();
-			vCard->belCard = belCard;
+			vCard = linphone_vcard_new_from_belcard(belCard);
 		} else {
 			ms_error("Couldn't parse buffer %s", buffer);
 		}
