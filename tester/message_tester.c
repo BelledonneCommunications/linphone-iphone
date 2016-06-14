@@ -23,7 +23,7 @@
 #include "liblinphone_tester.h"
 #include "lime.h"
 
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 #include <sqlite3.h>
 #endif
 
@@ -1094,7 +1094,7 @@ static void lime_unit(void) {
 
 #endif /* HAVE_LIME */
 
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 
 /*
  * Copy file "from" to file "to".
@@ -1800,7 +1800,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption),
 	TEST_NO_TAG("Lime unitary", lime_unit),
 #endif /* HAVE_LIME */
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
 	TEST_NO_TAG("History count", history_count),
