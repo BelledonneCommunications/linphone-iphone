@@ -361,7 +361,7 @@ static test_t tests[] = {
 };
 
 test_suite_t complex_sip_call_test_suite = {
-	"Complex SIP Call",
+	"Complex SIP Case",
 	NULL,
 	NULL,
 	liblinphone_tester_before_each,

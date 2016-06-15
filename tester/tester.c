@@ -136,7 +136,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	nowebcampath     = ms_strdup_printf("%s/images/nowebcamCIF.jpg", path);
 	rootcapath       = ms_strdup_printf("%s/certificates/cn/cafile.pem", path);
 	dnsuserhostspath = ms_strdup_printf("%s/%s", path, userhostsfile);
-	
+
 
 	if( config != NULL ) {
 		lp_config_set_string(config, "sound", "remote_ring", ringbackpath);
@@ -151,7 +151,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 		linphone_core_set_root_ca(lc,rootcapath);
 	}
 	chatdb = ms_strdup_printf("%s/messages-%p.db",bc_tester_get_writable_dir_prefix(),lc);
-	
+
 	linphone_core_enable_ipv6(lc, liblinphonetester_ipv6);
 
 	sal_enable_test_features(lc->sal,TRUE);
@@ -159,7 +159,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	linphone_core_set_static_picture(lc,nowebcampath);
 
 	linphone_core_set_chat_database_path(lc, chatdb);
-	
+
 	ms_free(ringpath);
 	ms_free(ringbackpath);
 	ms_free(nowebcampath);
@@ -502,6 +502,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&tunnel_test_suite);
 	bc_tester_add_suite(&offeranswer_test_suite);
 	bc_tester_add_suite(&call_test_suite);
+	bc_tester_add_suite(&call_video_test_suite);
 	bc_tester_add_suite(&audio_bypass_suite);
 	bc_tester_add_suite(&multi_call_test_suite);
 	bc_tester_add_suite(&message_test_suite);
