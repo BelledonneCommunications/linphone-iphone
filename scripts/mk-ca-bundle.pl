@@ -222,6 +222,11 @@ while (<TXT>) {
 }
 close(TXT) or die "Couldn't close $txt: $!\n";
 close(CRT) or die "Couldn't close $crt.~: $!\n";
+
+# this may happen if website is in maintenance - 200 OK is returned but it returns
+# a HTML maintenance page instead of expected file
+die "No certs processed (invalid input file?)!" if ($certnum == 0 and $skipnum == 0);
+
 unless( $stdout ) {
     if ($opt_b && -e $crt) {
         my $bk = 1;
