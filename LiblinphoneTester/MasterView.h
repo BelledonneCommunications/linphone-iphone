@@ -8,9 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSMutableArray *lastLogs;
-extern NSString *const kLogsUpdateNotification;
-
 @class DetailTableView;
 
 @interface MasterView : UITableViewController

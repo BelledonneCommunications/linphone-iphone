@@ -7,7 +7,6 @@
 //
 
 #import "MasterView.h"
-#import "LogsView.h"
 #import "DetailTableView.h"
 
 #include "linphone/liblinphone_tester.h"
@@ -31,16 +30,8 @@
 	[super awakeFromNib];
 }
 
-NSMutableArray *lastLogs = nil;
-NSMutableArray *logsBuffer = nil;
-static int const kLastLogsCapacity = 5000;
-static int const kLogsBufferCapacity = 10;
-NSString *const kLogsUpdateNotification = @"kLogsUpdateNotification";
-
 - (void)setupLogging {
-	lastLogs = [[NSMutableArray alloc] initWithCapacity:kLastLogsCapacity];
-	logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
-	[Log enableLogs:ORTP_DEBUG];
+	[Log enableLogs:0];
 	linphone_core_enable_log_collection(NO);
 }
 
