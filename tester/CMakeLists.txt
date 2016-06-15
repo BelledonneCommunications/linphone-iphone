@@ -20,35 +20,8 @@
 #
 ############################################################################
 
-set(SOURCE_FILES
-	accountmanager.c
-	audio_bypass_tester.c
-	call_tester.c
-	complex_sip_call_tester.c
-	dtmf_tester.c
-	eventapi_tester.c
-	flexisip_tester.c
-	liblinphone_tester.c
-	log_collection_tester.c
-	message_tester.c
-	multi_call_tester.c
-	multicast_call_tester.c
-	offeranswer_tester.c
-	player_tester.c
-	presence_tester.c
-	presence_server_tester.c
-	proxy_config_tester.c
-	quality_reporting_tester.c
-	register_tester.c
-	remote_provisioning_tester.c
-	setup_tester.c
-	stun_tester.c
-	tester.c
-	tunnel_tester.c
-	upnp_tester.c
-	video_tester.c
-	vcard_tester.c
-)
+file(GLOB SOURCE_FILES "*_tester.c")
+list(APPEND SOURCE_FILES accountmanager.c tester.c)
 
 apply_compile_flags(SOURCE_FILES "CPP" "C")
 
