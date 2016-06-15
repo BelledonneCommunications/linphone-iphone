@@ -158,7 +158,7 @@ static void profile_call_base(bool_t avpf1
 		linphone_core_set_media_encryption_mandatory(marie->lc,TRUE);
 		linphone_core_set_media_encryption_mandatory(pauline->lc,TRUE);
 	}
-	
+
 	if (enable_video && linphone_core_video_supported(marie->lc)) {
 		LinphoneVideoPolicy policy;
 		policy.automatically_accept = TRUE;
@@ -534,7 +534,7 @@ static test_t offeranswer_tests[] = {
 	TEST_NO_TAG("SAVPF/DTLS to SAVPF/DTLS encryption mandatory video call", savpf_dtls_to_savpf_dtls_encryption_mandatory_video_call),
 	TEST_NO_TAG("SAVPF/DTLS to SAVPF video call", savpf_dtls_to_savpf_video_call),
 	TEST_NO_TAG("SAVPF/DTLS to SAVPF encryption mandatory video call", savpf_dtls_to_savpf_encryption_mandatory_video_call),
-	TEST_NO_TAG("SAVPF/DTLS to AVPF call", savpf_dtls_to_avpf_video_call),
+	TEST_NO_TAG("SAVPF/DTLS to AVPF video call", savpf_dtls_to_avpf_video_call),
 
 	TEST_NO_TAG("Compatible AVPF features", compatible_avpf_features),
 	TEST_NO_TAG("Incompatible AVPF features", incompatible_avpf_features)
