@@ -29,10 +29,6 @@
 	return [[testString componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@"_"];
 }
 
-void tester_logs_handler(int level, const char *fmt, va_list args) {
-	linphone_iphone_log_handler(NULL, level, fmt, args);
-}
-
 + (void)initialize {
 	for (int i = 0; i < bc_tester_nb_suites(); i++) {
 		const char *suite = bc_tester_suite_name(i);
@@ -59,22 +55,10 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	}
 }
 
-- (void)setUp {
-	[super setUp];
-}
-
-- (void)tearDown {
-	[super tearDown];
-}
-
 - (void)testForSuite:(NSString *)suite andTest:(NSString *)test {
 	LOGI(@"Launching test %@ from suite %@", test, suite);
 	XCTAssertFalse(bc_tester_run_tests(suite.UTF8String, test.UTF8String, NULL), @"Suite '%@' / Test '%@' failed",
 				   suite, test);
-}
-
-- (void)dealloc {
-	liblinphone_tester_clear_accounts();
 }
 
 @end

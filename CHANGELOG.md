@@ -12,6 +12,8 @@ Group changes to describe their impact on the project, as follows:
 
 ## [Unreleased]
 
+## [3.13.9] - 2016-06-15
+
 ### Added
 - Added "Forgot your password?" link in Linphone account assistant
 - [Full IPv6 support to comply Apple requirements]
@@ -62,7 +64,8 @@ consider inputs to be phone numbers, otherwise SIP addresses.
 ### Added
 - Initial version
 
-[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.12.1...HEAD
+[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.13.9...HEAD
+[3.13.9]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.13.9.zip
 [3.12.1]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.12.1.zip
 [plugins registration]: https://github.com/BelledonneCommunications/linphone-iphone/blob/3.12.1/Classes/LinphoneManager.m#L1461-L1472
 [openh264 issue 2434]: https://github.com/cisco/openh264/issues/2434
