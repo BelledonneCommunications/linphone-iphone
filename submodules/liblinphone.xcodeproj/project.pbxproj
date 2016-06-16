@@ -340,7 +340,6 @@
 		631A51FB1C770B6900B95673 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51E81C770B6900B95673 /* libopencore-amrnb.a */; };
 		631A51FC1C770B6900B95673 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51E91C770B6900B95673 /* libopencore-amrwb.a */; };
 		631A51FD1C770B6900B95673 /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51EA1C770B6900B95673 /* libopenh264.a */; };
-		631A51FE1C770B6900B95673 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51EB1C770B6900B95673 /* libpolarssl.a */; };
 		631A51FF1C770B6900B95673 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51EC1C770B6900B95673 /* libsrtp.a */; };
 		631A52001C770B6900B95673 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51ED1C770B6900B95673 /* libswresample.a */; };
 		631A52011C770B6900B95673 /* libtunnel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51EE1C770B6900B95673 /* libtunnel.a */; };
@@ -792,7 +791,6 @@
 		631A51E81C770B6900B95673 /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrnb.a"; path = "../liblinphone-sdk/apple-darwin/lib/libopencore-amrnb.a"; sourceTree = "<group>"; };
 		631A51E91C770B6900B95673 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "../liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
 		631A51EA1C770B6900B95673 /* libopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenh264.a; path = "../liblinphone-sdk/apple-darwin/lib/libopenh264.a"; sourceTree = "<group>"; };
-		631A51EB1C770B6900B95673 /* libpolarssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpolarssl.a; path = "../liblinphone-sdk/apple-darwin/lib/libpolarssl.a"; sourceTree = "<group>"; };
 		631A51EC1C770B6900B95673 /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "../liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 		631A51ED1C770B6900B95673 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "../liblinphone-sdk/apple-darwin/lib/libswresample.a"; sourceTree = "<group>"; };
 		631A51EE1C770B6900B95673 /* libtunnel.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtunnel.a; path = "../liblinphone-sdk/apple-darwin/lib/libtunnel.a"; sourceTree = "<group>"; };
@@ -927,7 +925,6 @@
 				631A51FB1C770B6900B95673 /* libopencore-amrnb.a in Frameworks */,
 				631A51FC1C770B6900B95673 /* libopencore-amrwb.a in Frameworks */,
 				631A51FD1C770B6900B95673 /* libopenh264.a in Frameworks */,
-				631A51FE1C770B6900B95673 /* libpolarssl.a in Frameworks */,
 				631A51FF1C770B6900B95673 /* libsrtp.a in Frameworks */,
 				631A52001C770B6900B95673 /* libswresample.a in Frameworks */,
 				631A52011C770B6900B95673 /* libtunnel.a in Frameworks */,
@@ -1495,7 +1492,6 @@
 				631A51E81C770B6900B95673 /* libopencore-amrnb.a */,
 				631A51E91C770B6900B95673 /* libopencore-amrwb.a */,
 				631A51EA1C770B6900B95673 /* libopenh264.a */,
-				631A51EB1C770B6900B95673 /* libpolarssl.a */,
 				631A51EC1C770B6900B95673 /* libsrtp.a */,
 				631A51ED1C770B6900B95673 /* libswresample.a */,
 				631A51EE1C770B6900B95673 /* libtunnel.a */,

@@ -603,7 +603,6 @@
 		63CFEDF81B9EDD74007EA5BD /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22509041196BD902007863F6 /* libopenh264.a */; };
 		63CFEDF91B9EDD74007EA5BD /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AF73C11754C0D000BE8398 /* libopus.a */; };
 		63CFEDFA1B9EDD74007EA5BD /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
-		63CFEDFB1B9EDD74007EA5BD /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
 		63CFEDFD1B9EDD74007EA5BD /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		63CFEDFE1B9EDD74007EA5BD /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
 		63CFEDFF1B9EDD74007EA5BD /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
@@ -757,7 +756,6 @@
 		F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
 		F0BB8C241936245300974404 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AF73C11754C0D000BE8398 /* libopus.a */; };
 		F0BB8C251936245300974404 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
-		F0BB8C261936245300974404 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
 		F0BB8C281936245300974404 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		F0BB8C291936245300974404 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
 		F0BB8C2A1936245300974404 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
@@ -927,7 +925,6 @@
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
-		57B0E35F173C010400A476B8 /* libpolarssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpolarssl.a; path = "liblinphone-sdk/apple-darwin/lib/libpolarssl.a"; sourceTree = "<group>"; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
 		630589E01B4E810900EFAE36 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
@@ -1799,7 +1796,6 @@
 				63CFEDF81B9EDD74007EA5BD /* libopenh264.a in Frameworks */,
 				63CFEDF91B9EDD74007EA5BD /* libopus.a in Frameworks */,
 				63CFEDFA1B9EDD74007EA5BD /* libortp.a in Frameworks */,
-				63CFEDFB1B9EDD74007EA5BD /* libpolarssl.a in Frameworks */,
 				63CFEDFD1B9EDD74007EA5BD /* libspeex.a in Frameworks */,
 				63CFEDFE1B9EDD74007EA5BD /* libspeexdsp.a in Frameworks */,
 				63CFEDFF1B9EDD74007EA5BD /* libsrtp.a in Frameworks */,
@@ -1889,7 +1885,6 @@
 				F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */,
 				F0BB8C241936245300974404 /* libopus.a in Frameworks */,
 				F0BB8C251936245300974404 /* libortp.a in Frameworks */,
-				F0BB8C261936245300974404 /* libpolarssl.a in Frameworks */,
 				F0BB8C281936245300974404 /* libspeex.a in Frameworks */,
 				F0BB8C291936245300974404 /* libspeexdsp.a in Frameworks */,
 				F0BB8C2A1936245300974404 /* libsrtp.a in Frameworks */,
@@ -2204,7 +2199,6 @@
 				22509041196BD902007863F6 /* libopenh264.a */,
 				22AF73C11754C0D000BE8398 /* libopus.a */,
 				220FAD2C10765B400068D98F /* libortp.a */,
-				57B0E35F173C010400A476B8 /* libpolarssl.a */,
 				F0BB8C34193624C800974404 /* libresolv.9.dylib */,
 				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
 				220FAD2F10765B400068D98F /* libspeex.a */,

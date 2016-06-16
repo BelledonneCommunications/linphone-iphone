@@ -91,7 +91,6 @@
 		63D5C13A1BA6E504002D1ABF /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1161BA6E4F0002D1ABF /* libopenh264.a */; };
 		63D5C13B1BA6E504002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C13C1BA6E504002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
-		63D5C13D1BA6E504002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
 		63D5C13F1BA6E504002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C1401BA6E504002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C1411BA6E504002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -125,7 +124,6 @@
 		63D5C1651BA6E765002D1ABF /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1161BA6E4F0002D1ABF /* libopenh264.a */; };
 		63D5C1661BA6E765002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C1671BA6E765002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
-		63D5C1681BA6E765002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
 		63D5C16A1BA6E765002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C16B1BA6E765002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C16C1BA6E765002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -172,7 +170,6 @@
 		63D5C1981BA6E92A002D1ABF /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1161BA6E4F0002D1ABF /* libopenh264.a */; };
 		63D5C1991BA6E92A002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C19A1BA6E92A002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
-		63D5C19B1BA6E92A002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
 		63D5C19D1BA6E92A002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C19E1BA6E92A002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C19F1BA6E92A002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -200,7 +197,6 @@
 		63D5C1B61BA6E95C002D1ABF /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1161BA6E4F0002D1ABF /* libopenh264.a */; };
 		63D5C1B71BA6E95C002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C1B81BA6E95C002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
-		63D5C1B91BA6E95C002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
 		63D5C1BB1BA6E95C002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C1BC1BA6E95C002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C1BD1BA6E95C002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -275,7 +271,6 @@
 		63D5C1161BA6E4F0002D1ABF /* libopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenh264.a; path = "../liblinphone-sdk/apple-darwin/lib/libopenh264.a"; sourceTree = "<group>"; };
 		63D5C1171BA6E4F0002D1ABF /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = "../liblinphone-sdk/apple-darwin/lib/libopus.a"; sourceTree = "<group>"; };
 		63D5C1181BA6E4F0002D1ABF /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "../liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<group>"; };
-		63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpolarssl.a; path = "../liblinphone-sdk/apple-darwin/lib/libpolarssl.a"; sourceTree = "<group>"; };
 		63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		63D5C11B1BA6E4F0002D1ABF /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
 		63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
@@ -339,7 +334,6 @@
 				63D5C13A1BA6E504002D1ABF /* libopenh264.a in Frameworks */,
 				63D5C13B1BA6E504002D1ABF /* libopus.a in Frameworks */,
 				63D5C13C1BA6E504002D1ABF /* libortp.a in Frameworks */,
-				63D5C13D1BA6E504002D1ABF /* libpolarssl.a in Frameworks */,
 				63D5C13F1BA6E504002D1ABF /* libspeex.a in Frameworks */,
 				63D5C1401BA6E504002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C1411BA6E504002D1ABF /* libsrtp.a in Frameworks */,
@@ -419,7 +413,6 @@
 				63D5C1651BA6E765002D1ABF /* libopenh264.a in Frameworks */,
 				63D5C1661BA6E765002D1ABF /* libopus.a in Frameworks */,
 				63D5C1671BA6E765002D1ABF /* libortp.a in Frameworks */,
-				63D5C1681BA6E765002D1ABF /* libpolarssl.a in Frameworks */,
 				63D5C16A1BA6E765002D1ABF /* libspeex.a in Frameworks */,
 				63D5C16B1BA6E765002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C16C1BA6E765002D1ABF /* libsrtp.a in Frameworks */,
@@ -464,7 +457,6 @@
 				63D5C1981BA6E92A002D1ABF /* libopenh264.a in Frameworks */,
 				63D5C1991BA6E92A002D1ABF /* libopus.a in Frameworks */,
 				63D5C19A1BA6E92A002D1ABF /* libortp.a in Frameworks */,
-				63D5C19B1BA6E92A002D1ABF /* libpolarssl.a in Frameworks */,
 				63D5C19D1BA6E92A002D1ABF /* libspeex.a in Frameworks */,
 				63D5C19E1BA6E92A002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C19F1BA6E92A002D1ABF /* libsrtp.a in Frameworks */,
@@ -522,7 +514,6 @@
 				63D5C1B61BA6E95C002D1ABF /* libopenh264.a in Frameworks */,
 				63D5C1B71BA6E95C002D1ABF /* libopus.a in Frameworks */,
 				63D5C1B81BA6E95C002D1ABF /* libortp.a in Frameworks */,
-				63D5C1B91BA6E95C002D1ABF /* libpolarssl.a in Frameworks */,
 				63D5C1BB1BA6E95C002D1ABF /* libspeex.a in Frameworks */,
 				63D5C1BC1BA6E95C002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C1BD1BA6E95C002D1ABF /* libsrtp.a in Frameworks */,
@@ -634,7 +625,6 @@
 				63D5C1161BA6E4F0002D1ABF /* libopenh264.a */,
 				63D5C1171BA6E4F0002D1ABF /* libopus.a */,
 				63D5C1181BA6E4F0002D1ABF /* libortp.a */,
-				63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */,
 				63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */,
 				63D5C11B1BA6E4F0002D1ABF /* libspeex.a */,
 				63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */,
