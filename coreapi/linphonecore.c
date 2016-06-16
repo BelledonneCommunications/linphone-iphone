@@ -5435,7 +5435,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	migrated_logs_count = ms_list_size(lc->call_logs);
 	if (original_logs_count == migrated_logs_count) {
 		int i = 0;
-		ms_debug("call logs migration successful: %i logs migrated", ms_list_size(lc->call_logs));
+		ms_debug("call logs migration successful: %u logs migrated", (unsigned int)ms_list_size(lc->call_logs));
 		lp_config_set_int(lpc, "misc", "call_logs_migration_done", 1);
 
 		for (; i < original_logs_count; i++) {

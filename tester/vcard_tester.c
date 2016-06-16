@@ -75,7 +75,7 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	BC_ASSERT_EQUAL(ms_list_size(friends), 482, int, "%i"); // Thousand vcards contains 482 contacts with a SIP URI
 
 	elapsed = (double)(end - start);
-	ms_error("Imported a thousand of vCards from file (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
+	ms_error("Imported a thousand of vCards from file (only %u friends with SIP address found) in %f seconds", (unsigned int)ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
 
 	lfl = linphone_core_create_friend_list(manager->lc);
 	infile = fopen(import_filepath, "rb");
@@ -98,7 +98,7 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	BC_ASSERT_EQUAL(ms_list_size(friends), 482, int, "%i"); // Thousand vcards contains 482 contacts with a SIP URI
 
 	elapsed = (double)(end - start);
-	ms_error("Imported a thousand of vCards from buffer (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
+	ms_error("Imported a thousand of vCards from buffer (only %u friends with SIP address found) in %f seconds", (unsigned int)ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
 
 	linphone_friend_list_unref(lfl);
 
