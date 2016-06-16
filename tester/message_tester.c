@@ -31,6 +31,7 @@
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 
 static char* message_external_body_url=NULL;
@@ -1331,7 +1332,15 @@ void file_transfer_io_error_base(char *server_url, bool_t destroy_room) {
 }
 
 static void file_transfer_not_sent_if_invalid_url(void) {
-	file_transfer_io_error_base("INVALID URL", FALSE);
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneChatRoom *chatroom = linphone_core_get_chat_room_from_uri(marie->lc, "<sip:Jehan@sip.linphone.org>");
+	LinphoneChatMessage *msg = create_message_from_nowebcam(chatroom);
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_core_set_file_transfer_server(marie->lc, "INVALID URL");
+	linphone_chat_room_send_chat_message(chatroom, msg);
+	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000));
+	linphone_core_manager_destroy(marie);
 }
 
 static void file_transfer_not_sent_if_host_not_found(void) {
@@ -1404,8 +1413,8 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 	if (!audio_stream_enabled) {
 		linphone_call_params_enable_audio(marie_params,FALSE);
-		linphone_core_set_nortp_timeout(marie->lc, 10);
-		linphone_core_set_nortp_timeout(pauline->lc, 10);
+		linphone_core_set_nortp_timeout(marie->lc, 5);
+		linphone_core_set_nortp_timeout(pauline->lc, 5);
 	}
 
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
@@ -1420,7 +1429,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
-			const char* message = "Lorem Ipsum Belledonnum Communicatum";
+			const char* message = "Be l3l";
 			int i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
@@ -1459,7 +1468,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 
 		if (!audio_stream_enabled) {
 			int dummy = 0;
-			wait_for_until(pauline->lc, marie->lc, &dummy, 1, 13000); /* Wait to see if call is dropped after the nortp_timeout */
+			wait_for_until(pauline->lc, marie->lc, &dummy, 1, 7000); /* Wait to see if call is dropped after the nortp_timeout */
 			BC_ASSERT_FALSE(marie->stat.number_of_LinphoneCallEnd > 0);
 			BC_ASSERT_FALSE(pauline->stat.number_of_LinphoneCallEnd > 0);
 		}
@@ -1510,10 +1519,10 @@ static void real_time_text_conversation(void) {
 	marie_chat_room = linphone_call_get_chat_room(marie_call);
 	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 	if (pauline_chat_room && marie_chat_room) {
-		const char* message1_1 = "Lorem Ipsum";
-		const char* message1_2 = "Muspi Merol";
-		const char* message2_1 = "Belledonnum Communicatum";
-		const char* message2_2 = "Mutacinummoc Munnodelleb";
+		const char* message1_1 = "Lorem";
+		const char* message1_2 = "Ipsum";
+		const char* message2_1 = "Be lle Com";
+		const char* message2_2 = "eB ell moC";
 		int i;
 		LinphoneChatMessage* pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 		LinphoneChatMessage* marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
@@ -1622,7 +1631,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
-			const char* message = "Lorem Ipsum Belledonnum Communicatum";
+			const char* message = "Be l3l";
 			int i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
@@ -1642,6 +1651,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 			}
 			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, strlen(message), 1000));
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+			linphone_chat_message_unref(rtt_message);
 		}
 		end_call(marie, pauline);
 	}
@@ -1735,7 +1745,7 @@ static void real_time_text_copy_paste(void) {
 		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
-			const char* message = "Lorem Ipsum Belledonnum Communicatum";
+			const char* message = "Be l3l";
 			int i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
@@ -1806,23 +1816,23 @@ test_t message_tests[] = {
 	TEST_NO_TAG("History count", history_count),
 #endif
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
-	TEST_ONE_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url, "LeaksMemory"),
-	TEST_ONE_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found, "LeaksMemory"),
-	TEST_ONE_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently, "LeaksMemory"),
-	TEST_ONE_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom, "LeaksMemory"),
-	TEST_NO_TAG("Real Time Text message", real_time_text_message),
-	TEST_NO_TAG("Real Time Text SQL storage", real_time_text_sql_storage),
-	TEST_NO_TAG("Real Time Text SQL storage with RTT messages not stored", real_time_text_sql_storage_rtt_disabled),
-	TEST_NO_TAG("Real Time Text conversation", real_time_text_conversation),
-	TEST_NO_TAG("Real Time Text without audio", real_time_text_without_audio),
-	TEST_NO_TAG("Real Time Text with srtp", real_time_text_srtp),
-	TEST_NO_TAG("Real Time Text with ice", real_time_text_ice),
-	TEST_ONE_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf, "LeaksMemory"),
-	TEST_ONE_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf, "LeaksMemory"),
-	TEST_NO_TAG("Real Time Text message with accented characters", real_time_text_message_accented_chars),
-	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side),
-	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side),
-	TEST_NO_TAG("Real Time Text copy paste", real_time_text_copy_paste),
+	TEST_NO_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url),
+	TEST_NO_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found),
+	TEST_NO_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently),
+	TEST_NO_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom),
+	TEST_ONE_TAG("Real Time Text message", real_time_text_message, "RTT"),
+	TEST_ONE_TAG("Real Time Text SQL storage", real_time_text_sql_storage, "RTT"),
+	TEST_ONE_TAG("Real Time Text SQL storage with RTT messages not stored", real_time_text_sql_storage_rtt_disabled, "RTT"),
+	TEST_ONE_TAG("Real Time Text conversation", real_time_text_conversation, "RTT"),
+	TEST_ONE_TAG("Real Time Text without audio", real_time_text_without_audio, "RTT"),
+	TEST_ONE_TAG("Real Time Text with srtp", real_time_text_srtp, "RTT"),
+	TEST_ONE_TAG("Real Time Text with ice", real_time_text_ice, "RTT"),
+	TEST_ONE_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf, "RTT"),
+	TEST_ONE_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf, "RTT"),
+	TEST_ONE_TAG("Real Time Text message with accented characters", real_time_text_message_accented_chars, "RTT"),
+	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side, "RTT"),
+	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side, "RTT"),
+	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
 };
 
 test_suite_t message_test_suite = {

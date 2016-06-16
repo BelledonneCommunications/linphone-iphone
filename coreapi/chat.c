@@ -376,18 +376,24 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 
 	msg->dir = LinphoneChatMessageOutgoing;
 
-	// add to transient list
-	cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
 
 	/* Check if we shall upload a file to a server */
 	if (msg->file_transfer_information != NULL && msg->content_type == NULL) {
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
-		linphone_chat_room_upload_file(msg);
+		if (linphone_chat_room_upload_file(msg) == 0) {
+			// add to transient list only if message is going out
+			cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+		} else {
+			linphone_chat_message_unref(msg);
+			return;
+		}
 	} else {
 		SalOp *op = NULL;
 		LinphoneCall *call;
 		char *content_type;
 		const char *identity = NULL;
+		// add to transient list
+		cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
 		msg->time = ms_time(0);
 		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 			if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {

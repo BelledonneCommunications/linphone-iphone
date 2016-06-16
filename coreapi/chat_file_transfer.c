@@ -291,20 +291,22 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 					msg->message = ms_strdup(body);
 				}
 				msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
-				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 				linphone_chat_message_ref(msg);
+				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 				_release_http_request(msg);
 				_linphone_chat_room_send_message(msg->chat_room, msg);
 				linphone_chat_message_unref(msg);
 			} else {
 				ms_warning("Received empty response from server, file transfer failed");
-				linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+				linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 				_release_http_request(msg);
+				linphone_chat_message_unref(msg);
 			}
 		} else {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
-			linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+			linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 			_release_http_request(msg);
+			linphone_chat_message_unref(msg);
 		}
 	}
 }
