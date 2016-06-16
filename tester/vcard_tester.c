@@ -106,6 +106,15 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 static void linphone_vcard_update_existing_friends_test(void) {
 	LinphoneFriend *lf = linphone_friend_new_with_addr("sip:oldfriend@sip.linphone.org");
 
@@ -121,6 +130,10 @@ static void linphone_vcard_update_existing_friends_test(void) {
 	linphone_friend_unref(lf);
 	lf = NULL;
 }
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
 static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	LinphoneVcard *lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nIMPP;TYPE=home:sip:sylvain@sip.linphone.org\r\nTEL;TYPE=work:0952636505\r\nEND:VCARD\r\n");

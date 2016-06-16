@@ -28,6 +28,7 @@
 #pragma warning(disable : 4996)
 #else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 #endif
 
 #ifdef HAVE_GTK
