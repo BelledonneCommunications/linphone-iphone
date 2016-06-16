@@ -385,7 +385,7 @@ LinphoneProxyConfig *Daemon::findProxy(int id) {
 
 LinphoneAuthInfo *Daemon::findAuthInfo(int id)  {
 	const MSList *elem = linphone_core_get_auth_info_list(mLc);
-	if (elem == NULL || id < 1 || id > ms_list_size(elem)) {
+	if (elem == NULL || id < 1 || (unsigned int)id > ms_list_size(elem)) {
 		return NULL;
 	}
 	while (id > 1) {
