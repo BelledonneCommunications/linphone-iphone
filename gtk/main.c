@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include "lpconfig.h"
 #include "liblinphone_gitversion.h"
-
+#include <bctoolbox/bc_vfs.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -36,8 +36,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifdef _WIN32
-#define chdir _chdir
 #include "direct.h"
+#define chdir _chdir
 #ifndef F_OK
 #define F_OK 00 /*visual studio does not define F_OK*/
 #endif
@@ -186,7 +186,7 @@ static char _factory_config_file[1024];
 static const char *linphone_gtk_get_factory_config_file(void){
 	char* path = NULL;
 	/*try accessing a local file first if exists*/
-	if (access(FACTORY_CONFIG_FILE,F_OK)==0){
+	if (bctbx_file_exist(FACTORY_CONFIG_FILE)==0){
 		path = ms_strdup(FACTORY_CONFIG_FILE);
 	} else {
 		char *progdir;
@@ -216,7 +216,7 @@ static const char *linphone_gtk_get_factory_config_file(void){
 	}
 	if (path) {
 		//use factory file only if it exists
-		if (access(path,F_OK)==0){
+		if (bctbx_file_exist(path)==0){
 			snprintf(_factory_config_file, sizeof(_factory_config_file), "%s", path);
 			ms_free(path);
 			return _factory_config_file;
@@ -332,9 +332,9 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 
 static int get_ui_file(const char *name, char *path, int pathsize){
 	snprintf(path,pathsize,"%s/%s.ui",BUILD_TREE_XML_DIR,name);
-	if (access(path,F_OK)!=0){
+	if (bctbx_file_exist(path)!=0){
 		snprintf(path,pathsize,"%s/%s.ui",INSTALLED_XML_DIR,name);
-		if (access(path,F_OK)!=0){
+		if (bctbx_file_exist(path)!=0){
 			g_error("Could not locate neither %s/%s.ui nor %s/%s.ui",BUILD_TREE_XML_DIR,name,
 				INSTALLED_XML_DIR,name);
 			return -1;

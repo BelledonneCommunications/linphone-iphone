@@ -24,6 +24,14 @@ file(GLOB SOURCE_FILES "*_tester.c")
 list(APPEND SOURCE_FILES accountmanager.c tester.c)
 
 apply_compile_flags(SOURCE_FILES "CPP" "C")
+if(MSVC)
+	get_source_file_property(MESSAGE_TESTER_C_COMPILE_FLAGS message_tester.c COMPILE_FLAGS)
+	set(MESSAGE_TESTER_C_COMPILE_FLAGS "${MESSAGE_TESTER_C_COMPILE_FLAGS} /wd4996") # Disable "was declared deprecated" warnings
+	set_source_files_properties(message_tester.c PROPERTY COMPILE_FLAGS "${MESSAGE_TESTER_C_COMPILE_FLAGS}")
+	get_source_file_property(VCARD_TESTER_C_COMPILE_FLAGS vcard_tester.c COMPILE_FLAGS)
+	set(VCARD_TESTER_C_COMPILE_FLAGS "${VCARD_TESTER_C_COMPILE_FLAGS} /wd4996") # Disable "was declared deprecated" warnings
+	set_source_files_properties(vcard_tester.c PROPERTY COMPILE_FLAGS "${VCARD_TESTER_C_COMPILE_FLAGS}")
+endif()
 
 if(NOT IOS OR NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	# Executable must be available on root path, not host one

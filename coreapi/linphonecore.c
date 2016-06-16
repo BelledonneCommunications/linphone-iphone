@@ -102,7 +102,7 @@ static OrtpLogFunc liblinphone_log_func = NULL;
 static LinphoneLogCollectionState liblinphone_log_collection_state = LinphoneLogCollectionDisabled;
 static char * liblinphone_log_collection_path = NULL;
 static char * liblinphone_log_collection_prefix = NULL;
-static int liblinphone_log_collection_max_file_size = LOG_COLLECTION_DEFAULT_MAX_FILE_SIZE;
+static size_t liblinphone_log_collection_max_file_size = LOG_COLLECTION_DEFAULT_MAX_FILE_SIZE;
 static ortp_mutex_t liblinphone_log_collection_mutex;
 static FILE * liblinphone_log_collection_file = NULL;
 static size_t liblinphone_log_collection_file_size = 0;
@@ -230,7 +230,7 @@ static int _open_log_collection_file_with_idx(int idx) {
 	if (liblinphone_log_collection_file == NULL) return -1;
 
 	fstat(fileno(liblinphone_log_collection_file), &statbuf);
-	if (statbuf.st_size > liblinphone_log_collection_max_file_size) {
+	if ((size_t)statbuf.st_size > liblinphone_log_collection_max_file_size) {
 		fclose(liblinphone_log_collection_file);
 		return -1;
 	}
@@ -369,11 +369,11 @@ void linphone_core_set_log_collection_prefix(const char *prefix) {
 	}
 }
 
-int linphone_core_get_log_collection_max_file_size(void) {
+size_t linphone_core_get_log_collection_max_file_size(void) {
 	return liblinphone_log_collection_max_file_size;
 }
 
-void linphone_core_set_log_collection_max_file_size(int size) {
+void linphone_core_set_log_collection_max_file_size(size_t size) {
 	liblinphone_log_collection_max_file_size = size;
 }
 
@@ -810,7 +810,7 @@ static void build_sound_devices_table(LinphoneCore *lc){
 	devices[ndev]=NULL;
 	old=lc->sound_conf.cards;
 	lc->sound_conf.cards=devices;
-	if (old!=NULL) ms_free(old);
+	if (old!=NULL) ms_free((void *)old);
 }
 
 static const char *get_default_local_ring(LinphoneCore * lc){
@@ -1373,7 +1373,7 @@ static void build_video_devices_table(LinphoneCore *lc){
 	int ndev;
 	const char **devices;
 	if (lc->video_conf.cams)
-		ms_free(lc->video_conf.cams);
+		ms_free((void *)lc->video_conf.cams);
 	/* retrieve all video devices */
 	elem=ms_web_cam_manager_get_list(ms_factory_get_web_cam_manager(lc->factory));
 	ndev=ms_list_size(elem);
@@ -1604,7 +1604,7 @@ static void misc_config_read(LinphoneCore *lc) {
 	LpConfig *config=lc->config;
 	const char *uuid;
 
-	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",30);
+	lc->max_call_logs=(unsigned int)lp_config_get_int(config,"misc","history_max_size",30);
 	lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 
 	uuid=lp_config_get_string(config,"misc","uuid",NULL);
@@ -6545,7 +6545,7 @@ void rtp_config_uninit(LinphoneCore *lc)
 static void sound_config_uninit(LinphoneCore *lc)
 {
 	sound_config_t *config=&lc->sound_conf;
-	ms_free(config->cards);
+	ms_free((void *)config->cards);
 
 	lp_config_set_string(lc->config,"sound","remote_ring",config->remote_ring);
 	lp_config_set_float(lc->config,"sound","playback_gain_db",config->soft_play_lev);
@@ -6562,7 +6562,7 @@ static void video_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
 	if (lc->video_conf.cams)
-		ms_free(lc->video_conf.cams);
+		ms_free((void *)lc->video_conf.cams);
 }
 
 void _linphone_core_codec_config_write(LinphoneCore *lc){
@@ -6731,7 +6731,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 
 	linphone_core_free_payload_types(lc);
-	if (lc->supported_formats) ms_free(lc->supported_formats);
+	if (lc->supported_formats) ms_free((void *)lc->supported_formats);
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
 	linphone_core_friends_storage_close(lc);

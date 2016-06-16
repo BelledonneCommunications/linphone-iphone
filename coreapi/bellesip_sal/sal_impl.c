@@ -1036,7 +1036,7 @@ int sal_generate_uuid(char *uuid, size_t len) {
 	written=snprintf(uuid,len,"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-", uuid_struct.time_low, uuid_struct.time_mid,
 			uuid_struct.time_hi_and_version, uuid_struct.clock_seq_hi_and_reserved,
 			uuid_struct.clock_seq_low);
-	if (written>len+13){
+	if ((written < 0) || ((size_t)written > (len +13))) {
 		ms_error("sal_create_uuid(): buffer is too short !");
 		return -1;
 	}

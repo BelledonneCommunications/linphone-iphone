@@ -77,7 +77,7 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
 	int ret;
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile){
-		ret = bctbx_file_read(pFile->pbctbx_file, buf, count, offset);
+		ret = bctbx_file_read(pFile->pbctbx_file, buf, count, (off_t)offset);
 		if( ret==count ){
 			return SQLITE_OK;
 		}
@@ -106,7 +106,7 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	int ret;
 	if (pFile ){
-		ret = bctbx_file_write(pFile->pbctbx_file, buf, count, offset);
+		ret = bctbx_file_write(pFile->pbctbx_file, buf, count, (off_t)offset);
 		if(ret > 0 ) return SQLITE_OK;
 		else {
 			return SQLITE_IOERR_WRITE;
@@ -239,31 +239,21 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	LPWSTR wideFilename;
 	
 	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, NULL, 0);
-	if (nChar == 0){
-		return BCTBX_VFS_ERROR;
-	}
+	if (nChar == 0) return NULL;
 	wideFilename = bctbx_malloc(nChar*sizeof(wideFilename[0]));
-	if (wideFilename == 0){
-		return 0;
-	}
-	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, wideFilename,
-								nChar);
-	if (nChar == 0){
+	if (wideFilename == NULL) return NULL;
+	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, wideFilename, nChar);
+	if (nChar == 0) {
 		bctbx_free(wideFilename);
 		wideFilename = 0;
 	}
 	
 	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, 0, 0, 0, 0);
-	if (nb_byte == 0){
-		return 0;
-	}
+	if (nb_byte == 0) return NULL;
 	convertedFilename = bctbx_malloc(nb_byte);
-	if (convertedFilename == 0){
-		return 0;
-	}
-	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, convertedFilename,
-								  nb_byte, 0, 0);
-	if (nb_byte == 0){
+	if (convertedFilename == NULL) return NULL;
+	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, convertedFilename, nb_byte, 0, 0);
+	if (nb_byte == 0) {
 		bctbx_free(convertedFilename);
 		convertedFilename = 0;
 	}
@@ -286,7 +276,6 @@ static char* ConvertFromUtf8Filename(const char* fName){
 		iconv_close(cb);
 	}
 	return bctbx_strdup(db_file_locale);
-
 #endif
 
 
@@ -341,8 +330,12 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	openFlags |= O_BINARY;
 #endif
 	wFname = ConvertFromUtf8Filename(fName);
-	pFile->pbctbx_file = bctbx_file_open2(bctbx_vfs_get_default(), wFname, openFlags);
-	bctbx_free(wFname);
+	if (wFname != NULL) {
+		pFile->pbctbx_file = bctbx_file_open2(bctbx_vfs_get_default(), wFname, openFlags);
+		bctbx_free(wFname);
+	} else {
+		pFile->pbctbx_file = NULL;
+	}
 	
 	if( pFile->pbctbx_file == NULL){
 		return SQLITE_CANTOPEN;

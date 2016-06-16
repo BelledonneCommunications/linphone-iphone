@@ -201,23 +201,23 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 		}
 	} else {
 		if (linphone_core_rtcp_enabled(caller->lc)) {
-			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
-			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
+			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 		}
 		if (linphone_core_rtcp_enabled(callee->lc)) {
-		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
-		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
+		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 		}
 
@@ -4076,8 +4076,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		rtp_stats_t pauline_rtp_stats = linphone_call_stats_get_rtp_stats(pauline_stats);
 		ms_message("Marie sent %i RTP packets and received %i (for real)", (int)marie_rtp_stats.packet_sent, (int)marie_rtp_stats.packet_recv);
 		ms_message("Pauline sent %i RTP packets and received %i (for real)", (int)pauline_rtp_stats.packet_sent, (int)pauline_rtp_stats.packet_recv);
-		BC_ASSERT_EQUAL(data_marie->packetReceivedCount, marie_rtp_stats.packet_recv, int,  "%i");
-		BC_ASSERT_EQUAL(data_marie->packetSentCount, marie_rtp_stats.packet_sent, int, "%i");
+		BC_ASSERT_EQUAL(data_marie->packetReceivedCount, marie_rtp_stats.packet_recv, unsigned long long, "%llu");
+		BC_ASSERT_EQUAL(data_marie->packetSentCount, marie_rtp_stats.packet_sent, unsigned long long, "%llu");
 		// There can be a small difference between the number of packets received in the modifier and the number processed in reception because the processing is asynchronous
 		BC_ASSERT_TRUE(data_pauline->packetReceivedCount - pauline_rtp_stats.packet_recv < 20);
 		BC_ASSERT_TRUE(data_pauline->packetSentCount == pauline_rtp_stats.packet_sent);
@@ -4345,7 +4345,7 @@ static void call_logs_if_no_db_set(void) {
 static void call_logs_migrate(void) {
 	LinphoneCoreManager* laure = linphone_core_manager_new("laure_call_logs_rc");
 	char *logs_db = bc_tester_file("call_logs.db");
-	int i = 0;
+	size_t i = 0;
 	int incoming_count = 0, outgoing_count = 0, missed_count = 0, aborted_count = 0, decline_count = 0, video_enabled_count = 0;
 
 	unlink(logs_db);
@@ -4441,7 +4441,7 @@ static void call_logs_sqlite_storage(void) {
 		const char *ref_key = linphone_call_log_get_ref_key(call_log);
 		call_log = logs->data;
 		BC_ASSERT_EQUAL(linphone_call_log_get_dir(call_log), LinphoneCallOutgoing, int, "%d");
-		BC_ASSERT_LOWER(linphone_call_log_get_duration(call_log), 2, float, "%.1f");
+		BC_ASSERT_LOWER(linphone_call_log_get_duration(call_log), 2, int, "%d");
 		BC_ASSERT_TRUE(linphone_address_equal(
 			linphone_call_log_get_from_address(call_log),
 			linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(marie->lc))));
@@ -4449,7 +4449,7 @@ static void call_logs_sqlite_storage(void) {
 			linphone_call_log_get_to_address(call_log),
 			linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc))));
 		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_local_stats(call_log));
-		BC_ASSERT_GREATER(linphone_call_log_get_quality(call_log), -1, int, "%d");
+		BC_ASSERT_GREATER(linphone_call_log_get_quality(call_log), -1, float, "%.1f");
 		BC_ASSERT_PTR_NOT_NULL(ref_key);
 		if (ref_key) {
 			BC_ASSERT_STRING_EQUAL(ref_key, "ref_key");
@@ -4469,7 +4469,7 @@ static void call_logs_sqlite_storage(void) {
 			linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc))));
 		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_remote_stats(call_log));
 
-		BC_ASSERT_EQUAL(linphone_call_log_get_start_date(call_log), start_time, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_log_get_start_date(call_log), start_time, unsigned long long, "%llu");
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(call_log), LinphoneCallSuccess, int, "%d");
 	}
 

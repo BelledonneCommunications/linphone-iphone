@@ -940,7 +940,7 @@ struct _LinphoneCore
 	MSList *queued_calls;	/* used by the autoreplier */
 	MSList *call_logs;
 	MSList *chatrooms;
-	int max_call_logs;
+	unsigned int max_call_logs;
 	int missed_calls;
 	VideoPreview *previewstream;
 	struct _MSEventQueue *msevq;

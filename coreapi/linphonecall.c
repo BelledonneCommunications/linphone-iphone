@@ -4641,7 +4641,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 #endif
 	if (!call_logs_sqlite_db_found) {
 		lc->call_logs=ms_list_prepend(lc->call_logs,linphone_call_log_ref(call->log));
-		if (ms_list_size(lc->call_logs)>lc->max_call_logs){
+		if (ms_list_size(lc->call_logs)>(size_t)lc->max_call_logs){
 			MSList *elem,*prevelem=NULL;
 			/*find the last element*/
 			for(elem=lc->call_logs;elem!=NULL;elem=elem->next){

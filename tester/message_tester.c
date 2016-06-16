@@ -30,8 +30,12 @@
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 
 static char* message_external_body_url=NULL;
@@ -911,8 +915,8 @@ static  void lime_transfer_message_without_encryption(void) {
 	lime_transfer_message_base(FALSE);
 }
 
-static void printHex(char *title, uint8_t *data, uint32_t length) {
-	int i;
+static void printHex(char *title, uint8_t *data, size_t length) {
+	size_t i;
 	char debug_string_buffer[2048];
 	char *debug_string = debug_string_buffer;
 	sprintf (debug_string, "%s : ", title);
@@ -1430,7 +1434,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
 			const char* message = "Be l3l";
-			int i;
+			size_t i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 
@@ -1523,7 +1527,7 @@ static void real_time_text_conversation(void) {
 		const char* message1_2 = "Ipsum";
 		const char* message2_1 = "Be lle Com";
 		const char* message2_2 = "eB ell moC";
-		int i;
+		size_t i;
 		LinphoneChatMessage* pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 		LinphoneChatMessage* marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
 
@@ -1632,7 +1636,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
 			const char* message = "Be l3l";
-			int i;
+			size_t i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 			uint32_t crlf = 0x0D0A;
@@ -1746,7 +1750,7 @@ static void real_time_text_copy_paste(void) {
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
 			const char* message = "Be l3l";
-			int i;
+			size_t i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 

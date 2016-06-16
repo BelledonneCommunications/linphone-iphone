@@ -30,6 +30,12 @@ set(LINPHONECSH_SOURCE_FILES
 )
 
 apply_compile_flags(LINPHONEC_SOURCE_FILES "CPP" "C")
+if(MSVC)
+	get_source_file_property(COMMANDS_C_COMPILE_FLAGS commands.c COMPILE_FLAGS)
+	set(COMMANDS_C_COMPILE_FLAGS "${COMMANDS_C_COMPILE_FLAGS} /wd4996") # Disable "was declared deprecated" warnings
+	set_source_files_properties(commands.c PROPERTY COMPILE_FLAGS "${COMMANDS_C_COMPILE_FLAGS}")
+endif()
+
 add_executable(linphonec ${LINPHONEC_SOURCE_FILES})
 target_link_libraries(linphonec linphone)
 

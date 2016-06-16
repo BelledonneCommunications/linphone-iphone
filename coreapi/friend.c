@@ -133,6 +133,14 @@ LinphoneFriend * linphone_friend_new(void){
 	return obj;
 }
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 LinphoneFriend *linphone_friend_new_with_address(const char *addr){
 	LinphoneAddress* linphone_address = linphone_address_new(addr);
 	LinphoneFriend *fr;
@@ -146,6 +154,9 @@ LinphoneFriend *linphone_friend_new_with_address(const char *addr){
 	linphone_address_unref(linphone_address);
 	return fr;
 }
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
 void linphone_friend_set_user_data(LinphoneFriend *lf, void *data){
 	lf->user_data=data;
@@ -674,7 +685,11 @@ void linphone_friend_done(LinphoneFriend *fr) {
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc) {
 	LinphoneFriend * lf = linphone_friend_new();
 	lf->lc = lc;
@@ -1033,7 +1048,11 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 	LinphoneAddress* linphone_address = NULL;
 	LinphoneFriend *fr;
@@ -1183,7 +1202,7 @@ void linphone_core_friends_storage_close(LinphoneCore *lc) {
  */
 static int create_friend_list(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
-	unsigned int storage_id = atoi(argv[0]);
+	unsigned int storage_id = (unsigned int)atoi(argv[0]);
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(NULL);
 
 	lfl->storage_id = storage_id;
@@ -1200,7 +1219,11 @@ static int create_friend_list(void *data, int argc, char **argv, char **colName)
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 /* DB layout:
  * | 0  | storage_id
  * | 1  | friend_list_id
@@ -1217,7 +1240,7 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
 	LinphoneFriend *lf = NULL;
 	LinphoneVcard *vcard = NULL;
-	unsigned int storage_id = atoi(argv[0]);
+	unsigned int storage_id = (unsigned int)atoi(argv[0]);
 
 	vcard = linphone_vcard_new_from_vcard4_buffer(argv[6]);
 	if (vcard) {
@@ -1299,7 +1322,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 		}
 
 		if (lf->storage_id > 0) {
-			buf = sqlite3_mprintf("UPDATE friends SET friend_list_id=%i,sip_uri=%Q,subscribe_policy=%i,send_subscribe=%i,ref_key=%Q,vCard=%Q,vCard_etag=%Q,vCard_url=%Q,presence_received=%i WHERE (id = %i);",
+			buf = sqlite3_mprintf("UPDATE friends SET friend_list_id=%u,sip_uri=%Q,subscribe_policy=%i,send_subscribe=%i,ref_key=%Q,vCard=%Q,vCard_etag=%Q,vCard_url=%Q,presence_received=%i WHERE (id = %u);",
 				lf->friend_list->storage_id,
 				linphone_address_as_string(linphone_friend_get_address(lf)),
 				lf->pol,
@@ -1312,7 +1335,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 				lf->storage_id
 			);
 		} else {
-			buf = sqlite3_mprintf("INSERT INTO friends VALUES(NULL,%i,%Q,%i,%i,%Q,%Q,%Q,%Q,%i);",
+			buf = sqlite3_mprintf("INSERT INTO friends VALUES(NULL,%u,%Q,%i,%i,%Q,%Q,%Q,%Q,%i);",
 				lf->friend_list->storage_id,
 				linphone_address_as_string(linphone_friend_get_address(lf)),
 				lf->pol,
@@ -1328,7 +1351,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 		sqlite3_free(buf);
 
 		if (lf->storage_id == 0) {
-			lf->storage_id = sqlite3_last_insert_rowid(lc->friends_db);
+			lf->storage_id = (unsigned int)sqlite3_last_insert_rowid(lc->friends_db);
 		}
 	}
 }
@@ -1343,7 +1366,7 @@ void linphone_core_store_friends_list_in_db(LinphoneCore *lc, LinphoneFriendList
 		}
 
 		if (list->storage_id > 0) {
-			buf = sqlite3_mprintf("UPDATE friends_lists SET display_name=%Q,rls_uri=%Q,uri=%Q,revision=%i WHERE (id = %i);",
+			buf = sqlite3_mprintf("UPDATE friends_lists SET display_name=%Q,rls_uri=%Q,uri=%Q,revision=%i WHERE (id = %u);",
 				list->display_name,
 				list->rls_uri,
 				list->uri,
@@ -1362,7 +1385,7 @@ void linphone_core_store_friends_list_in_db(LinphoneCore *lc, LinphoneFriendList
 		sqlite3_free(buf);
 
 		if (list->storage_id == 0) {
-			list->storage_id = sqlite3_last_insert_rowid(lc->friends_db);
+			list->storage_id = (unsigned int)sqlite3_last_insert_rowid(lc->friends_db);
 		}
 	}
 }
@@ -1375,7 +1398,7 @@ void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf) {
 			return;
 		}
 
-		buf = sqlite3_mprintf("DELETE FROM friends WHERE id = %i", lf->storage_id);
+		buf = sqlite3_mprintf("DELETE FROM friends WHERE id = %u", lf->storage_id);
 		linphone_sql_request_generic(lc->friends_db, buf);
 		sqlite3_free(buf);
 
@@ -1391,7 +1414,7 @@ void linphone_core_remove_friends_list_from_db(LinphoneCore *lc, LinphoneFriendL
 			return;
 		}
 
-		buf = sqlite3_mprintf("DELETE FROM friends_lists WHERE id = %i", list->storage_id);
+		buf = sqlite3_mprintf("DELETE FROM friends_lists WHERE id = %u", list->storage_id);
 		linphone_sql_request_generic(lc->friends_db, buf);
 		sqlite3_free(buf);
 
@@ -1410,7 +1433,7 @@ MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList
 		return NULL;
 	}
 
-	buf = sqlite3_mprintf("SELECT * FROM friends WHERE friend_list_id = %i ORDER BY id", list->storage_id);
+	buf = sqlite3_mprintf("SELECT * FROM friends WHERE friend_list_id = %u ORDER BY id", list->storage_id);
 
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_friend(lc->friends_db, buf, &result);

@@ -287,8 +287,8 @@ static void friends_sqlite_storage(void) {
 	linphone_friend_list_set_display_name(lfl, "Test");
 	BC_ASSERT_EQUAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%i");
 	linphone_friend_unref(lf);
-	BC_ASSERT_EQUAL(lfl->storage_id, 1, int, "%d");
-	BC_ASSERT_EQUAL(lf->storage_id, 1, int, "%d");
+	BC_ASSERT_EQUAL(lfl->storage_id, 1, unsigned int, "%u");
+	BC_ASSERT_EQUAL(lf->storage_id, 1, unsigned int, "%u");
 
 	friends = linphone_friend_list_get_friends(linphone_core_get_default_friend_list(lc));
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
@@ -309,7 +309,7 @@ static void friends_sqlite_storage(void) {
 	}
 	lf2 = (LinphoneFriend *)friends_from_db->data;
 	BC_ASSERT_STRING_EQUAL(linphone_friend_get_name(lf2), linphone_friend_get_name(lf));
-	BC_ASSERT_EQUAL(lf2->storage_id, lf->storage_id, int, "%i");
+	BC_ASSERT_EQUAL(lf2->storage_id, lf->storage_id, unsigned int, "%u");
 	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_etag(linphone_friend_get_vcard(lf2)), linphone_vcard_get_etag(linphone_friend_get_vcard(lf)));
 	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_url(linphone_friend_get_vcard(lf2)), linphone_vcard_get_url(linphone_friend_get_vcard(lf)));
 	BC_ASSERT_STRING_EQUAL(linphone_address_as_string(linphone_friend_get_address(lf2)), linphone_address_as_string(linphone_friend_get_address(lf)));
@@ -611,7 +611,7 @@ static void carddav_integration(void) {
 	BC_ASSERT_EQUAL(ms_list_size(lfl->friends), 1, int, "%i");
 	lf = (LinphoneFriend *)lfl->friends->data;
 	BC_ASSERT_STRING_EQUAL(lf->refkey, refkey);
-	BC_ASSERT_EQUAL(lf->storage_id, lf2->storage_id, int, "%i");
+	BC_ASSERT_EQUAL(lf->storage_id, lf2->storage_id, unsigned int, "%u");
 	linphone_friend_unref(lf2);
 	BC_ASSERT_STRING_EQUAL(linphone_address_as_string_uri_only(lf->uri), "sip:sylvain@sip.linphone.org");
 

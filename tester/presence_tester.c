@@ -49,7 +49,7 @@ void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters;
 	
-	int i;
+	unsigned int i;
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	ms_message("New Notify request from [%s] ",from);
 	ms_free(from);

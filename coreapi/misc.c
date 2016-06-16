@@ -903,7 +903,8 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 	IceCandidate *rtcp_candidate = NULL;
 	IceSessionState session_state = ice_session_state(session);
 	int nb_candidates;
-	int i, j;
+	int i;
+	size_t j;
 	bool_t result;
 
 	if (session_state == IS_Completed) {

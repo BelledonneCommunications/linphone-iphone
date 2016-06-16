@@ -19,11 +19,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-#ifndef _WIN32
+#ifdef _WIN32
+#include <direct.h>
+#define mkdir _mkdir
+#else
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 extern gchar *linphone_logfile;
 

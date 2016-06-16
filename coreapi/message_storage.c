@@ -198,7 +198,7 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
  */
 static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
-	unsigned int storage_id = atoi(argv[0]);
+	unsigned int storage_id = (unsigned int)atoi(argv[0]);
 
 	// check if the message exists in the transient list, in which case we should return that one.
 	LinphoneChatMessage* new_message = get_transient_message(cr, storage_id);
@@ -329,7 +329,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i);",
+		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %u);",
 								  msg->state,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
@@ -339,7 +339,7 @@ void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 void linphone_chat_message_store_appdata(LinphoneChatMessage* msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET appdata=%Q WHERE id=%i;",
+		char *buf=sqlite3_mprintf("UPDATE history SET appdata=%Q WHERE id=%u;",
 								  msg->appdata,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
@@ -373,7 +373,7 @@ void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *ms
 
 	if (lc->db==NULL) return ;
 
-	buf=sqlite3_mprintf("UPDATE history SET url=%Q WHERE id=%i;",msg->external_body_url,msg->storage_id);
+	buf=sqlite3_mprintf("UPDATE history SET url=%Q WHERE id=%u;",msg->external_body_url,msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 }
@@ -424,7 +424,7 @@ void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage
 
 	if (lc->db==NULL) return ;
 
-	buf=sqlite3_mprintf("DELETE FROM history WHERE id = %i;", msg->storage_id);
+	buf=sqlite3_mprintf("DELETE FROM history WHERE id = %u;", msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 

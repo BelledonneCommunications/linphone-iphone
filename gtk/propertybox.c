@@ -228,10 +228,10 @@ void linphone_gtk_ldap_save(GtkWidget *button)
 	linphone_dictionary_set_int(dict, "deref_aliases", gtk_toggle_button_get_active(toggle));
 
 	spin = GTK_SPIN_BUTTON(linphone_gtk_get_widget(ldap_widget,"ldap_max_results"));
-	linphone_dictionary_set_int(dict, "max_results", gtk_spin_button_get_value(spin) );
+	linphone_dictionary_set_int(dict, "max_results", (int)gtk_spin_button_get_value(spin) );
 
 	spin = GTK_SPIN_BUTTON(linphone_gtk_get_widget(ldap_widget,"ldap_timeout"));
-	linphone_dictionary_set_int(dict, "timeout", gtk_spin_button_get_value(spin) );
+	linphone_dictionary_set_int(dict, "timeout", (int)gtk_spin_button_get_value(spin) );
 
 	ms_message("Create LDAP from config");
 	// create new LDAP according to the validated config
@@ -324,8 +324,8 @@ void linphone_gtk_min_audio_port_changed(GtkWidget *w){
 		linphone_core_set_audio_port(linphone_gtk_get_core(), (gint) gtk_spin_button_get_value(min_button));
 		gtk_spin_button_set_value(max_button, gtk_spin_button_get_value(min_button));
 	} else {
-		gint min_port = gtk_spin_button_get_value(min_button);
-		gint max_port = gtk_spin_button_get_value(max_button);
+		gint min_port = (gint)gtk_spin_button_get_value(min_button);
+		gint max_port = (gint)gtk_spin_button_get_value(max_button);
 		if (min_port > max_port) {
 			gtk_spin_button_set_value(max_button, min_port);
 			max_port = min_port;
@@ -339,8 +339,8 @@ void linphone_gtk_max_audio_port_changed(GtkWidget *w){
 	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
 	GtkSpinButton *min_button = GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port"));
 	GtkSpinButton *max_button = GTK_SPIN_BUTTON(w);
-	gint min_port = gtk_spin_button_get_value(min_button);
-	gint max_port = gtk_spin_button_get_value(max_button);
+	gint min_port = (gint)gtk_spin_button_get_value(min_button);
+	gint max_port = (gint)gtk_spin_button_get_value(max_button);
 	if (max_port < min_port) {
 		gtk_spin_button_set_value(min_button, max_port);
 		min_port = max_port;
@@ -359,8 +359,8 @@ void linphone_gtk_min_video_port_changed(GtkWidget *w){
 		linphone_core_set_video_port(linphone_gtk_get_core(), (gint) gtk_spin_button_get_value(min_button));
 		gtk_spin_button_set_value(max_button, gtk_spin_button_get_value(min_button));
 	} else {
-		gint min_port = gtk_spin_button_get_value(min_button);
-		gint max_port = gtk_spin_button_get_value(max_button);
+		gint min_port = (gint)gtk_spin_button_get_value(min_button);
+		gint max_port = (gint)gtk_spin_button_get_value(max_button);
 		if (min_port > max_port) {
 			gtk_spin_button_set_value(max_button, min_port);
 			max_port = min_port;
@@ -374,8 +374,8 @@ void linphone_gtk_max_video_port_changed(GtkWidget *w){
 	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
 	GtkSpinButton *min_button = GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_min_rtp_port"));
 	GtkSpinButton *max_button = GTK_SPIN_BUTTON(w);
-	gint min_port = gtk_spin_button_get_value(min_button);
-	gint max_port = gtk_spin_button_get_value(max_button);
+	gint min_port = (gint)gtk_spin_button_get_value(min_button);
+	gint max_port = (gint)gtk_spin_button_get_value(max_button);
 	if (max_port < min_port) {
 		gtk_spin_button_set_value(min_button, max_port);
 		min_port = max_port;
@@ -420,7 +420,7 @@ void linphone_gtk_use_upnp_toggled(GtkWidget *w){
 
 void linphone_gtk_mtu_changed(GtkWidget *w){
 	if (GTK_WIDGET_SENSITIVE(w))
-		linphone_core_set_mtu(linphone_gtk_get_core(),gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
+		linphone_core_set_mtu(linphone_gtk_get_core(),(int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
 }
 
 void linphone_gtk_use_sip_info_dtmf_toggled(GtkWidget *w){
@@ -673,7 +673,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 		}
 		/* get an iterator */
 		gtk_list_store_append(store,&iter);
-		bitrate=linphone_core_get_payload_type_bitrate(linphone_gtk_get_core(),pt);
+		bitrate=(gfloat)linphone_core_get_payload_type_bitrate(linphone_gtk_get_core(),pt);
 		rate=payload_type_get_rate(pt);
 		if (pt->recv_fmtp!=NULL) params=pt->recv_fmtp;
 		gtk_list_store_set(store,&iter,	CODEC_NAME,payload_type_get_mime(pt),
@@ -709,7 +709,7 @@ static void linphone_gtk_check_codec_bandwidth(GtkTreeView *v){
 		gfloat bitrate;
 		gtk_tree_model_get(model,&iter,CODEC_PRIVDATA,&pt,-1);
 
-		bitrate=linphone_core_get_payload_type_bitrate(linphone_gtk_get_core(),pt);
+		bitrate=(gfloat)linphone_core_get_payload_type_bitrate(linphone_gtk_get_core(),pt);
 		gtk_list_store_set(GTK_LIST_STORE(model),&iter,CODEC_COLOR, (gpointer)get_codec_color(linphone_gtk_get_core(),pt),
 					CODEC_BITRATE, bitrate,-1);
 	}while(gtk_tree_model_iter_next(model,&iter));
@@ -759,7 +759,7 @@ void linphone_gtk_upload_bw_changed(GtkWidget *w){
 
 void linphone_gtk_video_framerate_changed(GtkWidget *w) {
 	linphone_core_set_preferred_framerate(linphone_gtk_get_core(),
-		(int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
+		(float)(int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
 }
 
 void linphone_gtk_adaptive_rate_control_toggled(GtkToggleButton *button){
@@ -1748,8 +1748,8 @@ void linphone_gtk_fixed_audio_port_toggle(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
 	gboolean fixed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_audio_port")));
-	gint min_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port")));
-	gint max_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_max_rtp_port")));
+	gint min_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port")));
+	gint max_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_max_rtp_port")));
 	gtk_widget_set_sensitive(GTK_WIDGET(linphone_gtk_get_widget(pb, "audio_max_rtp_port")), !fixed);
 	if (fixed) {
 		linphone_core_set_audio_port(linphone_gtk_get_core(), min_port);
@@ -1763,8 +1763,8 @@ void linphone_gtk_fixed_video_port_toggle(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
 	gboolean fixed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_video_port")));
-	gint min_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_min_rtp_port")));
-	gint max_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_max_rtp_port")));
+	gint min_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_min_rtp_port")));
+	gint max_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_max_rtp_port")));
 	gtk_widget_set_sensitive(GTK_WIDGET(linphone_gtk_get_widget(pb, "video_max_rtp_port")), !fixed);
 	if (fixed) {
 		linphone_core_set_video_port(linphone_gtk_get_core(), min_port);
@@ -1916,7 +1916,7 @@ gboolean linphone_gtk_auto_answer_enabled(void) {
 }
 
 void linphone_gtk_auto_answer_delay_changed(GtkSpinButton *spinbutton, gpointer user_data) {
-	int delay = gtk_spin_button_get_value(spinbutton);
+	int delay = (int)gtk_spin_button_get_value(spinbutton);
 	linphone_gtk_set_ui_config_int("auto_answer_delay", delay);
 }
 

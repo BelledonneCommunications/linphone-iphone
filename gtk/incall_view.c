@@ -359,9 +359,9 @@ static void volume_control_value_changed(GtkScaleButton *button, gdouble value, 
 	VolumeControlType type = (VolumeControlType)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "type"));
 
 	if(type == VOLUME_CTRL_PLAYBACK) {
-		linphone_call_set_speaker_volume_gain(call, value);
+		linphone_call_set_speaker_volume_gain(call, (float)value);
 	} else if(type == VOLUME_CTRL_RECORD) {
-		linphone_call_set_microphone_volume_gain(call, value);
+		linphone_call_set_microphone_volume_gain(call, (float)value);
 	}
 }
 
@@ -641,7 +641,7 @@ static gboolean linphone_gtk_in_call_view_refresh(LinphoneCall *call){
 }
 
 #define UNSIGNIFICANT_VOLUME (-23)
-#define SMOOTH 0.15
+#define SMOOTH 0.15f
 
 static gboolean update_audio_meter(volume_ctx_t *ctx){
 	float volume_db=ctx->get_volume(ctx->data);

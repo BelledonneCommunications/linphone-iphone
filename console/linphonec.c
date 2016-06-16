@@ -37,6 +37,7 @@
 #include <linphonecore.h>
 
 #include "linphonec.h"
+#include <bctoolbox/bc_vfs.h>
 
 #ifdef _WIN32
 #include <ws2tcpip.h>
@@ -1206,7 +1207,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 			if (strcmp(argv[arg_num], "NUL") != 0) {
 #endif
 #if !defined(_WIN32_WCE)
-				if (access(argv[arg_num], F_OK) != 0)
+				if (bctbx_file_exist(argv[arg_num]) != 0)
 				{
 					fprintf(stderr,
 						"Cannot open config file %s.\n",
@@ -1223,7 +1224,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 		{
 			if ( ++arg_num >= argc ) print_usage(EXIT_FAILURE);
 #if !defined(_WIN32_WCE)
-			if (access(argv[arg_num],F_OK)!=0 )
+			if (bctbx_file_exist(argv[arg_num])!=0 )
 			{
 				fprintf (stderr,
 					"Cannot open config file %s.\n",
@@ -1331,7 +1332,7 @@ handle_configfile_migration()
 	 * If the *NEW* configuration already exists
 	 * do nothing.
 	 */
-	if (access(new_cfg,F_OK)==0)
+	if (bctbx_file_exist(new_cfg)==0)
 	{
 		free(new_cfg);
 		return 0;
@@ -1343,7 +1344,7 @@ handle_configfile_migration()
 	 * If the *OLD* CLI configurations exist copy it to
 	 * the new file and make it a symlink.
 	 */
-	if (access(old_cfg_cli, F_OK)==0)
+	if (bctbx_file_exist(old_cfg_cli)==0)
 	{
 		if ( ! copy_file(old_cfg_cli, new_cfg) )
 		{
@@ -1364,7 +1365,7 @@ handle_configfile_migration()
 	 * If the *OLD* GUI configurations exist copy it to
 	 * the new file and make it a symlink.
 	 */
-	if (access(old_cfg_gui, F_OK)==0)
+	if (bctbx_file_exist(old_cfg_gui)==0)
 	{
 		if ( ! copy_file(old_cfg_gui, new_cfg) )
 		{

@@ -713,7 +713,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"ZID"))){ /* sender ZID found, extract it */
 			peerZidHex = xmlNodeListGetString(xmlEncryptedMessage, cur->xmlChildrenNode, 1);
 			/* convert it from hexa string to bytes string and set the result in the associatedKey structure */
-			lime_strToUint8(associatedKey.peerZID, peerZidHex, strlen((char *)peerZidHex));
+			lime_strToUint8(associatedKey.peerZID, peerZidHex, (uint16_t)strlen((char *)peerZidHex));
 			cur = cur->next;
 		}
 	}

@@ -2261,7 +2261,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_collection_prefix(const char *prefix)
  * Get the max file size in bytes of the files used for log collection.
  * @return The max file size in bytes of the files used for log collection.
  */
-LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
+LINPHONE_PUBLIC size_t linphone_core_get_log_collection_max_file_size(void);
 
 /**
  * Set the max file size in bytes of the files used for log collection.
@@ -2271,7 +2271,7 @@ LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
   * on runtime, logs chronological order COULD be broken.
  * @param[in] size The max file size in bytes of the files used for log collection.
  */
-LINPHONE_PUBLIC void linphone_core_set_log_collection_max_file_size(int size);
+LINPHONE_PUBLIC void linphone_core_set_log_collection_max_file_size(size_t size);
 
 /**
  * Set the url of the server where to upload the collected log files.

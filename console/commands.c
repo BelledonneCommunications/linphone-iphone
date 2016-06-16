@@ -1432,7 +1432,7 @@ lpc_cmd_staticpic(LinphoneCore *lc, char *args)
 
 	if (strcmp(arg1, "fps")==0) {
 	  if (arg2) {
-	        float fps = atof(arg2); /* FIXME: Handle not-a-float */
+	        float fps = (float)atof(arg2); /* FIXME: Handle not-a-float */
 		linphone_core_set_static_picture_fps(lc, fps);
 		return 1;
 	  } else {
@@ -2375,7 +2375,7 @@ static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args){
 static int lpc_cmd_playback_gain(LinphoneCore *lc, char *args)
 {
 	if (args){
-	        linphone_core_set_playback_gain_db(lc, atof(args));
+	        linphone_core_set_playback_gain_db(lc, (float)atof(args));
         	return 1;
 	}
 	return 0;

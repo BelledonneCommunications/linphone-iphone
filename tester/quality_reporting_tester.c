@@ -400,7 +400,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
 			const char* message = "Lorem Ipsum Belledonnum Communicatum";
-			int i;
+			size_t i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(call_marie);
 

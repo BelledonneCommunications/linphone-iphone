@@ -76,7 +76,7 @@ static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
 void call_logs_write_to_config_file(LinphoneCore *lc){
 	MSList *elem;
 	char logsection[32];
-	int i;
+	unsigned int i;
 	char *tmp;
 	LpConfig *cfg=lc->config;
 
@@ -420,7 +420,7 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	LinphoneCallDir dir;
 	LinphoneCallLog *log;
 
-	unsigned int storage_id = atoi(argv[0]);
+	unsigned int storage_id = (unsigned int)atoi(argv[0]);
 	from = linphone_address_new(argv[1]);
 	to = linphone_address_new(argv[2]);
 	
@@ -436,7 +436,7 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	log->connected_date_time = (time_t)atol(argv[6]);
 	log->status = (LinphoneCallStatus) atoi(argv[7]);
 	log->video_enabled = atoi(argv[8]) == 1;
-	log->quality = atof(argv[9]);
+	log->quality = (float)atof(argv[9]);
 
 	if (argc > 10) {
 		if (argv[10] != NULL) {
@@ -507,7 +507,7 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 		ms_free(from);
 		ms_free(to);
 
-		log->storage_id = sqlite3_last_insert_rowid(lc->logs_db);
+		log->storage_id = (unsigned int)sqlite3_last_insert_rowid(lc->logs_db);
 	}
 
 	if (lc) {
@@ -541,7 +541,7 @@ const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 
 	if (!lc || lc->logs_db == NULL) return NULL;
 
-	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %i", lc->max_call_logs);
+	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %u", lc->max_call_logs);
 
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_call_log(lc->logs_db, buf, &result);
@@ -574,7 +574,7 @@ void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 
 	if (!lc || lc->logs_db == NULL) return ;
 
-	buf = sqlite3_mprintf("DELETE FROM call_history WHERE id = %i", log->storage_id);
+	buf = sqlite3_mprintf("DELETE FROM call_history WHERE id = %u", log->storage_id);
 	linphone_sql_request_generic(lc->logs_db, buf);
 	sqlite3_free(buf);
 }
