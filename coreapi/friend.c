@@ -1438,7 +1438,7 @@ MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_friend(lc->friends_db, buf, &result);
 	end = ortp_get_cur_time_ms();
-	ms_message("%s(): %i results fetched, completed in %i ms",__FUNCTION__, ms_list_size(result), (int)(end-begin));
+	ms_message("%s(): %u results fetched, completed in %i ms",__FUNCTION__, (unsigned int)ms_list_size(result), (int)(end-begin));
 	sqlite3_free(buf);
 
 	for(elem = result; elem != NULL; elem = elem->next) {
@@ -1466,7 +1466,7 @@ MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc) {
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_friends_list(lc->friends_db, buf, &result);
 	end = ortp_get_cur_time_ms();
-	ms_message("%s(): %i results fetched, completed in %i ms",__FUNCTION__, ms_list_size(result), (int)(end-begin));
+	ms_message("%s(): %u results fetched, completed in %i ms",__FUNCTION__, (unsigned int)ms_list_size(result), (int)(end-begin));
 	sqlite3_free(buf);
 
 	for(elem = result; elem != NULL; elem = elem->next) {
