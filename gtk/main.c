@@ -645,7 +645,7 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 	save_uri_history();
 }
 
-void on_contact_provider_search_results( LinphoneContactSearch* req, MSList* friends, void* data )
+void on_contact_provider_search_results( LinphoneContactSearch* req, bctbx_list_t* friends, void* data )
 {
 	GtkTreeIter    iter;
 	GtkEntry*    uribar = GTK_ENTRY(data);
@@ -793,10 +793,10 @@ void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	const MSList *calls=linphone_core_get_calls(lc);
+	const bctbx_list_t *calls=linphone_core_get_calls(lc);
 	GtkWidget *button;
 	bool_t add_call=(calls!=NULL);
-	int call_list_size=ms_list_size(calls);
+	int call_list_size=bctbx_list_size(calls);
 	GtkWidget *conf_frame;
 
 	button=linphone_gtk_get_widget(mw,"start_call");
@@ -1022,7 +1022,7 @@ void linphone_gtk_used_identity_changed(GtkWidget *w){
 
 void on_proxy_refresh_button_clicked(GtkWidget *w){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	MSList const *item=linphone_core_get_proxy_config_list(lc);
+	bctbx_list_t const *item=linphone_core_get_proxy_config_list(lc);
 	while (item != NULL) {
 		LinphoneProxyConfig *lpc=(LinphoneProxyConfig*)item->data;
 		linphone_proxy_config_edit(lpc);
@@ -1605,7 +1605,7 @@ static void init_identity_combo(GtkComboBox *box){
 }
 
 void linphone_gtk_load_identities(void){
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	GtkComboBox *box=GTK_COMBO_BOX(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"identities"));
 	char *def_identity;
 	LinphoneProxyConfig *def=NULL;
@@ -1627,7 +1627,7 @@ void linphone_gtk_load_identities(void){
 	g_free(def_identity);
 	for(i=1,elem=linphone_core_get_proxy_config_list(linphone_gtk_get_core());
 			elem!=NULL;
-			elem=ms_list_next(elem),i++){
+			elem=bctbx_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,linphone_proxy_config_get_identity(cfg),1,
@@ -1679,7 +1679,7 @@ static void linphone_gtk_check_menu_items(void){
 
 static gboolean linphone_gtk_can_manage_accounts(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	for(elem=linphone_core_get_sip_setups(lc);elem!=NULL;elem=elem->next){
 		SipSetup *ss=(SipSetup*)elem->data;
 		if (sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_ACCOUNT_MANAGER){

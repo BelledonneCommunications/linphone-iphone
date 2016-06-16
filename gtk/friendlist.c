@@ -571,14 +571,14 @@ static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *
 	return w2-w1;
 }
 
-static MSList *sort_friend_list(const MSList *friends){
-	MSList *ret=NULL;
-	const MSList *elem;
+static bctbx_list_t *sort_friend_list(const bctbx_list_t *friends){
+	bctbx_list_t *ret=NULL;
+	const bctbx_list_t *elem;
 	LinphoneFriend *lf;
 
 	for(elem=friends;elem!=NULL;elem=elem->next){
 		lf=(LinphoneFriend*)elem->data;
-		ret=ms_list_insert_sorted(ret,lf,(MSCompareFunc)friend_compare_func);
+		ret=bctbx_list_insert_sorted(ret,lf,(bctbx_compare_func)friend_compare_func);
 	}
 	return ret;
 }
@@ -669,9 +669,9 @@ void linphone_gtk_show_friends(void){
 	GtkWidget *friendlist=linphone_gtk_get_widget(mw,"contact_list");
 	GtkListStore *store=NULL;
 	GtkTreeIter iter;
-	const MSList *itf;
+	const bctbx_list_t *itf;
 	LinphoneCore *core=linphone_gtk_get_core();
-	MSList *sorted;
+	bctbx_list_t *sorted;
 	LinphoneChatRoom *cr=NULL;
 
 	linphone_gtk_show_directory_search();
@@ -684,7 +684,7 @@ void linphone_gtk_show_friends(void){
 
 	sorted=sort_friend_list(linphone_core_get_friend_list(core));
 
-	for(itf=sorted;itf!=NULL;itf=ms_list_next(itf)){
+	for(itf=sorted;itf!=NULL;itf=bctbx_list_next(itf)){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
 		const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 		char *uri=linphone_address_as_string(f_uri);
@@ -713,7 +713,7 @@ void linphone_gtk_show_friends(void){
 		g_free(escaped);
 		ms_free(uri);
 	}
-	ms_list_free(sorted);
+	bctbx_list_free(sorted);
 }
 
 void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent){

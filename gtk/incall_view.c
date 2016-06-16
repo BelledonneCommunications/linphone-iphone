@@ -39,9 +39,9 @@ LinphoneCall *linphone_gtk_get_currently_displayed_call(gboolean *is_conf){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
 	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
-	const MSList *calls=linphone_core_get_calls(lc);
+	const bctbx_list_t *calls=linphone_core_get_calls(lc);
 	if (is_conf) *is_conf=FALSE;
-	if (!linphone_gtk_use_in_call_view() || ms_list_size(calls)==1){
+	if (!linphone_gtk_use_in_call_view() || bctbx_list_size(calls)==1){
 		if (calls) return (LinphoneCall*)calls->data;
 	}else{
 		int idx=gtk_notebook_get_current_page (notebook);
@@ -134,7 +134,7 @@ void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 	GtkWidget *menu=gtk_menu_new();
 	LinphoneCall *call=(LinphoneCall*)call_ref;
 	LinphoneCore *lc=linphone_gtk_get_core();
-	const MSList *elem=linphone_core_get_calls(lc);
+	const bctbx_list_t *elem=linphone_core_get_calls(lc);
 
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneCall *other_call=(LinphoneCall*)elem->data;
@@ -158,7 +158,7 @@ void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 }
 
 void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value){
-	const MSList *elem=linphone_core_get_calls(lc);
+	const bctbx_list_t *elem=linphone_core_get_calls(lc);
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		GtkWidget *call_view=(GtkWidget*)linphone_call_get_user_pointer(call);
@@ -177,7 +177,7 @@ static void conference_button_clicked(GtkWidget *button, gpointer call_ref){
 }
 
 void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value){
-	const MSList *elem=linphone_core_get_calls(lc);
+	const bctbx_list_t *elem=linphone_core_get_calls(lc);
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		GtkWidget *call_view=(GtkWidget*)linphone_call_get_user_pointer(call);
@@ -413,7 +413,7 @@ void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	GtkWidget *button;
 	GtkWidget *image;
 
-	if (ms_list_size(linphone_core_get_calls(linphone_gtk_get_core()))==1){
+	if (bctbx_list_size(linphone_core_get_calls(linphone_gtk_get_core()))==1){
 		/*this is the only call at this time */
 		call_index=1;
 	}

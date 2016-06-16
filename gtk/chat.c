@@ -328,14 +328,14 @@ static void linphone_gtk_chat_message_destroy(LinphoneChatMessage *msg){
 	linphone_chat_message_destroy(msg);
 }
 
-void linphone_gtk_free_list(MSList *messages){
-	ms_list_for_each(messages,(void (*)(void*))linphone_gtk_chat_message_destroy);
-	ms_list_free(messages);
+void linphone_gtk_free_list(bctbx_list_t *messages){
+	bctbx_list_for_each(messages,(void (*)(void*))linphone_gtk_chat_message_destroy);
+	bctbx_list_free(messages);
 }
 
-void display_history_message(GtkWidget *chat_view,MSList *messages,const LinphoneAddress *with){
+void display_history_message(GtkWidget *chat_view,bctbx_list_t *messages,const LinphoneAddress *with){
 	if (messages != NULL){
-		MSList *it;
+		bctbx_list_t *it;
 		char *from_str;
 		char *with_str;
 		gchar *tmp;
@@ -502,7 +502,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	int idx;
 	GtkWidget *button;
 	GtkWidget *entry = linphone_gtk_get_widget(chat_view,"text_entry");
-	MSList *messages;
+	bctbx_list_t *messages;
 	GHashTable *table;
 	GtkTextTag *tmp_tag;
 	GtkWidget *link_ctx_menu = gtk_menu_new();
@@ -588,7 +588,7 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 	char *from_str=linphone_address_as_string_uri_only(from);
 	char *uri_str=linphone_address_as_string(uri);
 	char *uri_only=linphone_address_as_string_uri_only(uri);
-	MSList *messages=NULL;
+	bctbx_list_t *messages=NULL;
 
 	if(g_strcmp0(from_str,uri_only)!=0){
 		GtkTextView *text_view=GTK_TEXT_VIEW(linphone_gtk_get_widget(chat_view,"textview"));
