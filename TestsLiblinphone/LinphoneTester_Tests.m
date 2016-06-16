@@ -22,8 +22,13 @@
 	NSCharacterSet *charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
 	return [[testString componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@"_"];
 }
+void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
+}
 
 + (void)initialize {
+	// turn off ALL logs because xcodebuild has problems with it
+	linphone_core_enable_logs_with_cb(dummy_logger);
+
 	for (int i = 0; i < bc_tester_nb_suites(); i++) {
 		const char *suite = bc_tester_suite_name(i);
 		LOGE(@"suite = %s", suite);
