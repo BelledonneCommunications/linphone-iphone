@@ -14,15 +14,9 @@
 #import "Log.h"
 
 @interface LinphoneTester_Tests : XCTestCase
-@property(retain, nonatomic) NSString *bundlePath;
-@property(retain, nonatomic) NSString *documentPath;
 @end
 
 @implementation LinphoneTester_Tests
-
-+ (NSArray *)skippedSuites {
-	return @[ @"Flexisip" ];
-}
 
 + (NSString *)safetyTestString:(NSString *)testString {
 	NSCharacterSet *charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
@@ -40,8 +34,6 @@
 			NSString *sSuite = [NSString stringWithUTF8String:suite];
 			NSString *sTest = [NSString stringWithUTF8String:test];
 
-			if ([[LinphoneTester_Tests skippedSuites] containsObject:sSuite])
-				continue;
 			// prepend "test_" so that it gets found by introspection
 			NSString *safesTest = [self safetyTestString:sTest];
 			NSString *safesSuite = [self safetyTestString:sSuite];

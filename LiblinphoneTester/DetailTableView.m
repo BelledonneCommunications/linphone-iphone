@@ -8,7 +8,6 @@
 
 #import "DetailTableView.h"
 #import "MasterView.h"
-#import "LogsView.h"
 #include "linphone/liblinphone_tester.h"
 #import "Log.h"
 

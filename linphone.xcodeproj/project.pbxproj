@@ -51,7 +51,6 @@
 		63058A281B4E821E00EFAE36 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63058A151B4E821E00EFAE36 /* Main_iPad.storyboard */; };
 		63058A291B4E821E00EFAE36 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63058A171B4E821E00EFAE36 /* Main_iPhone.storyboard */; };
 		63058A2A1B4E821E00EFAE36 /* DetailTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A1A1B4E821E00EFAE36 /* DetailTableView.m */; };
-		63058A2C1B4E821E00EFAE36 /* LogsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A1F1B4E821E00EFAE36 /* LogsView.m */; };
 		63058A2D1B4E821E00EFAE36 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A201B4E821E00EFAE36 /* main.m */; };
 		63058A2E1B4E821E00EFAE36 /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A221B4E821E00EFAE36 /* MasterView.m */; };
 		63058A2F1B4E821E00EFAE36 /* TesterImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63058A231B4E821E00EFAE36 /* TesterImages.xcassets */; };
@@ -951,8 +950,6 @@
 		63058A1B1B4E821E00EFAE36 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		63058A1C1B4E821E00EFAE36 /* LinphoneTester-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LinphoneTester-Info.plist"; sourceTree = "<group>"; };
 		63058A1D1B4E821E00EFAE36 /* LinphoneTester-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LinphoneTester-Prefix.pch"; sourceTree = "<group>"; };
-		63058A1E1B4E821E00EFAE36 /* LogsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogsView.h; sourceTree = "<group>"; };
-		63058A1F1B4E821E00EFAE36 /* LogsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogsView.m; sourceTree = "<group>"; };
 		63058A201B4E821E00EFAE36 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		63058A211B4E821E00EFAE36 /* MasterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterView.h; sourceTree = "<group>"; };
 		63058A221B4E821E00EFAE36 /* MasterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterView.m; sourceTree = "<group>"; };
@@ -2302,8 +2299,6 @@
 				63058A1A1B4E821E00EFAE36 /* DetailTableView.m */,
 				63058A1C1B4E821E00EFAE36 /* LinphoneTester-Info.plist */,
 				63058A1D1B4E821E00EFAE36 /* LinphoneTester-Prefix.pch */,
-				63058A1E1B4E821E00EFAE36 /* LogsView.h */,
-				63058A1F1B4E821E00EFAE36 /* LogsView.m */,
 				63058A201B4E821E00EFAE36 /* main.m */,
 				63058A211B4E821E00EFAE36 /* MasterView.h */,
 				63058A221B4E821E00EFAE36 /* MasterView.m */,
@@ -3894,7 +3889,6 @@
 				63058A241B4E821E00EFAE36 /* AppDelegate.m in Sources */,
 				63058A2A1B4E821E00EFAE36 /* DetailTableView.m in Sources */,
 				63058A2E1B4E821E00EFAE36 /* MasterView.m in Sources */,
-				63058A2C1B4E821E00EFAE36 /* LogsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
