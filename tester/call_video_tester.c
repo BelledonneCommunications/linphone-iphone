@@ -38,13 +38,13 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline, *call_marie;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 	LinphoneVideoPolicy vpol;
 	bool_t call_ok;
 	LinphoneCoreVTable *vtable = linphone_core_v_table_new();
 	vtable->call_state_changed = call_paused_resumed_with_video_base_call_cb;
-	lcs = ms_list_append(lcs, pauline->lc);
-	lcs = ms_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
+	lcs = bctbx_list_append(lcs, marie->lc);
 
 	vpol.automatically_accept = FALSE;
 	vpol.automatically_initiate = TRUE; /* needed to present a video mline*/
@@ -127,7 +127,7 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 static void call_paused_resumed_with_video(void){
 	call_paused_resumed_with_video_base(FALSE, FALSE,FALSE,FALSE);
@@ -1079,7 +1079,7 @@ static void zrtp_video_ice_call(void) {
 	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyUseIce,FALSE);
 }
 
-static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, LinphoneCoreManager *marie, MSList *lcs) {
+static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, LinphoneCoreManager *marie, bctbx_list_t *lcs) {
 #define DEFAULT_WAIT_FOR 10000
 	LinphoneCallParams *params;
 	LinphoneVideoPolicy pol;
@@ -1139,7 +1139,7 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 }
 static void accept_call_in_send_base(bool_t caller_has_ice) {
 	LinphoneCoreManager *pauline, *marie;
-	MSList *lcs=NULL;;
+	bctbx_list_t *lcs=NULL;;
 
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -1147,14 +1147,14 @@ static void accept_call_in_send_base(bool_t caller_has_ice) {
 		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
 	}
 
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
 
 	accept_call_in_send_only_base(pauline,marie,lcs);
 
 
 	end_call(marie,pauline);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1169,16 +1169,16 @@ static void accept_call_in_send_only_with_ice(void)  {
 
 void two_accepted_call_in_send_only(void) {
 	LinphoneCoreManager *pauline, *marie, *laure;
-	MSList *lcs=NULL;
+	bctbx_list_t *lcs=NULL;
 
 	marie = linphone_core_manager_new("marie_rc");
 	linphone_core_use_files(marie->lc, TRUE);
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	laure = linphone_core_manager_new("laure_rc_udp");
 
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,laure->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
 
 	accept_call_in_send_only_base(pauline,marie,lcs);
 
@@ -1191,7 +1191,7 @@ void two_accepted_call_in_send_only(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void video_early_media_call(void) {
@@ -1219,7 +1219,7 @@ static void multiple_early_media(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
-	MSList *lcs=NULL;
+	bctbx_list_t *lcs=NULL;
 	LinphoneCallParams *params=linphone_core_create_call_params(pauline->lc, NULL);
 	LinphoneVideoPolicy pol;
 	LinphoneCall *marie1_call;
@@ -1243,9 +1243,9 @@ static void multiple_early_media(void) {
 	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
 	linphone_core_set_video_port_range(marie2->lc,40400,40500);
 
-	lcs=ms_list_append(lcs,marie1->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie1->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
 
 	linphone_call_params_enable_early_media_sending(params,TRUE);
 	linphone_call_params_enable_video(params,TRUE);
@@ -1293,7 +1293,7 @@ static void multiple_early_media(void) {
 
 	end_call(pauline, marie1);
 
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
@@ -1359,12 +1359,12 @@ static void classic_video_entry_phone_setup(void) {
 	LinphoneCallParams *in_call_params = NULL;
 	LinphoneCall *callee_call = NULL;
 	LinphoneVideoPolicy vpol = { TRUE, TRUE };
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 	int retry = 0;
 	bool_t ok;
 
-	lcs = ms_list_append(lcs, caller_mgr->lc);
-	lcs = ms_list_append(lcs, callee_mgr->lc);
+	lcs = bctbx_list_append(lcs, caller_mgr->lc);
+	lcs = bctbx_list_append(lcs, callee_mgr->lc);
 
 	linphone_core_enable_video_capture(caller_mgr->lc, TRUE);
 	linphone_core_enable_video_display(caller_mgr->lc, TRUE);
@@ -1443,7 +1443,7 @@ static void classic_video_entry_phone_setup(void) {
 end:
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(caller_mgr);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 static void video_call_recording_h264_test(void) {
 	record_call("recording", TRUE, "H264");
@@ -1495,7 +1495,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 	LinphoneCoreManager* pauline;
 	LinphoneCallParams *params;
 	const LinphoneCallParams *current_params;
-	MSList *lcs=NULL;
+	bctbx_list_t *lcs=NULL;
 	bool_t calls_ok;
 
 	marie = linphone_core_manager_new( "marie_rc");
@@ -1512,8 +1512,8 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 	linphone_core_set_avpf_mode(marie->lc,TRUE);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
 
 	video_call_base_2(marie,pauline,TRUE,mode,TRUE,TRUE);
 
@@ -1662,9 +1662,9 @@ static void video_call_with_no_audio_and_no_video_codec(void){
 	LinphoneVideoPolicy callee_policy, caller_policy;
 	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
 
-	const MSList* elem_video =linphone_core_get_video_codecs(caller->lc);
+	const bctbx_list_t* elem_video =linphone_core_get_video_codecs(caller->lc);
 
-	const MSList* elem_audio =linphone_core_get_audio_codecs(caller->lc);
+	const bctbx_list_t* elem_audio =linphone_core_get_audio_codecs(caller->lc);
 
 	disable_all_codecs(elem_audio, caller);
 	disable_all_codecs(elem_video, caller);

@@ -173,14 +173,14 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 
 bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value,int timout) {
-	MSList* lcs=NULL;
+	bctbx_list_t* lcs=NULL;
 	bool_t result;
 	if (lc_1)
-		lcs=ms_list_append(lcs,lc_1);
+		lcs=bctbx_list_append(lcs,lc_1);
 	if (lc_2)
-		lcs=ms_list_append(lcs,lc_2);
+		lcs=bctbx_list_append(lcs,lc_2);
 	result=wait_for_list(lcs,counter,value,timout);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 	return result;
 }
 
@@ -188,8 +188,8 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	return wait_for_until(lc_1, lc_2,counter,value,10000);
 }
 
-bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
-	MSList* iterator;
+bool_t wait_for_list(bctbx_list_t* lcs,int* counter,int value,int timeout_ms) {
+	bctbx_list_t* iterator;
 	MSTimeSpec start;
 
 	liblinphone_tester_clock_start(&start);
@@ -229,8 +229,8 @@ bool_t wait_for_stun_resolution(LinphoneCoreManager *m) {
 }
 
 static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t enable) {
-	MSList* codecs=ms_list_copy(linphone_core_get_audio_codecs(lc));
-	MSList* codecs_it;
+	bctbx_list_t* codecs=bctbx_list_copy(linphone_core_get_audio_codecs(lc));
+	bctbx_list_t* codecs_it;
 	PayloadType* pt;
 	for (codecs_it=codecs;codecs_it!=NULL;codecs_it=codecs_it->next) {
 		linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
@@ -238,7 +238,7 @@ static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t e
 	if ((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, enable);
 	}
-	ms_list_free(codecs);
+	bctbx_list_free(codecs);
 }
 
 static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
@@ -350,9 +350,9 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 	LinphoneNatPolicy *nat_policy;
 	int proxy_count;
 
-	/*BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
+	/*BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
 	if (check_for_proxies){ /**/
-		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
+		proxy_count=bctbx_list_size(linphone_core_get_proxy_config_list(mgr->lc));
 	}else{
 		proxy_count=0;
 		/*this is to prevent registration to go on*/

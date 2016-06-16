@@ -35,8 +35,8 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
-	MSList *iterator;
-	MSList* lcs;
+	bctbx_list_t *iterator;
+	bctbx_list_t* lcs;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* pauline_called_by_laure=NULL;
 	LinphoneCallParams *laure_params=linphone_core_create_call_params(laure->lc, NULL);
@@ -45,9 +45,9 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	if (enable_caller_privacy)
 		linphone_call_params_set_privacy(marie_params,LinphonePrivacyId);
 
-	lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
+	lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
 
 	BC_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
 	linphone_call_params_destroy(marie_params);
@@ -72,7 +72,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 							,&laure->stat.number_of_LinphoneCallOutgoingRinging
 							,1));
 
-	for (iterator=(MSList *)linphone_core_get_calls(pauline->lc);iterator!=NULL;iterator=iterator->next) {
+	for (iterator=(bctbx_list_t *)linphone_core_get_calls(pauline->lc);iterator!=NULL;iterator=iterator->next) {
 		LinphoneCall *call=(LinphoneCall *)iterator->data;
 		if (call != pauline_called_by_marie) {
 			/*fine, this is the call waiting*/
@@ -104,7 +104,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 static void call_waiting_indication(void) {
 	call_waiting_indication_with_param(FALSE);
@@ -177,13 +177,13 @@ static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
-	MSList* lcs;
+	bctbx_list_t* lcs;
 	LinphoneCallParams *laure_params=linphone_core_create_call_params(laure->lc, NULL);
 	LinphoneCallParams *marie_params=linphone_core_create_call_params(marie->lc, NULL);
 
-	lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
+	lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
 
 
 	if (state==LinphoneCallOutgoingRinging || state==LinphoneCallOutgoingEarlyMedia) {
@@ -229,7 +229,7 @@ static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 static void incoming_call_accepted_when_outgoing_call_in_progress(void) {
 	incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallOutgoingProgress);
@@ -250,13 +250,13 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* marie_call_laure;
 	LinphoneConference *conference;
-	const MSList* calls;
+	const bctbx_list_t* calls;
 	bool_t is_remote_conf;
 	bool_t focus_is_up = (focus && ((LinphoneConferenceServer *)focus)->reg_state == LinphoneRegistrationOk);
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
-	if(focus) lcs=ms_list_append(lcs,focus->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
+	if(focus) lcs=bctbx_list_append(lcs,focus->lc);
 
 	is_remote_conf = (strcmp(lp_config_get_string(marie->lc->config, "misc", "conference_type", "local"), "remote") == 0);
 	if(is_remote_conf) BC_ASSERT_PTR_NOT_NULL(focus);
@@ -341,9 +341,9 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 
 	BC_ASSERT_PTR_NOT_NULL(conference = linphone_core_get_conference(marie->lc));
 	if(conference) {
-		MSList *participants = linphone_conference_get_participants(conference);
-		BC_ASSERT_EQUAL(ms_list_size(participants), 2, int, "%d");
-		ms_list_free_with_data(participants, (void(*)(void *))linphone_address_destroy);
+		bctbx_list_t *participants = linphone_conference_get_participants(conference);
+		BC_ASSERT_EQUAL(bctbx_list_size(participants), 2, int, "%d");
+		bctbx_list_free_with_data(participants, (void(*)(void *))linphone_address_destroy);
 	}
 
 	linphone_core_terminate_conference(marie->lc);
@@ -358,7 +358,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	if(is_remote_conf) BC_ASSERT_TRUE(wait_for_list(lcs,&focus->stat.number_of_LinphoneCallReleased,3,10000));
 
 end:
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void simple_conference(void) {
@@ -415,9 +415,9 @@ static void simple_call_transfer(void) {
 	LinphoneCall *marie_calling_laure;
 
 	char* laure_identity=linphone_address_as_string(laure->identity);
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
 
 
 	BC_ASSERT_TRUE(call(marie,pauline));
@@ -467,7 +467,7 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void unattended_call_transfer(void) {
@@ -477,9 +477,9 @@ static void unattended_call_transfer(void) {
 	LinphoneCall* pauline_called_by_marie;
 
 	char* laure_identity=linphone_address_as_string(laure->identity);
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
 
 
 	BC_ASSERT_TRUE(call(marie,pauline));
@@ -514,7 +514,7 @@ static void unattended_call_transfer(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void unattended_call_transfer_with_error(void) {
@@ -522,9 +522,9 @@ static void unattended_call_transfer_with_error(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* pauline_called_by_marie;
 	bool_t call_ok=TRUE;
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 
-	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
 
 	BC_ASSERT_TRUE((call_ok=call(marie,pauline)));
 	if (call_ok){
@@ -555,7 +555,7 @@ static void unattended_call_transfer_with_error(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 
@@ -569,10 +569,10 @@ static void call_transfer_existing_call_outgoing_call(void) {
 	LinphoneCall* laure_called_by_marie;
 	LinphoneCall* lcall;
 	bool_t call_ok=TRUE;
-	const MSList* calls;
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
+	const bctbx_list_t* calls;
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
 
 	/*marie call pauline*/
 	BC_ASSERT_TRUE((call_ok=call(marie,pauline)));
@@ -639,7 +639,7 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(pauline);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void eject_from_3_participants_conference(LinphoneCoreManager *marie, LinphoneCoreManager *pauline, LinphoneCoreManager *laure, LinphoneCoreManager *focus) {
@@ -651,10 +651,10 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* marie_call_laure;
 	bool_t is_remote_conf;
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
-	if(focus) lcs=ms_list_append(lcs,focus->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
+	if(focus) lcs=bctbx_list_append(lcs,focus->lc);
 
 	is_remote_conf = (strcmp(lp_config_get_string(marie->lc->config, "misc", "conference_type", "local"), "remote") == 0);
 	if(is_remote_conf) BC_ASSERT_PTR_NOT_NULL(focus);
@@ -716,7 +716,7 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,3,10000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,5,10000));
 		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc));
-		BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_calls(marie->lc)), 2, int, "%d");
+		BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_calls(marie->lc)), 2, int, "%d");
 		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
 		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(laure->lc));
 	} else {
@@ -736,7 +736,7 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,initial_marie_stat.number_of_LinphoneCallEnd+3,3000));
 	}
 end:
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void eject_from_3_participants_local_conference(void) {
@@ -765,10 +765,10 @@ static void eject_from_4_participants_conference(void) {
 	LinphoneCall* marie_call_laure;
 	LinphoneCall* marie_call_michelle;
 	LinphoneCall* michelle_called_by_marie;
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
-	lcs=ms_list_append(lcs,michelle->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
+	lcs=bctbx_list_append(lcs,michelle->lc);
 
 	BC_ASSERT_TRUE(call(marie,pauline));
 	marie_call_pauline=linphone_core_get_current_call(marie->lc);
@@ -811,7 +811,7 @@ static void eject_from_4_participants_conference(void) {
 	BC_ASSERT_PTR_NULL(linphone_core_get_current_call(marie->lc));
 	BC_ASSERT_TRUE(linphone_core_is_in_conference(marie->lc));
 	BC_ASSERT_EQUAL(linphone_core_get_conference_size(marie->lc),3, int, "%d");
-	BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_calls(marie->lc)), 3, int, "%d");
+	BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_calls(marie->lc)), 3, int, "%d");
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(laure->lc));
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(michelle->lc));
@@ -837,7 +837,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(michelle);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 
@@ -852,7 +852,7 @@ void simple_remote_conference(void) {
 	const char *laure_proxy_uri = linphone_proxy_config_get_server_addr(laure_proxy_config);
 	const char *focus_uri = linphone_proxy_config_get_identity(focus_proxy_config);
 	int laure_n_register = laure->stat.number_of_LinphoneRegistrationOk;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 
 	lp_config_set_string(marie_config, "misc", "conference_type", "remote");
 	lp_config_set_string(marie_config, "misc", "conference_focus_addr", focus_uri);
@@ -860,9 +860,9 @@ void simple_remote_conference(void) {
 	linphone_proxy_config_edit(laure_proxy_config);
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
-	lcs = ms_list_append(lcs, laure->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
 	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneRegistrationOk, laure_n_register+1, 5000));
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 
 	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus);
 
@@ -883,7 +883,7 @@ void simple_remote_conference_shut_down_focus(void) {
 	const char *laure_proxy_uri = linphone_proxy_config_get_server_addr(laure_proxy_config);
 	const char *focus_uri = linphone_proxy_config_get_identity(focus_proxy_config);
 	int laure_n_register = laure->stat.number_of_LinphoneRegistrationOk;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 
 	lp_config_set_string(marie_config, "misc", "conference_type", "remote");
 	lp_config_set_string(marie_config, "misc", "conference_focus_addr", focus_uri);
@@ -891,9 +891,9 @@ void simple_remote_conference_shut_down_focus(void) {
 	linphone_proxy_config_edit(laure_proxy_config);
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
-	lcs = ms_list_append(lcs, laure->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
 	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneRegistrationOk, laure_n_register+1, 5000));
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 
 	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus);
 
@@ -914,7 +914,7 @@ void eject_from_3_participants_remote_conference(void) {
 	const char *laure_proxy_uri = linphone_proxy_config_get_server_addr(laure_proxy_config);
 	const char *focus_uri = linphone_proxy_config_get_identity(focus_proxy_config);
 	int laure_n_register = laure->stat.number_of_LinphoneRegistrationOk;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 
 	lp_config_set_string(marie_config, "misc", "conference_type", "remote");
 	lp_config_set_string(marie_config, "misc", "conference_focus_addr", focus_uri);
@@ -922,9 +922,9 @@ void eject_from_3_participants_remote_conference(void) {
 	linphone_proxy_config_edit(laure_proxy_config);
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
-	lcs = ms_list_append(lcs, laure->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
 	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneRegistrationOk, laure_n_register+1, 5000));
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 
 	eject_from_3_participants_conference(marie, pauline, laure, (LinphoneCoreManager *)focus);
 

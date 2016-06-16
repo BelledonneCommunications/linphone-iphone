@@ -78,7 +78,7 @@ static void call_multicast_video(void)  {
 #endif
 static void early_media_with_multicast_base(bool_t video) {
 	LinphoneCoreManager *marie, *pauline, *pauline2;
-	MSList* lcs = NULL;
+	bctbx_list_t* lcs = NULL;
 	int dummy=0;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 	LpConfig *marie_lp;
@@ -130,9 +130,9 @@ static void early_media_with_multicast_base(bool_t video) {
 	linphone_core_enable_audio_multicast(marie->lc,TRUE);
 
 
-	lcs = ms_list_append(lcs,marie->lc);
-	lcs = ms_list_append(lcs,pauline->lc);
-	lcs = ms_list_append(lcs,pauline2->lc);
+	lcs = bctbx_list_append(lcs,marie->lc);
+	lcs = bctbx_list_append(lcs,pauline->lc);
+	lcs = bctbx_list_append(lcs,pauline2->lc);
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/

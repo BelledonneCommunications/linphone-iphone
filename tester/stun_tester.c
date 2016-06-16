@@ -127,12 +127,12 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 	LinphoneCall *lcall;
 	LinphoneIceState expected_ice_state = LinphoneIceStateHostConnection;
 	LinphoneMediaDirection expected_video_dir = LinphoneMediaDirectionInactive;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 
 	marie = linphone_core_manager_new("marie_rc");
-	lcs = ms_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, marie->lc);
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	lcs = ms_list_append(lcs, pauline->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
 
 	configure_nat_policy(marie->lc, caller_turn_enabled);
 	configure_nat_policy(pauline->lc, callee_turn_enabled);
@@ -180,7 +180,7 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void basic_ice_turn_call(void) {

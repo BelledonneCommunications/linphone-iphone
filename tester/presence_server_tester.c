@@ -121,13 +121,13 @@ static void subscriber_no_longer_reachable(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneFriend *lf;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 	LinphonePresenceModel * presence;
 	int previous_number_of_LinphonePresenceActivityOnline=0;
 	int previous_number_of_LinphonePresenceActivityOffline=0;
 
-	lcs = ms_list_append(lcs, marie->lc);
-	lcs = ms_list_append(lcs, pauline1->lc);
+	lcs = bctbx_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline1->lc);
 
 	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 40);
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
@@ -176,7 +176,7 @@ static void subscriber_no_longer_reachable(void){
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline1);
 
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 
 }
 
@@ -265,10 +265,10 @@ static void test_forked_subscribe_notify_publish(void) {
 	LpConfig *pauline_lp;
 	char* lf_identity;
 	LinphoneFriend *lf;
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(marie2->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
@@ -334,7 +334,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	const char *laure_identity;
 	const char *marie_identity;
 	const char *pauline_identity;
-	MSList* lcs = NULL;
+	bctbx_list_t* lcs = NULL;
 
 	laure_identity = get_identity(laure);
 	marie_identity = get_identity(marie);
@@ -365,9 +365,9 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_friend_list_unref(lfl);
 	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
 
-	lcs = ms_list_append(lcs, laure->lc);
-	lcs = ms_list_append(lcs, marie->lc);
-	lcs = ms_list_append(lcs, pauline->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
+	lcs = bctbx_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
 
 	wait_for_list(lcs, &laure->stat.number_of_NotifyPresenceReceived, 2, 4000);
 	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyPresenceReceived, 2, int, "%d");
@@ -497,7 +497,7 @@ static void test_presence_list_subscribe_before_publish(void) {
 	LinphoneFriendList *lfl;
 	LinphoneFriend *lf;
 	const char *pauline_identity;
-	MSList* lcs = NULL;
+	bctbx_list_t* lcs = NULL;
 	int dummy = 0;
 
 	pauline_identity = get_identity(pauline);
@@ -516,8 +516,8 @@ static void test_presence_list_subscribe_before_publish(void) {
 	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
 	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(laure->lc), NULL, FALSE);
 
-	lcs = ms_list_append(lcs, laure->lc);
-	lcs = ms_list_append(lcs, pauline->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
 
 	wait_for_list(lcs, &dummy, 1, 2000); /* Wait a little bit for the subscribe to happen */
 
@@ -572,7 +572,7 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	LinphoneFriendList *lfl;
 	LinphoneFriend *lf;
 	const char *pauline_identity;
-	MSList* lcs = NULL;
+	bctbx_list_t* lcs = NULL;
 	int dummy = 0;
 	lp_config_set_int(laure->lc->config, "sip", "rls_presence_expires", 5);
 
@@ -594,8 +594,8 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	linphone_friend_list_unref(lfl);
 	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
 	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(laure->lc), NULL, FALSE);
-	lcs = ms_list_append(lcs, laure->lc);
-	lcs = ms_list_append(lcs, pauline->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
 
 	wait_for_list(lcs, &dummy, 1, 2000); /* Wait a little bit for the subscribe to happen */
 

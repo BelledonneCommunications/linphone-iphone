@@ -165,7 +165,7 @@ static void quality_reporting_not_sent_if_call_not_started(void) {
 	BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallError,1, 10000));
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1, int, "%d");
 
-	if (ms_list_size(linphone_core_get_call_logs(marie->lc))>0) {
+	if (bctbx_list_size(linphone_core_get_call_logs(marie->lc))>0) {
 		out_call_log=(LinphoneCallLog*)(linphone_core_get_call_logs(marie->lc)->data);
 		BC_ASSERT_PTR_NOT_NULL(out_call_log);
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(out_call_log),LinphoneCallAborted, int, "%d");
