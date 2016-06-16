@@ -458,7 +458,7 @@ int LocalConference::remoteParticipantsCount() {
 
 int LocalConference::convertConferenceToCall(){
 	int err=0;
-	MSList *calls=m_core->calls;
+	bctbx_list_t *calls=m_core->calls;
 
 	if (remoteParticipantsCount()!=1){
 		ms_error("No unique call remaining in conference.");
@@ -506,7 +506,7 @@ int LocalConference::removeParticipant(const LinphoneAddress *uri) {
 }
 
 int LocalConference::terminate() {
-	MSList *calls=m_core->calls;
+	bctbx_list_t *calls=m_core->calls;
 	m_terminating =TRUE;
 
 	while (calls) {
@@ -1009,12 +1009,12 @@ int linphone_conference_get_size(const LinphoneConference *obj) {
 	return ((Conference *)obj)->getSize();
 }
 
-MSList *linphone_conference_get_participants(const LinphoneConference *obj) {
+bctbx_list_t *linphone_conference_get_participants(const LinphoneConference *obj) {
 	const list<Conference::Participant *> &participants = ((Conference *)obj)->getParticipants();
-	MSList *participants_list = NULL;
+	bctbx_list_t *participants_list = NULL;
 	for(list<Conference::Participant *>::const_iterator it=participants.begin();it!=participants.end();it++) {
 		LinphoneAddress *uri = linphone_address_clone((*it)->getUri());
-		participants_list = ms_list_append(participants_list, uri);
+		participants_list = bctbx_list_append(participants_list, uri);
 	}
 	return participants_list;
 }

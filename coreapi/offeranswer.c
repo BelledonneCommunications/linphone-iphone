@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "offeranswer.h"
 #include "private.h"
 
-static bool_t only_telephone_event(const MSList *l){
+static bool_t only_telephone_event(const bctbx_list_t *l){
 	for(;l!=NULL;l=l->next){
 		PayloadType *p=(PayloadType*)l->data;
 		if (strcasecmp(p->mime_type,"telephone-event")!=0){
@@ -32,9 +32,9 @@ static bool_t only_telephone_event(const MSList *l){
 }
 
 
-static PayloadType * opus_match(MSOfferAnswerContext *ctx, const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads, bool_t reading_response){
+static PayloadType * opus_match(MSOfferAnswerContext *ctx, const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads, bool_t reading_response){
 	PayloadType *pt;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	PayloadType *legacy_opus=NULL;
 
 	for (elem=local_payloads;elem!=NULL;elem=elem->next){
@@ -68,9 +68,9 @@ MSOfferAnswerProvider opus_offer_answer_provider={
 };
 
 /* the reason for this matcher is for some stupid uncompliant phone that offer G729a mime type !*/
-static PayloadType * g729A_match(MSOfferAnswerContext *ctx, const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads, bool_t reading_response){
+static PayloadType * g729A_match(MSOfferAnswerContext *ctx, const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads, bool_t reading_response){
 	PayloadType *pt;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	PayloadType *candidate=NULL;
 
 	for (elem=local_payloads;elem!=NULL;elem=elem->next){
@@ -93,8 +93,8 @@ MSOfferAnswerProvider g729a_offer_answer_provider={
 	g729a_offer_answer_create_context
 };
 
-static PayloadType * red_match(MSOfferAnswerContext *ctx, const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads, bool_t reading_response) {
-	const MSList *elem_local, *elem_remote;
+static PayloadType * red_match(MSOfferAnswerContext *ctx, const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads, bool_t reading_response) {
+	const bctbx_list_t *elem_local, *elem_remote;
 	PayloadType *red = NULL;
 
 	for (elem_local = local_payloads; elem_local != NULL; elem_local = elem_local->next) {
@@ -131,9 +131,9 @@ MSOfferAnswerProvider red_offer_answer_provider={
 	red_offer_answer_create_context
 };
 
-static PayloadType * generic_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
+static PayloadType * generic_match(const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads){
 	PayloadType *pt;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 
 	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
@@ -158,8 +158,8 @@ void linphone_core_register_offer_answer_providers(LinphoneCore *lc){
 /*
  * Returns a PayloadType from the local list that matches a PayloadType offered or answered in the remote list
 */
-static PayloadType * find_payload_type_best_match(MSFactory *factory, const MSList *local_payloads, const PayloadType *refpt,
-						  const MSList *remote_payloads, bool_t reading_response){
+static PayloadType * find_payload_type_best_match(MSFactory *factory, const bctbx_list_t *local_payloads, const PayloadType *refpt,
+						  const bctbx_list_t *remote_payloads, bool_t reading_response){
 	PayloadType *ret = NULL;
 	MSOfferAnswerContext *ctx = NULL;
 
@@ -174,9 +174,9 @@ static PayloadType * find_payload_type_best_match(MSFactory *factory, const MSLi
 }
 
 
-static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSList *remote, bool_t reading_response, bool_t one_matching_codec){
-	const MSList *e2,*e1;
-	MSList *res=NULL;
+static bctbx_list_t *match_payloads(MSFactory *factory, const bctbx_list_t *local, const bctbx_list_t *remote, bool_t reading_response, bool_t one_matching_codec){
+	const bctbx_list_t *e2,*e1;
+	bctbx_list_t *res=NULL;
 	PayloadType *matched;
 	bool_t found_codec=FALSE;
 
@@ -211,7 +211,7 @@ static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSL
 			}else{
 				payload_type_unset_flag(matched, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 			}
-			res=ms_list_append(res,matched);
+			res=bctbx_list_append(res,matched);
 			/* we should use the remote numbering even when parsing a response */
 			payload_type_set_number(matched,remote_number);
 			payload_type_set_flag(matched, PAYLOAD_TYPE_FROZEN_NUMBER);
@@ -227,7 +227,7 @@ static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSL
 				payload_type_set_number(matched,local_number);
 				payload_type_set_flag(matched, PAYLOAD_TYPE_FLAG_CAN_RECV);
 				payload_type_set_flag(matched, PAYLOAD_TYPE_FROZEN_NUMBER);
-				res=ms_list_append(res,matched);
+				res=bctbx_list_append(res,matched);
 			}
 		}else{
 			if (p2->channels>0)
@@ -252,7 +252,7 @@ static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSL
 				p1=payload_type_clone(p1);
 				payload_type_set_flag(p1, PAYLOAD_TYPE_FLAG_CAN_RECV);
 				payload_type_set_flag(p1, PAYLOAD_TYPE_FROZEN_NUMBER);
-				res=ms_list_append(res,p1);
+				res=bctbx_list_append(res,p1);
 			}
 		}
 	}

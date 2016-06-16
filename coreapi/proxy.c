@@ -83,11 +83,11 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_confi
 }
 
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
-	MSList *elem;
+	bctbx_list_t *elem;
 	int i;
 	if (!linphone_core_ready(lc)) return;
 
-	for(elem=lc->sip_conf.proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
+	for(elem=lc->sip_conf.proxies,i=0;elem!=NULL;elem=bctbx_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
 	}
@@ -1227,24 +1227,24 @@ int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	if (!linphone_proxy_config_check(lc,cfg)) {
 		return -1;
 	}
-	if (ms_list_find(lc->sip_conf.proxies,cfg)!=NULL){
+	if (bctbx_list_find(lc->sip_conf.proxies,cfg)!=NULL){
 		ms_warning("ProxyConfig already entered, ignored.");
 		return 0;
 	}
-	lc->sip_conf.proxies=ms_list_append(lc->sip_conf.proxies,(void *)linphone_proxy_config_ref(cfg));
+	lc->sip_conf.proxies=bctbx_list_append(lc->sip_conf.proxies,(void *)linphone_proxy_config_ref(cfg));
 	linphone_proxy_config_apply(cfg,lc);
 	return 0;
 }
 
 void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	/* check this proxy config is in the list before doing more*/
-	if (ms_list_find(lc->sip_conf.proxies,cfg)==NULL){
+	if (bctbx_list_find(lc->sip_conf.proxies,cfg)==NULL){
 		ms_error("linphone_core_remove_proxy_config: LinphoneProxyConfig [%p] is not known by LinphoneCore (programming error?)",cfg);
 		return;
 	}
-	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,cfg);
+	lc->sip_conf.proxies=bctbx_list_remove(lc->sip_conf.proxies,cfg);
 	/* add to the list of destroyed proxies, so that the possible unREGISTER request can succeed authentication */
-	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,cfg);
+	lc->sip_conf.deleted_proxies=bctbx_list_append(lc->sip_conf.deleted_proxies,cfg);
 
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;
@@ -1264,19 +1264,19 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 }
 
 void linphone_core_clear_proxy_config(LinphoneCore *lc){
-	MSList* list=ms_list_copy(linphone_core_get_proxy_config_list((const LinphoneCore*)lc));
-	MSList* copy=list;
+	bctbx_list_t* list=bctbx_list_copy(linphone_core_get_proxy_config_list((const LinphoneCore*)lc));
+	bctbx_list_t* copy=list;
 	for(;list!=NULL;list=list->next){
 		linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
 	}
-	ms_list_free(copy);
+	bctbx_list_free(copy);
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
 
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc) {
 	int pos = -1;
 	if (lc->default_proxy != NULL) {
-		pos = ms_list_position(lc->sip_conf.proxies, ms_list_find(lc->sip_conf.proxies, (void *)lc->default_proxy));
+		pos = bctbx_list_position(lc->sip_conf.proxies, bctbx_list_find(lc->sip_conf.proxies, (void *)lc->default_proxy));
 	}
 	return pos;
 }
@@ -1284,7 +1284,7 @@ int linphone_core_get_default_proxy_config_index(LinphoneCore *lc) {
 void linphone_core_set_default_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config){
 	/* check if this proxy is in our list */
 	if (config!=NULL){
-		if (ms_list_find(lc->sip_conf.proxies,config)==NULL){
+		if (bctbx_list_find(lc->sip_conf.proxies,config)==NULL){
 			ms_warning("Bad proxy address: it is not in the list !");
 			lc->default_proxy=NULL;
 			return ;
@@ -1297,7 +1297,7 @@ void linphone_core_set_default_proxy_config(LinphoneCore *lc, LinphoneProxyConfi
 
 void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index){
 	if (index<0) linphone_core_set_default_proxy(lc,NULL);
-	else linphone_core_set_default_proxy(lc,ms_list_nth_data(lc->sip_conf.proxies,index));
+	else linphone_core_set_default_proxy(lc,bctbx_list_nth_data(lc->sip_conf.proxies,index));
 }
 
 int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config){
@@ -1309,7 +1309,7 @@ LinphoneProxyConfig * linphone_core_get_default_proxy_config(LinphoneCore *lc) {
 	return lc->default_proxy;
 }
 
-const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
+const bctbx_list_t *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 	return lc->sip_conf.proxies;
 }
 

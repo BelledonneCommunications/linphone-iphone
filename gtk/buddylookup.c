@@ -177,9 +177,8 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 					linphone_gtk_get_widget(w,"search_results"),
 					results);
 			gtk_progress_bar_set_fraction(pb,1);
-			tmp=g_strdup_printf(ngettext("Found %i contact",
-                        "Found %u contacts", ms_list_size(results)),
-                    (unsigned int)ms_list_size(results));
+			tmp=g_strdup_printf(ngettext("Found %u contact", "Found %u contacts",
+				(unsigned int)ms_list_size(results)), (unsigned int)ms_list_size(results));
 			gtk_progress_bar_set_text(pb,tmp);
 			g_free(tmp);
 			sip_setup_context_buddy_lookup_free(ctx,req);

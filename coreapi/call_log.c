@@ -74,7 +74,7 @@ static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
  ******************************************************************************/
 
 void call_logs_write_to_config_file(LinphoneCore *lc){
-	MSList *elem;
+	bctbx_list_t *elem;
 	char logsection[32];
 	unsigned int i;
 	char *tmp;
@@ -147,7 +147,7 @@ void call_logs_read_from_config_file(LinphoneCore *lc){
 			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
 			tmp=lp_config_get_string(cfg,logsection,"call_id",NULL);
 			if (tmp) cl->call_id=ms_strdup(tmp);
-			lc->call_logs=ms_list_append(lc->call_logs,cl);
+			lc->call_logs=bctbx_list_append(lc->call_logs,cl);
 		}else break;
 	}
 }
@@ -414,7 +414,7 @@ void linphone_core_call_log_storage_close(LinphoneCore *lc) {
  * | 11 | refkey
  */
 static int create_call_log(void *data, int argc, char **argv, char **colName) {
-	MSList **list = (MSList **)data;
+	bctbx_list_t **list = (bctbx_list_t **)data;
 	LinphoneAddress *from;
 	LinphoneAddress *to;
 	LinphoneCallDir dir;
@@ -447,7 +447,7 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 		}
 	}
 
-	*list = ms_list_append(*list, log);
+	*list = bctbx_list_append(*list, log);
 	return 0;
 	
 error:
@@ -461,7 +461,7 @@ error:
 	return 0;
 }
 
-static void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list) {
+static void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, bctbx_list_t **list) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db, stmt, create_call_log, list, &errmsg);
@@ -511,33 +511,33 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 	}
 
 	if (lc) {
-		lc->call_logs = ms_list_prepend(lc->call_logs, linphone_call_log_ref(log));
+		lc->call_logs = bctbx_list_prepend(lc->call_logs, linphone_call_log_ref(log));
 	}
 }
 
-static void copy_user_data_from_existing_log(MSList *existing_logs, LinphoneCallLog *log) {
+static void copy_user_data_from_existing_log(bctbx_list_t *existing_logs, LinphoneCallLog *log) {
 	while (existing_logs) {
 		LinphoneCallLog *existing_log = (LinphoneCallLog *)existing_logs->data;
 		if (existing_log->storage_id == log->storage_id) {
 			log->user_data = existing_log->user_data;
 			break;
 		}
-		existing_logs = ms_list_next(existing_logs);
+		existing_logs = bctbx_list_next(existing_logs);
 	}
 }
 
-static void copy_user_data_from_existing_logs(MSList *existing_logs, MSList *new_logs) {
+static void copy_user_data_from_existing_logs(bctbx_list_t *existing_logs, bctbx_list_t *new_logs) {
 	while (new_logs) {
 		LinphoneCallLog *new_log = (LinphoneCallLog *)new_logs->data;
 		copy_user_data_from_existing_log(existing_logs, new_log);
-		new_logs = ms_list_next(new_logs);
+		new_logs = bctbx_list_next(new_logs);
 	}
 }
 
-const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
+const bctbx_list_t *linphone_core_get_call_history(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
-	MSList *result = NULL;
+	bctbx_list_t *result = NULL;
 
 	if (!lc || lc->logs_db == NULL) return NULL;
 
@@ -553,7 +553,7 @@ const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 		copy_user_data_from_existing_logs(lc->call_logs, result);
 	}
 
-	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
+	lc->call_logs = bctbx_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 	lc->call_logs = result;
 
 	return lc->call_logs;
@@ -600,11 +600,11 @@ int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	return numrows;
 }
 
-MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr) {
+bctbx_list_t * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr) {
 	char *buf;
 	char *sipAddress;
 	uint64_t begin,end;
-	MSList *result = NULL;
+	bctbx_list_t *result = NULL;
 
 	if (!lc || lc->logs_db == NULL || addr == NULL) return NULL;
 
@@ -629,7 +629,7 @@ MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const Linp
 LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
-	MSList *list = NULL;
+	bctbx_list_t *list = NULL;
 	LinphoneCallLog* result = NULL;
 
 	if (!lc || lc->logs_db == NULL) return NULL;
@@ -657,7 +657,7 @@ LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
 LinphoneCallLog * linphone_core_find_call_log_from_call_id(LinphoneCore *lc, const char *call_id) {
 	char *buf;
 	uint64_t begin,end;
-	MSList *list = NULL;
+	bctbx_list_t *list = NULL;
 	LinphoneCallLog* result = NULL;
 
 	if (!lc || lc->logs_db == NULL) return NULL;
@@ -693,7 +693,7 @@ void linphone_core_call_log_storage_close(LinphoneCore *lc) {
 void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 }
 
-const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
+const bctbx_list_t *linphone_core_get_call_history(LinphoneCore *lc) {
 	return NULL;
 }
 
@@ -707,7 +707,7 @@ int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	return 0;
 }
 
-MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr) {
+bctbx_list_t * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr) {
 	return NULL;
 }
 

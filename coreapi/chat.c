@@ -114,18 +114,18 @@ void linphone_chat_message_cbs_set_file_transfer_progress_indication(
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
-	ms_list_free_with_data(cr->transient_messages, (void (*)(void *))linphone_chat_message_release);
+	bctbx_list_free_with_data(cr->transient_messages, (void (*)(void *))linphone_chat_message_release);
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
 	if (cr->lc != NULL) {
-		if (ms_list_find(cr->lc->chatrooms, cr)) {
+		if (bctbx_list_find(cr->lc->chatrooms, cr)) {
 			ms_error("LinphoneChatRoom[%p] is destroyed while still being used by the LinphoneCore. This is abnormal."
 					 " linphone_core_get_chat_room() doesn't give a reference, there is no need to call "
 					 "linphone_chat_room_unref(). "
 					 "In order to remove a chat room from the core, use linphone_core_delete_chat_room().",
 					 cr);
-			cr->lc->chatrooms = ms_list_remove(cr->lc->chatrooms, cr);
+			cr->lc->chatrooms = bctbx_list_remove(cr->lc->chatrooms, cr);
 		}
 	}
 	linphone_address_destroy(cr->peer_url);
@@ -167,7 +167,7 @@ bool_t linphone_core_chat_enabled(const LinphoneCore *lc) {
 	return lc->chat_deny_code != LinphoneReasonNone;
 }
 
-const MSList *linphone_core_get_chat_rooms(LinphoneCore *lc) {
+const bctbx_list_t *linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;
 }
 
@@ -195,7 +195,7 @@ static LinphoneChatRoom *_linphone_core_create_chat_room_base(LinphoneCore *lc, 
 
 static LinphoneChatRoom *_linphone_core_create_chat_room(LinphoneCore *lc, LinphoneAddress *addr) {
 	LinphoneChatRoom *cr = _linphone_core_create_chat_room_base(lc, addr);
-	lc->chatrooms = ms_list_append(lc->chatrooms, (void *)cr);
+	lc->chatrooms = bctbx_list_append(lc->chatrooms, (void *)cr);
 	return cr;
 }
 
@@ -216,8 +216,8 @@ static LinphoneChatRoom *_linphone_core_create_chat_room_from_url(LinphoneCore *
 
 LinphoneChatRoom *_linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr) {
 	LinphoneChatRoom *cr = NULL;
-	MSList *elem;
-	for (elem = lc->chatrooms; elem != NULL; elem = ms_list_next(elem)) {
+	bctbx_list_t *elem;
+	for (elem = lc->chatrooms; elem != NULL; elem = bctbx_list_next(elem)) {
 		cr = (LinphoneChatRoom *)elem->data;
 		if (linphone_chat_room_matches(cr, addr)) {
 			break;
@@ -252,8 +252,8 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 }
 
 void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {
-	if (ms_list_find(lc->chatrooms, cr)) {
-		lc->chatrooms = ms_list_remove(cr->lc->chatrooms, cr);
+	if (bctbx_list_find(lc->chatrooms, cr)) {
+		lc->chatrooms = bctbx_list_remove(cr->lc->chatrooms, cr);
 		linphone_chat_room_delete_history(cr);
 		linphone_chat_room_unref(cr);
 	} else {
@@ -338,7 +338,7 @@ static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneCha
 
 void linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	if (cr->received_rtt_characters) {
-		cr->received_rtt_characters = ms_list_free(cr->received_rtt_characters);
+		cr->received_rtt_characters = bctbx_list_free(cr->received_rtt_characters);
 	}
 	linphone_chat_room_unref(cr);
 }
@@ -382,7 +382,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
 		if (linphone_chat_room_upload_file(msg) == 0) {
 			// add to transient list only if message is going out
-			cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+			cr->transient_messages = bctbx_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
 		} else {
 			linphone_chat_message_unref(msg);
 			return;
@@ -393,7 +393,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		char *content_type;
 		const char *identity = NULL;
 		// add to transient list
-		cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+		cr->transient_messages = bctbx_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
 		msg->time = ms_time(0);
 		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 			if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
@@ -480,7 +480,7 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
 		// msg is not transient anymore, we can remove it from our transient list and unref it
-		msg->chat_room->transient_messages = ms_list_remove(msg->chat_room->transient_messages, msg);
+		msg->chat_room->transient_messages = bctbx_list_remove(msg->chat_room->transient_messages, msg);
 		linphone_chat_message_unref(msg);
 	}
 }
@@ -905,7 +905,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 
 		cmc->value = character;
 		cmc->has_been_read = FALSE;
-		cr->received_rtt_characters = ms_list_append(cr->received_rtt_characters, (void *)cmc);
+		cr->received_rtt_characters = bctbx_list_append(cr->received_rtt_characters, (void *)cmc);
 
 		cr->remote_is_composing = LinphoneIsComposingActive;
 		linphone_core_notify_is_composing_received(cr->lc, cr);
@@ -935,7 +935,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 			linphone_chat_room_message_received(cr, lc, msg);
 			linphone_chat_message_unref(msg);
 			cr->pending_message = NULL;
-			cr->received_rtt_characters = ms_list_free(cr->received_rtt_characters);
+			cr->received_rtt_characters = bctbx_list_free(cr->received_rtt_characters);
 		} else {
 			char *value = utf8_to_char(character);
 			cr->pending_message->message = ms_strcat_printf(cr->pending_message->message, value);
@@ -947,14 +947,14 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 
 uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
 	if (cr && cr->received_rtt_characters) {
-		MSList *characters = cr->received_rtt_characters;
+		bctbx_list_t *characters = cr->received_rtt_characters;
 		while (characters != NULL) {
 			LinphoneChatMessageCharacter *cmc = (LinphoneChatMessageCharacter *)characters->data;
 			if (!cmc->has_been_read) {
 				cmc->has_been_read = TRUE;
 				return cmc->value;
 			}
-			characters = ms_list_next(characters);
+			characters = bctbx_list_next(characters);
 		}
 	}
 	return 0;

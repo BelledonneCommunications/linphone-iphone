@@ -69,8 +69,8 @@ SalMediaDescription *sal_media_description_new(){
 static void sal_media_description_destroy(SalMediaDescription *md){
 	int i;
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++){
-		ms_list_free_with_data(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
-		ms_list_free_with_data(md->streams[i].already_assigned_payloads,(void (*)(void *))payload_type_destroy);
+		bctbx_list_free_with_data(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
+		bctbx_list_free_with_data(md->streams[i].already_assigned_payloads,(void (*)(void *))payload_type_destroy);
 		md->streams[i].payloads=NULL;
 		md->streams[i].already_assigned_payloads=NULL;
 		sal_custom_sdp_attribute_free(md->streams[i].custom_sdp_attributes);
@@ -356,8 +356,8 @@ static bool_t is_recv_only(PayloadType *p){
 	return (p->flags & PAYLOAD_TYPE_FLAG_CAN_RECV) && ! (p->flags & PAYLOAD_TYPE_FLAG_CAN_SEND);
 }
 
-static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
-	const MSList *e1,*e2;
+static bool_t payload_list_equals(const bctbx_list_t *l1, const bctbx_list_t *l2){
+	const bctbx_list_t *e1,*e2;
 	for(e1=l1,e2=l2;e1!=NULL && e2!=NULL; e1=e1->next,e2=e2->next){
 		PayloadType *p1=(PayloadType*)e1->data;
 		PayloadType *p2=(PayloadType*)e2->data;
@@ -527,18 +527,18 @@ void sal_op_set_route(SalOp *op, const char *route){
 	char* route_string=(void *)0;
 	SalOpBase* op_base = (SalOpBase*)op;
 	if (op_base->route_addresses) {
-		ms_list_for_each(op_base->route_addresses,(void (*)(void *))sal_address_destroy);
-		op_base->route_addresses=ms_list_free(op_base->route_addresses);
+		bctbx_list_for_each(op_base->route_addresses,(void (*)(void *))sal_address_destroy);
+		op_base->route_addresses=bctbx_list_free(op_base->route_addresses);
 	}
 	if (route) {
-		op_base->route_addresses=ms_list_append(NULL,NULL);
+		op_base->route_addresses=bctbx_list_append(NULL,NULL);
 		assign_address((SalAddress**)&(op_base->route_addresses->data),route);
 		route_string=sal_address_as_string((SalAddress*)op_base->route_addresses->data); \
 	}
 	assign_string(&op_base->route,route_string); \
 	if(route_string) ms_free(route_string);
 }
-const MSList* sal_op_get_route_addresses(const SalOp *op) {
+const bctbx_list_t* sal_op_get_route_addresses(const SalOp *op) {
 	return ((SalOpBase*)op)->route_addresses;
 }
 void sal_op_set_route_address(SalOp *op, const SalAddress *address){
@@ -549,7 +549,7 @@ void sal_op_set_route_address(SalOp *op, const SalAddress *address){
 void sal_op_add_route_address(SalOp *op, const SalAddress *address){
 	SalOpBase* op_base = (SalOpBase*)op;
 	if (op_base->route_addresses) {
-		op_base->route_addresses=ms_list_append(op_base->route_addresses,(void*)sal_address_clone(address));
+		op_base->route_addresses=bctbx_list_append(op_base->route_addresses,(void*)sal_address_clone(address));
 	} else {
 		sal_op_set_route_address(op,address);
 	}
@@ -713,8 +713,8 @@ void __sal_op_free(SalOp *op){
 		sal_address_destroy(b->service_route);
 	}
 	if (b->route_addresses){
-		ms_list_for_each(b->route_addresses,(void (*)(void*)) sal_address_destroy);
-		b->route_addresses=ms_list_free(b->route_addresses);
+		bctbx_list_for_each(b->route_addresses,(void (*)(void*)) sal_address_destroy);
+		b->route_addresses=bctbx_list_free(b->route_addresses);
 	}
 	if (b->recv_custom_headers)
 		sal_custom_header_free(b->recv_custom_headers);

@@ -112,7 +112,7 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 
 
 static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
-	MSList* transients = cr->transient_messages;
+	bctbx_list_t* transients = cr->transient_messages;
 	LinphoneChatMessage* chat;
 	while( transients ){
 		chat = (LinphoneChatMessage*)transients->data;
@@ -230,7 +230,7 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 			}
 		}
 	}
-	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
+	cr->messages_hist=bctbx_list_prepend(cr->messages_hist,new_message);
 
 	return 0;
 }
@@ -449,9 +449,9 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 	if(cr->unread_count > 0) cr->unread_count = 0;
 }
 
-MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
+bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
 	LinphoneCore *lc=linphone_chat_room_get_core(cr);
-	MSList *ret;
+	bctbx_list_t *ret;
 	char *buf,*buf2;
 	char *peer;
 	uint64_t begin,end;
@@ -501,7 +501,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 	return ret;
 }
 
-MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return linphone_chat_room_get_history_range(cr, 0, nb_message-1);
 }
 
@@ -738,11 +738,11 @@ void linphone_chat_message_store_appdata(LinphoneChatMessage *msg){
 void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 }
 
-MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return NULL;
 }
 
-LINPHONE_PUBLIC MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end){
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end){
 	return NULL;
 }
 
