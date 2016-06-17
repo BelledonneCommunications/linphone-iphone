@@ -4378,6 +4378,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-Wno-error-deprecated",
 					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
@@ -4465,6 +4466,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-Wno-error-deprecated",
 					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
@@ -4551,6 +4553,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-Wno-error-deprecated",
 					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
@@ -4638,6 +4641,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-Wno-error-deprecated",
 					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
