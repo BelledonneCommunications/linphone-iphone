@@ -24,7 +24,7 @@ void AudioCodecToggleCommand::exec(Daemon *app, const char *args) {
 		if (!parser.all()) pt = parser.getPayloadType();
 
 		int index = 0;
-		for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
+		for (const bctbx_list_t *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = bctbx_list_next(node)) {
 			PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 			if (parser.all()) {
 				linphone_core_enable_payload_type(app->getCore(), payload, mEnable);

@@ -5,6 +5,7 @@
 #include <linphonecore_utils.h>
 #include <mediastreamer2/mediastream.h>
 #include <mediastreamer2/mscommon.h>
+#include <bctoolbox/list.h>
 
 #include <string>
 #include <list>
@@ -212,7 +213,7 @@ public:
 	int updateCallId(LinphoneCall *call);
 	int updateProxyId(LinphoneProxyConfig *proxy);
 	inline int maxProxyId() { return mProxyIds; }
-	inline int maxAuthInfoId()  { return ms_list_size(linphone_core_get_auth_info_list(mLc)); }
+	inline int maxAuthInfoId()  { return bctbx_list_size(linphone_core_get_auth_info_list(mLc)); }
 	int updateAudioStreamId(AudioStream *audio_stream);
 	void dumpCommandsHelp();
 	void dumpCommandsHelpHtml();

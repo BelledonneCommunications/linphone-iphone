@@ -49,7 +49,7 @@ AudioCodecSetCommand::AudioCodecSetCommand() :
 
 static PayloadType *findPayload(LinphoneCore *lc, int payload_type, int *index){
 	if (index) *index=0;
-	for (const MSList *node = linphone_core_get_audio_codecs(lc); node != NULL; node = ms_list_next(node)) {
+	for (const bctbx_list_t *node = linphone_core_get_audio_codecs(lc); node != NULL; node = bctbx_list_next(node)) {
 		PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 		if (index) (*index)++;
 		if (payload_type == linphone_core_get_payload_type_number(lc, payload)) {

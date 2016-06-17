@@ -10,15 +10,17 @@
 static int running=1;
 
 int main(int argc, char *argv[]){
+	struct pollfd pfds[2]={{0}};
+	char buf[4096];
+	int fd;
+
 	/* handle args */
 	if (argc < 2) {
 		ortp_error("Usage: %s pipename", argv[0]);
 		return 1;
 	}
 
-	int fd=ortp_client_pipe_connect(argv[1]);
-	struct pollfd pfds[2]={{0}};
-	char buf[4096];
+	fd=ortp_client_pipe_connect(argv[1]);
 
 	ortp_init();
 	ortp_set_log_level_mask(NULL,ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);

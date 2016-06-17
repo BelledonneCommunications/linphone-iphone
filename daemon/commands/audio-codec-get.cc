@@ -54,7 +54,7 @@ void AudioCodecGetCommand::exec(Daemon *app, const char *args) {
 	}
 
 	int index = 0;
-	for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
+	for (const bctbx_list_t *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = bctbx_list_next(node)) {
 		PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 		if (list) {
 			ost << PayloadTypeResponse(app->getCore(), payload, index).getBody() << "\n";

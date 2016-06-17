@@ -65,21 +65,21 @@ void AudioCodecMoveCommand::exec(Daemon *app, const char *args) {
 	}
 
 	int i = 0;
-	MSList *mslist = NULL;
-	for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
+	bctbx_list_t *mslist = NULL;
+	for (const bctbx_list_t *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = bctbx_list_next(node)) {
 		PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 		if (i == index) {
-			mslist = ms_list_append(mslist, selected_payload);
+			mslist = bctbx_list_append(mslist, selected_payload);
 			++i;
 		}
 		if (selected_payload != payload) {
-			mslist = ms_list_append(mslist, payload);
+			mslist = bctbx_list_append(mslist, payload);
 			++i;
 		}
 	}
 	if (i <= index) {
 		index = i;
-		mslist = ms_list_append(mslist, selected_payload);
+		mslist = bctbx_list_append(mslist, selected_payload);
 	}
 	linphone_core_set_audio_codecs(app->getCore(), mslist);
 
