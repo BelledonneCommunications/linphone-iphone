@@ -97,12 +97,12 @@ LINPHONE_PUBLIC int linphone_conference_remove_participant(LinphoneConference *o
 
 /**
  * Get URIs of all participants of one conference
- * The returned MSList contains URIs of all participant. That list must be
+ * The returned bctbx_list_t contains URIs of all participant. That list must be
  * freed after use and each URI must be unref with linphone_address_unref()
  * @param obj A #LinphoneConference
  * @return \mslist{LinphoneAddress}
  */
-LINPHONE_PUBLIC MSList *linphone_conference_get_participants(const LinphoneConference *obj);
+LINPHONE_PUBLIC bctbx_list_t *linphone_conference_get_participants(const LinphoneConference *obj);
 
 /**
  * @}

@@ -101,7 +101,7 @@ class ArgumentType:
 		self.use_native_pointer = False
 		self.cast_convert_func_result = True
 		self.__compute()
-		if self.basic_type == 'MSList' and self.contained_type is not None and self.contained_type != 'const char *':
+		if (self.basic_type == 'MSList' or self.basic_type == 'bctbx_list_t') and self.contained_type is not None and self.contained_type != 'const char *':
 			self.linphone_module.mslist_types.add(self.contained_type)
 
 	def __compute(self):
@@ -214,7 +214,7 @@ class ArgumentType:
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
 			self.cnativefmt_str = '%ld'
-		elif self.basic_type == 'MSList':
+		elif self.basic_type == 'MSList' or self.basic_type == 'bctbx_list_t':
 			if self.contained_type == 'const char *':
 				self.type_str = 'list of string'
 				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsMSListOfString({arg_name});\n"

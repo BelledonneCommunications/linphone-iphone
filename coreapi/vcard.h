@@ -57,14 +57,14 @@ LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVcard *vCard);
  * @param[in] file the path to the file to parse
  * @return \mslist{LinphoneVcard}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_list_from_vcard4_file(const char *file);
+LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_list_from_vcard4_file(const char *file);
 
 /**
  * Uses belcard to parse the content of a buffer and returns all the vcards it contains as LinphoneVcards, or NULL if it contains none.
  * @param[in] buffer the buffer to parse
  * @return \mslist{LinphoneVcard}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer);
+LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(const char *buffer);
 
 /**
  * Uses belcard to parse the content of a buffer and returns one vCard if possible, or NULL otherwise.
@@ -120,7 +120,7 @@ void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_
  * @param[in] vCard the LinphoneVcard
  * @return \mslist{const char *}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
+LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
 
 /**
  * Adds a phone number in the vCard, using the TEL property
@@ -141,14 +141,14 @@ void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone)
  * @param[in] vCard the LinphoneVcard
  * @return \mslist{const char *}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard);
+LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard);
 
 /**
  * Returns the list of SIP addresses (as string) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
  * @param[in] vCard the LinphoneVcard
  * @return \mslist{const char *}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
+LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
 
 /**
  * Fills the Organization field of the vCard

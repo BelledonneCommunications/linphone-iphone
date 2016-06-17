@@ -436,7 +436,7 @@ class Project:
 			returnarg = CArgument(returntype, enums = self.enums, structs = self.__structs)
 			returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
 			if returndesc is not None:
-				if returnarg.ctype == 'MSList':
+				if returnarg.ctype == 'MSList' or returnarg.ctype == 'bctbx_list_t':
 					n = returndesc.find('.//mslist')
 					if n is not None:
 						returnarg.containedType = n.text
@@ -507,7 +507,7 @@ class Project:
 		returnarg = CArgument(t, enums = self.enums, structs = self.__structs)
 		returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
 		if returndesc is not None:
-			if returnarg.ctype == 'MSList':
+			if returnarg.ctype == 'MSList' or returnarg.ctype == 'bctbx_list_t':
 				n = returndesc.find('.//mslist')
 				if n is not None:
 					returnarg.containedType = n.text
@@ -530,7 +530,7 @@ class Project:
 				for arg in argslist.arguments:
 					for paramdesc in paramdescs:
 						if arg.name == paramdesc.find('./parameternamelist').find('./parametername').text:
-							if arg.ctype == 'MSList':
+							if arg.ctype == 'MSList' or arg.ctype == 'bctbx_list_t':
 								n = paramdesc.find('.//mslist')
 								if n is not None:
 									arg.containedType = n.text

@@ -89,7 +89,7 @@ LINPHONE_PUBLIC void linphone_core_remove_friend_list(LinphoneCore *lc, Linphone
  * @param[in] lc LinphoneCore object
  * @return \mslist{LinphoneFriendList} a list of LinphoneFriendList
  */
-LINPHONE_PUBLIC const MSList * linphone_core_get_friends_lists(const LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_friends_lists(const LinphoneCore *lc);
 
 /**
  * Retrieves the first list of LinphoneFriend from the core.
@@ -183,7 +183,7 @@ LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(Linp
  * @param[in] list LinphoneFriendList object
  * @return \mslist{LinphoneFriend} a list of LinphoneFriend
  */
-LINPHONE_PUBLIC const MSList * linphone_friend_list_get_friends(const LinphoneFriendList *list);
+LINPHONE_PUBLIC const bctbx_list_t * linphone_friend_list_get_friends(const LinphoneFriendList *list);
 
 /**
  * Find a friend in the friend list using a LinphoneAddress.

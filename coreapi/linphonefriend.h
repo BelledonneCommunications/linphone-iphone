@@ -176,7 +176,7 @@ LINPHONE_PUBLIC void linphone_friend_add_address(LinphoneFriend *lf, const Linph
  * @param lf #LinphoneFriend object
  * @return \mslist{LinphoneAddress}
  */
-LINPHONE_PUBLIC MSList* linphone_friend_get_addresses(LinphoneFriend *lf);
+LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_addresses(LinphoneFriend *lf);
 
 /**
  * Removes an address in this friend
@@ -197,7 +197,7 @@ LINPHONE_PUBLIC void linphone_friend_add_phone_number(LinphoneFriend *lf, const 
  * @param lf #LinphoneFriend object
  * @return \mslist{const char *}
  */
-LINPHONE_PUBLIC MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
+LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
 
 /**
  * Removes a phone number in this friend
@@ -430,7 +430,7 @@ LINPHONE_PUBLIC void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneF
  * @return \mslist{LinphoneFriend}
  * @deprecated use linphone_core_get_friends_lists() or linphone_friend_list_get_friends() instead.
  */
-LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
+LINPHONE_PUBLIC	const bctbx_list_t * linphone_core_get_friend_list(const LinphoneCore *lc);
 
 /**
  * Notify all friends that have subscribed
