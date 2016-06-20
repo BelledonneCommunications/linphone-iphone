@@ -232,7 +232,7 @@ class IOSPreparator(prepare.Preparator):
             shutil.copyfile(".git-pre-commit", git_hook_path)
             os.chmod(git_hook_path, 0755)
 
-    def generate_makefile(self, generator):
+    def generate_makefile(self, generator, project_file=''):
         platforms = self.args.target
         arch_targets = ""
         for arch in platforms:
@@ -240,9 +240,9 @@ class IOSPreparator(prepare.Preparator):
 {arch}: {arch}-build
 
 {arch}-build:
-\t{generator} WORK/ios-{arch}/cmake
+\t{generator} WORK/ios-{arch}/cmake/{project_file}
 \t@echo "Done"
-""".format(arch=arch, generator=generator)
+""".format(arch=arch, generator=generator, project_file=project_file)
         multiarch = ""
         for arch in platforms[1:]:
             multiarch += \
