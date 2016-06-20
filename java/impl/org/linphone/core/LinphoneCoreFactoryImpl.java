@@ -41,6 +41,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		List<String> cpuabis=Version.getCpuAbis();
 		boolean libLoaded=false;
 		Throwable firstException=null;
+		System.loadLibrary("gnustl_shared");
 		for (String abi : cpuabis){
 			//android.util.Log.i("LinphoneCoreFactoryImpl","Trying to load liblinphone for " + abi);
 			loadOptionalLibrary("ffmpeg-linphone-" + abi);
