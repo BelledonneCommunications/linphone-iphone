@@ -10,7 +10,7 @@ of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU General Public License fo r more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
@@ -22,17 +22,29 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.linphone.LinphoneService;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
+import org.linphone.tools.CodecDownloader;
 
 public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
-	private static boolean loadOptionalLibrary(String s) {
+	public static boolean loadOptionalLibrary(String s) {
 		try {
 			System.loadLibrary(s);
 			return true;
 		} catch (Throwable e) {
-			//android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library lib" + s);
+			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s +"\n" +e.getMessage());
+		}
+		return false;
+	}
+
+	public static boolean loadOptionalLibraryWithPath(String s) {
+		try {
+			System.load(s);
+			return true;
+		} catch (Throwable e) {
+			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s +"\n" +e.getMessage());
 		}
 		return false;
 	}
@@ -97,6 +109,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			String userConfig, String factoryConfig, Object userdata, Object context)
 			throws LinphoneCoreException {
 		try {
+			if(context!=null) loadOptionalLibraryWithPath(((android.content.Context)context).getFilesDir() + "/" + CodecDownloader.getNameLib());
 			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
