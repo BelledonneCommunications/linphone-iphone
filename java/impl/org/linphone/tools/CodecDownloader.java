@@ -56,7 +56,7 @@ interface CodecDownloadAction{
  * @author Erwan Croze
  */
 public class CodecDownloader implements CodecDownloadListener,CodecDownloadAction{
-    private static String fileDirection;
+    private static String fileDirection = null;
     private static String nameLib;
     private static String urlDownload;
     private static String nameFileDownload;
@@ -72,9 +72,7 @@ public class CodecDownloader implements CodecDownloadListener,CodecDownloadActio
         return licenseMessage;
     }
 
-    static public void setFileDirection(String s) {
-        fileDirection = s;
-    }
+    static public void setFileDirection(String s) { fileDirection = s; }
 
     static public void setNameLib(String s) {
         nameLib = s;
@@ -92,11 +90,23 @@ public class CodecDownloader implements CodecDownloadListener,CodecDownloadActio
         urlDownload = s;
     }
 
-    static public boolean codecExist(Context ctxt) {
-        if (ctxt == null) return false;
-        return new File(ctxt.getFilesDir()+"/" + nameLib).exists();
+	/**
+     * Indicates whether the lib exists
+     * Requirements : fileDirection and nameLib init
+     * @return file exists ?
+     */
+    static public boolean codecExist() {
+        return new File(fileDirection+"/" + nameLib).exists();
     }
 
+	/**
+     * Try to download codec
+     * Requirements :
+     *  fileDirection
+     *  nameFileDownload
+     *  urlDownload
+     *  nameLib
+     */
     public void downloadCodec() {
         Thread thread = new Thread(new Runnable()
         {
