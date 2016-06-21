@@ -165,9 +165,9 @@ class IOSPreparator(prepare.Preparator):
             error("No package manager found. Please README or install brew using:\n\truby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"")
             return "brew"
 
-    def check_tools(self):
+    def check_environment(self):
         reterr = 0
-        reterr |= prepare.Preparator.check_tools(self)
+        reterr |= prepare.Preparator.check_environment(self)
         package_manager_info = {"brew-pkg-config": "pkg-config",
                                 "sudo port-pkg-config": "pkgconfig",
                                 "brew-binary-path": "/usr/local/bin/",
@@ -343,8 +343,8 @@ help: help-prepare-options
 def main():
     preparator = IOSPreparator()
     preparator.parse_args()
-    if preparator.check_tools() != 0:
-        preparator.show_missing_dependencies()
+    if preparator.check_environment() != 0:
+        preparator.show_environment_errors()
         return 1
     preparator.install_git_hook()
     return preparator.run()
