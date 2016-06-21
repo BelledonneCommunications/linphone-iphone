@@ -127,6 +127,7 @@ void linphone_nat_policy_clear(LinphoneNatPolicy *policy) {
 	linphone_nat_policy_enable_ice(policy, FALSE);
 	linphone_nat_policy_enable_upnp(policy, FALSE);
 	linphone_nat_policy_set_stun_server(policy, NULL);
+	linphone_nat_policy_set_stun_server_username(policy, NULL);
 }
 
 bool_t linphone_nat_policy_stun_enabled(const LinphoneNatPolicy *policy) {
