@@ -296,7 +296,7 @@ static void tunnelLogHandler(int level, const char *fmt, va_list l){
 
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler){
 	tunnelOrtpLogHandler=logHandler;
-	bcTunnel(tunnel)->enableLogs(enabled, tunnelLogHandler);
+	bcTunnel(tunnel)->enableLogs(enabled == FALSE ? false : true, tunnelLogHandler);
 }
 
 void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel *tunnel, const char* username,const char* passwd){
@@ -323,7 +323,7 @@ void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable) {
-	bcTunnel(tunnel)->tunnelizeSipPackets(enable);
+	bcTunnel(tunnel)->tunnelizeSipPackets(enable == FALSE ? false : true);
 	lp_config_set_int(config(tunnel), "tunnel", "sip", (enable ? TRUE : FALSE));
 }
 
@@ -332,7 +332,7 @@ bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) {
 }
 
 void linphone_tunnel_verify_server_certificate(LinphoneTunnel *tunnel, bool_t enable) {
-	bcTunnel(tunnel)->verifyServerCertificate(enable);
+	bcTunnel(tunnel)->verifyServerCertificate(enable == FALSE ? false : true);
 	lp_config_set_int(config(tunnel), "tunnel", "verify_cert", (enable ? TRUE : FALSE));
 }
 
@@ -356,8 +356,10 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);
 	linphone_tunnel_enable_sip(tunnel, tunnelizeSIPPackets);
-	linphone_tunnel_set_mode(tunnel, mode);
 	linphone_tunnel_verify_server_certificate(tunnel, tunnelVerifyServerCertificate);
+	/*Tunnel is started here if mode equals true*/
+	linphone_tunnel_set_mode(tunnel, mode);
+
 }
 
 /* Deprecated functions */
@@ -380,5 +382,5 @@ bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
 }
 
 void linphone_tunnel_simulate_udp_loss(LinphoneTunnel *tunnel, bool_t enabled) {
-	bcTunnel(tunnel)->simulateUdpLoss(enabled);
+	bcTunnel(tunnel)->simulateUdpLoss(enabled == FALSE ? false : true);
 }
