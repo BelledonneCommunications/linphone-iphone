@@ -185,6 +185,7 @@ class IOSPreparator(prepare.Preparator):
         if find_executable("nasm"):
             nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
             if "fatal: unrecognised output format" in nasm_output:
+                error("Invalid version of nasm detected. Please make sure that you are NOT using Apple's binary here")
                 self.missing_dependencies["nasm"] = "nasm"
                 reterr = 1
 
