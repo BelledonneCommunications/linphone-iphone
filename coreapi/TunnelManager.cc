@@ -136,6 +136,8 @@ int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flag
 	int err=((TunnelSocket*)t->data)->recvfrom(msg->b_wptr,msg->b_datap->db_lim-msg->b_datap->db_base,from,*fromlen);
 	//to make ice happy
 	inet_aton(((TunnelManager*)((TunnelSocket*)t->data)->getUserPointer())->mLocalAddr,&msg->recv_addr.addr.ipi_addr);
+	msg->recv_addr.family = AF_INET;
+	msg->recv_addr.port = htons((unsigned short)((TunnelSocket*)t->data)->getPort());
 	if (err>0) return err;
 	return 0;
 }
