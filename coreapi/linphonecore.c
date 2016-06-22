@@ -882,10 +882,9 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_sound_source(lc,tmpbuf[0]);
 */
 
-	tmpbuf = get_default_local_ring(lc);
-	tmpbuf=lp_config_get_string(lc->config,"sound","local_ring",tmpbuf);
-	if (ortp_file_exist(tmpbuf)==-1) {
-		ms_warning("%s does not exist",tmpbuf);
+	tmpbuf=lp_config_get_string(lc->config,"sound","local_ring",NULL);
+	if (tmpbuf==NULL||ortp_file_exist(tmpbuf)!=0) {
+		if (tmpbuf) ms_warning("%s does not exist",tmpbuf);
 		tmpbuf = get_default_local_ring(lc);
 	}
 	linphone_core_set_ring(lc,tmpbuf);
@@ -1389,12 +1388,9 @@ static void video_config_read(LinphoneCore *lc){
 #ifdef VIDEO_ENABLED
 	int capture, display, self_view, reuse_source;
 	int automatic_video=1;
-#endif
 	const char *str;
-#ifdef VIDEO_ENABLED
 	LinphoneVideoPolicy vpol;
 	memset(&vpol, 0, sizeof(LinphoneVideoPolicy));
-#endif
 	build_video_devices_table(lc);
 
 	str=lp_config_get_string(lc->config,"video","device",NULL);
@@ -1409,7 +1405,6 @@ static void video_config_read(LinphoneCore *lc){
 
 	linphone_core_set_preferred_framerate(lc,lp_config_get_float(lc->config,"video","framerate",0));
 
-#ifdef VIDEO_ENABLED
 #if defined(ANDROID) || defined(__ios)
 	automatic_video=0;
 #endif

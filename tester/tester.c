@@ -156,7 +156,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 	sal_enable_test_features(lc->sal,TRUE);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
+#ifdef VIDEO_ENABLED
 	linphone_core_set_static_picture(lc,nowebcampath);
+#endif
 
 	ms_free(ringpath);
 	ms_free(ringbackpath);
