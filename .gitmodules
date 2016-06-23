@@ -100,3 +100,6 @@
 [submodule "submodules/mscodec2"]
 	path = submodules/mscodec2
 	url = git://git.linphone.org/mscodec2.git
+[submodule "submodules/externals/bv16-floatingpoint"]
+	path = submodules/externals/bv16-floatingpoint
+	url = gitosis@git.linphone.org:bv16-floatingpoint
