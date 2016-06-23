@@ -616,41 +616,43 @@ static void file_transfer_2_messages_simultaneously(void) {
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 
 		BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 0, int, "%d");
-		linphone_chat_room_send_chat_message(pauline_room,msg);
-		linphone_chat_room_send_chat_message(pauline_room,msg2);
-		if (BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1))) {
-			msg = linphone_chat_message_clone(marie->stat.last_received_chat_message);
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2));
-			msg2 = marie->stat.last_received_chat_message;
-			BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, int, "%d");
-			if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
-				char * buf = ms_strdup_printf("Found %d rooms instead of 1: ", bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)));
-				const bctbx_list_t *it = linphone_core_get_chat_rooms(marie->lc);
-				while (it) {
-					const LinphoneAddress * peer = linphone_chat_room_get_peer_address(it->data);
-					buf = ms_strcat_printf("%s, ", linphone_address_get_username(peer));
-					it = it->next;
+		if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) == 0) {
+			linphone_chat_room_send_chat_message(pauline_room,msg);
+			linphone_chat_room_send_chat_message(pauline_room,msg2);
+			if (BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1))) {
+				msg = linphone_chat_message_clone(marie->stat.last_received_chat_message);
+				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2));
+				msg2 = marie->stat.last_received_chat_message;
+				BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, int, "%d");
+				if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
+					char * buf = ms_strdup_printf("Found %d rooms instead of 1: ", bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)));
+					const bctbx_list_t *it = linphone_core_get_chat_rooms(marie->lc);
+					while (it) {
+						const LinphoneAddress * peer = linphone_chat_room_get_peer_address(it->data);
+						buf = ms_strcat_printf("%s, ", linphone_address_get_username(peer));
+						it = it->next;
+					}
+					ms_error("%s", buf);
 				}
-				ms_error("%s", buf);
+				
+				cbs = linphone_chat_message_get_callbacks(msg);
+				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+				linphone_chat_message_download_file(msg);
+				
+				cbs = linphone_chat_message_get_callbacks(msg2);
+				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+				linphone_chat_message_download_file(msg2);
+				
+				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,2));
+				
+				BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,4, int, "%d");
+				BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,2, int, "%d");
+				compare_files(send_filepath, receive_filepath);
+				
+				linphone_chat_message_unref(msg);
 			}
-
-			cbs = linphone_chat_message_get_callbacks(msg);
-			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
-			linphone_chat_message_download_file(msg);
-
-			cbs = linphone_chat_message_get_callbacks(msg2);
-			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
-			linphone_chat_message_download_file(msg2);
-
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,2));
-
-			BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,4, int, "%d");
-			BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,2, int, "%d");
-			compare_files(send_filepath, receive_filepath);
-
-			linphone_chat_message_unref(msg);
 		}
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
