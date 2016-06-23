@@ -21,9 +21,19 @@
 ############################################################################
 
 if(ENABLE_STATIC)
-	set(LINPHONE_LIBS_FOR_TOOLS linphone-static)
+	set(LINPHONE_LIBS_FOR_TESTER linphone-static)
 else()
-	set(LINPHONE_LIBS_FOR_TOOLS linphone)
+	set(LINPHONE_LIBS_FOR_TESTER linphone)
+endif()
+set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${BCTOOLBOX_TESTER_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
+if(INTL_FOUND)
+	list(APPEND OTHER_LIBS_FOR_TESTER ${INTL_LIBRARIES})
+endif()
+if(SQLITE3_FOUND)
+	list(APPEND OTHER_LIBS_FOR_TESTER ${SQLITE3_LIBRARIES})
+endif()
+if(ZLIB_FOUND)
+	list(APPEND OTHER_LIBS_FOR_TESTER ${ZLIB_LIBRARIES})
 endif()
 
 set(RESOURCES_FILES
@@ -80,7 +90,7 @@ if(ANDROID OR IOS)
 		add_library(linphonetester STATIC ${SOURCE_FILES_C})
 	endif()
 	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
-	target_link_libraries(linphonetester linphone ${BCTOOLBOX_TESTER_LIBRARIES})
+	target_link_libraries(linphonetester linphone ${OTHER_LIBS_FOR_TESTER})
 	install(TARGETS linphonetester
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -94,7 +104,7 @@ if(ANDROID OR IOS)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	add_library(linphone_tester_static STATIC ${SOURCE_FILES_C})
 	target_include_directories(linphone_tester_static PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
-	target_link_libraries(linphone_tester_static linphone ${BCTOOLBOX_TESTER_LIBRARIES})
+	target_link_libraries(linphone_tester_static linphone ${OTHER_LIBS_FOR_TESTER})
 
 	set(RUNTIME_COMPONENT_SOURCES
 		liblinphone_tester_windows.cpp
@@ -133,7 +143,7 @@ if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	endif()
 	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
 	target_include_directories(liblinphone_tester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
-	target_link_libraries(liblinphone_tester ${LINPHONE_LIBS_FOR_TOOLS} ${BCTOOLBOX_TESTER_LIBRARIES})
+	target_link_libraries(liblinphone_tester ${LINPHONE_LIBS_FOR_TESTER} ${OTHER_LIBS_FOR_TESTER})
 	if (GTK2_FOUND)
 		target_compile_definitions(liblinphone_tester PRIVATE HAVE_GTK)
 		target_include_directories(liblinphone_tester PUBLIC ${GTK2_INCLUDE_DIRS})
