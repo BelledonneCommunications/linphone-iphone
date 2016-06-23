@@ -65,7 +65,7 @@ add_definitions(
 
 apply_compile_flags(LP_AUTO_ANSWER_SOURCE_FILES "CPP" "C")
 add_executable(lp-auto-answer ${LP_AUTO_ANSWER_SOURCE_FILES})
-target_link_libraries(lp-auto-answer linphone)
+target_link_libraries(lp-auto-answer linphone ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
 
 
 install(TARGETS lp-auto-answer
@@ -85,7 +85,7 @@ add_definitions(
 
 apply_compile_flags(LP_SENDMSG_SOURCE_FILES "CPP" "C")
 add_executable(lp-sendmsg ${LP_SENDMSG_SOURCE_FILES})
-target_link_libraries(lp-sendmsg linphone)
+target_link_libraries(lp-sendmsg linphone ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
 
 
 install(TARGETS lp-sendmsg
