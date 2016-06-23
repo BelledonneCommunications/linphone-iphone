@@ -76,6 +76,11 @@ macro(apply_compile_flags SOURCE_FILES)
 	endif()
 endmacro()
 
+if(ENABLE_STATIC)
+	set(LINPHONE_LIBS_FOR_TOOLS linphone-static)
+else()
+	set(LINPHONE_LIBS_FOR_TOOLS linphone)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
