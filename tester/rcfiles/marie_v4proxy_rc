@@ -16,8 +16,8 @@ realm=sip.example.org
 
 
 [proxy_0]
-reg_proxy=sipv4-nat64.example.org;transport=tcp
-reg_route=sipv4-nat64.example.org;transport=tcp;lr
+reg_proxy=sipv4.example.org;transport=tcp
+reg_route=sipv4.example.org;transport=tcp;lr
 reg_identity="Super Marie" <sip:marie@sip.example.org>
 reg_expires=3600
 reg_sendregister=1

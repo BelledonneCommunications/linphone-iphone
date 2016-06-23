@@ -626,7 +626,7 @@ static void transfer_already_assigned_payload_types(SalMediaDescription *old, Sa
 
 static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int stream_index){
 	const char *bind_ip = lp_config_get_string(call->core->config,"rtp","bind_address",
-				linphone_core_ipv6_enabled(call->core) ? "::0" : "0.0.0.0");
+				call->af == AF_INET6 ? "::0" : "0.0.0.0");
 
 	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0'){
 		if (call->dir==LinphoneCallOutgoing){

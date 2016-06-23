@@ -1,4 +1,4 @@
-94.23.19.176	sip2.linphone.org sip.example.org sipopen.example.org auth.example.org auth1.example.org auth2.example.org altname.linphone.org sip.wildcard1.linphone.org altname.wildcard2.linphone.org 
+94.23.19.176	sip2.linphone.org sip.example.org sipopen.example.org auth.example.org auth1.example.org auth2.example.org altname.linphone.org sip.wildcard1.linphone.org altname.wildcard2.linphone.org sipv4.example.org
 2001:41d0:2:14b0::1 sip2.linphone.org sip.example.org sipopen.example.org auth.example.org auth1.example.org auth2.example.org altname.linphone.org sip.wildcard1.linphone.org altname.wildcard2.linphone.org
 188.165.46.90 tunnel.wildcard2.linphone.org
-64:ff9b::94.23.19.176 sipv4.example.org 
+64:ff9b::94.23.19.176 sipv4-nat64.example.org 
