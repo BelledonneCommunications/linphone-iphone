@@ -17,7 +17,7 @@ before_install:
 
 install:
     - ./prepare.py -d x86_64 -G Ninja
-    - make -j4 -s 1>/dev/null
+    - make -j4 -s
     - mkdir -p $KIF_SCREENSHOTS
 
 script:
