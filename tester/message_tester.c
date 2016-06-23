@@ -764,9 +764,6 @@ static void is_composing_notification(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-
-#ifdef HAVE_LIME
-
 static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 	char *filepath = bc_tester_file(name);
 	FILE * file = fopen(filepath,mode);
@@ -1132,9 +1129,6 @@ static void lime_unit(void) {
 	xmlFreeDoc(cacheBufferBob);
 }
 
-
-#endif /* HAVE_LIME */
-
 #ifdef SQLITE_STORAGE_ENABLED
 
 /*
@@ -1339,6 +1333,7 @@ end:
 	ms_free(src_db);
 	bc_free(tmp_db);
 }
+#endif
 
 static void text_status_after_destroying_chat_room(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -1852,6 +1847,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
 	TEST_NO_TAG("History count", history_count),
+#endif
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
 	TEST_NO_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url),
 	TEST_NO_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found),
