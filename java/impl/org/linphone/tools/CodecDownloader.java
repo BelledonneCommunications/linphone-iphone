@@ -1,7 +1,7 @@
 package org.linphone.tools;
 /*
-AssistantActivity.java
-Copyright (C) 2015  Belledonne Communications, Grenoble, France
+CodecDownloader.java
+Copyright (C) 2016  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,13 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Handler;
-import android.preference.CheckBoxPreference;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,29 +26,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.apache.commons.compress.compressors.bzip2.*;
-import org.linphone.LinphoneManager;
-import org.linphone.LinphonePreferences;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactoryImpl;
-import org.linphone.core.PayloadType;
-
-interface CodecDownloadListener{
-    void listenerDownloadStarting();
-    void listenerUpdateMsg(int now, int max);
-    void listenerDownloadEnding();
-    void listenerDownloadFailed(String error);
-}
-
-interface CodecDownloadAction{
-    void startDownload(Context context, Object obj);
-}
+import org.linphone.core.CodecDownloadAction;
+import org.linphone.core.CodecDownloadListener;
 
 /**
  * @author Erwan Croze
  */
-public class CodecDownloader implements CodecDownloadListener,CodecDownloadAction{
+public class CodecDownloader {
+    private CodecDownloadListener codecDownListener;
+    private CodecDownloadAction codecDownAction;
+    private ArrayList<Object> userData;
     private static String fileDirection = null;
     private static String nameLib;
     private static String urlDownload;
@@ -63,9 +46,34 @@ public class CodecDownloader implements CodecDownloadListener,CodecDownloadActio
     private static String licenseMessage = "OpenH264 Video Codec provided by Cisco Systems, Inc.";
 
     public CodecDownloader() {
+        userData = new ArrayList<Object>();
         nameLib = "libopenh264-1.5.so";
         urlDownload = "http://ciscobinary.openh264.org/libopenh264-1.5.0-android19.so.bz2";
         nameFileDownload = "libopenh264-1.5.0-android19.so.bz2";
+    }
+
+    public void setCodecDownloadlistener(CodecDownloadListener cdListener) {
+        codecDownListener = cdListener;
+    }
+
+    public void setCodecDownloadAction(CodecDownloadAction cdAction) {
+        codecDownAction = cdAction;
+    }
+
+    public CodecDownloadAction getCodecDownloadAction() {
+        return codecDownAction;
+    }
+
+    public Object getUserData(int i) {
+        return userData.get(i);
+    }
+
+    public void setUserData(int i, Object d) {
+        this.userData.add(i,d);
+    }
+
+    public int getUserDataSize() {
+        return this.userData.size();
     }
 
     static public String getLicenseMessage() {
@@ -106,6 +114,7 @@ public class CodecDownloader implements CodecDownloadListener,CodecDownloadActio
      *  nameFileDownload
      *  urlDownload
      *  nameLib
+     *  codecDownListener
      */
     public void downloadCodec() {
         Thread thread = new Thread(new Runnable()
@@ -118,7 +127,7 @@ public class CodecDownloader implements CodecDownloadListener,CodecDownloadActio
                     URL url = new URL(urlDownload);
                     HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
                     urlConnection.connect();
-                    listenerDownloadStarting();
+                    codecDownListener.listenerUpdateProgressBar(0,10);
 
                     InputStream inputStream = urlConnection.getInputStream();
                     FileOutputStream fileOutputStream = new FileOutputStream(fileDirection+"/"+nameFileDownload);
@@ -127,11 +136,11 @@ public class CodecDownloader implements CodecDownloadListener,CodecDownloadActio
                     byte[] buffer = new byte[4096];
                     int bufferLength;
                     int total = 0;
-                    listenerUpdateMsg(total, totalSize);
+                    codecDownListener.listenerUpdateProgressBar(total, totalSize);
                     while((bufferLength = inputStream.read(buffer))>0 ){
                         total += bufferLength;
                         fileOutputStream.write(buffer, 0, bufferLength);
-                        listenerUpdateMsg(total, totalSize);
+                        codecDownListener.listenerUpdateProgressBar(total, totalSize);
                     }
 
                     fileOutputStream.close();
@@ -149,34 +158,14 @@ public class CodecDownloader implements CodecDownloadListener,CodecDownloadActio
                     bzIn.close();
 
                     new File(fileDirection+"/"+nameFileDownload).delete();
-                    listenerDownloadEnding();
+                    codecDownListener.listenerUpdateProgressBar(2,1);
                 } catch (FileNotFoundException e) {
-                    listenerDownloadFailed(e.getMessage());
+                    codecDownListener.listenerDownloadFailed(e.getMessage());
                 } catch (IOException e) {
-                    listenerDownloadFailed(e.getMessage());
+                    codecDownListener.listenerDownloadFailed(e.getMessage());
                 }
             }
         });
         thread.start();
-    }
-
-    @Override
-    public void listenerDownloadStarting() {
-    }
-
-    @Override
-    public void listenerUpdateMsg(final int now, final int max) {
-    }
-
-    @Override
-    public void listenerDownloadEnding() {
-    }
-
-    @Override
-    public void listenerDownloadFailed(final String error) {
-    }
-
-    @Override
-    public void startDownload(Context context, Object obj) {
     }
 }
