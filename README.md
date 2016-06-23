@@ -114,7 +114,13 @@ Sometime it can be useful to step into liblinphone SDK functions. To allow Xcode
 ## Debugging mediastreamer2
 
 For iOS specific media development like audio video capture/playback it may be interesting to use `mediastream` test tool.
-The project `submodule/liblinphone.xcodeproj` can be used for this purpose.
+You can build it using the following:
+
+        ./prepare.py -G Xcode -g && make
+        # then open the project for a given architecture (here x86_64, to run on simulator):
+        open WORK/ios-x86_64/Build/linphone_builder/EP_linphone_builder.xcodeproj
+
+Then you can select mediastream target and launch it on device. You can configure scheme to pass custom parameters.
 
 # Quick UI reference
 
@@ -122,23 +128,23 @@ The project `submodule/liblinphone.xcodeproj` can be used for this purpose.
 - The delegate is set to LinphoneAppDelegate in main.m, in the UIApplicationMain() by passing its class
 - Basic layout:
 
-MainStoryboard
-        |
-        | (rootViewController)
-        |
-    PhoneMainView ---> view #--> app background
-        |                   |
-        |                   #--> statusbar background
-        |
-        | (mainViewController)
-        |
-    UICompositeView : TPMultilayout
+        MainStoryboard
                 |
-                #---> view  #--> statusBar
-                            |
-                            #--> contentView
-                            |
-                            #--> tabBar
+                | (rootViewController)
+                |
+            PhoneMainView ---> view |--> app background
+                |                   |
+                |                   |--> statusbar background
+                |
+                | (mainViewController)
+                |
+            UICompositeView : TPMultilayout
+                        |
+                        |---> view  |--> statusBar
+                                    |
+                                    |--> contentView
+                                    |
+                                    |--> tabBar
 
 
 When the application is started, the phoneMainView gets asked to transition to the Dialer view or the Assistant view.
