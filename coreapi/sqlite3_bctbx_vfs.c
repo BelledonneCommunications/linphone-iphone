@@ -259,6 +259,8 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	}
 	bctbx_free(wideFilename);
 	return convertedFilename;
+#elif defined(__QNXNTO__)
+	return bctbx_strdup(fName);	
 #else
 	#define MAX_PATH_SIZE 1024
 	char db_file_utf8[MAX_PATH_SIZE] = {'\0'};
@@ -277,8 +279,6 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	}
 	return bctbx_strdup(db_file_locale);
 #endif
-
-
 }
 #endif 
 /**

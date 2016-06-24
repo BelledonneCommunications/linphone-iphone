@@ -29,10 +29,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef _WIN32
 #if !defined(__QNXNTO__)
-#	include <langinfo.h>
-#	include <locale.h>
-#	include <iconv.h>
-#	include <string.h>
+#include <langinfo.h>
+#include <locale.h>
+#include <iconv.h>
+#include <string.h>
 #endif
 #else
 #include <Windows.h>
@@ -50,6 +50,8 @@ static char *utf8_convert(const char *filename){
 	wchar_t db_file_utf16[MAX_PATH_SIZE]={0};
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, filename, -1, db_file_utf16, MAX_PATH_SIZE);
 	WideCharToMultiByte(CP_UTF8, 0, db_file_utf16, -1, db_file_utf8, sizeof(db_file_utf8), NULL, NULL);
+#elif defined(__QNXNTO__)
+	strncpy(db_file_utf8, filename, MAX_PATH_SIZE - 1);
 #else
 	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
 	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
