@@ -184,13 +184,13 @@ int main(int argc, char *argv[]){
 
 	/* main loop for receiving notifications and doing background linphonecore work: */
 	while(running){
-		const MSList * iterator;
+		const bctbx_list_t * iterator;
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
 		if (print_stats) {
 			ms_message("*********************************");
-			ms_message("*Current number of calls   [%10i]  *",ms_list_size(linphone_core_get_calls(lc)));
-			ms_message("*Number of calls until now [%10i]  *",ms_list_size(linphone_core_get_call_logs(lc)));
+			ms_message("*Current number of calls   [%10u]  *", (unsigned int)bctbx_list_size(linphone_core_get_calls(lc)));
+			ms_message("*Number of calls until now [%10u]  *", (unsigned int)bctbx_list_size(linphone_core_get_call_logs(lc)));
 			ms_message("*********************************");
 			print_stats=FALSE;
 		}

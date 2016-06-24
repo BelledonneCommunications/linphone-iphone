@@ -74,8 +74,8 @@ typedef struct _LpSectionParam{
 
 typedef struct _LpSection{
 	char *name;
-	MSList *items;
-	MSList *params;
+	bctbx_list_t *items;
+	bctbx_list_t *params;
 	bool_t overwrite; // If set to true, will add overwrite=true to all items of this section when converted to xml
 	bool_t skip; // If set to true, won't be dumped when converted to xml
 } LpSection;
@@ -85,7 +85,7 @@ struct _LpConfig{
 	bctbx_vfs_file_t* pFile;
 	char *filename;
 	char *tmpfilename;
-	MSList *sections;
+	bctbx_list_t *sections;
 	int modified;
 	int readonly;
 	bctbx_vfs_t* g_bctbx_vfs;
@@ -156,31 +156,31 @@ void lp_section_param_destroy(void *section_param){
 
 void lp_section_destroy(LpSection *sec){
 	ortp_free(sec->name);
-	ms_list_for_each(sec->items,lp_item_destroy);
-	ms_list_for_each(sec->params,lp_section_param_destroy);
-	ms_list_free(sec->items);
+	bctbx_list_for_each(sec->items,lp_item_destroy);
+	bctbx_list_for_each(sec->params,lp_section_param_destroy);
+	bctbx_list_free(sec->items);
 	free(sec);
 }
 
 void lp_section_add_item(LpSection *sec,LpItem *item){
-	sec->items=ms_list_append(sec->items,(void *)item);
+	sec->items=bctbx_list_append(sec->items,(void *)item);
 }
 
 void lp_config_add_section(LpConfig *lpconfig, LpSection *section){
-	lpconfig->sections=ms_list_append(lpconfig->sections,(void *)section);
+	lpconfig->sections=bctbx_list_append(lpconfig->sections,(void *)section);
 }
 
 void lp_config_add_section_param(LpSection *section, LpSectionParam *param){
-	section->params = ms_list_append(section->params, (void *)param);
+	section->params = bctbx_list_append(section->params, (void *)param);
 }
 
 void lp_config_remove_section(LpConfig *lpconfig, LpSection *section){
-	lpconfig->sections=ms_list_remove(lpconfig->sections,(void *)section);
+	lpconfig->sections=bctbx_list_remove(lpconfig->sections,(void *)section);
 	lp_section_destroy(section);
 }
 
 void lp_section_remove_item(LpSection *sec, LpItem *item){
-	sec->items=ms_list_remove(sec->items,(void *)item);
+	sec->items=bctbx_list_remove(sec->items,(void *)item);
 	lp_item_destroy(item);
 }
 
@@ -202,9 +202,9 @@ static int is_a_comment(const char *str){
 
 LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
 	LpSection *sec;
-	MSList *elem;
+	bctbx_list_t *elem;
 	/*printf("Looking for section %s\n",name);*/
-	for (elem=lpconfig->sections;elem!=NULL;elem=ms_list_next(elem)){
+	for (elem=lpconfig->sections;elem!=NULL;elem=bctbx_list_next(elem)){
 		sec=(LpSection*)elem->data;
 		if (strcmp(sec->name,name)==0){
 			/*printf("Section %s found\n",name);*/
@@ -215,9 +215,9 @@ LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
 }
 
 LpSectionParam *lp_section_find_param(const LpSection *sec, const char *key){
-	MSList *elem;
+	bctbx_list_t *elem;
 	LpSectionParam *param;
-	for (elem = sec->params; elem != NULL; elem = ms_list_next(elem)){
+	for (elem = sec->params; elem != NULL; elem = bctbx_list_next(elem)){
 		param = (LpSectionParam*)elem->data;
 		if (strcmp(param->key, key) == 0) {
 			return param;
@@ -227,10 +227,10 @@ LpSectionParam *lp_section_find_param(const LpSection *sec, const char *key){
 }
 
 LpItem *lp_section_find_comment(const LpSection *sec, const char *comment){
-	MSList *elem;
+	bctbx_list_t *elem;
 	LpItem *item;
 	/*printf("Looking for item %s\n",name);*/
-	for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
+	for (elem=sec->items;elem!=NULL;elem=bctbx_list_next(elem)){
 		item=(LpItem*)elem->data;
 		if (item->is_comment && strcmp(item->value,comment)==0) {
 			/*printf("Item %s found\n",name);*/
@@ -241,10 +241,10 @@ LpItem *lp_section_find_comment(const LpSection *sec, const char *comment){
 }
 
 LpItem *lp_section_find_item(const LpSection *sec, const char *name){
-	MSList *elem;
+	bctbx_list_t *elem;
 	LpItem *item;
 	/*printf("Looking for item %s\n",name);*/
-	for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
+	for (elem=sec->items;elem!=NULL;elem=bctbx_list_next(elem)){
 		item=(LpItem*)elem->data;
 		if (!item->is_comment && strcmp(item->key,name)==0) {
 			/*printf("Item %s found\n",name);*/
@@ -488,8 +488,8 @@ void lp_item_set_value(LpItem *item, const char *value){
 static void _lp_config_destroy(LpConfig *lpconfig){
 	if (lpconfig->filename!=NULL) ortp_free(lpconfig->filename);
 	if (lpconfig->tmpfilename) ortp_free(lpconfig->tmpfilename);
-	ms_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
-	ms_list_free(lpconfig->sections);
+	bctbx_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
+	bctbx_list_free(lpconfig->sections);
 	free(lpconfig);
 }
 
@@ -528,6 +528,31 @@ const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, 
 		if (item!=NULL) return item->value;
 	}
 	return default_string;
+}
+
+bctbx_list_t * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, bctbx_list_t *default_list) {
+	LpItem *item;
+	LpSection *sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) {
+			bctbx_list_t *l = NULL;
+			char *str;
+			char *ptr;
+			str = ptr = ms_strdup(item->value);
+			while (ptr != NULL) {
+				char *next = strstr(ptr, ",");
+				if (next != NULL) {
+					*(next++) = '\0';
+				}
+				l = bctbx_list_append(l, ms_strdup(ptr));
+				ptr = next;
+			}
+			ms_free(str);
+			return l;
+		}
+	}
+	return default_list;
 }
 
 bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
@@ -645,6 +670,22 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 	lpconfig->modified++;
 }
 
+void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value) {
+	char *strvalue = NULL;
+	char *tmp = NULL;
+	const bctbx_list_t *elem;
+	for (elem = value; elem != NULL; elem = elem->next) {
+		if (strvalue) {
+			tmp = ms_strdup_printf("%s,%s", strvalue, (const char *)elem->data);
+			ms_free(strvalue);
+			strvalue = tmp;
+		}
+		else strvalue = ms_strdup((const char *)elem->data);
+	}
+	lp_config_set_string(lpconfig, section, key, strvalue);
+	if (strvalue) ms_free(strvalue);
+}
+
 void lp_config_set_range(LpConfig *lpconfig, const char *section, const char *key, int min_value, int max_value) {
 	char tmp[30];
 	snprintf(tmp, sizeof(tmp), "%i-%i", min_value, max_value);
@@ -742,10 +783,10 @@ void lp_section_param_write(LpSectionParam *param, LpConfig *lpconfig){
 void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 
 	if (bctbx_file_fprintf(lpconfig->pFile, 0, "[%s",sec->name) < 0) ms_error("lp_section_write : write error on %s", sec->name);
-	ms_list_for_each2(sec->params, (void (*)(void*, void*))lp_section_param_write, (void *)lpconfig);
+	bctbx_list_for_each2(sec->params, (void (*)(void*, void*))lp_section_param_write, (void *)lpconfig);
 
 	if (bctbx_file_fprintf(lpconfig->pFile, 0, "]\n")< 0) ms_error("lp_section_write : write error ");
-	ms_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)lpconfig);
+	bctbx_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)lpconfig);
 
 	if (bctbx_file_fprintf(lpconfig->pFile, 0, "\n")< 0) ms_error("lp_section_write : write error");
 	
@@ -770,7 +811,7 @@ int lp_config_sync(LpConfig *lpconfig){
 		return -1;
 	}
 	
-	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)lpconfig);
+	bctbx_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)lpconfig);
 	bctbx_file_close(pFile);
 
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
@@ -794,8 +835,8 @@ int lp_config_has_section(const LpConfig *lpconfig, const char *section){
 
 void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const char *section, void *ctx), void *ctx) {
 	LpSection *sec;
-	MSList *elem;
-	for (elem=lpconfig->sections;elem!=NULL;elem=ms_list_next(elem)){
+	bctbx_list_t *elem;
+	for (elem=lpconfig->sections;elem!=NULL;elem=bctbx_list_next(elem)){
 		sec=(LpSection*)elem->data;
 		callback(sec->name, ctx);
 	}
@@ -803,10 +844,10 @@ void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const
 
 void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx) {
 	LpItem *item;
-	MSList *elem;
+	bctbx_list_t *elem;
 	LpSection *sec=lp_config_find_section(lpconfig,section);
 	if (sec!=NULL){
-		for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
+		for (elem=sec->items;elem!=NULL;elem=bctbx_list_next(elem)){
 			item=(LpItem*)elem->data;
 			if (!item->is_comment)
 				callback(item->key, ctx);
@@ -1003,11 +1044,11 @@ err:
 
 const char** lp_config_get_sections_names(LpConfig *lpconfig) {
 	const char **sections_names;
-	const MSList *sections = lpconfig->sections;
+	const bctbx_list_t *sections = lpconfig->sections;
 	int ndev;
 	int i;
 
-	ndev = ms_list_size(sections);
+	ndev = bctbx_list_size(sections);
 	sections_names = ms_malloc((ndev + 1) * sizeof(const char *));
 
 	for (i = 0; sections != NULL; sections = sections->next, i++) {

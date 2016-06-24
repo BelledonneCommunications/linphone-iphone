@@ -338,7 +338,7 @@ end:
 static void codec_setup(void){
 	LinphoneCoreManager *mgr = linphone_core_manager_new2("empty_rc", FALSE);
 	PayloadType *vp8, *h264;
-	const MSList *codecs;
+	const bctbx_list_t *codecs;
 	if ((vp8 = linphone_core_find_payload_type(mgr->lc, "VP8", 90000, -1)) == NULL ||
 		(h264 = linphone_core_find_payload_type(mgr->lc, "H264", 90000, -1)) == NULL){
 		linphone_core_manager_destroy(mgr);
@@ -347,7 +347,7 @@ static void codec_setup(void){
 		return;
 	}
 	codecs = linphone_core_get_video_codecs(mgr->lc);
-	BC_ASSERT_TRUE(ms_list_size(codecs)>=2);
+	BC_ASSERT_TRUE(bctbx_list_size(codecs)>=2);
 	BC_ASSERT_TRUE(codecs->data == vp8);
 	BC_ASSERT_TRUE(codecs->next->data == h264);
 	linphone_core_manager_destroy(mgr);
@@ -356,7 +356,7 @@ static void codec_setup(void){
 	vp8 = linphone_core_find_payload_type(mgr->lc, "VP8", 90000, -1);
 	h264 = linphone_core_find_payload_type(mgr->lc, "H264", 90000, -1);
 	codecs = linphone_core_get_video_codecs(mgr->lc);
-	BC_ASSERT_TRUE(ms_list_size(codecs)>=2);
+	BC_ASSERT_TRUE(bctbx_list_size(codecs)>=2);
 	BC_ASSERT_PTR_NOT_NULL(vp8);
 	BC_ASSERT_PTR_NOT_NULL(h264);
 	BC_ASSERT_TRUE(codecs->data == vp8);
@@ -367,7 +367,7 @@ static void codec_setup(void){
 	vp8 = linphone_core_find_payload_type(mgr->lc, "VP8", 90000, -1);
 	h264 = linphone_core_find_payload_type(mgr->lc, "H264", 90000, -1);
 	codecs = linphone_core_get_video_codecs(mgr->lc);
-	BC_ASSERT_TRUE(ms_list_size(codecs)>=2);
+	BC_ASSERT_TRUE(bctbx_list_size(codecs)>=2);
 	BC_ASSERT_PTR_NOT_NULL(vp8);
 	BC_ASSERT_PTR_NOT_NULL(h264);
 	BC_ASSERT_TRUE(codecs->data == vp8);

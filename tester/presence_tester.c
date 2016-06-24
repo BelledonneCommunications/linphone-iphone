@@ -49,7 +49,7 @@ void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters;
 	
-	int i;
+	unsigned int i;
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	ms_message("New Notify request from [%s] ",from);
 	ms_free(from);
@@ -449,11 +449,11 @@ static void subscribe_presence_forked(void){
 	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_tcp_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_tcp_rc" : "pauline_tcp_rc");
 	LinphoneFriend *lf;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 
-	lcs = ms_list_append(lcs, marie->lc);
-	lcs = ms_list_append(lcs, pauline1->lc);
-	lcs = ms_list_append(lcs, pauline2->lc);
+	lcs = bctbx_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline1->lc);
+	lcs = bctbx_list_append(lcs, pauline2->lc);
 
 	lf = linphone_core_create_friend(marie->lc);
 	linphone_friend_set_address(lf, pauline1->identity);
@@ -480,17 +480,17 @@ static void subscribe_presence_forked(void){
 	linphone_core_manager_destroy(pauline1);
 	linphone_core_manager_destroy(pauline2);
 
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void subscribe_presence_expired(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneFriend *lf;
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 
-	lcs = ms_list_append(lcs, marie->lc);
-	lcs = ms_list_append(lcs, pauline1->lc);
+	lcs = bctbx_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline1->lc);
 
 	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 10);
 
@@ -521,7 +521,7 @@ static void subscribe_presence_expired(void){
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline1);
 
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void simple_subscribe_with_friend_from_rc(void) {
@@ -529,9 +529,9 @@ static void simple_subscribe_with_friend_from_rc(void) {
 	LinphoneCoreManager *marie = presence_linphone_core_manager_new_with_rc_name("marie", "pauline_as_friend_rc");
 	LinphoneFriend *pauline_as_friend;
 
-	BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_friend_list(marie->lc)), 1, int , "%i");
+	BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_friend_list(marie->lc)), 1, int , "%i");
 
-	if (ms_list_size(linphone_core_get_friend_list(marie->lc))>0) {
+	if (bctbx_list_size(linphone_core_get_friend_list(marie->lc))>0) {
 		pauline_as_friend = (LinphoneFriend*)linphone_core_get_friend_list(marie->lc)->data;
 		linphone_friend_set_address(pauline_as_friend, pauline->identity); /*hack to update addr with port number*/
 	}

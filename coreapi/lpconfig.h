@@ -105,6 +105,18 @@ LINPHONE_PUBLIC int lp_config_read_file(LpConfig *lpconfig, const char *filename
 LINPHONE_PUBLIC const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string);
 
 /**
+ * Retrieves a configuration item as a list of strings, given its section, key, and default value.
+ * The default value is returned if the config item is not found.
+ * @ingroup misc
+ * @param[in] lpconfig A LpConfig object
+ * @param[in] section The section from which to retrieve a configuration item
+ * @param[in] key The name of the configuration item to retrieve
+ * @param[in] default_list \mslist{const char *}
+ * @return \mslist{const char *}
+ */
+LINPHONE_PUBLIC bctbx_list_t * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, bctbx_list_t *default_list);
+
+/**
  * Retrieves a configuration item as a range, given its section, key, and default min and max values.
  *
  * @ingroup misc
@@ -143,6 +155,16 @@ LINPHONE_PUBLIC float lp_config_get_float(const LpConfig *lpconfig,const char *s
  * @ingroup misc
 **/
 LINPHONE_PUBLIC void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value);
+
+/**
+ * Sets a string list config item
+ * @ingroup misc
+ * @param[in] lpconfig A LpConfig object
+ * @param[in] section The name of the section to put the configuration item into
+ * @param[in] key The name of the configuration item to set
+ * @param[in] value \mslist{const char *} The value to set
+ */
+LINPHONE_PUBLIC void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value);
 
 /**
  * Sets a range config item

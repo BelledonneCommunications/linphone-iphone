@@ -505,7 +505,7 @@ static LinphoneCoreManager* configure_lcm(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager *lcm=linphone_core_manager_new2( "multi_account_rc", FALSE);
 		stats *counters=&lcm->stat;
-		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
+		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,bctbx_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0, int, "%d");
 		return lcm;
 	}
@@ -541,7 +541,7 @@ static void network_state_change(void){
 static int get_number_of_udp_proxy(const LinphoneCore* lc) {
 	int number_of_udp_proxy=0;
 	LinphoneProxyConfig* proxy_cfg;
-	const MSList* proxys;
+	const bctbx_list_t* proxys;
 	for (proxys=linphone_core_get_proxy_config_list(lc);proxys!=NULL;proxys=proxys->next) {
 			proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 			if (strcmp("udp",linphone_proxy_config_get_transport(proxy_cfg))==0)
@@ -567,7 +567,7 @@ static void transport_change(void){
 		register_ok=counters->number_of_LinphoneRegistrationOk;
 
 		number_of_udp_proxy=get_number_of_udp_proxy(lc);
-		total_number_of_proxies=ms_list_size(linphone_core_get_proxy_config_list(lc));
+		total_number_of_proxies=bctbx_list_size(linphone_core_get_proxy_config_list(lc));
 		linphone_core_get_sip_transports(lc,&sip_tr_orig);
 
 		sip_tr.udp_port=sip_tr_orig.udp_port;
@@ -734,12 +734,12 @@ static void io_recv_error_late_recovery(void){
 		int register_ok;
 		stats* counters ;
 		int number_of_udp_proxy=0;
-		MSList* lcs;
+		bctbx_list_t* lcs;
 		lcm=linphone_core_manager_new2( "multi_account_rc",FALSE); /*to make sure iterates are not call yet*/
 		lc=lcm->lc;
 		sal_set_refresher_retry_after(lc->sal,1000);
 		counters=&lcm->stat;
-		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
+		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,bctbx_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
 
 
 		counters = get_stats(lc);
@@ -752,12 +752,12 @@ static void io_recv_error_late_recovery(void){
 		BC_ASSERT_TRUE(wait_for(lc,NULL,&counters->number_of_LinphoneRegistrationProgress,(register_ok-number_of_udp_proxy)+register_ok /*because 1 udp*/));
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0,int,"%d");
 
-		BC_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationFailed,(register_ok-number_of_udp_proxy),sal_get_refresher_retry_after(lc->sal)+3000));
+		BC_ASSERT_TRUE(wait_for_list(lcs=bctbx_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationFailed,(register_ok-number_of_udp_proxy),sal_get_refresher_retry_after(lc->sal)+3000));
 
 		sal_set_recv_error(lc->sal, 1); /*reset*/
 		sal_set_send_error(lc->sal, 0);
 
-		BC_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+3000));
+		BC_ASSERT_TRUE(wait_for_list(lcs=bctbx_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+3000));
 		linphone_core_manager_destroy(lcm);
 	}
 }
@@ -767,7 +767,7 @@ static void io_recv_error_without_active_register(void){
 	LinphoneCore* lc;
 	int register_ok;
 	stats* counters ;
-	MSList* proxys;
+	bctbx_list_t* proxys;
 	int dummy=0;
 
 	lcm=configure_lcm();
@@ -777,13 +777,13 @@ static void io_recv_error_without_active_register(void){
 
 		register_ok=counters->number_of_LinphoneRegistrationOk;
 
-		for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
+		for (proxys=bctbx_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
 			LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 			linphone_proxy_config_edit(proxy_cfg);
 			linphone_proxy_config_enableregister(proxy_cfg,FALSE);
 			linphone_proxy_config_done(proxy_cfg);
 		}
-		ms_list_free(proxys);
+		bctbx_list_free(proxys);
 		/*wait for unregistrations*/
 		BC_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationCleared,register_ok /*because 1 udp*/));
 
@@ -791,7 +791,7 @@ static void io_recv_error_without_active_register(void){
 
 		/*nothing should happen because no active registration*/
 		wait_for_until(lc,lc, &dummy, 1, 3000);
-		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress, ms_list_size(linphone_core_get_proxy_config_list(lc)), int, "%d");
+		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress, bctbx_list_size(linphone_core_get_proxy_config_list(lc)), int, "%d");
 
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0,int,"%d");
 

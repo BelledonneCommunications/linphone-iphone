@@ -39,6 +39,7 @@
 #endif
 
 #include "ortp/ortp.h"
+#include <bctoolbox/port.h>
 
 #define DEFAULT_REPLY_SIZE 4096
 

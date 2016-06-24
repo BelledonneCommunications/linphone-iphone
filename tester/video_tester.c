@@ -27,7 +27,9 @@
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifndef _MSC_VER
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#endif
 
 #if HAVE_GTK
 #include <gtk/gtk.h>
@@ -158,14 +160,14 @@ static void early_media_video_call_state_changed_with_inactive_audio(LinphoneCor
 }
 
 bool_t wait_for_three_cores(LinphoneCore *lc1, LinphoneCore *lc2, LinphoneCore *lc3, int timeout) {
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 	bool_t result;
 	int dummy = 0;
-	if (lc1) lcs = ms_list_append(lcs, lc1);
-	if (lc2) lcs = ms_list_append(lcs, lc2);
-	if (lc3) lcs = ms_list_append(lcs, lc3);
+	if (lc1) lcs = bctbx_list_append(lcs, lc1);
+	if (lc2) lcs = bctbx_list_append(lcs, lc2);
+	if (lc3) lcs = bctbx_list_append(lcs, lc3);
 	result = wait_for_list(lcs, &dummy, 1, timeout);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 	return result;
 }
 
@@ -303,7 +305,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 	LinphoneCallParams *pauline_params;
 	LinphoneCallParams *laure_params;
 	LinphoneCall *call;
-	const MSList *calls_list;
+	const bctbx_list_t *calls_list;
 
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -333,7 +335,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 	BC_ASSERT_EQUAL(linphone_core_get_calls_nb(marie->lc), 2, int, "%d");
 	if (linphone_core_get_calls_nb(marie->lc) == 2) {
 		calls_list = linphone_core_get_calls(marie->lc);
-		call = (LinphoneCall *)ms_list_nth_data(calls_list, 0);
+		call = (LinphoneCall *)bctbx_list_nth_data(calls_list, 0);
 		BC_ASSERT_PTR_NOT_NULL(call);
 		if (call != NULL) {
 			LinphoneCallParams *params = linphone_call_params_copy(linphone_call_get_current_params(call));
@@ -407,7 +409,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneCoreManager *marie1 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager *marie2 = linphone_core_manager_new("marie_early_rc");
-	MSList *lcs = NULL;
+	bctbx_list_t *lcs = NULL;
 	LinphoneCallParams *pauline_params;
 	LinphoneCallParams *marie1_params;
 	LinphoneCallParams *marie2_params;
@@ -431,9 +433,9 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	linphone_core_set_audio_port_range(marie2->lc, 40200, 40300);
 	linphone_core_set_video_port_range(marie2->lc, 40400, 40500);
 
-	lcs = ms_list_append(lcs,marie1->lc);
-	lcs = ms_list_append(lcs,marie2->lc);
-	lcs = ms_list_append(lcs,pauline->lc);
+	lcs = bctbx_list_append(lcs,marie1->lc);
+	lcs = bctbx_list_append(lcs,marie2->lc);
+	lcs = bctbx_list_append(lcs,pauline->lc);
 
 	pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_enable_early_media_sending(pauline_params, TRUE);
@@ -509,7 +511,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 
 	linphone_call_params_destroy(marie1_params);
 	linphone_call_params_destroy(marie2_params);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);

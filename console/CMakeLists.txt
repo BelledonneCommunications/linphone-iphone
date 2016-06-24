@@ -30,16 +30,28 @@ set(LINPHONECSH_SOURCE_FILES
 )
 
 apply_compile_flags(LINPHONEC_SOURCE_FILES "CPP" "C")
+if(MSVC)
+	get_source_file_property(COMMANDS_C_COMPILE_FLAGS commands.c COMPILE_FLAGS)
+	set(COMMANDS_C_COMPILE_FLAGS "${COMMANDS_C_COMPILE_FLAGS} /wd4996") # Disable "was declared deprecated" warnings
+	set_source_files_properties(commands.c PROPERTY COMPILE_FLAGS "${COMMANDS_C_COMPILE_FLAGS}")
+endif()
+
 add_executable(linphonec ${LINPHONEC_SOURCE_FILES})
-target_link_libraries(linphonec linphone)
+target_link_libraries(linphonec linphone ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
+if(INTL_FOUND)
+	target_link_libraries(linphonec ${INTL_LIBRARIES})
+endif()
 
 if(WIN32)
 	add_executable(linphoned WIN32 ${LINPHONEC_SOURCE_FILES})
-	target_link_libraries(linphoned linphone)
+	target_link_libraries(linphoned linphone ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
+	if(INTL_FOUND)
+		target_link_libraries(linphoned ${INTL_LIBRARIES})
+	endif()
 endif()
 
 add_executable(linphonecsh ${LINPHONECSH_SOURCE_FILES})
-target_link_libraries(linphonecsh linphone)
+target_link_libraries(linphonecsh linphone ${ORTP_LIBRARIES})
 
 set(INSTALL_TARGETS linphonec linphonecsh)
 if(WIN32)

@@ -90,12 +90,12 @@ void linphone_friend_list_cbs_set_sync_status_changed(LinphoneFriendListCbs *cbs
 
 static char * create_resource_list_xml(const LinphoneFriendList *list) {
 	char *xml_content = NULL;
-	MSList *elem;
+	bctbx_list_t *elem;
 	xmlBufferPtr buf;
 	xmlTextWriterPtr writer;
 	int err;
 
-	if (ms_list_size(list->friends) <= 0) return NULL;
+	if (bctbx_list_size(list->friends) <= 0) return NULL;
 
 	buf = xmlBufferCreate();
 	if (buf == NULL) {
@@ -196,7 +196,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 			goto end;
 		}
 		if ((strcmp(full_state_str, "true") == 0) || (strcmp(full_state_str, "1") == 0)) {
-			MSList *l = list->friends;
+			bctbx_list_t *l = list->friends;
 			for (; l != NULL; l = l->next) {
 				lf = (LinphoneFriend *)l->data;
 				linphone_friend_set_presence_model(lf, NULL);
@@ -253,7 +253,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		if (resource_object != NULL) xmlXPathFreeObject(resource_object);
 
 		if (full_state == TRUE) {
-			MSList *l = list->friends;
+			bctbx_list_t *l = list->friends;
 			for (; l != NULL; l = l->next) {
 				lf = (LinphoneFriend *)l->data;
 				if (linphone_friend_is_presence_received(lf) == TRUE) {
@@ -270,7 +270,7 @@ end:
 }
 
 static bool_t linphone_friend_list_has_subscribe_inactive(const LinphoneFriendList *list) {
-	MSList *l = list->friends;
+	bctbx_list_t *l = list->friends;
 	bool_t has_subscribe_inactive = FALSE;
 	for (; l != NULL; l = l->next) {
 		LinphoneFriend *lf = (LinphoneFriend *)l->data;
@@ -301,8 +301,8 @@ static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	}
 	if (list->uri != NULL) ms_free(list->uri);
 	if (list->cbs) linphone_friend_list_cbs_unref(list->cbs);
-	if (list->dirty_friends_to_update) list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
-	if (list->friends) list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
+	if (list->dirty_friends_to_update) list->dirty_friends_to_update = bctbx_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
+	if (list->friends) list->friends = bctbx_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriendList);
@@ -338,10 +338,10 @@ void _linphone_friend_list_release(LinphoneFriendList *list){
 		list->cbs = NULL;
 	}
 	if (list->dirty_friends_to_update) {
-		list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
+		list->dirty_friends_to_update = bctbx_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 	}
 	if (list->friends) {
-		list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
+		list->friends = bctbx_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
 	}
 	linphone_friend_list_unref(list);
 }
@@ -400,7 +400,7 @@ static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendL
 			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
 		return status;
 	}
-	if (ms_list_find(list->friends, lf) != NULL) {
+	if (bctbx_list_find(list->friends, lf) != NULL) {
 		char *tmp = NULL;
 		const LinphoneAddress *addr = linphone_friend_get_address(lf);
 		if (addr) tmp = linphone_address_as_string(addr);
@@ -435,9 +435,9 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 	}
 	lf->friend_list = list;
 	lf->lc = list->lc;
-	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
+	list->friends = bctbx_list_append(list->friends, linphone_friend_ref(lf));
 	if (synchronize) {
-		list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
+		list->dirty_friends_to_update = bctbx_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
 	}
 	return LinphoneFriendListOK;
 }
@@ -450,7 +450,7 @@ static void carddav_done(LinphoneCardDavContext *cdc, bool_t success, const char
 }
 
 static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t remove_from_server) {
-	MSList *elem = ms_list_find(list->friends, lf);
+	bctbx_list_t *elem = bctbx_list_find(list->friends, lf);
 	if (elem == NULL) return LinphoneFriendListNonExistentFriend;
 
 #ifdef SQLITE_STORAGE_ENABLED
@@ -477,7 +477,7 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 
 	lf->friend_list = NULL;
 	linphone_friend_unref(lf);
-	list->friends = ms_list_remove_link(list->friends, elem);
+	list->friends = bctbx_list_remove_link(list->friends, elem);
 	return LinphoneFriendListOK;
 }
 
@@ -485,12 +485,12 @@ LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *
 	return _linphone_friend_list_remove_friend(list, lf, TRUE);
 }
 
-const MSList * linphone_friend_list_get_friends(const LinphoneFriendList *list) {
+const bctbx_list_t * linphone_friend_list_get_friends(const LinphoneFriendList *list) {
 	return list->friends;
 }
 
 void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
-	MSList *dirty_friends = list->dirty_friends_to_update;
+	bctbx_list_t *dirty_friends = list->dirty_friends_to_update;
 
 	while (dirty_friends) {
 		LinphoneCardDavContext *cdc = linphone_carddav_context_new(list);
@@ -504,9 +504,9 @@ void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
 				linphone_carddav_put_vcard(cdc, lf);
 			}
 		}
-		dirty_friends = ms_list_next(dirty_friends);
+		dirty_friends = bctbx_list_next(dirty_friends);
 	}
-	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
+	list->dirty_friends_to_update = bctbx_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 }
 
 static void carddav_created(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
@@ -532,7 +532,7 @@ static void carddav_removed(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
 static void carddav_updated(LinphoneCardDavContext *cdc, LinphoneFriend *lf_new, LinphoneFriend *lf_old) {
 	if (cdc) {
 		LinphoneFriendList *lfl = cdc->friend_list;
-		MSList *elem = ms_list_find(lfl->friends, lf_old);
+		bctbx_list_t *elem = bctbx_list_find(lfl->friends, lf_old);
 		if (elem) {
 			elem->data = linphone_friend_ref(lf_new);
 		}
@@ -568,7 +568,7 @@ void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *li
 
 LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFriendList *list, const LinphoneAddress *address) {
 	LinphoneFriend *lf = NULL;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	for (elem = list->friends; elem != NULL; elem = elem->next) {
 		lf = (LinphoneFriend *)elem->data;
 		if (linphone_address_weak_equal(lf->uri, address))
@@ -585,7 +585,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendLis
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	if (ref_key == NULL) return NULL;
 	for (elem = list->friends; elem != NULL; elem = elem->next) {
 		LinphoneFriend *lf = (LinphoneFriend *)elem->data;
@@ -595,16 +595,16 @@ LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFrien
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op) {
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	for (elem = list->friends; elem != NULL; elem = elem->next) {
 		LinphoneFriend *lf = (LinphoneFriend *)elem->data;
-		if (ms_list_find(lf->insubs, op)) return lf;
+		if (bctbx_list_find(lf->insubs, op)) return lf;
 	}
 	return NULL;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_out_subscribe(const LinphoneFriendList *list, SalOp *op) {
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	for (elem = list->friends; elem != NULL; elem = elem->next) {
 		LinphoneFriend *lf = (LinphoneFriend *)elem->data;
 		if (lf->outsub && ((lf->outsub == op) || sal_op_is_forked_of(lf->outsub, op))) return lf;
@@ -619,11 +619,11 @@ static void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
 		linphone_event_unref(list->event);
 		list->event = NULL;
 	}
-	ms_list_for_each(list->friends, (void (*)(void *))linphone_friend_close_subscriptions);
+	bctbx_list_for_each(list->friends, (void (*)(void *))linphone_friend_close_subscriptions);
 }
 
 void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered) {
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	if (list->rls_uri != NULL) {
 		if (list->enable_subscriptions) {
 			LinphoneAddress *address = linphone_address_new(list->rls_uri);
@@ -679,7 +679,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 }
 
 void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list) {
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	for (elem = list->friends; elem != NULL; elem = elem->next) {
 		LinphoneFriend *lf = (LinphoneFriend *)elem->data;
 		linphone_friend_invalidate_subscription(lf);
@@ -687,7 +687,7 @@ void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list) {
 }
 
 void linphone_friend_list_notify_presence(LinphoneFriendList *list, LinphonePresenceModel *presence) {
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	for(elem = list->friends; elem != NULL; elem = elem->next) {
 		LinphoneFriend *lf = (LinphoneFriend *)elem->data;
 		linphone_friend_notify(lf, presence);
@@ -768,24 +768,28 @@ LinphoneCore* linphone_friend_list_get_core(LinphoneFriendList *list) {
 }
 
 int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
-	MSList *vcards = linphone_vcard_list_from_vcard4_file(vcard_file);
+	bctbx_list_t *vcards = NULL;
+	bctbx_list_t *vcards_iterator = NULL;
 	int count = 0;
 
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
 	return -1;
 #endif
-	if (!vcards) {
-		ms_error("Failed to parse the file %s", vcard_file);
-		return -1;
-	}
 	if (!list) {
 		ms_error("Can't import into a NULL list");
 		return -1;
 	}
+	
+	vcards = linphone_vcard_list_from_vcard4_file(vcard_file);
+	vcards_iterator = vcards;
+	if (!vcards) {
+		ms_error("Failed to parse the file %s", vcard_file);
+		return -1;
+	}
 
-	while (vcards != NULL && vcards->data != NULL) {
-		LinphoneVcard *vcard = (LinphoneVcard *)vcards->data;
+	while (vcards_iterator != NULL && vcards_iterator->data != NULL) {
+		LinphoneVcard *vcard = (LinphoneVcard *)vcards_iterator->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
@@ -795,31 +799,36 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 		} else {
 			linphone_vcard_free(vcard);
 		}
-		vcards = ms_list_next(vcards);
+		vcards_iterator = bctbx_list_next(vcards_iterator);
 	}
+	bctbx_list_free(vcards);
 	linphone_core_store_friends_list_in_db(list->lc, list);
 	return count;
 }
 
 int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *list, const char *vcard_buffer) {
-	MSList *vcards = linphone_vcard_list_from_vcard4_buffer(vcard_buffer);
+	bctbx_list_t *vcards = NULL;
+	bctbx_list_t *vcards_iterator = NULL;
 	int count = 0;
 
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
 	return -1;
 #endif
-	if (!vcards) {
-		ms_error("Failed to parse the buffer");
-		return -1;
-	}
 	if (!list) {
 		ms_error("Can't import into a NULL list");
 		return -1;
 	}
+	
+	vcards = linphone_vcard_list_from_vcard4_buffer(vcard_buffer);
+	vcards_iterator = vcards;
+	if (!vcards) {
+		ms_error("Failed to parse the buffer");
+		return -1;
+	}
 
-	while (vcards != NULL && vcards->data != NULL) {
-		LinphoneVcard *vcard = (LinphoneVcard *)vcards->data;
+	while (vcards_iterator != NULL && vcards_iterator->data != NULL) {
+		LinphoneVcard *vcard = (LinphoneVcard *)vcards_iterator->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
@@ -829,15 +838,16 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 		} else {
 			linphone_vcard_free(vcard);
 		}
-		vcards = ms_list_next(vcards);
+		vcards_iterator = bctbx_list_next(vcards_iterator);
 	}
+	bctbx_list_free(vcards);
 	linphone_core_store_friends_list_in_db(list->lc, list);
 	return count;
 }
 
 void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
 	FILE *file = NULL;
-	const MSList *friends = linphone_friend_list_get_friends(list);
+	const bctbx_list_t *friends = linphone_friend_list_get_friends(list);
 
 	file = fopen(vcard_file, "wb");
 	if (file == NULL) {
@@ -857,7 +867,7 @@ void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list
 		} else {
 			ms_warning("Couldn't export friend %s because it doesn't have a vCard attached", linphone_address_as_string(linphone_friend_get_address(lf)));
 		}
-		friends = ms_list_next(friends);
+		friends = bctbx_list_next(friends);
 	}
 
 	fclose(file);

@@ -24,7 +24,12 @@
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#endif
 
 #ifdef HAVE_GTK
 #include <gtk/gtk.h>
@@ -77,6 +82,19 @@ static void liblinphone_android_ortp_log_handler(const char *domain, OrtpLogLeve
 		case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
 		case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
 		case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
+		default:			prio = ANDROID_LOG_DEFAULT;	break;
+	}
+	liblinphone_android_log_handler(prio, fmt, args);
+}
+
+static void liblinphone_android_bctbx_log_handler(const char *domain, BctbxLogLevel lev, const char *fmt, va_list args) {
+	int prio;
+	switch(lev){
+		case BCTBX_LOG_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
+		case BCTBX_LOG_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
+		case BCTBX_LOG_WARNING:	prio = ANDROID_LOG_WARN;	break;
+		case BCTBX_LOG_ERROR:	prio = ANDROID_LOG_ERROR;	break;
+		case BCTBX_LOG_FATAL:	prio = ANDROID_LOG_FATAL;	break;
 		default:			prio = ANDROID_LOG_DEFAULT;	break;
 	}
 	liblinphone_android_log_handler(prio, fmt, args);
@@ -158,6 +176,7 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 	if (! log_file) {
 #if defined(ANDROID)
 		linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
+		bctbx_set_log_handler(liblinphone_android_bctbx_log_handler);
 #endif
 	}
 
@@ -176,6 +195,7 @@ int liblinphone_tester_set_log_file(const char *filename) {
 		return -1;
 	}
 	ms_message("Redirecting traces to file [%s]", filename);
+	bctbx_set_log_file(log_file);
 	ortp_set_log_file(log_file);
 	return 0;
 }
@@ -191,7 +211,9 @@ static const char* liblinphone_helper =
 		"\t\t\t--auth-domain <test auth domain>\n"
 		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
 		"\t\t\t--keep-recorded-files\n"
-		"\t\t\t--disable-leak-detector\n";
+		"\t\t\t--disable-leak-detector\n"
+		"\t\t\t--6\n"
+		;
 
 int main (int argc, char *argv[])
 {

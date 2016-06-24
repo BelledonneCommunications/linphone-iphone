@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphone.h"
+#include <bctoolbox/bc_vfs.h>
 
 static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list);
 
@@ -570,14 +571,14 @@ static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *
 	return w2-w1;
 }
 
-static MSList *sort_friend_list(const MSList *friends){
-	MSList *ret=NULL;
-	const MSList *elem;
+static bctbx_list_t *sort_friend_list(const bctbx_list_t *friends){
+	bctbx_list_t *ret=NULL;
+	const bctbx_list_t *elem;
 	LinphoneFriend *lf;
 
 	for(elem=friends;elem!=NULL;elem=elem->next){
 		lf=(LinphoneFriend*)elem->data;
-		ret=ms_list_insert_sorted(ret,lf,(MSCompareFunc)friend_compare_func);
+		ret=bctbx_list_insert_sorted(ret,lf,(bctbx_compare_func)friend_compare_func);
 	}
 	return ret;
 }
@@ -668,9 +669,9 @@ void linphone_gtk_show_friends(void){
 	GtkWidget *friendlist=linphone_gtk_get_widget(mw,"contact_list");
 	GtkListStore *store=NULL;
 	GtkTreeIter iter;
-	const MSList *itf;
+	const bctbx_list_t *itf;
 	LinphoneCore *core=linphone_gtk_get_core();
-	MSList *sorted;
+	bctbx_list_t *sorted;
 	LinphoneChatRoom *cr=NULL;
 
 	linphone_gtk_show_directory_search();
@@ -683,7 +684,7 @@ void linphone_gtk_show_friends(void){
 
 	sorted=sort_friend_list(linphone_core_get_friend_list(core));
 
-	for(itf=sorted;itf!=NULL;itf=ms_list_next(itf)){
+	for(itf=sorted;itf!=NULL;itf=bctbx_list_next(itf)){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
 		const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 		char *uri=linphone_address_as_string(f_uri);
@@ -712,7 +713,7 @@ void linphone_gtk_show_friends(void){
 		g_free(escaped);
 		ms_free(uri);
 	}
-	ms_list_free(sorted);
+	bctbx_list_free(sorted);
 }
 
 void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent){
@@ -919,7 +920,7 @@ gboolean linphone_gtk_contact_list_button_pressed(GtkTreeView *friendlist, GdkEv
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(friendlist);
 
-	gtk_tree_view_convert_widget_to_bin_window_coords(friendlist, event->x, event->y, &x_bin, &y_bin);
+	gtk_tree_view_convert_widget_to_bin_window_coords(friendlist, (gint)event->x, (gint)event->y, &x_bin, &y_bin);
 	gtk_tree_view_get_path_at_pos(friendlist, x_bin, y_bin, &path, &column, NULL, NULL);
 
 	if (event->button == 3 && event->type == GDK_BUTTON_PRESS) {
@@ -964,7 +965,7 @@ static gboolean update_hovered_row_path(GtkTreeView *friendlist, int x_window, i
 }
 
 gboolean linphone_gtk_friend_list_enter_event_handler(GtkTreeView *friendlist, GdkEventCrossing *event) {
-	gboolean path_has_changed = update_hovered_row_path(friendlist, event->x, event->y);
+	gboolean path_has_changed = update_hovered_row_path(friendlist, (int)event->x, (int)event->y);
 	if(path_has_changed) linphone_gtk_friend_list_update_button_display(friendlist);
 	return FALSE;
 }
@@ -979,7 +980,7 @@ gboolean linphone_gtk_friend_list_leave_event_handler(GtkTreeView *friendlist, G
 }
 
 gboolean linphone_gtk_friend_list_motion_event_handler(GtkTreeView *friendlist, GdkEventMotion *event) {
-	gboolean path_has_changed = update_hovered_row_path(friendlist, event->x, event->y);
+	gboolean path_has_changed = update_hovered_row_path(friendlist, (int)event->x, (int)event->y);
 	if(path_has_changed) linphone_gtk_friend_list_update_button_display(friendlist);
 	return FALSE;
 }
@@ -993,7 +994,7 @@ char *linphone_gtk_friends_storage_get_db_file(const char *filename){
 	db_file=(char *)g_malloc(path_max*sizeof(char));
 	if (filename==NULL) filename=CONFIG_FILE;
 	/*try accessing a local file first if exists*/
-	if (access(CONFIG_FILE,F_OK)==0){
+	if (bctbx_file_exist(CONFIG_FILE)==0){
 		snprintf(db_file,path_max,"%s",filename);
 	}else{
 #ifdef _WIN32

@@ -40,6 +40,12 @@ LinphoneVcard* linphone_vcard_new(void) {
 	return vCard;
 }
 
+static LinphoneVcard* linphone_vcard_new_from_belcard(shared_ptr<belcard::BelCard> belcard) {
+	LinphoneVcard* vCard = (LinphoneVcard*) ms_new0(LinphoneVcard, 1);
+	vCard->belCard = belcard;
+	return vCard;
+}
+
 void linphone_vcard_free(LinphoneVcard *vCard) {
 	if (!vCard) return;
 	
@@ -47,34 +53,32 @@ void linphone_vcard_free(LinphoneVcard *vCard) {
 	ms_free(vCard);
 }
 
-MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
-	MSList *result = NULL;
-	if (filename && ortp_file_exist(filename) == 0) {
+bctbx_list_t* linphone_vcard_list_from_vcard4_file(const char *filename) {
+	bctbx_list_t *result = NULL;
+	if (filename) {
 		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
 		shared_ptr<belcard::BelCardList> belCards = parser.parseFile(filename);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
-				shared_ptr<belcard::BelCard> belcard = (*it);
-				LinphoneVcard *vCard = linphone_vcard_new();
-				vCard->belCard = belcard;
-				result = ms_list_append(result, vCard);
+				shared_ptr<belcard::BelCard> belCard = (*it);
+				LinphoneVcard *vCard = linphone_vcard_new_from_belcard(belCard);
+				result = bctbx_list_append(result, vCard);
 			}
 		}
 	}
 	return result;
 }
 
-MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
-	MSList *result = NULL;
+bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
+	bctbx_list_t *result = NULL;
 	if (buffer) {
 		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
 		shared_ptr<belcard::BelCardList> belCards = parser.parse(buffer);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belCard = (*it);
-				LinphoneVcard *vCard = linphone_vcard_new();
-				vCard->belCard = belCard;
-				result = ms_list_append(result, vCard);
+				LinphoneVcard *vCard = linphone_vcard_new_from_belcard(belCard);
+				result = bctbx_list_append(result, vCard);
 			}
 		}
 	}
@@ -87,8 +91,7 @@ LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
 		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
 		shared_ptr<belcard::BelCard> belCard = parser.parseOne(buffer);
 		if (belCard) {
-			vCard = linphone_vcard_new();
-			vCard->belCard = belCard;
+			vCard = linphone_vcard_new_from_belcard(belCard);
 		} else {
 			ms_error("Couldn't parse buffer %s", buffer);
 		}
@@ -150,14 +153,14 @@ void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_
 	}
 }
 
-MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
-	MSList *result = NULL;
+bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
+	bctbx_list_t *result = NULL;
 	if (!vCard) return NULL;
 	
 	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
 		if (strncmp(value, "sip:", 4) == 0) {
-			result = ms_list_append(result, (char *)value);
+			result = bctbx_list_append(result, (char *)value);
 		}
 	}
 	return result;
@@ -183,13 +186,13 @@ void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone)
 	}
 }
 
-MSList* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
-	MSList *result = NULL;
+bctbx_list_t* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
+	bctbx_list_t *result = NULL;
 	if (!vCard) return NULL;
 	
 	for (auto it = vCard->belCard->getPhoneNumbers().begin(); it != vCard->belCard->getPhoneNumbers().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
-		result = ms_list_append(result, (char *)value);
+		result = bctbx_list_append(result, (char *)value);
 	}
 	return result;
 }

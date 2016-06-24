@@ -1,21 +1,21 @@
-PyObject * PyList_FromMSListOfString(const MSList *msl) {
+PyObject * PyList_FromMSListOfString(const bctbx_list_t *msl) {
 	PyObject *pyl = PyList_New(0);
 	while (msl != NULL) {
 		PyObject *item = Py_BuildValue("z", (const char *)msl->data);
 		PyList_Append(pyl, item);
-		msl = ms_list_next(msl);
+		msl = bctbx_list_next(msl);
 	}
 	return pyl;
 }
 
-MSList * PyList_AsMSListOfString(PyObject *pyl) {
-	MSList *msl = NULL;
+bctbx_list_t * PyList_AsMSListOfString(PyObject *pyl) {
+	bctbx_list_t *msl = NULL;
 	Py_ssize_t idx;
 	Py_ssize_t size = PyList_Size(pyl);
 	for (idx = 0; idx < size; idx++) {
 		PyObject *item = PyList_GetItem(pyl, idx);
 		char *citem = (char *)PyString_AsString(item);
-		msl = ms_list_append(msl, citem);
+		msl = bctbx_list_append(msl, citem);
 	}
 	return msl;
 }

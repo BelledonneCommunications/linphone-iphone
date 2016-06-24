@@ -1,3 +1,22 @@
+/*
+daemon-pipetest.c
+Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+
+This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or (at
+your option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this library; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*/
+
 #define _GNU_SOURCE
 #include <fcntl.h>
 
@@ -10,15 +29,17 @@
 static int running=1;
 
 int main(int argc, char *argv[]){
+	struct pollfd pfds[2]={{0}};
+	char buf[4096];
+	int fd;
+
 	/* handle args */
 	if (argc < 2) {
 		ortp_error("Usage: %s pipename", argv[0]);
 		return 1;
 	}
 
-	int fd=ortp_client_pipe_connect(argv[1]);
-	struct pollfd pfds[2]={{0}};
-	char buf[4096];
+	fd=ortp_client_pipe_connect(argv[1]);
 
 	ortp_init();
 	ortp_set_log_level_mask(NULL,ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);

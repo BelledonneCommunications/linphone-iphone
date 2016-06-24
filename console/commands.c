@@ -600,7 +600,7 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 
 static int
 lpc_cmd_calls(LinphoneCore *lc, char *args){
-	const MSList *calls = linphone_core_get_calls(lc);
+	const bctbx_list_t *calls = linphone_core_get_calls(lc);
 	if(calls)
 	{
 		lpc_display_call_states(lc);
@@ -665,7 +665,7 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 		int n=sscanf(args,"%255s %265s %li",arg1,arg2,&id2);
 		if (n==1 || isalpha(*arg1)){
 			call=linphone_core_get_current_call(lc);
-			if (call==NULL && ms_list_size(linphone_core_get_calls(lc))==1){
+			if (call==NULL && bctbx_list_size(linphone_core_get_calls(lc))==1){
 				call=(LinphoneCall*)linphone_core_get_calls(lc)->data;
 			}
 			refer_to=args;
@@ -734,7 +734,7 @@ lpc_cmd_terminate(LinphoneCore *lc, char *args)
 
 static int
 lpc_cmd_redirect(LinphoneCore *lc, char *args){
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	int didit=0;
 	if (!args) return 0;
 	if ((elem=linphone_core_get_calls(lc))==NULL){
@@ -780,7 +780,7 @@ static int
 lpc_cmd_answer(LinphoneCore *lc, char *args){
 	if (!args)
 	{
-		int nb=ms_list_size(linphone_core_get_calls(lc));
+		int nb=bctbx_list_size(linphone_core_get_calls(lc));
 		if (nb==1){
 			//if just one call is present answer the only one in passing NULL to the linphone_core_accept_call ...
 			if ( -1 == linphone_core_accept_call(lc, NULL) )
@@ -1176,8 +1176,8 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 static int
 lpc_cmd_call_logs(LinphoneCore *lc, char *args)
 {
-	const MSList *elem=linphone_core_get_call_logs(lc);
-	for (;elem!=NULL;elem=ms_list_next(elem))
+	const bctbx_list_t *elem=linphone_core_get_call_logs(lc);
+	for (;elem!=NULL;elem=bctbx_list_next(elem))
 	{
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
 		char *str=linphone_call_log_to_str(cl);
@@ -1432,7 +1432,7 @@ lpc_cmd_staticpic(LinphoneCore *lc, char *args)
 
 	if (strcmp(arg1, "fps")==0) {
 	  if (arg2) {
-	        float fps = atof(arg2); /* FIXME: Handle not-a-float */
+	        float fps = (float)atof(arg2); /* FIXME: Handle not-a-float */
 		linphone_core_set_static_picture_fps(lc, fps);
 		return 1;
 	  } else {
@@ -1480,8 +1480,8 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 	}
 	else
 	{
-		const MSList *calls = linphone_core_get_calls(lc);
-		int nbcalls=ms_list_size(calls);
+		const bctbx_list_t *calls = linphone_core_get_calls(lc);
+		int nbcalls=bctbx_list_size(calls);
 		if( nbcalls == 1)
 		{
 			if(linphone_core_resume_call(lc,calls->data) < 0)
@@ -1766,7 +1766,7 @@ linphonec_proxy_display(LinphoneProxyConfig *cfg)
 
 static void linphonec_proxy_show(LinphoneCore *lc, int index)
 {
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	int i;
 	for(elem=linphone_core_get_proxy_config_list(lc),i=0;elem!=NULL;elem=elem->next,++i){
 		if (index==i){
@@ -1781,12 +1781,12 @@ static void linphonec_proxy_show(LinphoneCore *lc, int index)
 static void
 linphonec_proxy_list(LinphoneCore *lc)
 {
-	const MSList *proxies;
+	const bctbx_list_t *proxies;
 	int n;
 	int def=linphone_core_get_default_proxy(lc,NULL);
 
 	proxies=linphone_core_get_proxy_config_list(lc);
-	for(n=0;proxies!=NULL;proxies=ms_list_next(proxies),n++){
+	for(n=0;proxies!=NULL;proxies=bctbx_list_next(proxies),n++){
 		if (n==def)
 			linphonec_out("****** Proxy %i - this is the default one - *******\n",n);
 		else
@@ -1799,10 +1799,10 @@ linphonec_proxy_list(LinphoneCore *lc)
 static void
 linphonec_proxy_remove(LinphoneCore *lc, int index)
 {
-	const MSList *proxies;
+	const bctbx_list_t *proxies;
 	LinphoneProxyConfig *cfg;
 	proxies=linphone_core_get_proxy_config_list(lc);
-	cfg=(LinphoneProxyConfig*)ms_list_nth_data(proxies,index);
+	cfg=(LinphoneProxyConfig*)bctbx_list_nth_data(proxies,index);
 	if (cfg==NULL){
 		linphonec_out("No such proxy.\n");
 		return;
@@ -1814,10 +1814,10 @@ linphonec_proxy_remove(LinphoneCore *lc, int index)
 static int
 linphonec_proxy_use(LinphoneCore *lc, int index)
 {
-	const MSList *proxies;
+	const bctbx_list_t *proxies;
 	LinphoneProxyConfig *cfg;
 	proxies=linphone_core_get_proxy_config_list(lc);
-	cfg=(LinphoneProxyConfig*)ms_list_nth_data(proxies,index);
+	cfg=(LinphoneProxyConfig*)bctbx_list_nth_data(proxies,index);
 	if (cfg==NULL){
 		linphonec_out("No such proxy (try 'proxy list').");
 		return 0;
@@ -1841,7 +1841,7 @@ linphonec_friend_display(LinphoneFriend *fr)
 static int
 linphonec_friend_list(LinphoneCore *lc, char *pat)
 {
-	const MSList *friend;
+	const bctbx_list_t *friend;
 	int n;
 
 	if (pat) {
@@ -1850,7 +1850,7 @@ linphonec_friend_list(LinphoneCore *lc, char *pat)
 	}
 
 	friend = linphone_core_get_friend_list(lc);
-	for(n=0; friend!=NULL; friend=ms_list_next(friend), ++n )
+	for(n=0; friend!=NULL; friend=bctbx_list_next(friend), ++n )
 	{
 		if ( pat ) {
 			const char *name = linphone_address_get_display_name(
@@ -1867,11 +1867,11 @@ linphonec_friend_list(LinphoneCore *lc, char *pat)
 static int
 linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 {
-	const MSList *friend = linphone_core_get_friend_list(lc);
+	const bctbx_list_t *friend = linphone_core_get_friend_list(lc);
 	unsigned int n;
 	char *addr;
 
-	for(n=0; friend!=NULL; friend=ms_list_next(friend), ++n )
+	for(n=0; friend!=NULL; friend=bctbx_list_next(friend), ++n )
 	{
 		if ( n == num )
 		{
@@ -1904,10 +1904,10 @@ linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 static int
 linphonec_friend_delete(LinphoneCore *lc, int num)
 {
-	const MSList *friend = linphone_core_get_friend_list(lc);
+	const bctbx_list_t *friend = linphone_core_get_friend_list(lc);
 	unsigned int n;
 
-	for(n=0; friend!=NULL; friend=ms_list_next(friend), ++n )
+	for(n=0; friend!=NULL; friend=bctbx_list_next(friend), ++n )
 	{
 		if ( n == num )
 		{
@@ -1941,7 +1941,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	char proxy[512];
 	char passwd[512];
 	LinphoneProxyConfig *cfg;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 
 	if (!args)
 		{
@@ -2006,7 +2006,7 @@ static int lpc_cmd_unregister(LinphoneCore *lc, char *args){
 
 static int lpc_cmd_duration(LinphoneCore *lc, char *args){
 	LinphoneCallLog *cl;
-	const MSList *elem=linphone_core_get_call_logs(lc);
+	const bctbx_list_t *elem=linphone_core_get_call_logs(lc);
 	for(;elem!=NULL;elem=elem->next){
 		if (elem->next==NULL){
 			cl=(LinphoneCallLog*)elem->data;
@@ -2234,7 +2234,7 @@ static int lpc_cmd_codec(int type, LinphoneCore *lc, char *args){
 static void linphonec_codec_list(int type, LinphoneCore *lc){
 	PayloadType *pt;
 	int index=0;
-	const MSList *node=NULL;
+	const bctbx_list_t *node=NULL;
 
     if (type == AUDIO) {
       node=linphone_core_get_audio_codecs(lc);
@@ -2242,7 +2242,7 @@ static void linphonec_codec_list(int type, LinphoneCore *lc){
       node=linphone_core_get_video_codecs(lc);
     }
 
-	for(;node!=NULL;node=ms_list_next(node)){
+	for(;node!=NULL;node=bctbx_list_next(node)){
 		pt=(PayloadType*)(node->data);
         linphonec_out("%2d: %s (%d) %s\n", index, pt->mime_type, pt->clock_rate,
 		    linphone_core_payload_type_enabled(lc,pt) ? "enabled" : "disabled");
@@ -2253,7 +2253,7 @@ static void linphonec_codec_list(int type, LinphoneCore *lc){
 static void linphonec_codec_enable(int type, LinphoneCore *lc, int sel_index){
 	PayloadType *pt;
 	int index=0;
-	const MSList *node=NULL;
+	const bctbx_list_t *node=NULL;
 
 	if (type == AUDIO) {
 		node=linphone_core_get_audio_codecs(lc);
@@ -2261,7 +2261,7 @@ static void linphonec_codec_enable(int type, LinphoneCore *lc, int sel_index){
 		node=linphone_core_get_video_codecs(lc);
 	}
 
-    for(;node!=NULL;node=ms_list_next(node)){
+    for(;node!=NULL;node=bctbx_list_next(node)){
         if (index == sel_index || sel_index == -1) {
 		    pt=(PayloadType*)(node->data);
             linphone_core_enable_payload_type (lc,pt,TRUE);
@@ -2274,7 +2274,7 @@ static void linphonec_codec_enable(int type, LinphoneCore *lc, int sel_index){
 static void linphonec_codec_disable(int type, LinphoneCore *lc, int sel_index){
 	PayloadType *pt;
 	int index=0;
-	const MSList *node=NULL;
+	const bctbx_list_t *node=NULL;
 
 	if (type == AUDIO) {
 		node=linphone_core_get_audio_codecs(lc);
@@ -2282,7 +2282,7 @@ static void linphonec_codec_disable(int type, LinphoneCore *lc, int sel_index){
 		node=linphone_core_get_video_codecs(lc);
 	}
 
-	for(;node!=NULL;node=ms_list_next(node)){
+	for(;node!=NULL;node=bctbx_list_next(node)){
 		if (index == sel_index || sel_index == -1) {
 			pt=(PayloadType*)(node->data);
 			linphone_core_enable_payload_type (lc,pt,FALSE);
@@ -2375,7 +2375,7 @@ static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args){
 static int lpc_cmd_playback_gain(LinphoneCore *lc, char *args)
 {
 	if (args){
-	        linphone_core_set_playback_gain_db(lc, atof(args));
+	        linphone_core_set_playback_gain_db(lc, (float)atof(args));
         	return 1;
 	}
 	return 0;
@@ -2466,7 +2466,7 @@ static void lpc_display_global_state(LinphoneCore *lc){
 
 static void lpc_display_call_states(LinphoneCore *lc){
 	LinphoneCall *call;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	char *tmp;
 	linphonec_out("Call states\n"
 	              "Id |            Destination              |      State      |    Flags   |\n"
@@ -2491,7 +2491,7 @@ static void lpc_display_call_states(LinphoneCore *lc){
 }
 
 static void lpc_display_proxy_states(LinphoneCore *lc){
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	linphonec_out("Proxy registration states\n"
 	              "           Identity                      |      State\n"
 	              "------------------------------------------------------------\n");

@@ -458,7 +458,7 @@ int LocalConference::remoteParticipantsCount() {
 
 int LocalConference::convertConferenceToCall(){
 	int err=0;
-	MSList *calls=m_core->calls;
+	bctbx_list_t *calls=m_core->calls;
 
 	if (remoteParticipantsCount()!=1){
 		ms_error("No unique call remaining in conference.");
@@ -506,7 +506,7 @@ int LocalConference::removeParticipant(const LinphoneAddress *uri) {
 }
 
 int LocalConference::terminate() {
-	MSList *calls=m_core->calls;
+	bctbx_list_t *calls=m_core->calls;
 	m_terminating =TRUE;
 
 	while (calls) {
@@ -924,7 +924,7 @@ LinphoneConferenceParams *linphone_conference_params_clone(const LinphoneConfere
 }
 
 void linphone_conference_params_enable_video(LinphoneConferenceParams *params, bool_t enable) {
-	((Conference::Params *)params)->enableVideo(enable);
+	((Conference::Params *)params)->enableVideo((enable == TRUE) ? true : false);
 }
 
 bool_t linphone_conference_params_video_requested(const LinphoneConferenceParams *params) {
@@ -994,7 +994,7 @@ AudioStream *linphone_conference_get_audio_stream(const LinphoneConference *obj)
 }
 
 int linphone_conference_mute_microphone(LinphoneConference *obj, bool_t val) {
-	return ((Conference *)obj)->muteMicrophone(val);
+	return ((Conference *)obj)->muteMicrophone((val == TRUE) ? true : false);
 }
 
 bool_t linphone_conference_microphone_is_muted(const LinphoneConference *obj) {
@@ -1009,12 +1009,12 @@ int linphone_conference_get_size(const LinphoneConference *obj) {
 	return ((Conference *)obj)->getSize();
 }
 
-MSList *linphone_conference_get_participants(const LinphoneConference *obj) {
+bctbx_list_t *linphone_conference_get_participants(const LinphoneConference *obj) {
 	const list<Conference::Participant *> &participants = ((Conference *)obj)->getParticipants();
-	MSList *participants_list = NULL;
+	bctbx_list_t *participants_list = NULL;
 	for(list<Conference::Participant *>::const_iterator it=participants.begin();it!=participants.end();it++) {
 		LinphoneAddress *uri = linphone_address_clone((*it)->getUri());
-		participants_list = ms_list_append(participants_list, uri);
+		participants_list = bctbx_list_append(participants_list, uri);
 	}
 	return participants_list;
 }
@@ -1028,7 +1028,7 @@ int linphone_conference_stop_recording(LinphoneConference *obj) {
 }
 
 void linphone_conference_on_call_stream_starting(LinphoneConference *obj, LinphoneCall *call, bool_t is_paused_by_remote) {
-	((Conference *)obj)->onCallStreamStarting(call, is_paused_by_remote);
+	((Conference *)obj)->onCallStreamStarting(call, (is_paused_by_remote == TRUE) ? true : false);
 }
 
 void linphone_conference_on_call_stream_stopping(LinphoneConference *obj, LinphoneCall *call) {

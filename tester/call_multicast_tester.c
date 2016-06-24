@@ -78,7 +78,7 @@ static void call_multicast_video(void)  {
 #endif
 static void early_media_with_multicast_base(bool_t video) {
 	LinphoneCoreManager *marie, *pauline, *pauline2;
-	MSList* lcs = NULL;
+	bctbx_list_t* lcs = NULL;
 	int dummy=0;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 	LpConfig *marie_lp;
@@ -98,11 +98,19 @@ static void early_media_with_multicast_base(bool_t video) {
 		linphone_core_enable_video_display(pauline2->lc, TRUE);
 		linphone_core_enable_video_capture(marie->lc, TRUE);
 		linphone_core_enable_video_display(marie->lc, FALSE);
-		
+
+		// important: VP8 has really poor performances with the mire camera, at least
+		// on iOS - so when ever h264 is available, let's use it instead
+		if (linphone_core_find_payload_type(pauline->lc,"h264", -1, -1)!=NULL) {
+			disable_all_video_codecs_except_one(pauline->lc,"h264");
+			disable_all_video_codecs_except_one(pauline2->lc,"h264");
+			disable_all_video_codecs_except_one(marie->lc,"h264");
+		}
+
 		linphone_core_set_video_device(pauline->lc, liblinphone_tester_mire_id);
 		linphone_core_set_video_device(pauline2->lc, liblinphone_tester_mire_id);
 		linphone_core_set_video_device(marie->lc, liblinphone_tester_mire_id);
-		
+
 		linphone_core_set_avpf_mode(pauline->lc, LinphoneAVPFEnabled);
 		linphone_core_set_avpf_mode(pauline2->lc, LinphoneAVPFEnabled);
 		linphone_core_set_avpf_mode(marie->lc, LinphoneAVPFEnabled);
@@ -122,9 +130,9 @@ static void early_media_with_multicast_base(bool_t video) {
 	linphone_core_enable_audio_multicast(marie->lc,TRUE);
 
 
-	lcs = ms_list_append(lcs,marie->lc);
-	lcs = ms_list_append(lcs,pauline->lc);
-	lcs = ms_list_append(lcs,pauline2->lc);
+	lcs = bctbx_list_append(lcs,marie->lc);
+	lcs = bctbx_list_append(lcs,pauline->lc);
+	lcs = bctbx_list_append(lcs,pauline2->lc);
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/

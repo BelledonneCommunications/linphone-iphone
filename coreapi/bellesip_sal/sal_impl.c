@@ -115,8 +115,8 @@ void sal_set_log_level(OrtpLogLevel level) {
 }
 
 void sal_add_pending_auth(Sal *sal, SalOp *op){
-	if (ms_list_find(sal->pending_auths,op)==NULL){
-		sal->pending_auths=ms_list_append(sal->pending_auths,op);
+	if (bctbx_list_find(sal->pending_auths,op)==NULL){
+		sal->pending_auths=bctbx_list_append(sal->pending_auths,op);
 		op->has_auth_pending=TRUE;
 	}
 }
@@ -124,8 +124,8 @@ void sal_add_pending_auth(Sal *sal, SalOp *op){
 void sal_remove_pending_auth(Sal *sal, SalOp *op){
 	if (op->has_auth_pending){
 		op->has_auth_pending=FALSE;
-		if (ms_list_find(sal->pending_auths,op)){
-			sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+		if (bctbx_list_find(sal->pending_auths,op)){
+			sal->pending_auths=bctbx_list_remove(sal->pending_auths,op);
 		}
 	}
 }
@@ -593,7 +593,7 @@ void sal_uninit(Sal* sal){
 	belle_sip_object_unref(sal->stack);
 	belle_sip_object_unref(sal->listener);
 	if (sal->supported) belle_sip_object_unref(sal->supported);
-	ms_list_free_with_data(sal->supported_tags,ms_free);
+	bctbx_list_free_with_data(sal->supported_tags,ms_free);
 	if (sal->uuid) ms_free(sal->uuid);
 	if (sal->root_ca) ms_free(sal->root_ca);
 	ms_free(sal);
@@ -804,8 +804,8 @@ int sal_iterate(Sal *sal){
 	belle_sip_stack_sleep(sal->stack,0);
 	return 0;
 }
-MSList * sal_get_pending_auths(Sal *sal){
-	return ms_list_copy(sal->pending_auths);
+bctbx_list_t * sal_get_pending_auths(Sal *sal){
+	return bctbx_list_copy(sal->pending_auths);
 }
 
 /*misc*/
@@ -858,10 +858,10 @@ int sal_get_transport_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_transport_timeout(sal->stack);
 }
 
-void sal_set_dns_servers(Sal *sal, const MSList *servers){
+void sal_set_dns_servers(Sal *sal, const bctbx_list_t *servers){
 	belle_sip_list_t *l = NULL;
 
-	/*we have to convert the MSList into a belle_sip_list_t first*/
+	/*we have to convert the bctbx_list_t into a belle_sip_list_t first*/
 	for (; servers != NULL; servers = servers->next){
 		l = belle_sip_list_append(l, servers->data);
 	}
@@ -1036,7 +1036,7 @@ int sal_generate_uuid(char *uuid, size_t len) {
 	written=snprintf(uuid,len,"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-", uuid_struct.time_low, uuid_struct.time_mid,
 			uuid_struct.time_hi_and_version, uuid_struct.clock_seq_hi_and_reserved,
 			uuid_struct.clock_seq_low);
-	if (written>len+13){
+	if ((written < 0) || ((size_t)written > (len +13))) {
 		ms_error("sal_create_uuid(): buffer is too short !");
 		return -1;
 	}
@@ -1055,7 +1055,7 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len) {
 }
 
 static void make_supported_header(Sal *sal){
-	MSList *it;
+	bctbx_list_t *it;
 	char *alltags=NULL;
 	size_t buflen=64;
 	size_t written=0;
@@ -1080,7 +1080,7 @@ static void make_supported_header(Sal *sal){
 }
 
 void sal_set_supported_tags(Sal *ctx, const char* tags){
-	ctx->supported_tags=ms_list_free_with_data(ctx->supported_tags,ms_free);
+	ctx->supported_tags=bctbx_list_free_with_data(ctx->supported_tags,ms_free);
 	if (tags){
 		char *iter;
 		char *buffer=ms_strdup(tags);
@@ -1089,7 +1089,7 @@ void sal_set_supported_tags(Sal *ctx, const char* tags){
 		iter=buffer;
 		while((tag=strtok_r(iter,", ",&context))!=NULL){
 			iter=NULL;
-			ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
+			ctx->supported_tags=bctbx_list_append(ctx->supported_tags,ms_strdup(tag));
 		}
 		ms_free(buffer);
 	}
@@ -1104,19 +1104,19 @@ const char *sal_get_supported_tags(Sal *ctx){
 }
 
 void sal_add_supported_tag(Sal *ctx, const char* tag){
-	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,tag);
+	bctbx_list_t *elem=bctbx_list_find_custom(ctx->supported_tags,(bctbx_compare_func)strcasecmp,tag);
 	if (!elem){
-		ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
+		ctx->supported_tags=bctbx_list_append(ctx->supported_tags,ms_strdup(tag));
 		make_supported_header(ctx);
 	}
 
 }
 
 void sal_remove_supported_tag(Sal *ctx, const char* tag){
-	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,tag);
+	bctbx_list_t *elem=bctbx_list_find_custom(ctx->supported_tags,(bctbx_compare_func)strcasecmp,tag);
 	if (elem){
 		ms_free(elem->data);
-		ctx->supported_tags=ms_list_remove_link(ctx->supported_tags,elem);
+		ctx->supported_tags=bctbx_list_remove_link(ctx->supported_tags,elem);
 		make_supported_header(ctx);
 	}
 }
@@ -1152,6 +1152,10 @@ void sal_use_no_initial_route(Sal *ctx, bool_t enabled){
 
 SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data){
 	return (SalResolverContext*)belle_sip_stack_resolve_a(sal->stack,name,port,family,(belle_sip_resolver_callback_t)cb,data);
+}
+
+SalResolverContext * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, SalResolverCallback cb, void *data) {
+	return (SalResolverContext *)belle_sip_stack_resolve(sal->stack, service, transport, name, port, family, (belle_sip_resolver_callback_t)cb, data);
 }
 
 /*

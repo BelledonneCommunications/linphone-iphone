@@ -29,10 +29,10 @@ static void subscribe_forking(void) {
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires=  600;
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,pauline2->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,pauline2->lc);
 
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
@@ -55,20 +55,20 @@ static void subscribe_forking(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(pauline2);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void message_forking(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
 
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(chat_room, message);
@@ -84,7 +84,7 @@ static void message_forking(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void message_forking_with_unreachable_recipients(void) {
@@ -92,14 +92,14 @@ static void message_forking_with_unreachable_recipients(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,marie3->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
 
 	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
 	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
@@ -134,7 +134,7 @@ static void message_forking_with_unreachable_recipients(void) {
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
 	linphone_core_manager_destroy(pauline);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void message_forking_with_all_recipients_unreachable(void) {
@@ -142,14 +142,14 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,marie3->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
 
 	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
 	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
@@ -193,7 +193,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
 	linphone_core_manager_destroy(pauline);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void call_forking(void){
@@ -201,11 +201,11 @@ static void call_forking(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
 
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,marie3->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
@@ -239,7 +239,7 @@ static void call_forking(void){
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void call_forking_with_urgent_reply(void){
@@ -247,10 +247,10 @@ static void call_forking_with_urgent_reply(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,marie3->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
 
 	if (linphone_core_media_encryption_supported(pauline->lc,LinphoneMediaEncryptionSRTP)) {
 		linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
@@ -284,7 +284,7 @@ static void call_forking_with_urgent_reply(void){
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void call_forking_cancelled(void){
@@ -292,11 +292,11 @@ static void call_forking_cancelled(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
 
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,marie3->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
@@ -324,7 +324,7 @@ static void call_forking_cancelled(void){
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void call_forking_declined(bool_t declined_globaly){
@@ -332,11 +332,11 @@ static void call_forking_declined(bool_t declined_globaly){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
 
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,marie3->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
@@ -379,7 +379,7 @@ static void call_forking_declined(bool_t declined_globaly){
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void call_forking_declined_globaly(void){
@@ -391,7 +391,7 @@ static void call_forking_declined_localy(void){
 }
 
 static void call_forking_with_push_notification_single(void){
-	MSList* lcs;
+	bctbx_list_t* lcs;
 	LinphoneCoreManager* marie = linphone_core_manager_new2( "marie_rc", FALSE);
 	LinphoneCoreManager* pauline = linphone_core_manager_new2( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc",FALSE);
 	int dummy=0;
@@ -402,8 +402,8 @@ static void call_forking_with_push_notification_single(void){
 		linphone_core_get_default_proxy_config(marie->lc),
 		"app-id=org.linphonetester;pn-tok=aaabbb;pn-type=apple;pn-msg-str=33;pn-call-str=34;");
 
-	lcs=ms_list_append(NULL,pauline->lc);
-	lcs=ms_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(NULL,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneRegistrationOk,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneRegistrationOk,1,5000));
@@ -437,7 +437,7 @@ static void call_forking_with_push_notification_single(void){
 
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void call_forking_with_push_notification_multiple(void){
@@ -445,10 +445,10 @@ static void call_forking_with_push_notification_multiple(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
 
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
@@ -497,11 +497,11 @@ static void call_forking_not_responded(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
 
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,marie3->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
@@ -527,14 +527,14 @@ static void call_forking_not_responded(void){
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 }
 
 static void early_media_call_forking(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	MSList *lcs=NULL;
+	bctbx_list_t *lcs=NULL;
 	LinphoneCallParams *params=linphone_core_create_call_params(pauline->lc, NULL);
 	LinphoneVideoPolicy pol;
 	int dummy=0;
@@ -560,9 +560,9 @@ static void early_media_call_forking(void) {
 	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
 	linphone_core_set_video_port_range(marie2->lc,40400,40500);
 
-	lcs=ms_list_append(lcs,marie->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
 
 	linphone_call_params_enable_early_media_sending(params,TRUE);
 	linphone_call_params_enable_video(params,TRUE);
@@ -600,7 +600,7 @@ static void early_media_call_forking(void) {
 
 	end_call(pauline, marie);
 
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie);
@@ -611,10 +611,10 @@ static void call_with_sips(void){
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_sips_rc");
 		LinphoneCoreManager* pauline1 = linphone_core_manager_new( "pauline_sips_rc");
 		LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
-		MSList* lcs=ms_list_append(NULL,marie->lc);
+		bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 
-		lcs=ms_list_append(lcs,pauline1->lc);
-		lcs=ms_list_append(lcs,pauline2->lc);
+		lcs=bctbx_list_append(lcs,pauline1->lc);
+		lcs=bctbx_list_append(lcs,pauline2->lc);
 
 		linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 		linphone_core_set_user_agent(pauline1->lc,"Natted Linphone",NULL);
@@ -644,7 +644,7 @@ static void call_with_sips(void){
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline1);
 		linphone_core_manager_destroy(pauline2);
-		ms_list_free(lcs);
+		bctbx_list_free(lcs);
 	}
 }
 
@@ -653,13 +653,13 @@ static void call_with_sips_not_achievable(void){
 		LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_sips_rc");
 		LinphoneCoreManager* pauline1 = linphone_core_manager_new( "pauline_rc");
-		MSList* lcs=ms_list_append(NULL,marie->lc);
+		bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 		LinphoneAddress *dest;
 		LinphoneCall *call;
 		const LinphoneErrorInfo *ei;
 
-		lcs=ms_list_append(lcs,pauline1->lc);
-		lcs=ms_list_append(lcs,pauline2->lc);
+		lcs=bctbx_list_append(lcs,pauline1->lc);
+		lcs=bctbx_list_append(lcs,pauline2->lc);
 
 
 		dest=linphone_address_clone(pauline1->identity);
@@ -679,7 +679,7 @@ static void call_with_sips_not_achievable(void){
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline1);
 		linphone_core_manager_destroy(pauline2);
-		ms_list_free(lcs);
+		bctbx_list_free(lcs);
 	}
 }
 
@@ -1079,7 +1079,7 @@ static void test_list_subscribe (void) {
 
 
 	LinphoneEvent *lev;
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 	char * pauline_uri=linphone_address_as_string_uri_only(pauline->identity);
 	char * laure_uri=linphone_address_as_string_uri_only(laure->identity);
 	char * subscribe_content = ms_strdup_printf(list,pauline_uri,laure_uri);
@@ -1091,8 +1091,8 @@ static void test_list_subscribe (void) {
 	ms_free(pauline_uri);
 	ms_free(laure_uri);
 
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,laure->lc);
 
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"resource-lists+xml");

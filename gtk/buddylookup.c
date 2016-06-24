@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include "sipsetup.h"
 
-static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *results);
+static void linphone_gtk_display_lookup_results(GtkWidget *w, const bctbx_list_t *results);
 
 enum {
 	LOOKUP_RESULT_NAME,
@@ -136,7 +136,7 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 	SipSetupContext *ctx;
 	int last_state;
 	gchar *tmp;
-	MSList *results=NULL;
+	bctbx_list_t *results=NULL;
 	GtkProgressBar *pb=GTK_PROGRESS_BAR(linphone_gtk_get_widget(w,"progressbar"));
 	BuddyLookupRequest *req=(BuddyLookupRequest*)g_object_get_data(G_OBJECT(w),"buddylookup_request");
 
@@ -177,9 +177,8 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 					linphone_gtk_get_widget(w,"search_results"),
 					results);
 			gtk_progress_bar_set_fraction(pb,1);
-			tmp=g_strdup_printf(ngettext("Found %i contact",
-                        "Found %i contacts", ms_list_size(results)),
-                    ms_list_size(results));
+			tmp=g_strdup_printf(ngettext("Found %u contact", "Found %u contacts",
+				(unsigned int)bctbx_list_size(results)), (unsigned int)bctbx_list_size(results));
 			gtk_progress_bar_set_text(pb,tmp);
 			g_free(tmp);
 			sip_setup_context_buddy_lookup_free(ctx,req);
@@ -228,11 +227,11 @@ void linphone_gtk_keyword_changed(GtkEditable *e){
 	g_object_set_data(G_OBJECT(w),"typing_timeout",GINT_TO_POINTER(tid));
 }
 
-static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *results){
+static void linphone_gtk_display_lookup_results(GtkWidget *w, const bctbx_list_t *results){
 	GtkTreeStore *store;
 	GtkTreeIter iter;
 	gchar *tmp;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	store=GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(w)));
 	gtk_tree_store_clear(store);
 	disable_add_buddy_button(gtk_widget_get_toplevel(w));

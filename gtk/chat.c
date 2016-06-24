@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphone.h"
+#include <bctoolbox/bc_vfs.h>
 
 #ifdef HAVE_GTK_OSX
 #include <gtkosxapplication.h>
@@ -62,7 +63,7 @@ char *linphone_gtk_message_storage_get_db_file(const char *filename){
 	db_file=(char *)g_malloc(path_max*sizeof(char));
 	if (filename==NULL) filename=CONFIG_FILE;
 	/*try accessing a local file first if exists*/
-	if (access(CONFIG_FILE,F_OK)==0){
+	if (bctbx_file_exist(CONFIG_FILE)==0){
 		snprintf(db_file,path_max,"%s",filename);
 	}else{
 #ifdef _WIN32
@@ -196,7 +197,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 			pos = end;
 			g_match_info_next(match_info, NULL);
 		}
-		if(pos < strlen(message)) write_body(buffer, &iter, &message[pos], -1, me, FALSE);
+		if((size_t)pos < strlen(message)) write_body(buffer, &iter, &message[pos], -1, me, FALSE);
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_match_info_free(match_info);
 	}
@@ -327,14 +328,14 @@ static void linphone_gtk_chat_message_destroy(LinphoneChatMessage *msg){
 	linphone_chat_message_destroy(msg);
 }
 
-void linphone_gtk_free_list(MSList *messages){
-	ms_list_for_each(messages,(void (*)(void*))linphone_gtk_chat_message_destroy);
-	ms_list_free(messages);
+void linphone_gtk_free_list(bctbx_list_t *messages){
+	bctbx_list_for_each(messages,(void (*)(void*))linphone_gtk_chat_message_destroy);
+	bctbx_list_free(messages);
 }
 
-void display_history_message(GtkWidget *chat_view,MSList *messages,const LinphoneAddress *with){
+void display_history_message(GtkWidget *chat_view,bctbx_list_t *messages,const LinphoneAddress *with){
 	if (messages != NULL){
-		MSList *it;
+		bctbx_list_t *it;
 		char *from_str;
 		char *with_str;
 		gchar *tmp;
@@ -441,8 +442,8 @@ static gboolean chatroom_event(GtkWidget *widget, GdkEvent *event, gpointer user
 	GtkTextIter iter;
 	if(event->type == GDK_MOTION_NOTIFY) {
 		GdkEventMotion *motion_ev = (GdkEventMotion *)event;
-		wx = motion_ev->x;
-		wy = motion_ev->y;
+		wx = (gint)motion_ev->x;
+		wy = (gint)motion_ev->y;
 		gtk_text_view_window_to_buffer_coords(chatroom, GTK_TEXT_WINDOW_TEXT, wx, wy, &bx, &by);
 		gtk_text_view_get_iter_at_location(chatroom, &iter, bx, by);
 		if(gtk_text_iter_has_tag(&iter, link_tag)) {
@@ -501,7 +502,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	int idx;
 	GtkWidget *button;
 	GtkWidget *entry = linphone_gtk_get_widget(chat_view,"text_entry");
-	MSList *messages;
+	bctbx_list_t *messages;
 	GHashTable *table;
 	GtkTextTag *tmp_tag;
 	GtkWidget *link_ctx_menu = gtk_menu_new();
@@ -587,7 +588,7 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 	char *from_str=linphone_address_as_string_uri_only(from);
 	char *uri_str=linphone_address_as_string(uri);
 	char *uri_only=linphone_address_as_string_uri_only(uri);
-	MSList *messages=NULL;
+	bctbx_list_t *messages=NULL;
 
 	if(g_strcmp0(from_str,uri_only)!=0){
 		GtkTextView *text_view=GTK_TEXT_VIEW(linphone_gtk_get_widget(chat_view,"textview"));

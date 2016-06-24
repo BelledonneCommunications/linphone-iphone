@@ -42,6 +42,7 @@ extern "C" {
 extern test_suite_t setup_test_suite;
 extern test_suite_t register_test_suite;
 extern test_suite_t call_test_suite;
+extern test_suite_t call_video_test_suite;
 extern test_suite_t message_test_suite;
 extern test_suite_t presence_test_suite;
 extern test_suite_t presence_server_test_suite;
@@ -323,12 +324,18 @@ bool_t call_with_test_params(LinphoneCoreManager* caller_mgr
 				,LinphoneCoreManager* callee_mgr
 				,const LinphoneCallTestParams *caller_test_params
 				,const LinphoneCallTestParams *callee_test_params);
+bool_t call_with_params2(LinphoneCoreManager* caller_mgr
+						,LinphoneCoreManager* callee_mgr
+						, const LinphoneCallTestParams *caller_test_params
+						, const LinphoneCallTestParams *callee_test_params
+						, bool_t build_callee_params);
 
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
 bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t change_video_policy);
 void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime);
+void disable_all_codecs(const MSList* elem, LinphoneCoreManager* call);
 stats * get_stats(LinphoneCore *lc);
 bool_t transport_supported(LinphoneTransportType transport);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
@@ -352,6 +359,9 @@ bool_t call_with_caller_params(LinphoneCoreManager* caller_mgr,LinphoneCoreManag
 bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCoreManager* mgr_2,LinphoneCall* call_2);
 void compare_files(const char *path1, const char *path2);
 void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir);
+void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay);
+void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts);
+void record_call(const char *filename, bool_t enableVideo, const char *video_codec);
 
 extern const MSAudioDiffParams audio_cmp_params;
 
@@ -370,6 +380,7 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 void liblinphone_tester_uninit(void);
 int liblinphone_tester_set_log_file(const char *filename);
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state);
+void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts);
 
 LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bool_t do_registration);
 void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv);
@@ -379,6 +390,7 @@ extern const char *liblinphone_tester_mire_id;
 LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const LinphoneAddress *source);
 FILE *sip_start(const char *senario, const char* dest_username, const char *passwd, LinphoneAddress* dest_addres);
 
+void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ice );
 
 
 #ifdef __cplusplus

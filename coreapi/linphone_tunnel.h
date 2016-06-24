@@ -229,7 +229,7 @@ LINPHONE_PUBLIC void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, Linph
  * @param tunnel LinphoneTunnel object
  * @return \mslist{LinphoneTunnelConfig}
  */
-LINPHONE_PUBLIC const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC const bctbx_list_t *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel);
 
 /**
  * Remove all tunnel server addresses previously entered with linphone_tunnel_add_server()

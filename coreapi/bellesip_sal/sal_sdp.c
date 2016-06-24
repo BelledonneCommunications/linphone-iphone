@@ -70,7 +70,7 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 }
 
 static bool_t is_rtcp_fb_trr_int_the_same_for_all_payloads(const SalStreamDescription *stream, uint16_t *trr_int) {
-	MSList *pt_it;
+	bctbx_list_t *pt_it;
 	bool_t first = TRUE;
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 		PayloadType *pt = (PayloadType *)pt_it->data;
@@ -119,7 +119,7 @@ static void add_rtcp_fb_ccm_attribute(belle_sdp_media_description_t *media_desc,
 }
 
 static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, const SalMediaDescription *md, const SalStreamDescription *stream) {
-	MSList *pt_it;
+	bctbx_list_t *pt_it;
 	PayloadType *pt;
 	PayloadTypeAvpfParams avpf_params;
 	bool_t general_trr_int;
@@ -191,7 +191,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	belle_sdp_mime_parameter_t* mime_param;
 	belle_sdp_media_description_t* media_desc;
 	int j;
-	MSList* pt_it;
+	bctbx_list_t* pt_it;
 	PayloadType* pt;
 	char buffer[1024];
 	char* dir=NULL;
@@ -470,7 +470,7 @@ static void sdp_parse_payload_types(belle_sdp_media_description_t *media_desc, S
 		pt->channels=belle_sdp_mime_parameter_get_channel_count ( mime_param );
 		payload_type_set_send_fmtp ( pt,belle_sdp_mime_parameter_get_parameters ( mime_param ) );
 		payload_type_set_avpf_params(pt, avpf_params);
-		stream->payloads=ms_list_append ( stream->payloads,pt );
+		stream->payloads=bctbx_list_append ( stream->payloads,pt );
 		stream->ptime=belle_sdp_mime_parameter_get_ptime ( mime_param );
 		ms_message ( "Found payload %s/%i fmtp=%s",pt->mime_type,pt->clock_rate,
 						pt->send_fmtp ? pt->send_fmtp : "" );
@@ -577,7 +577,7 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 }
 
 static void enable_avpf_for_stream(SalStreamDescription *stream) {
-	MSList *pt_it;
+	bctbx_list_t *pt_it;
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 		PayloadType *pt = (PayloadType *)pt_it->data;
 		payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
@@ -639,7 +639,7 @@ static bool_t sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_
 	belle_sip_list_t *it;
 	belle_sdp_attribute_t *attribute;
 	belle_sdp_rtcp_fb_attribute_t *fb_attribute;
-	MSList *pt_it;
+	bctbx_list_t *pt_it;
 	PayloadType *pt;
 	int8_t pt_num;
 	bool_t retval = FALSE;

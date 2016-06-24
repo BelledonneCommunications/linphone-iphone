@@ -406,6 +406,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "content.h"
 #include "event.h"
 #include "linphonefriend.h"
+#include "nat_policy.h"
 #include "xmlrpc.h"
 #include "conference.h"
 #else
@@ -415,6 +416,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphone/content.h"
 #include "linphone/event.h"
 #include "linphone/linphonefriend.h"
+#include "linphone/nat_policy.h"
 #include "linphone/xmlrpc.h"
 #include "linphone/conference.h"
 #endif
@@ -1474,7 +1476,7 @@ LINPHONE_PUBLIC int linphone_chat_room_get_history_size(LinphoneChatRoom *cr);
  * @param[in] nb_message Number of message to retrieve. 0 means everything.
  * @return \mslist{LinphoneChatMessage}
  */
-LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
 
 /**
  * Gets the partial list of messages in the given range, sorted from oldest to most recent.
@@ -1483,7 +1485,7 @@ LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int 
  * @param[in] end The last message of the range to be retrieved. History oldest message has index of history size - 1 (use #linphone_chat_room_get_history_size to retrieve history size)
  * @return \mslist{LinphoneChatMessage}
  */
-LINPHONE_PUBLIC MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end);
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end);
 
 /**
  * Notifies the destination of the chat message being composed that the user is typing a new message.
@@ -1534,7 +1536,7 @@ LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr)
  * @param[in] lc #LinphoneCore object
  * @return \mslist{LinphoneChatRoom}
 **/
-LINPHONE_PUBLIC const MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t* linphone_core_get_chat_rooms(LinphoneCore *lc);
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
 
 /**
@@ -2194,6 +2196,7 @@ typedef struct _LCCallbackObj
 /**
  * Policy to use to pass through firewalls.
  * @ingroup network_parameters
+ * @deprecated Use LinphoneNatPolicy instead
 **/
 typedef enum _LinphoneFirewallPolicy {
 	LinphonePolicyNoFirewall, /**< Do not use any mechanism to pass through firewalls */
@@ -2264,7 +2267,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_collection_prefix(const char *prefix)
  * Get the max file size in bytes of the files used for log collection.
  * @return The max file size in bytes of the files used for log collection.
  */
-LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
+LINPHONE_PUBLIC size_t linphone_core_get_log_collection_max_file_size(void);
 
 /**
  * Set the max file size in bytes of the files used for log collection.
@@ -2274,7 +2277,7 @@ LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
   * on runtime, logs chronological order COULD be broken.
  * @param[in] size The max file size in bytes of the files used for log collection.
  */
-LINPHONE_PUBLIC void linphone_core_set_log_collection_max_file_size(int size);
+LINPHONE_PUBLIC void linphone_core_set_log_collection_max_file_size(size_t size);
 
 /**
  * Set the url of the server where to upload the collected log files.
@@ -2754,58 +2757,58 @@ LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
 /**
  * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.
  * @param[in] lc #LinphoneCore object.
- * @param[in] servers A #MSList of strings containing the IP addresses of DNS servers to be used.
+ * @param[in] servers A #bctbx_list_t of strings containing the IP addresses of DNS servers to be used.
  * Setting to NULL restores default behaviour, which is to use the DNS server list provided by the system.
  * The list is copied internally.
  * @ingroup media_parameters
  */
-LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const MSList *servers);
+LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx_list_t *servers);
 
 /**
  * Returns the list of available audio codecs.
  * @param[in] lc The LinphoneCore object
  * @return \mslist{PayloadType}
  *
- * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
- * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * It is possible to make copy of the list with bctbx_list_copy() in order to modify it
  * (such as the order of codecs).
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC	const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);
+LINPHONE_PUBLIC	const bctbx_list_t *linphone_core_get_audio_codecs(const LinphoneCore *lc);
 
-LINPHONE_PUBLIC int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs);
+LINPHONE_PUBLIC int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
 
 /**
  * Returns the list of available video codecs.
  * @param[in] lc The LinphoneCore object
  * @return \mslist{PayloadType}
  *
- * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
- * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * It is possible to make copy of the list with bctbx_list_copy() in order to modify it
  * (such as the order of codecs).
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
-LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
+LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
 
 /**
  * Returns the list of available text codecs.
  * @param[in] lc The LinphoneCore object
  * @return \mslist{PayloadType}
  *
- * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
- * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * It is possible to make copy of the list with bctbx_list_copy() in order to modify it
  * (such as the order of codecs).
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC const MSList *linphone_core_get_text_codecs(const LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_text_codecs(const LinphoneCore *lc);
 
 
-LINPHONE_PUBLIC int linphone_core_set_text_codecs(LinphoneCore *lc, MSList *codecs);
+LINPHONE_PUBLIC int linphone_core_set_text_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
 
 LINPHONE_PUBLIC void linphone_core_enable_generic_confort_noise(LinphoneCore *lc, bool_t enabled);
 
@@ -2932,7 +2935,7 @@ LINPHONE_PUBLIC void linphone_core_remove_proxy_config(LinphoneCore *lc, Linphon
  * @param[in] lc The LinphoneCore object
  * @return \mslist{LinphoneProxyConfig}
 **/
-LINPHONE_PUBLIC const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
 
 /** @deprecated Use linphone_core_set_default_proxy_config() instead. */
 #define linphone_core_set_default_proxy(lc, config) linphone_core_set_default_proxy_config(lc, config)
@@ -2985,7 +2988,7 @@ LINPHONE_PUBLIC	void linphone_core_add_auth_info(LinphoneCore *lc, const Linphon
 
 LINPHONE_PUBLIC void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
-LINPHONE_PUBLIC const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_auth_info_list(const LinphoneCore *lc);
 
 /**
  * Find authentication info matching realm, username, domain criteria.
@@ -3192,6 +3195,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_nat_address(const LinphoneCore *lc
  * @param[in] lc #LinphoneCore object.
  * @param[in] pol The #LinphoneFirewallPolicy to use.
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_set_nat_policy() instead.
  */
 LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol);
 
@@ -3200,8 +3204,29 @@ LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, Linphon
  * @param[in] lc #LinphoneCore object.
  * @return The #LinphoneFirewallPolicy that is being used.
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_get_nat_policy() instead.
  */
 LINPHONE_PUBLIC	LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc);
+
+/**
+ * Set the policy to use to pass through NATs/firewalls.
+ * It may be overridden by a NAT policy for a specific proxy config.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] policy LinphoneNatPolicy object
+ * @ingroup network_parameters
+ * @see linphone_proxy_config_set_nat_policy()
+ */
+LINPHONE_PUBLIC void linphone_core_set_nat_policy(LinphoneCore *lc, LinphoneNatPolicy *policy);
+
+/**
+ * Get The policy that is used to pass through NATs/firewalls.
+ * It may be overridden by a NAT policy for a specific proxy config.
+ * @param[in] lc #LinphoneCore object
+ * @return LinphoneNatPolicy object in use.
+ * @ingroup network_parameters
+ * @see linphone_proxy_config_get_nat_policy()
+ */
+LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_get_nat_policy(const LinphoneCore *lc);
 
 /* sound functions */
 /* returns a null terminated static array of string describing the sound devices */
@@ -3365,7 +3390,7 @@ LINPHONE_PUBLIC void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *l
  * @param[in] lc LinphoneCore object
  * @return \mslist{LinphoneCallLog}
 **/
-LINPHONE_PUBLIC const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_call_logs(LinphoneCore *lc);
 
 /**
  * Get the list of call logs (past calls) that matches the given #LinphoneAddress.
@@ -3374,7 +3399,7 @@ LINPHONE_PUBLIC const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
  * @param[in] addr LinphoneAddress object
  * @return \mslist{LinphoneCallLog}
 **/
-LINPHONE_PUBLIC MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr);
+LINPHONE_PUBLIC bctbx_list_t * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
 /**
  * Get the latest outgoing call log.
@@ -3862,7 +3887,7 @@ LINPHONE_PUBLIC LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, cons
 LINPHONE_PUBLIC void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneCoreWaitingCallback cb, void *user_context);
 
 /*returns the list of registered SipSetup (linphonecore plugins) */
-LINPHONE_PUBLIC const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);
+LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_sip_setups(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_destroy(LinphoneCore *lc);
 
@@ -3886,7 +3911,7 @@ int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, r
 
 LINPHONE_PUBLIC	int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
-LINPHONE_PUBLIC	const MSList *linphone_core_get_calls(LinphoneCore *lc);
+LINPHONE_PUBLIC	const bctbx_list_t *linphone_core_get_calls(LinphoneCore *lc);
 
 LINPHONE_PUBLIC LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
 /**
@@ -4162,7 +4187,7 @@ typedef unsigned int ContactSearchID;
 typedef struct _LinphoneContactSearch LinphoneContactSearch;
 typedef struct _LinphoneContactProvider LinphoneContactProvider;
 
-typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friends, void* data );
+typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, bctbx_list_t* friends, void* data );
 
 /*
  * Remote provisioning

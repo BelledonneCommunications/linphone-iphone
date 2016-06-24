@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sqlite3.h"
 #include <assert.h>
 
+
 static char *utf8_convert(const char *filename){
 	char db_file_utf8[MAX_PATH_SIZE] = "";
 #if defined(_WIN32)
@@ -79,8 +80,11 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 	flags |= SQLITE_OPEN_FILEPROTECTION_NONE;
 #endif
 	
+	/*since we plug our vfs into sqlite, we convert to UTF-8.
+	 * On Windows, the filename has to be converted back to windows native charset.*/
 	char *utf8_filename = utf8_convert(db_file);
-	ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
+	//ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
+	ret = sqlite3_open_v2(utf8_filename, db, flags, NULL); // Do not use VFS until all issues are resolved
 	ms_free(utf8_filename);
 
 	if (ret != SQLITE_OK) return ret;
@@ -109,7 +113,7 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 
 
 static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
-	MSList* transients = cr->transient_messages;
+	bctbx_list_t* transients = cr->transient_messages;
 	LinphoneChatMessage* chat;
 	while( transients ){
 		chat = (LinphoneChatMessage*)transients->data;
@@ -195,7 +199,7 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
  */
 static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
-	unsigned int storage_id = atoi(argv[0]);
+	unsigned int storage_id = (unsigned int)atoi(argv[0]);
 
 	// check if the message exists in the transient list, in which case we should return that one.
 	LinphoneChatMessage* new_message = get_transient_message(cr, storage_id);
@@ -227,7 +231,7 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 			}
 		}
 	}
-	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
+	cr->messages_hist=bctbx_list_prepend(cr->messages_hist,new_message);
 
 	return 0;
 }
@@ -326,7 +330,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i);",
+		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %u);",
 								  msg->state,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
@@ -336,7 +340,7 @@ void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 void linphone_chat_message_store_appdata(LinphoneChatMessage* msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET appdata=%Q WHERE id=%i;",
+		char *buf=sqlite3_mprintf("UPDATE history SET appdata=%Q WHERE id=%u;",
 								  msg->appdata,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
@@ -370,7 +374,7 @@ void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *ms
 
 	if (lc->db==NULL) return ;
 
-	buf=sqlite3_mprintf("UPDATE history SET url=%Q WHERE id=%i;",msg->external_body_url,msg->storage_id);
+	buf=sqlite3_mprintf("UPDATE history SET url=%Q WHERE id=%u;",msg->external_body_url,msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 }
@@ -421,7 +425,7 @@ void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage
 
 	if (lc->db==NULL) return ;
 
-	buf=sqlite3_mprintf("DELETE FROM history WHERE id = %i;", msg->storage_id);
+	buf=sqlite3_mprintf("DELETE FROM history WHERE id = %u;", msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 
@@ -446,9 +450,9 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 	if(cr->unread_count > 0) cr->unread_count = 0;
 }
 
-MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
+bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
 	LinphoneCore *lc=linphone_chat_room_get_core(cr);
-	MSList *ret;
+	bctbx_list_t *ret;
 	char *buf,*buf2;
 	char *peer;
 	uint64_t begin,end;
@@ -498,7 +502,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 	return ret;
 }
 
-MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return linphone_chat_room_get_history_range(cr, 0, nb_message-1);
 }
 
@@ -735,11 +739,11 @@ void linphone_chat_message_store_appdata(LinphoneChatMessage *msg){
 void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 }
 
-MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return NULL;
 }
 
-LINPHONE_PUBLIC MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end){
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end){
 	return NULL;
 }
 

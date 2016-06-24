@@ -40,7 +40,7 @@ struct _LinphoneLDAPContactProvider
 	LinphoneDictionary* config;
 
 	LDAP*   ld;
-	MSList* requests;
+	bctbx_list_t* requests;
 	unsigned int    req_count;
 
 	// bind transaction
@@ -78,7 +78,7 @@ struct _LinphoneLDAPContactSearch
 	int     msgid;
 	char*   filter;
 	bool_t  complete;
-	MSList* found_entries;
+	bctbx_list_t* found_entries;
 	unsigned int found_count;
 };
 
@@ -116,8 +116,8 @@ unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch
 static void linphone_ldap_contact_search_destroy( LinphoneLDAPContactSearch* obj )
 {
 	//ms_message("~LinphoneLDAPContactSearch(%p)", obj);
-	ms_list_for_each(obj->found_entries, linphone_ldap_contact_search_destroy_friend);
-	obj->found_entries = ms_list_free(obj->found_entries);
+	bctbx_list_for_each(obj->found_entries, linphone_ldap_contact_search_destroy_friend);
+	obj->found_entries = bctbx_list_free(obj->found_entries);
 	if( obj->filter ) ms_free(obj->filter);
 }
 
@@ -152,7 +152,7 @@ static void linphone_ldap_contact_provider_destroy( LinphoneLDAPContactProvider*
 	linphone_core_remove_iterate_hook(LINPHONE_CONTACT_PROVIDER(obj)->lc, linphone_ldap_contact_provider_iterate,obj);
 
 	// clean pending requests
-	ms_list_for_each(obj->requests, linphone_ldap_contact_provider_destroy_request_cb);
+	bctbx_list_for_each(obj->requests, linphone_ldap_contact_provider_destroy_request_cb);
 
 	if (obj->ld) ldap_unbind_ext(obj->ld, NULL, NULL);
 	obj->ld = NULL;
@@ -223,7 +223,7 @@ static void linphone_ldap_contact_provider_handle_search_result( LinphoneLDAPCon
 					LinphoneFriend* lf = linphone_core_create_friend(lc);
 					linphone_friend_set_address(lf, la);
 					linphone_friend_set_name(lf, ldap_data.name);
-					req->found_entries = ms_list_append(req->found_entries, lf);
+					req->found_entries = bctbx_list_append(req->found_entries, lf);
 					req->found_count++;
 					//ms_message("Added friend %s / %s", ldap_data.name, ldap_data.sip);
 					ms_free(ldap_data.sip);
@@ -313,7 +313,7 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 		unsigned int i;
 
 		for( i=0; i<obj->req_count; i++){
-			LinphoneLDAPContactSearch* search = (LinphoneLDAPContactSearch*)ms_list_nth_data( obj->requests, i );
+			LinphoneLDAPContactSearch* search = (LinphoneLDAPContactSearch*)bctbx_list_nth_data( obj->requests, i );
 			if( search && search->msgid == 0){
 				int ret;
 				ms_message("Found pending search %p (for %s), launching...", search, search->filter);
@@ -618,10 +618,10 @@ static int linphone_ldap_request_entry_compare_strong(const void*a, const void* 
 static inline LinphoneLDAPContactSearch* linphone_ldap_contact_provider_request_search( LinphoneLDAPContactProvider* obj, int msgid )
 {
 	LinphoneLDAPContactSearch dummy = {};
-	MSList* list_entry;
+	bctbx_list_t* list_entry;
 	dummy.msgid = msgid;
 
-	list_entry = ms_list_find_custom(obj->requests, linphone_ldap_request_entry_compare_weak, &dummy);
+	list_entry = bctbx_list_find_custom(obj->requests, linphone_ldap_request_entry_compare_weak, &dummy);
 	if( list_entry ) return list_entry->data;
 	else return NULL;
 }
@@ -632,10 +632,10 @@ static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContact
 	LinphoneLDAPContactProvider* ldap_cp = LINPHONE_LDAP_CONTACT_PROVIDER(obj);
 	int ret = 1;
 
-	MSList* list_entry = ms_list_find_custom(ldap_cp->requests, linphone_ldap_request_entry_compare_strong, req);
+	bctbx_list_t* list_entry = bctbx_list_find_custom(ldap_cp->requests, linphone_ldap_request_entry_compare_strong, req);
 	if( list_entry ) {
 		ms_message("Delete search %p", req);
-		ldap_cp->requests = ms_list_remove_link(ldap_cp->requests, list_entry);
+		ldap_cp->requests = bctbx_list_remove_link(ldap_cp->requests, list_entry);
 		ldap_cp->req_count--;
 		ret = 0; // return OK if we found it in the monitored requests
 	} else {
@@ -703,7 +703,7 @@ static LinphoneLDAPContactSearch* linphone_ldap_contact_provider_begin_search ( 
 	}
 
 	if( request != NULL ) {
-		obj->requests = ms_list_append ( obj->requests, request );
+		obj->requests = bctbx_list_append ( obj->requests, request );
 		obj->req_count++;
 	}
 

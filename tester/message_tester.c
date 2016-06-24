@@ -23,14 +23,19 @@
 #include "liblinphone_tester.h"
 #include "lime.h"
 
-#ifdef MSG_STORAGE_ENABLED
+#ifdef SQLITE_STORAGE_ENABLED
 #include <sqlite3.h>
 #endif
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 
 static char* message_external_body_url=NULL;
@@ -357,15 +362,15 @@ static void text_message_with_send_error(void) {
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* check transient msg list: the msg should be in it, and should be the only one */
-	BC_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 1, int, "%d");
-	BC_ASSERT_PTR_EQUAL(ms_list_nth_data(chat_room->transient_messages,0), msg);
+	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 1, int, "%d");
+	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(chat_room->transient_messages,0), msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
 	/*BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageInProgress,1, int, "%d");*/
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0, int, "%d");
 
 	/* the msg should have been discarded from transient list after an error */
-	BC_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 0, int, "%d");
+	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 0, int, "%d");
 
 	sal_set_send_error(marie->lc->sal, 0);
 
@@ -391,8 +396,8 @@ static void text_message_with_external_body(void) {
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* check transient msg list: the msg should be in it, and should be the only one */
-	BC_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 1, int, "%d");
-	BC_ASSERT_PTR_EQUAL(ms_list_nth_data(chat_room->transient_messages,0), msg);
+	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 1, int, "%d");
+	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(chat_room->transient_messages,0), msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
@@ -400,7 +405,7 @@ static void text_message_with_external_body(void) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1, int, "%d");
 
-	BC_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 0, int, "%d");
+	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 0, int, "%d");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -453,8 +458,10 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 				BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneMessageNotDelivered,1, 10000));
 				belle_http_provider_set_recv_error(marie->lc->http_provider, 0);
 			} else {
-				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
-				compare_files(send_filepath, receive_filepath);
+				/* wait for a long time in case the DNS SRV resolution takes times - it should be immediate though */
+				if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1,55000))) {
+					compare_files(send_filepath, receive_filepath);
+				}
 			}
 		}
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
@@ -608,42 +615,44 @@ static void file_transfer_2_messages_simultaneously(void) {
 		cbs = linphone_chat_message_get_callbacks(msg2);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 
-		BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_chat_rooms(marie->lc)), 0, int, "%d");
-		linphone_chat_room_send_chat_message(pauline_room,msg);
-		linphone_chat_room_send_chat_message(pauline_room,msg2);
-		if (BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1))) {
-			msg = linphone_chat_message_clone(marie->stat.last_received_chat_message);
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2));
-			msg2 = marie->stat.last_received_chat_message;
-			BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, int, "%d");
-			if (ms_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
-				char * buf = ms_strdup_printf("Found %d rooms instead of 1: ", ms_list_size(linphone_core_get_chat_rooms(marie->lc)));
-				const MSList *it = linphone_core_get_chat_rooms(marie->lc);
-				while (it) {
-					const LinphoneAddress * peer = linphone_chat_room_get_peer_address(it->data);
-					buf = ms_strcat_printf("%s, ", linphone_address_get_username(peer));
-					it = it->next;
+		BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 0, int, "%d");
+		if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) == 0) {
+			linphone_chat_room_send_chat_message(pauline_room,msg);
+			linphone_chat_room_send_chat_message(pauline_room,msg2);
+			if (BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1))) {
+				msg = linphone_chat_message_clone(marie->stat.last_received_chat_message);
+				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2));
+				msg2 = marie->stat.last_received_chat_message;
+				BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, int, "%d");
+				if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
+					char * buf = ms_strdup_printf("Found %d rooms instead of 1: ", bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)));
+					const bctbx_list_t *it = linphone_core_get_chat_rooms(marie->lc);
+					while (it) {
+						const LinphoneAddress * peer = linphone_chat_room_get_peer_address(it->data);
+						buf = ms_strcat_printf("%s, ", linphone_address_get_username(peer));
+						it = it->next;
+					}
+					ms_error("%s", buf);
 				}
-				ms_error("%s", buf);
+				
+				cbs = linphone_chat_message_get_callbacks(msg);
+				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+				linphone_chat_message_download_file(msg);
+				
+				cbs = linphone_chat_message_get_callbacks(msg2);
+				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+				linphone_chat_message_download_file(msg2);
+				
+				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,2));
+				
+				BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,4, int, "%d");
+				BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,2, int, "%d");
+				compare_files(send_filepath, receive_filepath);
+				
+				linphone_chat_message_unref(msg);
 			}
-
-			cbs = linphone_chat_message_get_callbacks(msg);
-			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
-			linphone_chat_message_download_file(msg);
-
-			cbs = linphone_chat_message_get_callbacks(msg2);
-			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
-			linphone_chat_message_download_file(msg2);
-
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,2));
-
-			BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,4, int, "%d");
-			BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,2, int, "%d");
-			compare_files(send_filepath, receive_filepath);
-
-			linphone_chat_message_unref(msg);
 		}
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
@@ -757,9 +766,6 @@ static void is_composing_notification(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-
-#ifdef HAVE_LIME
-
 static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 	char *filepath = bc_tester_file(name);
 	FILE * file = fopen(filepath,mode);
@@ -817,7 +823,7 @@ static void lime_text_message_to_non_lime(void) {
 	char* filepath;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	
+
 	if (!linphone_core_lime_available(marie->lc)) {
 		ms_warning("Lime not available, skiping");
 		goto end;
@@ -857,7 +863,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	
+
 	if (!linphone_core_lime_available(marie->lc)) {
 		ms_warning("Lime not available, skiping");
 		goto end;
@@ -944,8 +950,8 @@ static  void lime_transfer_message_without_encryption(void) {
 	lime_transfer_message_base(FALSE,FALSE);
 }
 
-static void printHex(char *title, uint8_t *data, uint32_t length) {
-	int i;
+static void printHex(char *title, uint8_t *data, size_t length) {
+	size_t i;
 	char debug_string_buffer[2048];
 	char *debug_string = debug_string_buffer;
 	sprintf (debug_string, "%s : ", title);
@@ -959,174 +965,177 @@ static void printHex(char *title, uint8_t *data, uint32_t length) {
 }
 
 static void lime_unit(void) {
-	const char* PLAIN_TEXT_TEST_MESSAGE = "Ceci est un fabuleux msg de test à encrypter";
-	int retval;
-	size_t size;
-	uint8_t *cacheBufferString;
-	xmlDocPtr cacheBufferAlice;
-	xmlDocPtr cacheBufferBob;
-	uint8_t *multipartMessage = NULL;
-	uint8_t *decryptedMessage = NULL;
-	xmlChar *xmlStringOutput;
-	int xmlStringLength;
-	limeURIKeys_t associatedKeys;
-	int i;
-	limeKey_t associatedKey;
-	uint8_t targetZID[12] = {0x00, 0x5d, 0xbe, 0x03, 0x99, 0x64, 0x3d, 0x95, 0x3a, 0x22, 0x02, 0xdd};
-	uint8_t senderZID[12] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x70, 0x80, 0x90, 0xa0, 0xb0, 0xc0, 0xd0};
-	uint8_t encryptedMessage[1024];
-	uint8_t plainMessage[1024];
-	uint8_t receiverZID[12];
-	xmlDocPtr cacheBuffer;
-	FILE *CACHE;
-
-	/**** Low level tests using on cache file to extract keys, encrypt/decrypt ****/
-	/**** use functions that are not directly used by external entities ****/
-
-	/* create and load cache file */
-	CACHE = fopen_from_write_dir("ZIDCache.xml", "wb");
-	fprintf (CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>963c57bb28e62068d2df23e8f9b771932d3c57bb28e62068d2df23e8f9b77193</sndKey><rcvKey>05d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>02ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000069</sndIndex><rcvIndex>000001e8</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>123456789012345678901234567890123456765431262068d2df23e8f9b77193</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000001</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>");
-	fclose(CACHE);
-	CACHE = fopen_from_write_dir("ZIDCache.xml", "rb+");
-	cacheBufferString = (uint8_t*) ms_load_file_content(CACHE, &size);
-	*(cacheBufferString+size) = '\0';
-	fclose(CACHE);
-	/* parse it to an xmlDoc */
-	cacheBuffer = xmlParseDoc(cacheBufferString);
-	ms_free(cacheBufferString);
-
-	/* get data from cache : sender */
-	associatedKeys.peerURI = (uint8_t *)malloc(15);
-	memcpy(associatedKeys.peerURI, "pipo1@pipo.com", 15);
-	associatedKeys.associatedZIDNumber  = 0;
-	retval = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys);
-	BC_ASSERT_EQUAL(retval, 0, int, "%d");
-	BC_ASSERT_EQUAL(associatedKeys.associatedZIDNumber, 2, int, "%d"); /* there are 2 keys associated to pipo1@pipo.com address in the cache above*/
-	ms_message("Get cached key by URI, for sender, return %d keys", associatedKeys.associatedZIDNumber);
-
-	for (i=0; i<associatedKeys.associatedZIDNumber; i++) {
-		printHex("ZID", associatedKeys.peerKeys[i]->peerZID, 12);
-		printHex("key", associatedKeys.peerKeys[i]->key, 32);
-		printHex("sessionID", associatedKeys.peerKeys[i]->sessionId, 32);
-		ms_message("session index %d\n", associatedKeys.peerKeys[i]->sessionIndex);
+	if (lime_is_available()) {
+		const char* PLAIN_TEXT_TEST_MESSAGE = "Ceci est un fabuleux msg de test à encrypter";
+		int retval;
+		size_t size;
+		uint8_t *cacheBufferString;
+		xmlDocPtr cacheBufferAlice;
+		xmlDocPtr cacheBufferBob;
+		uint8_t *multipartMessage = NULL;
+		uint8_t *decryptedMessage = NULL;
+		xmlChar *xmlStringOutput;
+		int xmlStringLength;
+		limeURIKeys_t associatedKeys;
+		int i;
+		limeKey_t associatedKey;
+		uint8_t targetZID[12] = {0x00, 0x5d, 0xbe, 0x03, 0x99, 0x64, 0x3d, 0x95, 0x3a, 0x22, 0x02, 0xdd};
+		uint8_t senderZID[12] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x70, 0x80, 0x90, 0xa0, 0xb0, 0xc0, 0xd0};
+		uint8_t encryptedMessage[1024];
+		uint8_t plainMessage[1024];
+		uint8_t receiverZID[12];
+		xmlDocPtr cacheBuffer;
+		FILE *CACHE;
+		
+		/**** Low level tests using on cache file to extract keys, encrypt/decrypt ****/
+		/**** use functions that are not directly used by external entities ****/
+		
+		/* create and load cache file */
+		CACHE = fopen_from_write_dir("ZIDCache.xml", "wb");
+		fprintf (CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>963c57bb28e62068d2df23e8f9b771932d3c57bb28e62068d2df23e8f9b77193</sndKey><rcvKey>05d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>02ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000069</sndIndex><rcvIndex>000001e8</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>123456789012345678901234567890123456765431262068d2df23e8f9b77193</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000001</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>");
+		fclose(CACHE);
+		CACHE = fopen_from_write_dir("ZIDCache.xml", "rb+");
+		cacheBufferString = (uint8_t*) ms_load_file_content(CACHE, &size);
+		*(cacheBufferString+size) = '\0';
+		fclose(CACHE);
+		/* parse it to an xmlDoc */
+		cacheBuffer = xmlParseDoc(cacheBufferString);
+		ms_free(cacheBufferString);
+		
+		/* get data from cache : sender */
+		associatedKeys.peerURI = (uint8_t *)malloc(15);
+		memcpy(associatedKeys.peerURI, "pipo1@pipo.com", 15);
+		associatedKeys.associatedZIDNumber  = 0;
+		retval = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys);
+		BC_ASSERT_EQUAL(retval, 0, int, "%d");
+		BC_ASSERT_EQUAL(associatedKeys.associatedZIDNumber, 2, int, "%d"); /* there are 2 keys associated to pipo1@pipo.com address in the cache above*/
+		ms_message("Get cached key by URI, for sender, return %d keys", associatedKeys.associatedZIDNumber);
+		
+		for (i=0; i<associatedKeys.associatedZIDNumber; i++) {
+			printHex("ZID", associatedKeys.peerKeys[i]->peerZID, 12);
+			printHex("key", associatedKeys.peerKeys[i]->key, 32);
+			printHex("sessionID", associatedKeys.peerKeys[i]->sessionId, 32);
+			ms_message("session index %d\n", associatedKeys.peerKeys[i]->sessionIndex);
+		}
+		
+		/* get data from cache : receiver */
+		memcpy(associatedKey.peerZID, targetZID, 12);
+		retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
+		BC_ASSERT_EQUAL(retval, 0, int, "%d");
+		printHex("Got receiver key for ZID", targetZID, 12);
+		printHex("Key", associatedKey.key, 32);
+		printHex("sessionID", associatedKey.sessionId, 32);
+		ms_message("session index %d\n", associatedKey.sessionIndex);
+		
+		/* encrypt/decrypt a msg */
+		lime_encryptMessage(associatedKeys.peerKeys[0], (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, strlen(PLAIN_TEXT_TEST_MESSAGE), senderZID, encryptedMessage);
+		printHex("Ciphered", encryptedMessage, strlen((char *)encryptedMessage));
+		/* invert sender and receiverZID to decrypt/authenticate */
+		memcpy(receiverZID, associatedKeys.peerKeys[0]->peerZID, 12);
+		memcpy(associatedKeys.peerKeys[0]->peerZID, senderZID, 12);
+		retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, strlen(PLAIN_TEXT_TEST_MESSAGE)+16, receiverZID, plainMessage);
+		BC_ASSERT_EQUAL(retval, 0, int, "%d");
+		BC_ASSERT_STRING_EQUAL((char *)plainMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
+		ms_message("Decrypt and auth returned %d\nPlain text is %s\n", retval, plainMessage);
+		
+		/* update receiver data */
+		associatedKey.sessionIndex++;
+		associatedKey.key[0]++;
+		associatedKey.sessionId[0]++;
+		retval = lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER);
+		BC_ASSERT_EQUAL(retval, 0, int, "%d");
+		
+		/* update sender data */
+		associatedKeys.peerKeys[0]->sessionIndex++;
+		associatedKeys.peerKeys[0]->key[0]++;
+		associatedKeys.peerKeys[0]->sessionId[0]++;
+		retval = lime_setCachedKey(cacheBuffer, associatedKeys.peerKeys[0], LIME_SENDER);
+		BC_ASSERT_EQUAL(retval, 0, int, "%d");
+		
+		/* free memory */
+		lime_freeKeys(&associatedKeys);
+		
+		/* write the file */
+		/* dump the xml document into a string */
+		xmlDocDumpFormatMemoryEnc(cacheBuffer, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+		/* write it to the file */
+		CACHE = fopen_from_write_dir("ZIDCache.xml", "w+");
+		fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
+		xmlFree(xmlStringOutput);
+		fclose(CACHE);
+		xmlFreeDoc(cacheBuffer);
+		
+		/**** Higher level tests using 2 caches to encrypt/decrypt a msg ****/
+		/* Create Alice cache file and then load it */
+		CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "wb");
+		fprintf(CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>9111ebeb52e50edcc6fcb3eea1a2d3ae3c2c75d3668923e83c59d0f472455150</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000080</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex></peer></cache>");
+		fclose(CACHE);
+		CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "rb+");
+		cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
+		*(cacheBufferString+size) = '\0';
+		fclose(CACHE);
+		/* parse it to an xmlDoc */
+		cacheBufferAlice = xmlParseDoc(cacheBufferString);
+		ms_free(cacheBufferString);
+		
+		/* Create Bob cache file and then load it */
+		CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "wb");
+		fprintf(CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:marie@sip.example.org</uri><rcvKey>9111ebeb52e50edcc6fcb3eea1a2d3ae3c2c75d3668923e83c59d0f472455150</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000080</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:marie@sip.example.org</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>");
+		fclose(CACHE);
+		CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "rb+");
+		cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
+		*(cacheBufferString+size) = '\0';
+		fclose(CACHE);
+		/* parse it to an xmlDoc */
+		cacheBufferBob = xmlParseDoc(cacheBufferString);
+		ms_free(cacheBufferString);
+		
+		
+		
+		/* encrypt a msg */
+		retval = lime_createMultipartMessage(cacheBufferAlice, (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
+		
+		BC_ASSERT_EQUAL(retval, 0, int, "%d");
+		if (retval == 0) {
+			ms_message("Encrypted msg created is %s", multipartMessage);
+		}
+		
+		/* decrypt the multipart msg */
+		retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage);
+		
+		BC_ASSERT_EQUAL(retval, 0, int, "%d");
+		if (retval == 0) {
+			BC_ASSERT_STRING_EQUAL((char *)decryptedMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
+			ms_message("Succesfully decrypted msg is %s", decryptedMessage);
+		}
+		free(multipartMessage);
+		free(decryptedMessage);
+		
+		/* update ZID files */
+		/* dump the xml document into a string */
+		xmlDocDumpFormatMemoryEnc(cacheBufferAlice, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+		/* write it to the file */
+		CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "wb+");
+		fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
+		xmlFree(xmlStringOutput);
+		fclose(CACHE);
+		
+		xmlDocDumpFormatMemoryEnc(cacheBufferBob, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+		/* write it to the file */
+		CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "wb+");
+		fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
+		xmlFree(xmlStringOutput);
+		fclose(CACHE);
+		
+		
+		xmlFreeDoc(cacheBufferAlice);
+		xmlFreeDoc(cacheBufferBob);
+	} else {
+		ms_warning("Lime not available, skiping");
 	}
-
-	/* get data from cache : receiver */
-	memcpy(associatedKey.peerZID, targetZID, 12);
-	retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
-	BC_ASSERT_EQUAL(retval, 0, int, "%d");
-	printHex("Got receiver key for ZID", targetZID, 12);
-	printHex("Key", associatedKey.key, 32);
-	printHex("sessionID", associatedKey.sessionId, 32);
-	ms_message("session index %d\n", associatedKey.sessionIndex);
-
-	/* encrypt/decrypt a msg */
-	lime_encryptMessage(associatedKeys.peerKeys[0], (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, strlen(PLAIN_TEXT_TEST_MESSAGE), senderZID, encryptedMessage);
-	printHex("Ciphered", encryptedMessage, strlen((char *)encryptedMessage));
-	/* invert sender and receiverZID to decrypt/authenticate */
-	memcpy(receiverZID, associatedKeys.peerKeys[0]->peerZID, 12);
-	memcpy(associatedKeys.peerKeys[0]->peerZID, senderZID, 12);
-	retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, strlen(PLAIN_TEXT_TEST_MESSAGE)+16, receiverZID, plainMessage);
-	BC_ASSERT_EQUAL(retval, 0, int, "%d");
-	BC_ASSERT_STRING_EQUAL((char *)plainMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
-	ms_message("Decrypt and auth returned %d\nPlain text is %s\n", retval, plainMessage);
-
-	/* update receiver data */
-	associatedKey.sessionIndex++;
-	associatedKey.key[0]++;
-	associatedKey.sessionId[0]++;
-	retval = lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER);
-	BC_ASSERT_EQUAL(retval, 0, int, "%d");
-
-	/* update sender data */
-	associatedKeys.peerKeys[0]->sessionIndex++;
-	associatedKeys.peerKeys[0]->key[0]++;
-	associatedKeys.peerKeys[0]->sessionId[0]++;
-	retval = lime_setCachedKey(cacheBuffer, associatedKeys.peerKeys[0], LIME_SENDER);
-	BC_ASSERT_EQUAL(retval, 0, int, "%d");
-
-	/* free memory */
-	lime_freeKeys(&associatedKeys);
-
-	/* write the file */
-	/* dump the xml document into a string */
-	xmlDocDumpFormatMemoryEnc(cacheBuffer, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-	/* write it to the file */
-	CACHE = fopen_from_write_dir("ZIDCache.xml", "w+");
-	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
-	xmlFree(xmlStringOutput);
-	fclose(CACHE);
-	xmlFreeDoc(cacheBuffer);
-
-	/**** Higher level tests using 2 caches to encrypt/decrypt a msg ****/
-	/* Create Alice cache file and then load it */
-	CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "wb");
-	fprintf(CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>9111ebeb52e50edcc6fcb3eea1a2d3ae3c2c75d3668923e83c59d0f472455150</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000080</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex></peer></cache>");
-	fclose(CACHE);
-	CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "rb+");
-	cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
-	*(cacheBufferString+size) = '\0';
-	fclose(CACHE);
-	/* parse it to an xmlDoc */
-	cacheBufferAlice = xmlParseDoc(cacheBufferString);
-	ms_free(cacheBufferString);
-
-	/* Create Bob cache file and then load it */
-	CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "wb");
-	fprintf(CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:marie@sip.example.org</uri><rcvKey>9111ebeb52e50edcc6fcb3eea1a2d3ae3c2c75d3668923e83c59d0f472455150</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000080</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:marie@sip.example.org</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>");
-	fclose(CACHE);
-	CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "rb+");
-	cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
-	*(cacheBufferString+size) = '\0';
-	fclose(CACHE);
-	/* parse it to an xmlDoc */
-	cacheBufferBob = xmlParseDoc(cacheBufferString);
-	ms_free(cacheBufferString);
-
-
-
-	/* encrypt a msg */
-	retval = lime_createMultipartMessage(cacheBufferAlice, (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
-
-	BC_ASSERT_EQUAL(retval, 0, int, "%d");
-	if (retval == 0) {
-		ms_message("Encrypted msg created is %s", multipartMessage);
-	}
-
-	/* decrypt the multipart msg */
-	retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage);
-
-	BC_ASSERT_EQUAL(retval, 0, int, "%d");
-	if (retval == 0) {
-		BC_ASSERT_STRING_EQUAL((char *)decryptedMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
-		ms_message("Succesfully decrypted msg is %s", decryptedMessage);
-	}
-	free(multipartMessage);
-	free(decryptedMessage);
-
-	/* update ZID files */
-	/* dump the xml document into a string */
-	xmlDocDumpFormatMemoryEnc(cacheBufferAlice, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-	/* write it to the file */
-	CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "wb+");
-	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
-	xmlFree(xmlStringOutput);
-	fclose(CACHE);
-
-	xmlDocDumpFormatMemoryEnc(cacheBufferBob, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-	/* write it to the file */
-	CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "wb+");
-	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
-	xmlFree(xmlStringOutput);
-	fclose(CACHE);
-
-
-	xmlFreeDoc(cacheBufferAlice);
-	xmlFreeDoc(cacheBufferBob);
 }
 
-
-#endif /* HAVE_LIME */
+#ifdef SQLITE_STORAGE_ENABLED
 
 /*
  * Copy file "from" to file "to".
@@ -1182,16 +1191,16 @@ int check_no_strange_time(void* data,int argc, char** argv,char** cNames) {
 }
 
 void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, int expected ){
-	MSList* messages = linphone_chat_room_get_history_range(chatroom, x, y);
-	BC_ASSERT_EQUAL(ms_list_size(messages), expected, int, "%d");
-	ms_list_free_with_data(messages, (void (*)(void *))linphone_chat_message_unref);
+	bctbx_list_t* messages = linphone_chat_room_get_history_range(chatroom, x, y);
+	BC_ASSERT_EQUAL(bctbx_list_size(messages), expected, int, "%d");
+	bctbx_list_free_with_data(messages, (void (*)(void *))linphone_chat_message_unref);
 }
 
 static void database_migration(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	char *src_db = bc_tester_res("messages.db");
 	char *tmp_db  = bc_tester_file("tmp.db");
-	const MSList* chatrooms;
+	const bctbx_list_t* chatrooms;
 
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
@@ -1201,13 +1210,16 @@ static void database_migration(void) {
 	// the messages.db has 10000 dummy messages with the very first DB scheme.
 	// This will test the migration procedure
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
+	if (!marie->lc->db) goto end;
 
 	chatrooms = linphone_core_get_chat_rooms(marie->lc);
-	BC_ASSERT(ms_list_size(chatrooms) > 0);
+	BC_ASSERT(bctbx_list_size(chatrooms) > 0);
 
 	// check that all messages have been migrated to the UTC time storage
 	BC_ASSERT(sqlite3_exec(marie->lc->db, "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
 
+end:
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
 	ms_free(src_db);
@@ -1224,6 +1236,8 @@ static void history_range(void){
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
+	if (!marie->lc->db) goto end;
 
 	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
 	BC_ASSERT_PTR_NOT_NULL(chatroom);
@@ -1247,6 +1261,8 @@ static void history_range(void){
 		history_message_count_helper(chatroom, -2, 2, 3);
 		history_message_count_helper(chatroom, -3, 1, 2);
 	}
+
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
@@ -1258,28 +1274,30 @@ static void history_count(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
 	LinphoneChatRoom *chatroom;
-	MSList *messages;
+	bctbx_list_t *messages;
 	char *src_db = bc_tester_res("messages.db");
 	char *tmp_db  = bc_tester_file("tmp.db");
 
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
+	if (!marie->lc->db) goto end;
 
 	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
 	BC_ASSERT_PTR_NOT_NULL(chatroom);
 	if (chatroom){
 		messages=linphone_chat_room_get_history(chatroom,10);
-		BC_ASSERT_EQUAL(ms_list_size(messages), 10, int, "%d");
-		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		BC_ASSERT_EQUAL(bctbx_list_size(messages), 10, int, "%d");
+		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		messages=linphone_chat_room_get_history(chatroom,1);
-		BC_ASSERT_EQUAL(ms_list_size(messages), 1, int, "%d");
-		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1, int, "%d");
+		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		messages=linphone_chat_room_get_history(chatroom,0);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270, int, "%d");
-		BC_ASSERT_EQUAL(ms_list_size(messages), 1270, int, "%d");
+		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1270, int, "%d");
 
 		/*check the second most recent msg*/
 		BC_ASSERT_PTR_NOT_NULL(messages);
@@ -1290,35 +1308,38 @@ static void history_count(void) {
 			}
 		}
 
-		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset+limit: retrieve the 42th latest msg only and check its content*/
 		messages=linphone_chat_room_get_history_range(chatroom, 42, 42);
-		BC_ASSERT_EQUAL(ms_list_size(messages), 1, int, "%d");
+		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1, int, "%d");
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->data), "If you open yourself to the Tao is intangible and evasive, yet prefers to keep us at the mercy of the kingdom, then all of the streams of hundreds of valleys because of its limitless possibilities.");
-		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset without limit*/
 		messages = linphone_chat_room_get_history_range(chatroom, 1265, -1);
-		BC_ASSERT_EQUAL(ms_list_size(messages), 1270-1265, int, "%d");
-		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1270-1265, int, "%d");
+		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test limit without offset*/
 		messages = linphone_chat_room_get_history_range(chatroom, 0, 5);
-		BC_ASSERT_EQUAL(ms_list_size(messages), 6, int, "%d");
-		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		BC_ASSERT_EQUAL(bctbx_list_size(messages), 6, int, "%d");
+		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test invalid start*/
 		messages = linphone_chat_room_get_history_range(chatroom, 1265, 1260);
-		BC_ASSERT_EQUAL(ms_list_size(messages), 1270-1265, int, "%d");
-		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1270-1265, int, "%d");
+		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 	}
+
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
 	ms_free(src_db);
 	bc_free(tmp_db);
 }
+#endif
 
 static void text_status_after_destroying_chat_room(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -1351,7 +1372,15 @@ void file_transfer_io_error_base(char *server_url, bool_t destroy_room) {
 }
 
 static void file_transfer_not_sent_if_invalid_url(void) {
-	file_transfer_io_error_base("INVALID URL", FALSE);
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneChatRoom *chatroom = linphone_core_get_chat_room_from_uri(marie->lc, "<sip:Jehan@sip.linphone.org>");
+	LinphoneChatMessage *msg = create_message_from_nowebcam(chatroom);
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_core_set_file_transfer_server(marie->lc, "INVALID URL");
+	linphone_chat_room_send_chat_message(chatroom, msg);
+	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000));
+	linphone_core_manager_destroy(marie);
 }
 
 static void file_transfer_not_sent_if_host_not_found(void) {
@@ -1366,7 +1395,7 @@ static void file_transfer_io_error_after_destroying_chatroom(void) {
 	file_transfer_io_error_base("https://www.linphone.org:444/lft.php", TRUE);
 }
 
-static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, bool_t mess_with_marie_payload_number, bool_t mess_with_pauline_payload_number, 
+static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, bool_t mess_with_marie_payload_number, bool_t mess_with_pauline_payload_number,
 						   bool_t ice_enabled, bool_t sql_storage, bool_t do_not_store_rtt_messages_in_sql_storage) {
 	LinphoneChatRoom *pauline_chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -1375,10 +1404,12 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	LinphoneCall *pauline_call, *marie_call;
 	char *marie_db  = bc_tester_file("marie.db");
 	char *pauline_db  = bc_tester_file("pauline.db");
-	
+
 	if (sql_storage) {
 		linphone_core_set_chat_database_path(marie->lc, marie_db);
+		BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
 		linphone_core_set_chat_database_path(pauline->lc, pauline_db);
+		BC_ASSERT_PTR_NOT_NULL(pauline->lc->db);
 		if (do_not_store_rtt_messages_in_sql_storage) {
 			lp_config_set_int(marie->lc->config, "misc", "store_rtt_messages", 0);
 			lp_config_set_int(pauline->lc->config, "misc", "store_rtt_messages", 0);
@@ -1386,7 +1417,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	}
 
 	if (mess_with_marie_payload_number) {
-		MSList *elem;
+		bctbx_list_t *elem;
 		for (elem = marie->lc->codecs_conf.text_codecs; elem != NULL; elem = elem->next) {
 			PayloadType *pt = (PayloadType*)elem->data;
 			if (strcasecmp(pt->mime_type, payload_type_t140.mime_type) == 0) {
@@ -1395,7 +1426,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			}
 		}
 	} else if (mess_with_pauline_payload_number) {
-		MSList *elem;
+		bctbx_list_t *elem;
 		for (elem = pauline->lc->codecs_conf.text_codecs; elem != NULL; elem = elem->next) {
 			PayloadType *pt = (PayloadType*)elem->data;
 			if (strcasecmp(pt->mime_type, payload_type_t140.mime_type) == 0) {
@@ -1422,8 +1453,8 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 	if (!audio_stream_enabled) {
 		linphone_call_params_enable_audio(marie_params,FALSE);
-		linphone_core_set_nortp_timeout(marie->lc, 10);
-		linphone_core_set_nortp_timeout(pauline->lc, 10);
+		linphone_core_set_nortp_timeout(marie->lc, 5);
+		linphone_core_set_nortp_timeout(pauline->lc, 5);
 	}
 
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
@@ -1438,8 +1469,8 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
-			const char* message = "Lorem Ipsum Belledonnum Communicatum";
-			int i;
+			const char* message = "Be l3l";
+			size_t i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 
@@ -1450,18 +1481,18 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
-			
+
 			if (sql_storage) {
-				MSList *marie_messages = linphone_chat_room_get_history(marie_chat_room, 0);
-				MSList *pauline_messages = linphone_chat_room_get_history(pauline_chat_room, 0);
+				bctbx_list_t *marie_messages = linphone_chat_room_get_history(marie_chat_room, 0);
+				bctbx_list_t *pauline_messages = linphone_chat_room_get_history(pauline_chat_room, 0);
 				LinphoneChatMessage *marie_msg = NULL;
 				LinphoneChatMessage *pauline_msg = NULL;
 				if (do_not_store_rtt_messages_in_sql_storage) {
-					BC_ASSERT_EQUAL(ms_list_size(marie_messages), 0, int , "%i");
-					BC_ASSERT_EQUAL(ms_list_size(pauline_messages), 0, int , "%i");
+					BC_ASSERT_EQUAL(bctbx_list_size(marie_messages), 0, int , "%i");
+					BC_ASSERT_EQUAL(bctbx_list_size(pauline_messages), 0, int , "%i");
 				} else {
-					BC_ASSERT_EQUAL(ms_list_size(marie_messages), 1, int , "%i");
-					BC_ASSERT_EQUAL(ms_list_size(pauline_messages), 1, int , "%i");
+					BC_ASSERT_EQUAL(bctbx_list_size(marie_messages), 1, int , "%i");
+					BC_ASSERT_EQUAL(bctbx_list_size(pauline_messages), 1, int , "%i");
 					if (!marie_messages || !pauline_messages) {
 						goto end;
 					}
@@ -1469,15 +1500,15 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 					pauline_msg = (LinphoneChatMessage *)pauline_messages->data;
 					BC_ASSERT_STRING_EQUAL(marie_msg->message, message);
 					BC_ASSERT_STRING_EQUAL(pauline_msg->message, message);
-					ms_list_free_with_data(marie_messages, (void (*)(void *))linphone_chat_message_unref);
-					ms_list_free_with_data(pauline_messages, (void (*)(void *))linphone_chat_message_unref);
+					bctbx_list_free_with_data(marie_messages, (void (*)(void *))linphone_chat_message_unref);
+					bctbx_list_free_with_data(pauline_messages, (void (*)(void *))linphone_chat_message_unref);
 				}
 			}
 		}
 
 		if (!audio_stream_enabled) {
 			int dummy = 0;
-			wait_for_until(pauline->lc, marie->lc, &dummy, 1, 13000); /* Wait to see if call is dropped after the nortp_timeout */
+			wait_for_until(pauline->lc, marie->lc, &dummy, 1, 7000); /* Wait to see if call is dropped after the nortp_timeout */
 			BC_ASSERT_FALSE(marie->stat.number_of_LinphoneCallEnd > 0);
 			BC_ASSERT_FALSE(pauline->stat.number_of_LinphoneCallEnd > 0);
 		}
@@ -1528,11 +1559,11 @@ static void real_time_text_conversation(void) {
 	marie_chat_room = linphone_call_get_chat_room(marie_call);
 	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 	if (pauline_chat_room && marie_chat_room) {
-		const char* message1_1 = "Lorem Ipsum";
-		const char* message1_2 = "Muspi Merol";
-		const char* message2_1 = "Belledonnum Communicatum";
-		const char* message2_2 = "Mutacinummoc Munnodelleb";
-		int i;
+		const char* message1_1 = "Lorem";
+		const char* message1_2 = "Ipsum";
+		const char* message2_1 = "Be lle Com";
+		const char* message2_2 = "eB ell moC";
+		size_t i;
 		LinphoneChatMessage* pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 		LinphoneChatMessage* marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
 
@@ -1640,8 +1671,8 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
-			const char* message = "Lorem Ipsum Belledonnum Communicatum";
-			int i;
+			const char* message = "Be l3l";
+			size_t i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 			uint32_t crlf = 0x0D0A;
@@ -1660,6 +1691,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 			}
 			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, strlen(message), 1000));
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+			linphone_chat_message_unref(rtt_message);
 		}
 		end_call(marie, pauline);
 	}
@@ -1753,8 +1785,8 @@ static void real_time_text_copy_paste(void) {
 		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
-			const char* message = "Lorem Ipsum Belledonnum Communicatum";
-			int i;
+			const char* message = "Be l3l";
+			size_t i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 
@@ -1817,27 +1849,29 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Lime transfer message from history", lime_transfer_message_from_history,"LeaksMemory"),
 	TEST_NO_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption),
 	TEST_NO_TAG("Lime unitary", lime_unit),
+#ifdef SQLITE_STORAGE_ENABLED
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
 	TEST_NO_TAG("History count", history_count),
+#endif
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
-	TEST_ONE_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url, "LeaksMemory"),
-	TEST_ONE_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found, "LeaksMemory"),
-	TEST_ONE_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently, "LeaksMemory"),
-	TEST_ONE_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom, "LeaksMemory"),
-	TEST_NO_TAG("Real Time Text message", real_time_text_message),
-	TEST_NO_TAG("Real Time Text SQL storage", real_time_text_sql_storage),
-	TEST_NO_TAG("Real Time Text SQL storage with RTT messages not stored", real_time_text_sql_storage_rtt_disabled),
-	TEST_NO_TAG("Real Time Text conversation", real_time_text_conversation),
-	TEST_NO_TAG("Real Time Text without audio", real_time_text_without_audio),
-	TEST_NO_TAG("Real Time Text with srtp", real_time_text_srtp),
-	TEST_NO_TAG("Real Time Text with ice", real_time_text_ice),
-	TEST_ONE_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf, "LeaksMemory"),
-	TEST_ONE_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf, "LeaksMemory"),
-	TEST_NO_TAG("Real Time Text message with accented characters", real_time_text_message_accented_chars),
-	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side),
-	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side),
-	TEST_NO_TAG("Real Time Text copy paste", real_time_text_copy_paste),
+	TEST_NO_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url),
+	TEST_NO_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found),
+	TEST_NO_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently),
+	TEST_NO_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom),
+	TEST_ONE_TAG("Real Time Text message", real_time_text_message, "RTT"),
+	TEST_ONE_TAG("Real Time Text SQL storage", real_time_text_sql_storage, "RTT"),
+	TEST_ONE_TAG("Real Time Text SQL storage with RTT messages not stored", real_time_text_sql_storage_rtt_disabled, "RTT"),
+	TEST_ONE_TAG("Real Time Text conversation", real_time_text_conversation, "RTT"),
+	TEST_ONE_TAG("Real Time Text without audio", real_time_text_without_audio, "RTT"),
+	TEST_ONE_TAG("Real Time Text with srtp", real_time_text_srtp, "RTT"),
+	TEST_ONE_TAG("Real Time Text with ice", real_time_text_ice, "RTT"),
+	TEST_ONE_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf, "RTT"),
+	TEST_ONE_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf, "RTT"),
+	TEST_ONE_TAG("Real Time Text message with accented characters", real_time_text_message_accented_chars, "RTT"),
+	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side, "RTT"),
+	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side, "RTT"),
+	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
 };
 
 test_suite_t message_test_suite = {

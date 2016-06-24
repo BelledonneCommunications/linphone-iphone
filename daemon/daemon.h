@@ -1,3 +1,22 @@
+/*
+daemon.h
+Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+
+This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or (at
+your option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this library; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*/
+
 #ifndef DAEMON_H_
 #define DAEMON_H_
 
@@ -5,6 +24,7 @@
 #include <linphonecore_utils.h>
 #include <mediastreamer2/mediastream.h>
 #include <mediastreamer2/mscommon.h>
+#include <bctoolbox/list.h>
 
 #include <string>
 #include <list>
@@ -212,7 +232,7 @@ public:
 	int updateCallId(LinphoneCall *call);
 	int updateProxyId(LinphoneProxyConfig *proxy);
 	inline int maxProxyId() { return mProxyIds; }
-	inline int maxAuthInfoId()  { return ms_list_size(linphone_core_get_auth_info_list(mLc)); }
+	inline int maxAuthInfoId()  { return bctbx_list_size(linphone_core_get_auth_info_list(mLc)); }
 	int updateAudioStreamId(AudioStream *audio_stream);
 	void dumpCommandsHelp();
 	void dumpCommandsHelpHtml();

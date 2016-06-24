@@ -713,7 +713,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"ZID"))){ /* sender ZID found, extract it */
 			peerZidHex = xmlNodeListGetString(xmlEncryptedMessage, cur->xmlChildrenNode, 1);
 			/* convert it from hexa string to bytes string and set the result in the associatedKey structure */
-			lime_strToUint8(associatedKey.peerZID, peerZidHex, strlen((char *)peerZidHex));
+			lime_strToUint8(associatedKey.peerZID, peerZidHex, (uint16_t)strlen((char *)peerZidHex));
 			cur = cur->next;
 		}
 	}
@@ -825,8 +825,18 @@ void lime_freeKeys(limeURIKeys_t *associatedKeys){
 int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys){
 	return LIME_NOT_ENABLED;
 }
-
-
+int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
+	return LIME_NOT_ENABLED;
+}
+int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role) {
+	return LIME_NOT_ENABLED;
+}
+int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
+	return LIME_NOT_ENABLED;
+}
+int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {
+	return LIME_NOT_ENABLED;
+}
 #endif /* HAVE_LIME */
 
 char *lime_error_code_to_string(int errorCode) {

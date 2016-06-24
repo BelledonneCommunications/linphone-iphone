@@ -25,7 +25,9 @@
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifndef _MSC_VER
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#endif
 
 #ifdef HAVE_GTK
 #include <gtk/gtk.h>
@@ -136,7 +138,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	nowebcampath     = ms_strdup_printf("%s/images/nowebcamCIF.jpg", path);
 	rootcapath       = ms_strdup_printf("%s/certificates/cn/cafile.pem", path);
 	dnsuserhostspath = ms_strdup_printf("%s/%s", path, userhostsfile);
-	
+
 
 	if( config != NULL ) {
 		lp_config_set_string(config, "sound", "remote_ring", ringbackpath);
@@ -151,15 +153,17 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 		linphone_core_set_root_ca(lc,rootcapath);
 	}
 	chatdb = ms_strdup_printf("%s/messages-%p.db",bc_tester_get_writable_dir_prefix(),lc);
-	
+
 	linphone_core_enable_ipv6(lc, liblinphonetester_ipv6);
 
 	sal_enable_test_features(lc->sal,TRUE);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
+#ifdef VIDEO_ENABLED
 	linphone_core_set_static_picture(lc,nowebcampath);
+#endif
 
 	linphone_core_set_chat_database_path(lc, chatdb);
-	
+
 	ms_free(ringpath);
 	ms_free(ringbackpath);
 	ms_free(nowebcampath);
@@ -176,14 +180,14 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 
 bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value,int timout) {
-	MSList* lcs=NULL;
+	bctbx_list_t* lcs=NULL;
 	bool_t result;
 	if (lc_1)
-		lcs=ms_list_append(lcs,lc_1);
+		lcs=bctbx_list_append(lcs,lc_1);
 	if (lc_2)
-		lcs=ms_list_append(lcs,lc_2);
+		lcs=bctbx_list_append(lcs,lc_2);
 	result=wait_for_list(lcs,counter,value,timout);
-	ms_list_free(lcs);
+	bctbx_list_free(lcs);
 	return result;
 }
 
@@ -191,8 +195,8 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	return wait_for_until(lc_1, lc_2,counter,value,10000);
 }
 
-bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
-	MSList* iterator;
+bool_t wait_for_list(bctbx_list_t* lcs,int* counter,int value,int timeout_ms) {
+	bctbx_list_t* iterator;
 	MSTimeSpec start;
 
 	liblinphone_tester_clock_start(&start);
@@ -223,26 +227,25 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 bool_t wait_for_stun_resolution(LinphoneCoreManager *m) {
 	MSTimeSpec start;
 	int timeout_ms = 10000;
-
 	liblinphone_tester_clock_start(&start);
-	while (m->lc->net_conf.stun_addrinfo == NULL && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
+	while (linphone_core_get_stun_server_addrinfo(m->lc) == NULL && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
 		linphone_core_iterate(m->lc);
 		ms_usleep(20000);
 	}
-	return m->lc->net_conf.stun_addrinfo != NULL;
+	return linphone_core_get_stun_server_addrinfo(m->lc) != NULL;
 }
 
 static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t enable) {
-	MSList* codecs=ms_list_copy(linphone_core_get_audio_codecs(lc));
-	MSList* codecs_it;
+	bctbx_list_t* codecs=bctbx_list_copy(linphone_core_get_audio_codecs(lc));
+	bctbx_list_t* codecs_it;
 	PayloadType* pt;
 	for (codecs_it=codecs;codecs_it!=NULL;codecs_it=codecs_it->next) {
 		linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
 	}
-	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
+	if ((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, enable);
 	}
-	ms_list_free(codecs);
+	bctbx_list_free(codecs);
 }
 
 static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
@@ -269,7 +272,11 @@ bool_t transport_supported(LinphoneTransportType transport) {
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
@@ -347,11 +354,12 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 
 void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies) {
 	LinphoneProxyConfig* proxy;
+	LinphoneNatPolicy *nat_policy;
 	int proxy_count;
 
-	/*BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
+	/*BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
 	if (check_for_proxies){ /**/
-		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
+		proxy_count=bctbx_list_size(linphone_core_get_proxy_config_list(mgr->lc));
 	}else{
 		proxy_count=0;
 		/*this is to prevent registration to go on*/
@@ -378,7 +386,9 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 		linphone_address_clean(mgr->identity);
 	}
 
-	if (linphone_core_get_stun_server(mgr->lc) != NULL){
+	nat_policy = linphone_core_get_nat_policy(mgr->lc);
+	if ((nat_policy != NULL) && (linphone_nat_policy_get_stun_server(nat_policy) != NULL) &&
+		(linphone_nat_policy_stun_enabled(nat_policy) || linphone_nat_policy_turn_enabled(nat_policy))) {
 		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
 		const char **tags = bc_tester_current_test_tags();
 		int ice_test = (tags && ((tags[0] && !strcmp(tags[0], "ICE")) || (tags[1] && !strcmp(tags[1], "ICE"))));
@@ -502,6 +512,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&tunnel_test_suite);
 	bc_tester_add_suite(&offeranswer_test_suite);
 	bc_tester_add_suite(&call_test_suite);
+	bc_tester_add_suite(&call_video_test_suite);
 	bc_tester_add_suite(&audio_bypass_suite);
 	bc_tester_add_suite(&multi_call_test_suite);
 	bc_tester_add_suite(&message_test_suite);
@@ -588,6 +599,7 @@ int liblinphone_tester_after_each(void) {
 			ms_error("%s", format);
 
 			all_leaks_buffer = ms_strcat_printf(all_leaks_buffer, "\n%s", format);
+			ms_free(format);
 		}
 
 		// prevent any future leaks

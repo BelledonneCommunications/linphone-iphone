@@ -42,13 +42,13 @@ LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
 }
 
 static void cleanup_dead_vtable_refs(LinphoneCore *lc){
-	MSList *it,*next_it;
+	bctbx_list_t *it,*next_it;
 	for(it=lc->vtable_refs; it!=NULL; ){
 		VTableReference *ref=(VTableReference*)it->data;
 		next_it=it->next;
 		if (ref->valid==0){
 			ref->valid=0;
-			lc->vtable_refs=ms_list_remove_link(lc->vtable_refs, it);
+			lc->vtable_refs=bctbx_list_remove_link(lc->vtable_refs, it);
 			ms_free(ref);
 		}
 		it=next_it;
@@ -56,7 +56,7 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 }
 
 #define NOTIFY_IF_EXIST(function_name, ...) \
-	MSList* iterator; \
+	bctbx_list_t* iterator; \
 	VTableReference *ref; \
 	bool_t has_cb = FALSE; \
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
@@ -67,7 +67,7 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	if (has_cb) ms_message("Linphone core [%p] notifying [%s]",lc,#function_name)
 
 #define NOTIFY_IF_EXIST_INTERNAL(function_name, internal_val, ...) \
-	MSList* iterator; \
+	bctbx_list_t* iterator; \
 	VTableReference *ref; \
 	bool_t has_cb = FALSE; \
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
@@ -99,7 +99,11 @@ void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneP
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 void linphone_core_notify_show_interface(LinphoneCore *lc){
 	NOTIFY_IF_EXIST(show, lc);
 	cleanup_dead_vtable_refs(lc);
@@ -149,7 +153,11 @@ void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *ne
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
 	NOTIFY_IF_EXIST(text_received, lc,room,from,message);
@@ -166,7 +174,11 @@ void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *r
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
 	NOTIFY_IF_EXIST(file_transfer_recv, lc,message,content,buff,size);
 	cleanup_dead_vtable_refs(lc);
@@ -195,7 +207,7 @@ void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, in
 }
 
 bool_t linphone_core_dtmf_received_has_listener(const LinphoneCore* lc) {
-	MSList* iterator;
+	bctbx_list_t* iterator;
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next){
 		VTableReference *ref=(VTableReference*)iterator->data;
 		if (ref->valid && ref->vtable->dtmf_received)
@@ -290,7 +302,7 @@ void v_table_reference_destroy(VTableReference *ref){
 
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal) {
 	ms_message("Vtable [%p] registered on core [%p]",vtable, lc);
-	lc->vtable_refs=ms_list_append(lc->vtable_refs,v_table_reference_new(vtable, autorelease, internal));
+	lc->vtable_refs=bctbx_list_append(lc->vtable_refs,v_table_reference_new(vtable, autorelease, internal));
 }
 
 void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable){
@@ -298,7 +310,7 @@ void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable){
 }
 
 void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *vtable) {
-	MSList *it;
+	bctbx_list_t *it;
 	ms_message("Vtable [%p] unregistered on core [%p]",lc,vtable);
 	for(it=lc->vtable_refs; it!=NULL; it=it->next){
 		VTableReference *ref=(VTableReference*)it->data;

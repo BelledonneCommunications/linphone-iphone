@@ -111,12 +111,12 @@ void linphone_call_update_frozen_payloads(LinphoneCall *call, SalMediaDescriptio
 	SalMediaDescription *local=call->localdesc;
 	int i;
 	for(i=0;i<result_desc->nb_streams;++i){
-		MSList *elem;
+		bctbx_list_t *elem;
 		for (elem=result_desc->streams[i].payloads;elem!=NULL;elem=elem->next){
 			PayloadType *pt=(PayloadType*)elem->data;
 			if (is_payload_type_number_available(local->streams[i].already_assigned_payloads, payload_type_get_number(pt), NULL)){
 				/*new codec, needs to be added to the list*/
-				local->streams[i].already_assigned_payloads=ms_list_append(local->streams[i].already_assigned_payloads, payload_type_clone(pt));
+				local->streams[i].already_assigned_payloads=bctbx_list_append(local->streams[i].already_assigned_payloads, payload_type_clone(pt));
 				ms_message("LinphoneCall[%p] : payload type %i %s/%i fmtp=%s added to frozen list.",
 					   call, payload_type_get_number(pt), pt->mime_type, pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : "");
 			}
@@ -201,7 +201,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		prepare_early_media_forking(call);
 	}
 	linphone_call_start_media_streams(call, target_state);
-	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
+	if (call->state==LinphoneCallPausing && call->paused_by_app && bctbx_list_size(lc->calls)==1){
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
 	linphone_call_update_frozen_payloads(call, new_md);
@@ -212,7 +212,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 }
 #if 0
 static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){
-	MSList *elem;
+	bctbx_list_t *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (linphone_address_weak_equal(call->log->from,from) &&
@@ -225,7 +225,7 @@ static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, c
 #endif
 
 static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const LinphoneAddress *remote) {
-	MSList *elem;
+	bctbx_list_t *elem;
 	ms_message("Searching for already_a_call_with_remote_address.");
 
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
@@ -786,7 +786,7 @@ static void call_terminated(SalOp *op, const char *from){
 		linphone_core_start_refered_call(lc,call,NULL);
 	}
 	//we stop the call only if we have this current call or if we are in call
-	if ((ms_list_size(lc->calls)  == 1) || linphone_core_in_call(lc)) {
+	if ((bctbx_list_size(lc->calls)  == 1) || linphone_core_in_call(lc)) {
 		linphone_core_stop_ringing(lc);
 	}
 	linphone_call_stop_media_streams(call);
@@ -1088,8 +1088,8 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 }
 
 static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
-	MSList *elem=lc->last_recv_msg_ids;
-	MSList *tail=NULL;
+	bctbx_list_t *elem=lc->last_recv_msg_ids;
+	bctbx_list_t *tail=NULL;
 	int i;
 	bool_t is_duplicate=FALSE;
 	for(i=0;elem!=NULL;elem=elem->next,i++){
@@ -1099,11 +1099,11 @@ static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
 		tail=elem;
 	}
 	if (!is_duplicate){
-		lc->last_recv_msg_ids=ms_list_prepend(lc->last_recv_msg_ids,ms_strdup(msg_id));
+		lc->last_recv_msg_ids=bctbx_list_prepend(lc->last_recv_msg_ids,ms_strdup(msg_id));
 	}
 	if (i>=10){
 		ms_free(tail->data);
-		lc->last_recv_msg_ids=ms_list_remove_link(lc->last_recv_msg_ids,tail);
+		lc->last_recv_msg_ids=bctbx_list_remove_link(lc->last_recv_msg_ids,tail);
 	}
 	return is_duplicate;
 }

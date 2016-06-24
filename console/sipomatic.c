@@ -271,8 +271,8 @@ void sipomatic_uninit(Sipomatic *obj)
 
 void sipomatic_iterate(Sipomatic *obj)
 {
-	MSList *elem;
-	MSList *to_be_destroyed=NULL;
+	bctbx_list_t *elem;
+	bctbx_list_t *to_be_destroyed=NULL;
 	Call *call;
 	double elapsed;
 	eXosip_event_t *ev;
@@ -293,13 +293,13 @@ void sipomatic_iterate(Sipomatic *obj)
 			case CALL_STATE_RUNNING:
 				if (elapsed>obj->max_call_time || call->eof){
 					call_release(call);
-					to_be_destroyed=ms_list_append(to_be_destroyed,call);
+					to_be_destroyed=bctbx_list_append(to_be_destroyed,call);
 				}
 			break;
 		}
-		elem=ms_list_next(elem);
+		elem=bctbx_list_next(elem);
 	}
-	for(;to_be_destroyed!=NULL; to_be_destroyed=ms_list_next(to_be_destroyed)){
+	for(;to_be_destroyed!=NULL; to_be_destroyed=bctbx_list_next(to_be_destroyed)){
 		call_destroy((Call*)to_be_destroyed->data);
 	}
 }
@@ -307,9 +307,9 @@ void sipomatic_iterate(Sipomatic *obj)
 
 Call* sipomatic_find_call(Sipomatic *obj,int did)
 {
-	MSList *it;
+	bctbx_list_t *it;
 	Call *call=NULL;
-	for (it=obj->calls;it!=NULL;it=ms_list_next(it)){
+	for (it=obj->calls;it!=NULL;it=bctbx_list_next(it)){
 		call=(Call*)it->data;
 		if ( call->did==did) return call;
 	}
@@ -351,7 +351,7 @@ Call * call_new(Sipomatic *root, eXosip_event_t *ev)
 	obj->state=CALL_STATE_INIT;
 	obj->eof=0;
 	obj->root=root;
-	root->calls=ms_list_append(root->calls,obj);
+	root->calls=bctbx_list_append(root->calls,obj);
 	return obj;
 }
 
@@ -367,7 +367,7 @@ void call_release(Call *call)
 
 void call_destroy(Call *obj)
 {
-	obj->root->calls=ms_list_remove(obj->root->calls,obj);
+	obj->root->calls=bctbx_list_remove(obj->root->calls,obj);
 	rtp_profile_destroy(obj->profile);
 	sdp_context_free(obj->sdpc);
 	ms_free(obj);

@@ -55,7 +55,7 @@ void account_destroy(Account *obj){
 
 struct _AccountManager{
 	char *unique_id;
-	MSList *accounts;
+	bctbx_list_t *accounts;
 };
 
 typedef struct _AccountManager AccountManager;
@@ -73,7 +73,7 @@ AccountManager *account_manager_get(void){
 void account_manager_destroy(void){
 	if (the_am){
 		ms_free(the_am->unique_id);
-		ms_list_free_with_data(the_am->accounts,(void(*)(void*))account_destroy);
+		bctbx_list_free_with_data(the_am->accounts,(void(*)(void*))account_destroy);
 		ms_free(the_am);
 	}
 	the_am=NULL;
@@ -81,7 +81,7 @@ void account_manager_destroy(void){
 }
 
 Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *identity){
-	MSList *it;
+	bctbx_list_t *it;
 
 	for(it=m->accounts;it!=NULL;it=it->next){
 		Account *a=(Account*)it->data;
@@ -160,8 +160,9 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_proxy_config_set_expires(cfg,3*3600); //accounts are valid 3 hours
 
 	linphone_core_add_proxy_config(lc,cfg);
-	/*wait 15 seconds, since the DNS SRV resolution make time a while*/
-	if (wait_for_until(lc,NULL,&account->created,1,15000)==FALSE){
+	/*wait 25 seconds, since the DNS SRV resolution may take a while - and
+	especially if router does NOT support DNS SRV and we have to wait its timeout*/
+	if (wait_for_until(lc,NULL,&account->created,1,25000)==FALSE){
 		ms_fatal("Account for %s could not be created on server.", linphone_proxy_config_get_identity(refcfg));
 	}
 	linphone_proxy_config_edit(cfg);
@@ -207,7 +208,7 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 		account=account_new(id_addr,m->unique_id);
 		ms_message("No account for %s exists, going to create one.",identity);
 		create_account=TRUE;
-		m->accounts=ms_list_append(m->accounts,account);
+		m->accounts=bctbx_list_append(m->accounts,account);
 	}
 	/*modify the username of the identity of the proxy config*/
 	linphone_address_set_username(id_addr, linphone_address_get_username(account->modified_identity));
@@ -234,7 +235,7 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 }
 
 void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
-	const MSList *it;
+	const bctbx_list_t *it;
 	AccountManager *am=account_manager_get();
 
 	for(it=linphone_core_get_proxy_config_list(m->lc);it!=NULL;it=it->next){

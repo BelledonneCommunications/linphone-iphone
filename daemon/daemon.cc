@@ -1,3 +1,22 @@
+/*
+daemon.cc
+Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+
+This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or (at
+your option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this library; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*/
+
 #include <cstdio>
 #include <sys/ioctl.h>
 #include <iostream>
@@ -251,9 +270,9 @@ PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type
 			return;
 		}
 		mPayloadType = linphone_core_find_payload_type(core, type, rate, channels);
-		if (mPayloadType) mPosition=ms_list_index(linphone_core_get_audio_codecs(core), mPayloadType);
+		if (mPayloadType) mPosition=bctbx_list_index(linphone_core_get_audio_codecs(core), mPayloadType);
 	}else if (number!=-1){
-		const MSList *elem;
+		const bctbx_list_t *elem;
 		for(elem=linphone_core_get_audio_codecs(core);elem!=NULL;elem=elem->next){
 			if (number==linphone_core_get_payload_type_number(core,(PayloadType*)elem->data)){
 				mPayloadType=(PayloadType*)elem->data;
@@ -355,7 +374,7 @@ int Daemon::updateCallId(LinphoneCall *call) {
 }
 
 LinphoneCall *Daemon::findCall(int id) {
-	const MSList *elem = linphone_core_get_calls(mLc);
+	const bctbx_list_t *elem = linphone_core_get_calls(mLc);
 	for (; elem != NULL; elem = elem->next) {
 		LinphoneCall *call = (LinphoneCall *) elem->data;
 		if (linphone_call_get_user_pointer(call) == (void*) (long) id)
@@ -374,7 +393,7 @@ int Daemon::updateProxyId(LinphoneProxyConfig *cfg) {
 }
 
 LinphoneProxyConfig *Daemon::findProxy(int id) {
-	const MSList *elem = linphone_core_get_proxy_config_list(mLc);
+	const bctbx_list_t *elem = linphone_core_get_proxy_config_list(mLc);
 	for (; elem != NULL; elem = elem->next) {
 		LinphoneProxyConfig *proxy = (LinphoneProxyConfig *) elem->data;
 		if (linphone_proxy_config_get_user_data(proxy) == (void*) (long) id)
@@ -384,8 +403,8 @@ LinphoneProxyConfig *Daemon::findProxy(int id) {
 }
 
 LinphoneAuthInfo *Daemon::findAuthInfo(int id)  {
-	const MSList *elem = linphone_core_get_auth_info_list(mLc);
-	if (elem == NULL || id < 1 || id > ms_list_size(elem)) {
+	const bctbx_list_t *elem = linphone_core_get_auth_info_list(mLc);
+	if (elem == NULL || id < 1 || (unsigned int)id > bctbx_list_size(elem)) {
 		return NULL;
 	}
 	while (id > 1) {
