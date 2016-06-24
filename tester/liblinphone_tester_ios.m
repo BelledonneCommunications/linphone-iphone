@@ -43,7 +43,7 @@ static void* _apple_main(void* data) {
     bc_tester_set_writable_dir_prefix(documentPath.UTF8String);
 
 	liblinphone_tester_init(NULL);
-	bc_tester_start("toto");
+	bc_tester_start(NULL);
 	liblinphone_tester_uninit();
 
     [bundlePath release];
