@@ -286,6 +286,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
 void linphone_core_manager_stop(LinphoneCoreManager *mgr);
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr);
+void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr);
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr);
 
 void reset_counters( stats* counters);
