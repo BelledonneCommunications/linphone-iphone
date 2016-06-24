@@ -45,6 +45,11 @@ set(LP_GEN_WRAPPERS_LIBS
 	${XML2_LIBRARIES}
 	)
 
+set(LINK_FLAGS ${MEDIASTREAMER2_LDFLAGS})
+if(BELCARD_FOUND AND APPLE)
+    set(LINK_FLAGS "${LINK_FLAGS} -stdlib=libc++")
+endif()
+
 apply_compile_flags(LP_GEN_WRAPPERS_SOURCE_FILES "CPP" "CXX")
 add_executable(lp-gen-wrappers ${USE_BUNDLE} ${LP_GEN_WRAPPERS_SOURCE_FILES})
 target_link_libraries(lp-gen-wrappers ${LP_GEN_WRAPPERS_LIBS})
@@ -53,13 +58,13 @@ set(LP_AUTO_ANSWER_SOURCE_FILES	auto_answer.c)
 apply_compile_flags(LP_AUTO_ANSWER_SOURCE_FILES "CPP" "C")
 add_executable(lp-auto-answer ${USE_BUNDLE} ${LP_AUTO_ANSWER_SOURCE_FILES})
 target_link_libraries(lp-auto-answer ${LINPHONE_LIBS_FOR_TOOLS} ${MEDIASTREAMER2_LIBRARIES})
-set_target_properties(lp-auto-answer PROPERTIES LINK_FLAGS "${MEDIASTREAMER2_LDFLAGS}")
+set_target_properties(lp-auto-answer PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
 
 set(LP_SENDMSG_SOURCE_FILES lpsendmsg.c)
 apply_compile_flags(LP_SENDMSG_SOURCE_FILES "CPP" "C")
 add_executable(lp-sendmsg ${USE_BUNDLE} ${LP_SENDMSG_SOURCE_FILES})
 target_link_libraries(lp-sendmsg ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
-set_target_properties(lp-sendmsg PROPERTIES LINK_FLAGS "${MEDIASTREAMER2_LDFLAGS}")
+set_target_properties(lp-sendmsg PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
 
 if (NOT IOS)
 	install(TARGETS lp-gen-wrappers
