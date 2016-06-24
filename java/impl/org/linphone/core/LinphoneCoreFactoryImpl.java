@@ -25,7 +25,7 @@ import java.util.List;
 import org.linphone.LinphoneService;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
-import org.linphone.tools.CodecDownloader;
+import org.linphone.tools.OpenH264Helper;
 
 public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
@@ -109,7 +109,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			String userConfig, String factoryConfig, Object userdata, Object context)
 			throws LinphoneCoreException {
 		try {
-			if(context!=null) loadOptionalLibraryWithPath(((android.content.Context)context).getFilesDir() + "/" + CodecDownloader.getNameLib());
+			if(context!=null) loadOptionalLibraryWithPath(((android.content.Context)context).getFilesDir() + "/" + OpenH264Helper.getNameLib());
 			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
