@@ -470,7 +470,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		if (call && call->op == op) {
 			/*In this case, chat delivery status is not notified, so unrefing chat message right now*/
 			/*Might be better fixed by delivering status, but too costly for now*/
-			msg->chat_room->transient_messages = ms_list_remove(msg->chat_room->transient_messages, msg);
+			msg->chat_room->transient_messages = bctbx_list_remove(msg->chat_room->transient_messages, msg);
 			linphone_chat_message_unref(msg);
 			linphone_chat_message_unref(msg);
 			return;
