@@ -1187,6 +1187,8 @@ static LangCodes supported_langs[]={
 	{	"sr"	,	N_("Serbian")	},
 	{	"ar"	,	N_("Arabic")	},
 	{	"tr"	,	N_("Turkish")	},
+	{	"fi"	,	N_("Finnish")	},
+	{	"lt"	,	N_("Lithuanian")	},
 	{	NULL	,	NULL		}
 };
 
