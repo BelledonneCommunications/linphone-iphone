@@ -20,17 +20,6 @@
 #
 ############################################################################
 
-set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
-if(INTL_FOUND)
-	list(APPEND OTHER_LIBS_FOR_TESTER ${INTL_LIBRARIES})
-endif()
-if(SQLITE3_FOUND)
-	list(APPEND OTHER_LIBS_FOR_TESTER ${SQLITE3_LIBRARIES})
-endif()
-if(ZLIB_FOUND)
-	list(APPEND OTHER_LIBS_FOR_TESTER ${ZLIB_LIBRARIES})
-endif()
-
 set(RESOURCES_FILES
 	certificates
 	flexisip
@@ -161,11 +150,7 @@ if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	if (IOS)
 		set_source_files_properties(${RESOURCES_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 		add_executable(liblinphone_tester MACOSX_BUNDLE ${RESOURCES_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_OBJC})
-		set(LINK_FLAGS ${MEDIASTREAMER2_LDFLAGS})
-		if(BELCARD_FOUND)
-		    set(LINK_FLAGS "${LINK_FLAGS} -stdlib=libc++")
-		endif()
-		set_target_properties(liblinphone_tester PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
+		set_target_properties(liblinphone_tester PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 	else()
 		add_executable(liblinphone_tester ${SOURCE_FILES_C} ${SOURCE_FILES_OBJC})
 	endif()
