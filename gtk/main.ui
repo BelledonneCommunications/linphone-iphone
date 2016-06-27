@@ -167,8 +167,8 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="linphone_gtk_show_parameters" swapped="no"/>
                         <accelerator key="p" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <signal name="activate" handler="linphone_gtk_show_parameters" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -650,6 +650,7 @@
                   <object class="GtkNotebook" id="viewswitch">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <signal name="switch-page" handler="linphone_gtk_viewswitch_changed" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
