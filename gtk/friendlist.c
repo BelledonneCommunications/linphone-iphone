@@ -218,13 +218,15 @@ void linphone_gtk_friend_list_update_button_display(GtkTreeView *friendlist){
 					icon_name = "linphone-chat-nothing";
 				}
 			}
+
 			if ((selected_path && gtk_tree_path_compare(path, selected_path) == 0)
 					|| (hovered_row && gtk_tree_path_compare(path, hovered_row) == 0)){
 				show_chat_button = TRUE;
 				show_call_button = TRUE;
 			}
+
 			gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,icon_name,
-						FRIEND_CHAT_BUTTON_VISIBLE, show_chat_button, -1);
+					FRIEND_CHAT_BUTTON_VISIBLE, show_chat_button, -1);
 			gtk_list_store_set(GTK_LIST_STORE(model), &iter, FRIEND_CALL_BUTTON_VISIBLE, show_call_button, -1);
 
 			gtk_tree_path_free(path);
@@ -702,11 +704,13 @@ void linphone_gtk_show_friends(void){
 		gtk_list_store_set(store,&iter,FRIEND_NAME, display,FRIEND_ID,lf,
 				FRIEND_PRESENCE_IMG, send_subscribe ? status_to_icon_name(linphone_friend_get_status(lf)) : NULL,
 				FRIEND_CHAT,"linphone-chat-nothing", -1);
+
 		cr=linphone_gtk_create_chatroom(f_uri);
 		gtk_list_store_set(store,&iter,FRIEND_CHATROOM,cr,-1);
 		nbmsg=linphone_chat_room_get_unread_messages_count(cr);
 		if(nbmsg != 0){
-			gtk_list_store_set(store,&iter,FRIEND_CHAT,"linphone-chat-new-message",-1);
+			gtk_list_store_set(store,&iter,FRIEND_CHAT,"linphone-chat-new-message",
+					   FRIEND_CHAT_BUTTON_VISIBLE, TRUE, -1);
 		}
 		escaped=g_markup_escape_text(uri,-1);
 		gtk_list_store_set(store,&iter,FRIEND_SIP_ADDRESS,escaped,-1);
