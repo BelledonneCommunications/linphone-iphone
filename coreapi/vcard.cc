@@ -65,7 +65,7 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_file(const char *filename) {
 				result = bctbx_list_append(result, vCard);
 			}
 		}
-		free(parser);
+		delete(parser);
 	}
 	return result;
 }
@@ -82,7 +82,7 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 				result = bctbx_list_append(result, vCard);
 			}
 		}
-		free(parser);
+		delete(parser);
 	}
 	return result;
 }
@@ -97,7 +97,7 @@ LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
 		} else {
 			ms_error("Couldn't parse buffer %s", buffer);
 		}
-		free(parser);
+		delete(parser);
 	}
 	return vCard;
 }
