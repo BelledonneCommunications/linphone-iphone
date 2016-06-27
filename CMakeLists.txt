@@ -189,17 +189,6 @@ if(BELCARD_FOUND AND APPLE)
     set(LINPHONE_LDFLAGS "${LINPHONE_LDFLAGS} -stdlib=libc++")
 endif()
 
-set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
-if(INTL_FOUND)
-	list(APPEND OTHER_LIBS_FOR_TESTER ${INTL_LIBRARIES})
-endif()
-if(SQLITE3_FOUND)
-	list(APPEND OTHER_LIBS_FOR_TESTER ${SQLITE3_LIBRARIES})
-endif()
-if(ZLIB_FOUND)
-	list(APPEND OTHER_LIBS_FOR_TESTER ${ZLIB_LIBRARIES})
-endif()
-
 # include_directories must be called only UNDER THIS LINE in order to use our
 # projects submodules first (we do NOT want to have system headers in first position)
 include_directories(
