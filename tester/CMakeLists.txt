@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${BCTOOLBOX_TESTER_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
+set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
 if(INTL_FOUND)
 	list(APPEND OTHER_LIBS_FOR_TESTER ${INTL_LIBRARIES})
 endif()
@@ -44,8 +44,37 @@ set(RESOURCES_FILES
 	vcards
 )
 
-file(GLOB SOURCE_FILES_C "*_tester.c")
-list(APPEND SOURCE_FILES_C accountmanager.c tester.c)
+set(SOURCE_FILES_C
+	accountmanager.c
+	audio_bypass_tester.c
+	call_multicast_tester.c
+	call_multi_tester.c
+	call_single_tester.c
+	call_video_tester.c
+	complex_sip_case_tester.c
+	dtmf_tester.c
+	eventapi_tester.c
+	flexisip_tester.c
+	liblinphone_tester.c
+	liblinphone_tester.h
+	log_collection_tester.c
+	message_tester.c
+	offeranswer_tester.c
+	player_tester.c
+	presence_server_tester.c
+	presence_tester.c
+	proxy_config_tester.c
+	quality_reporting_tester.c
+	register_tester.c
+	remote_provisioning_tester.c
+	setup_tester.c
+	stun_tester.c
+	tester.c
+	tunnel_tester.c
+	upnp_tester.c
+	vcard_tester.c
+	video_tester.c
+)
 
 set(SOURCE_FILES_OBJC )
 if(APPLE)
