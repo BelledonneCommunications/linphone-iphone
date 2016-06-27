@@ -509,7 +509,7 @@ void linphone_gtk_remove_in_call_view(LinphoneCall *call){
 	GtkWidget *w=(GtkWidget*)linphone_call_get_user_pointer (call);
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
 	GtkWidget *nb=linphone_gtk_get_widget(main_window,"viewswitch");
-	int idx;
+	int idx,id_current_page;
 	g_return_if_fail(w!=NULL);
 	idx=gtk_notebook_page_num(GTK_NOTEBOOK(nb),w);
 	if (linphone_gtk_call_is_in_conference_view(call)){
@@ -518,15 +518,21 @@ void linphone_gtk_remove_in_call_view(LinphoneCall *call){
 	linphone_call_set_user_pointer (call,NULL);
 	linphone_call_unref(call);
 	call=linphone_core_get_current_call(linphone_gtk_get_core());
-	if (call==NULL){
-		if (linphone_core_is_in_conference(linphone_gtk_get_core())){
-			/*show the conference*/
+	id_current_page = gtk_notebook_get_current_page(GTK_NOTEBOOK(nb));
+	if (id_current_page == idx) {
+		if (call==NULL){
+			if (linphone_core_is_in_conference(linphone_gtk_get_core())){
+				/*show the conference*/
+				gtk_notebook_set_current_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),
+								g_object_get_data(G_OBJECT(main_window),"conf_frame")));
+			} else {
+				gtk_notebook_set_current_page(GTK_NOTEBOOK(nb),0);
+			}
+		}else{
+			/*show the active call*/
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),
-		                            g_object_get_data(G_OBJECT(main_window),"conf_frame")));
-		}else gtk_notebook_prev_page(GTK_NOTEBOOK(nb));
-	}else{
-		/*show the active call*/
-		gtk_notebook_set_current_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),                                                                     linphone_call_get_user_pointer(call)));
+							linphone_call_get_user_pointer(call)));
+		}
 	}
 	gtk_notebook_remove_page (GTK_NOTEBOOK(nb),idx);
 	gtk_widget_destroy(w);
@@ -865,6 +871,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 		gtk_label_set_markup(GTK_LABEL(status),msg);
 		g_free(msg);
 	}
+	
 	linphone_gtk_in_call_set_animation_image(callview, linphone_gtk_get_ui_config("stop_call_icon_name","linphone-stop-call"));
 	linphone_gtk_in_call_view_hide_encryption(call);
 
