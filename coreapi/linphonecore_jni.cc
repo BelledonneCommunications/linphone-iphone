@@ -840,6 +840,9 @@ public:
 		if (msg) {
 			env->DeleteLocalRef(msg);
 		}
+		if (jproxy) {
+			env->DeleteLocalRef(jproxy);
+		}
 	}
 
 	static void callStateChange(LinphoneCore *lc, LinphoneCall* call,LinphoneCallState state,const char* message) {
@@ -956,6 +959,8 @@ public:
 			return;
 		}
 		
+		jobject jmsg;
+		jobject jroom;
 		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
@@ -963,9 +968,16 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,ljb->messageReceivedId
 							,lcData->core
-							,getChatRoom(env, room)
-							,getChatMessage(env, msg));
+							,(jroom = getChatRoom(env, room))
+							,(jmsg = getChatMessage(env, msg)));
 		handle_possible_java_exception(env, lcData->listener);
+		
+		if (jmsg) {
+			env->DeleteLocalRef(jmsg);
+		}
+		if (jroom) {
+			env->DeleteLocalRef(jroom);
+		}
 	}
 	static void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 		JNIEnv *env = 0;
@@ -975,14 +987,19 @@ public:
 			return;
 		}
 		
+		jobject jroom;
 		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
 		env->CallVoidMethod(lcData->listener
 							,ljb->isComposingReceivedId
 							,lcData->core
-							,getChatRoom(env, room));
+							,(jroom = getChatRoom(env, room)));
 		handle_possible_java_exception(env, lcData->listener);
+		
+		if (jroom) {
+			env->DeleteLocalRef(jroom);
+		}
 	}
 	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
 		JNIEnv *env = 0;
@@ -1190,6 +1207,9 @@ public:
 		if (jcontent) {
 			env->DeleteLocalRef(jcontent);
 		}
+		if (jmsg) {
+			env->DeleteLocalRef(jmsg);
+		}
 		handle_possible_java_exception(env, lcData->listener);
 	}
 
@@ -1221,6 +1241,9 @@ public:
 		if (jbuffer) {
 			env->DeleteLocalRef(jbuffer);
 		}
+		if (jmsg) {
+			env->DeleteLocalRef(jmsg);
+		}
 		handle_possible_java_exception(env, lcData->listener);
 	}
 
@@ -1250,6 +1273,9 @@ public:
 				size);
 		if (jcontent) {
 			env->DeleteLocalRef(jcontent);
+		}
+		if (jmsg) {
+			env->DeleteLocalRef(jmsg);
 		}
 		handle_possible_java_exception(env, lcData->listener);
 	}
@@ -1318,14 +1344,19 @@ public:
 			return;
 		}
 		
+		jobject jfriendlist;
 		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
 		env->CallVoidMethod(lcData->listener
 							,ljb->friendListRemovedId
 							,lcData->core
-							,getFriendList(env, list));
+							,(jfriendlist = getFriendList(env, list)));
 		handle_possible_java_exception(env, lcData->listener);
+		
+		if (jfriendlist) {
+			env->DeleteLocalRef(jfriendlist);
+		}
 	}
 
 private:
@@ -3302,6 +3333,9 @@ static void contact_created(LinphoneFriendList *list, LinphoneFriend *lf) {
 	env->DeleteLocalRef(clazz);
 	env->CallVoidMethod(listener, method, jlist, jfriend);
 	env->DeleteLocalRef(jfriend);
+	if (jlist) {
+		env->DeleteLocalRef(jlist);
+	}
 }
 
 static void contact_updated(LinphoneFriendList *list, LinphoneFriend *lf_new, LinphoneFriend *lf_old) {
@@ -3328,6 +3362,9 @@ static void contact_updated(LinphoneFriendList *list, LinphoneFriend *lf_new, Li
 	env->CallVoidMethod(listener, method, jlist, jfriend_new, jfriend_old);
 	env->DeleteLocalRef(jfriend_new);
 	env->DeleteLocalRef(jfriend_old);
+	if (jlist) {
+		env->DeleteLocalRef(jlist);
+	}
 }
 
 static void contact_removed(LinphoneFriendList *list, LinphoneFriend *lf) {
@@ -3352,6 +3389,9 @@ static void contact_removed(LinphoneFriendList *list, LinphoneFriend *lf) {
 	env->DeleteLocalRef(clazz);
 	env->CallVoidMethod(listener, method, jlist, jfriend);
 	env->DeleteLocalRef(jfriend);
+	if (jlist) {
+		env->DeleteLocalRef(jlist);
+	}
 }
 
 static void sync_status_changed(LinphoneFriendList *list, LinphoneFriendListSyncStatus status, const char *message) {
@@ -3380,6 +3420,9 @@ static void sync_status_changed(LinphoneFriendList *list, LinphoneFriendListSync
 	env->CallVoidMethod(listener, method, jlist, env->CallStaticObjectMethod(ljb->friendListSyncStateClass, ljb->friendListSyncStateFromIntId, (jint)status), msg);
 	if (msg) {
 		env->DeleteLocalRef(msg);
+	}
+	if (jlist) {
+		env->DeleteLocalRef(jlist);
 	}
 }
 
@@ -4039,6 +4082,9 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 		env->DeleteGlobalRef(listener);
 		msg->message_state_changed_user_data = NULL;
 	}
+	if (jmessage) {
+		env->DeleteLocalRef(jmessage);
+	}
 }
 
 static void file_transfer_progress_indication(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t total) {
@@ -4058,6 +4104,9 @@ static void file_transfer_progress_indication(LinphoneChatMessage *msg, const Li
 	env->CallVoidMethod(listener, method, jmessage, jcontent, offset, total);
 	if (jcontent) {
 		env->DeleteLocalRef(jcontent);
+	}
+	if (jmessage) {
+		env->DeleteLocalRef(jmessage);
 	}
 }
 
@@ -4084,6 +4133,9 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 	if (jcontent) {
 		env->DeleteLocalRef(jcontent);
 	}
+	if (jmessage) {
+		env->DeleteLocalRef(jmessage);
+	}
 }
 
 static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const LinphoneContent* content, size_t offset, size_t size) {
@@ -4106,6 +4158,9 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 	env->CallVoidMethod(listener, method, jmessage, jcontent, offset, size, jbuffer);
 	if (jcontent) {
 		env->DeleteLocalRef(jcontent);
+	}
+	if (jmessage) {
+		env->DeleteLocalRef(jmessage);
 	}
 
 	buffer = create_c_linphone_buffer_from_java_linphone_buffer(env, jbuffer);
