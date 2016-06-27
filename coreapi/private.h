@@ -1493,7 +1493,7 @@ SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
  * @param[in] content LinphoneContent object.
  * @return The key to encrypt/decrypt the file associated to this content.
  */
-const char *linphone_content_get_key(const LinphoneContent *content);
+LINPHONE_PUBLIC const char *linphone_content_get_key(const LinphoneContent *content);
 
 /**
  * Get the size of key associated with a RCS file transfer message if encrypted
