@@ -84,9 +84,10 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 		fseek(infile, 0L, SEEK_END);
 		numbytes = ftell(infile);
 		fseek(infile, 0L, SEEK_SET);
-		buffer = (char*)ms_malloc(numbytes * sizeof(char));
+		buffer = (char*)ms_malloc((numbytes + 1) * sizeof(char));
 		numbytes = fread(buffer, sizeof(char), numbytes, infile);
 		fclose(infile);
+		buffer[numbytes] = '\0';
 
 		start = clock();
 		linphone_friend_list_import_friends_from_vcard4_buffer(lfl, buffer);
