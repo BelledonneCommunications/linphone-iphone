@@ -142,28 +142,47 @@ void linphone_gtk_remove_contact(GtkWidget *button){
 
 gboolean linphone_gtk_on_key_press(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
 
-	if (event->type == GDK_KEY_PRESS && ((GdkEventKey*)event)->state & GDK_CONTROL_MASK
-		&& ((GdkEventKey*)event)->hardware_keycode >= 10 && ((GdkEventKey*)event)->hardware_keycode <= 19) {
+	if (event->type == GDK_KEY_PRESS && ((GdkEventKey*)event)->state & GDK_CONTROL_MASK) {
+		int cpt;
+		int key = -1;
+		static int key_map[9] = {0};
+		if (key_map[0] == 0) {
+			GdkKeymapKey *keys = NULL;
+			gint n_keys = 0;
+			for (cpt = 0; cpt < 9; cpt++) {
+				if (gdk_keymap_get_entries_for_keyval(gdk_keymap_get_default(),
+					GDK_KEY_1+cpt, &keys, &n_keys))
+					key_map[cpt] = keys->keycode;
+			}
+		}
 
-		GtkWidget *main_window = linphone_gtk_get_main_window();
-		GtkWidget *friendlist = linphone_gtk_get_widget(main_window,"contact_list");
-		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
-		int key = ((GdkEventKey*)event)->hardware_keycode - 10;
-		GtkTreeIter iter;
+		for(cpt = 0; cpt < 9 ; cpt++) {
+			if (key_map[cpt] == (((GdkEventKey*)event)->hardware_keycode)) {
+				key = cpt;
+				break;
+			}
+		}
 
-		if (gtk_tree_model_get_iter_first(model, &iter)) {
-			int index = 0;
-			LinphoneFriend *lf = NULL;
-			do{
-				if (index == key) {
-					const LinphoneAddress *uri;
-					gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-					uri = linphone_friend_get_address(lf);
-					linphone_gtk_friend_list_set_chat_conversation(uri);
-					return TRUE;
-				}
-				index++;
-			}while(gtk_tree_model_iter_next(model,&iter) && index <= 9);
+		if (key != -1) {
+			GtkWidget *main_window = linphone_gtk_get_main_window();
+			GtkWidget *friendlist = linphone_gtk_get_widget(main_window,"contact_list");
+			GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
+			GtkTreeIter iter;
+
+			if (gtk_tree_model_get_iter_first(model, &iter)) {
+				int index = 0;
+				LinphoneFriend *lf = NULL;
+				do{
+					if (index == key) {
+						const LinphoneAddress *uri;
+						gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
+						uri = linphone_friend_get_address(lf);
+						linphone_gtk_friend_list_set_chat_conversation(uri);
+						return TRUE;
+					}
+					index++;
+				}while(gtk_tree_model_iter_next(model,&iter) && index <= 9);
+			}
 		}
 	}
 	return FALSE;
