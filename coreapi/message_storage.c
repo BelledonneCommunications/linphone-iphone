@@ -58,13 +58,17 @@ static char *utf8_convert(const char *filename){
 	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
 	iconv_t cb;
 
-	strncpy(db_file_locale, filename, MAX_PATH_SIZE-1);
-	cb = iconv_open("UTF-8", nl_langinfo(CODESET));
-	if(cb != (iconv_t)-1) {
-		int ret;
-		ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
-		if(ret == -1) db_file_utf8[0] = '\0';
-		iconv_close(cb);
+	if (strcasecmp("UTF-8", nl_langinfo(CODESET)) == 0) {
+		strncpy(db_file_utf8, filename, MAX_PATH_SIZE - 1);
+	} else {
+		strncpy(db_file_locale, filename, MAX_PATH_SIZE-1);
+		cb = iconv_open("UTF-8", nl_langinfo(CODESET));
+		if (cb != (iconv_t)-1) {
+			int ret;
+			ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
+			if(ret == -1) db_file_utf8[0] = '\0';
+			iconv_close(cb);
+		}
 	}
 #endif
 	return ms_strdup(db_file_utf8);
