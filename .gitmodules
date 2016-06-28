@@ -55,7 +55,7 @@
 	url = git://git.gnome.org/libxml2
 	ignore = dirty
 [submodule "submodules/cunit"]
-	path = submodules/cunit
+	path = submodules/externals/cunit
 	url = git://git.linphone.org/cunit.git
 	ignore = dirty
 [submodule "submodules/externals/openh264"]
