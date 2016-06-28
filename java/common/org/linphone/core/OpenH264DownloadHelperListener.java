@@ -1,6 +1,6 @@
 package org.linphone.core;
 
-public interface OpenH264HelperListener {
+public interface OpenH264DownloadHelperListener {
 	/**
      * Called at the beginning of download with current < max Called
      * at each iteration of download Called at the ending of download
@@ -14,5 +14,5 @@ public interface OpenH264HelperListener {
      * Called when we failed to download codec
      * @param error: Error message
      */
-    void OnDownloadFailure(String error);
+    void OnError(String error);
 }

@@ -1,5 +1,5 @@
 package org.linphone.core;
 
-public interface OpenH264HelperAction {
+public interface OpenH264DownloadHelperAction {
     void startDownload();
 }

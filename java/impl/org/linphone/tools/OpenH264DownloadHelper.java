@@ -29,21 +29,21 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.commons.compress.compressors.bzip2.*;
-import org.linphone.core.OpenH264HelperAction;
-import org.linphone.core.OpenH264HelperListener;
+import org.linphone.core.OpenH264DownloadHelperListener;
+import org.linphone.core.OpenH264DownloadHelperAction;
 
 /**
  * @author Erwan Croze
  */
-public class OpenH264Helper {
-    private OpenH264HelperListener openH264HelperListener;
-    private OpenH264HelperAction openH264HelperAction;
+public class OpenH264DownloadHelper {
+    private OpenH264DownloadHelperListener openH264DownloadHelperListener;
+    private OpenH264DownloadHelperAction openH264DownloadHelperAction;
     private ArrayList<Object> userData;
-    private static String fileDirection = null;
-    private static String nameLib;
-    private static String urlDownload;
-    private static String nameFileDownload;
-    private static String licenseMessage = "OpenH264 Video Codec provided by Cisco Systems, Inc.";
+    private String fileDirection = null;
+    private String nameLib;
+    private String urlDownload;
+    private String nameFileDownload;
+    private String licenseMessage;
 
 	/**
      * Default values
@@ -51,41 +51,42 @@ public class OpenH264Helper {
      * urlDownload = "http://ciscobinary.openh264.org/libopenh264-1.5.0-android19.so.bz2"
      * nameFileDownload = "libopenh264-1.5.0-android19.so.bz2"
      */
-    public OpenH264Helper() {
+    public OpenH264DownloadHelper() {
         userData = new ArrayList<Object>();
+        licenseMessage = "OpenH264 Video Codec provided by Cisco Systems, Inc.";
         nameLib = "libopenh264-1.5.so";
         urlDownload = "http://ciscobinary.openh264.org/libopenh264-1.5.0-android19.so.bz2";
         nameFileDownload = "libopenh264-1.5.0-android19.so.bz2";
     }
 
 	/**
-     * Set OpenH264HelperListener
+     * Set OpenH264DownloadHelperListener
      * @param h264Listener
      */
-    public void setOpenH264HelperListener(OpenH264HelperListener h264Listener) {
-        openH264HelperListener = h264Listener;
+    public void setOpenH264HelperListener(OpenH264DownloadHelperListener h264Listener) {
+        openH264DownloadHelperListener = h264Listener;
     }
 
 	/**
-     * Set OpenH264HelperAction
+     * Set OpenH264DownloadHelperAction
      * @param h264Action
      */
-    public void setOpenH264HelperAction(OpenH264HelperAction h264Action) {
-        openH264HelperAction = h264Action;
+    public void setOpenH264HelperAction(OpenH264DownloadHelperAction h264Action) {
+        openH264DownloadHelperAction = h264Action;
     }
 
 	/**
-     * @return OpenH264HelperAction
+     * @return OpenH264DownloadHelperAction
      */
-    public OpenH264HelperAction getOpenH264HelperAction() {
-        return openH264HelperAction;
+    public OpenH264DownloadHelperAction getOpenH264DownloadHelperAction() {
+        return openH264DownloadHelperAction;
     }
 
 	/**
-     * @return OpenH264HelperListener
+     * @return OpenH264DownloadHelperListener
      */
-    public OpenH264HelperListener getOpenH264HelperListener() {
-        return openH264HelperListener;
+    public OpenH264DownloadHelperListener getOpenH264DownloadHelperListener() {
+        return openH264DownloadHelperListener;
     }
 
 	/**
@@ -128,7 +129,7 @@ public class OpenH264Helper {
 	/**
      * @return OpenH264 license message
      */
-    static public String getLicenseMessage() {
+    public String getLicenseMessage() {
         return licenseMessage;
     }
 
@@ -136,20 +137,20 @@ public class OpenH264Helper {
      * Set path for file storage
      * @param path
      */
-    static public void setFileDirection(String path) { fileDirection = path; }
+    public void setFileDirection(String path) { fileDirection = path; }
 
 	/**
      * Set filename to storage for OpenH264 codec
      * @param name
      */
-    static public void setNameLib(String name) {
+    public void setNameLib(String name) {
         nameLib = name;
     }
 
 	/**
      * @return filename of OpenH264 codec
      */
-    static public String getNameLib() {
+    public String getNameLib() {
         return nameLib;
     }
 
@@ -157,7 +158,7 @@ public class OpenH264Helper {
      * Set name download file
      * @param name : must be the same name relative to the url
      */
-    static public void setNameFileDownload(String name) {
+    public void setNameFileDownload(String name) {
         nameFileDownload = name;
     }
 
@@ -165,7 +166,7 @@ public class OpenH264Helper {
      * Set new url
      * @param url : must be a Cisco Url to OpenH264 and .bzip2 file
      */
-    static public void setUrlDownload(String url) {
+    public void setUrlDownload(String url) {
         urlDownload = url;
     }
 
@@ -174,7 +175,7 @@ public class OpenH264Helper {
      * Requirements : fileDirection and nameLib init
      * @return file exists ?
      */
-    static public boolean codecExist() {
+    public boolean isCodecFound() {
         return new File(fileDirection+"/" + nameLib).exists();
     }
 
@@ -198,7 +199,7 @@ public class OpenH264Helper {
                     URL url = new URL(urlDownload);
                     HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
                     urlConnection.connect();
-                    openH264HelperListener.OnProgress(0,10);
+                    openH264DownloadHelperListener.OnProgress(0,10);
 
                     InputStream inputStream = urlConnection.getInputStream();
                     FileOutputStream fileOutputStream = new FileOutputStream(fileDirection+"/"+nameFileDownload);
@@ -207,11 +208,11 @@ public class OpenH264Helper {
                     byte[] buffer = new byte[4096];
                     int bufferLength;
                     int total = 0;
-                    openH264HelperListener.OnProgress(total, totalSize);
+                    openH264DownloadHelperListener.OnProgress(total, totalSize);
                     while((bufferLength = inputStream.read(buffer))>0 ){
                         total += bufferLength;
                         fileOutputStream.write(buffer, 0, bufferLength);
-                        openH264HelperListener.OnProgress(total, totalSize);
+                        openH264DownloadHelperListener.OnProgress(total, totalSize);
                     }
 
                     fileOutputStream.close();
@@ -229,11 +230,11 @@ public class OpenH264Helper {
                     bzIn.close();
 
                     new File(fileDirection+"/"+nameFileDownload).delete();
-                    openH264HelperListener.OnProgress(2,1);
+                    openH264DownloadHelperListener.OnProgress(2,1);
                 } catch (FileNotFoundException e) {
-                    openH264HelperListener.OnDownloadFailure(e.getLocalizedMessage());
+                    openH264DownloadHelperListener.OnError(e.getLocalizedMessage());
                 } catch (IOException e) {
-                    openH264HelperListener.OnDownloadFailure(e.getLocalizedMessage());
+                    openH264DownloadHelperListener.OnError(e.getLocalizedMessage());
                 }
             }
         });
