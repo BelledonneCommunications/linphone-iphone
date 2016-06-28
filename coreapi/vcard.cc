@@ -134,12 +134,16 @@ void linphone_vcard_add_sip_address(LinphoneVcard *vCard, const char *sip_addres
 void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 	if (!vCard) return;
 	
+	shared_ptr<belcard::BelCardImpp> impp;
 	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
 		if (strcmp(value, sip_address) == 0) {
-			vCard->belCard->removeImpp(*it);
+			impp = *it;
 			break;
 		}
+	}
+	if (impp) {
+		vCard->belCard->removeImpp(impp);
 	}
 }
 
@@ -180,12 +184,16 @@ void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone) {
 void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone) {
 	if (!vCard) return;
 	
+	shared_ptr<belcard::BelCardPhoneNumber> tel;
 	for (auto it = vCard->belCard->getPhoneNumbers().begin(); it != vCard->belCard->getPhoneNumbers().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
 		if (strcmp(value, phone) == 0) {
-			vCard->belCard->removePhoneNumber(*it);
+			tel = *it;
 			break;
 		}
+	}
+	if (tel) {
+		vCard->belCard->removePhoneNumber(tel);
 	}
 }
 
