@@ -371,3 +371,5 @@ LINPHONE_PUBLIC void linphone_gtk_mark_chat_read(LinphoneChatRoom *cr);
 #ifdef __APPLE__
 LINPHONE_PUBLIC void linphone_gtk_update_badge_count();
 #endif
+
+LINPHONE_PUBLIC gboolean linphone_gtk_on_key_press(GtkWidget *widget, GdkEvent *event, gpointer user_data);

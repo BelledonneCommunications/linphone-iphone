@@ -2263,6 +2263,7 @@ core_start:
 	the_ui=linphone_gtk_create_window("main", NULL);
 
 	g_object_set_data(G_OBJECT(the_ui),"is_created",GINT_TO_POINTER(FALSE));
+	g_signal_connect(G_OBJECT (the_ui), "key_press_event", G_CALLBACK (linphone_gtk_on_key_press), NULL);
 
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);

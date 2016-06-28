@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 #include <bctoolbox/bc_vfs.h>
+#include <gdk/gdkkeysyms.h>
 
 static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list);
 
@@ -137,6 +138,35 @@ void linphone_gtk_remove_contact(GtkWidget *button){
 		linphone_chat_room_delete_history(cr);
 		linphone_gtk_show_friends();
 	}
+}
+
+gboolean linphone_gtk_on_key_press(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+
+	if (event->type == GDK_KEY_PRESS && ((GdkEventKey*)event)->state & GDK_CONTROL_MASK
+		&& ((GdkEventKey*)event)->hardware_keycode >= 10 && ((GdkEventKey*)event)->hardware_keycode <= 19) {
+
+		GtkWidget *main_window = linphone_gtk_get_main_window();
+		GtkWidget *friendlist = linphone_gtk_get_widget(main_window,"contact_list");
+		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
+		int key = ((GdkEventKey*)event)->hardware_keycode - 10;
+		GtkTreeIter iter;
+
+		if (gtk_tree_model_get_iter_first(model, &iter)) {
+			int index = 0;
+			LinphoneFriend *lf = NULL;
+			do{
+				if (index == key) {
+					const LinphoneAddress *uri;
+					gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
+					uri = linphone_friend_get_address(lf);
+					linphone_gtk_friend_list_set_chat_conversation(uri);
+					return TRUE;
+				}
+				index++;
+			}while(gtk_tree_model_iter_next(model,&iter) && index <= 9);
+		}
+	}
+	return FALSE;
 }
 
 void linphone_gtk_delete_history(GtkWidget *button){
