@@ -268,6 +268,7 @@ void linphone_vcard_set_etag(LinphoneVcard *vCard, const char * etag) {
 	}
 	if (vCard->etag) {
 		ms_free(vCard->etag);
+		vCard->etag = NULL;
 	}
 	vCard->etag = ms_strdup(etag);
 }
@@ -283,6 +284,7 @@ void linphone_vcard_set_url(LinphoneVcard *vCard, const char * url) {
 	}
 	if (vCard->url) {
 		ms_free(vCard->url);
+		vCard->url = NULL;
 	}
 	vCard->url = ms_strdup(url);
 }

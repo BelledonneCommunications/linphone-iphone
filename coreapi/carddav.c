@@ -106,6 +106,7 @@ static void linphone_carddav_response_free(LinphoneCardDavResponse *response) {
 }
 
 static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, bctbx_list_t *vCards) {
+	bctbx_list_t *vCards_remember = vCards;
 	if (vCards != NULL && bctbx_list_size(vCards) > 0) {
 		bctbx_list_t *friends = cdc->friend_list->friends;
 		while (vCards) {
@@ -158,7 +159,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, bctbx_li
 			}
 			vCards = bctbx_list_next(vCards);
 		}
-		bctbx_list_free_with_data(vCards, (void (*)(void *))linphone_carddav_response_free);
+		bctbx_list_free_with_data(vCards_remember, (void (*)(void *))linphone_carddav_response_free);
 	}
 	linphone_carddav_server_to_client_sync_done(cdc, TRUE, NULL);
 }
@@ -190,6 +191,9 @@ static bctbx_list_t* parse_vcards_from_xml_response(const char *body) {
 							response->vcard = ms_strdup(vcard);
 							result = bctbx_list_append(result, response);
 							ms_debug("Added vCard object with eTag %s, URL %s and vCard %s", etag, url, vcard);
+							linphone_free_xml_text_content(etag);
+							linphone_free_xml_text_content(url);
+							linphone_free_xml_text_content(vcard);
 						}
 					}
 				}
@@ -281,6 +285,8 @@ static bctbx_list_t* parse_vcards_etags_from_xml_response(const char *body) {
 							response->url = ms_strdup(url);
 							result = bctbx_list_append(result, response);
 							ms_debug("Added vCard object with eTag %s and URL %s", etag, url);
+							linphone_free_xml_text_content(etag);
+							linphone_free_xml_text_content(url);
 						}
 					}
 				}
@@ -734,11 +740,11 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(
 		if (response) {
 			char temp_body[300];
 			snprintf(temp_body, sizeof(temp_body), "<d:href>%s</d:href>", response->url);
-			sprintf(body, "%s%s", body, temp_body);
+			strcat(body, temp_body);
 			iterator = bctbx_list_next(iterator);
 		}
 	}
-	sprintf(body, "%s%s", body, "</card:addressbook-multiget>");
+	strcat(body, "</card:addressbook-multiget>");
 	query->body = ms_strdup(body);
 	ms_free(body);
 	
