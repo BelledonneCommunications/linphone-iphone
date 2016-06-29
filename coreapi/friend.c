@@ -1250,12 +1250,13 @@ static int create_friend_list(void *data, int argc, char **argv, char **colName)
  * | 9  | presence_received
  */
 static int create_friend(void *data, int argc, char **argv, char **colName) {
-	bctbx_list_t **list = (bctbx_list_t **)data;
+	LinphoneVcardContext *context = (LinphoneVcardContext *)data;
+	bctbx_list_t **list = (bctbx_list_t **)linphone_vcard_context_get_user_data(context);
 	LinphoneFriend *lf = NULL;
 	LinphoneVcard *vcard = NULL;
 	unsigned int storage_id = (unsigned int)atoi(argv[0]);
 
-	vcard = linphone_vcard_new_from_vcard4_buffer(argv[6]);
+	vcard = linphone_vcard_new_from_vcard4_buffer(context, argv[6]);
 	if (vcard) {
 		linphone_vcard_set_etag(vcard, argv[7]);
 		linphone_vcard_set_url(vcard, argv[8]);
@@ -1281,10 +1282,10 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 #pragma GCC diagnostic pop
 #endif
 
-static int linphone_sql_request_friend(sqlite3* db, const char *stmt, bctbx_list_t **list) {
+static int linphone_sql_request_friend(sqlite3* db, const char *stmt, LinphoneVcardContext *context) {
 	char* errmsg = NULL;
 	int ret;
-	ret = sqlite3_exec(db, stmt, create_friend, list, &errmsg);
+	ret = sqlite3_exec(db, stmt, create_friend, context, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_error("linphone_sql_request: statement %s -> error sqlite3_exec(): %s.", stmt, errmsg);
 		sqlite3_free(errmsg);
@@ -1448,11 +1449,13 @@ bctbx_list_t* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFrie
 		ms_warning("Either lc (or list) is NULL or friends database wasn't initialized with linphone_core_friends_storage_init() yet");
 		return NULL;
 	}
+	
+	linphone_vcard_context_set_user_data(lc->vcard_context, &result);
 
 	buf = sqlite3_mprintf("SELECT * FROM friends WHERE friend_list_id = %u ORDER BY id", list->storage_id);
 
 	begin = ortp_get_cur_time_ms();
-	linphone_sql_request_friend(lc->friends_db, buf, &result);
+	linphone_sql_request_friend(lc->friends_db, buf, lc->vcard_context);
 	end = ortp_get_cur_time_ms();
 	ms_message("%s(): %u results fetched, completed in %i ms",__FUNCTION__, (unsigned int)bctbx_list_size(result), (int)(end-begin));
 	sqlite3_free(buf);
@@ -1462,6 +1465,7 @@ bctbx_list_t* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFrie
 		lf->lc = lc;
 		lf->friend_list = list;
 	}
+	linphone_vcard_context_set_user_data(lc->vcard_context, NULL);
 
 	return result;
 }

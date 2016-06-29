@@ -1826,6 +1826,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	sqlite3_bctbx_vfs_register(0);
 #endif
 	
+	lc->vcard_context = linphone_vcard_context_new();
+	
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
@@ -6487,6 +6489,10 @@ void sip_config_uninit(LinphoneCore *lc)
 		ms_message("Tunnel destroyed.");
 	}
 #endif
+
+	if (lc->vcard_context) {
+		linphone_vcard_context_destroy(lc->vcard_context);
+	}
 
 	sal_reset_transports(lc->sal);
 	sal_unlisten_ports(lc->sal); /*to make sure no new messages are received*/

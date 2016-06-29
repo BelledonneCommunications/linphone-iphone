@@ -19,6 +19,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "vcard.h"
 
+struct _LinphoneVcardContext {
+	void *dummy;
+};
+
+LinphoneVcardContext* linphone_vcard_context_new(void) {
+	return NULL;
+}
+
+void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
+	
+}
+
+void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context) {
+	return NULL;
+}
+
+void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data) {
+	
+}
+
 struct _LinphoneVcard {
 	void *dummy;
 };
@@ -31,15 +51,15 @@ void linphone_vcard_free(LinphoneVcard *vCard) {
 	
 }
 
-MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
+MSList* linphone_vcard_list_from_vcard4_file(LinphoneVcardContext *context, const char *filename) {
 	return NULL;
 }
 
-MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
+MSList* linphone_vcard_list_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
 	return NULL;
 }
 
-LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
+LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
 	return NULL;
 }
 

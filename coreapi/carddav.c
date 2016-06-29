@@ -115,7 +115,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, bctbx_li
 		while (vCards) {
 			LinphoneCardDavResponse *vCard = (LinphoneCardDavResponse *)vCards->data;
 			if (vCard) {
-				LinphoneVcard *lvc = linphone_vcard_new_from_vcard4_buffer(vCard->vcard);
+				LinphoneVcard *lvc = linphone_vcard_new_from_vcard4_buffer(cdc->friend_list->lc->vcard_context, vCard->vcard);
 				LinphoneFriend *lf = NULL;
 				bctbx_list_t *local_friend = NULL;
 				

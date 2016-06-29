@@ -23,6 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal/sal.h"
 #include <bctoolbox/crypto.h>
 
+struct _LinphoneVcardContext {
+	belcard::BelCardParser *parser;
+	void *user_data;
+};
+
 struct _LinphoneVcard {
 	shared_ptr<belcard::BelCard> belCard;
 	char *etag;
@@ -33,6 +38,29 @@ struct _LinphoneVcard {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+LinphoneVcardContext* linphone_vcard_context_new(void) {
+	LinphoneVcardContext* context = ms_new0(LinphoneVcardContext, 1);
+	context->parser = new belcard::BelCardParser();
+	context->user_data = NULL;
+	return context;
+}
+
+void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
+	if (context) {
+		if (context->parser) delete context->parser;
+		ms_free(context);
+	}
+}
+
+void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context) {
+	return context ? context->user_data : NULL;
+}
+
+
+void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data) {
+	if (context) context->user_data = data;
+}
 
 LinphoneVcard* linphone_vcard_new(void) {
 	LinphoneVcard* vCard = (LinphoneVcard*) ms_new0(LinphoneVcard, 1);
@@ -54,10 +82,10 @@ void linphone_vcard_free(LinphoneVcard *vCard) {
 	ms_free(vCard);
 }
 
-bctbx_list_t* linphone_vcard_list_from_vcard4_file(const char *filename) {
+bctbx_list_t* linphone_vcard_list_from_vcard4_file(LinphoneVcardContext *context, const char *filename) {
 	bctbx_list_t *result = NULL;
-	if (filename) {
-		belcard::BelCardParser *parser = new belcard::BelCardParser();
+	if (context && filename) {
+		belcard::BelCardParser *parser = context->parser;
 		shared_ptr<belcard::BelCardList> belCards = parser->parseFile(filename);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
@@ -66,15 +94,14 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_file(const char *filename) {
 				result = bctbx_list_append(result, vCard);
 			}
 		}
-		delete(parser);
 	}
 	return result;
 }
 
-bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
+bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
 	bctbx_list_t *result = NULL;
-	if (buffer) {
-		belcard::BelCardParser *parser = new belcard::BelCardParser();
+	if (context && buffer) {
+		belcard::BelCardParser *parser = context->parser;
 		shared_ptr<belcard::BelCardList> belCards = parser->parse(buffer);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
@@ -83,22 +110,20 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 				result = bctbx_list_append(result, vCard);
 			}
 		}
-		delete(parser);
 	}
 	return result;
 }
 
-LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
+LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
 	LinphoneVcard *vCard = NULL;
-	if (buffer) {
-		belcard::BelCardParser *parser = new belcard::BelCardParser();
+	if (context && buffer) {
+		belcard::BelCardParser *parser = context->parser;
 		shared_ptr<belcard::BelCard> belCard = parser->parseOne(buffer);
 		if (belCard) {
 			vCard = linphone_vcard_new_from_belcard(belCard);
 		} else {
 			ms_error("Couldn't parse buffer %s", buffer);
 		}
-		delete(parser);
 	}
 	return vCard;
 }
