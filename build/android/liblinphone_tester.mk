@@ -49,7 +49,7 @@ endif
 
 LOCAL_STATIC_LIBRARIES := bctoolbox_tester
 
-LOCAL_SHARED_LIBRARIES := cunit liblinphone
+LOCAL_SHARED_LIBRARIES := bcunit liblinphone
 include $(BUILD_SHARED_LIBRARY)
 
 #end

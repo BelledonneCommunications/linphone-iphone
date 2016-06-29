@@ -23,7 +23,7 @@ In order to enable generation of bundle for older MacOS version, it is recommend
 
 ##### Linphone library (liblinphone)
 
-        sudo port install automake autoconf libtool pkgconfig intltool wget cunit \
+        sudo port install automake autoconf libtool pkgconfig intltool wget bcunit \
         antlr3 speex readline sqlite3 openldap libupnp \
         ffmpeg-devel -gpl2
 

@@ -280,7 +280,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
-	mgr->number_of_cunit_error_at_creation =  bc_get_number_of_failures();
+	mgr->number_of_bcunit_error_at_creation =  bc_get_number_of_failures();
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
@@ -422,7 +422,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
 		char *chatdb = ms_strdup(linphone_core_get_chat_database_path(mgr->lc));
 		if (!liblinphone_tester_keep_record_files && record_file){
-			if ((bc_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
+			if ((bc_get_number_of_failures()-mgr->number_of_bcunit_error_at_creation)>0) {
 				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
 			} else {
 				unlink(record_file);
