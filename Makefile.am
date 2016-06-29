@@ -161,7 +161,7 @@ zip:
 	make gtk-cherrypick
 	make other-cherrypick
 	cp -f $(top_srcdir)/gtk/gtkrc $(INSTALLDIR_WITH_PREFIX)/.
-	cp -f $(top_srcdir)/README $(INSTALLDIR_WITH_PREFIX)/.
+	cp -f $(top_srcdir)/README.md $(INSTALLDIR_WITH_PREFIX)/.
 	cp -f $(top_srcdir)/COPYING $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && zip -r $(ZIPFILE) *
 
@@ -173,7 +173,7 @@ sdk:
 # remove unwanted stuff (gtk interface)
 	cd $(INSTALLDIR_WITH_PREFIX) && rm -rf $(SDK_EXCLUDED)
 	make other-cherrypick
-	cp -f $(top_srcdir)/README $(INSTALLDIR_WITH_PREFIX)/.
+	cp -f $(top_srcdir)/README.md $(INSTALLDIR_WITH_PREFIX)/.
 	cp -f $(top_srcdir)/COPYING $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && zip -r $(SDK_ZIPFILE) *
 
