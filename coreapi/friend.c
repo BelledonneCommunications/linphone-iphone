@@ -220,7 +220,9 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 
 	vcard = lf->vcard;
 	if (vcard) {
-		linphone_vcard_edit_main_sip_address(vcard, linphone_address_as_string_uri_only(fr));
+		char *address = linphone_address_as_string_uri_only(fr);
+		linphone_vcard_edit_main_sip_address(vcard, address);
+		ms_free(address);
 	}
 
 	return 0;
@@ -228,6 +230,8 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 
 void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
 	LinphoneVcard *vcard = NULL;
+	char *address = NULL;
+	
 	if (!lf || !addr) {
 		return;
 	}
@@ -242,7 +246,9 @@ void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr
 		return;
 	}
 
-	linphone_vcard_add_sip_address(vcard, linphone_address_as_string_uri_only(addr));
+	address = linphone_address_as_string_uri_only(addr);
+	linphone_vcard_add_sip_address(vcard, address);
+	ms_free(address);
 }
 
 bctbx_list_t* linphone_friend_get_addresses(LinphoneFriend *lf) {
@@ -276,6 +282,7 @@ bctbx_list_t* linphone_friend_get_addresses(LinphoneFriend *lf) {
 
 void linphone_friend_remove_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
 	LinphoneVcard *vcard = NULL;
+	char * address = NULL;
 	if (!lf || !addr) {
 		return;
 	}
@@ -284,8 +291,10 @@ void linphone_friend_remove_address(LinphoneFriend *lf, const LinphoneAddress *a
 	if (!vcard) {
 		return;
 	}
-
-	linphone_vcard_remove_sip_address(vcard, linphone_address_as_string_uri_only(addr));
+	
+	address = linphone_address_as_string_uri_only(addr);
+	linphone_vcard_remove_sip_address(vcard, address);
+	ms_free(address);
 }
 
 void linphone_friend_add_phone_number(LinphoneFriend *lf, const char *phone) {
@@ -444,6 +453,7 @@ static void _linphone_friend_destroy(LinphoneFriend *lf){
 	if (lf->uri!=NULL) linphone_address_unref(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	if (lf->vcard != NULL) linphone_vcard_free(lf->vcard);
+	if (lf->refkey != NULL) ms_free(lf->refkey);
 }
 
 static belle_sip_error_code _linphone_friend_marshall(belle_sip_object_t *obj, char* buff, size_t buff_size, size_t *offset) {
@@ -1563,15 +1573,18 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 		const LinphoneAddress *addr = linphone_friend_get_address(lf);
 		if (addr) {
 			const char *displayName = linphone_address_get_display_name(addr);
+			char *address = NULL;
 			if (!displayName) {
 				displayName = linphone_address_get_username(addr);
 			}
 
+			address = linphone_address_as_string(addr);
 			if (!linphone_friend_create_vcard(lf, displayName)) {
-				ms_warning("Couldn't create vCard for friend %s", linphone_address_as_string(addr));
+				ms_warning("Couldn't create vCard for friend %s", address);
 			} else {
-				linphone_vcard_add_sip_address(linphone_friend_get_vcard(lf), linphone_address_as_string_uri_only(addr));
+				linphone_vcard_add_sip_address(linphone_friend_get_vcard(lf), address);
 			}
+			ms_free(address);
 
 			linphone_friend_list_add_friend(lfl, lf);
 			linphone_friend_unref(lf);

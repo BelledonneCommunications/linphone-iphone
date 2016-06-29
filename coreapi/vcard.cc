@@ -48,7 +48,8 @@ static LinphoneVcard* linphone_vcard_new_from_belcard(shared_ptr<belcard::BelCar
 
 void linphone_vcard_free(LinphoneVcard *vCard) {
 	if (!vCard) return;
-	
+	if (vCard->etag) ms_free(vCard->etag);
+	if (vCard->url) ms_free(vCard->url);
 	vCard->belCard.reset();
 	ms_free(vCard);
 }
@@ -240,7 +241,7 @@ bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard) {
 		if (sal_generate_uuid(uuid, sizeof(uuid)) == 0) {
 			char vcard_uuid[sizeof(uuid)+4];
 			snprintf(vcard_uuid, sizeof(vcard_uuid), "urn:%s", uuid);
-			linphone_vcard_set_uid(vCard, ms_strdup(vcard_uuid));
+			linphone_vcard_set_uid(vCard, vcard_uuid);
 			return TRUE;
 		}
 	}

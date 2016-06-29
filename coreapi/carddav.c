@@ -102,6 +102,9 @@ static int find_matching_friend(LinphoneFriend *lf1, LinphoneFriend *lf2) {
 }
 
 static void linphone_carddav_response_free(LinphoneCardDavResponse *response) {
+	if (response->etag) ms_free(response->etag);
+	if (response->url) ms_free(response->url);
+	if (response->vcard) ms_free(response->vcard);
 	ms_free(response);
 }
 
@@ -343,6 +346,13 @@ static void linphone_carddav_query_free(LinphoneCardDavQuery *query) {
 	// Context will be freed later (in sync_done)
 	query->context = NULL;
 	
+	if (query->url) {
+		ms_free(query->url);
+	}
+	if (query->body) {
+		ms_free(query->body);
+	}
+	
 	ms_free(query);
 }
 
@@ -404,7 +414,7 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 							// We need to do a GET on the vCard to get the correct one
 							bctbx_list_t *vcard = NULL;
 							LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)ms_new0(LinphoneCardDavResponse, 1);
-							response->url = linphone_vcard_get_url(lvc);
+							response->url = ms_strdup(linphone_vcard_get_url(lvc));
 							vcard = bctbx_list_append(vcard, response);
 							linphone_carddav_pull_vcards(query->context, vcard);
 							bctbx_list_free_with_data(vcard, (void (*)(void *))linphone_carddav_response_free);
@@ -551,9 +561,9 @@ static LinphoneCardDavQuery* linphone_carddav_create_put_query(LinphoneCardDavCo
 	query->context = cdc;
 	query->depth = NULL;
 	query->ifmatch = linphone_vcard_get_etag(lvc);
-	query->body = linphone_vcard_as_vcard4_string(lvc);
+	query->body = ms_strdup(linphone_vcard_as_vcard4_string(lvc));
 	query->method = "PUT";
-	query->url = linphone_vcard_get_url(lvc);
+	query->url = ms_strdup(linphone_vcard_get_url(lvc));
 	query->type = LinphoneCardDavQueryTypePut;
 	return query;
 }
@@ -625,7 +635,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_delete_query(LinphoneCardDa
 	query->ifmatch = linphone_vcard_get_etag(lvc);
 	query->body = NULL;
 	query->method = "DELETE";
-	query->url = linphone_vcard_get_url(lvc);
+	query->url = ms_strdup(linphone_vcard_get_url(lvc));
 	query->type = LinphoneCardDavQueryTypeDelete;
 	return query;
 }
@@ -693,9 +703,9 @@ static LinphoneCardDavQuery* linphone_carddav_create_propfind_query(LinphoneCard
 	query->context = cdc;
 	query->depth = "0";
 	query->ifmatch = NULL;
-	query->body = "<d:propfind xmlns:d=\"DAV:\" xmlns:cs=\"http://calendarserver.org/ns/\"><d:prop><cs:getctag /></d:prop></d:propfind>";
+	query->body = ms_strdup("<d:propfind xmlns:d=\"DAV:\" xmlns:cs=\"http://calendarserver.org/ns/\"><d:prop><cs:getctag /></d:prop></d:propfind>");
 	query->method = "PROPFIND";
-	query->url = cdc->friend_list->uri;
+	query->url = ms_strdup(cdc->friend_list->uri);
 	query->type = LinphoneCardDavQueryTypePropfind;
 	return query;
 }
@@ -710,9 +720,9 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_query(LinphoneC
 	query->context = cdc;
 	query->depth = "1";
 	query->ifmatch = NULL;
-	query->body = "<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /></d:prop><card:filter></card:filter></card:addressbook-query>";
+	query->body = ms_strdup("<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /></d:prop><card:filter></card:filter></card:addressbook-query>");
 	query->method = "REPORT";
-	query->url = cdc->friend_list->uri;
+	query->url = ms_strdup(cdc->friend_list->uri);
 	query->type = LinphoneCardDavQueryTypeAddressbookQuery;
 	return query;
 }
@@ -731,7 +741,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(
 	query->depth = "1";
 	query->ifmatch = NULL;
 	query->method = "REPORT";
-	query->url = cdc->friend_list->uri;
+	query->url = ms_strdup(cdc->friend_list->uri);
 	query->type = LinphoneCardDavQueryTypeAddressbookMultiget;
 
 	sprintf(body, "%s", "<card:addressbook-multiget xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /><card:address-data content-type='text/vcard' version='4.0'/></d:prop>");

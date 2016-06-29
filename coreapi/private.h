@@ -1308,9 +1308,9 @@ struct _LinphoneCardDavContext {
 
 struct _LinphoneCardDavQuery {
 	LinphoneCardDavContext *context;
-	const char *url;
+	char *url;
 	const char *method;
-	const char *body;
+	char *body;
 	const char *depth;
 	const char *ifmatch;
 	belle_http_request_listener_t *http_request_listener;
@@ -1319,9 +1319,9 @@ struct _LinphoneCardDavQuery {
 };
 
 struct _LinphoneCardDavResponse {
-	const char *etag;
-	const char *url;
-	const char *vcard;
+	char *etag;
+	char *url;
+	char *vcard;
 };
 
 /*****************************************************************************
