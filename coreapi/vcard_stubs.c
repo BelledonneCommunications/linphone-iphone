@@ -20,23 +20,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "vcard.h"
 
 struct _LinphoneVcardContext {
-	void *dummy;
+	void *user_data;
 };
 
 LinphoneVcardContext* linphone_vcard_context_new(void) {
-	return NULL;
+	LinphoneVcardContext* context = ms_new0(LinphoneVcardContext, 1);
+	context->user_data = NULL;
+	return context;
 }
 
 void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
-	
+	if (context) {
+		ms_free(context);
+	}
 }
 
 void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context) {
-	return NULL;
+	return context ? context->user_data : NULL;
 }
 
 void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data) {
-	
+	if (context) context->user_data = data;
 }
 
 struct _LinphoneVcard {
