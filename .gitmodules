@@ -54,10 +54,6 @@
 	path = submodules/externals/libxml2
 	url = git://git.gnome.org/libxml2
 	ignore = dirty
-[submodule "submodules/cunit"]
-	path = submodules/externals/cunit
-	url = git://git.linphone.org/cunit.git
-	ignore = dirty
 [submodule "submodules/externals/openh264"]
 	path = submodules/externals/openh264
 	url = https://github.com/cisco/openh264
@@ -103,3 +99,6 @@
 [submodule "submodules/externals/bv16-floatingpoint"]
 	path = submodules/externals/bv16-floatingpoint
 	url = git://git.linphone.org/bv16-floatingpoint.git
+[submodule "submodules/bcunit"]
+	path = submodules/bcunit
+	url = git://git.linphone.org/bcunit.git
