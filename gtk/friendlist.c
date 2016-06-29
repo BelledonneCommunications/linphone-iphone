@@ -172,12 +172,18 @@ gboolean linphone_gtk_on_key_press(GtkWidget *widget, GdkEvent *event, gpointer 
 			if (gtk_tree_model_get_iter_first(model, &iter)) {
 				int index = 0;
 				LinphoneFriend *lf = NULL;
+				LinphoneChatRoom *cr;
 				do{
 					if (index == key) {
 						const LinphoneAddress *uri;
+						gtk_tree_model_get (model, &iter,FRIEND_CHATROOM , &cr, -1);
 						gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
 						uri = linphone_friend_get_address(lf);
-						linphone_gtk_friend_list_set_chat_conversation(uri);
+						if (lf != NULL) linphone_gtk_friend_list_set_chat_conversation(uri);
+						if (cr != NULL){
+							linphone_gtk_mark_chat_read(cr);
+							linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(friendlist));
+						}
 						return TRUE;
 					}
 					index++;
