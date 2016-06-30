@@ -90,7 +90,7 @@ public class OpenH264DownloadHelper {
      * @param object
      * @return index of object in UserData list
      */
-    public int setUserDate(Object object) {
+    public int setUserData(Object object) {
         this.userData.add(object);
         return this.userData.indexOf(object);
     }
@@ -186,16 +186,15 @@ public class OpenH264DownloadHelper {
                     URL url = new URL(urlDownload);
                     HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
                     urlConnection.connect();
-                    openH264DownloadHelperListener.OnProgress(0,10);
 
                     InputStream inputStream = urlConnection.getInputStream();
                     FileOutputStream fileOutputStream = new FileOutputStream(fileDirection+"/"+nameFileDownload);
                     int totalSize = urlConnection.getContentLength();
+                    openH264DownloadHelperListener.OnProgress(0,totalSize);
 
                     byte[] buffer = new byte[4096];
                     int bufferLength;
                     int total = 0;
-                    openH264DownloadHelperListener.OnProgress(total, totalSize);
                     while((bufferLength = inputStream.read(buffer))>0 ){
                         total += bufferLength;
                         fileOutputStream.write(buffer, 0, bufferLength);
