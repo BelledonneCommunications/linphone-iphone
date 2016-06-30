@@ -248,7 +248,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	endif()
 endif()
 
-# on iOS though, we also build the executable so that one can compile it from Xcode and run it directly
+# on iOS though, we also build the exectuable so that one can compile it from Xcode and run it directly
 if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	if(IOS)
 		set_source_files_properties(${IOS_RESOURCES_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
