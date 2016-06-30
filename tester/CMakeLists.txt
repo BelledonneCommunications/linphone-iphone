@@ -70,12 +70,15 @@ set(CERTIFICATE_FILES ${CERTIFICATE_ALT_FILES} ${CERTIFICATE_CN_FILES})
 
 set(RC_FILES
 	rcfiles/carddav_rc
+	rcfiles/conference_focus_rc
 	rcfiles/empty_rc
 	rcfiles/friends_rc
 	rcfiles/laure_call_logs_rc
 	rcfiles/laure_rc_udp
+	rcfiles/laure_tcp_rc
 	rcfiles/marie_early_rc
 	rcfiles/marie_h264_rc
+	rcfiles/marie_nat64_rc
 	rcfiles/marie_quality_reporting_rc
 	rcfiles/marie_rc
 	rcfiles/marie_rc_rtcp_xr
@@ -98,11 +101,14 @@ set(RC_FILES
 	rcfiles/michelle_rc_udp
 	rcfiles/multi_account_rc
 	rcfiles/pauline_alt_rc
+	rcfiles/pauline_as_friend_rc
 	rcfiles/pauline_h264_rc
+	rcfiles/pauline_nat64_rc
 	rcfiles/pauline_rc
 	rcfiles/pauline_rc_rtcp_xr
 	rcfiles/pauline_sips_rc
 	rcfiles/pauline_tcp_rc
+	rcfiles/pauline_tunnel_verify_server_certificate_rc
 	rcfiles/pauline_v4proxy_rc
 	rcfiles/pauline_wild_rc
 	rcfiles/pauline_zrtp_aes256_rc
