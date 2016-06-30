@@ -532,6 +532,7 @@
 		635775251B6673EC00C8B704 /* HistoryDetailsTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */; };
 		636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutView.xib */; };
 		636316D41A1DEC650009B839 /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsView.xib */; };
+		636920671D253DF700D44CAC /* libbcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 636920661D253DF700D44CAC /* libbcunit.a */; };
 		636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 636BC9961B5F921B00C754CE /* UIIconButton.m */; };
 		63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */; };
 		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
@@ -737,7 +738,6 @@
 		F0BB8BD71936208100974404 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		F0BB8BD81936208100974404 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		F0BB8C10193623F300974404 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
-		F0BB8C121936240300974404 /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C111936240300974404 /* libcunit.a */; };
 		F0BB8C131936242400974404 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F0BB8C141936242400974404 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
 		F0BB8C151936242400974404 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
@@ -1443,6 +1443,7 @@
 		636316D51A1DEC650009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SettingsView.xib; sourceTree = "<group>"; };
 		636316DA1A1DEDD40009B839 /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
 		636316DB1A1DEDD80009B839 /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
+		636920661D253DF700D44CAC /* libbcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libbcunit.a"; sourceTree = "<group>"; };
 		636BC9951B5F921B00C754CE /* UIIconButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIIconButton.h; sourceTree = "<group>"; };
 		636BC9961B5F921B00C754CE /* UIIconButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIIconButton.m; sourceTree = "<group>"; };
 		63701DDD1BA32039006A9AE3 /* UIConfirmationDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIConfirmationDialog.h; sourceTree = "<group>"; };
@@ -1841,6 +1842,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				636920671D253DF700D44CAC /* libbcunit.a in Frameworks */,
 				63BB26A31D006F4B00DA1F83 /* libbv16.a in Frameworks */,
 				63FD3F101CA17FA400E9AECC /* libmbedcrypto.a in Frameworks */,
 				63FD3F111CA17FA400E9AECC /* libmbedtls.a in Frameworks */,
@@ -1869,7 +1871,6 @@
 				F0BB8C181936245300974404 /* libavutil.a in Frameworks */,
 				F0BB8C191936245300974404 /* libbellesip.a in Frameworks */,
 				F0BB8C1A1936245300974404 /* libbzrtp.a in Frameworks */,
-				F0BB8C121936240300974404 /* libcunit.a in Frameworks */,
 				F0BB8C1B1936245300974404 /* libgsm.a in Frameworks */,
 				F0BB8C131936242400974404 /* liblinphone.a in Frameworks */,
 				F0BB8C10193623F300974404 /* liblinphonetester.a in Frameworks */,
@@ -2141,6 +2142,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				636920661D253DF700D44CAC /* libbcunit.a */,
 				637835A41CFD971D00599382 /* libbv16.a */,
 				63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */,
 				63FD3F071CA17F9100E9AECC /* libmbedtls.a */,
