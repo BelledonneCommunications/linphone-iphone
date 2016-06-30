@@ -103,6 +103,7 @@ set(RC_FILES
 	rcfiles/pauline_rc_rtcp_xr
 	rcfiles/pauline_sips_rc
 	rcfiles/pauline_tcp_rc
+	rcfiles/pauline_v4proxy_rc
 	rcfiles/pauline_wild_rc
 	rcfiles/pauline_zrtp_aes256_rc
 	rcfiles/pauline_zrtp_b256_rc
