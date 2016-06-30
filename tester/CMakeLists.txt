@@ -91,6 +91,7 @@ set(RC_FILES
 	rcfiles/marie_remote_rc
 	rcfiles/marie_sips_rc
 	rcfiles/marie_transient_remote_rc
+	rcfiles/marie_v4proxy_rc
 	rcfiles/marie_zrtp_aes256_rc
 	rcfiles/marie_zrtp_b256_rc
 	rcfiles/marie_zrtp_srtpsuite_aes256_rc
