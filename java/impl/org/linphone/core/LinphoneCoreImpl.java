@@ -224,6 +224,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		}
 	}
 
+	public Context getContext() {
+		return mContext;
+	}
+
 	public synchronized void addAuthInfo(LinphoneAuthInfo info) {
 		isValid();
 		addAuthInfo(nativePtr,((LinphoneAuthInfoImpl)info).nativePtr);

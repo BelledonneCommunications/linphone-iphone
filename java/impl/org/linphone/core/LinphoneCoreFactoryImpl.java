@@ -18,30 +18,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
+import android.content.Context;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.linphone.LinphoneService;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 import org.linphone.tools.OpenH264DownloadHelper;
 
 public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
-	public static boolean loadOptionalLibrary(String s) {
+	private static boolean loadOptionalLibrary(String s) {
 		try {
 			System.loadLibrary(s);
-			return true;
-		} catch (Throwable e) {
-			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s +"\n" +e.getMessage());
-		}
-		return false;
-	}
-
-	public static boolean loadOptionalLibraryWithPath(String s) {
-		try {
-			System.load(s);
 			return true;
 		} catch (Throwable e) {
 			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s +"\n" +e.getMessage());
@@ -110,8 +101,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			String userConfig, String factoryConfig, Object userdata, Object context)
 			throws LinphoneCoreException {
 		try {
-			OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper();
-			if(context!=null) loadOptionalLibraryWithPath(((android.content.Context)context).getFilesDir() + "/" + downloadHelper.getNameLib());
+			fcontext = (Context)context;
+			OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper((Context)context);
+			if(context!=null && downloadHelper.isCodecFound()) System.load(downloadHelper.getFullPathLib());
 			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
@@ -126,6 +118,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	@Override
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException {
 		try {
+			fcontext = (Context)context;
+			OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper((Context)context);
+			if(context!=null && downloadHelper.isCodecFound()) System.load(downloadHelper.getFullPathLib());
 			MediastreamerAndroidContext.setContext(context);
 			LinphoneCore lc = new LinphoneCoreImpl(listener);
 			if(context!=null) lc.setContext(context);
@@ -143,6 +138,15 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	@Override
 	public void setLogHandler(LinphoneLogHandler handler) {
 		_setLogHandler(handler);
+	}
+
+	@Override
+	public OpenH264DownloadHelper createOpenH264DownloadHelper() {
+		if (fcontext == null) {
+			new LinphoneCoreException("Cannot create LinphoneCore");
+			return null;//exception
+		}
+		return new OpenH264DownloadHelper(fcontext);
 	}
 
 	@Override
