@@ -259,6 +259,8 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	}
 	bctbx_free(wideFilename);
 	return convertedFilename;
+#elif defined(__QNXNTO__)
+	return bctbx_strdup(fName);
 #else
 	#define MAX_PATH_SIZE 1024
 	char db_file_utf8[MAX_PATH_SIZE] = {'\0'};
@@ -267,18 +269,20 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
 	iconv_t cb;
 	
-	strncpy(db_file_utf8, fName, MAX_PATH_SIZE-1);
-	cb = iconv_open(nl_langinfo(CODESET), "UTF-8");
-	if(cb != (iconv_t)-1) {
-		int ret;
-		ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
-		if(ret == -1) db_file_locale[0] = '\0';
-		iconv_close(cb);
+	if (strcasecmp("UTF-8", nl_langinfo(CODESET)) == 0) {
+		strncpy(db_file_locale, fName, MAX_PATH_SIZE - 1);
+	} else {
+		strncpy(db_file_utf8, fName, MAX_PATH_SIZE-1);
+		cb = iconv_open(nl_langinfo(CODESET), "UTF-8");
+		if (cb != (iconv_t)-1) {
+			int ret;
+			ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
+			if(ret == -1) db_file_locale[0] = '\0';
+			iconv_close(cb);
+		}
 	}
 	return bctbx_strdup(db_file_locale);
 #endif
-
-
 }
 #endif 
 /**

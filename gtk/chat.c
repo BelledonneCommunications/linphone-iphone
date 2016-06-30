@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define F_OK 00 /*visual studio does not define F_OK*/
 #endif
 
-#define NB_MSG_HIST 250
+#define NB_MSG_HIST 250000
 
 #define CONFIG_FILE ".linphone-history.db"
 
@@ -133,11 +133,9 @@ void update_chat_header(GtkNotebook *notebook, GtkWidget *chat_view, LinphoneCha
 
 static gboolean scroll_to_end(GtkTextView *w){
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(w);
-	GtkTextMark *mark;
 	GtkTextIter iter;
 	gtk_text_buffer_get_end_iter(buffer,&iter);
-	mark=gtk_text_buffer_create_mark(buffer,NULL,&iter,FALSE);
-	gtk_text_view_scroll_mark_onscreen(w,mark);
+	gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (w), &iter, 0.0, FALSE, 0, 0);
 	return FALSE;
 }
 

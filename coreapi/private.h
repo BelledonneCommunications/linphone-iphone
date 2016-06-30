@@ -1025,6 +1025,7 @@ struct _LinphoneCore
 	jmethodID multicast_lock_acquire_id;
 	jmethodID multicast_lock_release_id;
 #endif
+	LinphoneVcardContext *vcard_context;
 };
 
 
@@ -1308,9 +1309,9 @@ struct _LinphoneCardDavContext {
 
 struct _LinphoneCardDavQuery {
 	LinphoneCardDavContext *context;
-	const char *url;
+	char *url;
 	const char *method;
-	const char *body;
+	char *body;
 	const char *depth;
 	const char *ifmatch;
 	belle_http_request_listener_t *http_request_listener;
@@ -1319,9 +1320,9 @@ struct _LinphoneCardDavQuery {
 };
 
 struct _LinphoneCardDavResponse {
-	const char *etag;
-	const char *url;
-	const char *vcard;
+	char *etag;
+	char *url;
+	char *vcard;
 };
 
 /*****************************************************************************
@@ -1493,7 +1494,7 @@ SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
  * @param[in] content LinphoneContent object.
  * @return The key to encrypt/decrypt the file associated to this content.
  */
-const char *linphone_content_get_key(const LinphoneContent *content);
+LINPHONE_PUBLIC const char *linphone_content_get_key(const LinphoneContent *content);
 
 /**
  * Get the size of key associated with a RCS file transfer message if encrypted
@@ -1553,6 +1554,11 @@ char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
 #define LINPHONE_SQLITE3_VFS "sqlite3bctbx_vfs"
 
 void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite);
+
+LinphoneVcardContext* linphone_vcard_context_new(void);
+void linphone_vcard_context_destroy(LinphoneVcardContext *context);
+void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context);
+void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data);
 
 #ifdef __cplusplus
 }

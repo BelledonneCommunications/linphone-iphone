@@ -280,7 +280,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
-	mgr->number_of_cunit_error_at_creation =  bc_get_number_of_failures();
+	mgr->number_of_bcunit_error_at_creation =  bc_get_number_of_failures();
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
@@ -354,7 +354,6 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 
 void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies) {
 	LinphoneProxyConfig* proxy;
-	LinphoneNatPolicy *nat_policy;
 	int proxy_count;
 
 	/*BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
@@ -386,16 +385,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 		linphone_address_clean(mgr->identity);
 	}
 
-	nat_policy = linphone_core_get_nat_policy(mgr->lc);
-	if ((nat_policy != NULL) && (linphone_nat_policy_get_stun_server(nat_policy) != NULL) &&
-		(linphone_nat_policy_stun_enabled(nat_policy) || linphone_nat_policy_turn_enabled(nat_policy))) {
-		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
-		const char **tags = bc_tester_current_test_tags();
-		int ice_test = (tags && ((tags[0] && !strcmp(tags[0], "ICE")) || (tags[1] && !strcmp(tags[1], "ICE"))));
-		if (ice_test) {
-			BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
-		}
-	}
+	linphone_core_manager_wait_for_stun_resolution(mgr);
 	if (!check_for_proxies){
 		/*now that stun server resolution is done, we can start registering*/
 		linphone_core_set_network_reachable(mgr->lc, TRUE);
@@ -430,22 +420,35 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
-		const char *chatdb = linphone_core_get_chat_database_path(mgr->lc);
+		char *chatdb = ms_strdup(linphone_core_get_chat_database_path(mgr->lc));
 		if (!liblinphone_tester_keep_record_files && record_file){
-			if ((bc_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
+			if ((bc_get_number_of_failures()-mgr->number_of_bcunit_error_at_creation)>0) {
 				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
 			} else {
 				unlink(record_file);
 			}
 		}
 		linphone_core_destroy(mgr->lc);
-		if (chatdb) unlink(chatdb);
+		if (chatdb) {
+			unlink(chatdb);
+			ms_free(chatdb);
+		}
 	}
 	if (mgr->identity) {
 		linphone_address_destroy(mgr->identity);
 	}
 
 	manager_count--;
+}
+
+void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr) {
+	LinphoneNatPolicy *nat_policy = linphone_core_get_nat_policy(mgr->lc);
+	if ((nat_policy != NULL) && (linphone_nat_policy_get_stun_server(nat_policy) != NULL) &&
+		(linphone_nat_policy_stun_enabled(nat_policy) || linphone_nat_policy_turn_enabled(nat_policy)) &&
+		(linphone_nat_policy_ice_enabled(nat_policy))) {
+		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
+		BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
+	}
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {

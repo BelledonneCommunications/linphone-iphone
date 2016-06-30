@@ -260,6 +260,10 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	LinphoneCall *callee_call=NULL;
 	LinphoneCall *caller_call=NULL;
 
+	/* TODO: This should be handled correctly inside the liblinphone library but meanwhile handle this here. */
+	linphone_core_manager_wait_for_stun_resolution(caller_mgr);
+	linphone_core_manager_wait_for_stun_resolution(callee_mgr);
+
 	setup_sdp_handling(caller_test_params, caller_mgr);
 	setup_sdp_handling(callee_test_params, callee_mgr);
 

@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${BCTOOLBOX_TESTER_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
+set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
 if(INTL_FOUND)
 	list(APPEND OTHER_LIBS_FOR_TESTER ${INTL_LIBRARIES})
 endif()
@@ -31,21 +31,140 @@ if(ZLIB_FOUND)
 	list(APPEND OTHER_LIBS_FOR_TESTER ${ZLIB_LIBRARIES})
 endif()
 
-set(RESOURCES_FILES
-	certificates
-	flexisip
-	images
-	local_tester_hosts
+set(SOUND_FILES
+	sounds/ahbahouaismaisbon.wav
+	sounds/hello44100.wav
+	sounds/hello8000.mkv
+	sounds/hello8000_mkv_ref.wav
+	sounds/hello8000.wav
+	sounds/oldphone.wav
+	sounds/ringback.wav
+	sounds/sintel_trailer_opus_h264.mkv
+	sounds/sintel_trailer_opus_vp8.mkv
+	sounds/sintel_trailer_pcmu_h264.mkv
+	sounds/vrroom.wav
+)
+
+set(SIPP_FILES
+	sipp/call_invite_200ok_without_contact_header.xml
+	sipp/call_with_audio_mline_before_video_in_sdp.xml
+	sipp/call_with_multiple_audio_mline_in_sdp.xml
+	sipp/call_with_multiple_video_mline_in_sdp.xml
+	sipp/call_with_video_mline_before_audio_in_sdp.xml
+	sipp/sip_update_within_icoming_reinvite_with_no_sdp.xml
+)
+
+set(CERTIFICATE_ALT_FILES
+	certificates/altname/agent.pem
+	certificates/altname/cafile.pem
+	certificates/altname/openssl-altname.cnf
+)
+
+set(CERTIFICATE_CN_FILES
+	certificates/cn/agent.pem
+	certificates/cn/cafile.pem
+	certificates/cn/openssl-cn.cnf
+)
+
+set(CERTIFICATE_FILES ${CERTIFICATE_ALT_FILES} ${CERTIFICATE_CN_FILES})
+
+set(RC_FILES
+	rcfiles/carddav_rc
+	rcfiles/empty_rc
+	rcfiles/friends_rc
+	rcfiles/laure_call_logs_rc
+	rcfiles/laure_rc_udp
+	rcfiles/marie_early_rc
+	rcfiles/marie_h264_rc
+	rcfiles/marie_quality_reporting_rc
+	rcfiles/marie_rc
+	rcfiles/marie_rc_rtcp_xr
+	rcfiles/marie_remote_404_rc
+	rcfiles/marie_remote_default_values_rc
+	rcfiles/marie_remote_https_rc
+	rcfiles/marie_remote_invalid_rc
+	rcfiles/marie_remote_invalid_uri_rc
+	rcfiles/marie_remote_localfile2_rc
+	rcfiles/marie_remote_localfile_android_rc
+	rcfiles/marie_remote_localfile_rc
+	rcfiles/marie_remote_localfile_win10_rc
+	rcfiles/marie_remote_rc
+	rcfiles/marie_sips_rc
+	rcfiles/marie_transient_remote_rc
+	rcfiles/marie_zrtp_aes256_rc
+	rcfiles/marie_zrtp_b256_rc
+	rcfiles/marie_zrtp_srtpsuite_aes256_rc
+	rcfiles/michelle_rc_udp
+	rcfiles/multi_account_rc
+	rcfiles/pauline_alt_rc
+	rcfiles/pauline_h264_rc
+	rcfiles/pauline_rc
+	rcfiles/pauline_rc_rtcp_xr
+	rcfiles/pauline_sips_rc
+	rcfiles/pauline_tcp_rc
+	rcfiles/pauline_wild_rc
+	rcfiles/pauline_zrtp_aes256_rc
+	rcfiles/pauline_zrtp_b256_rc
+	rcfiles/pauline_zrtp_srtpsuite_aes256_rc
+	rcfiles/remote_zero_length_params_rc
+	rcfiles/stun_rc
+	rcfiles/upnp_rc
+	rcfiles/zero_length_params_rc
+)
+
+set(IMAGE_FILES images/nowebcamCIF.jpg)
+
+set(VCARD_FILES
+	vcards/thousand_vcards.vcf
+	vcards/vcards.vcf
+)
+
+set(OTHER_FILES
+	tester_hosts
 	messages.db
+)
+
+set(IOS_RESOURCES_FILES
+	${OTHER_FILES}
+	certificates
+	images
 	rcfiles
 	sipp
 	sounds
-	tester_hosts
 	vcards
 )
 
-file(GLOB SOURCE_FILES_C "*_tester.c")
-list(APPEND SOURCE_FILES_C accountmanager.c tester.c)
+set(SOURCE_FILES_C
+	accountmanager.c
+	audio_bypass_tester.c
+	call_multicast_tester.c
+	call_multi_tester.c
+	call_single_tester.c
+	call_video_tester.c
+	complex_sip_case_tester.c
+	dtmf_tester.c
+	eventapi_tester.c
+	flexisip_tester.c
+	liblinphone_tester.c
+	liblinphone_tester.h
+	log_collection_tester.c
+	message_tester.c
+	offeranswer_tester.c
+	player_tester.c
+	presence_server_tester.c
+	presence_tester.c
+	proxy_config_tester.c
+	quality_reporting_tester.c
+	register_tester.c
+	remote_provisioning_tester.c
+	setup_tester.c
+	stun_tester.c
+	tester.c
+	tunnel_tester.c
+	upnp_tester.c
+	vcard_tester.c
+	video_tester.c
+)
 
 set(SOURCE_FILES_OBJC )
 if(APPLE)
@@ -127,12 +246,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	endif()
 endif()
 
-# on iOS though, we also build the exectuable so that one can compile it from Xcode and run it directly
+# on iOS though, we also build the executable so that one can compile it from Xcode and run it directly
 if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-	if (IOS)
-		set_source_files_properties(${RESOURCES_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-		add_executable(liblinphone_tester MACOSX_BUNDLE ${RESOURCES_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_OBJC})
-		set_target_properties(liblinphone_tester PROPERTIES LINK_FLAGS "${MEDIASTREAMER2_LDFLAGS}")
+	if(IOS)
+		set_source_files_properties(${IOS_RESOURCES_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+		add_executable(liblinphone_tester MACOSX_BUNDLE ${IOS_RESOURCES_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_OBJC})
+		set_target_properties(liblinphone_tester PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 	else()
 		add_executable(liblinphone_tester ${SOURCE_FILES_C} ${SOURCE_FILES_OBJC})
 	endif()
@@ -147,5 +266,22 @@ if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 			target_include_directories(liblinphone_tester PUBLIC ${GTKMACINTEGRATION_INCLUDE_DIRS})
 			target_link_libraries(liblinphone_tester ${GTKMACINTEGRATION_LIBRARIES})
 		endif()
+	endif()
+
+	if(NOT IOS)
+		install(TARGETS liblinphone_tester
+			RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+			LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+		)
+		install(FILES ${OTHER_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester")
+		install(FILES ${SOUND_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sounds")
+		install(FILES ${SIPP_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sipp")
+		install(FILES ${CERTIFICATE_ALT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/altname")
+		install(FILES ${CERTIFICATE_CN_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/cn")
+		install(FILES ${RC_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/rcfiles")
+		install(FILES ${IMAGE_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/images")
+		install(FILES ${VCARD_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/vcards")
 	endif()
 endif()

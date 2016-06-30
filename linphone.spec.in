@@ -23,15 +23,15 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	i686
 %endif
 
-BuildRequires: gtk2-devel 
-BuildRequires: belle-sip-devel speex-devel gettext 
-BuildRequires: intltool gettext-devel 
+BuildRequires: gtk2-devel
+BuildRequires: belle-sip-devel speex-devel gettext
+BuildRequires: intltool gettext-devel
 %if %{video}
 BuildRequires: ffmpeg-devel SDL-devel
 %endif
 
 %description
-Linphone is a SIP compliant audio & video phone. It can be used to run calls 
+Linphone is a SIP compliant audio & video phone. It can be used to run calls
 over the internet. It has a gtk+ and console interface.
 
 %package devel
@@ -79,7 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING NEWS README TODO
+%doc AUTHORS ChangeLog COPYING NEWS README.md TODO
 %{_bindir}/linphone
 %{_bindir}/linphonec
 %{_bindir}/linphonecsh

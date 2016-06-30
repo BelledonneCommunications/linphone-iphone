@@ -23,6 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal/sal.h"
 #include <bctoolbox/crypto.h>
 
+struct _LinphoneVcardContext {
+	belcard::BelCardParser *parser;
+	void *user_data;
+};
+
 struct _LinphoneVcard {
 	shared_ptr<belcard::BelCard> belCard;
 	char *etag;
@@ -33,6 +38,29 @@ struct _LinphoneVcard {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+LinphoneVcardContext* linphone_vcard_context_new(void) {
+	LinphoneVcardContext* context = ms_new0(LinphoneVcardContext, 1);
+	context->parser = new belcard::BelCardParser();
+	context->user_data = NULL;
+	return context;
+}
+
+void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
+	if (context) {
+		if (context->parser) delete context->parser;
+		ms_free(context);
+	}
+}
+
+void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context) {
+	return context ? context->user_data : NULL;
+}
+
+
+void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data) {
+	if (context) context->user_data = data;
+}
 
 LinphoneVcard* linphone_vcard_new(void) {
 	LinphoneVcard* vCard = (LinphoneVcard*) ms_new0(LinphoneVcard, 1);
@@ -48,16 +76,17 @@ static LinphoneVcard* linphone_vcard_new_from_belcard(shared_ptr<belcard::BelCar
 
 void linphone_vcard_free(LinphoneVcard *vCard) {
 	if (!vCard) return;
-	
+	if (vCard->etag) ms_free(vCard->etag);
+	if (vCard->url) ms_free(vCard->url);
 	vCard->belCard.reset();
 	ms_free(vCard);
 }
 
-bctbx_list_t* linphone_vcard_list_from_vcard4_file(const char *filename) {
+bctbx_list_t* linphone_vcard_list_from_vcard4_file(LinphoneVcardContext *context, const char *filename) {
 	bctbx_list_t *result = NULL;
-	if (filename) {
-		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
-		shared_ptr<belcard::BelCardList> belCards = parser.parseFile(filename);
+	if (context && filename) {
+		belcard::BelCardParser *parser = context->parser;
+		shared_ptr<belcard::BelCardList> belCards = parser->parseFile(filename);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belCard = (*it);
@@ -69,11 +98,11 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_file(const char *filename) {
 	return result;
 }
 
-bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
+bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
 	bctbx_list_t *result = NULL;
-	if (buffer) {
-		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
-		shared_ptr<belcard::BelCardList> belCards = parser.parse(buffer);
+	if (context && buffer) {
+		belcard::BelCardParser *parser = context->parser;
+		shared_ptr<belcard::BelCardList> belCards = parser->parse(buffer);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belCard = (*it);
@@ -85,11 +114,11 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 	return result;
 }
 
-LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
+LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
 	LinphoneVcard *vCard = NULL;
-	if (buffer) {
-		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
-		shared_ptr<belcard::BelCard> belCard = parser.parseOne(buffer);
+	if (context && buffer) {
+		belcard::BelCardParser *parser = context->parser;
+		shared_ptr<belcard::BelCard> belCard = parser->parseOne(buffer);
 		if (belCard) {
 			vCard = linphone_vcard_new_from_belcard(belCard);
 		} else {
@@ -131,12 +160,16 @@ void linphone_vcard_add_sip_address(LinphoneVcard *vCard, const char *sip_addres
 void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 	if (!vCard) return;
 	
+	shared_ptr<belcard::BelCardImpp> impp;
 	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
 		if (strcmp(value, sip_address) == 0) {
-			vCard->belCard->removeImpp(*it);
+			impp = *it;
 			break;
 		}
+	}
+	if (impp) {
+		vCard->belCard->removeImpp(impp);
 	}
 }
 
@@ -177,12 +210,16 @@ void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone) {
 void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone) {
 	if (!vCard) return;
 	
+	shared_ptr<belcard::BelCardPhoneNumber> tel;
 	for (auto it = vCard->belCard->getPhoneNumbers().begin(); it != vCard->belCard->getPhoneNumbers().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
 		if (strcmp(value, phone) == 0) {
-			vCard->belCard->removePhoneNumber(*it);
+			tel = *it;
 			break;
 		}
+	}
+	if (tel) {
+		vCard->belCard->removePhoneNumber(tel);
 	}
 }
 
@@ -229,7 +266,7 @@ bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard) {
 		if (sal_generate_uuid(uuid, sizeof(uuid)) == 0) {
 			char vcard_uuid[sizeof(uuid)+4];
 			snprintf(vcard_uuid, sizeof(vcard_uuid), "urn:%s", uuid);
-			linphone_vcard_set_uid(vCard, ms_strdup(vcard_uuid));
+			linphone_vcard_set_uid(vCard, vcard_uuid);
 			return TRUE;
 		}
 	}
@@ -257,6 +294,7 @@ void linphone_vcard_set_etag(LinphoneVcard *vCard, const char * etag) {
 	}
 	if (vCard->etag) {
 		ms_free(vCard->etag);
+		vCard->etag = NULL;
 	}
 	vCard->etag = ms_strdup(etag);
 }
@@ -272,6 +310,7 @@ void linphone_vcard_set_url(LinphoneVcard *vCard, const char * url) {
 	}
 	if (vCard->url) {
 		ms_free(vCard->url);
+		vCard->url = NULL;
 	}
 	vCard->url = ms_strdup(url);
 }

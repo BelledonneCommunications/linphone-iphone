@@ -100,7 +100,7 @@ static void liblinphone_android_bctbx_log_handler(const char *domain, BctbxLogLe
 	liblinphone_android_log_handler(prio, fmt, args);
 }
 
-void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
+void bcunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	char buffer[CALLBACK_BUFFER_SIZE];
 	jstring javaString;
 	jclass cls;
@@ -130,7 +130,7 @@ JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject 
 	}
 	current_env = env;
 	current_obj = obj;
-	bc_set_trace_handler(cunit_android_trace_handler);
+	bc_set_trace_handler(bcunit_android_trace_handler);
 	ret = main(argc, argv);
 	current_env = NULL;
 	bc_set_trace_handler(NULL);
@@ -159,7 +159,7 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 	va_copy(cap,args);
 #ifdef ANDROID
 	/* IMPORTANT: needed by liblinphone tester to retrieve suite list...*/
-	cunit_android_trace_handler(lev == ORTP_ERROR, fmt, cap);
+	bcunit_android_trace_handler(lev == ORTP_ERROR, fmt, cap);
 #else
 	/* Otherwise, we must use stdio to avoid log formatting (for autocompletion etc.) */
 	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, cap);

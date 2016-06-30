@@ -743,12 +743,13 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	}
 	if ((ai != NULL) && (nat_policy != NULL)
 		&& (linphone_nat_policy_stun_enabled(nat_policy) || linphone_nat_policy_turn_enabled(nat_policy))) {
+		bool_t gathering_in_progress;
 		ms_message("ICE: gathering candidate from [%s] using %s", server, linphone_nat_policy_turn_enabled(nat_policy) ? "TURN" : "STUN");
 		/* Gather local srflx candidates. */
 		ice_session_enable_turn(call->ice_session, linphone_nat_policy_turn_enabled(nat_policy));
 		ice_session_set_stun_auth_requested_cb(call->ice_session, (MSStunAuthRequestedCb)stun_auth_requested_cb, call);
-		ice_session_gather_candidates(call->ice_session, ai->ai_addr, (socklen_t)ai->ai_addrlen);
-		return 1;
+		gathering_in_progress = ice_session_gather_candidates(call->ice_session, ai->ai_addr, (socklen_t)ai->ai_addrlen);
+		return (gathering_in_progress == FALSE) ? 0 : 1;
 	} else {
 		ms_message("ICE: bypass candidates gathering");
 		ice_session_compute_candidates_foundations(call->ice_session);

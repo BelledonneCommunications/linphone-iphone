@@ -1031,6 +1031,21 @@ void on_proxy_refresh_button_clicked(GtkWidget *w){
 	}
 }
 
+static gboolean grab_focus(GtkWidget *w){
+	gtk_widget_grab_focus(w);
+	return FALSE;
+}
+
+void linphone_gtk_viewswitch_changed(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data){
+	GtkWidget *main_window = linphone_gtk_get_main_window();
+	GtkWidget *friendlist = linphone_gtk_get_widget(main_window,"contact_list");
+	GtkWidget *w = (GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
+
+	if (page_num == gtk_notebook_page_num(GTK_NOTEBOOK(notebook),w)) {
+		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(page,"text_entry"));
+	}
+}
+
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid){
 	linphone_gtk_show_friends();
 }
@@ -2248,6 +2263,7 @@ core_start:
 	the_ui=linphone_gtk_create_window("main", NULL);
 
 	g_object_set_data(G_OBJECT(the_ui),"is_created",GINT_TO_POINTER(FALSE));
+	g_signal_connect(G_OBJECT (the_ui), "key_press_event", G_CALLBACK (linphone_gtk_on_key_press), NULL);
 
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);

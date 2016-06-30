@@ -184,6 +184,11 @@ if(UNIX AND NOT APPLE)
 	check_include_files(libudev.h HAVE_LIBUDEV_H)
 endif()
 
+set(LINPHONE_LDFLAGS "${BELLESIP_LDFLAGS} ${MEDIASTREAMER2_LDFLAGS}")
+if(BELCARD_FOUND AND APPLE)
+    set(LINPHONE_LDFLAGS "${LINPHONE_LDFLAGS} -stdlib=libc++")
+endif()
+
 # include_directories must be called only UNDER THIS LINE in order to use our
 # projects submodules first (we do NOT want to have system headers in first position)
 include_directories(

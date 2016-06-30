@@ -39,7 +39,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "speex", "..\..\..\..\speex\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "speexdsp", "..\..\..\..\speex\build\wp8\speex\speexdsp.vcxproj", "{6BD78980-9C71-4341-8775-AD19E9EC7305}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cunit", "..\..\..\..\cunit\build\wp8\cunit\cunit.vcxproj", "{902DAF1D-EBF1-4D03-B598-143500A50AB4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bcunit", "..\..\..\..\bcunit\build\wp8\bcunit\bcunit.vcxproj", "{902DAF1D-EBF1-4D03-B598-143500A50AB4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmswasapi", "..\..\..\..\mswasapi\mswasapi\mswasapi.vcxproj", "{D22BD217-D0F8-4274-9B3A-F3F35F46482C}"
 	ProjectSection(ProjectDependencies) = postProject

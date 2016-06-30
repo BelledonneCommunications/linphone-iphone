@@ -1,7 +1,12 @@
 This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 
+# Warning
 
-******************Building linphone ***********************************
+Unless you exactly know what you are doing, you should take at look at [linphone-desktop](https://github.com/BelledonneCommunications/linphone-desktop).
+
+# Otherwise…
+
+## Building Linphone
 
 - Install build time dependencies
 	- libtool
@@ -59,7 +64,7 @@ For windows compilation see README.mingw.
 For macOS X, see README.macos
 
 
-******************************** Notes for developers *****************************
+## Notes for developers
 
 Here is a short description of the content of the source tree.
 

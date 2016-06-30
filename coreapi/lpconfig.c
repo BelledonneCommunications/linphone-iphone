@@ -793,7 +793,6 @@ void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 }
 
 int lp_config_sync(LpConfig *lpconfig){
-	int fd = -1;	
 	bctbx_vfs_file_t *pFile = NULL;
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
@@ -804,8 +803,7 @@ int lp_config_sync(LpConfig *lpconfig){
 #endif
 	pFile  = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
 	lpconfig->pFile = pFile;
-	fd = pFile->fd;
-	if (fd  == -1 ){
+	if (pFile == NULL){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
 		lpconfig->readonly=1;
 		return -1;
