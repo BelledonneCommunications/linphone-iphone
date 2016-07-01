@@ -31,8 +31,9 @@ void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
 	
 }
 
-void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context) {
-	return NULL;
+
+void* linphone_vcard_context_get_user_data(const LinphoneVcardContext *context) {
+	return context ? context->user_data : NULL;
 }
 
 void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data) {
@@ -51,15 +52,15 @@ void linphone_vcard_free(LinphoneVcard *vCard) {
 	
 }
 
-MSList* linphone_vcard_list_from_vcard4_file(LinphoneVcardContext *context, const char *filename) {
+MSList* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {
 	return NULL;
 }
 
-MSList* linphone_vcard_list_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
+MSList* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardContext *context, const char *buffer) {
 	return NULL;
 }
 
-LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
+LinphoneVcard* linphone_vcard_context_get_vcard_from_buffer(LinphoneVcardContext *context, const char *buffer) {
 	return NULL;
 }
 

@@ -53,7 +53,7 @@ void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
 	}
 }
 
-void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context) {
+void* linphone_vcard_context_get_user_data(const LinphoneVcardContext *context) {
 	return context ? context->user_data : NULL;
 }
 
@@ -82,11 +82,13 @@ void linphone_vcard_free(LinphoneVcard *vCard) {
 	ms_free(vCard);
 }
 
-bctbx_list_t* linphone_vcard_list_from_vcard4_file(LinphoneVcardContext *context, const char *filename) {
+bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {
 	bctbx_list_t *result = NULL;
 	if (context && filename) {
-		belcard::BelCardParser *parser = context->parser;
-		shared_ptr<belcard::BelCardList> belCards = parser->parseFile(filename);
+		if (!context->parser) {
+			context->parser = new belcard::BelCardParser();
+		}
+		shared_ptr<belcard::BelCardList> belCards = context->parser->parseFile(filename);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belCard = (*it);
@@ -98,11 +100,13 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_file(LinphoneVcardContext *context
 	return result;
 }
 
-bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
+bctbx_list_t* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardContext *context, const char *buffer) {
 	bctbx_list_t *result = NULL;
 	if (context && buffer) {
-		belcard::BelCardParser *parser = context->parser;
-		shared_ptr<belcard::BelCardList> belCards = parser->parse(buffer);
+		if (!context->parser) {
+			context->parser = new belcard::BelCardParser();
+		}
+		shared_ptr<belcard::BelCardList> belCards = context->parser->parse(buffer);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belCard = (*it);
@@ -114,11 +118,13 @@ bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(LinphoneVcardContext *conte
 	return result;
 }
 
-LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer) {
+LinphoneVcard* linphone_vcard_context_get_vcard_from_buffer(LinphoneVcardContext *context, const char *buffer) {
 	LinphoneVcard *vCard = NULL;
 	if (context && buffer) {
-		belcard::BelCardParser *parser = context->parser;
-		shared_ptr<belcard::BelCard> belCard = parser->parseOne(buffer);
+		if (!context->parser) {
+			context->parser = new belcard::BelCardParser();
+		}
+		shared_ptr<belcard::BelCard> belCard = context->parser->parseOne(buffer);
 		if (belCard) {
 			vCard = linphone_vcard_new_from_belcard(belCard);
 		} else {

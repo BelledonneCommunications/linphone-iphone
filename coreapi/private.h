@@ -1555,11 +1555,6 @@ char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
 
 void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite);
 
-LinphoneVcardContext* linphone_vcard_context_new(void);
-void linphone_vcard_context_destroy(LinphoneVcardContext *context);
-void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context);
-void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data);
-
 #ifdef __cplusplus
 }
 #endif
