@@ -1020,7 +1020,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	}
 
 
-	if(bctbx_file_read(pFile, data, 1, max_length) < 0){
+	if(bctbx_file_read(pFile, data, 1, (off_t)max_length) < 0){
 		ms_error("%s could not be loaded.", realfilepath);
 		goto err;
 		
@@ -1043,7 +1043,7 @@ err:
 const char** lp_config_get_sections_names(LpConfig *lpconfig) {
 	const char **sections_names;
 	const bctbx_list_t *sections = lpconfig->sections;
-	int ndev;
+	size_t ndev;
 	int i;
 
 	ndev = bctbx_list_size(sections);

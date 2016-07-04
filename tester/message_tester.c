@@ -362,7 +362,7 @@ static void text_message_with_send_error(void) {
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* check transient msg list: the msg should be in it, and should be the only one */
-	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 1, int, "%d");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 1, unsigned int, "%u");
 	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(chat_room->transient_messages,0), msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
@@ -370,7 +370,7 @@ static void text_message_with_send_error(void) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0, int, "%d");
 
 	/* the msg should have been discarded from transient list after an error */
-	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 0, int, "%d");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 0, unsigned int, "%u");
 
 	sal_set_send_error(marie->lc->sal, 0);
 
@@ -396,7 +396,7 @@ static void text_message_with_external_body(void) {
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* check transient msg list: the msg should be in it, and should be the only one */
-	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 1, int, "%d");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 1, unsigned int, "%u");
 	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(chat_room->transient_messages,0), msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
@@ -405,7 +405,7 @@ static void text_message_with_external_body(void) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1, int, "%d");
 
-	BC_ASSERT_EQUAL(bctbx_list_size(chat_room->transient_messages), 0, int, "%d");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 0, unsigned int, "%u");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -615,7 +615,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 		cbs = linphone_chat_message_get_callbacks(msg2);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 
-		BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 0, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 0, unsigned int, "%u");
 		if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) == 0) {
 			linphone_chat_room_send_chat_message(pauline_room,msg);
 			linphone_chat_room_send_chat_message(pauline_room,msg2);
@@ -623,7 +623,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 				msg = linphone_chat_message_clone(marie->stat.last_received_chat_message);
 				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2));
 				msg2 = marie->stat.last_received_chat_message;
-				BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, int, "%d");
+				BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, unsigned int, "%u");
 				if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
 					char * buf = ms_strdup_printf("Found %d rooms instead of 1: ", bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)));
 					const bctbx_list_t *it = linphone_core_get_chat_rooms(marie->lc);
@@ -1028,12 +1028,12 @@ static void lime_unit(void) {
 		ms_message("session index %d\n", associatedKey.sessionIndex);
 		
 		/* encrypt/decrypt a msg */
-		lime_encryptMessage(associatedKeys.peerKeys[0], (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, strlen(PLAIN_TEXT_TEST_MESSAGE), senderZID, encryptedMessage);
+		lime_encryptMessage(associatedKeys.peerKeys[0], (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint32_t)strlen(PLAIN_TEXT_TEST_MESSAGE), senderZID, encryptedMessage);
 		printHex("Ciphered", encryptedMessage, strlen((char *)encryptedMessage));
 		/* invert sender and receiverZID to decrypt/authenticate */
 		memcpy(receiverZID, associatedKeys.peerKeys[0]->peerZID, 12);
 		memcpy(associatedKeys.peerKeys[0]->peerZID, senderZID, 12);
-		retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, strlen(PLAIN_TEXT_TEST_MESSAGE)+16, receiverZID, plainMessage);
+		retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, (uint32_t)strlen(PLAIN_TEXT_TEST_MESSAGE)+16, receiverZID, plainMessage);
 		BC_ASSERT_EQUAL(retval, 0, int, "%d");
 		BC_ASSERT_STRING_EQUAL((char *)plainMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
 		ms_message("Decrypt and auth returned %d\nPlain text is %s\n", retval, plainMessage);
@@ -1190,9 +1190,9 @@ int check_no_strange_time(void* data,int argc, char** argv,char** cNames) {
 	return 0;
 }
 
-void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, int expected ){
+void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, unsigned int expected ){
 	bctbx_list_t* messages = linphone_chat_room_get_history_range(chatroom, x, y);
-	BC_ASSERT_EQUAL(bctbx_list_size(messages), expected, int, "%d");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), expected, unsigned int, "%u");
 	bctbx_list_free_with_data(messages, (void (*)(void *))linphone_chat_message_unref);
 }
 
@@ -1288,16 +1288,16 @@ static void history_count(void) {
 	BC_ASSERT_PTR_NOT_NULL(chatroom);
 	if (chatroom){
 		messages=linphone_chat_room_get_history(chatroom,10);
-		BC_ASSERT_EQUAL(bctbx_list_size(messages), 10, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 10, unsigned int, "%u");
 		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		messages=linphone_chat_room_get_history(chatroom,1);
-		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1, unsigned int, "%u");
 		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		messages=linphone_chat_room_get_history(chatroom,0);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270, int, "%d");
-		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1270, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1270, unsigned int, "%u");
 
 		/*check the second most recent msg*/
 		BC_ASSERT_PTR_NOT_NULL(messages);
@@ -1312,23 +1312,23 @@ static void history_count(void) {
 
 		/*test offset+limit: retrieve the 42th latest msg only and check its content*/
 		messages=linphone_chat_room_get_history_range(chatroom, 42, 42);
-		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1, unsigned int, "%u");
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->data), "If you open yourself to the Tao is intangible and evasive, yet prefers to keep us at the mercy of the kingdom, then all of the streams of hundreds of valleys because of its limitless possibilities.");
 		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset without limit*/
 		messages = linphone_chat_room_get_history_range(chatroom, 1265, -1);
-		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1270-1265, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1270-1265, unsigned int, "%u");
 		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test limit without offset*/
 		messages = linphone_chat_room_get_history_range(chatroom, 0, 5);
-		BC_ASSERT_EQUAL(bctbx_list_size(messages), 6, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 6, unsigned int, "%u");
 		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test invalid start*/
 		messages = linphone_chat_room_get_history_range(chatroom, 1265, 1260);
-		BC_ASSERT_EQUAL(bctbx_list_size(messages), 1270-1265, int, "%d");
+		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1270-1265, unsigned int, "%u");
 		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 	}
 
@@ -1476,7 +1476,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 
 			for (i = 0; i < strlen(message); i++) {
 				BC_ASSERT_FALSE(linphone_chat_message_put_char(rtt_message, message[i]));
-				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
@@ -1488,11 +1488,11 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 				LinphoneChatMessage *marie_msg = NULL;
 				LinphoneChatMessage *pauline_msg = NULL;
 				if (do_not_store_rtt_messages_in_sql_storage) {
-					BC_ASSERT_EQUAL(bctbx_list_size(marie_messages), 0, int , "%i");
-					BC_ASSERT_EQUAL(bctbx_list_size(pauline_messages), 0, int , "%i");
+					BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(marie_messages), 0, unsigned int , "%u");
+					BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(pauline_messages), 0, unsigned int , "%u");
 				} else {
-					BC_ASSERT_EQUAL(bctbx_list_size(marie_messages), 1, int , "%i");
-					BC_ASSERT_EQUAL(bctbx_list_size(pauline_messages), 1, int , "%i");
+					BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(marie_messages), 1, unsigned int , "%u");
+					BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(pauline_messages), 1, unsigned int , "%u");
 					if (!marie_messages || !pauline_messages) {
 						goto end;
 					}
@@ -1569,11 +1569,11 @@ static void real_time_text_conversation(void) {
 
 		for (i = 0; i < strlen(message1_1); i++) {
 			linphone_chat_message_put_char(pauline_rtt_message, message1_1[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
 			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message1_1[i], char, "%c");
 
 			linphone_chat_message_put_char(marie_rtt_message, message1_2[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
 			BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message1_2[i], char, "%c");
 		}
 
@@ -1605,11 +1605,11 @@ static void real_time_text_conversation(void) {
 
 		for (i = 0; i < strlen(message2_1); i++) {
 			linphone_chat_message_put_char(pauline_rtt_message, message2_1[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
 			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message2_1[i], char, "%c");
 
 			linphone_chat_message_put_char(marie_rtt_message, message2_2[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
 			BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message2_2[i], char, "%c");
 		}
 
@@ -1680,7 +1680,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 
 			for (i = 0; i < strlen(message); i++) {
 				linphone_chat_message_put_char(rtt_message, message[i]);
-				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 			}
 
@@ -1689,7 +1689,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 			} else if (end_with_lf) {
 				linphone_chat_message_put_char(rtt_message, lf);
 			}
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, strlen(message), 1000));
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)strlen(message), 1000));
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 			linphone_chat_message_unref(rtt_message);
 		}
@@ -1794,7 +1794,7 @@ static void real_time_text_copy_paste(void) {
 				linphone_chat_message_put_char(rtt_message, message[i-1]);
 				if (i % 4 == 0) {
 					int j;
-					BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i, 1000));
+					BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i, 1000));
 					for (j = 4; j > 0; j--) {
 						BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i-j], char, "%c");
 					}

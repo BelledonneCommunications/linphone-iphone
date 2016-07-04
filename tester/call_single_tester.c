@@ -4359,7 +4359,7 @@ static void call_logs_migrate(void) {
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(laure->lc) == 10);
 
 	for (; i < bctbx_list_size(laure->lc->call_logs); i++) {
-		LinphoneCallLog *log = bctbx_list_nth_data(laure->lc->call_logs, i);
+		LinphoneCallLog *log = bctbx_list_nth_data(laure->lc->call_logs, (int)i);
 		LinphoneCallStatus state = linphone_call_log_get_status(log);
 		LinphoneCallDir direction = linphone_call_log_get_dir(log);
 

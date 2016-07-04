@@ -358,7 +358,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 
 	/*BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
 	if (check_for_proxies){ /**/
-		proxy_count=bctbx_list_size(linphone_core_get_proxy_config_list(mgr->lc));
+		proxy_count=(int)bctbx_list_size(linphone_core_get_proxy_config_list(mgr->lc));
 	}else{
 		proxy_count=0;
 		/*this is to prevent registration to go on*/

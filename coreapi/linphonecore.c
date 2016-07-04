@@ -603,7 +603,7 @@ static int compress_file(FILE *input_file, COMPRESS_FILE_PTR output_file) {
 		total_bytes += fwrite(buffer, 1, bytes, output_file);
 #endif
 	}
-	return total_bytes;
+	return (int)total_bytes;
 }
 
 static int prepare_log_collection_file_to_upload(const char *filename) {
@@ -799,7 +799,7 @@ static void net_config_read (LinphoneCore *lc)
 static void build_sound_devices_table(LinphoneCore *lc){
 	const char **devices;
 	const char **old;
-	int ndev;
+	size_t ndev;
 	int i;
 	const bctbx_list_t *elem=ms_snd_card_manager_get_list(ms_factory_get_snd_card_manager(lc->factory));
 	ndev=bctbx_list_size(elem);
@@ -1369,7 +1369,7 @@ static void codecs_config_read(LinphoneCore *lc){
 static void build_video_devices_table(LinphoneCore *lc){
 	const bctbx_list_t *elem;
 	int i;
-	int ndev;
+	size_t ndev;
 	const char **devices;
 	if (lc->video_conf.cams)
 		ms_free((void *)lc->video_conf.cams);
@@ -5390,7 +5390,7 @@ void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl) {
 void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	bctbx_list_t *logs_to_migrate = NULL;
 	LpConfig *lpc = NULL;
-	int original_logs_count, migrated_logs_count;
+	size_t original_logs_count, migrated_logs_count;
 	int i;
 
 #ifndef SQLITE_STORAGE_ENABLED
@@ -5423,7 +5423,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	logs_to_migrate = lc->call_logs;
 	lc->call_logs = NULL;
 	// We can't use bctbx_list_for_each because logs_to_migrate are listed in the wrong order (latest first), and we want to store the logs latest last
-	for (i = bctbx_list_size(logs_to_migrate) - 1; i >= 0; i--) {
+	for (i = (int)bctbx_list_size(logs_to_migrate) - 1; i >= 0; i--) {
 		LinphoneCallLog *log = (LinphoneCallLog *) bctbx_list_nth_data(logs_to_migrate, i);
 		linphone_core_store_call_log(lc, log);
 	}
@@ -5431,13 +5431,13 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	original_logs_count = bctbx_list_size(logs_to_migrate);
 	migrated_logs_count = bctbx_list_size(lc->call_logs);
 	if (original_logs_count == migrated_logs_count) {
-		int i = 0;
+		size_t i = 0;
 		ms_debug("call logs migration successful: %u logs migrated", (unsigned int)bctbx_list_size(lc->call_logs));
 		lp_config_set_int(lpc, "misc", "call_logs_migration_done", 1);
 
 		for (; i < original_logs_count; i++) {
 			char logsection[32];
-			snprintf(logsection, sizeof(logsection), "call_log_%i", i);
+			snprintf(logsection, sizeof(logsection), "call_log_%u", (unsigned int)i);
 			lp_config_clean_section(lpc, logsection);
 		}
 	} else {
@@ -6895,7 +6895,7 @@ void linphone_core_destroy(LinphoneCore *lc){
  * @ingroup call_control
 **/
 int linphone_core_get_calls_nb(const LinphoneCore *lc){
-	return  bctbx_list_size(lc->calls);;
+	return (int)bctbx_list_size(lc->calls);
 }
 
 /**

@@ -319,7 +319,7 @@ static ortp_socket_t create_socket(int local_port){
 
 static int send_stun_request(int sock, const struct sockaddr *server, socklen_t addrlen, int id, bool_t change_addr){
 	char *buf = NULL;
-	int len;
+	size_t len;
 	int err = 0;
 	MSStunMessage *req = ms_stun_binding_request_create();
 	UInt96 tr_id = ms_stun_message_get_tr_id(req);
@@ -332,7 +332,7 @@ static int send_stun_request(int sock, const struct sockaddr *server, socklen_t 
 		ms_error("Fail to encode stun message.");
 		err = -1;
 	} else {
-		err = sendto(sock, buf, len, 0, server, addrlen);
+		err = bctbx_sendto(sock, buf, len, 0, server, addrlen);
 		if (err < 0) {
 			ms_error("sendto failed: %s",strerror(errno));
 			err = -1;
@@ -905,7 +905,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 	IceSessionState session_state = ice_session_state(session);
 	int nb_candidates;
 	int i;
-	size_t j;
+	int j;
 	bool_t result;
 
 	if (session_state == IS_Completed) {
@@ -955,7 +955,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 		stream->ice_mismatch = ice_check_list_is_mismatch(cl);
 		if ((ice_check_list_state(cl) == ICL_Running) || (ice_check_list_state(cl) == ICL_Completed)) {
 			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
-			for (j = 0; j < MIN(bctbx_list_size(cl->local_candidates), SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES); j++) {
+			for (j = 0; j < MIN((int)bctbx_list_size(cl->local_candidates), SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES); j++) {
 				SalIceCandidate *sal_candidate = &stream->ice_candidates[nb_candidates];
 				IceCandidate *ice_candidate = bctbx_list_nth_data(cl->local_candidates, j);
 				const char *default_addr = NULL;

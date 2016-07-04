@@ -854,7 +854,7 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 }
 
 static void remove_trailing_spaces(char *line){
-	int i;
+	size_t i;
 	for(i=strlen(line)-1;i>=0;--i){
 		if (isspace(line[i])) line[i]='\0';
 		else break;
