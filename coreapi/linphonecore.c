@@ -5441,7 +5441,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 			lp_config_clean_section(lpc, logsection);
 		}
 	} else {
-		ms_error("not as many logs saved in db has logs read from rc (%i in rc against %i in db)!", original_logs_count, migrated_logs_count);
+		ms_error("not as many logs saved in db has logs read from rc (%i in rc against %i in db)!", (int)original_logs_count, (int)migrated_logs_count);
 	}
 
 	bctbx_list_free_with_data(logs_to_migrate, (void (*)(void*))linphone_call_log_unref);
