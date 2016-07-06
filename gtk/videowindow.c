@@ -196,14 +196,17 @@ static void on_controls_response(GtkWidget *dialog, int response_id, GtkWidget *
 
 }
 
-static void on_controls_destroy(GtkWidget *w){
+static gboolean on_controls_destroy(GtkWidget *w){
 	GtkWidget *video_window=(GtkWidget*)g_object_get_data(G_OBJECT(w),"video_window");
 	gint timeout=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"timeout"));
 	if (timeout!=0){
 		g_source_remove(timeout);
 		g_object_set_data(G_OBJECT(w),"timeout",GINT_TO_POINTER(0));
 	}
-	g_object_set_data(G_OBJECT(video_window),"controls",NULL);
+	if (video_window) {
+		g_object_set_data(G_OBJECT(video_window),"controls",NULL);
+	}
+	return FALSE;
 }
 
 static gboolean _set_video_controls_position(GtkWidget *video_window){
