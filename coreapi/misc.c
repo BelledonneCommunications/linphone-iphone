@@ -1749,6 +1749,8 @@ void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id, const char *aud
 
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 	const char *config= lp_config_get_string(lc->config, "sip", "srtp_crypto_suites", "AES_CM_128_HMAC_SHA1_80, AES_CM_128_HMAC_SHA1_32, AES_256_CM_HMAC_SHA1_80, AES_256_CM_HMAC_SHA1_32");
+	char *tmp=ms_strdup(config);
+
 	char *sep;
 	char *pos;
 	char *nextpos;
