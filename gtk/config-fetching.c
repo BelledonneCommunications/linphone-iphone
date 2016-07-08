@@ -36,12 +36,30 @@ void linphone_gtk_config_uri_changed(GtkWidget *button){
 	
 	if (uri && (strlen(uri)==0 || strcmp(uri,"https://")==0)) uri=NULL;
 	
-	linphone_core_set_provisioning_uri(linphone_gtk_get_core(),uri);
-	gtk_widget_destroy(w);
-	
-	if (uri){
-		linphone_gtk_schedule_restart();
-		gtk_main_quit();
+	if(linphone_core_set_provisioning_uri(linphone_gtk_get_core(),uri) == 0) {
+		gtk_widget_destroy(w);
+		if (uri){
+#ifndef _WIN32
+			linphone_gtk_schedule_restart();
+			gtk_main_quit();
+#else
+			GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(linphone_gtk_get_main_window()),
+													   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+													   GTK_MESSAGE_INFO,
+													   GTK_BUTTONS_OK,
+													   _("Remote provisioning URI successfully set. Please restart Linphone in order to load the new remote settings"));
+			g_signal_connect_swapped(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), dialog);
+			gtk_widget_show(dialog);
+#endif
+		}
+	} else {
+		GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(w),
+								   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+								   GTK_MESSAGE_INFO,
+								   GTK_BUTTONS_OK,
+								   _("Invalid remote provisioning URI"));
+		g_signal_connect_swapped(G_OBJECT(dialog), "response", G_CALLBACK(gtk_widget_destroy), dialog);
+		gtk_widget_show(dialog);
 	}
 }
 
