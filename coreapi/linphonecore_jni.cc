@@ -282,15 +282,18 @@ public:
 		chatRoomClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatRoomImpl"));
 		chatRoomCtrId = env->GetMethodID(chatRoomClass,"<init>", "(J)V");
 
-		friendClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendImpl"));;
+		friendClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendImpl"));
 		friendCtrId = env->GetMethodID(friendClass,"<init>", "(J)V");
 		
-		friendListClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendListImpl"));;
+		friendListClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendListImpl"));
 		friendListCtrId = env->GetMethodID(friendListClass,"<init>", "(J)V");
 		friendListCreatedId = env->GetMethodID(listenerClass, "friendListCreated", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriendList;)V");
 		friendListRemovedId = env->GetMethodID(listenerClass, "friendListRemoved", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriendList;)V");
 		friendListSyncStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendList$State"));
 		friendListSyncStateFromIntId = env->GetStaticMethodID(friendListSyncStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneFriendList$State;");
+
+		natPolicyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneNatPolicyImpl"));
+		natPolicyCtrId = env->GetMethodID(natPolicyClass, "<init>", "(J)V");
 
 		addressClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneAddressImpl"));
 		addressCtrId = env->GetMethodID(addressClass,"<init>", "(J)V");
@@ -411,6 +414,9 @@ public:
 	jmethodID friendListRemovedId;
 	jclass friendListSyncStateClass;
 	jmethodID friendListSyncStateFromIntId;
+
+	jclass natPolicyClass;
+	jmethodID natPolicyCtrId;
 
 	jclass addressClass;
 	jmethodID addressCtrId;
@@ -593,6 +599,29 @@ jobject getFriendList(JNIEnv *env, LinphoneFriendList *lfriendList){
 			if (jobj == NULL){
 				jobj=env->NewObject(ljb->friendListClass, ljb->friendListCtrId, (jlong)lfriendList);
 				linphone_friend_list_set_user_data(lfriendList,(void*)env->NewWeakGlobalRef(jobj));
+			}
+		}
+	}
+	return jobj;
+}
+
+jobject getNatPolicy(JNIEnv *env, LinphoneNatPolicy *lNatPolicy) {
+	jobject jobj = 0;
+
+	if (lNatPolicy != NULL) {
+		LinphoneCore *lc = lNatPolicy->lc;
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+
+		void *up = linphone_nat_policy_get_user_data(lNatPolicy);
+		if (up == NULL) {
+			jobj = env->NewObject(ljb->natPolicyClass, ljb->natPolicyCtrId, (jlong)lNatPolicy);
+			linphone_nat_policy_set_user_data(lNatPolicy, (void *)env->NewWeakGlobalRef(jobj));
+			linphone_nat_policy_ref(lNatPolicy);
+		} else {
+			jobj = env->NewLocalRef((jobject)up);
+			if (jobj == NULL) {
+				jobj = env->NewObject(ljb->natPolicyClass, ljb->natPolicyCtrId, (jlong)lNatPolicy);
+				linphone_nat_policy_set_user_data(lNatPolicy, (void *)env->NewWeakGlobalRef(jobj));
 			}
 		}
 	}
@@ -4340,6 +4369,21 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getFirewallPolicy(JNIEnv
 	return (jint)linphone_core_get_firewall_policy((LinphoneCore*)lc);
 }
 
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_createNatPolicy(JNIEnv *env, jobject thiz, jlong lc) {
+	LinphoneNatPolicy *nat_policy = linphone_core_create_nat_policy((LinphoneCore *)lc);
+	return (nat_policy != NULL) ? getNatPolicy(env, nat_policy) : NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setNatPolicy(JNIEnv *env, jobject thiz, jlong lc, jlong jpolicy) {
+	linphone_core_set_nat_policy((LinphoneCore *)lc, (LinphoneNatPolicy *)jpolicy);
+}
+
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_getNatPolicy(JNIEnv *env, jobject thiz, jlong lc) {
+	LinphoneNatPolicy *nat_policy = linphone_core_get_nat_policy((LinphoneCore *)lc);
+	return (nat_policy != NULL) ? getNatPolicy(env, nat_policy) : NULL;
+}
+
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setStunServer(JNIEnv *env, jobject thiz, jlong lc, jstring jserver){
 	const char* server = GetStringUTFChars(env, jserver);
 	linphone_core_set_stun_server((LinphoneCore*)lc,server);
@@ -7416,4 +7460,82 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_reloadMsPlugins(J
 	const char *path = GetStringUTFChars(env, jpath);
 	linphone_core_reload_ms_plugins((LinphoneCore*)pcore, path);
 	ReleaseStringUTFChars(env, jpath, path);
+}
+
+
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_getCore(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneCore *lc = ((LinphoneNatPolicy *)jNatPolicy)->lc;
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+	return ljb->getCore();
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_clear(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	linphone_nat_policy_clear(nat_policy);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_stunEnabled(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	return (linphone_nat_policy_stun_enabled(nat_policy) == FALSE) ? JNI_FALSE : JNI_TRUE;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_enableStun(JNIEnv *env, jobject thiz, jlong jNatPolicy, jboolean jEnable) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	linphone_nat_policy_enable_stun(nat_policy, (jEnable == JNI_FALSE) ? FALSE : TRUE);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_turnEnabled(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	return (linphone_nat_policy_turn_enabled(nat_policy) == FALSE) ? JNI_FALSE : JNI_TRUE;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_enableTurn(JNIEnv *env, jobject thiz, jlong jNatPolicy, jboolean jEnable) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	linphone_nat_policy_enable_turn(nat_policy, (jEnable == JNI_FALSE) ? FALSE : TRUE);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_iceEnabled(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	return (linphone_nat_policy_ice_enabled(nat_policy) == FALSE) ? JNI_FALSE : JNI_TRUE;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_enableIce(JNIEnv *env, jobject thiz, jlong jNatPolicy, jboolean jEnable) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	linphone_nat_policy_enable_ice(nat_policy, (jEnable == JNI_FALSE) ? FALSE : TRUE);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_upnpEnabled(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	return (linphone_nat_policy_upnp_enabled(nat_policy) == FALSE) ? JNI_FALSE : JNI_TRUE;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_enableUpnp(JNIEnv *env, jobject thiz, jlong jNatPolicy, jboolean jEnable) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	linphone_nat_policy_enable_upnp(nat_policy, (jEnable == JNI_FALSE) ? FALSE : TRUE);
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_getStunServer(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	const char *stun_server = linphone_nat_policy_get_stun_server(nat_policy);
+	return (stun_server != NULL) ? env->NewStringUTF(stun_server) : NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_setStunServer(JNIEnv *env, jobject thiz, jlong jNatPolicy, jstring jStunServer) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	const char *stun_server = GetStringUTFChars(env, jStunServer);
+	linphone_nat_policy_set_stun_server(nat_policy, stun_server);
+	ReleaseStringUTFChars(env, jStunServer, stun_server);
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_getStunServerUsername(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	const char *stun_server = linphone_nat_policy_get_stun_server_username(nat_policy);
+	return (stun_server != NULL) ? env->NewStringUTF(stun_server) : NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_setStunServerUsername(JNIEnv *env, jobject thiz, jlong jNatPolicy, jstring jStunServerUsername) {
+	LinphoneNatPolicy *nat_policy = (LinphoneNatPolicy *)jNatPolicy;
+	const char *stun_server_username = GetStringUTFChars(env, jStunServerUsername);
+	linphone_nat_policy_set_stun_server_username(nat_policy, stun_server_username);
+	ReleaseStringUTFChars(env, jStunServerUsername, stun_server_username);
 }
