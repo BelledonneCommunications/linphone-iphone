@@ -231,7 +231,8 @@ static void set_video_controls_position(GtkWidget *video_window){
 }
 
 static gboolean video_window_moved(GtkWidget *widget, GdkEvent  *event, gpointer   user_data){
-	set_video_controls_position(widget);
+	/*Workaround to Video window bug on Windows. */
+	/* set_video_controls_position(widget); */
 	return FALSE;
 }
 
