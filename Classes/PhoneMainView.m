@@ -23,6 +23,8 @@
 #import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 
+#import "ADCallKitManager.h"
+
 static RootViewManager *rootViewManagerInstance = nil;
 
 @implementation RootViewManager {
@@ -127,6 +129,31 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)initPhoneMainView {
 	currentView = nil;
 	inhibitedEvents = [[NSMutableArray alloc] init];
+
+	[[ADCallKitManager sharedInstance] setupWithAppName:@"Linphone"
+										  supportsVideo:YES
+								actionNotificationBlock:^(CXCallAction *_Nonnull action, ADCallActionType actionType) {
+								  LinphoneCall *call = (linphone_core_get_current_call(LC));
+								  if (call) {
+									  switch (actionType) {
+										  case ADCallActionTypeAnswer:
+											  [self incomingCallAccepted:call evenWithVideo:YES];
+											  break;
+										  case ADCallActionTypeEnd:
+											  [self incomingCallDeclined:call];
+											  break;
+										  case ADCallActionTypeHeld:
+											  linphone_core_pause_call(LC, call);
+											  break;
+										  case ADCallActionTypeMute:
+											  LOGE(@"todo ADCallActionTypeMute!");
+											  break;
+										  case ADCallActionTypeStart:
+											  linphone_core_resume_call(LC, call);
+											  break;
+									  }
+								  }
+								}];
 }
 
 - (id)init {
@@ -310,19 +337,41 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 }
 
+#import "ADCallKitManager.h"
+
 - (void)callUpdate:(NSNotification *)notif {
 	LinphoneCall *call = [[notif.userInfo objectForKey:@"call"] pointerValue];
 	LinphoneCallState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	NSString *message = [notif.userInfo objectForKey:@"message"];
 
+	Contact *aaa = call ? [FastAddressBook getContactWithAddress:linphone_call_get_remote_address(call)] : NULL;
+	ADContactProtocol *contact2 = [[ADContactProtocol alloc] init];
+	contact2.displayName = [FastAddressBook displayNameForContact:aaa];
+	contact2.phoneNumber = aaa.phoneNumbers.count > 0 ? aaa.phoneNumbers[0] : aaa.sipAddresses[0];
+	contact2.uniqueIdentifier = aaa.displayName;
+
+	LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+	if (!data) {
+		data = [[LinphoneCallAppData alloc] init];
+		linphone_call_set_user_data(call, (void *)CFBridgingRetain(data));
+	}
+
 	switch (state) {
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia: {
-			[self displayIncomingCall:call];
+			data->uuid = [[ADCallKitManager sharedInstance] reportIncomingCallWithContact:contact2
+																			   completion:^(NSError *_Nullable error) {
+																				 LOGE(@"ended!");
+																			   }];
+			//			[self displayIncomingCall:call];
 			break;
 		}
 		case LinphoneCallOutgoingInit: {
-			[self changeCurrentView:CallOutgoingView.compositeViewDescription];
+			data->uuid = [[ADCallKitManager sharedInstance] reportOutgoingCallWithContact:contact2
+																			   completion:^(NSError *_Nullable error) {
+																				 LOGE(@"ended.");
+																			   }];
+			//			[self changeCurrentView:CallOutgoingView.compositeViewDescription];
 			break;
 		}
 		case LinphoneCallPausedByRemote:
@@ -344,6 +393,12 @@ static RootViewManager *rootViewManagerInstance = nil;
 			[self displayCallError:call message:message];
 		}
 		case LinphoneCallEnd: {
+			if (data->uuid != nil) {
+				[[ADCallKitManager sharedInstance] endCall:data->uuid
+												completion:^(NSError *_Nullable error) {
+												  LOGE(@"ended?");
+												}];
+			}
 			const MSList *calls = linphone_core_get_calls(LC);
 			if (calls == NULL) {
 				while ((currentView == CallView.compositeViewDescription) ||

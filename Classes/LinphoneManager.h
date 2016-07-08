@@ -89,6 +89,7 @@ struct NetworkReachabilityContext {
     NSMutableDictionary *userInfos;
 	bool_t videoRequested; /*set when user has requested for video*/
     NSTimer* timer;
+	NSUUID *uuid;
 };
 @end
 

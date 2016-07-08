@@ -99,5 +99,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSVoIPUsageDescription</key>
+	<string>Make audio/video calls</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Make calls with your friends</string>
 </dict>
 </plist>

@@ -62,8 +62,8 @@
     else {
         CAAnimationDelegate *delegate = [[CAAnimationDelegate alloc] init];
         delegate.completion = completion;
-        self.delegate = delegate;
-    }
+		self.delegate = (id<CAAnimationDelegate>)delegate;
+	}
 }
 
 - (void (^)(BOOL))completion
@@ -79,8 +79,8 @@
     else {
         CAAnimationDelegate *delegate = [[CAAnimationDelegate alloc] init];
         delegate.start = start;
-        self.delegate = delegate;
-    }
+		self.delegate = (id<CAAnimationDelegate>)delegate;
+	}
 }
 
 - (void (^)(void))start

@@ -532,6 +532,8 @@
 		635775251B6673EC00C8B704 /* HistoryDetailsTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */; };
 		636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutView.xib */; };
 		636316D41A1DEC650009B839 /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsView.xib */; };
+		63677EFD1D2F9CA5008B562C /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63677EFC1D2F9CA5008B562C /* CallKit.framework */; };
+		63677F081D2FA1E4008B562C /* ADCallKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63677F071D2FA1E4008B562C /* ADCallKitManager.m */; };
 		636920671D253DF700D44CAC /* libbcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 636920661D253DF700D44CAC /* libbcunit.a */; };
 		636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 636BC9961B5F921B00C754CE /* UIIconButton.m */; };
 		63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */; };
@@ -1443,6 +1445,9 @@
 		636316D51A1DEC650009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SettingsView.xib; sourceTree = "<group>"; };
 		636316DA1A1DEDD40009B839 /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
 		636316DB1A1DEDD80009B839 /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
+		63677EFC1D2F9CA5008B562C /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
+		63677F061D2FA1E4008B562C /* ADCallKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADCallKitManager.h; path = Utils/ADCallKitManager.h; sourceTree = "<group>"; };
+		63677F071D2FA1E4008B562C /* ADCallKitManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ADCallKitManager.m; path = Utils/ADCallKitManager.m; sourceTree = "<group>"; };
 		636920661D253DF700D44CAC /* libbcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libbcunit.a"; sourceTree = "<group>"; };
 		636BC9951B5F921B00C754CE /* UIIconButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIIconButton.h; sourceTree = "<group>"; };
 		636BC9961B5F921B00C754CE /* UIIconButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIIconButton.m; sourceTree = "<group>"; };
@@ -1759,6 +1764,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63677EFD1D2F9CA5008B562C /* CallKit.framework in Frameworks */,
 				637835A51CFD971D00599382 /* libbv16.a in Frameworks */,
 				63FD3F091CA17F9100E9AECC /* libmbedcrypto.a in Frameworks */,
 				63FD3F0A1CA17F9100E9AECC /* libmbedtls.a in Frameworks */,
@@ -1909,6 +1915,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				63677F061D2FA1E4008B562C /* ADCallKitManager.h */,
+				63677F071D2FA1E4008B562C /* ADCallKitManager.m */,
 				63E27A311C4FECD000D332AE /* LaunchScreen.xib */,
 				22E0A81D111C44E100B04932 /* AboutView.h */,
 				22E0A81C111C44E100B04932 /* AboutView.m */,
@@ -2142,6 +2150,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63677EFC1D2F9CA5008B562C /* CallKit.framework */,
 				636920661D253DF700D44CAC /* libbcunit.a */,
 				637835A41CFD971D00599382 /* libbv16.a */,
 				63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */,
@@ -3799,6 +3808,7 @@
 				F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
 				63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */,
 				63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */,
+				63677F081D2FA1E4008B562C /* ADCallKitManager.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
