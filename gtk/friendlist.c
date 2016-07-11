@@ -611,7 +611,7 @@ static int get_friend_weight(const LinphoneFriend *lf){
 }
 
 static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *lf2){
-	int w1,w2;
+	int w1,w2,ret;
 	w1=get_friend_weight(lf1);
 	w2=get_friend_weight(lf2);
 	if (w1==w2){
@@ -619,13 +619,19 @@ static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *
 		const LinphoneAddress *addr1,*addr2;
 		addr1=linphone_friend_get_address(lf1);
 		addr2=linphone_friend_get_address(lf2);
-		u1=linphone_address_get_username(addr1);
-		u2=linphone_address_get_username(addr2);
-		if (u1 && u2) return strcasecmp(u1,u2);
-		if (u1) return 1;
-		else return -1;
+		u1=linphone_address_get_display_name(addr1) ? linphone_address_get_display_name(addr1) : linphone_address_get_username(addr1);
+		u2=linphone_address_get_display_name(addr2) ? linphone_address_get_display_name(addr2) : linphone_address_get_username(addr2);
+		if (u1 && u2) {
+			ret = strcasecmp(u1,u2);
+		} else if (u1) {
+			ret = 1;
+		} else {
+			ret = -1;
+		}
+	} else {
+		ret = w2-w1;
 	}
-	return w2-w1;
+	return ret;
 }
 
 static bctbx_list_t *sort_friend_list(const bctbx_list_t *friends){
