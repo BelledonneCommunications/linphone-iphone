@@ -685,7 +685,7 @@ static void long_term_presence_list(void) {
 	LinphoneFriend *f1, *f2;
 	LinphoneFriendList* friends;
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	enable_publish(pauline, TRUE);
+	enable_publish(pauline, FALSE);
 	enable_deflate_content_encoding(pauline, FALSE);
 
 	friends = linphone_core_create_friend_list(pauline->lc);
