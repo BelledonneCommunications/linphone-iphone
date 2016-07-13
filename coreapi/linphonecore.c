@@ -790,6 +790,8 @@ static void net_config_read (LinphoneCore *lc)
 	}
 	tmp = lp_config_get_int(lc->config, "net", "dns_srv_enabled", 1);
 	linphone_core_enable_dns_srv(lc, tmp);
+	tmp = lp_config_get_int(lc->config, "net", "dns_search_enabled", 1);
+	linphone_core_enable_dns_search(lc, tmp);
 
 	/* This is to filter out unsupported firewall policies */
 	if (nat_policy_ref == NULL)
@@ -1521,6 +1523,16 @@ void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enable) {
 
 bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc) {
 	return sal_dns_srv_enabled(lc->sal);
+}
+
+void linphone_core_enable_dns_search(LinphoneCore *lc, bool_t enable) {
+	sal_enable_dns_search(lc->sal, enable);
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config, "net", "dns_search_enabled", enable ? 1 : 0);
+}
+
+bool_t linphone_core_dns_search_enabled(const LinphoneCore *lc) {
+	return sal_dns_search_enabled(lc->sal);
 }
 
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
