@@ -2755,6 +2755,22 @@ LINPHONE_PUBLIC void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enabl
 LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
 
 /**
+ * Enable or disable DNS search (use of local domain if the fully qualified name did return results).
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] enable TRUE to enable DNS search, FALSE to disable it.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_enable_dns_search(LinphoneCore *lc, bool_t enable);
+
+/**
+ * Tells whether DNS search (use of local domain if the fully qualified name did return results) is enabled.
+ * @param[in] lc #LinphoneCore object.
+ * @return TRUE if DNS search is enabled, FALSE if disabled.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_dns_search_enabled(const LinphoneCore *lc);
+
+/**
  * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.
  * @param[in] lc #LinphoneCore object.
  * @param[in] servers A #bctbx_list_t of strings containing the IP addresses of DNS servers to be used.
