@@ -138,8 +138,8 @@ static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* 
  * | 4  | encoding
  * | 5  | size
  * | 6  | data (currently not stored)
- * | 7  | size
- * | 8  | size
+ * | 7  | key size
+ * | 8  | key
  */
 // Callback for sql request when getting linphone content
 static int callback_content(void *data, int argc, char **argv, char **colName) {
