@@ -1678,4 +1678,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void reloadMsPlugins(String path) {
 		reloadMsPlugins(nativePtr, path);
 	}
+	
+	private native boolean isLimeEncryptionAvailable(long nativePtr);
+	public synchronized boolean isLimeEncryptionAvailable() {
+		return isLimeEncryptionAvailable(nativePtr);
+	}
+	
+	private native void setLimeEncryption(long nativePtr, int value);
+	public synchronized void setLimeEncryption(LinphoneLimeState lime) {
+		setLimeEncryption(nativePtr, lime.mValue);
+	}
+	
+	private native int getLimeEncryption(long nativePtr);
+	public synchronized LinphoneLimeState getLimeEncryption() {
+		return LinphoneLimeState.fromInt(getLimeEncryption(nativePtr));
+	}
 }

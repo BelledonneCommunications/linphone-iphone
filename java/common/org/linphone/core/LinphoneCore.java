@@ -561,6 +561,42 @@ public interface LinphoneCore {
 			return mStringValue;
 		}
 	}
+	static public final class LinphoneLimeState {
+
+		static private Vector<LinphoneLimeState> values = new Vector<LinphoneLimeState>();
+		/**
+		 * Disabled
+		 */
+		static public final LinphoneLimeState Disabled = new LinphoneLimeState(0, "None");
+		/**
+		 * Mandatory
+		 */
+		static public final LinphoneLimeState Mandatory = new LinphoneLimeState(1,"Mandatory");
+		/**
+		 * Preferred
+		 */
+		static public final LinphoneLimeState Preferred = new LinphoneLimeState(2,"Preferred");
+		protected final int mValue;
+		private final String mStringValue;
+
+
+		private LinphoneLimeState(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static LinphoneLimeState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				LinphoneLimeState menc = (LinphoneLimeState) values.elementAt(i);
+				if (menc.mValue == value) return menc;
+			}
+			throw new RuntimeException("LinphoneLimeState not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
 
 	/**
 	 * Set the context of creation of the LinphoneCore.
@@ -2340,4 +2376,10 @@ public interface LinphoneCore {
 	 * @param path The path from where plugins are to be loaded.
 	**/
 	public void reloadMsPlugins(String path);
+	
+	public boolean isLimeEncryptionAvailable();
+	
+	public void setLimeEncryption(LinphoneLimeState lime);
+	
+	public LinphoneLimeState getLimeEncryption();
 }

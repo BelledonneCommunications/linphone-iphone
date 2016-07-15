@@ -2475,6 +2475,27 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMediaEncryptionMandat
 	linphone_core_set_media_encryption_mandatory((LinphoneCore*)lc, yesno);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isLimeEncryptionAvailable (JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return (jboolean) linphone_core_lime_available((LinphoneCore*)lc);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getLimeEncryption(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return (jint)linphone_core_lime_enabled((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setLimeEncryption(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jint menc) {
+	linphone_core_enable_lime((LinphoneCore*)lc,(LinphoneLimeState)menc);
+}
+
 /*
  * Class:     org_linphone_core_LinphoneCoreImpl
  * Method:    disableChat
