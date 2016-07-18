@@ -111,6 +111,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native boolean isVideoSupported(long nativePtr);
 	private native void setFirewallPolicy(long nativePtr, int enum_value);
 	private native int getFirewallPolicy(long nativePtr);
+	private native Object createNatPolicy(long nativePtr);
+	private native void setNatPolicy(long nativePtr, long policyPtr);
+	private native Object getNatPolicy(long nativePtr);
 	private native void setStunServer(long nativePtr, String stun_server);
 	private native String getStunServer(long nativePtr);
 	private native int updateCall(long ptrLc, long ptrCall, long ptrParams);
@@ -528,11 +531,20 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized FirewallPolicy getFirewallPolicy() {
 		return FirewallPolicy.fromInt(getFirewallPolicy(nativePtr));
 	}
-	public synchronized String getStunServer() {
-		return getStunServer(nativePtr);
-	}
 	public synchronized void setFirewallPolicy(FirewallPolicy pol) {
 		setFirewallPolicy(nativePtr,pol.value());
+	}
+	public synchronized LinphoneNatPolicy createNatPolicy() {
+		return (LinphoneNatPolicy)createNatPolicy(nativePtr);
+	}
+	public synchronized void setNatPolicy(LinphoneNatPolicy policy) {
+		setNatPolicy(nativePtr, ((LinphoneNatPolicyImpl)policy).mNativePtr);
+	}
+	public synchronized LinphoneNatPolicy getNatPolicy() {
+		return (LinphoneNatPolicy)getNatPolicy(nativePtr);
+	}
+	public synchronized String getStunServer() {
+		return getStunServer(nativePtr);
 	}
 	public synchronized void setStunServer(String stunServer) {
 		setStunServer(nativePtr, stunServer);
@@ -1669,5 +1681,20 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public void reloadMsPlugins(String path) {
 		reloadMsPlugins(nativePtr, path);
+	}
+	
+	private native boolean isLimeEncryptionAvailable(long nativePtr);
+	public synchronized boolean isLimeEncryptionAvailable() {
+		return isLimeEncryptionAvailable(nativePtr);
+	}
+	
+	private native void setLimeEncryption(long nativePtr, int value);
+	public synchronized void setLimeEncryption(LinphoneLimeState lime) {
+		setLimeEncryption(nativePtr, lime.mValue);
+	}
+	
+	private native int getLimeEncryption(long nativePtr);
+	public synchronized LinphoneLimeState getLimeEncryption() {
+		return LinphoneLimeState.fromInt(getLimeEncryption(nativePtr));
 	}
 }

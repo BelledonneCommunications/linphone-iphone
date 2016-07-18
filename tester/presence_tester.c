@@ -529,7 +529,7 @@ static void simple_subscribe_with_friend_from_rc(void) {
 	LinphoneCoreManager *marie = presence_linphone_core_manager_new_with_rc_name("marie", "pauline_as_friend_rc");
 	LinphoneFriend *pauline_as_friend;
 
-	BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_friend_list(marie->lc)), 1, int , "%i");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_core_get_friend_list(marie->lc)), 1, unsigned int , "%u");
 
 	if (bctbx_list_size(linphone_core_get_friend_list(marie->lc))>0) {
 		pauline_as_friend = (LinphoneFriend*)linphone_core_get_friend_list(marie->lc)->data;

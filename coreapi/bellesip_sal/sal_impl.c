@@ -877,6 +877,14 @@ bool_t sal_dns_srv_enabled(const Sal *sal) {
 	return (bool_t)belle_sip_stack_dns_srv_enabled(sal->stack);
 }
 
+void sal_enable_dns_search(Sal *sal, bool_t enable) {
+	belle_sip_stack_enable_dns_search(sal->stack, (unsigned char)enable);
+}
+
+bool_t sal_dns_search_enabled(const Sal *sal) {
+	return (bool_t)belle_sip_stack_dns_search_enabled(sal->stack);
+}
+
 void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file) {
 	belle_sip_stack_set_dns_user_hosts_file(sal->stack, hosts_file);
 }

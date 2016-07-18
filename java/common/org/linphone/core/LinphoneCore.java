@@ -170,7 +170,7 @@ public interface LinphoneCore {
 	}
 	/**
 	 * Describes firewall policy.
-	 *
+	 * @deprecated
 	 */
 	static public class FirewallPolicy {
 
@@ -556,6 +556,42 @@ public interface LinphoneCore {
 				if (state.mValue == value) return state;
 			}
 			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	static public final class LinphoneLimeState {
+
+		static private Vector<LinphoneLimeState> values = new Vector<LinphoneLimeState>();
+		/**
+		 * Disabled
+		 */
+		static public final LinphoneLimeState Disabled = new LinphoneLimeState(0, "None");
+		/**
+		 * Mandatory
+		 */
+		static public final LinphoneLimeState Mandatory = new LinphoneLimeState(1,"Mandatory");
+		/**
+		 * Preferred
+		 */
+		static public final LinphoneLimeState Preferred = new LinphoneLimeState(2,"Preferred");
+		protected final int mValue;
+		private final String mStringValue;
+
+
+		private LinphoneLimeState(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static LinphoneLimeState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				LinphoneLimeState menc = (LinphoneLimeState) values.elementAt(i);
+				if (menc.mValue == value) return menc;
+			}
+			throw new RuntimeException("LinphoneLimeState not found ["+value+"]");
 		}
 		public String toString() {
 			return mStringValue;
@@ -1116,6 +1152,7 @@ public interface LinphoneCore {
 	 *
 	**/
 	void enableVideo(boolean vcap_enabled, boolean display_enabled);
+
 	/**
 	 * Returns TRUE if video is enabled, FALSE otherwise.
 	 *
@@ -1127,6 +1164,7 @@ public interface LinphoneCore {
 	 * @param stun_server Stun server address and port, such as stun.linphone.org or stun.linphone.org:3478
 	 */
 	void setStunServer(String stun_server);
+
 	/**
 	 * Get STUN server
 	 * @return stun server address if previously set.
@@ -1136,24 +1174,49 @@ public interface LinphoneCore {
 	/**
 	 * Sets policy regarding workarounding NATs
 	 * @param pol one of the FirewallPolicy members.
+	 * @deprecated
 	**/
 	void setFirewallPolicy(FirewallPolicy pol);
+
 	/**
 	 * @return previously set firewall policy.
+	 * @deprecated
 	 */
 	FirewallPolicy getFirewallPolicy();
+
+	/**
+	 * Create a new LinphoneNatPolicy object with every policies being disabled.
+	 * @return A new LinphoneNatPolicy object.
+	 */
+	LinphoneNatPolicy createNatPolicy();
+
+	/**
+	 * Set the policy to use to pass through NATs/firewalls.
+	 * It may be overridden by a NAT policy for a specific proxy config.
+	 * @param policy LinphoneNatPolicy object
+	 */
+	void setNatPolicy(LinphoneNatPolicy policy);
+
+	/**
+	 * Get The policy that is used to pass through NATs/firewalls.
+	 * It may be overridden by a NAT policy for a specific proxy config.
+	 * @return LinphoneNatPolicy object in use.
+	 */
+	LinphoneNatPolicy getNatPolicy();
+
 	/**
 	 * Initiates an outgoing call given a destination LinphoneAddress
 	 *
 	 * @param addr the destination of the call {@link #LinphoneAddress }.
 	 * @param params call parameters {@link #LinphoneCallParams }
 	 *
-	 *<br>The LinphoneAddress can be constructed directly using {@link LinphoneCoreFactory#createLinphoneAddress} , or created {@link LinphoneCore#interpretUrl(String)}. .
+	 *<br>The LinphoneAddress can be constructed directly using {@link LinphoneCoreFactory#createLinphoneAddress} , or created {@link LinphoneCore#interpretUrl(String)}.
 	 *
 	 * @return a {@link #LinphoneCall LinphoneCall} object
 	 * @throws LinphoneCoreException  in case of failure
 	**/
-	LinphoneCall inviteAddressWithParams(LinphoneAddress destination, LinphoneCallParams params) throws LinphoneCoreException ;
+	LinphoneCall inviteAddressWithParams(LinphoneAddress destination, LinphoneCallParams params) throws LinphoneCoreException;
+
 	/**
 	 * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
 	 *
@@ -2313,4 +2376,10 @@ public interface LinphoneCore {
 	 * @param path The path from where plugins are to be loaded.
 	**/
 	public void reloadMsPlugins(String path);
+	
+	public boolean isLimeEncryptionAvailable();
+	
+	public void setLimeEncryption(LinphoneLimeState lime);
+	
+	public LinphoneLimeState getLimeEncryption();
 }

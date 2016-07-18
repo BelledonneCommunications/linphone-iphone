@@ -37,9 +37,35 @@ extern "C"
  */
 
 /**
- * Linphone vCard context object.
+ * The LinphoneVcardContext object.
  */
 typedef struct _LinphoneVcardContext LinphoneVcardContext;
+
+/**
+ * Creates a vCard context to reuse the same BelCardParser object
+ * @return a new LinphoneVcardContext object
+ */
+LINPHONE_PUBLIC LinphoneVcardContext* linphone_vcard_context_new(void);
+
+/**
+ * Destroys the vCard context
+ * @param[in] context a LinphoneVcardContext object
+ */
+LINPHONE_PUBLIC void linphone_vcard_context_destroy(LinphoneVcardContext *context);
+
+/**
+ * Gets the user data set in the LinphoneVcardContext
+ * @param[in] context a LinphoneVcardContext object
+ * @return the user data pointer
+ */
+LINPHONE_PUBLIC void* linphone_vcard_context_get_user_data(const LinphoneVcardContext *context);
+
+/**
+ * Sets the user data in the LinphoneVcardContext
+ * @param[in] context a LinphoneVcardContext object
+ * @param[in] data the user data pointer
+ */
+LINPHONE_PUBLIC void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data);
 
 /**
  * The LinphoneVcard object.
@@ -48,6 +74,7 @@ typedef struct _LinphoneVcard LinphoneVcard;
 
 /**
  * Creates a LinphoneVcard object that has a pointer to an empty vCard
+ * @return a new LinphoneVcard object
  */
 LINPHONE_PUBLIC LinphoneVcard* linphone_vcard_new(void);
 
@@ -59,24 +86,27 @@ LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVcard *vCard);
 
 /**
  * Uses belcard to parse the content of a file and returns all the vcards it contains as LinphoneVcards, or NULL if it contains none.
+ * @param[in] context the vCard context to use (speed up the process by not creating a Belcard parser each time)
  * @param[in] file the path to the file to parse
  * @return \mslist{LinphoneVcard}
  */
-LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_list_from_vcard4_file(LinphoneVcardContext *context, const char *file);
+LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *file);
 
 /**
  * Uses belcard to parse the content of a buffer and returns all the vcards it contains as LinphoneVcards, or NULL if it contains none.
+ * @param[in] context the vCard context to use (speed up the process by not creating a Belcard parser each time)
  * @param[in] buffer the buffer to parse
  * @return \mslist{LinphoneVcard}
  */
-LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_list_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer);
+LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardContext *context, const char *buffer);
 
 /**
  * Uses belcard to parse the content of a buffer and returns one vCard if possible, or NULL otherwise.
+ * @param[in] context the vCard context to use (speed up the process by not creating a Belcard parser each time)
  * @param[in] buffer the buffer to parse
  * @return a LinphoneVcard if one could be parsed, or NULL otherwise
  */
-LINPHONE_PUBLIC LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(LinphoneVcardContext *context, const char *buffer);
+LINPHONE_PUBLIC LinphoneVcard* linphone_vcard_context_get_vcard_from_buffer(LinphoneVcardContext *context, const char *buffer);
 
 /**
  * Returns the vCard4 representation of the LinphoneVcard.

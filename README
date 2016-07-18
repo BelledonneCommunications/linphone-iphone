@@ -47,7 +47,7 @@ libglew1.6-dev libv4l-dev libxml2-dev
 libsqlite3-dev libupnp4-dev libsrtp-dev
 
 	+ Install zrtp (optional), for unbreakable call encryption
-		$ git clone git://git.linphone.org:bzrtp
+		$ git clone git://git.linphone.org/bzrtp.git
 		$ cd bzrtp && ./autogen.sh && ./configure && make
 		$ sudo make install
 

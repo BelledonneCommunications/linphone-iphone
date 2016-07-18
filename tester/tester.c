@@ -358,7 +358,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 
 	/*BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
 	if (check_for_proxies){ /**/
-		proxy_count=bctbx_list_size(linphone_core_get_proxy_config_list(mgr->lc));
+		proxy_count=(int)bctbx_list_size(linphone_core_get_proxy_config_list(mgr->lc));
 	}else{
 		proxy_count=0;
 		/*this is to prevent registration to go on*/
@@ -390,19 +390,26 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 		/*now that stun server resolution is done, we can start registering*/
 		linphone_core_set_network_reachable(mgr->lc, TRUE);
 	}
+
 }
 
 LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
+	int old_log_level = ortp_get_log_level_mask(NULL);
 	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_set_log_level(ORTP_ERROR);
 	linphone_core_manager_init(manager, rc_file);
 	linphone_core_manager_start(manager, TRUE);
+	linphone_core_set_log_level(old_log_level);
 	return manager;
 }
 
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
+	int old_log_level = ortp_get_log_level_mask(NULL);
 	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_set_log_level(ORTP_ERROR);
 	linphone_core_manager_init(manager, rc_file);
 	linphone_core_manager_start(manager, check_for_proxies);
+	linphone_core_set_log_level(old_log_level);
 	return manager;
 }
 
@@ -414,6 +421,8 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 }
 
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
+	int old_log_level = ortp_get_log_level_mask(NULL);
+	linphone_core_set_log_level(ORTP_ERROR);
 	if (mgr->stat.last_received_chat_message) {
 		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	}
@@ -423,7 +432,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 		char *chatdb = ms_strdup(linphone_core_get_chat_database_path(mgr->lc));
 		if (!liblinphone_tester_keep_record_files && record_file){
 			if ((bc_get_number_of_failures()-mgr->number_of_bcunit_error_at_creation)>0) {
-				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
+				ms_error("Test has failed, keeping recorded file [%s]",record_file);
 			} else {
 				unlink(record_file);
 			}
@@ -439,6 +448,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	}
 
 	manager_count--;
+	linphone_core_set_log_level(old_log_level);
 }
 
 void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr) {

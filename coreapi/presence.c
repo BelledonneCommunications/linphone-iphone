@@ -360,7 +360,7 @@ int linphone_presence_model_set_contact(LinphonePresenceModel *model, const char
 }
 
 static void presence_model_count_activities(const LinphonePresencePerson *person, unsigned int *nb) {
-	*nb += bctbx_list_size(person->activities);
+	*nb += (unsigned int)bctbx_list_size(person->activities);
 }
 
 struct _get_activity_st {
@@ -371,7 +371,7 @@ struct _get_activity_st {
 
 static void presence_model_get_activity(const LinphonePresencePerson *person, struct _get_activity_st *st) {
 	if (st->current_idx != (unsigned)-1) {
-		unsigned int size = bctbx_list_size(person->activities);
+		unsigned int size = (unsigned int)bctbx_list_size(person->activities);
 		if (st->requested_idx < (st->current_idx + size)) {
 			st->activity = (LinphonePresenceActivity *)bctbx_list_nth_data(person->activities, st->requested_idx - st->current_idx);
 			st->current_idx = (unsigned)-1;
@@ -471,10 +471,8 @@ struct _find_note_st {
 };
 
 static LinphonePresenceNote * find_presence_note_in_list(bctbx_list_t *list, const char *lang) {
-	int nb;
 	int i;
-
-	nb = bctbx_list_size(list);
+	int nb = (int)bctbx_list_size(list);
 	for (i = 0; i < nb; i++) {
 		LinphonePresenceNote *note = (LinphonePresenceNote *)bctbx_list_nth_data(list, i);
 		if (lang == NULL) {
@@ -632,7 +630,7 @@ LinphonePresenceModel * linphone_presence_model_new(void) {
 }
 
 unsigned int linphone_presence_model_get_nb_services(const LinphonePresenceModel *model) {
-	return bctbx_list_size(model->services);
+	return (unsigned int)bctbx_list_size(model->services);
 }
 
 LinphonePresenceService * linphone_presence_model_get_nth_service(const LinphonePresenceModel *model, unsigned int idx) {
@@ -658,7 +656,7 @@ int linphone_presence_model_clear_services(LinphonePresenceModel *model) {
 }
 
 unsigned int linphone_presence_model_get_nb_persons(const LinphonePresenceModel *model) {
-	return bctbx_list_size(model->persons);
+	return (unsigned int)bctbx_list_size(model->persons);
 }
 
 LinphonePresencePerson * linphone_presence_model_get_nth_person(const LinphonePresenceModel *model, unsigned int idx) {
@@ -762,7 +760,7 @@ int linphone_presence_service_set_contact(LinphonePresenceService *service, cons
 }
 
 unsigned int linphone_presence_service_get_nb_notes(const LinphonePresenceService *service) {
-	return bctbx_list_size(service->notes);
+	return (unsigned int)bctbx_list_size(service->notes);
 }
 
 LinphonePresenceNote * linphone_presence_service_get_nth_note(const LinphonePresenceService *service, unsigned int idx) {
@@ -815,7 +813,7 @@ int linphone_presence_person_set_id(LinphonePresencePerson *person, const char *
 
 unsigned int linphone_presence_person_get_nb_activities(const LinphonePresencePerson *person) {
 	if (person == NULL) return 0;
-	return bctbx_list_size(person->activities);
+	return (unsigned int)bctbx_list_size(person->activities);
 }
 
 LinphonePresenceActivity * linphone_presence_person_get_nth_activity(const LinphonePresencePerson *person, unsigned int idx) {
@@ -841,7 +839,7 @@ int linphone_presence_person_clear_activities(LinphonePresencePerson *person) {
 
 unsigned int linphone_presence_person_get_nb_notes(const LinphonePresencePerson *person) {
 	if (person == NULL) return 0;
-	return bctbx_list_size(person->notes);
+	return (unsigned int)bctbx_list_size(person->notes);
 }
 
 LinphonePresenceNote * linphone_presence_person_get_nth_note(const LinphonePresencePerson *person, unsigned int idx) {
@@ -866,7 +864,7 @@ int linphone_presence_person_clear_notes(LinphonePresencePerson *person) {
 
 unsigned int linphone_presence_person_get_nb_activities_notes(const LinphonePresencePerson *person) {
 	if (person == NULL) return 0;
-	return bctbx_list_size(person->activities_notes);
+	return (unsigned int)bctbx_list_size(person->activities_notes);
 }
 
 LinphonePresenceNote * linphone_presence_person_get_nth_activities_note(const LinphonePresencePerson *person, unsigned int idx) {

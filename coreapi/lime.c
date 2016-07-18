@@ -588,7 +588,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	lime_strToUint8(selfZid, selfZidHex, 24);
 
 	/* encrypted message length is plaintext + 16 for tag */
-	encryptedMessageLength = strlen((char *)message) + 16;
+	encryptedMessageLength = (uint32_t)strlen((char *)message) + 16;
 
 	/* retrieve keys associated to the peer URI */
 	associatedKeys.peerURI = (uint8_t *)malloc(strlen((char *)peerURI)+1);
@@ -626,7 +626,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 		limeKey_t *currentKey = associatedKeys.peerKeys[i];
 		/* encrypted message include a 16 bytes tag */
 		uint8_t *encryptedMessage = (uint8_t *)malloc(encryptedMessageLength);
-		lime_encryptMessage(currentKey, message, strlen((char *)message), selfZid, encryptedMessage);
+		lime_encryptMessage(currentKey, message, (uint32_t)strlen((char *)message), selfZid, encryptedMessage);
 		/* add a "msg" node the the output message, doc node is :
 		 * <msg>
 		 * 		<pzid>peerZID</pzid>
@@ -795,7 +795,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 
 	/* decrypt the message */
 	*output = (uint8_t *)malloc(encryptedMessageLength - 16 +1); /* plain message is same length than encrypted one with 16 bytes less for the tag + 1 to add the null termination char */
-	retval = lime_decryptMessage(&associatedKey, encryptedMessage, encryptedMessageLength, selfZid, *output);
+	retval = lime_decryptMessage(&associatedKey, encryptedMessage, (uint32_t)encryptedMessageLength, selfZid, *output);
 
 	free(encryptedMessage);
 

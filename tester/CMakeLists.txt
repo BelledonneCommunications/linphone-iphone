@@ -129,6 +129,7 @@ set(VCARD_FILES
 
 set(OTHER_FILES
 	tester_hosts
+	local_tester_hosts
 	messages.db
 )
 

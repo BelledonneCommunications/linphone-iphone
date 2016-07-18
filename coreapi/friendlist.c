@@ -781,7 +781,7 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 		return -1;
 	}
 	
-	vcards = linphone_vcard_list_from_vcard4_file(list->lc->vcard_context, vcard_file);
+	vcards = linphone_vcard_context_get_vcard_list_from_file(list->lc->vcard_context, vcard_file);
 	vcards_iterator = vcards;
 	if (!vcards) {
 		ms_error("Failed to parse the file %s", vcard_file);
@@ -820,7 +820,7 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 		return -1;
 	}
 	
-	vcards = linphone_vcard_list_from_vcard4_buffer(list->lc->vcard_context, vcard_buffer);
+	vcards = linphone_vcard_context_get_vcard_list_from_buffer(list->lc->vcard_context, vcard_buffer);
 	vcards_iterator = vcards;
 	if (!vcards) {
 		ms_error("Failed to parse the buffer");

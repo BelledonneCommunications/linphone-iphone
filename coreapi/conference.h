@@ -39,12 +39,15 @@ extern "C" {
 
 /**
  * LinphoneConference class
+ * The _LinphoneConference struct does not exists, it's the Conference C++ class that is used behind
  */
 typedef struct _LinphoneConference LinphoneConference;
+
 /**
  * Parameters for initialization of conferences
+ * The _LinphoneConferenceParams struct does not exists, it's the ConferenceParams C++ class that is used behind
  */
-typedef struct _LinphoneCorferenceParams LinphoneConferenceParams;
+typedef struct _LinphoneConferenceParams LinphoneConferenceParams;
 
 
 

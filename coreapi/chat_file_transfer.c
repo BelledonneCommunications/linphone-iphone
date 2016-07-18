@@ -441,18 +441,38 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 		int code = belle_http_response_get_status_code(event->response);
 		if (code == 200) {
 			LinphoneCore *lc = msg->chat_room->lc;
-			/* if the file was encrypted, finish the decryption and free context */
-			if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
-				lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0,
-								 NULL, NULL);
-			}
-			/* file downloaded succesfully, call again the callback with size at zero */
-			if (linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)) {
-				LinphoneBuffer *lb = linphone_buffer_new();
-				linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)(msg, msg->file_transfer_information,
-																				 lb);
-				linphone_buffer_unref(lb);
+			if (msg->file_transfer_filepath == NULL) {
+				/* if the file was encrypted, finish the decryption and free context */
+				if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
+					lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
+				}
+				if (linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)) {
+					LinphoneBuffer *lb = linphone_buffer_new();
+					linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)(msg, msg->file_transfer_information, lb);
+					linphone_buffer_unref(lb);
+				} else {
+					linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, NULL, 0);
+				}
 			} else {
+				if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
+					bctbx_vfs_t *vfs = bctbx_vfs_get_default();
+					bctbx_vfs_file_t *decrypted_file;
+					bctbx_vfs_file_t *encrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "r");
+					int64_t encrypted_file_size = bctbx_file_size(encrypted_file);
+					char *encrypted_content = bctbx_malloc(encrypted_file_size);
+					char *decrypted_content = bctbx_malloc(encrypted_file_size);
+					bctbx_file_read(encrypted_file, encrypted_content, encrypted_file_size, 0);
+					bctbx_file_close(encrypted_file);
+					lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+						(unsigned char *)linphone_content_get_key(msg->file_transfer_information),
+						encrypted_file_size, decrypted_content, encrypted_content);
+					lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
+					decrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "w");
+					bctbx_file_write(decrypted_file, decrypted_content, encrypted_file_size, 0);
+					bctbx_file_close(decrypted_file);
+					bctbx_free(encrypted_content);
+					bctbx_free(decrypted_content);
+				}
 				linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, NULL, 0);
 			}
 			linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
