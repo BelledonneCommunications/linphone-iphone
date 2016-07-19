@@ -2392,10 +2392,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 	MSFactory * factory = linphone_core_get_ms_factory(lc);
 	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
 	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
-	if(sound_description != NULL && sound_description == &genericSoundDeviceDescriptor){
-		return TRUE;
-	}
-
+	if (sound_description == NULL) return TRUE;
 	if (sound_description->flags & DEVICE_HAS_BUILTIN_AEC) return FALSE;
 	if (sound_description->delay != 0) return FALSE;
 	return TRUE;
@@ -2406,27 +2403,18 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasCrappyOpenGL(JNIE
 	MSFactory * factory = linphone_core_get_ms_factory(lc);
 	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
 	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
-	if (sound_description != NULL && sound_description == &genericSoundDeviceDescriptor){
-		return FALSE;
-	}
-
+	if (sound_description == NULL) return FALSE;
 	if (sound_description->flags & DEVICE_HAS_CRAPPY_OPENGL) return TRUE;
 	return FALSE;
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasBuiltInEchoCanceler(JNIEnv *env, jobject thiz, jlong lcptr) {
-	MSSndCard *sndcard;
 	LinphoneCore *lc = (LinphoneCore*) lcptr;
 	MSFactory * factory = linphone_core_get_ms_factory(lc);
-	MSSndCardManager *m = ms_factory_get_snd_card_manager(factory);
-	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
-	sndcard = ms_snd_card_manager_get_card(m, card);
-	if (sndcard == NULL) {
-		ms_error("Could not get soundcard %s", card);
-		return FALSE;
-	}
-
-	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return TRUE;
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
+	if (sound_description == NULL) return FALSE;
+	if (sound_description->flags & DEVICE_HAS_BUILTIN_AEC) return TRUE;
 	return FALSE;
 }
 
