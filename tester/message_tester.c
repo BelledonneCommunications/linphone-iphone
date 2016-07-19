@@ -1865,9 +1865,7 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text SQL storage with RTT messages not stored", real_time_text_sql_storage_rtt_disabled, "RTT"),
 	TEST_ONE_TAG("Real Time Text conversation", real_time_text_conversation, "RTT"),
 	TEST_ONE_TAG("Real Time Text without audio", real_time_text_without_audio, "RTT"),
-#if HAVE_SRTP
 	TEST_ONE_TAG("Real Time Text with srtp", real_time_text_srtp, "RTT"),
-#endif
 	TEST_ONE_TAG("Real Time Text with ice", real_time_text_ice, "RTT"),
 	TEST_ONE_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf, "RTT"),
 	TEST_ONE_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf, "RTT"),
