@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include "lpconfig.h"
 #include "liblinphone_gitversion.h"
-#include <bctoolbox/bc_vfs.h>
+#include <bctoolbox/vfs.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

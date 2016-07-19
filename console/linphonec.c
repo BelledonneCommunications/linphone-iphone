@@ -37,7 +37,7 @@
 #include <linphonecore.h>
 
 #include "linphonec.h"
-#include <bctoolbox/bc_vfs.h>
+#include <bctoolbox/vfs.h>
 
 #ifdef _WIN32
 #include <ws2tcpip.h>
