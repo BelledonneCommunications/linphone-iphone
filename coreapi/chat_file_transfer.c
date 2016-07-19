@@ -49,27 +49,30 @@ static void _release_http_request(LinphoneChatMessage* msg) {
 static void linphone_chat_message_process_io_error_upload(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 	ms_error("I/O Error during file upload of msg [%p]", msg);
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+	linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 	_release_http_request(msg);
+	linphone_chat_message_unref(msg);
 }
 
 static void linphone_chat_message_process_auth_requested_upload(void *data, belle_sip_auth_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 	ms_error("Error during file upload: auth requested for msg [%p]", msg);
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+	linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 	_release_http_request(msg);
+	linphone_chat_message_unref(msg);
 }
 
 static void linphone_chat_message_process_io_error_download(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 	ms_error("I/O Error during file download msg [%p]", msg);
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferError);
+	linphone_chat_message_update_state(msg, LinphoneChatMessageStateFileTransferError);
 	_release_http_request(msg);
 }
+
 static void linphone_chat_message_process_auth_requested_download(void *data, belle_sip_auth_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 	ms_error("Error during file download : auth requested for msg [%p]", msg);
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferError);
+	linphone_chat_message_update_state(msg, LinphoneChatMessageStateFileTransferError);
 	_release_http_request(msg);
 }
 
@@ -577,6 +580,10 @@ void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 								, msg
 								, msg->chat_room);
 				belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
+				if (msg->dir == LinphoneChatMessageOutgoing) {
+					// must release it
+					linphone_chat_message_unref(msg);
+				}
 			} else {
 				ms_message("Warning: http request still running for ORPHAN msg [%p]: this is a memory leak", msg);
 			}

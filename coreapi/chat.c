@@ -466,7 +466,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		}
 		linphone_chat_room_delete_composing_idle_timer(cr);
 		linphone_chat_room_delete_composing_refresh_timer(cr);
-		
+
 		if (call && call->op == op) {
 			/*In this case, chat delivery status is not notified, so unrefing chat message right now*/
 			/*Might be better fixed by delivering status, but too costly for now*/
@@ -475,7 +475,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			linphone_chat_message_unref(msg);
 			return;
 		}
-		
+
 
 	}
 	// if operation failed, we should not change message state

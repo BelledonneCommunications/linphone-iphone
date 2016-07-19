@@ -229,7 +229,7 @@ int main (int argc, char *argv[])
 #endif
 
 	liblinphone_tester_init(NULL);
-	linphone_core_set_log_level(ORTP_FATAL);
+	linphone_core_set_log_level(ORTP_ERROR);
 
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
