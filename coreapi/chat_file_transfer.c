@@ -461,7 +461,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 					bctbx_vfs_t *vfs = bctbx_vfs_get_default();
 					bctbx_vfs_file_t *decrypted_file;
 					bctbx_vfs_file_t *encrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "r");
-					int64_t encrypted_file_size = bctbx_file_size(encrypted_file);
+					size_t encrypted_file_size = (size_t)bctbx_file_size(encrypted_file);
 					char *encrypted_content = bctbx_malloc(encrypted_file_size);
 					char *decrypted_content = bctbx_malloc(encrypted_file_size);
 					bctbx_file_read(encrypted_file, encrypted_content, encrypted_file_size, 0);
