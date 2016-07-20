@@ -1232,15 +1232,30 @@ void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie
 	end_call(pauline, marie);
 }
 
-static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay, bool_t ipv6) {
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_rc", FALSE);
+	LinphoneCoreManager* pauline = linphone_core_manager_new2(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", FALSE);
+	if (ipv6) {
+		linphone_core_enable_ipv6(marie->lc, TRUE);
+		linphone_core_enable_ipv6(pauline->lc, TRUE);
+	}
+	linphone_core_manager_start(marie, TRUE);
+	linphone_core_manager_start(pauline, TRUE);
 	_call_with_ice_base(pauline,marie,caller_with_ice,callee_with_ice,random_ports,forced_relay);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
 static void call_with_ice(void){
-	_call_with_ice(TRUE,TRUE,FALSE,FALSE);
+	_call_with_ice(TRUE,TRUE,FALSE,FALSE,FALSE);
+}
+
+static void call_with_ice_ipv6(void) {
+	if (liblinphone_tester_ipv6_available()) {
+		_call_with_ice(TRUE, TRUE, FALSE, FALSE, TRUE);
+	} else {
+		ms_warning("Test skipped, no ipv6 available");
+	}
 }
 
 /*ICE is not expected to work in this case, however this should not crash*/
@@ -1264,19 +1279,19 @@ static void call_with_ice_no_sdp(void){
 }
 
 static void call_with_ice_random_ports(void){
-	_call_with_ice(TRUE,TRUE,TRUE,FALSE);
+	_call_with_ice(TRUE,TRUE,TRUE,FALSE,FALSE);
 }
 
 static void call_with_ice_forced_relay(void) {
-	_call_with_ice(TRUE, TRUE, TRUE, TRUE);
+	_call_with_ice(TRUE, TRUE, TRUE, TRUE, FALSE);
 }
 
 static void ice_to_not_ice(void){
-	_call_with_ice(TRUE,FALSE,FALSE,FALSE);
+	_call_with_ice(TRUE,FALSE,FALSE,FALSE,FALSE);
 }
 
 static void not_ice_to_ice(void){
-	_call_with_ice(FALSE,TRUE,FALSE,FALSE);
+	_call_with_ice(FALSE,TRUE,FALSE,FALSE,FALSE);
 }
 
 static void ice_added_by_reinvite(void){
@@ -1311,15 +1326,11 @@ static void ice_added_by_reinvite(void){
 	linphone_call_params_destroy(params);
 	
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
-	
-	BC_ASSERT_TRUE(check_ice(marie, pauline, LinphoneIceStateHostConnection));
-	
+
 	/*wait for the ICE reINVITE*/
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
-	
+	BC_ASSERT_TRUE(check_ice(marie, pauline, LinphoneIceStateHostConnection));
 	
 	end_call(pauline, marie);
 	
@@ -4189,10 +4200,10 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
 	if (use_ice) {
-		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 		/*wait for ICE reINVITE to complete*/
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 	}
 
 	/*marie looses the network and reconnects*/
@@ -4279,10 +4290,10 @@ static void call_with_sip_and_rtp_independant_switches(void){
 
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
 	if (use_ice) {
-		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 		/*wait for ICE reINVITE to complete*/
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 	}
 	/*marie looses the SIP network and reconnects*/
 	linphone_core_set_sip_network_reachable(marie->lc, FALSE);
@@ -4799,17 +4810,19 @@ static void v6_call_over_nat_64(void){
 }
 
 static void call_with_ice_in_ipv4_with_v6_enabled(void) {
-	   if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
-			   bool_t liblinphonetester_ipv6_save=liblinphonetester_ipv6; /*this test nee v6*/
-			   LinphoneCoreManager* marie = linphone_core_manager_new("marie_v4proxy_rc");
-			   LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_v4proxy_rc");
+		LinphoneCoreManager* marie;
+		LinphoneCoreManager* pauline;
 
-			   liblinphonetester_ipv6=TRUE;
-			   _call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE,FALSE);
-			   linphone_core_manager_destroy(marie);
-			   linphone_core_manager_destroy(pauline);
-			   liblinphonetester_ipv6=liblinphonetester_ipv6_save; /*this test nee v6*/
+		if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
+			bool_t liblinphonetester_ipv6_save=liblinphonetester_ipv6; /*this test nee v6*/
+			liblinphonetester_ipv6=TRUE;
+			marie = linphone_core_manager_new("marie_v4proxy_rc");
+			pauline = linphone_core_manager_new("pauline_v4proxy_rc");
 
+			_call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE,FALSE);
+			linphone_core_manager_destroy(marie);
+			linphone_core_manager_destroy(pauline);
+			liblinphonetester_ipv6=liblinphonetester_ipv6_save; /*this test nee v6*/
 	   } else ms_warning("Test skipped, need both ipv6 and v4 available");
 }
 
@@ -4873,6 +4886,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call rejected without 403 because of wrong credential", call_rejected_without_403_because_wrong_credentials),
 	TEST_NO_TAG("Call rejected without 403 because of wrong credential and no auth req cb", call_rejected_without_403_because_wrong_credentials_no_auth_req_cb),
 	TEST_ONE_TAG("Call with ICE", call_with_ice, "ICE"),
+	TEST_ONE_TAG("Call with ICE IPv6", call_with_ice_ipv6, "ICE"),
 	TEST_ONE_TAG("Call with ICE without SDP", call_with_ice_no_sdp, "ICE"),
 	TEST_ONE_TAG("Call with ICE (random ports)", call_with_ice_random_ports, "ICE"),
 	TEST_ONE_TAG("Call with ICE (forced relay)", call_with_ice_forced_relay, "ICE"),
