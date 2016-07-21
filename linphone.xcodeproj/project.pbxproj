@@ -2987,6 +2987,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "linphone" */;
 			buildPhases = (
+				639002451D4106CA00BEFC78 /* ShellScript */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				63DCC71D1A07B08E00916627 /* Run Script */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -3729,6 +3730,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		639002451D4106CA00BEFC78 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f \"$SRCROOT/liblinphone-sdk/apple-darwin/share/linphone/rootca.pem\" ]; then\necho '****************************************************************'\necho 'error: Liblinphone SDK missing!'\necho 'Missing rootca.pem from liblinphone SDK.'\necho 'Did you compile it (./prepare.py && make or read the README.md).'\necho 'Aborting for now.'\necho '****************************************************************'\nexit 1\nfi";
+		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
