@@ -3484,6 +3484,32 @@ extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setName(JNIEnv*  env
 	ReleaseStringUTFChars(env, jname, name);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setFamillyName(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jname) {
+	LinphoneFriend *lf = (LinphoneFriend*)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc) {
+		const char* name = GetStringUTFChars(env, jname);
+		linphone_vcard_set_familly_name(lvc, name);
+		ReleaseStringUTFChars(env, jname, name);
+	}
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setGivenName(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jname) {
+	LinphoneFriend *lf = (LinphoneFriend*)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc) {
+		const char* name = GetStringUTFChars(env, jname);
+		linphone_vcard_set_given_name(lvc, name);
+		ReleaseStringUTFChars(env, jname, name);
+	}
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSUri(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
@@ -3632,6 +3658,30 @@ extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getName(JNIEnv*  en
 																		,jlong ptr) {
 	const char *name = linphone_friend_get_name((LinphoneFriend*)ptr);
 	return name ? env->NewStringUTF(name) : NULL;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getFamillyName(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneFriend *lf = (LinphoneFriend*)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc) {
+		const char *name = linphone_vcard_get_familly_name(lvc);
+		return name ? env->NewStringUTF(name) : NULL;
+	}
+	return NULL;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getGivenName(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneFriend *lf = (LinphoneFriend*)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc) {
+		const char *name = linphone_vcard_get_given_name(lvc);
+		return name ? env->NewStringUTF(name) : NULL;
+	}
+	return NULL;
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getOrganization(JNIEnv* env,

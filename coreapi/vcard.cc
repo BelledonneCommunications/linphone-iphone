@@ -143,15 +143,57 @@ const char * linphone_vcard_as_vcard4_string(LinphoneVcard *vCard) {
 void linphone_vcard_set_full_name(LinphoneVcard *vCard, const char *name) {
 	if (!vCard || !name) return;
 	
-	shared_ptr<belcard::BelCardFullName> fn = belcard::BelCardGeneric::create<belcard::BelCardFullName>();
-	fn->setValue(name);
-	vCard->belCard->setFullName(fn);
+	if (vCard->belCard->getFullName()) {
+		vCard->belCard->getFullName()->setValue(name);
+	} else {
+		shared_ptr<belcard::BelCardFullName> fn = belcard::BelCardGeneric::create<belcard::BelCardFullName>();
+		fn->setValue(name);
+		vCard->belCard->setFullName(fn);
+	}
 }
 
 const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard) {
 	if (!vCard) return NULL;
 	
 	const char *result = vCard->belCard->getFullName() ? vCard->belCard->getFullName()->getValue().c_str() : NULL;
+	return result;
+}
+
+void linphone_vcard_set_familly_name(LinphoneVcard *vCard, const char *name) {
+	if (!vCard || !name) return;
+	
+	if (vCard->belCard->getName()) {
+		vCard->belCard->getName()->setFamilyName(name);
+	} else {
+		shared_ptr<belcard::BelCardName> n = belcard::BelCardGeneric::create<belcard::BelCardName>();
+		n->setFamilyName(name);
+		vCard->belCard->setName(n);
+	}
+}
+
+const char* linphone_vcard_get_familly_name(const LinphoneVcard *vCard) {
+	if (!vCard) return NULL;
+	
+	const char *result = vCard->belCard->getName() ? vCard->belCard->getName()->getFamilyName().c_str() : NULL;
+	return result;
+}
+
+void linphone_vcard_set_given_name(LinphoneVcard *vCard, const char *name) {
+	if (!vCard || !name) return;
+	
+	if (vCard->belCard->getName()) {
+		vCard->belCard->getName()->setGivenName(name);
+	} else {
+		shared_ptr<belcard::BelCardName> n = belcard::BelCardGeneric::create<belcard::BelCardName>();
+		n->setGivenName(name);
+		vCard->belCard->setName(n);
+	}
+}
+
+const char* linphone_vcard_get_given_name(const LinphoneVcard *vCard) {
+	if (!vCard) return NULL;
+	
+	const char *result = vCard->belCard->getName() ? vCard->belCard->getName()->getGivenName().c_str() : NULL;
 	return result;
 }
 

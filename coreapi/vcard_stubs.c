@@ -79,6 +79,22 @@ const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
+void linphone_vcard_set_familly_name(LinphoneVcard *vCard, const char *name) {
+	
+}
+
+const char* linphone_vcard_get_familly_name(const LinphoneVcard *vCard) {
+	return NULL;
+}
+
+void linphone_vcard_set_given_name(LinphoneVcard *vCard, const char *name) {
+	
+}
+
+const char* linphone_vcard_get_given_name(const LinphoneVcard *vCard) {
+	return NULL;
+}
+
 void linphone_vcard_add_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 	
 }

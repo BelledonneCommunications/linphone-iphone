@@ -142,6 +142,28 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		return getName(nativePtr);
 	}
 	
+	private native void setFamillyName(long nativePtr, String name);
+	@Override
+	public void setFamillyName(String name) {
+		setFamillyName(nativePtr, name);
+	}
+
+	private native String getFamillyName(long nativePtr);
+	public String getFamillyName() {
+		return getFamillyName(nativePtr);
+	}
+
+	private native void setGivenName(long nativePtr, String name);
+	@Override
+	public void setGivenName(String name) {
+		setGivenName(nativePtr, name);
+	}
+
+	private native String getGivenName(long nativePtr);
+	public String getGivenName() {
+		return getGivenName(nativePtr);
+	}
+	
 	private native void setOrganization(long nativePtr, String organization);
 	@Override
 	public void setOrganization(String organization) {

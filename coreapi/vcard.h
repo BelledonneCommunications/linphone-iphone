@@ -130,6 +130,34 @@ LINPHONE_PUBLIC void linphone_vcard_set_full_name(LinphoneVcard *vCard, const ch
 LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard);
 
 /**
+ * Sets the familly name in the N attribute of the vCard.
+ * @param[in] vCard the LinphoneVcard
+ * @param[in] name the familly name to set for the vCard
+ */
+LINPHONE_PUBLIC void linphone_vcard_set_familly_name(LinphoneVcard *vCard, const char *name);
+
+/**
+ * Returns the familly name in the N attribute of the vCard, or NULL if it isn't set yet.
+ * @param[in] vCard the LinphoneVcard
+ * @return the familly name of the vCard, or NULL
+ */
+LINPHONE_PUBLIC const char* linphone_vcard_get_familly_name(const LinphoneVcard *vCard);
+
+/**
+ * Sets the given name in the N attribute of the vCard.
+ * @param[in] vCard the LinphoneVcard
+ * @param[in] name the given name to set for the vCard
+ */
+LINPHONE_PUBLIC void linphone_vcard_set_given_name(LinphoneVcard *vCard, const char *name);
+
+/**
+ * Returns the given name in the N attribute of the vCard, or NULL if it isn't set yet.
+ * @param[in] vCard the LinphoneVcard
+ * @return the given name of the vCard, or NULL
+ */
+LINPHONE_PUBLIC const char* linphone_vcard_get_given_name(const LinphoneVcard *vCard);
+
+/**
  * Adds a SIP address in the vCard, using the IMPP property
  * @param[in] vCard the LinphoneVcard
  * @param[in] sip_address the SIP address to add
