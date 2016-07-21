@@ -62,7 +62,11 @@
     else {
         CAAnimationDelegate *delegate = [[CAAnimationDelegate alloc] init];
         delegate.completion = completion;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_10_0
+		self.delegate = delegate;
+#else
 		self.delegate = (id<CAAnimationDelegate>)delegate;
+#endif
 	}
 }
 
@@ -79,7 +83,11 @@
     else {
         CAAnimationDelegate *delegate = [[CAAnimationDelegate alloc] init];
         delegate.start = start;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_10_0
+		self.delegate = delegate;
+#else
 		self.delegate = (id<CAAnimationDelegate>)delegate;
+#endif
 	}
 }
 
