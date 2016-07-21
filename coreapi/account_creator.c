@@ -455,7 +455,7 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 			linphone_address_set_transport(addr, LinphoneTransportTls);
 			tmp = linphone_address_as_string(addr);
 			linphone_proxy_config_set_server_addr(cfg, tmp);
-			linphone_proxy_config_set_route(cfg, tmp);
+			linphone_proxy_config_set_route(cfg, "");
 			ms_free(tmp);
 			linphone_address_destroy(addr);
 		}
