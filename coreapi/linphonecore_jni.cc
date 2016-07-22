@@ -7645,7 +7645,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneXmlRpcRequestImpl_newLinphoneXml
 	return (jlong) request;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneXmlRpcRequestImpl_finalize(JNIEnv *env, jobject thiz, jlong ptr) {
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcRequestImpl_unref(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
 	linphone_xml_rpc_request_set_user_data(request, NULL);
 	linphone_xml_rpc_request_unref(request);
@@ -7704,7 +7704,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneXmlRpcSessionImpl_newLinphoneXml
 	return (jlong) session;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneXmlRpcSessionImpl_finalize(JNIEnv *env, jobject thiz, jlong ptr) {
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcSessionImpl_unref(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneXmlRpcSession *session = (LinphoneXmlRpcSession *)ptr;
 	linphone_xml_rpc_session_set_user_data(session, NULL);
 	linphone_xml_rpc_session_unref(session);
