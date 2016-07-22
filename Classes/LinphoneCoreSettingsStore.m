@@ -37,7 +37,7 @@
 - (void)setCString:(const char *)value forKey:(NSString *)key {
 	id obj = @"";
 	if (value)
-		obj = [[NSString alloc] initWithCString:value encoding:[NSString defaultCStringEncoding]];
+		obj = [[NSString alloc] initWithCString:value encoding:NSUTF8StringEncoding];
 	[self setObject:obj forKey:key];
 }
 
