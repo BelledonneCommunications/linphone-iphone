@@ -25,6 +25,39 @@
 
 	if (_person) {
 		[self loadProperties];
+
+		const char* key = [NSString stringWithFormat:@"ab%d", ABRecordGetRecordID(aperson)].UTF8String;
+		// try to find friend associated with that person
+		_friend = linphone_friend_list_find_friend_by_ref_key(linphone_core_get_default_friend_list(LC), key);
+		if (!_friend) {
+			_friend = linphone_friend_ref(linphone_core_create_friend(LC));
+			linphone_friend_set_ref_key(_friend, key);
+			linphone_friend_set_name(_friend, [NSString stringWithFormat:@"%@ %@", _firstName, _lastName].UTF8String);
+			for (NSString* sipAddr in _sipAddresses) {
+				LinphoneAddress* addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
+				if (addr) {
+					linphone_address_set_display_name(addr, [self displayName].UTF8String);
+					linphone_friend_add_address(_friend, addr);
+					linphone_address_destroy(addr);
+				}
+			}
+			for (NSString* phone in _phoneNumbers) {
+				LOGI(@"fixme! use linphone_friend_add_phone_number for phone numbers");
+				char* normalized_phone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
+				if (normalized_phone) {
+					LinphoneAddress* addr = linphone_core_interpret_url(LC, normalized_phone);
+					if (addr) {
+						linphone_address_set_display_name(addr, [self displayName].UTF8String);
+						linphone_friend_add_address(_friend, addr);
+						linphone_address_destroy(addr);
+					}
+					ms_free(normalized_phone);
+				}
+//				linphone_friend_add_phone_number(_friend, phone.UTF8String);
+			}
+			linphone_core_add_friend(LC, _friend);
+		}
+		linphone_friend_ref(_friend);
 	} else if (_friend) {
 		[self loadFriend];
 	} else {
@@ -59,6 +92,12 @@
 }
 
 - (NSString *)displayName {
+	if (_friend) {
+		const char *dp = linphone_address_get_display_name(linphone_friend_get_address(_friend));
+		if (dp)
+			return [NSString stringWithUTF8String:dp];
+	}
+
 	if (_person != nil) {
 		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(_person, kABPersonFirstNameProperty));
 		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
@@ -77,10 +116,6 @@
 		} else {
 			return (NSString *)lLocalizedOrganization;
 		}
-	} else if (_friend) {
-		const char *dp = linphone_address_get_display_name(linphone_friend_get_address(_friend));
-		if (dp)
-			return [NSString stringWithUTF8String:dp];
 	}
 
 	if (_lastName || _firstName) {

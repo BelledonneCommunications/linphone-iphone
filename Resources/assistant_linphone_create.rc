@@ -15,6 +15,11 @@
 		<entry name="realm" overwrite="true">sip.linphone.org</entry>
 	</section>
 
+	<section name="sip">
+		<entry name="rls_uri" overwrite="true">sip:rls@sip.linphone.org</entry>
+		<entry name="use_rls_presence" overwrite="true">1</entry>
+	</section>
+
 	<section name="assistant">
 		<entry name="domain" overwrite="true">sip.linphone.org</entry>
 		<entry name="password_max_length" overwrite="true">-1</entry>

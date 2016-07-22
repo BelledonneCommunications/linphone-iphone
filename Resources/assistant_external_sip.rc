@@ -13,6 +13,12 @@
 		<entry name="realm" overwrite="true"></entry>
 	</section>
 
+
+	<section name="sip">
+		<entry name="rls_uri" overwrite="true"></entry>
+		<entry name="use_rls_presence" overwrite="true"></entry>
+	</section>
+
 	<section name="assistant">
 		<entry name="domain" overwrite="true"></entry>
 		<entry name="password_max_length" overwrite="true">-1</entry>

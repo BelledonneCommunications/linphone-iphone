@@ -170,8 +170,11 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 			const MSList *friends = linphone_friend_list_get_friends(fl);
 			while (friends) {
 				LinphoneFriend *f = friends->data;
-				Contact *contact = [[Contact alloc] initWithFriend:f];
-				[self registerAddrsFor:contact];
+				// only append friends that are not native contacts (already added above)
+				if (linphone_friend_get_ref_key(f) == NULL) {
+					Contact *contact = [[Contact alloc] initWithFriend:f];
+					[self registerAddrsFor:contact];
+				}
 				friends = friends->next;
 			}
 			lists = lists->next;

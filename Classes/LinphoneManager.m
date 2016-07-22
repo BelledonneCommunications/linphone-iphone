@@ -66,6 +66,7 @@ NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvaila
 NSString *const kLinphoneConfiguringStateUpdate = @"LinphoneConfiguringStateUpdate";
 NSString *const kLinphoneGlobalStateUpdate = @"LinphoneGlobalStateUpdate";
 NSString *const kLinphoneNotifyReceived = @"LinphoneNotifyReceived";
+NSString *const kLinphoneNotifyPresenceReceived = @"LinphoneNotifyPresenceReceived";
 NSString *const kLinphoneCallEncryptionChanged = @"LinphoneCallEncryptionChanged";
 NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpdate";
 NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
@@ -1041,6 +1042,17 @@ static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev
 																		  content:body];
 }
 
+- (void)onNotifyPresenceReceived:(LinphoneCore *)lc friend:(LinphoneFriend *)lf {
+	// Post event
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	[dict setObject:[NSValue valueWithPointer:lf] forKey:@"friend"];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneNotifyPresenceReceived object:self userInfo:dict];
+}
+
+static void linphone_iphone_notify_presence_received(LinphoneCore *lc, LinphoneFriend *lf) {
+	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onNotifyPresenceReceived:lc friend:lf];
+}
+
 static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on,
 													const char *authentication_token) {
 	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onCallEncryptionChanged:lc
@@ -1326,7 +1338,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 static LinphoneCoreVTable linphonec_vtable = {
 	.call_state_changed = (LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
 	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_presence_received = NULL,
+	.notify_presence_received = linphone_iphone_notify_presence_received,
 	.new_subscription_requested = NULL,
 	.auth_info_requested = linphone_iphone_popup_password_request,
 	.message_received = linphone_iphone_message_received,
@@ -1419,6 +1431,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_enable_video_display(theLinphoneCore, FALSE);
 		linphone_core_enable_video_capture(theLinphoneCore, FALSE);
 	}
+
+	[self enableProxyPublish:YES];
 
 	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
 
@@ -1666,10 +1680,42 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LOGI(@"Long running task started, remaining [%g s] because at least one call is paused",
 		 [[UIApplication sharedApplication] backgroundTimeRemaining]);
 }
+
+- (void)enableProxyPublish:(BOOL)enabled {
+	if (linphone_core_get_global_state(LC) != LinphoneGlobalOn || !linphone_core_get_default_friend_list(LC)) {
+		LOGW(@"Not changing presence configuration because linphone core not ready yet");
+		return;
+	}	
+
+	if ([self lpConfigBoolForKey:@"publish_presence"]) {
+		// set present to "tv", because "available" does not work yet
+		if (enabled) {
+			linphone_core_set_presence_model(
+											 LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
+		}
+
+		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		while (proxies) {
+			LinphoneProxyConfig *cfg = proxies->data;
+			linphone_proxy_config_edit(cfg);
+			linphone_proxy_config_enable_publish(cfg, enabled);
+			linphone_proxy_config_done(cfg);
+			proxies = proxies->next;
+		}
+		// force registration update first, then update friend list subscription
+		linphone_core_iterate(theLinphoneCore);
+	}
+
+	linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(LC), enabled);
+}
+
 - (BOOL)enterBackgroundMode {
 	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
 	BOOL shouldEnterBgMode = FALSE;
 
+	// disable presence
+	[self enableProxyPublish:NO];
+	
 	// handle proxy config if any
 	if (proxyCfg) {
 		const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
@@ -1724,7 +1770,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LOGI(@"Entering [%s] bg mode", shouldEnterBgMode ? "normal" : "lite");
 
 	if (!shouldEnterBgMode) {
-		const char *refkey = linphone_proxy_config_get_ref_key(proxyCfg);
+		const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
 		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
 		if (pushNotifEnabled) {
 			LOGI(@"Keeping lc core to handle push");
@@ -1740,6 +1786,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 - (void)becomeActive {
+	// enable presence
+
 	[self refreshRegisters];
 	if (pausedCallBgTask) {
 		[[UIApplication sharedApplication] endBackgroundTask:pausedCallBgTask];
@@ -1765,6 +1813,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			LOGW(@"keepalive handler was called for the last time at %@", datestr);
 		}
 	}
+
+	[self enableProxyPublish:YES];
 }
 
 - (void)beginInterruption {
