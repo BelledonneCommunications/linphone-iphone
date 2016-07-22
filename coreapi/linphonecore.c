@@ -52,13 +52,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
-#ifndef ANDROID /*on Android LIBLINPHONE version is passed from root Makefile*/
-	#include "liblinphone_gitversion.h"
-#endif
-#else
-#ifndef LIBLINPHONE_GIT_VERSION
-#define LIBLINPHONE_GIT_VERSION "unknown"
-#endif
+#include "liblinphone_gitversion.h"
 #endif
 
 #ifdef __APPLE__
