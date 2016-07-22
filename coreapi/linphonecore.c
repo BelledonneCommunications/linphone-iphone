@@ -953,10 +953,7 @@ static void sip_config_read(LinphoneCore *lc)
 	const char *tmpstr;
 	LCSipTransports tr;
 	int i,tmp;
-	int ipv6_default = FALSE;
-#if TARGET_OS_IPHONE
-	ipv6_default=TRUE;
-#endif
+	int ipv6_default = TRUE;
 
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
 		sal_use_session_timers(lc->sal,200);
@@ -965,13 +962,11 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_use_no_initial_route(lc->sal,lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 
-#if TARGET_OS_IPHONE
 	if (!lp_config_get_int(lc->config,"sip","ipv6_migration_done",FALSE) && lp_config_has_entry(lc->config,"sip","use_ipv6")) {
 		lp_config_clean_entry(lc->config,"sip","use_ipv6");
 		lp_config_set_int(lc->config, "sip", "ipv6_migration_done", TRUE);
 		ms_message("IPV6 settings migration done.");
 	}
-#endif
 	
 	lc->sip_conf.ipv6_enabled=lp_config_get_int(lc->config,"sip","use_ipv6",ipv6_default);
 	
