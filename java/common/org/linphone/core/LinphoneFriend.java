@@ -167,15 +167,15 @@ public interface LinphoneFriend {
 	 */
 	String getName();
 	/**
-	 * Set a familly name for this friend
+	 * Set a family name for this friend
 	 * @param name
 	 */
-	void setFamillyName(String name);
+	void setFamilyName(String name);
 	/**
-	 * get a familly name of this friend
+	 * get a family name of this friend
 	 * @return
 	 */
-	String getFamillyName();
+	String getFamilyName();
 	/**
 	 * Set a given name for this friend
 	 * @param name

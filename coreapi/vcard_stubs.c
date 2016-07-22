@@ -52,7 +52,6 @@ LinphoneVcard* linphone_vcard_new(void) {
 }
 
 void linphone_vcard_free(LinphoneVcard *vCard) {
-	
 }
 
 MSList* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {
@@ -72,23 +71,20 @@ const char * linphone_vcard_as_vcard4_string(LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_set_full_name(LinphoneVcard *vCard, const char *name) {
-	
 }
 
 const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
-void linphone_vcard_set_familly_name(LinphoneVcard *vCard, const char *name) {
-	
+void linphone_vcard_set_family_name(LinphoneVcard *vCard, const char *name) {
 }
 
-const char* linphone_vcard_get_familly_name(const LinphoneVcard *vCard) {
+const char* linphone_vcard_get_family_name(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
 void linphone_vcard_set_given_name(LinphoneVcard *vCard, const char *name) {
-	
 }
 
 const char* linphone_vcard_get_given_name(const LinphoneVcard *vCard) {
@@ -96,15 +92,12 @@ const char* linphone_vcard_get_given_name(const LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_add_sip_address(LinphoneVcard *vCard, const char *sip_address) {
-	
 }
 
 void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_address) {
-	
 }
 
 void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_address) {
-	
 }
 
 MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
@@ -112,11 +105,9 @@ MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone) {
-
 }
 
 void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone) {
-
 }
 
 MSList* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
@@ -124,7 +115,6 @@ MSList* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_set_organization(LinphoneVcard *vCard, const char *organization) {
-	
 }
 
 const char* linphone_vcard_get_organization(const LinphoneVcard *vCard) {
@@ -136,7 +126,6 @@ bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_set_uid(LinphoneVcard *vCard, const char *uid) {
-	
 }
 
 const char* linphone_vcard_get_uid(const LinphoneVcard *vCard) {
@@ -144,7 +133,6 @@ const char* linphone_vcard_get_uid(const LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_set_etag(LinphoneVcard *vCard, const char * etag) {
-	
 }
 
 const char* linphone_vcard_get_etag(const LinphoneVcard *vCard) {
@@ -152,7 +140,6 @@ const char* linphone_vcard_get_etag(const LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_set_url(LinphoneVcard *vCard, const char * url) {
-	
 }
 
 const char* linphone_vcard_get_url(const LinphoneVcard *vCard) {

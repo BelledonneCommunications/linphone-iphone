@@ -130,18 +130,18 @@ LINPHONE_PUBLIC void linphone_vcard_set_full_name(LinphoneVcard *vCard, const ch
 LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard);
 
 /**
- * Sets the familly name in the N attribute of the vCard.
+ * Sets the family name in the N attribute of the vCard.
  * @param[in] vCard the LinphoneVcard
- * @param[in] name the familly name to set for the vCard
+ * @param[in] name the family name to set for the vCard
  */
-LINPHONE_PUBLIC void linphone_vcard_set_familly_name(LinphoneVcard *vCard, const char *name);
+LINPHONE_PUBLIC void linphone_vcard_set_family_name(LinphoneVcard *vCard, const char *name);
 
 /**
- * Returns the familly name in the N attribute of the vCard, or NULL if it isn't set yet.
+ * Returns the family name in the N attribute of the vCard, or NULL if it isn't set yet.
  * @param[in] vCard the LinphoneVcard
- * @return the familly name of the vCard, or NULL
+ * @return the family name of the vCard, or NULL
  */
-LINPHONE_PUBLIC const char* linphone_vcard_get_familly_name(const LinphoneVcard *vCard);
+LINPHONE_PUBLIC const char* linphone_vcard_get_family_name(const LinphoneVcard *vCard);
 
 /**
  * Sets the given name in the N attribute of the vCard.
@@ -205,13 +205,6 @@ void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone)
  * @return \mslist{const char *}
  */
 LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard);
-
-/**
- * Returns the list of SIP addresses (as string) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
- * @param[in] vCard the LinphoneVcard
- * @return \mslist{const char *}
- */
-LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
 
 /**
  * Fills the Organization field of the vCard
