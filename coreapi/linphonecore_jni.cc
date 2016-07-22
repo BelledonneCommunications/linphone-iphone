@@ -338,6 +338,7 @@ public:
 		env->DeleteGlobalRef(friendClass);
 		env->DeleteGlobalRef(friendListClass);
 		env->DeleteGlobalRef(friendListSyncStateClass);
+		env->DeleteGlobalRef(natPolicyClass);
 		env->DeleteGlobalRef(infoMessageClass);
 		env->DeleteGlobalRef(linphoneEventClass);
 		env->DeleteGlobalRef(subscriptionStateClass);
@@ -640,6 +641,29 @@ jobject getEvent(JNIEnv *env, LinphoneEvent *lev){
 		linphone_event_set_user_data(lev,jev);
 	}
 	return jev;
+}
+
+jobject getXmlRpcRequest(JNIEnv *env, LinphoneXmlRpcRequest *lrequest) {
+	jobject jobj = 0;
+
+	if (lrequest != NULL) {
+		jclass xmlRpcSessionClass = (jclass)env->FindClass("org/linphone/core/LinphoneXmlRpcRequestImpl");
+		jmethodID xmlRpcSessionCtrId = env->GetMethodID(xmlRpcSessionClass, "<init>", "(J)V");
+		
+		void *up = linphone_xml_rpc_request_get_user_data(lrequest);
+		if (up == NULL) {
+			jobj = env->NewObject(xmlRpcSessionClass, xmlRpcSessionCtrId, (jlong)lrequest);
+			linphone_xml_rpc_request_set_user_data(lrequest, (void *)env->NewWeakGlobalRef(jobj));
+			linphone_xml_rpc_request_ref(lrequest);
+		} else {
+			jobj = env->NewLocalRef((jobject)up);
+			if (jobj == NULL) {
+				jobj = env->NewObject(xmlRpcSessionClass, xmlRpcSessionCtrId, (jlong)lrequest);
+				linphone_xml_rpc_request_set_user_data(lrequest, (void *)env->NewWeakGlobalRef(jobj));
+			}
+		}
+	}
+	return jobj;
 }
 
 class LinphoneCoreData {
@@ -7588,4 +7612,106 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_setStunServe
 	const char *stun_server_username = GetStringUTFChars(env, jStunServerUsername);
 	linphone_nat_policy_set_stun_server_username(nat_policy, stun_server_username);
 	ReleaseStringUTFChars(env, jStunServerUsername, stun_server_username);
+}
+
+// XML RPC wrapper
+
+static void xml_request_response(LinphoneXmlRpcRequest *request) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+	
+	LinphoneXmlRpcRequestCbs *cbs = linphone_xml_rpc_request_get_callbacks(request);
+	jobject listener = (jobject) linphone_xml_rpc_request_cbs_get_user_data(cbs);
+	if (listener == NULL) {
+		ms_error("xml_request_response() notification without listener");
+		return ;
+	}
+	
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onXmlRpcRequestResponse","(Lorg/linphone/core/LinphoneXmlRpcRequest;)V");
+	env->DeleteLocalRef(clazz);
+	
+	env->CallVoidMethod(listener, method, getXmlRpcRequest(env, request));
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneXmlRpcRequestImpl_newLinphoneXmlRpcRequest(JNIEnv *env, jobject thiz, jstring jmethodname, jint returntype) {
+	const char *methodname = GetStringUTFChars(env, jmethodname);
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new(methodname, (LinphoneXmlRpcArgType)returntype);
+	ReleaseStringUTFChars(env, jmethodname, methodname);
+	return (jlong) request;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcRequestImpl_finalize(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	linphone_xml_rpc_request_set_user_data(request, NULL);
+	linphone_xml_rpc_request_unref(request);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcRequestImpl_addIntArg(JNIEnv *env, jobject thiz, jlong ptr, jint arg) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	linphone_xml_rpc_request_add_int_arg(request, (int)arg);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcRequestImpl_addStringArg(JNIEnv *env, jobject thiz, jlong ptr, jstring jarg) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	const char *arg = GetStringUTFChars(env, jarg);
+	linphone_xml_rpc_request_add_string_arg(request, arg);
+	ReleaseStringUTFChars(env, jarg, arg);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneXmlRpcRequestImpl_getContent(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	const char *content = linphone_xml_rpc_request_get_content(request);
+	return content ? env->NewStringUTF(content) : NULL;
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneXmlRpcRequestImpl_getStatus(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	return (jint) linphone_xml_rpc_request_get_status(request);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneXmlRpcRequestImpl_getIntResponse(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	return (jint) linphone_xml_rpc_request_get_int_response(request);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneXmlRpcRequestImpl_getStringResponse(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	const char *response = linphone_xml_rpc_request_get_string_response(request);
+	return response ? env->NewStringUTF(response) : NULL;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcRequestImpl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)ptr;
+	jobject listener = env->NewGlobalRef(jlistener);
+	LinphoneXmlRpcRequestCbs *cbs;
+
+	cbs = linphone_xml_rpc_request_get_callbacks(request);
+	linphone_xml_rpc_request_cbs_set_user_data(cbs, listener);
+	linphone_xml_rpc_request_cbs_set_response(cbs, xml_request_response);
+}
+
+
+extern "C" jlong Java_org_linphone_core_LinphoneXmlRpcSessionImpl_newLinphoneXmlRpcSession(JNIEnv *env, jobject thiz, jlong ptr, jstring jurl) {
+	LinphoneCore *lc = (LinphoneCore *)ptr;
+	const char *url = GetStringUTFChars(env, jurl);
+	LinphoneXmlRpcSession *session = linphone_xml_rpc_session_new(lc, url);
+	ReleaseStringUTFChars(env, jurl, url);
+	return (jlong) session;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcSessionImpl_finalize(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneXmlRpcSession *session = (LinphoneXmlRpcSession *)ptr;
+	linphone_xml_rpc_session_set_user_data(session, NULL);
+	linphone_xml_rpc_session_unref(session);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneXmlRpcSessionImpl_sendRequest(JNIEnv *env, jobject thiz, jlong ptr, jlong requestPtr) {
+	LinphoneXmlRpcSession *session = (LinphoneXmlRpcSession *)ptr;
+	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)requestPtr;
+	linphone_xml_rpc_session_send_request(session, request);
 }
