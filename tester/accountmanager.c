@@ -30,7 +30,7 @@ struct _Account{
 
 typedef struct _Account Account;
 
-Account *account_new(LinphoneAddress *identity, const char *unique_id){
+static Account *account_new(LinphoneAddress *identity, const char *unique_id){
 	char *modified_username;
 	Account *obj=ms_new0(Account,1);
 
@@ -121,7 +121,7 @@ static void account_created_auth_requested_cb(LinphoneCore *lc, const char *user
 }
 // TEMPORARY CODE: remove line above when flexisip is updated, this is not needed anymore!
 
-void account_create_on_server(Account *account, const LinphoneProxyConfig *refcfg){
+void account_create_on_server(Account *account, const LinphoneProxyConfig *refcfg, const char* phone_alias){
 	LinphoneCoreVTable vtable={0};
 	LinphoneCore *lc;
 	LinphoneAddress *tmp_identity=linphone_address_clone(account->modified_identity);
@@ -144,6 +144,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_address_set_secure(tmp_identity, FALSE);
 	linphone_address_set_password(tmp_identity,account->password);
 	linphone_address_set_header(tmp_identity,"X-Create-Account","yes");
+	if (phone_alias) linphone_address_set_header(tmp_identity, "X-Phone-Alias", phone_alias);
 	tmp=linphone_address_as_string(tmp_identity);
 	linphone_proxy_config_set_identity(cfg,tmp);
 	ms_free(tmp);
@@ -191,7 +192,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_core_destroy(lc);
 }
 
-LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyConfig *cfg){
+static LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyConfig *cfg,const char* phone_alias){
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
 	const char *identity=linphone_proxy_config_get_identity(cfg);
 	LinphoneAddress *id_addr=linphone_address_new(identity);
@@ -217,7 +218,7 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	ms_free(tmp);
 
 	if (create_account){
-		account_create_on_server(account,cfg);
+		account_create_on_server(account,cfg,phone_alias);
 	}
 
 	/*remove previous auth info to avoid mismatching*/
@@ -240,6 +241,6 @@ void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
 
 	for(it=linphone_core_get_proxy_config_list(m->lc);it!=NULL;it=it->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig *)it->data;
-		account_manager_check_account(am,cfg);
+		account_manager_check_account(am,cfg,m->phone_alias);
 	}
 }

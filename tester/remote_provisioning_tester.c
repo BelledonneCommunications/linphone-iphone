@@ -114,7 +114,7 @@ static void remote_provisioning_file(void) {
 	marie = linphone_core_manager_new2("marie_remote_localfile_win10_rc", FALSE);
 #else
 	marie = ms_new0(LinphoneCoreManager, 1);
-	linphone_core_manager_init(marie, "marie_remote_localfile_rc");
+	linphone_core_manager_init(marie, "marie_remote_localfile_rc",NULL);
 	// fix relative path to absolute path
 	{
 		char* path = bc_tester_res("rcfiles/marie_remote_localfile2_rc");

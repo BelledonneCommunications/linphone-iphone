@@ -687,6 +687,28 @@ static void long_term_presence_phone_alias(void) {
 	long_term_presence_base("sip:+331234567890@sip.example.org", TRUE, "sip:liblinphone_tester@sip.example.org");
 }
 
+static const char* random_phone_number() {
+	static char phone[10];
+	int i;
+	phone[0] = '+';
+	for (i = 1; i < 10; i++) {
+		phone[i] = '0' + rand() % 10;
+	}
+	return phone;
+}
+
+static void long_term_presence_phone_alias2(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new3("marie_rc", TRUE, random_phone_number());
+	char * identity = linphone_address_as_string_uri_only(marie->identity);
+	LinphoneAddress * phone_addr = linphone_core_interpret_url(marie->lc, marie->phone_alias);
+	char *phone_addr_uri = linphone_address_as_string(phone_addr);
+	long_term_presence_base(phone_addr_uri, TRUE, identity);
+	ms_free(identity);
+	ms_free(phone_addr_uri);
+	linphone_address_destroy(phone_addr);
+	linphone_core_manager_destroy(marie);
+}
+
 static void long_term_presence_list(void) {
 	LinphoneFriend *f1, *f2;
 	LinphoneFriendList* friends;
@@ -733,6 +755,7 @@ test_t presence_server_tests[] = {
 	TEST_NO_TAG("Long term presence existing friend",long_term_presence_existing_friend),
 	TEST_NO_TAG("Long term presence inexistent friend",long_term_presence_inexistent_friend),
 	TEST_NO_TAG("Long term presence phone alias",long_term_presence_phone_alias),
+	TEST_NO_TAG("Long term presence phone alias 2",long_term_presence_phone_alias2),
 	TEST_NO_TAG("Long term presence list",long_term_presence_list),
 };
 

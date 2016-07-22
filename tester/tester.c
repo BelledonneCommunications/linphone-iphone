@@ -277,7 +277,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 #else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
+void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, const char* phone_alias) {
 	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
 	mgr->number_of_bcunit_error_at_creation =  bc_get_number_of_failures();
@@ -299,6 +299,8 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	mgr->v_table.network_reachable=network_reachable;
 	mgr->v_table.dtmf_received=dtmf_received;
 	mgr->v_table.call_stats_updated=call_stats_updated;
+
+	mgr->phone_alias = phone_alias ? ms_strdup(phone_alias) : NULL;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
@@ -393,25 +395,24 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 
 }
 
-LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
+LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias) {
 	int old_log_level = ortp_get_log_level_mask(NULL);
 	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
 	linphone_core_set_log_level(ORTP_ERROR);
-	linphone_core_manager_init(manager, rc_file);
-	linphone_core_manager_start(manager, TRUE);
+	linphone_core_manager_init(manager, rc_file, phone_alias);
+	linphone_core_manager_start(manager, check_for_proxies);
 	linphone_core_set_log_level(old_log_level);
 	return manager;
 }
 
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
-	int old_log_level = ortp_get_log_level_mask(NULL);
-	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
-	linphone_core_set_log_level(ORTP_ERROR);
-	linphone_core_manager_init(manager, rc_file);
-	linphone_core_manager_start(manager, check_for_proxies);
-	linphone_core_set_log_level(old_log_level);
-	return manager;
+	return linphone_core_manager_new3(rc_file, check_for_proxies, NULL);
 }
+
+LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
+	return linphone_core_manager_new2(rc_file, TRUE);
+}
+
 
 void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 	if (mgr->lc) {
@@ -423,6 +424,9 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	int old_log_level = ortp_get_log_level_mask(NULL);
 	linphone_core_set_log_level(ORTP_ERROR);
+	if (mgr->phone_alias) {
+		ms_free(mgr->phone_alias);
+	}
 	if (mgr->stat.last_received_chat_message) {
 		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	}
@@ -849,7 +853,7 @@ LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bo
 	conf_srv->vtable->registration_state_changed = linphone_conference_server_registration_state_changed;
 	conf_srv->vtable->user_data = conf_srv;
 	conf_srv->reg_state = LinphoneRegistrationNone;
-	linphone_core_manager_init(lm, rc_file);
+	linphone_core_manager_init(lm, rc_file,NULL);
 	linphone_core_add_listener(lm->lc, conf_srv->vtable);
 	linphone_core_manager_start(lm, do_registration);
 	return conf_srv;
