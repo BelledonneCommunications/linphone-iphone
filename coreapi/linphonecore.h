@@ -3480,6 +3480,12 @@ LINPHONE_PUBLIC void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc);
  * @}
 **/
 
+/**
+ * Tells whether VCARD support is builtin.
+ * @return TRUE if VCARD is supported, FALSE otherwise.
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC bool_t linphone_core_vcard_supported(void);
 
 /* video support */
 LINPHONE_PUBLIC bool_t linphone_core_video_supported(LinphoneCore *lc);
