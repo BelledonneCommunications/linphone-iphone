@@ -312,6 +312,14 @@ push-transifex:
 zipres:
 \t@tar -czf ios_assets.tar.gz Resources iTunesArtwork
 
+download-sdk-release:
+\tcurl https://www.linphone.org/releases/ios/liblinphone-iphone-sdk-latest.zip > liblinphone-sdk.zip
+\tunzip -x liblinphone-sdk.zip
+
+download-sdk-latest:
+\tcurl https://www.linphone.org/snapshots/ios/liblinphone-iphone-sdk-latest.zip > liblinphone-sdk.zip
+\tunzip -x liblinphone-sdk.zip
+
 {arch_targets}
 
 help-prepare-options:
@@ -327,6 +335,7 @@ help: help-prepare-options
 \t@echo "Available targets:"
 \t@echo ""
 \t@echo "   * all or build: builds all architectures and creates the liblinphone SDK"
+\t@echo "   * download-sdk-release download-sdk-latest: download prebuilt SDK from linphone.org"
 \t@echo "   * sdk: creates the liblinphone SDK. Use this only after a full build"
 \t@echo "   * zipsdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after SDK is built."
 \t@echo "   * zipres: creates a tar.gz file with all the resources (images)"
