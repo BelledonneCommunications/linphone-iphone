@@ -687,7 +687,7 @@ static void long_term_presence_phone_alias(void) {
 	long_term_presence_base("sip:+331234567890@sip.example.org", TRUE, "sip:liblinphone_tester@sip.example.org");
 }
 
-static const char* random_phone_number() {
+static const char* random_phone_number(void) {
 	static char phone[10];
 	int i;
 	phone[0] = '+';
