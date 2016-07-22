@@ -400,6 +400,10 @@ bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard) {
 	return result;
 }
 
+bool_t linphone_core_vcard_supported(void) {
+	return TRUE;
+}
+
 #ifdef __cplusplus
 }
 #endif

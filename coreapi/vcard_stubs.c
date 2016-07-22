@@ -147,9 +147,12 @@ const char* linphone_vcard_get_url(const LinphoneVcard *vCard) {
 }
 
 void linphone_vcard_compute_md5_hash(LinphoneVcard *vCard) {
-	
 }
 
 bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard) {
+	return FALSE;
+}
+
+bool_t linphone_core_vcard_supported(void) {
 	return FALSE;
 }
