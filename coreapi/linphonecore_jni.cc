@@ -2307,7 +2307,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoSupported(JNI
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVCardSupported(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc) {
-	return (jboolean)linphone_core_vcard_supported((LinphoneCore*)lc);
+	return (jboolean)linphone_core_vcard_supported();
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlayFile(JNIEnv*  env
