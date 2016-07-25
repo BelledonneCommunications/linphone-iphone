@@ -1134,10 +1134,16 @@ public interface LinphoneCore {
 
 
 	/**
-	 * Teturns true if the underlying sdk support video
+	 * Returns true if the underlying sdk support video
 	 *
 	 * */
 	boolean isVideoSupported();
+	
+	/**
+	 * Returns true if the underlying sdk support vCards
+	 *
+	 * */
+	boolean isVCardSupported();
 
 	/**
 	 * Enables video globally.

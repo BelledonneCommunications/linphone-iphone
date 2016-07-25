@@ -109,6 +109,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
 	private native boolean isVideoEnabled(long nativePtr);
 	private native boolean isVideoSupported(long nativePtr);
+	private native boolean isVCardSupported(long nativePtr);
 	private native void setFirewallPolicy(long nativePtr, int enum_value);
 	private native int getFirewallPolicy(long nativePtr);
 	private native Object createNatPolicy(long nativePtr);
@@ -523,6 +524,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized boolean isVideoSupported() {
 		return isVideoSupported(nativePtr);
+	}
+	public synchronized boolean isVCardSupported() {
+		return isVCardSupported(nativePtr);
 	}
 	public synchronized FirewallPolicy getFirewallPolicy() {
 		return FirewallPolicy.fromInt(getFirewallPolicy(nativePtr));
