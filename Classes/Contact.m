@@ -93,9 +93,9 @@
 
 - (NSString *)displayName {
 	if (_friend) {
-		const char *dp = linphone_address_get_display_name(linphone_friend_get_address(_friend));
-		if (dp)
-			return [NSString stringWithUTF8String:dp];
+	//	const char *dp = linphone_address_get_display_name(linphone_friend_get_address(_friend));
+		//if (dp)
+		//	return [NSString stringWithUTF8String:dp];
 	}
 
 	if (_person != nil) {

@@ -76,6 +76,8 @@
 		6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6306440C1BECB08500134C72 /* FirstLoginView.m */; };
 		6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
+		631098491D4660580041F2B3 /* CountryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 631098481D4660580041F2B3 /* CountryListViewController.m */; };
+		631098521D4660630041F2B3 /* CountryListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 631098501D4660630041F2B3 /* CountryListViewController.xib */; };
 		63130FB21C1ED06900371918 /* SideMenuView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */; };
 		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
 		631348321B6FA53300C6BDCB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 631348311B6FA53300C6BDCB /* rootca.pem */; };
@@ -981,6 +983,9 @@
 		6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMLRPCHelper.m; path = Utils/XMLRPCHelper.m; sourceTree = "<group>"; };
 		630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
+		631098471D4660580041F2B3 /* CountryListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryListViewController.h; sourceTree = "<group>"; };
+		631098481D4660580041F2B3 /* CountryListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryListViewController.m; sourceTree = "<group>"; };
+		631098511D4660630041F2B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/CountryListViewController.xib; sourceTree = "<group>"; };
 		63130FB11C1ED06900371918 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/SideMenuView~ipad.xib"; sourceTree = "<group>"; };
 		6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedButton.h; sourceTree = "<group>"; };
 		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
@@ -1778,6 +1783,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
 				637835A51CFD971D00599382 /* libbv16.a in Frameworks */,
 				63FD3F091CA17F9100E9AECC /* libmbedcrypto.a in Frameworks */,
 				63FD3F0A1CA17F9100E9AECC /* libmbedtls.a in Frameworks */,
@@ -1830,7 +1836,6 @@
 				2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */,
-				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
@@ -1928,7 +1933,6 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				63E27A311C4FECD000D332AE /* LaunchScreen.xib */,
 				22E0A81D111C44E100B04932 /* AboutView.h */,
 				22E0A81C111C44E100B04932 /* AboutView.m */,
 				636316D31A1DEBCB0009B839 /* AboutView.xib */,
@@ -1978,6 +1982,9 @@
 				D35497FB15875372000081D8 /* ContactsListView.h */,
 				D35497FC15875372000081D8 /* ContactsListView.m */,
 				D38187C015FE342800C3EDCA /* ContactsListView.xib */,
+				631098471D4660580041F2B3 /* CountryListViewController.h */,
+				631098481D4660580041F2B3 /* CountryListViewController.m */,
+				631098501D4660630041F2B3 /* CountryListViewController.xib */,
 				22F2508B107141E100AC9B3F /* DialerView.h */,
 				22F2508C107141E100AC9B3F /* DialerView.m */,
 				D38187C415FE345B00C3EDCA /* DialerView.xib */,
@@ -2002,6 +2009,7 @@
 				D37EE11016035793003608A6 /* ImageView.xib */,
 				63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */,
 				63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */,
+				63E27A311C4FECD000D332AE /* LaunchScreen.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
 				D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */,
@@ -3473,6 +3481,7 @@
 				633FEDC91D3CD5590014B822 /* call_missed@2x.png in Resources */,
 				633FEEAE1D3CD55A0014B822 /* numpad_2_over@2x.png in Resources */,
 				633FEDB51D3CD5590014B822 /* call_alt_back_disabled@2x.png in Resources */,
+				631098521D4660630041F2B3 /* CountryListViewController.xib in Resources */,
 				633FEF271D3CD55A0014B822 /* route_bluetooth_selected@2x.png in Resources */,
 				633FEE111D3CD5590014B822 /* chat_list_indicator~ipad@2x.png in Resources */,
 				633FEEFC1D3CD55A0014B822 /* options_add_call_default.png in Resources */,
@@ -3861,6 +3870,7 @@
 				D3F26BF115986B73005F9CAB /* CallIncomingView.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeView.m in Sources */,
 				D31AAF5E159B3919002C6B02 /* CallPausedTableView.m in Sources */,
+				631098491D4660580041F2B3 /* CountryListViewController.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
@@ -4021,6 +4031,14 @@
 				63058A351B4E822F00EFAE36 /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		631098501D4660630041F2B3 /* CountryListViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				631098511D4660630041F2B3 /* Base */,
+			);
+			name = CountryListViewController.xib;
 			sourceTree = "<group>";
 		};
 		63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */ = {

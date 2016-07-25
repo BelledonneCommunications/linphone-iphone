@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -7,7 +7,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AssistantView">
             <connections>
-                <outlet property="createAccountActivationView" destination="101" id="cxQ-rX-4fA"/>
+                <outlet property="accountLabel" destination="vh7-65-1js" id="IU4-gv-v6m"/>
+                <outlet property="countryButton" destination="uol-lZ-FNd" id="n0C-nf-Z7h"/>
+                <outlet property="createAccountActivateEmailView" destination="Zd9-Ms-s7X" id="6Qs-np-oqS"/>
+                <outlet property="createAccountActivateSMSView" destination="101" id="SAS-8i-4Ao"/>
                 <outlet property="createAccountView" destination="44" id="70"/>
                 <outlet property="gotoCreateAccountButton" destination="36" id="bZf-lI-yJp"/>
                 <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
@@ -53,6 +56,7 @@
                     <state key="normal" title="CREATE ACCOUNT">
                         <color key="titleColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onGotoCreateAccountClick:" destination="-1" eventType="touchUpInside" id="Meo-Hq-8td"/>
                     </connections>
@@ -67,7 +71,7 @@
                     <state key="normal" title="USE LINPHONE ACCOUNT">
                         <color key="titleColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
-                    <state key="highlighted">
+                    <state key="highlighted" backgroundImage="color_F.png">
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
@@ -84,7 +88,7 @@
                     <state key="normal" title="USE SIP ACCOUNT">
                         <color key="titleColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
-                    <state key="highlighted">
+                    <state key="highlighted" backgroundImage="color_F.png">
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
@@ -101,7 +105,7 @@
                     <state key="normal" title="FETCH REMOTE CONFIGURATION">
                         <color key="titleColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
-                    <state key="highlighted">
+                    <state key="highlighted" backgroundImage="color_F.png">
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
@@ -115,7 +119,7 @@
             <point key="canvasLocation" x="203.5" y="189"/>
         </view>
         <view contentMode="scaleToFill" id="44" userLabel="createAccountView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="511"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="739"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CREATE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="4Aj-nv-TyO" userLabel="titleLabel">
@@ -136,116 +140,208 @@
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" tag="120" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USERNAME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ZSJ-Lv-n60" userLabel="usernameLabel">
-                    <rect key="frame" x="38" y="131" width="299" height="14"/>
+                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ZSJ-Lv-n60" userLabel="phoneLabel">
+                    <rect key="frame" x="38" y="131" width="270" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="74" userLabel="usernameField" customClass="UIAssistantTextField">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="uol-lZ-FNd" userLabel="countryButton">
                     <rect key="frame" x="38" y="153" width="299" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <state key="normal">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="highlighted" title="Choose your country" backgroundImage="color_F.png"/>
+                    <connections>
+                        <action selector="onCountryCodeClick:" destination="-1" eventType="touchUpInside" id="pRM-Fe-12o"/>
+                    </connections>
+                </button>
+                <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" id="aG8-DH-06s" userLabel="countryCodeField" customClass="UIAssistantTextField">
+                    <rect key="frame" x="38" y="190" width="54" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                    <connections>
+                        <action selector="onCountryCodeFieldChange:" destination="-1" eventType="editingChanged" id="Jvb-Z0-0cY"/>
+                        <action selector="onCountryCodeFieldEnd:" destination="-1" eventType="editingDidEnd" id="QUC-vT-pmS"/>
+                    </connections>
+                </textField>
+                <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="74" userLabel="phoneField" customClass="UIAssistantTextField">
+                    <rect key="frame" x="95" y="190" width="242" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
                     <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="phonePad" returnKeyType="next"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="80"/>
                         <outlet property="errorLabel" destination="nOO-ch-4RW" id="fVH-OO-tVS"/>
                     </connections>
                 </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="nOO-ch-4RW" userLabel="usernameErrorLabel">
-                    <rect key="frame" x="38" y="183" width="299" height="10"/>
+                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="nOO-ch-4RW" userLabel="phoneErrorLabel">
+                    <rect key="frame" x="38" y="220" width="299" height="10"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
                     <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="RIQ-aB-k0Y" userLabel="passwordLabel">
-                    <rect key="frame" x="38" y="202" width="299" height="14"/>
+                <switch opaque="NO" tag="181" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="vj2-gD-eqO" userLabel="useUsernameSwitch">
+                    <rect key="frame" x="38" y="269" width="51" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <connections>
+                        <action selector="onFormSwitchToggle:" destination="-1" eventType="valueChanged" id="5ir-05-3Ec"/>
+                    </connections>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Username instead of phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="Dyy-Oh-esb" userLabel="useUsernameLabel">
+                    <rect key="frame" x="95" y="269" width="242" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="75" userLabel="passwordField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="227" width="299" height="30"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <accessibility key="accessibilityConfiguration" label="Password "/>
-                    <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
+                <switch opaque="NO" tag="182" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="pMa-xZ-KDw" userLabel="useEmailSwitch">
+                    <rect key="frame" x="38" y="308" width="51" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <connections>
-                        <outlet property="delegate" destination="-1" id="82"/>
-                        <outlet property="errorLabel" destination="qbL-gD-kHo" id="9pp-bs-jQ2"/>
+                        <action selector="onFormSwitchToggle:" destination="-1" eventType="valueChanged" id="rKZ-eR-jLr"/>
                     </connections>
-                </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="qbL-gD-kHo" userLabel="passwordErrorLabel">
-                    <rect key="frame" x="38" y="257" width="299" height="10"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD CONFIRMATION" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yyK-OU-HXT" userLabel="password2Label">
-                    <rect key="frame" x="38" y="279" width="299" height="14"/>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't use my phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="fm4-59-oEV" userLabel="useEmailSwitch">
+                    <rect key="frame" x="95" y="308" width="242" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <textField opaque="NO" clipsSubviews="YES" tag="102" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="76" userLabel="password2Field" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="301" width="299" height="30"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <accessibility key="accessibilityConfiguration" label="Password confirmation"/>
-                    <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="83"/>
-                        <outlet property="errorLabel" destination="xZk-J2-sOC" id="yEr-ch-Hlx"/>
-                    </connections>
-                </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Passwords do not match" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="xZk-J2-sOC" userLabel="password2ErrorLabel">
-                    <rect key="frame" x="38" y="331" width="299" height="10"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EMAIL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Syg-X5-YFX" userLabel="emailLabel">
-                    <rect key="frame" x="38" y="354" width="299" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <textField opaque="NO" clipsSubviews="YES" tag="103" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="79" userLabel="emailField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="376" width="299" height="30"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <accessibility key="accessibilityConfiguration" label="Email"/>
-                    <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="done"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="84"/>
-                        <outlet property="errorLabel" destination="boL-zt-q9f" id="jBP-Jl-eVp"/>
-                    </connections>
-                </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid email" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="boL-zt-q9f" userLabel="emailErrorLabel">
-                    <rect key="frame" x="38" y="406" width="299" height="10"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="K99-0e-fHC" userLabel="createAccountButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="451" width="299" height="40"/>
+                <view hidden="YES" tag="181" contentMode="scaleToFill" id="SWm-U7-vTI" userLabel="usernameFormView">
+                    <rect key="frame" x="0.0" y="359" width="375" height="75"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="120" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USERNAME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LHu-Vo-7k8" userLabel="usernameLabel">
+                            <rect key="frame" x="38" y="0.0" width="299" height="14"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="OLm-Nz-ouj" userLabel="usernameField" customClass="UIAssistantTextField">
+                            <rect key="frame" x="38" y="22" width="299" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <accessibility key="accessibilityConfiguration" label="Username"/>
+                            <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="ewM-oE-aam"/>
+                                <outlet property="errorLabel" destination="SJT-EF-scd" id="kou-54-9Gg"/>
+                            </connections>
+                        </textField>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="SJT-EF-scd" userLabel="usernameErrorLabel">
+                            <rect key="frame" x="38" y="56" width="299" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                            <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <view hidden="YES" tag="182" contentMode="scaleToFill" id="G3B-Ig-yhe" userLabel="emailFormView">
+                    <rect key="frame" x="0.0" y="433" width="375" height="238"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EMAIL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Syg-X5-YFX" userLabel="emailLabel">
+                            <rect key="frame" x="38" y="0.0" width="299" height="14"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" clipsSubviews="YES" tag="103" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="79" userLabel="emailField" customClass="UIAssistantTextField">
+                            <rect key="frame" x="38" y="22" width="299" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <accessibility key="accessibilityConfiguration" label="Email"/>
+                            <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="done"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="84"/>
+                                <outlet property="errorLabel" destination="boL-zt-q9f" id="jBP-Jl-eVp"/>
+                            </connections>
+                        </textField>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid email" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="boL-zt-q9f" userLabel="emailErrorLabel">
+                            <rect key="frame" x="38" y="52" width="299" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                            <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="RIQ-aB-k0Y" userLabel="passwordLabel">
+                            <rect key="frame" x="38" y="76" width="299" height="14"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="75" userLabel="passwordField" customClass="UIAssistantTextField">
+                            <rect key="frame" x="38" y="101" width="299" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <accessibility key="accessibilityConfiguration" label="Password "/>
+                            <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="82"/>
+                                <outlet property="errorLabel" destination="qbL-gD-kHo" id="9pp-bs-jQ2"/>
+                            </connections>
+                        </textField>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="qbL-gD-kHo" userLabel="passwordErrorLabel">
+                            <rect key="frame" x="38" y="131" width="299" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                            <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD CONFIRMATION" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yyK-OU-HXT" userLabel="password2Label">
+                            <rect key="frame" x="38" y="153" width="299" height="14"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" clipsSubviews="YES" tag="102" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="76" userLabel="password2Field" customClass="UIAssistantTextField">
+                            <rect key="frame" x="38" y="175" width="299" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <accessibility key="accessibilityConfiguration" label="Password confirmation"/>
+                            <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
+                            <connections>
+                                <outlet property="delegate" destination="-1" id="83"/>
+                                <outlet property="errorLabel" destination="xZk-J2-sOC" id="yEr-ch-Hlx"/>
+                            </connections>
+                        </textField>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Passwords do not match" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="xZk-J2-sOC" userLabel="password2ErrorLabel">
+                            <rect key="frame" x="38" y="205" width="299" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                            <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <button opaque="NO" tag="130" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="K99-0e-fHC" userLabel="createAccountButton" customClass="UIRoundBorderedButton">
+                    <rect key="frame" x="38" y="679" width="299" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Create account">
                         <bool key="isElement" value="YES"/>
@@ -257,18 +353,33 @@
                     <state key="disabled">
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onCreateAccountClick:" destination="-1" eventType="touchUpInside" id="h6e-zF-Xnj"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter your phone number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="vh7-65-1js" userLabel="accountLabel">
+                    <rect key="frame" x="38" y="238" width="299" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                    <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="ZuT-FJ-wdo">
+                    <rect key="frame" x="315" y="127" width="22" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <connections>
+                        <action selector="onPhoneNumberDisclosureClick:" destination="-1" eventType="touchUpInside" id="IWD-Sn-zg0"/>
                     </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="625.5" y="231.5"/>
+            <point key="canvasLocation" x="625.5" y="345.5"/>
         </view>
-        <view contentMode="scaleToFill" id="101" userLabel="createAccountActivationView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="366"/>
+        <view contentMode="scaleToFill" id="101" userLabel="createAccountActivateSMSView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="372"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CREATE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="Gyl-37-emh" userLabel="titleLabel">
@@ -298,7 +409,77 @@
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" id="UWU-j2-pUb" userLabel="activateDescLabel">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="We sent you a SMS, please check your messages and enter the 4 digits code below:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" id="UWU-j2-pUb" userLabel="activateDescLabel">
+                    <rect key="frame" x="36" y="192" width="302" height="96"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                    <size key="shadowOffset" width="-1" height="-1"/>
+                </label>
+                <textField opaque="NO" clipsSubviews="YES" tag="108" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Activation code" textAlignment="center" minimumFontSize="17" clearButtonMode="always" id="ULe-kp-qZn">
+                    <rect key="frame" x="38" y="265" width="299" height="59"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done"/>
+                </textField>
+                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="PR0-Gi-vU3" userLabel="checkValidationButton" customClass="UIRoundBorderedButton">
+                    <rect key="frame" x="36" y="332" width="299" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Finish configuration">
+                        <bool key="isElement" value="YES"/>
+                    </accessibility>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <state key="normal" title="FINISH CONFIGURATION">
+                        <color key="titleColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <state key="disabled">
+                        <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
+                    <connections>
+                        <action selector="onCreateAccountActivationClick:" destination="-1" eventType="touchUpInside" id="9Nq-pn-Xw5"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="625.5" y="943"/>
+        </view>
+        <view contentMode="scaleToFill" id="Zd9-Ms-s7X" userLabel="createAccountActivateEmailView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="366"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CREATE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="0ER-xf-LSS" userLabel="titleLabel">
+                    <rect key="frame" x="36" y="0.0" width="302" height="59"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
+                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                    <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                    <size key="shadowOffset" width="-1" height="-1"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="2/2" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" id="pJ5-CB-byl" userLabel="subtitleLabel">
+                    <rect key="frame" x="36" y="66" width="302" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                    <size key="shadowOffset" width="-1" height="-1"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="ACTIVATE YOUR ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="F6u-fS-sJs" userLabel="activateLabel">
+                    <rect key="frame" x="36" y="131" width="302" height="59"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                    <size key="shadowOffset" width="-1" height="-1"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" id="mbT-xm-bKk" userLabel="activateDescLabel">
                     <rect key="frame" x="36" y="192" width="302" height="96"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
@@ -309,7 +490,7 @@ Once it is done, come back here and click on the button.</string>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="PR0-Gi-vU3" userLabel="checkValidationButton" customClass="UIRoundBorderedButton">
+                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="XAC-vH-TQ2" userLabel="checkValidationButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="38" y="306" width="299" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Finish configuration">
@@ -322,18 +503,19 @@ Once it is done, come back here and click on the button.</string>
                     <state key="disabled">
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
-                        <action selector="onCreateAccountActivationClick:" destination="-1" eventType="touchUpInside" id="9Nq-pn-Xw5"/>
+                        <action selector="onCreateAccountCheckActivatedClick:" destination="-1" eventType="touchUpInside" id="cSS-c9-wmb"/>
                     </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="1038.5" y="159"/>
+            <point key="canvasLocation" x="625.5" y="1354"/>
         </view>
         <view contentMode="scaleToFill" id="52" userLabel="linphoneLoginView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="389"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="486"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CONFIGURE LINPHONE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="LbS-op-QAh" userLabel="titleLabel">
@@ -445,8 +627,46 @@ Once it is done, come back here and click on the button.</string>
                         <outlet property="errorLabel" destination="YzC-qL-tc0" id="SbI-Cd-cxw"/>
                     </connections>
                 </textField>
+                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LINK WITH PHONE NUMBER (OPTIONAL)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="cac-e8-KHg" userLabel="phoneLabel">
+                    <rect key="frame" x="38" y="356" width="269" height="14"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" id="y6x-Aq-16J" userLabel="countryCodeField" customClass="UIAssistantTextField">
+                    <rect key="frame" x="38" y="378" width="54" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                    <connections>
+                        <action selector="onCountryCodeFieldChange:" destination="-1" eventType="editingChanged" id="FDR-Ar-diD"/>
+                        <action selector="onCountryCodeFieldEnd:" destination="-1" eventType="editingDidEnd" id="hxt-GV-AIo"/>
+                    </connections>
+                </textField>
+                <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="eD1-BU-COs" userLabel="phoneField" customClass="UIAssistantTextField">
+                    <rect key="frame" x="95" y="378" width="242" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <accessibility key="accessibilityConfiguration" label="Username"/>
+                    <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="phonePad" returnKeyType="next"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="Kdo-Ve-XLh"/>
+                        <outlet property="errorLabel" destination="CCu-8i-8MI" id="vkU-BE-zYj"/>
+                    </connections>
+                </textField>
+                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="CCu-8i-8MI" userLabel="phoneErrorLabel">
+                    <rect key="frame" x="38" y="408" width="299" height="10"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="eIr-bh-JLB" userLabel="linphoneLoginButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="349" width="299" height="40"/>
+                    <rect key="frame" x="38" y="426" width="299" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Login">
                         <bool key="isElement" value="YES"/>
@@ -458,8 +678,16 @@ Once it is done, come back here and click on the button.</string>
                     <state key="disabled">
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onLinphoneLoginClick:" destination="-1" eventType="touchUpInside" id="EcX-YF-Zzh"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="wW8-73-U8k">
+                    <rect key="frame" x="315" y="352" width="22" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <connections>
+                        <action selector="onPhoneNumberDisclosureClick:" destination="-1" eventType="touchUpInside" id="G8I-J6-C3e"/>
                     </connections>
                 </button>
             </subviews>
@@ -467,7 +695,7 @@ Once it is done, come back here and click on the button.</string>
             <gestureRecognizers/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="203.5" y="738.5"/>
+            <point key="canvasLocation" x="1055.5" y="219"/>
         </view>
         <view contentMode="scaleToFill" id="56" userLabel="loginView">
             <rect key="frame" x="0.0" y="0.0" width="374" height="576"/>
@@ -629,6 +857,7 @@ Once it is done, come back here and click on the button.</string>
                     <state key="disabled">
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onLoginClick:" destination="-1" eventType="touchUpInside" id="LKg-hT-sDN"/>
                     </connections>
@@ -637,7 +866,7 @@ Once it is done, come back here and click on the button.</string>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="626" y="869"/>
+            <point key="canvasLocation" x="1490" y="264"/>
         </view>
         <view contentMode="scaleToFill" id="Zuh-Sd-pcd" userLabel="remoteProvisioningView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="241"/>
@@ -701,6 +930,7 @@ Once it is done, come back here and click on the button.</string>
                     <state key="disabled">
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onRemoteProvisioningDownloadClick:" destination="-1" eventType="touchUpInside" id="6yF-1w-Hpa"/>
                     </connections>
@@ -709,7 +939,7 @@ Once it is done, come back here and click on the button.</string>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="203.5" y="1155.5"/>
+            <point key="canvasLocation" x="1917.5" y="96.5"/>
         </view>
         <view contentMode="scaleToFill" id="xVK-hL-6pe" userLabel="remoteProvisioningLoginView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="379"/>
@@ -803,6 +1033,7 @@ Once it is done, come back here and click on the button.</string>
                     <state key="disabled">
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onRemoteProvisioningLoginClick:" destination="-1" eventType="touchUpInside" id="smy-BN-mwN"/>
                     </connections>
@@ -811,7 +1042,7 @@ Once it is done, come back here and click on the button.</string>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="626.5" y="1433.5"/>
+            <point key="canvasLocation" x="1917.5" y="457.5"/>
         </view>
         <tapGestureRecognizer id="VEO-W5-GDl" userLabel="onLinkTap">
             <connections>
@@ -819,4 +1050,7 @@ Once it is done, come back here and click on the button.</string>
             </connections>
         </tapGestureRecognizer>
     </objects>
+    <resources>
+        <image name="color_F.png" width="2" height="2"/>
+    </resources>
 </document>

@@ -2,7 +2,7 @@
 <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
 
 	<section name="proxy_default_values">
-		<entry name="avpf" overwrite="true">1</entry>
+		<entry name="avpf" overwrite="t rue">1</entry>
 		<entry name="dial_escape_plus" overwrite="true">0</entry>
 		<entry name="publish" overwrite="true">0</entry>
 		<entry name="quality_reporting_collector" overwrite="true">sip:voip-metrics@sip.linphone.org;transport=tls</entry>
@@ -28,6 +28,6 @@
 		<entry name="username_max_length" overwrite="true">64</entry>
 		<entry name="username_min_length" overwrite="true">1</entry>
 		<entry name="username_regex" overwrite="true">^[a-z0-9_.\-]*$</entry>
-		<entry name="xmlrpc_url" overwrite="true">https://www.linphone.org/assistant.php</entry>
+		<entry name="xmlrpc_url" overwrite="true">http://sip3.linphone.org/xmlrpc.php</entry>
 	</section>
 </config>

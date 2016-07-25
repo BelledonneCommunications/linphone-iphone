@@ -18,11 +18,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+
+#import <CoreTelephony/CTCarrier.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+
 #import "AssistantView.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "UITextField+DoneButton.h"
 #import "UIAssistantTextField.h"
+#import "CountryListViewController.h"
 
 #import <XMLRPCConnection.h>
 #import <XMLRPCConnectionManager.h>
@@ -37,10 +42,16 @@ typedef enum _ViewElement {
 	ViewElement_Domain = 104,
 	ViewElement_URL = 105,
 	ViewElement_DisplayName = 106,
-	ViewElement_TextFieldCount = 7,
+	ViewElement_Phone = 107,
+	ViewElement_SMSCode = 108,
+	ViewElement_PhoneCC = 109,
+	ViewElement_TextFieldCount = ViewElement_PhoneCC - 100 + 1,
 	ViewElement_Transport = 110,
 	ViewElement_Username_Label = 120,
 	ViewElement_NextButton = 130,
+
+	ViewElement_UsernameFormView = 181,
+	ViewElement_EmailFormView = 182,
 } ViewElement;
 
 @implementation AssistantView
@@ -53,6 +64,7 @@ typedef enum _ViewElement {
 		[[NSBundle mainBundle] loadNibNamed:@"AssistantViewScreens" owner:self options:nil];
 		historyViews = [[NSMutableArray alloc] init];
 		currentView = nil;
+		mustRestoreView = NO;
 	}
 	return self;
 }
@@ -82,8 +94,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	_countryButton.layer.borderWidth = .8;
+	_countryButton.layer.borderColor = _countryButton.backgroundColor.CGColor;
+	_countryButton.layer.cornerRadius = 4.f;
+	_countryButton.layer.masksToBounds = YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(registrationUpdateEvent:)
 											   name:kLinphoneRegistrationUpdate
@@ -93,10 +114,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneConfiguringStateUpdate
 											 object:nil];
 
-	new_config = NULL;
-	[self resetTextFields];
-	[self changeView:_welcomeView back:FALSE animation:FALSE];
-	number_of_configs_before = ms_list_size(linphone_core_get_proxy_config_list(LC));
+	if (!mustRestoreView) {
+		new_config = NULL;
+		number_of_configs_before = ms_list_size(linphone_core_get_proxy_config_list(LC));
+		[self resetTextFields];
+		[self changeView:_welcomeView back:FALSE animation:FALSE];
+	}
+	mustRestoreView = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -130,12 +154,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
 				.UTF8String);
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-	linphone_account_creator_cbs_set_existence_tested(linphone_account_creator_get_callbacks(account_creator),
-													  assistant_existence_tested);
+	linphone_account_creator_cbs_set_is_account_used(linphone_account_creator_get_callbacks(account_creator),
+													  assistant_is_account_used);
 	linphone_account_creator_cbs_set_create_account(linphone_account_creator_get_callbacks(account_creator),
 													assistant_create_account);
-	linphone_account_creator_cbs_set_validation_tested(linphone_account_creator_get_callbacks(account_creator),
-													   assistant_validation_tested);
+	linphone_account_creator_cbs_set_activate_account(linphone_account_creator_get_callbacks(account_creator),
+													assistant_activate_account);
+	linphone_account_creator_cbs_set_is_account_activated(linphone_account_creator_get_callbacks(account_creator),
+													   assistant_is_account_activated);
+
+	linphone_account_creator_cbs_set_link_phone_number_with_account(linphone_account_creator_get_callbacks(account_creator),
+													   assistant_link_phone_number_with_account);
+	linphone_account_creator_cbs_set_activate_phone_number_link(linphone_account_creator_get_callbacks(account_creator),
+													   assistant_activate_phone_number_link);
+
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
@@ -173,6 +205,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorUsernameInvalidSize:
 			return usePhoneNumber ? NSLocalizedString(@"Phone number length invalid.", nil)
 								  : NSLocalizedString(@"Username length invalid.", nil);
+		case LinphoneAccountCreatorPhoneNumberTooShort:
+		case LinphoneAccountCreatorPhoneNumberTooLong:
+			return nil; /* this is not an error, just user has to finish typing */
+		case LinphoneAccountCreatorPhoneNumberInvalid:
+			return NSLocalizedString(@"Invalid phone number.", nil);
 		case LinphoneAccountCreatorPasswordTooShort:
 			return NSLocalizedString(@"Password too short.", nil);
 		case LinphoneAccountCreatorPasswordTooLong:
@@ -191,8 +228,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorAccountExist:
 		case LinphoneAccountCreatorAccountNotCreated:
 		case LinphoneAccountCreatorAccountNotExist:
-		case LinphoneAccountCreatorAccountNotValidated:
-		case LinphoneAccountCreatorAccountValidated:
+		case LinphoneAccountCreatorAccountNotActivated:
+		case LinphoneAccountCreatorAccountActivated:
 		case LinphoneAccountCreatorOK:
 			break;
 	}
@@ -336,10 +373,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	currentView = view;
 	[_contentView insertSubview:currentView atIndex:0];
 	[_contentView setContentOffset:CGPointMake(0, -_contentView.contentInset.top) animated:NO];
-	[self fitContent];
 
 	// Resize next button to fix text length
-	UIButton *button = [self findButton:ViewElement_NextButton];
+	UIRoundBorderedButton *button = [self findButton:ViewElement_NextButton];
 	CGSize size = [button.titleLabel.text sizeWithFont:button.titleLabel.font];
 	size.width += 60;
 	CGRect frame = button.frame;
@@ -347,7 +383,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	frame.size.width = size.width;
 	[button setFrame:frame];
 
+	// also force next button alignement on create account page
+	if (currentView == _createAccountView) {
+		CTTelephonyNetworkInfo *networkInfo = [CTTelephonyNetworkInfo new];
+		CTCarrier *carrier = networkInfo.subscriberCellularProvider;
+		NSDictionary *country = [CountryListViewController countryWithIso:carrier.isoCountryCode];
+		if (!country) {
+			//fetch phone locale
+			for (NSString* lang in [NSLocale preferredLanguages]) {
+				if ((country = [CountryListViewController countryWithIso:[lang substringFromIndex:[lang rangeOfString:@"-"].location+1]]) != nil)
+					break;
+			}
+		}
+
+		if (country) {
+			[self didSelectCountry:country];
+			[self onFormSwitchToggle:nil];
+		}
+	}
+
 	[self prepareErrorLabels];
+
+	[self fitContent];
 }
 
 - (void)fillDefaultValues {
@@ -380,7 +437,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			 _createAccountView,
 			 _linphoneLoginView,
 			 _loginView,
-			 _createAccountActivationView,
+			 _createAccountActivateEmailView,
+			 _createAccountActivateSMSView,
 			 _remoteProvisioningLoginView
 		 ]) {
 		[AssistantView cleanTextField:view];
@@ -390,6 +448,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		atf.text = @"test.linphone.org";
 #endif
 	}
+	phone_number_length = 0;
 }
 
 - (void)displayUsernameAsPhoneOrUsername {
@@ -418,20 +477,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)shouldEnableNextButton {
-	BOOL invalidInputs = NO;
-	for (int i = 0; i < ViewElement_TextFieldCount; i++) {
-		UIAssistantTextField *field = [self findTextField:100 + i];
-		if (field) {
-			invalidInputs |= field.isInvalid;
-		}
-	}
-	[self findButton:ViewElement_NextButton].enabled = !invalidInputs;
-}
-
 - (UIView *)findView:(ViewElement)tag inView:view ofType:(Class)type {
 	for (UIView *child in [view subviews]) {
-		if (child.tag == tag) {
+		if (child.tag == tag && child.class == type) {
 			return child;
 		} else {
 			UIView *o = [self findView:tag inView:child ofType:type];
@@ -446,8 +494,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return (UIAssistantTextField *)[self findView:tag inView:self.contentView ofType:[UIAssistantTextField class]];
 }
 
-- (UIButton *)findButton:(ViewElement)tag {
-	return (UIButton *)[self findView:tag inView:self.contentView ofType:[UIButton class]];
+- (UIRoundBorderedButton *)findButton:(ViewElement)tag {
+	return (UIRoundBorderedButton *)[self findView:tag inView:self.contentView ofType:[UIRoundBorderedButton class]];
 }
 
 - (UILabel *)findLabel:(ViewElement)tag {
@@ -460,8 +508,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 						 when:^BOOL(NSString *inputEntry) {
 						   LinphoneAccountCreatorStatus s =
 							   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
+							 if (s != LinphoneAccountCreatorOK) linphone_account_creator_set_username(account_creator, NULL);
 						   createUsername.errorLabel.text = [AssistantView errorForStatus:s];
 						   return s != LinphoneAccountCreatorOK;
+						 }];
+	UIAssistantTextField *createPhone = [self findTextField:ViewElement_Phone];
+	[createPhone showError:[AssistantView errorForStatus:LinphoneAccountCreatorPhoneNumberInvalid]
+						 when:^BOOL(NSString *inputEntry) {
+							 UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
+							 NSString* prefix = countryCodeField.text.length > 0 ? [countryCodeField.text substringFromIndex:1] : nil;
+							 LinphoneAccountCreatorStatus s =
+							 linphone_account_creator_set_phone_number(account_creator, inputEntry.UTF8String, prefix.UTF8String);
+							 if (s != LinphoneAccountCreatorOK) linphone_account_creator_set_phone_number(account_creator, NULL, NULL);
+							 createPhone.errorLabel.text = [AssistantView errorForStatus:s];
+							 return s != LinphoneAccountCreatorOK;
 						 }];
 
 	UIAssistantTextField *password = [self findTextField:ViewElement_Password];
@@ -521,7 +581,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 						return s != LinphoneAccountCreatorOK;
 					  }];
 
+	UIAssistantTextField *smsCode = [self findTextField:ViewElement_SMSCode];
+	[smsCode showError:nil when:^BOOL(NSString *inputEntry) {
+		return inputEntry.length != 4;
+	}];
+
 	[self shouldEnableNextButton];
+}
+
+- (void)shouldEnableNextButton {
+	BOOL invalidInputs = NO;
+	for (int i = 0; !invalidInputs && i < ViewElement_TextFieldCount; i++) {
+		ViewElement ve = (ViewElement)100+i;
+		if ([self findTextField:ve].isInvalid) {
+			invalidInputs = YES;
+			break;
+		}
+	}
+
+	[self findButton:ViewElement_NextButton].enabled = !invalidInputs;
 }
 
 #pragma mark - Event Functions
@@ -612,16 +690,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (void)genericError {
+	UIAlertView *errorView = [[UIAlertView alloc]
+							  initWithTitle:NSLocalizedString(@"Account creation issue", nil)
+							  message:NSLocalizedString(@"Your account could not be created, please try again later.", nil)
+							  delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+							  otherButtonTitles:nil, nil];
+	[errorView show];
+}
+
 #pragma mark - Account creator callbacks
 
-void assistant_existence_tested(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountExist) {
-		[[thiz findTextField:ViewElement_Username] showError:NSLocalizedString(@"This name is already taken.", nil)];
+		[[thiz findTextField:ViewElement_Username] showError:NSLocalizedString(@"This account already exists.", nil)];
 		[thiz findButton:ViewElement_NextButton].enabled = NO;
 	} else if (status == LinphoneAccountCreatorAccountNotExist) {
 		linphone_account_creator_create_account(thiz->account_creator);
+	} else {
+		[thiz genericError];
 	}
 }
 
@@ -629,24 +719,41 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountCreated) {
-		[thiz changeView:thiz.createAccountActivationView back:FALSE animation:TRUE];
+		if (linphone_account_creator_get_phone_number(creator)) {
+			[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
+		} else {
+			[thiz changeView:thiz.createAccountActivateEmailView back:FALSE animation:TRUE];
+		}
 	} else {
-		UIAlertView *errorView = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Account creation issue", nil)
-					  message:NSLocalizedString(@"Your account could not be created, please try again later.", nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-			otherButtonTitles:nil, nil];
-		[errorView show];
+		[thiz genericError];
 	}
 }
 
-void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorAccountValidated) {
+	if (status == LinphoneAccountCreatorAccountActivated) {
 		[thiz configureProxyConfig];
-	} else if (status == LinphoneAccountCreatorAccountNotValidated) {
+	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
+		UIAlertView *errorView = [[UIAlertView alloc]
+								  initWithTitle:NSLocalizedString(@"Account activation issue", nil)
+								  message:NSLocalizedString(@"Your account could not be activated, please check SMS code.", nil)
+								  delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+								  otherButtonTitles:nil, nil];
+		[errorView show];
+	} else {
+		// in case we are actually trying to link account, let's try it now
+		linphone_account_creator_activate_phone_number_link(creator);
+	}
+}
+
+void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorAccountActivated) {
+		[thiz configureProxyConfig];
+	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
 		DTAlertView *alert = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Account validation failed", nil)
 				  message:
@@ -660,6 +767,40 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 							  [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 							}];
 		[alert show];
+	} else {
+		[thiz genericError];
+	}
+}
+
+void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorOK) {
+		[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
+	} else {
+		UIAlertView *errorView = [[UIAlertView alloc]
+								  initWithTitle:NSLocalizedString(@"Account link issue", nil)
+								  message:NSLocalizedString(@"Could not link your phone number with your account, please try again later.", nil)
+								  delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+								  otherButtonTitles:nil, nil];
+		[errorView show];
+	}
+}
+
+void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorOK) {
+		[thiz configureProxyConfig];
+	} else {
+		UIAlertView *errorView = [[UIAlertView alloc]
+								  initWithTitle:NSLocalizedString(@"Account link issue", nil)
+								  message:NSLocalizedString(@"Could not link your phone number with your account, please try again later.", nil)
+								  delegate:nil
+								  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+								  otherButtonTitles:nil, nil];
+		[errorView show];
 	}
 }
 
@@ -693,19 +834,28 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 - (BOOL)textField:(UITextField *)textField
 	shouldChangeCharactersInRange:(NSRange)range
 				replacementString:(NSString *)string {
-	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
-	BOOL replace = YES;
-	// if we are hitting backspace on secure entry, this will clear all text
-	if ([string isEqual:@""] && textField.isSecureTextEntry) {
-		range = NSMakeRange(0, atf.text.length);
+	if (textField.tag == ViewElement_SMSCode) {
+		// max 4 length
+		return range.location + range.length <= 4;
+	} else {
+		UIAssistantTextField *atf = (UIAssistantTextField *)textField;
+		BOOL replace = YES;
+		// if we are hitting backspace on secure entry, this will clear all text
+		if ([string isEqual:@""] && textField.isSecureTextEntry) {
+			range = NSMakeRange(0, atf.text.length);
+		}
+		[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
+		if (atf.tag == ViewElement_Username && currentView == _createAccountView) {
+			atf.text = [atf.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
+			replace = NO;
+		}
+
+		if (textField.tag == ViewElement_Phone || textField.tag == ViewElement_Username) {
+			[self refreshYourUsername];
+		}
+		[self shouldEnableNextButton];
+		return replace;
 	}
-	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
-	if (atf.tag == ViewElement_Username && currentView == _createAccountView) {
-		atf.text = [atf.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
-		replace = NO;
-	}
-	[self shouldEnableNextButton];
-	return replace;
 }
 
 #pragma mark - Action Functions
@@ -734,17 +884,29 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onCreateAccountClick:(id)sender {
 	_waitView.hidden = NO;
-	linphone_account_creator_test_existence(account_creator);
+	linphone_account_creator_is_account_used(account_creator);
 }
 
 - (IBAction)onCreateAccountActivationClick:(id)sender {
 	_waitView.hidden = NO;
-	linphone_account_creator_test_validation(account_creator);
+	linphone_account_creator_set_activation_code(account_creator, ((UITextField*)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text.UTF8String);
+	linphone_account_creator_activate_account(account_creator);
+}
+
+- (IBAction)onCreateAccountCheckActivatedClick:(id)sender {
+	_waitView.hidden = NO;
+	linphone_account_creator_is_account_activated(account_creator);
 }
 
 - (IBAction)onLinphoneLoginClick:(id)sender {
 	_waitView.hidden = NO;
-	[self configureProxyConfig];
+
+	NSString *phone = [self findTextField:ViewElement_Phone].text;
+	if (phone.length > 0) {
+		linphone_account_creator_link_phone_number_with_account(account_creator);
+	} else {
+		[self configureProxyConfig];
+	}
 }
 
 - (IBAction)onLoginClick:(id)sender {
@@ -761,6 +923,96 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
 	[_waitView setHidden:false];
 	[self resetLiblinphone];
+}
+
+- (void)refreshYourUsername {
+	UIAssistantTextField *username = [self findTextField:ViewElement_Username];
+	UIAssistantTextField *phone = [self findTextField:ViewElement_Phone];
+	const char* uri = NULL;
+	if (!username.superview.hidden) {
+		uri = linphone_account_creator_get_username(account_creator);
+	} else if (!phone.superview.hidden) {
+		uri = linphone_account_creator_get_phone_number(account_creator);
+	}
+
+	if (uri) {
+		_accountLabel.text = [NSString stringWithFormat:NSLocalizedString(@"Your SIP address will be sip:%s@sip.linphone.org", nil), uri];
+	} else if (!username.superview.hidden) {
+		_accountLabel.text = NSLocalizedString(@"Please enter your username", nil);
+	} else {
+		_accountLabel.text = NSLocalizedString(@"Please enter your phone number", nil);
+	}
+}
+
+- (IBAction)onFormSwitchToggle:(UISwitch*)sender {
+	UISwitch *usernameSwitch = (UISwitch *)[self findView:ViewElement_UsernameFormView inView:self.contentView ofType:UISwitch.class];
+	UISwitch *emailSwitch = (UISwitch *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UISwitch.class];
+
+	UIView * usernameView = [self findView:ViewElement_UsernameFormView inView:self.contentView ofType:UIView.class];
+	UIView * emailView = [self findView:ViewElement_EmailFormView inView:self.contentView ofType:UIView.class];
+	usernameView.hidden = !usernameSwitch.isOn && !emailSwitch.isOn;
+	emailView.hidden = !emailSwitch.isOn;
+
+	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
+	usernameSwitch.enabled = _countryButton.enabled = countryCodeField.enabled = countryCodeField.userInteractionEnabled = [self findTextField:ViewElement_Phone].userInteractionEnabled = [self findTextField:ViewElement_Phone].enabled = !emailSwitch.isOn;
+
+	[self refreshYourUsername];
+
+	// put next button right after latest field (avoid blanks)
+	UIRoundBorderedButton* nextButton = [self findButton:ViewElement_NextButton];
+	CGRect pos = nextButton.frame;
+	if (usernameView.hidden) {
+		pos.origin.y = usernameView.frame.origin.y;
+	} else if (emailView.hidden) {
+		pos.origin.y = emailView.frame.origin.y;
+	} else {
+		pos.origin.y = emailView.frame.origin.y + emailView.frame.size.height;
+	}
+	nextButton.frame = pos;
+
+	// make view scrollable only if next button is too away
+	CGRect viewframe = currentView.frame;
+	viewframe.size.height = pos.origin.y + pos.size.height;
+	currentView.autoresizesSubviews = NO;
+	currentView.frame = viewframe;
+	currentView.autoresizesSubviews = YES;
+	[self fitContent];
+
+	[self shouldEnableNextButton];
+}
+
+- (IBAction)onCountryCodeClick:(id)sender {
+	mustRestoreView = YES;
+
+	CountryListViewController *view = VIEW(CountryListViewController);
+	[view setDelegate:(id)self];
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (void)updateCountry:(BOOL)force {
+	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
+	NSDictionary *c = [CountryListViewController countryWithCountryCode:countryCodeField.text];
+	if (c || force) {
+		[_countryButton setTitle:c ? [c objectForKey:@"name"] : NSLocalizedString(@"Unknown country code", nil) forState:UIControlStateNormal];
+	}
+}
+
+- (IBAction)onCountryCodeFieldChange:(id)sender {
+	[self updateCountry:NO];
+}
+
+- (IBAction)onCountryCodeFieldEnd:(id)sender {
+	[self updateCountry:YES];
+}
+
+- (IBAction)onPhoneNumberDisclosureClick:(id)sender {
+	UIAlertView *errorView = [[UIAlertView alloc]
+							  initWithTitle:NSLocalizedString(@"What is my phone number for?", nil)
+							  message:NSLocalizedString(@"A SMS code will be sent to your phone number to validate your account.", nil)
+							  delegate:nil
+							  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+							  otherButtonTitles:nil, nil];
+	[errorView show];
 }
 
 - (IBAction)onBackClick:(id)sender {
@@ -780,6 +1032,16 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}
+}
+
+#pragma mark - select country delegate
+
+- (void)didSelectCountry:(NSDictionary *)country{
+	[_countryButton setTitle:[country objectForKey:@"name"] forState:UIControlStateNormal];
+	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
+	countryCodeField.text = countryCodeField.lastText = [country objectForKey:@"code"];
+	phone_number_length = [[country objectForKey:@"phone_length"] integerValue];
+	[self shouldEnableNextButton];
 }
 
 @end
