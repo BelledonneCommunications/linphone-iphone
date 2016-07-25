@@ -1938,6 +1938,7 @@ static void linphone_gtk_init_main_window(void){
 		G_CALLBACK (linphone_gtk_close), main_window);
 #ifdef HAVE_GTK_OSX
 	{
+		gtk_widget_show(main_window);
 		GtkWidget *menubar=linphone_gtk_get_widget(main_window,"menubar1");
 		GtkosxApplication *theMacApp = gtkosx_application_get();
 		gtkosx_application_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));
