@@ -85,7 +85,7 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 	 * We workaround by asking that the open is made with no protection*/
 	flags |= SQLITE_OPEN_FILEPROTECTION_NONE;
 #endif
-	
+
 	/*since we plug our vfs into sqlite, we convert to UTF-8.
 	 * On Windows, the filename has to be converted back to windows native charset.*/
 	char *utf8_filename = utf8_convert(db_file);
@@ -209,16 +209,15 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 	// check if the message exists in the transient list, in which case we should return that one.
 	LinphoneChatMessage* new_message = get_transient_message(cr, storage_id);
 	if( new_message == NULL ){
-		LinphoneAddress *local_addr=linphone_address_new(argv[1]);
 		new_message = linphone_chat_room_create_message(cr, argv[4]);
 
 		if(atoi(argv[3])==LinphoneChatMessageIncoming){
 			new_message->dir=LinphoneChatMessageIncoming;
 			linphone_chat_message_set_from(new_message,linphone_chat_room_get_peer_address(cr));
-			new_message->to = local_addr; /*direct assignation to avoid a copy*/
+			new_message->to = NULL; /*will be filled at the end */
 		} else {
 			new_message->dir=LinphoneChatMessageOutgoing;
-			new_message->from = local_addr; /*direct assignation to avoid a copy*/
+			new_message->from = NULL; /*will be filled at the end */
 			linphone_chat_message_set_to(new_message,linphone_chat_room_get_peer_address(cr));
 		}
 
@@ -491,16 +490,33 @@ bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int sta
 		ms_free(buf);
 		buf = buf2;
 	}
-	
+
 	begin=ortp_get_cur_time_ms();
 	linphone_sql_request_message(lc->db,buf,cr);
 	end=ortp_get_cur_time_ms();
-	
+
 	if (endm+1-startm > 1) {
 		//display message only if at least 2 messages are loaded
 		ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 	}
 	ms_free(buf);
+
+	if (cr->messages_hist) {
+		//fill local addr with core identity instead of per message
+		LinphoneAddress* local_addr = linphone_address_new(linphone_core_get_identity(cr->lc));
+		bctbx_list_t* it = cr->messages_hist;
+		while (it) {
+			LinphoneChatMessage* msg = it->data;
+			if (msg->dir == LinphoneChatMessageOutgoing) {
+				msg->from = linphone_address_ref(local_addr);
+			} else {
+				msg->to = linphone_address_ref(local_addr);
+			}
+			it = it->next;
+		}
+		linphone_address_unref(local_addr);
+	}
+
 	ret=cr->messages_hist;
 	cr->messages_hist=NULL;
 	ms_free(peer);
@@ -650,7 +666,7 @@ void linphone_update_table(sqlite3* db) {
 			ms_debug("Table content successfully created.");
 		}
 	}
-	
+
 	// new fields for content key storage when using lime
 	ret=sqlite3_exec(db,"ALTER TABLE content ADD COLUMN key_size INTEGER;",NULL,NULL,&errmsg);
 	if(ret != SQLITE_OK) {
