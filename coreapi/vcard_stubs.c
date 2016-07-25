@@ -54,11 +54,11 @@ LinphoneVcard* linphone_vcard_new(void) {
 void linphone_vcard_free(LinphoneVcard *vCard) {
 }
 
-MSList* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {
+bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {
 	return NULL;
 }
 
-MSList* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardContext *context, const char *buffer) {
+bctbx_list_t* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardContext *context, const char *buffer) {
 	return NULL;
 }
 
@@ -100,7 +100,7 @@ void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_add
 void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 }
 
-MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
+bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
@@ -110,7 +110,7 @@ void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone) {
 void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone) {
 }
 
-MSList* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
+bctbx_list_t* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
 	return NULL;
 }
 

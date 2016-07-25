@@ -162,7 +162,7 @@ LINPHONE_PUBLIC int linphone_friend_set_address(LinphoneFriend *fr, const Linpho
  * @param lf #LinphoneFriend object
  * @return #LinphoneAddress
  */
-LINPHONE_PUBLIC const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+LINPHONE_PUBLIC LinphoneAddress * linphone_friend_get_address(const LinphoneFriend *lf);
 
 /**
  * Adds an address in this friend

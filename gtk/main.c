@@ -677,7 +677,7 @@ void on_contact_provider_search_results( LinphoneContactSearch* req, bctbx_list_
 	while( friends ){
 		LinphoneFriend* lf = friends->data;
 		if( lf ) {
-			const LinphoneAddress* la = linphone_friend_get_address(lf);
+			LinphoneAddress* la = linphone_friend_get_address(lf);
 			if( la ){
 				char *addr = linphone_address_as_string(la);
 
@@ -688,6 +688,7 @@ void on_contact_provider_search_results( LinphoneContactSearch* req, bctbx_list_
 													  1, COMPLETION_LDAP, -1);
 					ms_free(addr);
 				}
+				linphone_address_unref(la);
 			}
 		}
 		friends = friends->next;

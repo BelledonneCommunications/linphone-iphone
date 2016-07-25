@@ -22,17 +22,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LinphoneCardDavContext* linphone_carddav_context_new(LinphoneFriendList *lfl) {
 	LinphoneCardDavContext *carddav_context = NULL;
-	
+
+	if (!linphone_core_vcard_supported()) {
+		ms_error("[carddav] vCard isn't available (maybe it wasn't compiled), can't do CardDAV sync");
+		return NULL;
+	}
 	if (!lfl || !lfl->uri) {
 		return NULL;
 	}
-	
-#ifdef VCARD_ENABLED
+
 	carddav_context = (LinphoneCardDavContext *)ms_new0(LinphoneCardDavContext, 1);
 	carddav_context->friend_list = linphone_friend_list_ref(lfl);
-#else
-	ms_error("[carddav] vCard isn't available (maybe it wasn't compiled), can't do CardDAV sync");
-#endif
 	return carddav_context;
 }
 

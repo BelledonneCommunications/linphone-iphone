@@ -381,7 +381,7 @@ void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list);
  * @param[in] list LinphoneFriendList object.
  * @return a LinphoneCore object
  */
-LINPHONE_PUBLIC LinphoneCore* linphone_friend_list_get_core(LinphoneFriendList *list);
+LINPHONE_PUBLIC LinphoneCore* linphone_friend_list_get_core(const LinphoneFriendList *list);
 
 /**
  * Creates and adds LinphoneFriend objects to LinphoneFriendList from a file that contains the vCard(s) to parse

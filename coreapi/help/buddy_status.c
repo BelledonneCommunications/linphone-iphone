@@ -52,17 +52,19 @@ static void stop(int signum){
  */
 static void notify_presence_recv_updated (LinphoneCore *lc,  LinphoneFriend *friend) {
 	const LinphonePresenceModel* model = linphone_friend_get_presence_model(friend);
-	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
+	LinphoneAddress* friend_address = linphone_friend_get_address(friend);
 	LinphonePresenceActivity *activity = linphone_presence_model_get_activity(model);
 	char *activity_str = linphone_presence_activity_to_string(activity);
 	printf("New state state [%s] for user id [%s] \n"
 				,activity_str
 				,linphone_address_as_string (friend_address));
+	linphone_address_unref(friend_address);
 }
 static void new_subscription_requested (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
-	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
+	LinphoneAddress* friend_address = linphone_friend_get_address(friend);
 	printf(" [%s] wants to see your status, accepting\n"
 				,linphone_address_as_string (friend_address));
+	linphone_address_unref(friend_address);
 	linphone_friend_edit(friend); /* start editing friend */
 	linphone_friend_set_inc_subscribe_policy(friend,LinphoneSPAccept); /* Accept incoming subscription request for this friend*/
 	linphone_friend_done(friend); /*commit change*/

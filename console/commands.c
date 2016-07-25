@@ -1829,7 +1829,7 @@ linphonec_proxy_use(LinphoneCore *lc, int index)
 static void
 linphonec_friend_display(LinphoneFriend *fr)
 {
-	LinphoneAddress *uri=linphone_address_clone(linphone_friend_get_address(fr));
+	LinphoneAddress *uri=linphone_friend_get_address(fr);
 	char *str;
 
 	linphonec_out("name: %s\n", linphone_address_get_display_name(uri));
@@ -1853,9 +1853,15 @@ linphonec_friend_list(LinphoneCore *lc, char *pat)
 	for(n=0; friend!=NULL; friend=bctbx_list_next(friend), ++n )
 	{
 		if ( pat ) {
-			const char *name = linphone_address_get_display_name(
-			    linphone_friend_get_address((LinphoneFriend*)friend->data));
-			if (name && ! strstr(name, pat) ) continue;
+			LinphoneAddress *addr = linphone_friend_get_address((LinphoneFriend*)friend->data);
+			if (addr) {
+				const char *name = linphone_address_get_display_name(addr);
+				if (name && ! strstr(name, pat) ) {
+					linphone_address_unref(addr);
+					continue;
+				}
+				linphone_address_unref(addr);
+			}
 		}
 		linphonec_out("****** Friend %i *******\n",n);
 		linphonec_friend_display((LinphoneFriend*)friend->data);
@@ -1869,16 +1875,18 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 {
 	const bctbx_list_t *friend = linphone_core_get_friend_list(lc);
 	unsigned int n;
-	char *addr;
+	char *addr_str;
 
 	for(n=0; friend!=NULL; friend=bctbx_list_next(friend), ++n )
 	{
 		if ( n == num )
 		{
 			int ret;
-			addr = linphone_address_as_string(linphone_friend_get_address((LinphoneFriend*)friend->data));
-			ret=lpc_cmd_call(lc, addr);
-			ms_free(addr);
+			LinphoneAddress *addr = linphone_friend_get_address((LinphoneFriend*)friend->data);
+			addr_str = linphone_address_as_string(addr);
+			ret=lpc_cmd_call(lc, addr_str);
+			ms_free(addr_str);
+			linphone_address_unref(addr);
 			return ret;
 		}
 	}

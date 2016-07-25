@@ -1471,6 +1471,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 
 void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalOp *op){
 	LinphoneFriend *fl=linphone_core_create_friend_with_address(lc,subscriber);
+	LinphoneAddress *addr;
 	char *tmp;
 
 	if (fl==NULL) return ;
@@ -1481,10 +1482,11 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 	/* the newly created "not yet" friend ownership is transfered to the lc->subscribers list*/
 	lc->subscribers=bctbx_list_append(lc->subscribers,fl);
 
-	tmp = linphone_address_as_string(fl->uri);
+	addr = linphone_friend_get_address(fl);
+	tmp = linphone_address_as_string(addr);
 	linphone_core_notify_new_subscription_requested(lc,fl,tmp);
 	ms_free(tmp);
-
+	linphone_address_unref(addr);
 }
 
 void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){
@@ -1905,7 +1907,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	if (lf!=NULL){
 		LinphonePresenceActivity *activity = NULL;
 		char *activity_str;
-		friend=lf->uri;
+		friend=linphone_friend_get_address(lf);
 		tmp=linphone_address_as_string(friend);
 		activity = linphone_presence_model_get_activity(presence);
 		activity_str = linphone_presence_activity_to_string(activity);
@@ -1916,6 +1918,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		lf->presence_received = TRUE;
 		lf->out_sub_state = linphone_subscription_state_from_sal(ss);
 		linphone_core_notify_notify_presence_received(lc,(LinphoneFriend*)lf);
+		linphone_address_unref(friend);
 		ms_free(tmp);
 		if (op != lf->outsub){
 			/*case of a NOTIFY received out of any dialog*/
