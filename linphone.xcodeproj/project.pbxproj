@@ -3741,7 +3741,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f \"$SRCROOT/liblinphone-sdk/apple-darwin/share/linphone/rootca.pem\" ]; then\necho '****************************************************************'\necho 'error: Liblinphone SDK missing!'\necho 'Missing rootca.pem from liblinphone SDK.'\necho 'Did you compile it (./prepare.py && make or read the README.md).'\necho 'Aborting for now.'\necho '****************************************************************'\nexit 1\nfi";
+			shellScript = "if [ ! -f \"$SRCROOT/liblinphone-sdk/apple-darwin/share/linphone/rootca.pem\" ]; then\necho '********************************************************************'\necho 'warning: Liblinphone SDK missing! Downloading it (latest release)...'\n$SRCROOT/Tools/sdk_download.sh \"latest\"\necho '********************************************************************'\nexit 1\nfi";
 		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;

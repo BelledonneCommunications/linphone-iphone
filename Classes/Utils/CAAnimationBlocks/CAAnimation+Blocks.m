@@ -65,7 +65,7 @@
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_10_0
 		self.delegate = delegate;
 #else
-		self.delegate = (id<CAAnimationDelegate>)delegate;
+		self.delegate = (id)delegate;
 #endif
 	}
 }
@@ -86,7 +86,7 @@
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_10_0
 		self.delegate = delegate;
 #else
-		self.delegate = (id<CAAnimationDelegate>)delegate;
+		self.delegate = (id)delegate;
 #endif
 	}
 }

@@ -6,18 +6,11 @@ Linphone is a free VoIP and video softphone based on the SIP protocol.
 
 # Getting started
 
-Here's how to launch Linphone for iPhone (more details below):
+Here's how to launch Linphone for iPhone (more details below) in the most straightforward way:
 
 1. Install [Xcode from AppStore](https://itunes.apple.com/us/app/Xcode/id497799835?mt=12#).
-2. Install [HomeBrew, a package manager for OS X](http://brew.sh) (MacPorts is supported but deprecated).
-3. Install Linphone dependencies: open iTerm.app in the current directory and list dependencies to install using:
- `./prepare.py`
-4. Reorder your path so that brew tools are used instead of Apple's ones which are obsolete:
- `export PATH=/usr/local/bin:$PATH`
-5. Build SDK (see below for options and explanations):
- `./prepare.py -c && ./prepare.py && make`
-6. Open linphone.xcodeproj in Xcode: `open linphone.xcodeproj`
-7. Press `⌘R` and voilà!
+2. Open linphone.xcodeproj in Xcode: `open linphone.xcodeproj`
+3. Press `⌘R` and voilà!
 
 # How can I contribute?
 
@@ -36,11 +29,21 @@ Interested in helping translate Linphone? Contribute [on Transifex](https://www.
 
 If you want to dig through Linphone code or report a bug, please read `CONTRIBUTING.md` first. You should also read this `README` entirely ;-).
 
-# Building the SDK
+# Building and customizing the SDK
 
 Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts.
 
- To generate the liblinphone multi-arch SDK in GPL mode, simply invoke:
+ Steps to customize the liblinphone SDK options are:
+
+ 1. Install [HomeBrew, a package manager for OS X](http://brew.sh) (MacPorts is supported but deprecated).
+ 2. Install Linphone dependencies: open iTerm.app in the current directory and list dependencies to install using:
+ `./prepare.py`
+ 3. Reorder your path so that brew tools are used instead of Apple's ones which are obsolete:
+ `export PATH=/usr/local/bin:$PATH`
+ 4. Build SDK (see below for options and explanations):
+ `./prepare.py -c && ./prepare.py && make`
+
+ For instance to generate the liblinphone multi-arch SDK in GPL mode, simply invoke:
 
         ./prepare.py [options] && make
 
