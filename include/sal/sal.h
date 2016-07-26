@@ -125,6 +125,7 @@ void sal_address_set_transport(SalAddress* addr,SalTransport transport);
 void sal_address_set_transport_name(SalAddress* addr,const char* transport);
 void sal_address_set_method_param(SalAddress *addr, const char *method);
 void sal_address_set_params(SalAddress *addr, const char *params);
+void sal_address_set_uri_param(SalAddress *addr, const char *name, const char *value);
 void sal_address_set_uri_params(SalAddress *addr, const char *params);
 bool_t sal_address_has_uri_param(SalAddress *addr, const char *name);
 bool_t sal_address_is_ipv6(const SalAddress *addr);

@@ -451,6 +451,11 @@ LINPHONE_PUBLIC bool_t linphone_address_equal(const LinphoneAddress *a1, const L
 LINPHONE_PUBLIC void linphone_address_set_password(LinphoneAddress *addr, const char *passwd);
 LINPHONE_PUBLIC const char *linphone_address_get_password(const LinphoneAddress *addr);
 LINPHONE_PUBLIC void linphone_address_set_header(LinphoneAddress *addr, const char *header_name, const char *header_value);
+LINPHONE_PUBLIC void linphone_address_set_param(LinphoneAddress *addr, const char *name, const char *value);
+LINPHONE_PUBLIC void linphone_address_set_params(LinphoneAddress *addr, const char *params);
+LINPHONE_PUBLIC void linphone_address_set_uri_param(LinphoneAddress *addr, const char *name, const char *value);
+LINPHONE_PUBLIC void linphone_address_set_uri_params(LinphoneAddress *addr, const char *params);
+LINPHONE_PUBLIC bool_t linphone_address_has_uri_param(LinphoneAddress *addr, const char *name);
 LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
 
 /**
