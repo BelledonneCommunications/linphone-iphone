@@ -191,10 +191,11 @@ class IOSPreparator(prepare.Preparator):
 
         if self.check_is_installed("libtoolize", warn=False):
             if not self.check_is_installed("glibtoolize", "libtool"):
-                glibtoolize_path = find_executable("glibtoolize")
                 reterr = 1
-                msg = "Please do a symbolic link from glibtoolize to libtoolize:\n\tln -s {} ${}"
-                error(msg.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
+                glibtoolize_path = find_executable("glibtoolize")
+                if glibtoolize_path is not None:
+                    msg = "Please do a symbolic link from glibtoolize to libtoolize:\n\tln -s {} ${}"
+                    error(msg.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
 
         devnull = open(os.devnull, 'wb')
         # just ensure that JDK is installed - if not, it will automatically display a popup to user
