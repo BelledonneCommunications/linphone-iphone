@@ -840,6 +840,7 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
+				linphone_friend_save(lf, lf->lc);
 				count++;
 			}
 			linphone_friend_unref(lf);
