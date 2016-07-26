@@ -156,10 +156,20 @@ static char * create_resource_list_xml(const LinphoneFriendList *list) {
 		iterator = numbers;
 		while (iterator) {
 			const char *number = (const char *)bctbx_list_get_data(iterator);
-			char *normalized_number = linphone_proxy_config_normalize_phone_number(proxy_config, number);
+			char *normalized_number;
+			if (strstr(number, "tel:") == number) number += 4; /* Remove the "tel:" prefix if it is present. */
+			normalized_number = linphone_proxy_config_normalize_phone_number(proxy_config, number);
 			if (normalized_number) {
-				char *uri = ms_strdup_printf("%s;user=phone", normalized_number);
-				err = add_uri_entry(writer, err, uri);
+				char *uri = ms_strdup_printf("sip:%s@%s", normalized_number, linphone_proxy_config_get_domain(proxy_config));
+				LinphoneAddress *addr = linphone_core_create_address(lf->lc, uri);
+				if (addr) {
+					char *full_uri;
+					linphone_address_set_uri_param(addr, "user", "phone");
+					full_uri = linphone_address_as_string_uri_only(addr);
+					err = add_uri_entry(writer, err, full_uri);
+					ms_free(full_uri);
+					linphone_address_unref(addr);
+				}
 				ms_free(uri);
 				ms_free(normalized_number);
 			}
