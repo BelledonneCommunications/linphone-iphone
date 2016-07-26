@@ -1926,6 +1926,14 @@ typedef void (*LinphoneCoreCbFunc)(LinphoneCore *lc,void * user_data);
  */
 typedef void (*LinphoneCoreNotifyPresenceReceivedCb)(LinphoneCore *lc, LinphoneFriend * lf);
 /**
+ * Reports presence model change for a specific URI or phone number of a friend
+ * @param lc #LinphoneCore object
+ * @param lf #LinphoneFriend object
+ * @param uri_or_tel The URI or phone number for which teh presence model has changed
+ * @param presence_model The new presence model
+ */
+typedef void (*LinphoneCoreNotifyPresenceReceivedForUriOrTelCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
+/**
  *  Reports that a new subscription request has been received and wait for a decision.
  *  Status on this subscription request is notified by \link linphone_friend_set_inc_subscribe_policy() changing policy \endlink for this friend
  * @param lc #LinphoneCore object
@@ -2120,6 +2128,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreRegistrationStateChangedCb registration_state_changed;/**<Notifies registration state changes*/
 	LinphoneCoreCallStateChangedCb call_state_changed;/**<Notifies call state changes*/
 	LinphoneCoreNotifyPresenceReceivedCb notify_presence_received; /**< Notify received presence events*/
+	LinphoneCoreNotifyPresenceReceivedForUriOrTelCb notify_presence_received_for_uri_or_tel; /**< Notify received presence events*/
 	LinphoneCoreNewSubscriptionRequestedCb new_subscription_requested; /**< Notify about pending presence subscription request */
 	LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
 	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */

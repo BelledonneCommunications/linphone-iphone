@@ -285,13 +285,21 @@ LINPHONE_PUBLIC LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFr
  */
 
 LINPHONE_PUBLIC LinphoneSubscriptionState linphone_friend_get_subscription_state(const LinphoneFriend *lf);
-	
+
 /**
  * Get the presence model of a friend
  * @param[in] lf A #LinphoneFriend object
  * @return A #LinphonePresenceModel object, or NULL if the friend do not have presence information (in which case he is considered offline)
  */
-LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
+LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model(const LinphoneFriend *lf);
+
+/**
+ * Get the presence model for a specific SIP URI or phone number of a friend
+ * @param[in] lf A #LinphoneFriend object
+ * @param[in] uri_or_tel The SIP URI or phone number for which to get the presence model
+ * @return A #LinphonePresenceModel object, or NULL if the friend do not have presence information for this SIP URI or phone number
+ */
+LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model_for_uri_or_tel(const LinphoneFriend *lf, const char *uri_or_tel);
 
 /**
  * Set the presence model of a friend
@@ -299,6 +307,14 @@ LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model
  * @param[in] presence The #LinphonePresenceModel object to set for the friend
  */
 LINPHONE_PUBLIC void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceModel *presence);
+
+/**
+ * Set the presence model for a specific SIP URI or phone number of a friend
+ * @param[in] lf A #LinphoneFriend object
+ * @param[in] uri_or_tel The SIP URI or phone number for which to set the presence model
+ * @param[in] presence The #LinphonePresenceModel object to set
+ */
+LINPHONE_PUBLIC void linphone_friend_set_presence_model_for_uri_or_tel(LinphoneFriend *lf, const char *uri_or_tel, LinphonePresenceModel *presence);
 
 /**
  * Tells whether we already received presence information for a friend.

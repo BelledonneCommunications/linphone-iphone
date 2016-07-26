@@ -140,7 +140,6 @@ static char * create_resource_list_xml(const LinphoneFriendList *list) {
 		bctbx_list_t *iterator;
 		bctbx_list_t *addresses = linphone_friend_get_addresses(lf);
 		bctbx_list_t *numbers = linphone_friend_get_phone_numbers(lf);
-		LinphoneProxyConfig *proxy_config = linphone_core_get_default_proxy_config(linphone_friend_list_get_core(list));
 		iterator = addresses;
 		while (iterator) {
 			LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(iterator);
@@ -156,23 +155,8 @@ static char * create_resource_list_xml(const LinphoneFriendList *list) {
 		iterator = numbers;
 		while (iterator) {
 			const char *number = (const char *)bctbx_list_get_data(iterator);
-			char *normalized_number;
-			if (strstr(number, "tel:") == number) number += 4; /* Remove the "tel:" prefix if it is present. */
-			normalized_number = linphone_proxy_config_normalize_phone_number(proxy_config, number);
-			if (normalized_number) {
-				char *uri = ms_strdup_printf("sip:%s@%s", normalized_number, linphone_proxy_config_get_domain(proxy_config));
-				LinphoneAddress *addr = linphone_core_create_address(lf->lc, uri);
-				if (addr) {
-					char *full_uri;
-					linphone_address_set_uri_param(addr, "user", "phone");
-					full_uri = linphone_address_as_string_uri_only(addr);
-					err = add_uri_entry(writer, err, full_uri);
-					ms_free(full_uri);
-					linphone_address_unref(addr);
-				}
-				ms_free(uri);
-				ms_free(normalized_number);
-			}
+			const char *uri = linphone_friend_phone_number_to_sip_uri(lf, number);
+			if (uri) err = add_uri_entry(writer, err, uri);
 			iterator = bctbx_list_next(iterator);
 		}
 		if (addresses) bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
@@ -275,9 +259,12 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 								SalPresenceModel *presence = NULL;
 								linphone_notify_parse_presence(linphone_content_get_type(presence_part), linphone_content_get_subtype(presence_part), linphone_content_get_string_buffer(presence_part), &presence);
 								if (presence != NULL) {
+									const char *phone_number = linphone_friend_sip_uri_to_phone_number(lf, uri);
 									lf->presence_received = TRUE;
-									linphone_friend_set_presence_model(lf, (LinphonePresenceModel *)presence);
+									if (phone_number) linphone_friend_set_presence_model_for_uri_or_tel(lf, phone_number, (LinphonePresenceModel *)presence);
 									if (full_state == FALSE) {
+										if (phone_number)
+											linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, phone_number, (LinphonePresenceModel *)presence);
 										linphone_core_notify_notify_presence_received(list->lc, lf);
 									}
 								}
@@ -295,9 +282,30 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		if (resource_object != NULL) xmlXPathFreeObject(resource_object);
 
 		if (full_state == TRUE) {
+			bctbx_list_t *addresses;
+			bctbx_list_t *numbers;
+			bctbx_list_t *iterator;
 			bctbx_list_t *l = list->friends;
 			for (; l != NULL; l = bctbx_list_next(l)) {
 				lf = (LinphoneFriend *)bctbx_list_get_data(l);
+				addresses = linphone_friend_get_addresses(lf);
+				numbers = linphone_friend_get_phone_numbers(lf);
+				iterator = addresses;
+				while (iterator) {
+					LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(iterator);
+					char *uri = linphone_address_as_string_uri_only(addr);
+					const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lf, uri);
+					linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, uri, presence);
+					ms_free(uri);
+					iterator = bctbx_list_next(iterator);
+				}
+				iterator = numbers;
+				while (iterator) {
+					const char *number = (const char *)bctbx_list_get_data(iterator);
+					const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lf, number);
+					linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, number, presence);
+					iterator = bctbx_list_next(iterator);
+				}
 				if (linphone_friend_is_presence_received(lf) == TRUE) {
 					linphone_core_notify_notify_presence_received(list->lc, lf);
 				}

@@ -428,6 +428,8 @@ void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence)
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op);
+const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const char *phone_number);
+const char * linphone_friend_sip_uri_to_phone_number(LinphoneFriend *lf, const char *uri);
 LinphoneFriend *linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op);
 LinphoneFriend *linphone_friend_list_find_friend_by_out_subscribe(const LinphoneFriendList *list, SalOp *op);
 LinphoneFriend *linphone_core_find_friend_by_out_subscribe(const LinphoneCore *lc, SalOp *op);
@@ -693,6 +695,16 @@ typedef struct _LinphoneChatMessageCharacter {
 BELLE_SIP_DECLARE_VPTR(LinphoneChatRoom);
 
 
+typedef struct _LinphoneFriendPresence {
+	char *uri_or_tel;
+	LinphonePresenceModel *presence;
+} LinphoneFriendPresence;
+
+typedef struct _LinphoneFriendPhoneNumberSipUri {
+	char *number;
+	char *uri;
+} LinphoneFriendPhoneNumberSipUri;
+
 struct _LinphoneFriend{
 	belle_sip_object_t base;
 	void *user_data;
@@ -700,7 +712,8 @@ struct _LinphoneFriend{
 	MSList *insubs; /*list of SalOp. There can be multiple instances of a same Friend that subscribe to our presence*/
 	SalOp *outsub;
 	LinphoneSubscribePolicy pol;
-	LinphonePresenceModel *presence;
+	MSList *presence_models; /* list of LinphoneFriendPresence. It associates SIP URIs and phone numbers with their respective presence models. */
+	MSList *phone_number_sip_uri_map; /* list of LinphoneFriendPhoneNumberSipUri. It associates phone numbers with their corresponding SIP URIs. */
 	struct _LinphoneCore *lc;
 	BuddyInfo *info;
 	char *refkey;
@@ -1451,6 +1464,7 @@ void linphone_core_notify_display_message(LinphoneCore *lc, const char *message)
 void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url);
 void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
+void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
 void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl);

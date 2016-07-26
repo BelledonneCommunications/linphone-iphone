@@ -131,23 +131,28 @@ void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, con
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic pop
 #endif
-void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf){
-	NOTIFY_IF_EXIST(notify_presence_received, lc,lf);
+void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
+	NOTIFY_IF_EXIST(notify_presence_received, lc, lf);
 	cleanup_dead_vtable_refs(lc);
 }
 
-void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
-	NOTIFY_IF_EXIST(new_subscription_requested, lc,lf,url);
+void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model) {
+	NOTIFY_IF_EXIST(notify_presence_received_for_uri_or_tel, lc, lf, uri_or_tel, presence_model);
 	cleanup_dead_vtable_refs(lc);
 }
 
-void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
-	NOTIFY_IF_EXIST(auth_info_requested, lc,realm,username,domain);
+void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url) {
+	NOTIFY_IF_EXIST(new_subscription_requested, lc, lf, url);
 	cleanup_dead_vtable_refs(lc);
 }
 
-void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl){
-	NOTIFY_IF_EXIST(call_log_updated, lc,newcl);
+void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	NOTIFY_IF_EXIST(auth_info_requested, lc, realm, username, domain);
+	cleanup_dead_vtable_refs(lc);
+}
+
+void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl) {
+	NOTIFY_IF_EXIST(call_log_updated, lc, newcl);
 	cleanup_dead_vtable_refs(lc);
 }
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
