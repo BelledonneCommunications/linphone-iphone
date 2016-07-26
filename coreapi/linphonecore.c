@@ -2067,6 +2067,7 @@ void linphone_core_remove_friend_list(LinphoneCore *lc, LinphoneFriendList *list
 }
 
 void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
+	const char *rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
 	if (list) {
 		if (!list->lc) {
 			list->lc = lc;
@@ -2076,8 +2077,10 @@ void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 		linphone_core_store_friends_list_in_db(lc, list);
 #endif
 		linphone_core_notify_friend_list_created(lc, list);
+		if (!linphone_friend_list_get_rls_uri(list) && rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0)) {
+			linphone_friend_list_set_rls_uri(list, rls_uri);
+		}
 	} else {
-		const char *rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
 		list = linphone_core_create_friend_list(lc);
 		linphone_friend_list_set_display_name(list, "_default");
 		if (rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0)) {
