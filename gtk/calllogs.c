@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphone.h"
-#include <bctoolbox/bc_vfs.h>
+#include <bctoolbox/vfs.h>
 
 #define CONFIG_FILE ".linphone-call-history.db"
 

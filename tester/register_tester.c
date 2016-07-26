@@ -505,7 +505,7 @@ static LinphoneCoreManager* configure_lcm(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager *lcm=linphone_core_manager_new2( "multi_account_rc", FALSE);
 		stats *counters=&lcm->stat;
-		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,bctbx_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
+		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,(int)bctbx_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0, int, "%d");
 		return lcm;
 	}
@@ -567,7 +567,7 @@ static void transport_change(void){
 		register_ok=counters->number_of_LinphoneRegistrationOk;
 
 		number_of_udp_proxy=get_number_of_udp_proxy(lc);
-		total_number_of_proxies=bctbx_list_size(linphone_core_get_proxy_config_list(lc));
+		total_number_of_proxies=(int)bctbx_list_size(linphone_core_get_proxy_config_list(lc));
 		linphone_core_get_sip_transports(lc,&sip_tr_orig);
 
 		sip_tr.udp_port=sip_tr_orig.udp_port;
@@ -739,7 +739,7 @@ static void io_recv_error_late_recovery(void){
 		lc=lcm->lc;
 		sal_set_refresher_retry_after(lc->sal,1000);
 		counters=&lcm->stat;
-		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,bctbx_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
+		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,(int)bctbx_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
 
 
 		counters = get_stats(lc);
@@ -791,7 +791,7 @@ static void io_recv_error_without_active_register(void){
 
 		/*nothing should happen because no active registration*/
 		wait_for_until(lc,lc, &dummy, 1, 3000);
-		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress, bctbx_list_size(linphone_core_get_proxy_config_list(lc)), int, "%d");
+		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress, (int)bctbx_list_size(linphone_core_get_proxy_config_list(lc)), int, "%d");
 
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0,int,"%d");
 

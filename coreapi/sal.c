@@ -853,12 +853,13 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 	}
 }
 
-static void remove_trailing_spaces(char *line){
-	int i;
-	for(i=strlen(line)-1;i>=0;--i){
-		if (isspace(line[i])) line[i]='\0';
-		else break;
+static void remove_trailing_spaces(char *line) {
+	size_t size = size = strlen(line);
+	char *end = line + size - 1;
+	while (end >= line && isspace(*end)) {
+		end--;
 	}
+    *(end + 1) = '\0';
 }
 
 static int line_get_value(const char *input, const char *key, char *value, size_t value_size, size_t *read){

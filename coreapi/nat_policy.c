@@ -220,20 +220,16 @@ static void stun_server_resolved(LinphoneNatPolicy *policy, const char *name, st
 void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
 	const char *service = NULL;
 
-	/*
-	 * WARNING: stun server resolution only done in IPv4.
-	 * TODO: use IPv6 resolution if linphone_core_ipv6_enabled()==TRUE and use V4Mapped addresses for ICE gathering.
-	 */
-	if (linphone_nat_policy_stun_server_activated(policy)
-		&& (policy->lc->sal != NULL)
-		&& !policy->stun_resolver_context) {
+	if (linphone_nat_policy_stun_server_activated(policy) && (policy->lc->sal != NULL) && !policy->stun_resolver_context) {
 		char host[NI_MAXHOST];
 		int port = 3478;
 		linphone_parse_host_port(policy->stun_server, host, sizeof(host), &port);
 		if (linphone_nat_policy_turn_enabled(policy)) service = "turn";
 		else if (linphone_nat_policy_stun_enabled(policy)) service = "stun";
 		if (service != NULL) {
-			policy->stun_resolver_context = sal_resolve(policy->lc->sal, service, "udp", host, port, AF_INET, (SalResolverCallback)stun_server_resolved, policy);
+			int family = AF_INET;
+			if (linphone_core_ipv6_enabled(policy->lc) == TRUE) family = AF_INET6;
+			policy->stun_resolver_context = sal_resolve(policy->lc->sal, service, "udp", host, port, family, (SalResolverCallback)stun_server_resolved, policy);
 		}
 	}
 }

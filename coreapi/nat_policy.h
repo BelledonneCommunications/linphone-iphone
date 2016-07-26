@@ -156,7 +156,7 @@ LINPHONE_PUBLIC void linphone_nat_policy_set_stun_server(LinphoneNatPolicy *poli
 LINPHONE_PUBLIC const char * linphone_nat_policy_get_stun_server_username(const LinphoneNatPolicy *policy);
 
 /**
- * Seth the username used to authenticate with the STUN/TURN server.
+ * Set the username used to authenticate with the STUN/TURN server.
  * The authentication will search for a LinphoneAuthInfo with this username.
  * If it is not set the username of the currently used LinphoneProxyConfig is used to search for a LinphoneAuthInfo.
  * @param[in] policy LinphoneNatPolicy object

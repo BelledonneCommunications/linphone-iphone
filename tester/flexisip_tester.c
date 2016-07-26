@@ -962,7 +962,7 @@ static void dos_module_trigger(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-
+#if HAVE_SIPP
 static void test_subscribe_notify_with_sipp_publisher(void) {
 	char *scen;
 	FILE * sipp_out;
@@ -1004,7 +1004,8 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-	//does not work because sipp seams not able to manage 2 call  id in case file
+
+//does not work because sipp seams not able to manage 2 call  id in case file
 #if 0
 static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	char *scen;
@@ -1045,6 +1046,7 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+#endif
 #endif
 
 static void test_publish_unpublish(void) {
@@ -1142,6 +1144,7 @@ static void test_list_subscribe (void) {
 	linphone_core_manager_destroy(laure);
 }
 
+#if HAVE_SIPP
 static void test_subscribe_on_wrong_dialog(void) {
 	char *scen;
 	FILE * sipp_out;
@@ -1162,6 +1165,7 @@ static void test_subscribe_on_wrong_dialog(void) {
 
 	linphone_core_manager_destroy(marie);
 }
+#endif
 
 
 test_t flexisip_tests[] = {
@@ -1183,15 +1187,19 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Call ipv6 to ipv6", call_with_ipv6),
 	TEST_NO_TAG("Call ipv6 to ipv4", call_ipv6_to_ipv4),
 	TEST_NO_TAG("Call ipv4 to ipv6", call_ipv4_to_ipv6),
+#if HAVE_SIPP
 	TEST_ONE_TAG("Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher, "LeaksMemory"),
 	/*TEST_ONE_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish, "LeaksMemory"),*/
+#endif
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),
 	TEST_ONE_TAG("List subscribe", test_list_subscribe,"LeaksMemory"),
 	TEST_NO_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client),
 	TEST_ONE_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client, "LeaksMemory"),
 	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),
 	TEST_NO_TAG("DoS module trigger by sending a lot of chat messages", dos_module_trigger),
+#if HAVE_SIPP
 	TEST_NO_TAG("Subscribe on wrong dialog", test_subscribe_on_wrong_dialog)
+#endif
 };
 
 test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

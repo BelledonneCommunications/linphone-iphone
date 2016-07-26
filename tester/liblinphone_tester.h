@@ -262,6 +262,7 @@ typedef struct _LinphoneCoreManager {
 	LinphoneEvent *lev;
 	bool_t decline_subscribe;
 	int number_of_bcunit_error_at_creation;
+	char* phone_alias;
 } LinphoneCoreManager;
 
 typedef struct _LinphoneConferenceServer {
@@ -280,8 +281,9 @@ typedef struct _LinphoneCallTestParams {
 
 void liblinphone_tester_add_suites(void);
 
-void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file);
+void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, const char* phone_alias);
 void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies);
+LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias);
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
 void linphone_core_manager_stop(LinphoneCoreManager *mgr);

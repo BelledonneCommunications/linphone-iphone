@@ -985,7 +985,7 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 	if (h->dialog && (belle_sip_dialog_get_state(h->dialog) == BELLE_SIP_DIALOG_CONFIRMED || belle_sip_dialog_get_state(h->dialog) == BELLE_SIP_DIALOG_EARLY)){
 		belle_sip_request_t *req=belle_sip_dialog_create_queued_request(h->dialog,"INFO");
 		if (req){
-			int bodylen;
+			size_t bodylen;
 			char dtmf_body[128]={0};
 
 			snprintf(dtmf_body, sizeof(dtmf_body)-1, "Signal=%c\r\nDuration=250\r\n", dtmf);

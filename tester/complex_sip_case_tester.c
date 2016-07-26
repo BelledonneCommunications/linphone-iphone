@@ -23,6 +23,7 @@
 #include "private.h"
 
 
+#if HAVE_SIPP
 void check_rtcp(LinphoneCall *call) {
 	MSTimeSpec ts;
 
@@ -45,7 +46,6 @@ void check_rtcp(LinphoneCall *call) {
 }
 
 FILE *sip_start(const char *senario, const char* dest_username, const char *passwd, LinphoneAddress* dest_addres) {
-#if HAVE_SIPP
 	char *dest;
 	char *command;
 	FILE *file;
@@ -65,14 +65,10 @@ FILE *sip_start(const char *senario, const char* dest_username, const char *pass
 	ms_free(command);
 	ms_free(dest);
 	return file;
-#else
-	return NULL;
-#endif
 }
 
 
 static FILE *sip_start_recv(const char *senario) {
-#if HAVE_SIPP
 	char *command;
 	FILE *file;
 
@@ -83,9 +79,6 @@ static FILE *sip_start_recv(const char *senario) {
 	file = popen(command, "r");
 	ms_free(command);
 	return file;
-#else
-	return NULL;
-#endif
 }
 
 static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list) {
@@ -359,6 +352,7 @@ static test_t tests[] = {
 	TEST_NO_TAG("Call with multiple video mline in sdp", call_with_multiple_video_mline_in_sdp),
 	TEST_NO_TAG("Call invite 200ok without contact header", call_invite_200ok_without_contact_header)
 };
+#endif
 
 test_suite_t complex_sip_call_test_suite = {
 	"Complex SIP Case",
@@ -366,6 +360,11 @@ test_suite_t complex_sip_call_test_suite = {
 	NULL,
 	liblinphone_tester_before_each,
 	liblinphone_tester_after_each,
+#if HAVE_SIPP
 	sizeof(tests) / sizeof(tests[0]),
 	tests
+#else
+	0,
+	NULL
+#endif
 };

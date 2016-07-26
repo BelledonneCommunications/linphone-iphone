@@ -162,10 +162,30 @@ public interface LinphoneFriend {
 	 */
 	void setName(String name);
 	/**
-	 * get name of this friend
+	 * get a name of this friend
 	 * @return
 	 */
 	String getName();
+	/**
+	 * Set a family name for this friend
+	 * @param name
+	 */
+	void setFamilyName(String name);
+	/**
+	 * get a family name of this friend
+	 * @return
+	 */
+	String getFamilyName();
+	/**
+	 * Set a given name for this friend
+	 * @param name
+	 */
+	void setGivenName(String name);
+	/**
+	 * get a given name of this friend
+	 * @return
+	 */
+	String getGivenName();
 	/**
 	 * Set an organization for this friend
 	 * @param organization

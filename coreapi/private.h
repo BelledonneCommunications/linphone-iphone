@@ -38,7 +38,7 @@
 #include "vcard.h"
 
 #include <bctoolbox/port.h>
-#include <bctoolbox/bc_vfs.h>
+#include <bctoolbox/vfs.h>
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
 
@@ -1554,11 +1554,6 @@ char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
 #define LINPHONE_SQLITE3_VFS "sqlite3bctbx_vfs"
 
 void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite);
-
-LinphoneVcardContext* linphone_vcard_context_new(void);
-void linphone_vcard_context_destroy(LinphoneVcardContext *context);
-void* linphone_vcard_context_get_user_data(LinphoneVcardContext *context);
-void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *data);
 
 #ifdef __cplusplus
 }

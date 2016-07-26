@@ -112,7 +112,7 @@ public:
 	bool microphoneIsMuted() const {return m_isMuted;}
 	float getInputVolume() const;
 	
-	virtual int getSize() const {return m_participants.size() + (isIn()?1:0);}
+	virtual int getSize() const {return (int)m_participants.size() + (isIn()?1:0);}
 	const std::list<Participant *> &getParticipants() const {return m_participants;}
 	
 	virtual int startRecording(const char *path) = 0;

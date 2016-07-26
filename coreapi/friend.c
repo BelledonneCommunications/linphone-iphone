@@ -1256,7 +1256,7 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	LinphoneVcard *vcard = NULL;
 	unsigned int storage_id = (unsigned int)atoi(argv[0]);
 
-	vcard = linphone_vcard_new_from_vcard4_buffer(context, argv[6]);
+	vcard = linphone_vcard_context_get_vcard_from_buffer(context, argv[6]);
 	if (vcard) {
 		linphone_vcard_set_etag(vcard, argv[7]);
 		linphone_vcard_set_url(vcard, argv[8]);
