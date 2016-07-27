@@ -163,8 +163,8 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
 	[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
+	[super viewWillDisappear:animated];
 }
 
 #pragma mark - UICompositeViewDelegate Functions

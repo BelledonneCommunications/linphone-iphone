@@ -1410,16 +1410,20 @@ static LinphoneCoreVTable linphonec_vtable = {
 	/*DETECT cameras*/
 	_frontCamId = _backCamId = nil;
 	char **camlist = (char **)linphone_core_get_video_devices(theLinphoneCore);
-	for (char *cam = *camlist; *camlist != NULL; cam = *++camlist) {
-		if (strcmp(FRONT_CAM_NAME, cam) == 0) {
-			_frontCamId = cam;
-			// great set default cam to front
-			LOGI(@"Setting default camera [%s]", _frontCamId);
-			linphone_core_set_video_device(theLinphoneCore, _frontCamId);
+	if (camlist) {
+		for (char *cam = *camlist; *camlist != NULL; cam = *++camlist) {
+			if (strcmp(FRONT_CAM_NAME, cam) == 0) {
+				_frontCamId = cam;
+				// great set default cam to front
+				LOGI(@"Setting default camera [%s]", _frontCamId);
+				linphone_core_set_video_device(theLinphoneCore, _frontCamId);
+			}
+			if (strcmp(BACK_CAM_NAME, cam) == 0) {
+				_backCamId = cam;
+			}
 		}
-		if (strcmp(BACK_CAM_NAME, cam) == 0) {
-			_backCamId = cam;
-		}
+	} else {
+		LOGW(@"No camera detected!");
 	}
 
 	if (![LinphoneManager isNotIphone3G]) {
@@ -2089,10 +2093,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	_pushNotificationToken = apushNotificationToken;
 
-	const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-	while (proxies) {
-		[self configurePushTokenForProxyConfig:proxies->data];
-		proxies = proxies->next;
+	@try {
+		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		while (proxies) {
+			[self configurePushTokenForProxyConfig:proxies->data];
+			proxies = proxies->next;
+		}
+	} @catch (NSException* e) {
+		LOGW(@"%s: linphone core not ready yet, ignoring push token", __FUNCTION__);
 	}
 }
 
