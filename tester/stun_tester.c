@@ -174,13 +174,16 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 	check_media_direction(pauline, linphone_core_get_current_call(pauline->lc), lcs, LinphoneMediaDirectionSendRecv, expected_video_dir);
 	liblinphone_tester_check_rtcp(marie, pauline);
 	lcall = linphone_core_get_current_call(marie->lc);
-	BC_ASSERT_PTR_NOT_NULL(lcall->ice_session);
-	if (lcall->ice_session != NULL) {
-		IceCheckList *cl = ice_session_check_list(lcall->ice_session, 0);
-		BC_ASSERT_PTR_NOT_NULL(cl);
-		if (cl != NULL) {
-			check_turn_context_statistics(cl->rtp_turn_context, forced_relay);
-			if (!rtcp_mux_enabled) check_turn_context_statistics(cl->rtcp_turn_context, forced_relay);
+	BC_ASSERT_PTR_NOT_NULL(lcall);
+	if (lcall != NULL) {
+		BC_ASSERT_PTR_NOT_NULL(lcall->ice_session);
+		if (lcall->ice_session != NULL) {
+			IceCheckList *cl = ice_session_check_list(lcall->ice_session, 0);
+			BC_ASSERT_PTR_NOT_NULL(cl);
+			if (cl != NULL) {
+				check_turn_context_statistics(cl->rtp_turn_context, forced_relay);
+				if (!rtcp_mux_enabled) check_turn_context_statistics(cl->rtcp_turn_context, forced_relay);
+			}
 		}
 	}
 
