@@ -266,7 +266,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 	bool_t supported = sal_transport_available(sal,(SalTransport)transport);
 	if (!supported) ms_message("TLS transport not supported, falling back to TCP if possible otherwise skipping test.");
 	sal_uninit(sal);
-	return 0 & supported;
+	return supported;
 }
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
