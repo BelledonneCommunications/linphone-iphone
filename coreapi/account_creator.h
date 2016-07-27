@@ -52,6 +52,9 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorUsernameTooShort,
 	LinphoneAccountCreatorUsernameTooLong,
 	LinphoneAccountCreatorUsernameInvalidSize,
+	LinphoneAccountCreatorPhoneNumberInvalid,
+	LinphoneAccountCreatorPhoneNumberTooShort,
+	LinphoneAccountCreatorPhoneNumberTooLong,
 	LinphoneAccountCreatorPasswordTooShort,
 	LinphoneAccountCreatorPasswordTooLong,
 	LinphoneAccountCreatorDomainInvalid,
@@ -140,6 +143,22 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_userna
  * @return The username of the LinphoneAccountCreator
 **/
 LINPHONE_PUBLIC const char * linphone_account_creator_get_username(const LinphoneAccountCreator *creator);
+
+/**
+ * Set the phone number normalized.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] phone number The phone number to set
+ * @param[in] country code Country code to associate phone number with
+ * @return LinphoneAccountCreatorOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneAccountCreator *creator, const char *phone_number, const char *country_code);
+
+/**
+ * Get the RFC 3966 normalized phone number.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return The phone number of the LinphoneAccountCreator
+**/
+LINPHONE_PUBLIC const char * linphone_account_creator_get_phone_number(const LinphoneAccountCreator *creator);
 
 /**
  * Set the password.

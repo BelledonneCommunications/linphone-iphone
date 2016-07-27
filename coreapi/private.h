@@ -1281,6 +1281,7 @@ struct _LinphoneAccountCreator {
 	LinphoneCore *core;
 	char *xmlrpc_url;
 	char *username;
+	char *phone_number;
 	char *password;
 	char *domain;
 	char *route;

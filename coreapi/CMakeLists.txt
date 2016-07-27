@@ -83,6 +83,7 @@ set(LINPHONE_SOURCE_FILES_C
 	chat_file_transfer.c
 	contactprovider.c
 	content.c
+	dial_plan.c
 	dict.c
 	ec-calibrator.c
 	enum.c

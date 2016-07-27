@@ -209,7 +209,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_username(LinphoneAccou
 	int max_length = lp_config_get_int(creator->core->config, "assistant", "username_max_length", -1);
 	bool_t use_phone_number = lp_config_get_int(creator->core->config, "assistant", "use_phone_number", 0);
 	const char* regex = lp_config_get_string(creator->core->config, "assistant", "username_regex", 0);
-	LinphoneAccountCreatorStatus status;
+	LinphoneAccountCreatorStatus status = LinphoneAccountCreatorOK;
 	if (min_length > 0 && strlen(username) < (size_t)min_length) {
 		return LinphoneAccountCreatorUsernameTooShort;
 	} else if (max_length > 0 && strlen(username) > (size_t)max_length) {
@@ -231,6 +231,43 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_username(LinphoneAccou
 
 const char * linphone_account_creator_get_username(const LinphoneAccountCreator *creator) {
 	return creator->username;
+}
+
+
+LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneAccountCreator *creator, const char *phone_number, const char *country_code) {
+	char *user;
+	if (!phone_number || !country_code) {
+		return LinphoneAccountCreatorPhoneNumberInvalid;
+	} else {
+		LinphoneProxyConfig *numCfg = linphone_proxy_config_new();
+		linphone_proxy_config_set_dial_prefix(numCfg, country_code);
+		user = linphone_proxy_config_normalize_phone_number(numCfg, phone_number);
+		linphone_proxy_config_destroy(numCfg);
+		if (!user) {
+			return LinphoneAccountCreatorPhoneNumberInvalid;
+		}
+
+		// if phone is valid, we lastly want to check that length is OK
+		{
+			int ccc = linphone_dial_plan_lookup_ccc_from_e164(phone_number);
+			char *ccc_str = ms_strdup_printf("%d", ccc);
+			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(ccc_str);
+			ms_free(ccc_str);
+			if (strlen(phone_number) < plan->nnl) {
+				return LinphoneAccountCreatorPhoneNumberTooShort;
+			} else if (strlen(phone_number) > plan->nnl) {
+				return LinphoneAccountCreatorPhoneNumberTooLong;
+			}
+		}
+	}
+	set_string(&creator->phone_number, user, TRUE);
+	ms_free(user);
+
+	return LinphoneAccountCreatorOK;
+}
+
+const char * linphone_account_creator_get_phone_number(const LinphoneAccountCreator *creator) {
+	return creator->phone_number;
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_password(LinphoneAccountCreator *creator, const char *password){

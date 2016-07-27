@@ -65,6 +65,7 @@ liblinphone_la_SOURCES=\
 	conference.cc conference_private.h \
 	contactprovider.c contactprovider.h contact_providers_priv.h \
 	content.c \
+	dial_plan.c \
 	dict.c \
 	ec-calibrator.c \
 	enum.c enum.h \
