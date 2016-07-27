@@ -847,7 +847,7 @@ static void tls_with_non_tls_server(void){
 		linphone_proxy_config_set_server_addr(proxy_cfg,tmp);
 		linphone_proxy_config_done(proxy_cfg);
 		linphone_address_destroy(addr);
-		BC_ASSERT_TRUE(wait_for_until(lc,lc,&lcm->stat.number_of_LinphoneRegistrationFailed,1,5000));
+		BC_ASSERT_TRUE(wait_for_until(lc,lc,&lcm->stat.number_of_LinphoneRegistrationFailed,1,10000));
 		linphone_core_manager_destroy(lcm);
 	}
 }

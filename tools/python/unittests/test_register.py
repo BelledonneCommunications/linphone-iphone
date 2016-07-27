@@ -143,7 +143,7 @@ class TestRegister:
             port = 5060
         pc.server_addr = "sip:{domain}:{port};transport=tls".format(domain=addr.domain, port=port)
         pc.done()
-        assert_equals(CoreManager.wait_for_until(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == 1, 5000), True)
+        assert_equals(CoreManager.wait_for_until(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == 1, 10000), True)
 
     def test_simple_authenticated_register(self):
         cm = RegisterCoreManager()
