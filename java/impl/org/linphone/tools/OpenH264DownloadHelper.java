@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.compress.compressors.bzip2.*;
 import org.linphone.core.OpenH264DownloadHelperListener;
+import org.linphone.mediastream.Log;
 
 /**
  * @author Erwan Croze
@@ -186,11 +187,13 @@ public class OpenH264DownloadHelper {
                     URL url = new URL(urlDownload);
                     HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
                     urlConnection.connect();
-
+                    Log.i("OpenH264Downloader"," ");
                     InputStream inputStream = urlConnection.getInputStream();
                     FileOutputStream fileOutputStream = new FileOutputStream(fileDirection+"/"+nameFileDownload);
                     int totalSize = urlConnection.getContentLength();
                     openH264DownloadHelperListener.OnProgress(0,totalSize);
+
+                    Log.i("OpenH264Downloader"," Download file:" + nameFileDownload);
 
                     byte[] buffer = new byte[4096];
                     int bufferLength;
@@ -204,6 +207,8 @@ public class OpenH264DownloadHelper {
                     fileOutputStream.close();
                     inputStream.close();
 
+                    Log.i("OpenH264Downloader"," Uncompress file:" + nameFileDownload);
+
                     FileInputStream in = new FileInputStream(fileDirection+"/"+nameFileDownload);
                     FileOutputStream out = new FileOutputStream(path);
                     BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
@@ -215,7 +220,10 @@ public class OpenH264DownloadHelper {
                     out.close();
                     bzIn.close();
 
+                    Log.i("OpenH264Downloader"," Remove file:" + nameFileDownload);
                     new File(fileDirection+"/"+nameFileDownload).delete();
+
+                    Log.i("OpenH264Downloader"," Loading plugin:" + path);
                     System.load(path);
                     openH264DownloadHelperListener.OnProgress(2,1);
                 } catch (FileNotFoundException e) {
