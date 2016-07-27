@@ -167,6 +167,7 @@ typedef struct _stats {
 	int number_of_NewSubscriptionRequest;
 	int number_of_NotifyReceived;
 	int number_of_NotifyPresenceReceived;
+	int number_of_NotifyPresenceReceivedForUriOrTel;
 	int number_of_LinphonePresenceActivityOffline;
 	int number_of_LinphonePresenceActivityOnline;
 	int number_of_LinphonePresenceActivityAppointment;
@@ -297,6 +298,7 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg);
 void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
+void notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence);
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
 void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer);

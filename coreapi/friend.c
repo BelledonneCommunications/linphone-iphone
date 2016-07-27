@@ -136,6 +136,11 @@ static void free_friend_presence(LinphoneFriendPresence *lfp) {
 	if (lfp->presence) linphone_presence_model_unref(lfp->presence);
 }
 
+static void free_phone_number_sip_uri(LinphoneFriendPhoneNumberSipUri *lfpnsu) {
+	ms_free(lfpnsu->number);
+	ms_free(lfpnsu->uri);
+}
+
 
 
 bctbx_list_t *linphone_find_friend_by_address(bctbx_list_t *fl, const LinphoneAddress *addr, LinphoneFriend **lf){
@@ -478,6 +483,7 @@ static void _linphone_friend_release_ops(LinphoneFriend *lf){
 static void _linphone_friend_destroy(LinphoneFriend *lf){
 	_linphone_friend_release_ops(lf);
 	if (lf->presence_models) bctbx_list_free_with_data(lf->presence_models, (bctbx_list_free_func)free_friend_presence);
+	if (lf->phone_number_sip_uri_map) bctbx_list_free_with_data(lf->phone_number_sip_uri_map, (bctbx_list_free_func)free_phone_number_sip_uri);
 	if (lf->uri!=NULL) linphone_address_unref(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	if (lf->vcard != NULL) linphone_vcard_free(lf->vcard);
@@ -1682,4 +1688,8 @@ const char * linphone_friend_sip_uri_to_phone_number(LinphoneFriend *lf, const c
 		iterator = bctbx_list_next(iterator);
 	}
 	return NULL;
+}
+
+void linphone_friend_clear_presence_models(LinphoneFriend *lf) {
+	bctbx_list_free_with_data(lf->presence_models, (bctbx_list_free_func)free_friend_presence);
 }

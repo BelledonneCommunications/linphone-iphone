@@ -430,6 +430,7 @@ void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const char *phone_number);
 const char * linphone_friend_sip_uri_to_phone_number(LinphoneFriend *lf, const char *uri);
+void linphone_friend_clear_presence_models(LinphoneFriend *lf);
 LinphoneFriend *linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op);
 LinphoneFriend *linphone_friend_list_find_friend_by_out_subscribe(const LinphoneFriendList *list, SalOp *op);
 LinphoneFriend *linphone_core_find_friend_by_out_subscribe(const LinphoneCore *lc, SalOp *op);

@@ -712,6 +712,8 @@ static void long_term_presence_phone_alias2(void) {
 static void long_term_presence_list(void) {
 	LinphoneFriend *f1, *f2;
 	LinphoneFriendList* friends;
+	const LinphonePresenceModel *presence;
+	const char *phone_number = "+331234567890";
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	enable_publish(pauline, FALSE);
 	enable_deflate_content_encoding(pauline, FALSE);
@@ -719,6 +721,7 @@ static void long_term_presence_list(void) {
 	friends = linphone_core_create_friend_list(pauline->lc);
 	linphone_friend_list_set_rls_uri(friends, "sip:rls@sip.example.org");
 	f1 = linphone_core_create_friend_with_address(pauline->lc, "sip:liblinphone_tester@sip.example.org");
+	linphone_friend_add_phone_number(f1, phone_number);
 	linphone_friend_list_add_friend(friends, f1);
 	linphone_friend_unref(f1);
 	f2 = linphone_core_create_friend_with_address(pauline->lc, "sip:random_unknown@sip.example.org");
@@ -729,9 +732,15 @@ static void long_term_presence_list(void) {
 	linphone_friend_list_unref(friends);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_NotifyPresenceReceived,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc, NULL, &pauline->stat.number_of_NotifyPresenceReceivedForUriOrTel, 2));
 
 	f1 = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:liblinphone_tester@sip.example.org");
 	BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(f1)), LinphonePresenceBasicStatusOpen, int, "%d");
+	presence = linphone_friend_get_presence_model_for_uri_or_tel(f1, phone_number);
+	BC_ASSERT_PTR_NOT_NULL(presence);
+	if (presence) {
+		BC_ASSERT_STRING_EQUAL(linphone_presence_model_get_contact(presence), "sip:liblinphone_tester@sip.example.org");
+	}
 	BC_ASSERT_TRUE(f1->presence_received);
 
 	f2 = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:random_unknown@sip.example.org");

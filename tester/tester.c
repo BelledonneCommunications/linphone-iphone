@@ -289,6 +289,7 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 	mgr->v_table.is_composing_received=is_composing_received;
 	mgr->v_table.new_subscription_requested=new_subscription_requested;
 	mgr->v_table.notify_presence_received=notify_presence_received;
+	mgr->v_table.notify_presence_received_for_uri_or_tel=notify_presence_received_for_uri_or_tel;
 	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
 	mgr->v_table.info_received=info_message_received;
 	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;

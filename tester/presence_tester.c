@@ -131,6 +131,12 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	}
 }
 
+void notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence) {
+	stats *counters = get_stats(lc);
+	ms_message("Presence notification for URI or phone number [%s]", uri_or_tel);
+	counters->number_of_NotifyPresenceReceivedForUriOrTel++;
+}
+
 static void simple_publish_with_expire(int expires) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
