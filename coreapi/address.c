@@ -299,6 +299,14 @@ void linphone_address_set_header(LinphoneAddress *addr, const char *header_name,
 	sal_address_set_header(addr,header_name,header_value);
 }
 
+bool_t linphone_address_has_param(const LinphoneAddress *addr, const char *name) {
+	return sal_address_has_param(addr, name);
+}
+
+const char * linphone_address_get_param(const LinphoneAddress *addr, const char *name) {
+	return sal_address_get_param(addr, name);
+}
+
 void linphone_address_set_param(LinphoneAddress *addr, const char *name, const char *value) {
 	sal_address_set_param(addr, name, value);
 }
@@ -315,8 +323,12 @@ void linphone_address_set_uri_params(LinphoneAddress *addr, const char *params) 
 	sal_address_set_uri_params(addr, params);
 }
 
-bool_t linphone_address_has_uri_param(LinphoneAddress *addr, const char *name) {
+bool_t linphone_address_has_uri_param(const LinphoneAddress *addr, const char *name) {
 	return sal_address_has_uri_param(addr, name);
+}
+
+const char * linphone_address_get_uri_param(const LinphoneAddress *addr, const char *name) {
+	return sal_address_get_uri_param(addr, name);
 }
 
 LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {
