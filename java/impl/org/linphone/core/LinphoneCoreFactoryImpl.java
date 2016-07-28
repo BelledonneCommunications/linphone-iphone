@@ -19,14 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package org.linphone.core;
 
 import android.content.Context;
-import android.content.ContextWrapper;
-import android.os.Environment;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.linphone.LinphoneManager;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 import org.linphone.tools.OpenH264DownloadHelper;
