@@ -813,17 +813,13 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	[textField resignFirstResponder];
 	if (textField.returnKeyType == UIReturnKeyNext) {
-		// text fields must be ordored by increasing tag value
-		NSInteger tag = textField.tag + 1;
-		while (tag < ViewElement_NextButton) {
-			UIView *v = [self.view viewWithTag:tag];
-			if ([v isKindOfClass:UITextField.class]) {
-				[v becomeFirstResponder];
-				break;
-			}
-			tag++;
+		if (atf.nextResponder) {
+			[atf.nextResponder becomeFirstResponder];
+		} else {
+			[[self findButton:ViewElement_NextButton] sendActionsForControlEvents:UIControlEventTouchUpInside];
 		}
 	} else if (textField.returnKeyType == UIReturnKeyDone) {
 		[[self findButton:ViewElement_NextButton] sendActionsForControlEvents:UIControlEventTouchUpInside];

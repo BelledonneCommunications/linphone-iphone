@@ -12,7 +12,8 @@ typedef BOOL (^DisplayErrorPred)(NSString *inputEntry);
 
 @interface UIAssistantTextField : UITextField <UITextFieldDelegate>
 
-@property(nonatomic, strong) IBOutlet UILabel *errorLabel;
+@property(nonatomic, weak) IBOutlet UIView* nextResponder;
+@property(nonatomic, weak) IBOutlet UILabel *errorLabel;
 @property(nonatomic, readonly) DisplayErrorPred showErrorPredicate;
 
 @property(nonatomic, strong) NSString *lastText;
