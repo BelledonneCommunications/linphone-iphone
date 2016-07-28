@@ -1266,9 +1266,13 @@ BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcSession);
 struct _LinphoneAccountCreatorCbs {
 	belle_sip_object_t base;
 	void *user_data;
-	LinphoneAccountCreatorCbsExistenceTestedCb existence_tested;
-	LinphoneAccountCreatorCbsValidationTestedCb validation_tested;
-	LinphoneAccountCreatorCbsCreateAccountCb create_account;
+	LinphoneAccountCreatorDefaultCb is_account_used;
+	LinphoneAccountCreatorDefaultCb create_account;
+	LinphoneAccountCreatorDefaultCb activate_account;
+	LinphoneAccountCreatorDefaultCb is_account_activated;
+
+	LinphoneAccountCreatorDefaultCb link_phone_number_with_account;
+	LinphoneAccountCreatorDefaultCb activate_phone_number_link;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);
@@ -1289,6 +1293,8 @@ struct _LinphoneAccountCreator {
 	bool_t subscribe_to_newsletter;
 	char *display_name;
 	LinphoneTransportType transport;
+	char *activation_code;
+	char *ha1;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);
