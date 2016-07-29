@@ -7658,6 +7658,13 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_setStunServe
 // XML RPC wrapper
 
 static void xml_request_response(LinphoneXmlRpcRequest *request) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+	
 	LinphoneXmlRpcRequestCbs *cbs = linphone_xml_rpc_request_get_callbacks(request);
 	jobject listener = (jobject) linphone_xml_rpc_request_cbs_get_user_data(cbs);
 	if (listener == NULL) {
