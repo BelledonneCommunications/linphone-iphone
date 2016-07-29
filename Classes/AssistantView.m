@@ -392,7 +392,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (!country) {
 			//fetch phone locale
 			for (NSString* lang in [NSLocale preferredLanguages]) {
-				if ((country = [CountryListViewController countryWithIso:[lang substringFromIndex:[lang rangeOfString:@"-"].location+1]]) != nil)
+                NSUInteger idx2 = [lang rangeOfString:@"-"].location;
+                if (idx2 == NSNotFound) idx2 = 0;
+                if ((country = [CountryListViewController countryWithIso:[lang substringFromIndex:idx2]]) != nil)
 					break;
 			}
 		}
@@ -858,71 +860,104 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	}
 }
 
+// Change button color and wait the display of this
+#define ONCLICKBUTTON(button, timewaitmsec, body) \
+[button setBackgroundColor:[UIColor lightGrayColor]]; \
+    _waitView.hidden = NO; \
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (timewaitmsec * NSEC_PER_MSEC)); \
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){ \
+        body \
+        [button setBackgroundColor:[UIColor clearColor]]; \
+        _waitView.hidden = YES; \
+    }); \
+
 #pragma mark - Action Functions
 
 - (IBAction)onGotoCreateAccountClick:(id)sender {
-	nextView = _createAccountView;
-	[self loadAssistantConfig:@"assistant_linphone_create.rc"];
+    ONCLICKBUTTON(sender, 100, {
+        nextView = _createAccountView;
+        [self loadAssistantConfig:@"assistant_linphone_create.rc"];
+    });
 }
 
 - (IBAction)onGotoLinphoneLoginClick:(id)sender {
-	nextView = _linphoneLoginView;
-	[self loadAssistantConfig:@"assistant_linphone_existing.rc"];
+    ONCLICKBUTTON(sender, 100, {
+        nextView = _linphoneLoginView;
+        [self loadAssistantConfig:@"assistant_linphone_existing.rc"];
+    });
 }
 
 - (IBAction)onGotoLoginClick:(id)sender {
-	nextView = _loginView;
-	[self loadAssistantConfig:@"assistant_external_sip.rc"];
+    ONCLICKBUTTON(sender, 100, {
+        nextView = _loginView;
+        [self loadAssistantConfig:@"assistant_external_sip.rc"];
+    });
 }
 
 - (IBAction)onGotoRemoteProvisioningClick:(id)sender {
-	nextView = _remoteProvisioningView;
-	[self loadAssistantConfig:@"assistant_remote.rc"];
-	[self findTextField:ViewElement_URL].text =
-		[LinphoneManager.instance lpConfigStringForKey:@"config-uri" inSection:@"misc"];
+    ONCLICKBUTTON(sender, 100, {
+        nextView = _remoteProvisioningView;
+        [self loadAssistantConfig:@"assistant_remote.rc"];
+        [self findTextField:ViewElement_URL].text =
+        [LinphoneManager.instance lpConfigStringForKey:@"config-uri" inSection:@"misc"];
+    });
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
-	_waitView.hidden = NO;
-	linphone_account_creator_is_account_used(account_creator);
+	ONCLICKBUTTON(sender, 100, {
+        _waitView.hidden = NO;
+        linphone_account_creator_is_account_used(account_creator);
+    });
 }
 
 - (IBAction)onCreateAccountActivationClick:(id)sender {
-	_waitView.hidden = NO;
-	linphone_account_creator_set_activation_code(account_creator, ((UITextField*)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text.UTF8String);
-	linphone_account_creator_activate_account(account_creator);
+    ONCLICKBUTTON(sender, 100, {
+        _waitView.hidden = NO;
+        linphone_account_creator_set_activation_code(account_creator, ((UITextField*)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text.UTF8String);
+        linphone_account_creator_activate_account(account_creator);
+    });
 }
 
 - (IBAction)onCreateAccountCheckActivatedClick:(id)sender {
-	_waitView.hidden = NO;
-	linphone_account_creator_is_account_activated(account_creator);
+	ONCLICKBUTTON(sender, 100, {
+        _waitView.hidden = NO;
+        linphone_account_creator_is_account_activated(account_creator);
+    });
 }
 
 - (IBAction)onLinphoneLoginClick:(id)sender {
-	_waitView.hidden = NO;
+	ONCLICKBUTTON(sender, 100, {
+        _waitView.hidden = NO;
 
-	NSString *phone = [self findTextField:ViewElement_Phone].text;
-	if (phone.length > 0) {
-		linphone_account_creator_link_phone_number_with_account(account_creator);
-	} else {
-		[self configureProxyConfig];
-	}
+        NSString *phone = [self findTextField:ViewElement_Phone].text;
+        if (phone.length > 0) {
+            linphone_account_creator_link_phone_number_with_account(account_creator);
+        } else {
+            [self configureProxyConfig];
+        }
+    });
 }
 
 - (IBAction)onLoginClick:(id)sender {
-	_waitView.hidden = NO;
-	[self configureProxyConfig];
+	ONCLICKBUTTON(sender, 100, {
+        _waitView.hidden = NO;
+        [self configureProxyConfig];
+    });
 }
 
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender {
-	_waitView.hidden = NO;
-	[LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
-	[self configureProxyConfig];
+	ONCLICKBUTTON(sender, 100, {
+        _waitView.hidden = NO;
+        [LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
+        [self configureProxyConfig];
+    });
 }
 
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
-	[_waitView setHidden:false];
-	[self resetLiblinphone];
+	ONCLICKBUTTON(sender, 100, {
+        [_waitView setHidden:false];
+        [self resetLiblinphone];
+    });
 }
 
 - (void)refreshYourUsername {
