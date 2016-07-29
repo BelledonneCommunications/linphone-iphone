@@ -649,6 +649,7 @@ static void presence_list_subscribe_io_error(void) {
 
 static void long_term_presence_base(const char* addr, bool_t exist, const char* contact) {
 	LinphoneFriend* friend2;
+	char *presence_contact;
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
 
@@ -663,12 +664,16 @@ static void long_term_presence_base(const char* addr, bool_t exist, const char* 
 		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOnline, 1, int, "%d");
 		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(friend2)), LinphonePresenceBasicStatusOpen, int, "%d");
-		BC_ASSERT_STRING_EQUAL(linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2)), contact);
+		presence_contact = linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2));
+		BC_ASSERT_STRING_EQUAL(presence_contact, contact);
+		if (presence_contact) ms_free(presence_contact);
 	} else {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOffline,1));
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOffline, 1, int, "%d");
 		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(friend2)), LinphonePresenceBasicStatusClosed, int, "%d");
-		BC_ASSERT_PTR_NULL(linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2)));
+		presence_contact = linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2));
+		BC_ASSERT_PTR_NULL(presence_contact);
+		if (presence_contact) ms_free(presence_contact);
 	}
 
 	linphone_friend_unref(friend2);

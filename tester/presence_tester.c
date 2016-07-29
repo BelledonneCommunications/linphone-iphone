@@ -252,6 +252,7 @@ static void subscribe_failure_handle_by_app(void) {
 	sal_set_recv_error(marie->lc->sal, 1);
 
 	lf = linphone_core_get_friend_by_address(marie->lc,lf_identity);
+	ms_free(lf_identity);
 	BC_ASSERT_PTR_NOT_NULL(lf);
 	linphone_friend_edit(lf);
 	linphone_friend_enable_subscribes(lf,FALSE); /*disable subscription*/

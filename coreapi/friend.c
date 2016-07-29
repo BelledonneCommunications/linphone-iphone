@@ -160,8 +160,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
-		bctbx_list_free_with_data(fr->presence_models, (bctbx_list_free_func)free_friend_presence);
-		fr->presence_models = NULL;
+		fr->presence_models = bctbx_list_free_with_data(fr->presence_models, (bctbx_list_free_func)free_friend_presence);
 		/*
 		if (fr->lc->vtable.notify_recv)
 			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
@@ -265,7 +264,10 @@ LinphoneAddress * linphone_friend_get_address(const LinphoneFriend *lf) {
 			bctbx_list_t *sip_addresses = linphone_vcard_get_sip_addresses(lf->vcard);
 			if (sip_addresses) {
 				const char *uri = (const char *)bctbx_list_nth_data(sip_addresses, 0);
-				if (uri) return linphone_address_new(uri);
+				LinphoneAddress *addr = NULL;
+				if (uri) addr = linphone_address_new(uri);
+				bctbx_list_free(sip_addresses);
+				return addr;
 			}
 		}
 		return NULL;
@@ -1221,7 +1223,6 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	if (friends_lists) {
 		ms_warning("Replacing current default friend list by the one(s) from the database");
 		lc->friends_lists = bctbx_list_free_with_data(lc->friends_lists, (void (*)(void*))linphone_friend_list_unref);
-		lc->friends_lists = NULL;
 
 		while (friends_lists) {
 			LinphoneFriendList *list = (LinphoneFriendList *)bctbx_list_get_data(friends_lists);
@@ -1691,5 +1692,5 @@ const char * linphone_friend_sip_uri_to_phone_number(LinphoneFriend *lf, const c
 }
 
 void linphone_friend_clear_presence_models(LinphoneFriend *lf) {
-	bctbx_list_free_with_data(lf->presence_models, (bctbx_list_free_func)free_friend_presence);
+	lf->presence_models = bctbx_list_free_with_data(lf->presence_models, (bctbx_list_free_func)free_friend_presence);
 }

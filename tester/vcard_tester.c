@@ -120,7 +120,11 @@ static void linphone_vcard_update_existing_friends_test(void) {
 	LinphoneFriend *lf = linphone_friend_new_with_addr("sip:oldfriend@sip.linphone.org");
 
 	BC_ASSERT_PTR_NOT_NULL(lf);
-	BC_ASSERT_PTR_NULL(linphone_friend_get_vcard(lf));
+	if (linphone_core_vcard_supported()) {
+		BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_vcard(lf));
+	} else {
+		BC_ASSERT_PTR_NULL(linphone_friend_get_vcard(lf));
+	}
 
 	linphone_friend_edit(lf);
 	linphone_friend_set_name(lf, "Old Friend");

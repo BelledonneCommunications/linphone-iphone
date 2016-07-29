@@ -23,6 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "sal/sal.h"
 #include <bctoolbox/crypto.h>
 
+#define VCARD_MD5_HASH_SIZE 16
+
+
 struct _LinphoneVcardContext {
 	belcard::BelCardParser *parser;
 	void *user_data;
@@ -32,7 +35,7 @@ struct _LinphoneVcard {
 	shared_ptr<belcard::BelCard> belCard;
 	char *etag;
 	char *url;
-	unsigned char *md5;
+	unsigned char md5[VCARD_MD5_HASH_SIZE];
 };
 
 #ifdef __cplusplus
@@ -368,36 +371,18 @@ const char* linphone_vcard_get_url(const LinphoneVcard *vCard) {
 	return vCard->url;
 }
 
-#define VCARD_MD5_HASH_SIZE 16
-
 void linphone_vcard_compute_md5_hash(LinphoneVcard *vCard) {
-	unsigned char digest[VCARD_MD5_HASH_SIZE];
 	const char *text = NULL;
-	if (!vCard) {
-		return;
-	}
+	if (!vCard) return;
 	text = linphone_vcard_as_vcard4_string(vCard);
-	bctbx_md5((unsigned char *)text, strlen(text), digest);
-	vCard->md5 = (unsigned char *)ms_malloc(sizeof(digest));
-	memcpy(vCard->md5, digest, sizeof(digest));
+	bctbx_md5((unsigned char *)text, strlen(text), vCard->md5);
 }
 
 bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard) {
-	unsigned char *previous_md5 = vCard->md5;
-	unsigned char *new_md5 = NULL;
-	int result = -1;
-
-	if (!previous_md5) {
-		return result;
-	}
-
+	unsigned char previous_md5[VCARD_MD5_HASH_SIZE];
+	memcpy(previous_md5, vCard->md5, VCARD_MD5_HASH_SIZE);
 	linphone_vcard_compute_md5_hash(vCard);
-	new_md5 = vCard->md5;
-	result = memcmp(new_md5, previous_md5, VCARD_MD5_HASH_SIZE);
-	
-	ms_free(previous_md5);
-	ms_free(new_md5);
-	return result;
+	return memcmp(vCard->md5, previous_md5, VCARD_MD5_HASH_SIZE);
 }
 
 bool_t linphone_core_vcard_supported(void) {

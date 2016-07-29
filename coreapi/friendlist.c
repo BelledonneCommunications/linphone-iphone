@@ -301,6 +301,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 					ms_free(uri);
 					iterator = bctbx_list_next(iterator);
 				}
+				if (addresses) bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
 				iterator = numbers;
 				while (iterator) {
 					const char *number = (const char *)bctbx_list_get_data(iterator);
@@ -308,6 +309,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 					linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, number, presence);
 					iterator = bctbx_list_next(iterator);
 				}
+				if (numbers) bctbx_list_free(numbers);
 				if (linphone_friend_is_presence_received(lf) == TRUE) {
 					linphone_core_notify_notify_presence_received(list->lc, lf);
 				}
@@ -456,17 +458,14 @@ static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendL
 	}
 	if (bctbx_list_find(list->friends, lf) != NULL) {
 		char *tmp = NULL;
-		LinphoneAddress *addr = linphone_friend_get_address(lf);
 		if (addr) tmp = linphone_address_as_string(addr);
 		ms_warning("Friend %s already in list [%s], ignored.", tmp ? tmp : "unknown", list->display_name);
-		if (tmp) {
-			ms_free(tmp);
-			linphone_address_unref(addr);
-		}
+		if (tmp) ms_free(tmp);
 	} else {
 		status = linphone_friend_list_import_friend(list, lf, synchronize);
 		linphone_friend_save(lf, lf->lc);
 	}
+	if (addr) linphone_address_unref(addr);
 	if (list->rls_uri == NULL) {
 		/* Mimic the behaviour of linphone_core_add_friend() when a resource list server is not in use */
 		linphone_friend_apply(lf, lf->lc);
@@ -492,6 +491,7 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 		if (addr) linphone_address_unref(addr);
 		return LinphoneFriendListInvalidFriend;
 	}
+	linphone_address_unref(addr);
 	lf->friend_list = list;
 	lf->lc = list->lc;
 	list->friends = bctbx_list_append(list->friends, linphone_friend_ref(lf));
@@ -655,6 +655,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFrien
 				if (linphone_address_weak_equal(lfaddr, address)) result = lf;
 				iterator = bctbx_list_next(iterator);
 			}
+			bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
 		}
 	}
 	return result;
