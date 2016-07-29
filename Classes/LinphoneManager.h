@@ -33,6 +33,7 @@
 #import "InAppProductsManager.h"
 
 #include "linphone/linphonecore.h"
+#include "bctoolbox/list.h"
 
 extern NSString *const LINPHONERC_APPLICATION_KEY;
 

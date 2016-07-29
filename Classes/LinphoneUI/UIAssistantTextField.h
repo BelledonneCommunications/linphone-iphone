@@ -23,5 +23,6 @@ typedef BOOL (^DisplayErrorPred)(NSString *inputEntry);
 - (void)showError:(NSString *)msg when:(DisplayErrorPred)pred;
 - (void)showError:(NSString *)msg;
 - (BOOL)isInvalid;
+- (BOOL)isVisible;
 
 @end

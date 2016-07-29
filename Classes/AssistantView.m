@@ -384,11 +384,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 	frame.size.width = size.width;
 	[button setFrame:frame];
 
+	[self fitContent];
+
 	// also force next button alignement on create account page
 	if (currentView == _createAccountView) {
 		CTTelephonyNetworkInfo *networkInfo = [CTTelephonyNetworkInfo new];
 		CTCarrier *carrier = networkInfo.subscriberCellularProvider;
 		NSDictionary *country = [CountryListViewController countryWithIso:carrier.isoCountryCode];
+
+		if (!IPAD) {
+			UISwitch *emailSwitch = (UISwitch *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UISwitch.class];
+			UILabel *emailLabel = (UILabel *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UILabel.class];
+			emailSwitch.hidden = emailLabel.hidden = YES;
+		}
+
 		if (!country) {
 			//fetch phone locale
 			for (NSString* lang in [NSLocale preferredLanguages]) {
@@ -401,13 +410,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		if (country) {
 			[self didSelectCountry:country];
-			[self onFormSwitchToggle:nil];
 		}
+		[self onFormSwitchToggle:nil];
 	}
 
 	[self prepareErrorLabels];
 
-	[self fitContent];
 }
 
 - (void)fillDefaultValues {
@@ -524,6 +532,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 							 linphone_account_creator_set_phone_number(account_creator, inputEntry.length > 0 ? inputEntry.UTF8String : NULL, prefix.UTF8String);
 							 if (s != LinphoneAccountCreatorOK) linphone_account_creator_set_phone_number(account_creator, NULL, NULL);
 							 createPhone.errorLabel.text = [AssistantView errorForStatus:s];
+
+							 // if phone is empty and username is empty, this is wrong
+							 if (s == LinphoneAccountCreatorOK) {
+								 if (linphone_account_creator_get_phone_number(account_creator) == NULL
+									 && linphone_account_creator_get_username(account_creator) == NULL) {
+									 return LinphoneAccountCreatorPhoneNumberInvalid;
+								 }
+							 }
 							 return s != LinphoneAccountCreatorOK;
 						 }];
 
@@ -709,7 +725,8 @@ void assistant_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountC
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountExist) {
-		[[thiz findTextField:ViewElement_Username] showError:NSLocalizedString(@"This account already exists.", nil)];
+		ViewElement ve =  ([thiz findTextField:ViewElement_Username].isVisible) ? ViewElement_Username : ViewElement_Phone;
+		[[thiz findTextField:ve] showError:NSLocalizedString(@"This account already exists.", nil)];
 		[thiz findButton:ViewElement_NextButton].enabled = NO;
 	} else if (status == LinphoneAccountCreatorAccountNotExist) {
 		linphone_account_creator_create_account(thiz->account_creator);
@@ -994,25 +1011,18 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	[self refreshYourUsername];
 
 	// put next button right after latest field (avoid blanks)
-	UIRoundBorderedButton* nextButton = [self findButton:ViewElement_NextButton];
-	CGRect pos = nextButton.frame;
-	if (usernameView.hidden) {
-		pos.origin.y = usernameView.frame.origin.y;
-	} else if (emailView.hidden) {
-		pos.origin.y = emailView.frame.origin.y;
-	} else {
-		pos.origin.y = emailView.frame.origin.y + emailView.frame.size.height;
+	int old = _createAccountNextButtonPositionConstraint.constant;
+	_createAccountNextButtonPositionConstraint.constant = IPAD || !usernameView.hidden ? 21 : -10;
+	if (!usernameView.hidden) {
+		_createAccountNextButtonPositionConstraint.constant += usernameView.frame.size.height;
 	}
-	nextButton.frame = pos;
-
+	if (!emailView.hidden) {
+		_createAccountNextButtonPositionConstraint.constant += emailView.frame.size.height;
+	}
 	// make view scrollable only if next button is too away
 	CGRect viewframe = currentView.frame;
-	viewframe.size.height = pos.origin.y + pos.size.height;
-	currentView.autoresizesSubviews = NO;
-	currentView.frame = viewframe;
-	currentView.autoresizesSubviews = YES;
-	[self fitContent];
-
+	viewframe.size.height = 30 + _createAccountNextButtonPositionConstraint.constant - old + [self findButton:ViewElement_NextButton].frame.origin.y + [self findButton:ViewElement_NextButton].frame.size.height;
+	[_contentView setContentSize:viewframe.size];
 	[self shouldEnableNextButton];
 }
 
