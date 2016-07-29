@@ -652,7 +652,7 @@ This assistant will help you to use a SIP account for your calls.</property>
                 <property name="bottom_attach">6</property>
               </packing>
             </child>
-            <child>
+            <!--<child>
               <object class="GtkCheckButton" id="p4_check_newsletter">
                 <property name="label" translatable="yes">Keep me informed with linphone updates</property>
                 <property name="visible">True</property>
@@ -665,7 +665,7 @@ This assistant will help you to use a SIP account for your calls.</property>
                 <property name="top_attach">6</property>
                 <property name="bottom_attach">7</property>
               </packing>
-            </child>
+			</child>-->
           </object>
         </child>
       </object>
