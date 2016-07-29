@@ -705,7 +705,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link
 		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username, creator->password, creator->domain),
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
-	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _is_account_activated_cb);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_phone_number_link_cb);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
 	return LinphoneAccountCreatorOK;
