@@ -229,6 +229,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorAccountNotCreated:
 		case LinphoneAccountCreatorAccountNotExist:
 		case LinphoneAccountCreatorAccountNotActivated:
+		case LinphoneAccountCreatorAccountAlreadyActivated:
 		case LinphoneAccountCreatorAccountActivated:
 		case LinphoneAccountCreatorOK:
 			break;
@@ -518,7 +519,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 							 UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
 							 NSString* prefix = countryCodeField.text.length > 0 ? [countryCodeField.text substringFromIndex:1] : nil;
 							 LinphoneAccountCreatorStatus s =
-							 linphone_account_creator_set_phone_number(account_creator, inputEntry.UTF8String, prefix.UTF8String);
+							 linphone_account_creator_set_phone_number(account_creator, inputEntry.length > 0 ? inputEntry.UTF8String : NULL, prefix.UTF8String);
 							 if (s != LinphoneAccountCreatorOK) linphone_account_creator_set_phone_number(account_creator, NULL, NULL);
 							 createPhone.errorLabel.text = [AssistantView errorForStatus:s];
 							 return s != LinphoneAccountCreatorOK;
@@ -528,7 +529,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[password showError:[AssistantView errorForStatus:LinphoneAccountCreatorPasswordTooShort]
 				   when:^BOOL(NSString *inputEntry) {
 					 LinphoneAccountCreatorStatus s =
-						 linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
+					   linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
 					 password.errorLabel.text = [AssistantView errorForStatus:s];
 					 return s != LinphoneAccountCreatorOK;
 				   }];
@@ -742,9 +743,11 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 								  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
 								  otherButtonTitles:nil, nil];
 		[errorView show];
-	} else {
+	} else if (status == LinphoneAccountCreatorAccountAlreadyActivated) {
 		// in case we are actually trying to link account, let's try it now
 		linphone_account_creator_activate_phone_number_link(creator);
+	} else {
+		[thiz genericError];
 	}
 }
 
@@ -806,6 +809,11 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 
 #pragma mark - UITextFieldDelegate Functions
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
+	[atf textFieldDidBeginEditing:atf];
+}
+
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	[atf textFieldDidEndEditing:atf];
@@ -816,11 +824,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	[textField resignFirstResponder];
 	if (textField.returnKeyType == UIReturnKeyNext) {
-		if (atf.nextResponder) {
-			[atf.nextResponder becomeFirstResponder];
-		} else {
-			[[self findButton:ViewElement_NextButton] sendActionsForControlEvents:UIControlEventTouchUpInside];
-		}
+		[atf.nextFieldResponder becomeFirstResponder];
 	} else if (textField.returnKeyType == UIReturnKeyDone) {
 		[[self findButton:ViewElement_NextButton] sendActionsForControlEvents:UIControlEventTouchUpInside];
 	}

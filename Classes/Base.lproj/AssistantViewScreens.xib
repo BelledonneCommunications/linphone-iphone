@@ -168,6 +168,7 @@
                     <connections>
                         <action selector="onCountryCodeFieldChange:" destination="-1" eventType="editingChanged" id="Jvb-Z0-0cY"/>
                         <action selector="onCountryCodeFieldEnd:" destination="-1" eventType="editingDidEnd" id="QUC-vT-pmS"/>
+                        <outlet property="nextFieldResponder" destination="74" id="Qe8-Qy-zAT"/>
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="74" userLabel="phoneField" customClass="UIAssistantTextField">
@@ -181,6 +182,7 @@
                     <connections>
                         <outlet property="delegate" destination="-1" id="80"/>
                         <outlet property="errorLabel" destination="nOO-ch-4RW" id="fVH-OO-tVS"/>
+                        <outlet property="nextFieldResponder" destination="OLm-Nz-ouj" id="RJT-1m-fS4"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="nOO-ch-4RW" userLabel="phoneErrorLabel">
@@ -240,6 +242,7 @@
                             <connections>
                                 <outlet property="delegate" destination="-1" id="ewM-oE-aam"/>
                                 <outlet property="errorLabel" destination="SJT-EF-scd" id="kou-54-9Gg"/>
+                                <outlet property="nextFieldResponder" destination="79" id="ZNJ-ea-EE5"/>
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="SJT-EF-scd" userLabel="usernameErrorLabel">
@@ -274,6 +277,7 @@
                             <connections>
                                 <outlet property="delegate" destination="-1" id="84"/>
                                 <outlet property="errorLabel" destination="boL-zt-q9f" id="jBP-Jl-eVp"/>
+                                <outlet property="nextFieldResponder" destination="75" id="FR4-Ai-CrM"/>
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid email" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="boL-zt-q9f" userLabel="emailErrorLabel">
@@ -301,6 +305,7 @@
                             <connections>
                                 <outlet property="delegate" destination="-1" id="82"/>
                                 <outlet property="errorLabel" destination="qbL-gD-kHo" id="9pp-bs-jQ2"/>
+                                <outlet property="nextFieldResponder" destination="76" id="hr7-Ql-xdj"/>
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="qbL-gD-kHo" userLabel="passwordErrorLabel">
@@ -554,6 +559,7 @@ Once it is done, come back here and click on the button.</string>
                     <connections>
                         <outlet property="delegate" destination="-1" id="vfZ-tB-ybd"/>
                         <outlet property="errorLabel" destination="CBb-WR-x0g" id="0j0-6V-znD"/>
+                        <outlet property="nextFieldResponder" destination="ap4-xh-CVK" id="WOg-Yu-470"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="CBb-WR-x0g" userLabel="usernameErrorLabel">
@@ -581,6 +587,7 @@ Once it is done, come back here and click on the button.</string>
                     <connections>
                         <outlet property="delegate" destination="-1" id="nPx-Tc-Acv"/>
                         <outlet property="errorLabel" destination="lMz-lo-z4b" id="1Se-fB-fYb"/>
+                        <outlet property="nextFieldResponder" destination="buh-Vp-YwP" id="agG-Ue-xBJ"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="lMz-lo-z4b" userLabel="passwordErrorLabel">
@@ -625,6 +632,7 @@ Once it is done, come back here and click on the button.</string>
                     <connections>
                         <outlet property="delegate" destination="-1" id="QcZ-wS-LhT"/>
                         <outlet property="errorLabel" destination="YzC-qL-tc0" id="SbI-Cd-cxw"/>
+                        <outlet property="nextFieldResponder" destination="y6x-Aq-16J" id="gaY-du-DG9"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LINK WITH PHONE NUMBER (OPTIONAL)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="cac-e8-KHg" userLabel="phoneLabel">
@@ -643,6 +651,7 @@ Once it is done, come back here and click on the button.</string>
                     <connections>
                         <action selector="onCountryCodeFieldChange:" destination="-1" eventType="editingChanged" id="FDR-Ar-diD"/>
                         <action selector="onCountryCodeFieldEnd:" destination="-1" eventType="editingDidEnd" id="hxt-GV-AIo"/>
+                        <outlet property="nextFieldResponder" destination="eD1-BU-COs" id="KxJ-UV-0Ot"/>
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="eD1-BU-COs" userLabel="phoneField" customClass="UIAssistantTextField">
@@ -737,6 +746,7 @@ Once it is done, come back here and click on the button.</string>
                     <connections>
                         <outlet property="delegate" destination="-1" id="2Cf-FZ-uJk"/>
                         <outlet property="errorLabel" destination="UJ1-kb-e8g" id="XAu-w1-q5R"/>
+                        <outlet property="nextFieldResponder" destination="zEa-Dj-QiH" id="Hne-0h-vna"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="UJ1-kb-e8g" userLabel="usernameErrorLabel">
@@ -764,6 +774,7 @@ Once it is done, come back here and click on the button.</string>
                     <connections>
                         <outlet property="delegate" destination="-1" id="bYU-bJ-3Ts"/>
                         <outlet property="errorLabel" destination="Oyr-f0-auK" id="0Cr-il-vwE"/>
+                        <outlet property="nextFieldResponder" destination="5kh-Wo-SMY" id="e0h-Wa-i1z"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="Oyr-f0-auK" userLabel="passwordErrorLabel">
@@ -791,6 +802,7 @@ Once it is done, come back here and click on the button.</string>
                     <connections>
                         <outlet property="delegate" destination="-1" id="AEK-wy-Dko"/>
                         <outlet property="errorLabel" destination="ths-8b-FoU" id="mQu-DC-RgF"/>
+                        <outlet property="nextFieldResponder" destination="7Cb-fa-CY5" id="Cca-hY-8Yr"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid domain" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="ths-8b-FoU" userLabel="domainErrorLabel">
@@ -980,6 +992,7 @@ Once it is done, come back here and click on the button.</string>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="uJC-ra-Bp0"/>
+                        <outlet property="nextFieldResponder" destination="hfJ-yu-wVn" id="q8c-Ze-1iW"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JNj-cr-FwU" userLabel="passwordLabel">
@@ -999,6 +1012,7 @@ Once it is done, come back here and click on the button.</string>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="oIG-Cs-m9O"/>
+                        <outlet property="nextFieldResponder" destination="gfr-KY-4vo" id="Nqo-Pk-nGv"/>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DOMAIN" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KTG-uK-Lji" userLabel="domainLabel">
@@ -1018,6 +1032,7 @@ Once it is done, come back here and click on the button.</string>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="6Mx-mR-LQx"/>
+                        <outlet property="nextFieldResponder" destination="hfJ-yu-wVn" id="z3d-Az-1Gd"/>
                     </connections>
                 </textField>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="eKs-or-rqw" userLabel="remoteProvisioningLoginButton" customClass="UIRoundBorderedButton">

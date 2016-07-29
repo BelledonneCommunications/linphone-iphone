@@ -157,6 +157,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorAccountNotCreated:
 		case LinphoneAccountCreatorAccountNotExist:
 		case LinphoneAccountCreatorAccountNotActivated:
+		case LinphoneAccountCreatorAccountAlreadyActivated:
 		case LinphoneAccountCreatorAccountActivated:
 		case LinphoneAccountCreatorOK:
 			break;

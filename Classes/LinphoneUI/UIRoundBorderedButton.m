@@ -53,4 +53,12 @@
 	self.layer.borderColor = [self.titleLabel.textColor CGColor];
 }
 
+- (BOOL)becomeFirstResponder {
+	if ([super becomeFirstResponder]) {
+		[LinphoneUtils findAndResignFirstResponder:self.superview];
+		return YES;
+	}
+	return NO;
+}
+
 @end

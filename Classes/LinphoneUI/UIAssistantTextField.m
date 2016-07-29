@@ -41,7 +41,7 @@ INIT_WITH_COMMON_CF {
 - (BOOL)isVisible {
 	UIView* aview = self;
 	while (aview) {
-		if (aview.isHidden) return NO;
+		if (aview.isHidden || !aview.isUserInteractionEnabled) return NO;
 		aview = aview.superview;
 	}
 	return YES;
@@ -67,6 +67,14 @@ INIT_WITH_COMMON_CF {
 	return YES;
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	if (self.nextFieldResponder && !self.nextFieldResponder.hidden) {
+		self.returnKeyType = UIReturnKeyNext;
+	} else {
+		self.returnKeyType = UIReturnKeyDone;
+	}
+
+}
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	_lastText = textField.text;
 	[self checkDisplayError];

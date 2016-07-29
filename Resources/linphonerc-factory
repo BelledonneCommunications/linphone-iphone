@@ -18,7 +18,7 @@ history_max_size=-1
 [sip]
 sip_random_port=0
 store_ha1_passwd=0
-handle_content_encoding=none
+#handle_content_encoding=none
 
 [sound]
 dtmf_player_amp=0.007
