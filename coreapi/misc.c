@@ -1077,150 +1077,6 @@ void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMedi
 	}
 }
 
-void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer){
-	const SalStreamDescription *stream;
-	IceCheckList *cl = NULL;
-	bool_t default_candidate = FALSE;
-	const char *addr = NULL;
-	int port = 0;
-	int componentID = 0;
-	bool_t ice_restarted = FALSE;
-	bool_t ice_params_found=FALSE;
-	int i, j;
-		
-	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0'))  {
-		ice_params_found=TRUE;
-	} else {
-		for (i = 0; i < md->nb_streams; i++) {
-			stream = &md->streams[i];
-			cl = ice_session_check_list(call->ice_session, i);
-			if (cl) {
-				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
-					ice_params_found=TRUE;
-				} else {
-					ice_params_found=FALSE;
-					break;
-				}
-			}
-		}
-	}
-	if (ice_params_found) {
-		/* Check for ICE restart and set remote credentials. */
-		if ((strcmp(md->addr, "0.0.0.0") == 0) || (strcmp(md->addr, "::0") == 0)) {
-			ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
-			ice_restarted = TRUE;
-		} else {
-			for (i = 0; i < md->nb_streams; i++) {
-				stream = &md->streams[i];
-				cl = ice_session_check_list(call->ice_session, i);
-				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
-					ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
-					ice_restarted = TRUE;
-					break;
-				}
-			}
-		}
-		if ((ice_session_remote_ufrag(call->ice_session) == NULL) && (ice_session_remote_pwd(call->ice_session) == NULL)) {
-			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
-		} else if (ice_session_remote_credentials_changed(call->ice_session, md->ice_ufrag, md->ice_pwd)) {
-			if (ice_restarted == FALSE) {
-				ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
-				ice_restarted = TRUE;
-			}
-			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
-		}
-		for (i = 0; i < md->nb_streams; i++) {
-			stream = &md->streams[i];
-			cl = ice_session_check_list(call->ice_session, i);
-			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
-				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
-					if (ice_restarted == FALSE
-							&& ice_check_list_get_remote_ufrag(cl)
-							&& ice_check_list_get_remote_pwd(cl)) {
-							/* restart only if remote ufrag/paswd was already set*/
-						ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
-						ice_restarted = TRUE;
-					}
-					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
-					break;
-				}
-			}
-		}
-
-		/* Create ICE check lists if needed and parse ICE attributes. */
-		for (i = 0; i < md->nb_streams; i++) {
-			stream = &md->streams[i];
-			cl = ice_session_check_list(call->ice_session, i);
-			
-			if (cl==NULL) continue;
-			if (stream->ice_mismatch == TRUE) {
-				ice_check_list_set_state(cl, ICL_Failed);
-			} else if (stream->rtp_port == 0) {
-				ice_session_remove_check_list(call->ice_session, cl);
-				clear_ice_check_list(call,cl);
-			} else {
-				int family;
-				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
-					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
-				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
-					const SalIceCandidate *candidate = &stream->ice_candidates[j];
-					default_candidate = FALSE;
-					addr = NULL;
-					port = 0;
-					if (candidate->addr[0] == '\0') break;
-					if ((candidate->componentID == 0) || (candidate->componentID > 2)) continue;
-					get_default_addr_and_port(candidate->componentID, md, stream, &addr, &port);
-					if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
-						default_candidate = TRUE;
-					if (strchr(candidate->addr, ':') != NULL) family = AF_INET6;
-					else family = AF_INET;
-					ice_add_remote_candidate(cl, candidate->type, family, candidate->addr, candidate->port, candidate->componentID,
-						candidate->priority, candidate->foundation, default_candidate);
-				}
-				if (ice_restarted == FALSE) {
-					bool_t losing_pairs_added = FALSE;
-					for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
-						const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
-						addr = NULL;
-						port = 0;
-						componentID = j + 1;
-						if (remote_candidate->addr[0] == '\0') break;
-						get_default_addr_and_port(componentID, md, stream, &addr, &port);
-						if (j == 0) {
-							/* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
-							ice_check_list_unselect_valid_pairs(cl);
-						}
-						if (strchr(remote_candidate->addr, ':') != NULL) family = AF_INET6;
-						else family = AF_INET;
-						ice_add_losing_pair(cl, j + 1, family, remote_candidate->addr, remote_candidate->port, addr, port);
-						losing_pairs_added = TRUE;
-					}
-					if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
-				}
-			}
-		}
-		for (i = 0; i < md->nb_streams; i++) {
-			stream = &md->streams[i];
-			cl = ice_session_check_list(call->ice_session, i);
-			if (!cl) continue;
-				
-			if (!sal_stream_description_active(stream)) {
-				ice_session_remove_check_list_from_idx(call->ice_session, i);
-				clear_ice_check_list(call, cl);
-			}
-		}
-		linphone_call_clear_unused_ice_candidates(call, md);
-		ice_session_check_mismatch(call->ice_session);
-	} else {
-		/* Response from remote does not contain mandatory ICE attributes, delete the session. */
-		linphone_call_delete_ice_session(call);
-		return;
-	}
-	if (ice_session_nb_check_lists(call->ice_session) == 0) {
-		linphone_call_delete_ice_session(call);
-	}
-}
-
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md){
 	int i;
 
@@ -2073,4 +1929,180 @@ void linphone_task_list_run(LinphoneTaskList *t){
 
 void linphone_task_list_free(LinphoneTaskList *t){
 	t->hooks = bctbx_list_free_with_data(t->hooks, (void (*)(void*))ms_free);
+}
+
+static bool_t _ice_params_found_in_remote_media_description(IceSession *ice_session, const SalMediaDescription *md) {
+	const SalStreamDescription *stream;
+	IceCheckList *cl = NULL;
+	int i;
+	bool_t ice_params_found = FALSE;
+	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
+		ice_params_found=TRUE;
+	} else {
+		for (i = 0; i < md->nb_streams; i++) {
+			stream = &md->streams[i];
+			cl = ice_session_check_list(ice_session, i);
+			if (cl) {
+				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
+					ice_params_found=TRUE;
+				} else {
+					ice_params_found=FALSE;
+					break;
+				}
+			}
+		}
+	}
+	return ice_params_found;
+}
+
+static bool_t _check_for_ice_restart_and_set_remote_credentials(IceSession *ice_session, const SalMediaDescription *md, bool_t is_offer) {
+	const SalStreamDescription *stream;
+	IceCheckList *cl = NULL;
+	bool_t ice_restarted = FALSE;
+	int i;
+
+	if ((strcmp(md->addr, "0.0.0.0") == 0) || (strcmp(md->addr, "::0") == 0)) {
+		ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
+		ice_restarted = TRUE;
+	} else {
+		for (i = 0; i < md->nb_streams; i++) {
+			stream = &md->streams[i];
+			cl = ice_session_check_list(ice_session, i);
+			if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
+				ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
+				ice_restarted = TRUE;
+				break;
+			}
+		}
+	}
+	if ((ice_session_remote_ufrag(ice_session) == NULL) && (ice_session_remote_pwd(ice_session) == NULL)) {
+		ice_session_set_remote_credentials(ice_session, md->ice_ufrag, md->ice_pwd);
+	} else if (ice_session_remote_credentials_changed(ice_session, md->ice_ufrag, md->ice_pwd)) {
+		if (ice_restarted == FALSE) {
+			ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
+			ice_restarted = TRUE;
+		}
+		ice_session_set_remote_credentials(ice_session, md->ice_ufrag, md->ice_pwd);
+	}
+	for (i = 0; i < md->nb_streams; i++) {
+		stream = &md->streams[i];
+		cl = ice_session_check_list(ice_session, i);
+		if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
+			if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
+				if (ice_restarted == FALSE
+						&& ice_check_list_get_remote_ufrag(cl)
+						&& ice_check_list_get_remote_pwd(cl)) {
+						/* restart only if remote ufrag/paswd was already set*/
+					ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
+					ice_restarted = TRUE;
+				}
+				ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
+				break;
+			}
+		}
+	}
+	return ice_restarted;
+}
+
+static void _create_ice_check_lists_and_parse_ice_attributes(LinphoneCall *call, const SalMediaDescription *md, bool_t ice_restarted) {
+	const SalStreamDescription *stream;
+	IceCheckList *cl = NULL;
+	bool_t default_candidate = FALSE;
+	const char *addr = NULL;
+	int port = 0;
+	int componentID = 0;
+	int family;
+	int i, j;
+
+	for (i = 0; i < md->nb_streams; i++) {
+		stream = &md->streams[i];
+		cl = ice_session_check_list(call->ice_session, i);
+
+		if (cl==NULL) continue;
+		if (stream->ice_mismatch == TRUE) {
+			ice_check_list_set_state(cl, ICL_Failed);
+			continue;
+		}
+		if (stream->rtp_port == 0) {
+			ice_session_remove_check_list(call->ice_session, cl);
+			clear_ice_check_list(call,cl);
+			continue;
+		}
+
+		if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
+			ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
+		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+			const SalIceCandidate *candidate = &stream->ice_candidates[j];
+			default_candidate = FALSE;
+			addr = NULL;
+			port = 0;
+			if (candidate->addr[0] == '\0') break;
+			if ((candidate->componentID == 0) || (candidate->componentID > 2)) continue;
+			get_default_addr_and_port(candidate->componentID, md, stream, &addr, &port);
+			if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
+				default_candidate = TRUE;
+			if (strchr(candidate->addr, ':') != NULL) family = AF_INET6;
+			else family = AF_INET;
+			ice_add_remote_candidate(cl, candidate->type, family, candidate->addr, candidate->port, candidate->componentID,
+				candidate->priority, candidate->foundation, default_candidate);
+		}
+		if (ice_restarted == FALSE) {
+			bool_t losing_pairs_added = FALSE;
+			for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+				const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
+				addr = NULL;
+				port = 0;
+				componentID = j + 1;
+				if (remote_candidate->addr[0] == '\0') break;
+				get_default_addr_and_port(componentID, md, stream, &addr, &port);
+				if (j == 0) {
+					/* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
+					ice_check_list_unselect_valid_pairs(cl);
+				}
+				if (strchr(remote_candidate->addr, ':') != NULL) family = AF_INET6;
+				else family = AF_INET;
+				ice_add_losing_pair(cl, j + 1, family, remote_candidate->addr, remote_candidate->port, addr, port);
+				losing_pairs_added = TRUE;
+			}
+			if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
+		}
+	}
+}
+
+static void _update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer) {
+	const SalStreamDescription *stream;
+	IceCheckList *cl = NULL;
+	bool_t ice_restarted = FALSE;
+	int i;
+
+	/* Check for ICE restart and set remote credentials. */
+	ice_restarted = _check_for_ice_restart_and_set_remote_credentials(call->ice_session, md, is_offer);
+
+	/* Create ICE check lists if needed and parse ICE attributes. */
+	_create_ice_check_lists_and_parse_ice_attributes(call, md, ice_restarted);
+	for (i = 0; i < md->nb_streams; i++) {
+		stream = &md->streams[i];
+		cl = ice_session_check_list(call->ice_session, i);
+		if (!cl) continue;
+			
+		if (!sal_stream_description_active(stream)) {
+			ice_session_remove_check_list_from_idx(call->ice_session, i);
+			clear_ice_check_list(call, cl);
+		}
+	}
+	linphone_call_clear_unused_ice_candidates(call, md);
+	ice_session_check_mismatch(call->ice_session);
+}
+
+void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer){
+	if (_ice_params_found_in_remote_media_description(call->ice_session, md) == TRUE) {
+		_update_ice_from_remote_media_description(call, md, is_offer);
+	} else {
+		/* Response from remote does not contain mandatory ICE attributes, delete the session. */
+		linphone_call_delete_ice_session(call);
+		return;
+	}
+	if (ice_session_nb_check_lists(call->ice_session) == 0) {
+		linphone_call_delete_ice_session(call);
+	}
 }

@@ -777,6 +777,9 @@ STRICT_OPTIONS_CXX=""
 #for clang
 
 case $CC in
+	*gcc*)
+		STRICT_OPTIONS="$STRICT_OPTIONS -fno-inline-small-functions"
+	;;
 	*clang*)
 		STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments "
 		#disabled due to wrong optimization false positive with small string
