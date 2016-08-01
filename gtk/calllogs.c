@@ -316,12 +316,9 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 #endif
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
 		if(lf != NULL){
-			LinphoneAddress *address = linphone_friend_get_address(lf);
-			if ((display=linphone_address_get_display_name(address))) {
-				/*update display name from friend*/
-				linphone_address_set_display_name(la,display);
-			}
-			linphone_address_unref(address);
+			/*update display name from friend*/
+			const char *name = linphone_friend_get_name(lf);
+			if (name != NULL) linphone_address_set_display_name(la, name);
 		} else {
 			display=linphone_address_get_display_name(la);
 		}

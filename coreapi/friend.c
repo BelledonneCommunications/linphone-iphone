@@ -158,22 +158,24 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	LinphoneCore *lc=fr->lc;
 	LinphoneAddress *addr = linphone_friend_get_address(fr);
 
-	if (fr->outsub==NULL){
-		/* people for which we don't have yet an answer should appear as offline */
-		fr->presence_models = bctbx_list_free_with_data(fr->presence_models, (bctbx_list_free_func)free_friend_presence);
-		/*
-		if (fr->lc->vtable.notify_recv)
-			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
-		 */
-	}else{
-		sal_op_release(fr->outsub);
-		fr->outsub=NULL;
+	if (addr != NULL) {
+		if (fr->outsub==NULL){
+			/* people for which we don't have yet an answer should appear as offline */
+			fr->presence_models = bctbx_list_free_with_data(fr->presence_models, (bctbx_list_free_func)free_friend_presence);
+			/*
+			if (fr->lc->vtable.notify_recv)
+				fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
+			*/
+		}else{
+			sal_op_release(fr->outsub);
+			fr->outsub=NULL;
+		}
+		fr->outsub=sal_op_new(lc->sal);
+		linphone_configure_op(lc,fr->outsub,addr,NULL,TRUE);
+		sal_subscribe_presence(fr->outsub,NULL,NULL,lp_config_get_int(lc->config,"sip","subscribe_expires",600));
+		fr->subscribe_active=TRUE;
+		linphone_address_unref(addr);
 	}
-	fr->outsub=sal_op_new(lc->sal);
-	linphone_configure_op(lc,fr->outsub,addr,NULL,TRUE);
-	sal_subscribe_presence(fr->outsub,NULL,NULL,lp_config_get_int(lc->config,"sip","subscribe_expires",600));
-	fr->subscribe_active=TRUE;
-	linphone_address_unref(addr);
 }
 
 LinphoneFriend * linphone_friend_new(void){
@@ -671,16 +673,18 @@ void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *
 
 	if (only_when_registered && (fr->subscribe || fr->subscribe_active)){
 		LinphoneAddress *addr = linphone_friend_get_address(fr);
-		LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(fr->lc, addr);
-		if (proxy && proxy!=cfg) return;
-		if (cfg && cfg->state!=LinphoneRegistrationOk){
-			char *tmp=linphone_address_as_string(addr);
-			ms_message("Friend [%s] belongs to proxy config with identity [%s], but this one isn't registered. Subscription is suspended.",
-				   tmp,linphone_proxy_config_get_identity(cfg));
-			ms_free(tmp);
-			can_subscribe=0;
+		if (addr != NULL) {
+			LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(fr->lc, addr);
+			if (proxy && proxy!=cfg) return;
+			if (cfg && cfg->state!=LinphoneRegistrationOk){
+				char *tmp=linphone_address_as_string(addr);
+				ms_message("Friend [%s] belongs to proxy config with identity [%s], but this one isn't registered. Subscription is suspended.",
+					tmp,linphone_proxy_config_get_identity(cfg));
+				ms_free(tmp);
+				can_subscribe=0;
+			}
+			linphone_address_unref(addr);
 		}
-		linphone_address_unref(addr);
 	}
 	if (can_subscribe && fr->subscribe && fr->subscribe_active==FALSE){
 		ms_message("Sending a new SUBSCRIBE");
@@ -1166,7 +1170,7 @@ static void linphone_create_table(sqlite3* db) {
 	ret = sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS friends ("
 						"id                INTEGER PRIMARY KEY AUTOINCREMENT,"
 						"friend_list_id    INTEGER,"
-						"sip_uri           TEXT NOT NULL,"
+						"sip_uri           TEXT,"
 						"subscribe_policy  INTEGER,"
 						"send_subscribe    INTEGER,"
 						"ref_key           TEXT,"
@@ -1196,7 +1200,26 @@ static void linphone_create_table(sqlite3* db) {
 }
 
 static void linphone_update_table(sqlite3* db) {
-
+	char *errmsg = NULL;
+	int ret = sqlite3_exec(db,
+		"PRAGMA writable_schema = 1;\n"
+		"UPDATE SQLITE_MASTER SET SQL = 'CREATE TABLE friends ("
+			"id                INTEGER PRIMARY KEY AUTOINCREMENT,"
+			"friend_list_id    INTEGER,"
+			"sip_uri           TEXT,"
+			"subscribe_policy  INTEGER,"
+			"send_subscribe    INTEGER,"
+			"ref_key           TEXT,"
+			"vCard             TEXT,"
+			"vCard_etag        TEXT,"
+			"vCard_url         TEXT,"
+			"presence_received INTEGER"
+		")' WHERE NAME = 'friends';\n"
+		"PRAGMA writable_schema = 0;", 0, 0, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Error altering table friends: %s.\n", errmsg);
+		sqlite3_free(errmsg);
+	}
 }
 
 void linphone_core_friends_storage_init(LinphoneCore *lc) {
@@ -1372,7 +1395,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 
 		if (linphone_core_vcard_supported()) vcard = linphone_friend_get_vcard(lf);
 		addr = linphone_friend_get_address(lf);
-		addr_str = linphone_address_as_string(addr);
+		if (addr != NULL) addr_str = linphone_address_as_string(addr);
 		if (lf->storage_id > 0) {
 			buf = sqlite3_mprintf("UPDATE friends SET friend_list_id=%u,sip_uri=%Q,subscribe_policy=%i,send_subscribe=%i,ref_key=%Q,vCard=%Q,vCard_etag=%Q,vCard_url=%Q,presence_received=%i WHERE (id = %u);",
 				lf->friend_list->storage_id,
@@ -1399,8 +1422,8 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 				lf->presence_received
 			);
 		}
-		ms_free(addr_str);
-		linphone_address_unref(addr);
+		if (addr_str != NULL) ms_free(addr_str);
+		if (addr != NULL) linphone_address_unref(addr);
 		linphone_sql_request_generic(lc->friends_db, buf);
 		sqlite3_free(buf);
 

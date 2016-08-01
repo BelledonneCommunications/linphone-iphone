@@ -444,18 +444,16 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 
 static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize) {
 	LinphoneFriendListStatus status = LinphoneFriendListInvalidFriend;
-	LinphoneAddress *addr = linphone_friend_get_address(lf);
+	LinphoneAddress *addr;
 
-	if (!list || !addr || lf->friend_list) {
+	if (!list || lf->friend_list) {
 		if (!list)
 			ms_error("linphone_friend_list_add_friend(): invalid list, null");
-		if (!addr)
-			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
 		if (lf->friend_list)
 			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
-		if (addr) linphone_address_unref(addr);
 		return status;
 	}
+	addr = linphone_friend_get_address(lf);
 	if (bctbx_list_find(list->friends, lf) != NULL) {
 		char *tmp = NULL;
 		if (addr) tmp = linphone_address_as_string(addr);
@@ -482,16 +480,11 @@ LinphoneFriendListStatus linphone_friend_list_add_local_friend(LinphoneFriendLis
 }
 
 LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize) {
-	LinphoneAddress *addr = linphone_friend_get_address(lf);
-	if (!addr || lf->friend_list) {
-		if (!addr)
-			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
+	if (lf->friend_list) {
 		if (lf->friend_list)
 			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
-		if (addr) linphone_address_unref(addr);
 		return LinphoneFriendListInvalidFriend;
 	}
-	linphone_address_unref(addr);
 	lf->friend_list = list;
 	lf->lc = list->lc;
 	list->friends = bctbx_list_append(list->friends, linphone_friend_ref(lf));
@@ -952,8 +945,6 @@ void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list
 		if (vcard) {
 			const char *vcard_text = linphone_vcard_as_vcard4_string(vcard);
 			fprintf(file, "%s", vcard_text);
-		} else {
-			ms_warning("Couldn't export friend %s because it doesn't have a vCard attached", linphone_address_as_string(linphone_friend_get_address(lf)));
 		}
 		friends = bctbx_list_next(friends);
 	}

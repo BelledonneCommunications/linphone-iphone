@@ -1483,10 +1483,12 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 	lc->subscribers=bctbx_list_append(lc->subscribers,fl);
 
 	addr = linphone_friend_get_address(fl);
-	tmp = linphone_address_as_string(addr);
-	linphone_core_notify_new_subscription_requested(lc,fl,tmp);
-	ms_free(tmp);
-	linphone_address_unref(addr);
+	if (addr != NULL) {
+		tmp = linphone_address_as_string(addr);
+		linphone_core_notify_new_subscription_requested(lc,fl,tmp);
+		ms_free(tmp);
+		linphone_address_unref(addr);
+	}
 }
 
 void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){
@@ -1907,19 +1909,21 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	if (lf!=NULL){
 		LinphonePresenceActivity *activity = NULL;
 		char *activity_str;
-		friend=linphone_friend_get_address(lf);
-		tmp=linphone_address_as_string(friend);
 		activity = linphone_presence_model_get_activity(presence);
-		activity_str = linphone_presence_activity_to_string(activity);
-		ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
-		if (activity_str != NULL) ms_free(activity_str);
+		friend=linphone_friend_get_address(lf);
+		if (friend != NULL) {
+			tmp=linphone_address_as_string(friend);
+			activity_str = linphone_presence_activity_to_string(activity);
+			ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
+			if (activity_str != NULL) ms_free(activity_str);
+			ms_free(tmp);
+			linphone_address_unref(friend);
+		}
 		linphone_friend_set_presence_model(lf, presence);
 		lf->subscribe_active=TRUE;
 		lf->presence_received = TRUE;
 		lf->out_sub_state = linphone_subscription_state_from_sal(ss);
 		linphone_core_notify_notify_presence_received(lc,(LinphoneFriend*)lf);
-		linphone_address_unref(friend);
-		ms_free(tmp);
 		if (op != lf->outsub){
 			/*case of a NOTIFY received out of any dialog*/
 			sal_op_release(op);

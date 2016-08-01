@@ -37,12 +37,14 @@ static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
 
 
 void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
-	LinphoneAddress *addr = linphone_friend_get_address(lf);
-	char* from=linphone_address_as_string(addr);
 	stats* counters;
-	ms_message("New subscription request from [%s] url [%s]",from,url);
-	linphone_address_unref(addr);
-	ms_free(from);
+	LinphoneAddress *addr = linphone_friend_get_address(lf);
+	if (addr != NULL) {
+		char* from=linphone_address_as_string(addr);
+		ms_message("New subscription request from [%s] url [%s]",from,url);
+		linphone_address_unref(addr);
+		ms_free(from);
+	}
 	counters = get_stats(lc);
 	counters->number_of_NewSubscriptionRequest++;
 	linphone_core_add_friend(lc,lf); /*accept subscription*/
@@ -52,10 +54,12 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters;
 	unsigned int i;
 	LinphoneAddress *addr = linphone_friend_get_address(lf);
-	char* from=linphone_address_as_string(addr);
-	ms_message("New Notify request from [%s] ",from);
-	linphone_address_unref(addr);
-	ms_free(from);
+	if (addr != NULL) {
+		char* from=linphone_address_as_string(addr);
+		ms_message("New Notify request from [%s] ",from);
+		linphone_address_unref(addr);
+		ms_free(from);
+	}
 	counters = get_stats(lc);
 	counters->number_of_NotifyPresenceReceived++;
 	counters->last_received_presence = linphone_friend_get_presence_model(lf);
