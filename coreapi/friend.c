@@ -340,7 +340,7 @@ bctbx_list_t* linphone_friend_get_addresses(LinphoneFriend *lf) {
 		if (sip_addresses) bctbx_list_free(sip_addresses);
 		return addresses;
 	} else {
-		return lf->uri ? bctbx_list_append(addresses, lf->uri) : NULL;
+		return lf->uri ? bctbx_list_append(addresses, linphone_address_clone(lf->uri)) : NULL;
 	}
 }
 
