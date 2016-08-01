@@ -586,7 +586,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	UILocalNotification *notif = [timer userInfo];
 	if (notif) {
 		LOGI(@"cancelling/presenting local notif");
-		[[UIApplication sharedApplication] cancelLocalNotification:notif];
 		[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 	}
 }
@@ -651,7 +650,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 						data->notification.category = @"incoming_call";
 					} else {
 						data->notification.soundName = @"shortring.caf";
-						data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0
+						data->timer = [NSTimer scheduledTimerWithTimeInterval:5
 																	   target:self
 																	 selector:@selector(localNotifContinue:)
 																	 userInfo:data->notification
