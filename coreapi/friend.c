@@ -1199,27 +1199,20 @@ static void linphone_create_table(sqlite3* db) {
 	}
 }
 
-static void linphone_update_table(sqlite3* db) {
+static bool_t linphone_update_table(sqlite3* db) {
 	char *errmsg = NULL;
 	int ret = sqlite3_exec(db,
+		"BEGIN TRANSACTION;\n"
 		"PRAGMA writable_schema = 1;\n"
-		"UPDATE SQLITE_MASTER SET SQL = 'CREATE TABLE friends ("
-			"id                INTEGER PRIMARY KEY AUTOINCREMENT,"
-			"friend_list_id    INTEGER,"
-			"sip_uri           TEXT,"
-			"subscribe_policy  INTEGER,"
-			"send_subscribe    INTEGER,"
-			"ref_key           TEXT,"
-			"vCard             TEXT,"
-			"vCard_etag        TEXT,"
-			"vCard_url         TEXT,"
-			"presence_received INTEGER"
-		")' WHERE NAME = 'friends';\n"
-		"PRAGMA writable_schema = 0;", 0, 0, &errmsg);
+		"UPDATE SQLITE_MASTER SET SQL = replace(SQL, 'sip_uri TEXT NOT NULL', 'sip_uri TEXT NULL') WHERE NAME = 'friends';\n"
+		"PRAGMA writable_schema = 0;\n"
+		"COMMIT;", 0, 0, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_error("Error altering table friends: %s.\n", errmsg);
 		sqlite3_free(errmsg);
+		return FALSE;
 	}
+	return TRUE;
 }
 
 void linphone_core_friends_storage_init(LinphoneCore *lc) {
@@ -1239,7 +1232,12 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	}
 
 	linphone_create_table(db);
-	linphone_update_table(db);
+	if (linphone_update_table(db)) {
+		// After updating schema, database need to be closed/reopenned
+		sqlite3_close(lc->friends_db);
+		_linphone_sqlite3_open(lc->friends_db_file, &db);
+	}
+	
 	lc->friends_db = db;
 
 	friends_lists = linphone_core_fetch_friends_lists_from_db(lc);
