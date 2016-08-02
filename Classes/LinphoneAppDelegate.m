@@ -361,13 +361,13 @@
 	[self fixRing];
 
 	if ([notification.userInfo objectForKey:@"callId"] != nil) {
-		BOOL auto_answer = TRUE;
+		BOOL bypass_incoming_view = TRUE;
 		// some local notifications have an internal timer to relaunch themselves at specified intervals
 		if ([[notification.userInfo objectForKey:@"timer"] intValue] == 1) {
 			[LinphoneManager.instance cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
-			auto_answer = [LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"];
+			bypass_incoming_view = [LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"];
 		}
-		if (auto_answer) {
+		if (bypass_incoming_view) {
 			[LinphoneManager.instance acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
 		}
 	} else if ([notification.userInfo objectForKey:@"from_addr"] != nil) {

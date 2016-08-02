@@ -1611,7 +1611,9 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 	MSList *calls = (MSList *)linphone_core_get_calls(theLinphoneCore);
 	MSList *call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
 	if (call != NULL) {
-		[self acceptCall:(LinphoneCall *)call->data evenWithVideo:YES];
+		const LinphoneVideoPolicy *video_policy = linphone_core_get_video_policy(theLinphoneCore);
+		bool with_video = video_policy->automatically_accept;
+		[self acceptCall:(LinphoneCall *)call->data evenWithVideo:with_video];
 		return;
 	};
 }
