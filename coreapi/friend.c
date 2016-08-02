@@ -1170,7 +1170,7 @@ static void linphone_create_table(sqlite3* db) {
 	ret = sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS friends ("
 						"id                INTEGER PRIMARY KEY AUTOINCREMENT,"
 						"friend_list_id    INTEGER,"
-						"sip_uri           TEXT,"
+						"sip_uri           TEXT NOT NULL,"
 						"subscribe_policy  INTEGER,"
 						"send_subscribe    INTEGER,"
 						"ref_key           TEXT,"
@@ -1200,19 +1200,34 @@ static void linphone_create_table(sqlite3* db) {
 }
 
 static bool_t linphone_update_table(sqlite3* db) {
+	static sqlite3_stmt *stmt_version;
+	int database_user_version = -1;
 	char *errmsg = NULL;
-	int ret = sqlite3_exec(db,
-		"BEGIN TRANSACTION;\n"
-		"PRAGMA writable_schema = 1;\n"
-		"UPDATE SQLITE_MASTER SET SQL = replace(SQL, 'sip_uri TEXT NOT NULL', 'sip_uri TEXT NULL') WHERE NAME = 'friends';\n"
-		"PRAGMA writable_schema = 0;\n"
-		"COMMIT;", 0, 0, &errmsg);
-	if (ret != SQLITE_OK) {
-		ms_error("Error altering table friends: %s.\n", errmsg);
-		sqlite3_free(errmsg);
-		return FALSE;
+
+    if (sqlite3_prepare_v2(db, "PRAGMA user_version;", -1, &stmt_version, NULL) == SQLITE_OK) {
+        while(sqlite3_step(stmt_version) == SQLITE_ROW) {
+            database_user_version = sqlite3_column_int(stmt_version, 0);
+			ms_debug("friends database user version = %i", database_user_version);
+		}
 	}
-	return TRUE;
+    sqlite3_finalize(stmt_version);
+	
+	if (database_user_version == 0) {
+		int ret = sqlite3_exec(db,
+			"BEGIN TRANSACTION;\n"
+			"PRAGMA writable_schema = 1;\n"
+			"UPDATE SQLITE_MASTER SET SQL = replace(SQL, 'sip_uri TEXT NOT NULL', 'sip_uri TEXT NULL') WHERE NAME = 'friends';\n"
+			"PRAGMA writable_schema = 0;\n"
+			"PRAGMA user_version = 1;\n"
+			"COMMIT;", 0, 0, &errmsg);
+		if (ret != SQLITE_OK) {
+			ms_error("Error altering table friends: %s.\n", errmsg);
+			sqlite3_free(errmsg);
+			return FALSE;
+		}
+		return TRUE;
+	}
+	return FALSE;
 }
 
 void linphone_core_friends_storage_init(LinphoneCore *lc) {
