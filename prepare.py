@@ -189,7 +189,7 @@ class IOSPreparator(prepare.Preparator):
                 self.missing_dependencies["nasm"] = "nasm"
                 reterr = 1
 
-        if self.check_is_installed("libtoolize", warn=False):
+        if self.check_is_installed("libtoolize", "libtoolize", warn=False):
             if not self.check_is_installed("glibtoolize", "libtool"):
                 reterr = 1
                 glibtoolize_path = find_executable("glibtoolize")
