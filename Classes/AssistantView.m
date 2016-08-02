@@ -531,15 +531,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 							 LinphoneAccountCreatorStatus s =
 							 linphone_account_creator_set_phone_number(account_creator, inputEntry.length > 0 ? inputEntry.UTF8String : NULL, prefix.UTF8String);
 							 if (s != LinphoneAccountCreatorOK) linphone_account_creator_set_phone_number(account_creator, NULL, NULL);
-							 createPhone.errorLabel.text = [AssistantView errorForStatus:s];
 
 							 // if phone is empty and username is empty, this is wrong
-							 if (s == LinphoneAccountCreatorOK) {
-								 if (linphone_account_creator_get_phone_number(account_creator) == NULL
-									 && linphone_account_creator_get_username(account_creator) == NULL) {
-									 return LinphoneAccountCreatorPhoneNumberInvalid;
-								 }
+							 if (linphone_account_creator_get_phone_number(account_creator) == NULL) {
+								 s = LinphoneAccountCreatorPhoneNumberTooShort;
 							 }
+
+							 createPhone.errorLabel.text = [AssistantView errorForStatus:s];
+
+
 							 return s != LinphoneAccountCreatorOK;
 						 }];
 
