@@ -88,6 +88,9 @@ static void format_request(LinphoneXmlRpcRequest *request) {
 		return;
 	}
 
+	/* autoindent so that logs are human-readable, as SIP sip on-purpose */
+	xmlTextWriterSetIndent(writer, 1);
+
 	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
 	if (err >= 0) {
 		err = xmlTextWriterStartElement(writer, (const xmlChar *)"methodCall");
