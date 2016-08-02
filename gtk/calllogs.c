@@ -317,8 +317,8 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
 		if(lf != NULL){
 			/*update display name from friend*/
-			const char *name = linphone_friend_get_name(lf);
-			if (name != NULL) linphone_address_set_display_name(la, name);
+			display = linphone_friend_get_name(lf);
+			if (display != NULL) linphone_address_set_display_name(la, display);
 		} else {
 			display=linphone_address_get_display_name(la);
 		}

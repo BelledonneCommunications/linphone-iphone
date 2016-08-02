@@ -97,8 +97,8 @@ static void linphone_gtk_set_selection_to_uri_bar(GtkTreeView *treeview){
 			friend=linphone_address_as_string(addr);
 			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),friend);
 			linphone_address_unref(addr);
+			ms_free(friend);
 		}
-		ms_free(friend);
 	}
 }
 
@@ -608,7 +608,7 @@ static int get_friend_weight(const LinphoneFriend *lf){
 	int w=0;
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneAddress *addr = linphone_friend_get_address(lf);
-	LinphoneChatRoom *cr;
+	LinphoneChatRoom *cr = NULL;
 
 	if (addr != NULL) {
 		cr = linphone_core_get_chat_room(lc, addr);
