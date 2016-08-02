@@ -319,7 +319,7 @@ void linphone_gtk_account_creation_password_changed(GtkEntry *entry) {
 }
 
 static void linphone_gtk_assistant_init(GtkWidget *w) {
-	LinphoneAccountCreator *creator = linphone_account_creator_new(linphone_gtk_get_core(), "https://www.linphone.org/wizard.php");
+	LinphoneAccountCreator *creator = linphone_account_creator_new(linphone_gtk_get_core(), "https://subscribe.linphone.org:444/wizard.php");
 	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
 	linphone_account_creator_set_user_data(creator, w);
 	linphone_account_creator_cbs_set_is_account_used(cbs, linphone_gtk_test_account_existence_cb);
