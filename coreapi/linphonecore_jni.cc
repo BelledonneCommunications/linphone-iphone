@@ -688,13 +688,13 @@ jobject getAccountCreator(JNIEnv *env, LinphoneAccountCreator *account_creator) 
 
 		void *up = linphone_account_creator_get_user_data(account_creator);
 		if (up == NULL) {
-			jobj = env->NewObject(ljb->natPolicyClass, ljb->natPolicyCtrId, (jlong)account_creator);
+			jobj = env->NewObject(ljb->accountCreatorClass, ljb->accountCreatorCtrId, (jlong)account_creator);
 			linphone_account_creator_set_user_data(account_creator, (void *)env->NewWeakGlobalRef(jobj));
 			linphone_account_creator_ref(account_creator);
 		} else {
 			jobj = env->NewLocalRef((jobject)up);
 			if (jobj == NULL) {
-				jobj = env->NewObject(ljb->natPolicyClass, ljb->natPolicyCtrId, (jlong)account_creator);
+				jobj = env->NewObject(ljb->accountCreatorClass, ljb->accountCreatorCtrId, (jlong)account_creator);
 				linphone_account_creator_set_user_data(account_creator, (void *)env->NewWeakGlobalRef(jobj));
 			}
 		}
