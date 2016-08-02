@@ -225,4 +225,10 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	public void removePhoneNumber(String phone) {
 		removePhoneNumber(nativePtr, phone);
 	}
+	
+	private native boolean isAlreadyPresentInFriendList(long nativePtr);
+	@Override
+	public boolean isAlreadyPresentInFriendList() {
+		return isAlreadyPresentInFriendList(nativePtr);
+	}
 }

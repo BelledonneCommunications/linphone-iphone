@@ -204,4 +204,9 @@ public interface LinphoneFriend {
 	String[] getPhoneNumbers();
 	void addPhoneNumber(String phone);
 	void removePhoneNumber(String phone);
+	
+	/**
+	 * Returns true if friend has already been added in a LinphoneFriendList, false otherwise
+	 */
+	boolean isAlreadyPresentInFriendList();
 }
