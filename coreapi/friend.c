@@ -278,7 +278,7 @@ LinphoneAddress * linphone_friend_get_address(const LinphoneFriend *lf) {
 	return NULL;
 }
 
-int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
+int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
 	LinphoneAddress *fr = linphone_address_clone(addr);
 
 	linphone_address_clean(fr);
@@ -715,7 +715,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 	LinphoneAddress *addr = linphone_friend_get_address(fr);
 
 	if (!addr) {
-		ms_warning("No sip url defined.");
+		ms_debug("No sip url defined in friend %s", linphone_friend_get_name(fr));
 		return;
 	}
 	linphone_address_unref(addr);
@@ -1332,10 +1332,14 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 		lf = linphone_friend_new_from_vcard(vcard);
 	}
 	if (!lf) {
-		LinphoneAddress *addr = linphone_address_new(argv[2]);
 		lf = linphone_friend_new();
-		linphone_friend_set_address(lf, addr);
-		linphone_address_unref(addr);
+		if (argv[2] != NULL) {
+			LinphoneAddress *addr = linphone_address_new(argv[2]);
+			if (addr) {
+				linphone_friend_set_address(lf, addr);
+				linphone_address_unref(addr);
+			}
+		}
 	}
 	linphone_friend_set_inc_subscribe_policy(lf, atoi(argv[3]));
 	linphone_friend_send_subscribe(lf, atoi(argv[4]));

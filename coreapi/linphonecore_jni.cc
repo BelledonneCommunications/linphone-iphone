@@ -3864,7 +3864,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setPresenceModel(JNIEn
 
 extern "C" jboolean Java_org_linphone_core_LinphoneFriendImpl_isAlreadyPresentInFriendList(JNIEnv* env, jobject thiz, jlong ptr) {
 	LinphoneFriend *lf = (LinphoneFriend *)ptr;
-	return (jboolean)lf->friend_list != NULL;
+	return lf->friend_list != NULL;
 }
 
 /*
