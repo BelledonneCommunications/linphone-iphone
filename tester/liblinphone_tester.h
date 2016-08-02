@@ -110,6 +110,9 @@ extern const char* test_username;
 extern const char* test_password;
 extern const char* test_route;
 extern const char* userhostsfile;
+extern bool_t liblinphone_tester_tls_support_disabled;
+extern const MSAudioDiffParams audio_cmp_params;
+extern const char *liblinphone_tester_mire_id;
 extern bool_t liblinphonetester_ipv6;
 
 typedef struct _stats {
@@ -368,8 +371,6 @@ void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie
 void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts);
 void record_call(const char *filename, bool_t enableVideo, const char *video_codec);
 
-extern const MSAudioDiffParams audio_cmp_params;
-
 /*
  * this function return max value in the last 3 seconds*/
 int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr);
@@ -389,8 +390,6 @@ void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *cal
 
 LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bool_t do_registration);
 void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv);
-
-extern const char *liblinphone_tester_mire_id;
 
 LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const LinphoneAddress *source);
 FILE *sip_start(const char *senario, const char* dest_username, const char *passwd, LinphoneAddress* dest_addres);

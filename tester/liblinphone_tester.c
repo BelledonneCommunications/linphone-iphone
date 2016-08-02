@@ -212,6 +212,7 @@ static const char* liblinphone_helper =
 		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
 		"\t\t\t--keep-recorded-files\n"
 		"\t\t\t--disable-leak-detector\n"
+		"\t\t\t--disable-tls-support\n"
 		"\t\t\t--6\n"
 		;
 
@@ -252,6 +253,8 @@ int main (int argc, char *argv[])
 			liblinphone_tester_keep_recorded_files(TRUE);
 		} else if (strcmp(argv[i],"--disable-leak-detector")==0){
 			liblinphone_tester_disable_leak_detector(TRUE);
+		} else if (strcmp(argv[i],"--disable-tls-support")==0){
+			liblinphone_tester_tls_support_disabled = TRUE;
 		} else if (strcmp(argv[i],"--6")==0){
 			liblinphonetester_ipv6=TRUE;
 		} else {

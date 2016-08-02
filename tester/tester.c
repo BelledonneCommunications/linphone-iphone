@@ -45,6 +45,7 @@
 static int liblinphone_tester_keep_accounts_flag = 0;
 static int liblinphone_tester_keep_record_files = FALSE;
 static int liblinphone_tester_leak_detector_disabled = FALSE;
+bool_t liblinphone_tester_tls_support_disabled = FALSE;
 int manager_count = 0;
 int leaked_objects_count = 0;
 const MSAudioDiffParams audio_cmp_params = {10,2000};
@@ -262,11 +263,15 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 }
 
 bool_t transport_supported(LinphoneTransportType transport) {
-	Sal *sal = sal_init(NULL);
-	bool_t supported = sal_transport_available(sal,(SalTransport)transport);
-	if (!supported) ms_message("TLS transport not supported, falling back to TCP if possible otherwise skipping test.");
-	sal_uninit(sal);
-	return supported;
+	if ((transport == LinphoneTransportDtls || transport == LinphoneTransportTls) && liblinphone_tester_tls_support_disabled == TRUE) {
+		return FALSE;
+	} else {
+		Sal *sal = sal_init(NULL);
+		bool_t supported = sal_transport_available(sal,(SalTransport)transport);
+		if (!supported) ms_message("TLS transport not supported, falling back to TCP if possible otherwise skipping test.");
+		sal_uninit(sal);
+		return  supported;
+	}
 }
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
