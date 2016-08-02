@@ -7777,7 +7777,7 @@ static void account_creator_is_account_used(LinphoneAccountCreator *creator, Lin
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	
 	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorIsAccountUsed","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status)V");
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorIsAccountUsed","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
 	env->DeleteLocalRef(clazz);
 	
 	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
@@ -7803,7 +7803,7 @@ static void account_creator_create_account(LinphoneAccountCreator *creator, Linp
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	
 	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorAccountCreated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status)V");
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorAccountCreated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
 	env->DeleteLocalRef(clazz);
 	
 	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
@@ -7829,7 +7829,7 @@ static void account_creator_activate_account(LinphoneAccountCreator *creator, Li
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	
 	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorAccountActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status)V");
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorAccountActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
 	env->DeleteLocalRef(clazz);
 	
 	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
@@ -7855,7 +7855,7 @@ static void account_creator_link_phone_number_with_account(LinphoneAccountCreato
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	
 	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorAccountLinkedWithPhoneNumber","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status)V");
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorAccountLinkedWithPhoneNumber","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
 	env->DeleteLocalRef(clazz);
 	
 	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
@@ -7881,7 +7881,7 @@ static void account_creator_activate_phone_number_link(LinphoneAccountCreator *c
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	
 	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorPhoneNumberLinkActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status)V");
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorPhoneNumberLinkActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
 	env->DeleteLocalRef(clazz);
 	
 	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
@@ -7907,7 +7907,7 @@ static void account_creator_is_account_activated(LinphoneAccountCreator *creator
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	
 	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorIsAccountActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status)V");
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorIsAccountActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
 	env->DeleteLocalRef(clazz);
 	
 	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
