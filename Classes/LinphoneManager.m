@@ -1594,8 +1594,8 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 
 - (void)cancelLocalNotifTimerForCallId:(NSString *)callid {
 	// first, make sure this callid is not already involved in a call
-	MSList *calls = (MSList *)linphone_core_get_calls(theLinphoneCore);
-	MSList *call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
+	bctbx_list_t *call = bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [callid UTF8String]);
 	if (call != NULL) {
 		LinphoneCallAppData *data =
 			(__bridge LinphoneCallAppData *)(linphone_call_get_user_data((LinphoneCall *)call->data));
@@ -1608,8 +1608,8 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 
 - (void)acceptCallForCallId:(NSString *)callid {
 	// first, make sure this callid is not already involved in a call
-	MSList *calls = (MSList *)linphone_core_get_calls(theLinphoneCore);
-	MSList *call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
+	bctbx_list_t *call = bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [callid UTF8String]);
 	if (call != NULL) {
 		const LinphoneVideoPolicy *video_policy = linphone_core_get_video_policy(theLinphoneCore);
 		bool with_video = video_policy->automatically_accept;
@@ -1620,8 +1620,8 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 
 - (void)addPushCallId:(NSString *)callid {
 	// first, make sure this callid is not already involved in a call
-	MSList *calls = (MSList *)linphone_core_get_calls(theLinphoneCore);
-	if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
+	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
+	if (bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [callid UTF8String])) {
 		LOGW(@"Call id [%@] already handled", callid);
 		return;
 	};
@@ -1705,10 +1705,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 
 	LinphoneCall *currentCall = linphone_core_get_current_call(theLinphoneCore);
-	const MSList *callList = linphone_core_get_calls(theLinphoneCore);
+	const bctbx_list_t *callList = linphone_core_get_calls(theLinphoneCore);
 	if (!currentCall // no active call
 		&& callList  // at least one call in a non active state
-		&& ms_list_find_custom((MSList *)callList, (MSCompareFunc)comp_call_state_paused, NULL)) {
+		&& bctbx_list_find_custom(callList, (bctbx_compare_func)comp_call_state_paused, NULL)) {
 		[self startCallPausedLongRunningTask];
 	}
 	if (callList) {

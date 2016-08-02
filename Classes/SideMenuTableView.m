@@ -64,7 +64,8 @@
 	if (section == 0) {
 		BOOL hasDefault = (linphone_core_get_default_proxy_config(LC) != NULL);
 		// default account is shown in the header already
-		return MAX(0, ms_list_size(linphone_core_get_proxy_config_list(LC)) - (hasDefault ? 1 : 0));
+		size_t count = bctbx_list_size(linphone_core_get_proxy_config_list(LC));
+		return MAX(0, (int)count - (hasDefault ? 1 : 0));
 	} else {
 		return [_sideMenuEntries count];
 	}
@@ -74,11 +75,12 @@
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
 	if (indexPath.section == 0) {
 		// do not display default account here, it is already in header view
-		int idx = linphone_core_get_default_proxy_config(LC) ? ms_list_index(linphone_core_get_proxy_config_list(LC),
-																			 linphone_core_get_default_proxy_config(LC))
-															 : 0;
-		LinphoneProxyConfig *proxy = ms_list_nth_data(linphone_core_get_proxy_config_list(LC),
-													  (int)indexPath.row + (idx <= indexPath.row ? 1 : 0));
+		int idx =
+			linphone_core_get_default_proxy_config(LC)
+				? bctbx_list_index(linphone_core_get_proxy_config_list(LC), linphone_core_get_default_proxy_config(LC))
+				: 0;
+		LinphoneProxyConfig *proxy = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+														 (int)indexPath.row + (idx <= indexPath.row ? 1 : 0));
 		if (proxy) {
 			cell.textLabel.text = [NSString stringWithUTF8String:linphone_proxy_config_get_identity(proxy)];
 			cell.imageView.image = [StatusBarView imageForState:linphone_proxy_config_get_state(proxy)];

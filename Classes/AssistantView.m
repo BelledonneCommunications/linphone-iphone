@@ -96,7 +96,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	new_config = NULL;
 	[self resetTextFields];
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
-	number_of_configs_before = ms_list_size(linphone_core_get_proxy_config_list(LC));
+	number_of_configs_before = bctbx_list_size(linphone_core_get_proxy_config_list(LC));
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -583,7 +583,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	switch (status) {
 		case LinphoneConfiguringSuccessful:
 			// we successfully loaded a remote provisioned config, go to dialer
-			if (number_of_configs_before < ms_list_size(linphone_core_get_proxy_config_list(LC))) {
+			if (number_of_configs_before < bctbx_list_size(linphone_core_get_proxy_config_list(LC))) {
 				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
 			}

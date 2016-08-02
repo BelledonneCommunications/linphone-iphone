@@ -110,7 +110,7 @@
 		}
 	}
 
-	const MSList *logs = linphone_core_get_call_logs(LC);
+	const bctbx_list_t *logs = linphone_core_get_call_logs(LC);
 	self.sections = [NSMutableDictionary dictionary];
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
@@ -130,14 +130,14 @@
 			LinphoneCallLog *prev = [eventsOnThisDay lastObject] ? [[eventsOnThisDay lastObject] pointerValue] : NULL;
 			if (prev && linphone_address_weak_equal(linphone_call_log_get_remote_address(prev),
 													linphone_call_log_get_remote_address(log))) {
-				MSList *list = linphone_call_log_get_user_data(prev);
-				list = ms_list_append(list, log);
+				bctbx_list_t *list = linphone_call_log_get_user_data(prev);
+				list = bctbx_list_append(list, log);
 				linphone_call_log_set_user_data(prev, list);
 			} else {
 				[eventsOnThisDay addObject:[NSValue valueWithPointer:linphone_call_log_ref(log)]];
 			}
 		}
-		logs = ms_list_next(logs);
+		logs = bctbx_list_next(logs);
 	}
 
 	[self computeSections];

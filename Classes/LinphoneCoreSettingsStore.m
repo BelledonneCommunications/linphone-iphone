@@ -205,7 +205,7 @@
 				[self setCString:linphone_auth_info_get_ha1(ai) forKey:@"ha1_preference"];
 			}
 
-			int idx = ms_list_index(linphone_core_get_proxy_config_list(LC), proxy);
+			int idx = (int)bctbx_list_index(linphone_core_get_proxy_config_list(LC), proxy);
 			[self setInteger:idx forKey:@"current_proxy_config_preference"];
 
 			int expires = linphone_proxy_config_get_expires(proxy);
@@ -227,10 +227,10 @@
 
 	// root section
 	{
-		const MSList *accounts = linphone_core_get_proxy_config_list(LC);
-		int count = ms_list_size(accounts);
-		for (int i = 1; i <= count; i++, accounts = accounts->next) {
-			NSString *key = [NSString stringWithFormat:@"menu_account_%d", i];
+		const bctbx_list_t *accounts = linphone_core_get_proxy_config_list(LC);
+		size_t count = bctbx_list_size(accounts);
+		for (size_t i = 1; i <= count; i++, accounts = accounts->next) {
+			NSString *key = [NSString stringWithFormat:@"menu_account_%lu", i];
 			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)accounts->data;
 			[self setCString:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))
 					  forKey:key];
@@ -478,8 +478,8 @@
 			proxy = linphone_address_as_string_uri_only(proxy_addr);
 		}
 
-		proxyCfg = ms_list_nth_data(linphone_core_get_proxy_config_list(LC),
-									[self integerForKey:@"current_proxy_config_preference"]);
+		proxyCfg = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+									   [self integerForKey:@"current_proxy_config_preference"]);
 		// if account was deleted, it is not present anymore
 		if (proxyCfg == NULL) {
 			goto bad_proxy;
@@ -842,8 +842,8 @@
 }
 
 - (void)removeAccount {
-	LinphoneProxyConfig *config = ms_list_nth_data(linphone_core_get_proxy_config_list(LC),
-												   [self integerForKey:@"current_proxy_config_preference"]);
+	LinphoneProxyConfig *config = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+													  [self integerForKey:@"current_proxy_config_preference"]);
 
 	BOOL isDefault = (linphone_core_get_default_proxy_config(LC) == config);
 

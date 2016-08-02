@@ -203,7 +203,7 @@
 			linphone_friend_add_address(_friend, addr);
 			linphone_address_destroy(addr);
 			// ensure that it was added by checking list size
-			ret = (ms_list_size(linphone_friend_get_addresses(_friend)) == _sipAddresses.count + 1);
+			ret = (bctbx_list_size(linphone_friend_get_addresses(_friend)) == _sipAddresses.count + 1);
 		}
 	}
 	if (ret) {
@@ -224,7 +224,7 @@
 			phone = [NSString stringWithUTF8String:cphone];
 			ms_free(cphone);
 			// ensure that it was added by checking list size
-			ret = (ms_list_size(linphone_friend_get_phone_numbers(_friend)) == _phoneNumbers.count + 1);
+			ret = (bctbx_list_size(linphone_friend_get_phone_numbers(_friend)) == _phoneNumbers.count + 1);
 		}
 	}
 	if (ret) {
@@ -256,7 +256,7 @@
 			linphone_friend_remove_address(_friend, addr);
 			linphone_address_destroy(addr);
 			// ensure that it was destroyed by checking list size
-			ret = (ms_list_size(linphone_friend_get_addresses(_friend)) == _sipAddresses.count - 1);
+			ret = (bctbx_list_size(linphone_friend_get_addresses(_friend)) + 1 == _sipAddresses.count);
 		}
 	}
 	if (ret) {
@@ -273,7 +273,7 @@
 		const char *phone = ((NSString *)_phoneNumbers[index]).UTF8String;
 		linphone_friend_remove_phone_number(_friend, phone);
 		// ensure that it was destroyed by checking list size
-		ret = (ms_list_size(linphone_friend_get_phone_numbers(_friend)) == _phoneNumbers.count - 1);
+		ret = (bctbx_list_size(linphone_friend_get_phone_numbers(_friend)) + 1 == _phoneNumbers.count);
 	}
 	if (ret) {
 		[_phoneNumbers removeObjectAtIndex:index];

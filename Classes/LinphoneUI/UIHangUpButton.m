@@ -99,7 +99,7 @@
 		linphone_core_terminate_call(LC, currentcall);
 	} else {
 		const MSList *calls = linphone_core_get_calls(LC);
-		if (ms_list_size(calls) == 1) { // Only one call
+		if (bctbx_list_size(calls) == 1) { // Only one call
 			linphone_core_terminate_call(LC, (LinphoneCall *)(calls->data));
 		}
 	}

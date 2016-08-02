@@ -496,10 +496,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if ([specifier.key hasPrefix:@"menu_account_"]) {
-		const MSList *accounts = linphone_core_get_proxy_config_list(LC);
+		const bctbx_list_t *accounts = linphone_core_get_proxy_config_list(LC);
 		int index = [specifier.key substringFromIndex:@"menu_account_".length].intValue - 1;
-		if (index < ms_list_size(accounts)) {
-			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)ms_list_nth_data(accounts, index);
+		if (index < bctbx_list_size(accounts)) {
+			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)bctbx_list_nth_data(accounts, index);
 			NSString *name = [NSString
 				stringWithUTF8String:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))];
 			[specifier.specifierDict setValue:name forKey:kIASKTitle];
@@ -514,8 +514,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSMutableSet *hiddenKeys = [NSMutableSet set];
 
 	const MSList *accounts = linphone_core_get_proxy_config_list(LC);
-	for (int i = ms_list_size(accounts) + 1; i <= 5; i++) {
-		[hiddenKeys addObject:[NSString stringWithFormat:@"menu_account_%d", i]];
+	for (size_t i = bctbx_list_size(accounts) + 1; i <= 5; i++) {
+		[hiddenKeys addObject:[NSString stringWithFormat:@"menu_account_%lu", i]];
 	}
 
 	if (!linphone_core_sip_transport_supported(LC, LinphoneTransportTls)) {

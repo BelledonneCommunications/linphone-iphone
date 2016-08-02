@@ -20,13 +20,13 @@
 	}
 
 	if (peer) {
-		const MSList *logs = linphone_core_get_call_history_for_address(LC, peer);
+		const bctbx_list_t *logs = linphone_core_get_call_history_for_address(LC, peer);
 		while (logs != NULL) {
 			LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
 			if (linphone_address_weak_equal(linphone_call_log_get_remote_address(log), peer)) {
 				[callLogs addObject:[NSValue valueWithPointer:log]];
 			}
-			logs = ms_list_next(logs);
+			logs = bctbx_list_next(logs);
 		}
 	}
 	[[self tableView] reloadData];

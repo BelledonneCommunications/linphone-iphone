@@ -27,7 +27,7 @@
 #import "Utils.h"
 
 @implementation ChatsListTableView {
-	MSList *data;
+	bctbx_list_t *data;
 }
 
 #pragma mark - Lifecycle Functions
@@ -42,7 +42,7 @@
 
 - (void)dealloc {
 	if (data != nil) {
-		ms_list_free_with_data(data, chatTable_free_chatrooms);
+		bctbx_list_free_with_data(data, chatTable_free_chatrooms);
 	}
 }
 
@@ -88,15 +88,15 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	while (iter) {
 		// store last message in user data
 		LinphoneChatRoom *chat_room = iter->data;
-		MSList *history = linphone_chat_room_get_history(iter->data, 1);
+		bctbx_list_t *history = linphone_chat_room_get_history(iter->data, 1);
 		LinphoneChatMessage *last_msg = NULL;
 		if (history) {
 			last_msg = linphone_chat_message_ref(history->data);
-			ms_list_free(history);
+			bctbx_list_free(history);
 		}
 		linphone_chat_room_set_user_data(chat_room, last_msg);
-		sorted =
-			ms_list_insert_sorted(sorted, linphone_chat_room_ref(chat_room), (MSCompareFunc)sorted_history_comparison);
+		sorted = bctbx_list_insert_sorted(sorted, linphone_chat_room_ref(chat_room),
+										  (bctbx_compare_func)sorted_history_comparison);
 		iter = iter->next;
 	}
 	return sorted;
@@ -113,13 +113,13 @@ static void chatTable_free_chatrooms(void *data) {
 
 - (void)loadData {
 	if (data != NULL) {
-		ms_list_free_with_data(data, chatTable_free_chatrooms);
+		bctbx_list_free_with_data(data, chatTable_free_chatrooms);
 	}
 	data = [self sortChatRooms];
 	[super loadData];
 
 	if (IPAD) {
-		int idx = ms_list_index(data, VIEW(ChatConversationView).chatRoom);
+		int idx = bctbx_list_index(data, VIEW(ChatConversationView).chatRoom);
 		// if conversation view is using a chatroom that does not exist anymore, update it
 		if (idx != -1) {
 			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
@@ -137,7 +137,7 @@ static void chatTable_free_chatrooms(void *data) {
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ms_list_size(data);
+	return bctbx_list_size(data);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -147,7 +147,7 @@ static void chatTable_free_chatrooms(void *data) {
 		cell = [[UIChatCell alloc] initWithIdentifier:kCellId];
 	}
 
-	[cell setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row])];
+	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row])];
 	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
 }
@@ -157,7 +157,7 @@ static void chatTable_free_chatrooms(void *data) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if (![self isEditing]) {
-		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:chatRoom];
 		// on iPad, force unread bubble to disappear by reloading the cell
@@ -175,7 +175,7 @@ static void chatTable_free_chatrooms(void *data) {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[tableView beginUpdates];
 
-		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
 		LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(chatRoom);
 		if (last_msg) {
 			linphone_chat_message_unref(last_msg);
@@ -192,7 +192,7 @@ static void chatTable_free_chatrooms(void *data) {
 		[ftdToDelete cancel];
 
 		linphone_core_delete_chat_room(linphone_chat_room_get_core(chatRoom), chatRoom);
-		data = ms_list_remove(data, chatRoom);
+		data = bctbx_list_remove(data, chatRoom);
 
 		// will force a call to [self loadData]
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
@@ -205,7 +205,7 @@ static void chatTable_free_chatrooms(void *data) {
 
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
-	  LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
+	  LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
 	  LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(chatRoom);
 	  if (last_msg) {
 		  linphone_chat_message_unref(last_msg);
@@ -222,7 +222,7 @@ static void chatTable_free_chatrooms(void *data) {
 	  [ftdToDelete cancel];
 
 	  linphone_core_delete_chat_room(linphone_chat_room_get_core(chatRoom), chatRoom);
-	  data = ms_list_remove(data, chatRoom);
+	  data = bctbx_list_remove(data, chatRoom);
 
 	  // will force a call to [self loadData]
 	  [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];

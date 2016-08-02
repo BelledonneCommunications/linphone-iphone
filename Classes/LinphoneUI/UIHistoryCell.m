@@ -99,10 +99,10 @@
 
 	[ContactDisplay setDisplayNameLabel:displayNameLabel forAddress:addr];
 
-	int count = ms_list_size(linphone_call_log_get_user_data(callLog)) + 1;
+	size_t count = bctbx_list_size(linphone_call_log_get_user_data(callLog)) + 1;
 	if (count > 1) {
 		displayNameLabel.text =
-			[displayNameLabel.text stringByAppendingString:[NSString stringWithFormat:@" (%d)", count]];
+			[displayNameLabel.text stringByAppendingString:[NSString stringWithFormat:@" (%lu)", count]];
 	}
 
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:YES] bordered:NO withRoundedRadius:YES];
