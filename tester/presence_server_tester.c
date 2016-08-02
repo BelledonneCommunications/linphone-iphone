@@ -689,7 +689,7 @@ static void long_term_presence_inexistent_friend(void) {
 }
 
 static void long_term_presence_phone_alias(void) {
-	long_term_presence_base("sip:+331234567890@sip.example.org", TRUE, "sip:liblinphone_tester@sip.example.org");
+	long_term_presence_base("sip:+33123456789@sip.example.org", TRUE, "sip:liblinphone_tester@sip.example.org");
 }
 
 static const char* random_phone_number(void) {
@@ -718,7 +718,7 @@ static void long_term_presence_list(void) {
 	LinphoneFriend *f1, *f2;
 	LinphoneFriendList* friends;
 	const LinphonePresenceModel *presence;
-	const char *phone_number = "+331234567890";
+	const char *phone_number = "+33123456789";
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	enable_publish(pauline, FALSE);
 	enable_deflate_content_encoding(pauline, FALSE);
