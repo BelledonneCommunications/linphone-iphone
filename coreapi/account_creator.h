@@ -79,7 +79,7 @@ typedef struct _LinphoneAccountCreatorCbs LinphoneAccountCreatorCbs;
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] status The status of the LinphoneAccountCreator test existence operation that has just finished
 **/
-typedef void (*LinphoneAccountCreatorStatusCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status);
+typedef void (*LinphoneAccountCreatorCbsStatusCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status);
 
 /**
  * Create a LinphoneAccountCreator.
@@ -332,84 +332,84 @@ LINPHONE_PUBLIC void linphone_account_creator_cbs_set_user_data(LinphoneAccountC
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @return The current existence tested callback.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_is_account_used(const LinphoneAccountCreatorCbs *cbs);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_is_account_used(const LinphoneAccountCreatorCbs *cbs);
 
 /**
  * Set the existence tested callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @param[in] cb The existence tested callback to be used.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_account_used(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb);
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_account_used(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * Get the create account callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @return The current create account callback.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_create_account(const LinphoneAccountCreatorCbs *cbs);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_create_account(const LinphoneAccountCreatorCbs *cbs);
 
 /**
  * Set the create account callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @param[in] cb The create account callback to be used.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_cbs_set_create_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb);
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_create_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * Get the activate account callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @return The current activate account callback.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_activate_account(const LinphoneAccountCreatorCbs *cbs);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_activate_account(const LinphoneAccountCreatorCbs *cbs);
 
 /**
  * Set the activate account callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @param[in] cb The activate account callback to be used.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_cbs_set_activate_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb);
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_activate_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * Get the link phone number with account callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @return The current link phone number with account callback.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_link_phone_number_with_account(const LinphoneAccountCreatorCbs *cbs);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_link_phone_number_with_account(const LinphoneAccountCreatorCbs *cbs);
 
 /**
  * Set the link phone number with account callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @param[in] cb The link phone number with account callback to be used.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_cbs_set_link_phone_number_with_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb);
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_link_phone_number_with_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * Get the activate phone number link callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @return The current activate phone number link callback.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_activate_phone_number_link(const LinphoneAccountCreatorCbs *cbs);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_activate_phone_number_link(const LinphoneAccountCreatorCbs *cbs);
 
 /**
  * Set the activate phone number link callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @param[in] cb The activate phone number link callback to be used.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_cbs_set_activate_phone_number_link(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb);
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_activate_phone_number_link(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * Get the validation tested callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @return The current validation tested callback.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_is_account_activated(const LinphoneAccountCreatorCbs *cbs);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_is_account_activated(const LinphoneAccountCreatorCbs *cbs);
 
 /**
  * Set the validation tested callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @param[in] cb The validation tested callback to be used.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_account_activated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb);
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_account_activated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * @}
