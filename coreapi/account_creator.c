@@ -61,51 +61,51 @@ void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, 
 	cbs->user_data = ud;
 }
 
-LinphoneAccountCreatorDefaultCb linphone_account_creator_cbs_get_is_account_used(const LinphoneAccountCreatorCbs *cbs) {
+LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_is_account_used(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->is_account_used;
 }
 
-void linphone_account_creator_cbs_set_is_account_used(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorDefaultCb cb) {
+void linphone_account_creator_cbs_set_is_account_used(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb) {
 	cbs->is_account_used = cb;
 }
 
-LinphoneAccountCreatorDefaultCb linphone_account_creator_cbs_get_create_account(const LinphoneAccountCreatorCbs *cbs) {
+LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_create_account(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->create_account;
 }
 
-void linphone_account_creator_cbs_set_create_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorDefaultCb cb) {
+void linphone_account_creator_cbs_set_create_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb) {
 	cbs->create_account = cb;
 }
 
-LinphoneAccountCreatorDefaultCb linphone_account_creator_cbs_get_activate_account(const LinphoneAccountCreatorCbs *cbs) {
+LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_activate_account(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->activate_account;
 }
 
-void linphone_account_creator_cbs_set_activate_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorDefaultCb cb) {
+void linphone_account_creator_cbs_set_activate_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb) {
 	cbs->activate_account = cb;
 }
 
-LinphoneAccountCreatorDefaultCb linphone_account_creator_cbs_get_link_phone_number_with_account(const LinphoneAccountCreatorCbs *cbs) {
+LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_link_phone_number_with_account(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->link_phone_number_with_account;
 }
 
-void linphone_account_creator_cbs_set_link_phone_number_with_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorDefaultCb cb) {
+void linphone_account_creator_cbs_set_link_phone_number_with_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb) {
 	cbs->link_phone_number_with_account = cb;
 }
 
-LinphoneAccountCreatorDefaultCb linphone_account_creator_cbs_get_activate_phone_number_link(const LinphoneAccountCreatorCbs *cbs) {
+LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_activate_phone_number_link(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->activate_phone_number_link;
 }
 
-void linphone_account_creator_cbs_set_activate_phone_number_link(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorDefaultCb cb) {
+void linphone_account_creator_cbs_set_activate_phone_number_link(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb) {
 	cbs->activate_phone_number_link = cb;
 }
 
-LinphoneAccountCreatorDefaultCb linphone_account_creator_cbs_get_is_account_activated(const LinphoneAccountCreatorCbs *cbs) {
+LinphoneAccountCreatorStatusCb linphone_account_creator_cbs_get_is_account_activated(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->is_account_activated;
 }
 
-void linphone_account_creator_cbs_set_is_account_activated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorDefaultCb cb) {
+void linphone_account_creator_cbs_set_is_account_activated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorStatusCb cb) {
 	cbs->is_account_activated = cb;
 }
 
