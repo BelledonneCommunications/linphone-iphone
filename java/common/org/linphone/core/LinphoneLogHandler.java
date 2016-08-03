@@ -17,17 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.linphone.core;
+
 /**
  * Interface to implement for handling liblinphone log.
  * <br> use {@link LinphoneCoreFactory#setLogHandler(LinphoneLogHandler)}
  *
  */
 public interface LinphoneLogHandler {
-	public static final int Fatal=1<<4;
-	public static final int Error=1<<3;
-	public static final int Warn=1<<2;
-	public static final int Info=1<<1;
 	public static final int Debug=1;
+	public static final int Trace=1<<1;
+	public static final int Info=1<<2;
+	public static final int Warn=1<<3;
+	public static final int Error=1<<4;
+	public static final int Fatal=1<<5;
 	
 	/**
 	 * Method invoked for each traces
