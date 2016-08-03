@@ -93,32 +93,50 @@ void linphone_android_log_handler(int prio, char *str) {
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreFactoryImpl__1setLogHandler(JNIEnv *env, jobject jfactory, jobject jhandler) {
+	handler_class = (jclass) env->GetObjectClass(jhandler);
+	loghandler_id = env->GetMethodID(handler_class, "log", "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V");
+	
+	if (loghandler_id == NULL) {
+		ms_fatal("log method not found");
+	}
+	if (handler_obj) {
+		env->DeleteGlobalRef(handler_obj);
+		handler_obj = NULL;
+	}
+	if (jhandler) {
+		handler_obj = env->NewGlobalRef(jhandler);
+	}
+}
+
 static void linphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	char str[4096];
-	const char *levname="undef";
+	const char *levname = "undef";
 	vsnprintf(str, sizeof(str) - 1, fmt, args);
 	str[sizeof(str) - 1] = '\0';
 
 	int prio;
-	switch(lev){
-	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	levname="debug"; break;
-	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	levname="message"; break;
-	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	levname="warning"; break;
-	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	levname="error"; break;
-	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	levname="fatal"; break;
-	default:			prio = ANDROID_LOG_DEFAULT;	break;
+	switch(lev) {
+		case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	levname="debug"; break;
+		case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	levname="message"; break;
+		case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	levname="warning"; break;
+		case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	levname="error"; break;
+		case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	levname="fatal"; break;
+		default:			prio = ANDROID_LOG_DEFAULT;	break;
 	}
-	if (handler_obj){
-		JNIEnv *env=ms_get_jni_env();
-		jstring jdomain=env->NewStringUTF(LogDomain);
-		jstring jlevname=env->NewStringUTF(levname);
-		jstring jstr=env->NewStringUTF(str);
-		env->CallVoidMethod(handler_obj,loghandler_id,jdomain,(jint)lev,jlevname,jstr,NULL);
+	
+	if (handler_obj) {
+		JNIEnv *env = ms_get_jni_env();
+		jstring jdomain = env->NewStringUTF(LogDomain);
+		jstring jlevname = env->NewStringUTF(levname);
+		jstring jstr = env->NewStringUTF(str);
+		env->CallVoidMethod(handler_obj, loghandler_id, jdomain, (jint)lev, jlevname, jstr, NULL);
 		if (jdomain) env->DeleteLocalRef(jdomain);
 		if (jlevname) env->DeleteLocalRef(jlevname);
 		if (jstr) env->DeleteLocalRef(jstr);
-	}else
+	} else {
 		linphone_android_log_handler(prio, str);
+	}
 }
 
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
@@ -5850,24 +5868,6 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_getHead
  */
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_delete(JNIEnv *env, jobject jobj , jlong infoptr){
 	linphone_info_message_destroy((LinphoneInfoMessage*)infoptr);
-}
-
-JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreFactoryImpl__1setLogHandler(JNIEnv *env, jobject jfactory, jobject jhandler){
-	static int init_done=FALSE;
-
-	if (!init_done){
-		handler_class=(jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneLogHandler"));
-		loghandler_id=env->GetMethodID(handler_class,"log", "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V");
-		if (loghandler_id==NULL) ms_fatal("log method not found");
-		init_done=TRUE;
-	}
-	if (handler_obj) {
-		env->DeleteGlobalRef(handler_obj);
-		handler_obj=NULL;
-	}
-	if (jhandler){
-		handler_obj=env->NewGlobalRef(jhandler);
-	}
 }
 
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneEventImpl_getCore(JNIEnv *env, jobject jobj, jlong evptr){
