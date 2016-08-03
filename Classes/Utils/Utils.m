@@ -445,6 +445,9 @@
 	else if ([machine isEqual:@"iPod7,1"])
 		return @"iPod touch 6G";
 
+	else if ([machine isEqual:@"x86_64"])
+		return @"simulator 64bits";
+
 	// none matched: cf https://www.theiphonewiki.com/wiki/Models for the whole list
 	LOGW(@"%s: Oops, unknown machine %@... consider completing me!", __FUNCTION__, machine);
 	return machine;

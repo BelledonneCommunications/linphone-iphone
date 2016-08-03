@@ -27,7 +27,7 @@ INIT_WITH_COMMON_CF {
 	self.layer.borderColor = _errorLabel.hidden ? [[UIColor clearColor] CGColor] : [[UIColor redColor] CGColor];
 }
 
-- (void)showError:(NSString *)msg when:(UIDisplayError)apred {
+- (void)showError:(NSString *)msg when:(DisplayErrorPred)apred {
 	_showErrorPredicate = apred;
 	[self showError:msg];
 	[self checkDisplayError];
@@ -38,8 +38,21 @@ INIT_WITH_COMMON_CF {
 	self.layer.borderColor = _errorLabel.hidden ? [[UIColor clearColor] CGColor] : [[UIColor redColor] CGColor];
 }
 
+- (BOOL)isVisible {
+	UIView* aview = self;
+	while (aview) {
+		if (aview.isHidden || !aview.isUserInteractionEnabled) return NO;
+		aview = aview.superview;
+	}
+	return YES;
+}
+
 - (BOOL)isInvalid {
-	return _showErrorPredicate && _showErrorPredicate(_lastText);
+	return self.isVisible && _showErrorPredicate && _showErrorPredicate(_lastText);
+}
+
+- (void)setEnabled:(BOOL)enabled {
+	self.backgroundColor = [self.backgroundColor colorWithAlphaComponent:enabled?1:0.5];
 }
 
 #pragma mark - UITextFieldDelegate Functions
@@ -47,14 +60,23 @@ INIT_WITH_COMMON_CF {
 - (BOOL)textField:(UITextField *)textField
 	shouldChangeCharactersInRange:(NSRange)range
 				replacementString:(NSString *)string {
+	// we must not show any error until user typed at least one character
+	_canShowError |= (string.length > 0);
 	_lastText = [textField.text stringByReplacingCharactersInRange:range withString:string];
 	[self checkDisplayError];
 	return YES;
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	if (self.nextFieldResponder && !self.nextFieldResponder.hidden) {
+		self.returnKeyType = UIReturnKeyNext;
+	} else {
+		self.returnKeyType = UIReturnKeyDone;
+	}
+
+}
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	_lastText = textField.text;
-	_canShowError = YES;
 	[self checkDisplayError];
 }
 

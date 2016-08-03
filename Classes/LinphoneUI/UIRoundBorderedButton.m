@@ -1,3 +1,4 @@
+
 //
 //  UIRoundBorderedButton.m
 //  linphone
@@ -50,6 +51,14 @@
 - (void)setEnabled:(BOOL)enabled {
 	[super setEnabled:enabled];
 	self.layer.borderColor = [self.titleLabel.textColor CGColor];
+}
+
+- (BOOL)becomeFirstResponder {
+	if ([super becomeFirstResponder]) {
+		[LinphoneUtils findAndResignFirstResponder:self.superview];
+		return YES;
+	}
+	return NO;
 }
 
 @end

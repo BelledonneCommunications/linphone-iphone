@@ -52,7 +52,7 @@
 - (void)setContact:(Contact *)acontact {
 	_contact = acontact;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
-	_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:_contact]);
+	_linphoneImage.hidden = ! (_contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(_contact.friend)) == LinphonePresenceBasicStatusOpen);
 }
 
 #pragma mark -

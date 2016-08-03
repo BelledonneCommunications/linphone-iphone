@@ -133,6 +133,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorUsernameInvalidSize:
 			return usePhoneNumber ? NSLocalizedString(@"Phone number length invalid.", nil)
 								  : NSLocalizedString(@"Username length invalid.", nil);
+		case LinphoneAccountCreatorPhoneNumberTooShort:
+		case LinphoneAccountCreatorPhoneNumberTooLong:
+			return nil; /* this is not an error, just user has to finish typing */
+		case LinphoneAccountCreatorPhoneNumberInvalid:
+			return NSLocalizedString(@"Invalid phone number.", nil);
 		case LinphoneAccountCreatorPasswordTooShort:
 			return NSLocalizedString(@"Password too short.", nil);
 		case LinphoneAccountCreatorPasswordTooLong:
@@ -151,8 +156,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorAccountExist:
 		case LinphoneAccountCreatorAccountNotCreated:
 		case LinphoneAccountCreatorAccountNotExist:
-		case LinphoneAccountCreatorAccountNotValidated:
-		case LinphoneAccountCreatorAccountValidated:
+		case LinphoneAccountCreatorAccountNotActivated:
+		case LinphoneAccountCreatorAccountAlreadyActivated:
+		case LinphoneAccountCreatorAccountActivated:
 		case LinphoneAccountCreatorOK:
 			break;
 	}

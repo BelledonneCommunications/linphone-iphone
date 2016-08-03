@@ -15,6 +15,11 @@
 		<entry name="realm" overwrite="true">sip.linphone.org</entry>
 	</section>
 
+	<section name="sip">
+		<entry name="rls_uri" overwrite="true">sip:rls@sip.linphone.org</entry>
+		<entry name="use_rls_presence" overwrite="true">1</entry>
+	</section>
+
 	<section name="assistant">
 		<entry name="domain" overwrite="true">sip.linphone.org</entry>
 		<entry name="password_max_length" overwrite="true">-1</entry>
@@ -23,6 +28,6 @@
 		<entry name="username_max_length" overwrite="true">64</entry>
 		<entry name="username_min_length" overwrite="true">1</entry>
 		<entry name="username_regex" overwrite="true">^[a-z0-9_.\-]*$</entry>
-		<entry name="xmlrpc_url" overwrite="true">https://www.linphone.org/assistant.php</entry>
+		<entry name="xmlrpc_url" overwrite="true">https://sip3.linphone.org:444/xmlrpc.php</entry>
 	</section>
 </config>

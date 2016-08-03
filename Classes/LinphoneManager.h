@@ -33,6 +33,7 @@
 #import "InAppProductsManager.h"
 
 #include "linphone/linphonecore.h"
+#include "bctoolbox/list.h"
 
 extern NSString *const LINPHONERC_APPLICATION_KEY;
 
@@ -50,6 +51,7 @@ extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 extern NSString *const kLinphoneConfiguringStateUpdate;
 extern NSString *const kLinphoneGlobalStateUpdate;
 extern NSString *const kLinphoneNotifyReceived;
+extern NSString *const kLinphoneNotifyPresenceReceived;
 extern NSString *const kLinphoneCallEncryptionChanged;
 extern NSString *const kLinphoneFileTransferSendUpdate;
 extern NSString *const kLinphoneFileTransferRecvUpdate;
