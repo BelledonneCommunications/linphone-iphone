@@ -651,6 +651,7 @@ static void long_term_presence_base(const char* addr, bool_t exist, const char* 
 	LinphoneFriend* friend2;
 	const LinphonePresenceModel* model;
 	char *presence_contact;
+	int *presence;
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
 
@@ -660,7 +661,7 @@ static void long_term_presence_base(const char* addr, bool_t exist, const char* 
 	linphone_friend_done(friend2);
 	linphone_core_add_friend(pauline->lc,friend2);
 
-	int *presence = exist ? &pauline->stat.number_of_LinphonePresenceActivityOnline : &pauline->stat.number_of_LinphonePresenceActivityOffline;
+	presence = exist ? &pauline->stat.number_of_LinphonePresenceActivityOnline : &pauline->stat.number_of_LinphonePresenceActivityOffline;
 	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,presence,1));
 	BC_ASSERT_EQUAL(*presence, 1, int, "%d");
 	model = linphone_friend_get_presence_model(friend2);
