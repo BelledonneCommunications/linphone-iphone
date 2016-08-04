@@ -291,7 +291,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneA
 		// if phone is valid, we lastly want to check that length is OK
 		{
 			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(country_code);
-			int size = strlen(phone_number);
+			int size = (int)strlen(phone_number);
 			if (size < plan->nnl) {
 				return LinphoneAccountCreatorPhoneNumberTooShort;
 			} else if (size > plan->nnl + 1) {
