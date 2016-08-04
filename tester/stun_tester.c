@@ -121,7 +121,7 @@ static void check_turn_context_statistics(MSTurnContext *turn_context, bool_t fo
 	}
 }
 
-static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t caller_turn_enabled, bool_t callee_turn_enabled, bool_t rtcp_mux_enabled, bool_t ipv6) {
+static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t caller_turn_enabled, bool_t callee_turn_enabled, bool_t rtcp_mux_enabled) {
 	LinphoneCoreManager *marie;
 	LinphoneCoreManager *pauline;
 	LinphoneCall *lcall;
@@ -129,15 +129,10 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 	LinphoneMediaDirection expected_video_dir = LinphoneMediaDirectionInactive;
 	bctbx_list_t *lcs = NULL;
 
-	marie = linphone_core_manager_new2("marie_rc", FALSE);
+	marie = linphone_core_manager_new("marie_rc");
 	lcs = bctbx_list_append(lcs, marie->lc);
-	pauline = linphone_core_manager_new2(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", FALSE);
+	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	lcs = bctbx_list_append(lcs, pauline->lc);
-
-	if (ipv6) {
-		linphone_core_enable_ipv6(marie->lc, TRUE);
-		linphone_core_enable_ipv6(pauline->lc, TRUE);
-	}
 
 	configure_nat_policy(marie->lc, caller_turn_enabled);
 	configure_nat_policy(pauline->lc, callee_turn_enabled);
@@ -152,9 +147,6 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 		lp_config_set_int(linphone_core_get_config(marie->lc), "rtp", "rtcp_mux", 1);
 		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "rtcp_mux", 1);
 	}
-
-	linphone_core_manager_start(marie, TRUE);
-	linphone_core_manager_start(pauline, TRUE);
 
 	if (video_enabled) {
 #ifdef VIDEO_ENABLED
@@ -195,39 +187,31 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 }
 
 static void basic_ice_turn_call(void) {
-	ice_turn_call_base(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE);
-}
-
-static void basic_ipv6_ice_turn_call(void) {
-	if (liblinphone_tester_ipv6_available()) {
-		ice_turn_call_base(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE);
-	} else {
-		ms_warning("Test skipped, no ipv6 available");
-	}
+	ice_turn_call_base(FALSE, FALSE, TRUE, TRUE, FALSE);
 }
 
 #ifdef VIDEO_ENABLED
 static void video_ice_turn_call(void) {
-	ice_turn_call_base(TRUE, FALSE, TRUE, TRUE, FALSE, FALSE);
+	ice_turn_call_base(TRUE, FALSE, TRUE, TRUE, FALSE);
 }
 #endif
 
 static void relayed_ice_turn_call(void) {
-	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, FALSE, FALSE);
+	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, FALSE);
 }
 
 #ifdef VIDEO_ENABLED
 static void relayed_video_ice_turn_call(void) {
-	ice_turn_call_base(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE);
+	ice_turn_call_base(TRUE, TRUE, TRUE, TRUE, FALSE);
 }
 #endif
 
 static void relayed_ice_turn_call_with_rtcp_mux(void) {
-	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE);
+	ice_turn_call_base(FALSE, TRUE, TRUE, TRUE, TRUE);
 }
 
 static void relayed_ice_turn_to_ice_stun_call(void) {
-	ice_turn_call_base(FALSE, TRUE, TRUE, FALSE, FALSE, FALSE);
+	ice_turn_call_base(FALSE, TRUE, TRUE, FALSE, FALSE);
 }
 
 
@@ -235,7 +219,6 @@ test_t stun_tests[] = {
 	TEST_ONE_TAG("Basic Stun test (Ping/public IP)", linphone_stun_test_grab_ip, "STUN"),
 	TEST_ONE_TAG("STUN encode", linphone_stun_test_encode, "STUN"),
 	TEST_TWO_TAGS("Basic ICE+TURN call", basic_ice_turn_call, "ICE", "TURN"),
-	TEST_TWO_TAGS("Basic IPv6 ICE+TURN call", basic_ipv6_ice_turn_call, "ICE", "TURN"),
 #ifdef VIDEO_ENABLED
 	TEST_TWO_TAGS("Video ICE+TURN call", video_ice_turn_call, "ICE", "TURN"),
 	TEST_TWO_TAGS("Relayed video ICE+TURN call", relayed_video_ice_turn_call, "ICE", "TURN"),
