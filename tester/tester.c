@@ -138,7 +138,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	ringbackpath     = ms_strdup_printf("%s/sounds/ringback.wav", path);
 	nowebcampath     = ms_strdup_printf("%s/images/nowebcamCIF.jpg", path);
 	rootcapath       = ms_strdup_printf("%s/certificates/cn/cafile.pem", path);
-	dnsuserhostspath = ms_strdup_printf("%s/%s", path, userhostsfile);
+	dnsuserhostspath = userhostsfile[0]=='/' ? ms_strdup(userhostsfile) : ms_strdup_printf("%s/%s", path, userhostsfile);
 
 
 	if( config != NULL ) {
