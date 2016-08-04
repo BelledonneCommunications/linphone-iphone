@@ -1294,7 +1294,7 @@ static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 			gtk_widget_set_sensitive(mandatory_box,TRUE);
 		}else if (strcasecmp(selected,"DTLS")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionDTLS);
-			gtk_widget_set_sensitive(mandatory_box,FALSE);
+			gtk_widget_set_sensitive(mandatory_box,TRUE);
 		}else if (strcasecmp(selected,"ZRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionZRTP);
 			gtk_widget_set_sensitive(mandatory_box,FALSE);
