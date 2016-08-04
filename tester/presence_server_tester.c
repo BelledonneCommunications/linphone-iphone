@@ -158,7 +158,7 @@ static void subscriber_no_longer_reachable(void){
 	previous_number_of_LinphonePresenceActivityOnline=marie->stat.number_of_LinphonePresenceActivityOnline;
 
 	/*don't schedule marie to simulate Notify timeout server side*/
-	wait_for_until(pauline1->lc, NULL, 0, 0, 35000);
+	wait_for_until(pauline1->lc, NULL, 0, 0, 40000);
 
 	//sal_set_send_error(marie->lc->sal,0);
 
@@ -649,6 +649,7 @@ static void presence_list_subscribe_io_error(void) {
 
 static void long_term_presence_base(const char* addr, bool_t exist, const char* contact) {
 	LinphoneFriend* friend2;
+	const LinphonePresenceModel* model;
 	char *presence_contact;
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
@@ -659,21 +660,20 @@ static void long_term_presence_base(const char* addr, bool_t exist, const char* 
 	linphone_friend_done(friend2);
 	linphone_core_add_friend(pauline->lc,friend2);
 
-
-	if (exist) {
-		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
-		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOnline, 1, int, "%d");
-		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(friend2)), LinphonePresenceBasicStatusOpen, int, "%d");
-		presence_contact = linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2));
-		BC_ASSERT_STRING_EQUAL(presence_contact, contact);
-		if (presence_contact) ms_free(presence_contact);
-	} else {
-		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOffline,1));
-		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOffline, 1, int, "%d");
-		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(friend2)), LinphonePresenceBasicStatusClosed, int, "%d");
-		presence_contact = linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2));
-		BC_ASSERT_PTR_NULL(presence_contact);
-		if (presence_contact) ms_free(presence_contact);
+	int *presence = exist ? &pauline->stat.number_of_LinphonePresenceActivityOnline : &pauline->stat.number_of_LinphonePresenceActivityOffline;
+	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,presence,1));
+	BC_ASSERT_EQUAL(*presence, 1, int, "%d");
+	model = linphone_friend_get_presence_model(friend2);
+	if (BC_ASSERT_PTR_NOT_NULL(model)) {
+		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(model),
+			exist ? LinphonePresenceBasicStatusOpen : LinphonePresenceBasicStatusClosed, int, "%d");
+		presence_contact = linphone_presence_model_get_contact(model);
+		if (exist && BC_ASSERT_PTR_NOT_NULL(presence_contact)) {
+			BC_ASSERT_STRING_EQUAL(presence_contact, contact);
+			ms_free(presence_contact);
+		} else if (!exist) {
+			BC_ASSERT_PTR_NULL(presence_contact);
+		}
 	}
 
 	linphone_friend_unref(friend2);
@@ -742,8 +742,7 @@ static void long_term_presence_list(void) {
 	f1 = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:liblinphone_tester@sip.example.org");
 	BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(f1)), LinphonePresenceBasicStatusOpen, int, "%d");
 	presence = linphone_friend_get_presence_model_for_uri_or_tel(f1, phone_number);
-	BC_ASSERT_PTR_NOT_NULL(presence);
-	if (presence) {
+	if (BC_ASSERT_PTR_NOT_NULL(presence)) {
 		BC_ASSERT_STRING_EQUAL(linphone_presence_model_get_contact(presence), "sip:liblinphone_tester@sip.example.org");
 	}
 	BC_ASSERT_TRUE(f1->presence_received);
@@ -758,19 +757,19 @@ static void long_term_presence_list(void) {
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
-	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
-	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
 	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
 	TEST_NO_TAG("Presence list", test_presence_list),
 	TEST_NO_TAG("Presence list without compression", test_presence_list_without_compression),
 	TEST_NO_TAG("Presence list, subscription expiration for unknown contact",test_presence_list_subscription_expire_for_unknown),
 	TEST_NO_TAG("Presence list, silent subscription expiration", presence_list_subscribe_dialog_expire),
 	TEST_NO_TAG("Presence list, io error",presence_list_subscribe_io_error),
-	TEST_NO_TAG("Long term presence existing friend",long_term_presence_existing_friend),
-	TEST_NO_TAG("Long term presence inexistent friend",long_term_presence_inexistent_friend),
-	TEST_NO_TAG("Long term presence phone alias",long_term_presence_phone_alias),
-	TEST_NO_TAG("Long term presence phone alias 2",long_term_presence_phone_alias2),
-	TEST_NO_TAG("Long term presence list",long_term_presence_list),
+	TEST_ONE_TAG("Long term presence existing friend",long_term_presence_existing_friend, "longterm"),
+	TEST_ONE_TAG("Long term presence inexistent friend",long_term_presence_inexistent_friend, "longterm"),
+	TEST_ONE_TAG("Long term presence phone alias",long_term_presence_phone_alias, "longterm"),
+	TEST_ONE_TAG("Long term presence phone alias 2",long_term_presence_phone_alias2, "longterm"),
+	TEST_ONE_TAG("Long term presence list",long_term_presence_list, "longterm"),
+	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
+	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
 };
 
 test_suite_t presence_server_test_suite = {"Presence using server", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

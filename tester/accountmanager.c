@@ -26,6 +26,7 @@ struct _Account{
 	int registered;
 	int done;
 	int created;
+	char *phone_alias;
 };
 
 typedef struct _Account Account;
@@ -38,6 +39,7 @@ static Account *account_new(LinphoneAddress *identity, const char *unique_id){
 	belle_sip_object_inhibit_leak_detector(TRUE);
 	obj->identity=linphone_address_clone(identity);
 	obj->password=sal_get_random_token(8);
+	obj->phone_alias = NULL;
 	obj->modified_identity=linphone_address_clone(identity);
 	modified_username=ms_strdup_printf("%s_%s",linphone_address_get_username(identity), unique_id);
 	linphone_address_set_username(obj->modified_identity, modified_username);
@@ -205,8 +207,13 @@ static LinphoneAddress *account_manager_check_account(AccountManager *m, Linphon
 																		, linphone_address_get_username(id_addr)
 																		, linphone_address_get_domain(id_addr));
 
-	if (!account){
+	if (!account||(phone_alias&&(!account->phone_alias||strcmp(phone_alias,account->phone_alias)!=0))){
+		if (account) {
+			m->accounts=bctbx_list_remove(m->accounts,account);
+			account_destroy(account);
+		}
 		account=account_new(id_addr,m->unique_id);
+		account->phone_alias=ms_strdup(phone_alias);
 		ms_message("No account for %s exists, going to create one.",identity);
 		create_account=TRUE;
 		m->accounts=bctbx_list_append(m->accounts,account);
