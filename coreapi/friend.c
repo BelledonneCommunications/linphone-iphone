@@ -1702,6 +1702,7 @@ const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const c
 	}
 
 	proxy_config = linphone_core_get_default_proxy_config(linphone_friend_get_core(lf));
+	if (!proxy_config) return NULL;
 	if (strstr(phone_number, "tel:") == phone_number) phone_number += 4; /* Remove the "tel:" prefix if it is present. */
 	normalized_number = linphone_proxy_config_normalize_phone_number(proxy_config, phone_number);
 	if (!normalized_number) return NULL;
