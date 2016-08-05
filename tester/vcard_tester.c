@@ -72,10 +72,10 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	end = clock();
 
 	friends = linphone_friend_list_get_friends(lfl);
-	BC_ASSERT_EQUAL(bctbx_list_size(friends), 482, int, "%i"); // Thousand vcards contains 482 contacts with a SIP URI
+	BC_ASSERT_EQUAL(bctbx_list_size(friends), 1000, int, "%i"); // Now that we accept Friends without a SIP URI, the result must be equal to 1000
 
 	elapsed = (double)(end - start);
-	ms_error("Imported a thousand of vCards from file (only %u friends with SIP address found) in %f seconds", (unsigned int)bctbx_list_size(friends), elapsed / CLOCKS_PER_SEC);
+	ms_error("Imported a thousand of vCards from file in %f seconds", (unsigned int)bctbx_list_size(friends), elapsed / CLOCKS_PER_SEC);
 
 	lfl = linphone_core_create_friend_list(manager->lc);
 	infile = fopen(import_filepath, "rb");
@@ -96,10 +96,10 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	}
 
 	friends = linphone_friend_list_get_friends(lfl);
-	BC_ASSERT_EQUAL(bctbx_list_size(friends), 482, int, "%i"); // Thousand vcards contains 482 contacts with a SIP URI
+	BC_ASSERT_EQUAL(bctbx_list_size(friends), 1000, int, "%i"); // Now that we accept Friends without a SIP URI, the result must be equal to 1000
 
 	elapsed = (double)(end - start);
-	ms_error("Imported a thousand of vCards from buffer (only %u friends with SIP address found) in %f seconds", (unsigned int)bctbx_list_size(friends), elapsed / CLOCKS_PER_SEC);
+	ms_error("Imported a thousand of vCards from buffer in %f seconds", (unsigned int)bctbx_list_size(friends), elapsed / CLOCKS_PER_SEC);
 
 	linphone_friend_list_unref(lfl);
 
