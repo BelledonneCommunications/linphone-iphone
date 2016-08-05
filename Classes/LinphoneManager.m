@@ -1392,6 +1392,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName UTF8String]);
 	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 	linphone_core_set_call_logs_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
+	linphone_core_set_friends_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 
 	[self migrationLinphoneSettings];
 	[self migrationFromVersion2To3];
