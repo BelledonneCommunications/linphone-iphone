@@ -401,9 +401,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (!country) {
 			//fetch phone locale
 			for (NSString* lang in [NSLocale preferredLanguages]) {
-                NSUInteger idx2 = [lang rangeOfString:@"-"].location;
-                if (idx2 == NSNotFound) idx2 = 0;
-                if ((country = [CountryListViewController countryWithIso:[lang substringFromIndex:idx2]]) != nil)
+				NSUInteger idx = [lang rangeOfString:@"-"].location;
+				idx = (idx == NSNotFound) ? idx = 0 : idx + 1;
+				if ((country = [CountryListViewController countryWithIso:[lang substringFromIndex:idx]]) != nil)
 					break;
 			}
 		}

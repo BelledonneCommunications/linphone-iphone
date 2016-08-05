@@ -42,7 +42,7 @@
 				}
 			}
 			for (NSString* phone in _phoneNumbers) {
-				LOGI(@"fixme! use linphone_friend_add_phone_number for phone numbers");
+#if 0
 				char* normalized_phone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
 				if (normalized_phone) {
 					LinphoneAddress* addr = linphone_core_interpret_url(LC, normalized_phone);
@@ -53,7 +53,9 @@
 					}
 					ms_free(normalized_phone);
 				}
-//				linphone_friend_add_phone_number(_friend, phone.UTF8String);
+#else
+				linphone_friend_add_phone_number(_friend, phone.UTF8String);
+#endif
 			}
 			linphone_core_add_friend(LC, _friend);
 		}
