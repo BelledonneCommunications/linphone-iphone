@@ -755,6 +755,44 @@ static void long_term_presence_list(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void long_term_presence_phone_without_sip(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new3("marie_rc", TRUE, random_phone_number());
+	char * identity = linphone_address_as_string_uri_only(marie->identity);
+	LinphoneAddress * phone_addr = linphone_core_interpret_url(marie->lc, marie->phone_alias);
+	char *phone_addr_uri = linphone_address_as_string(phone_addr);
+
+	LinphoneFriend* friend2;
+	char *presence_contact;
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
+
+	friend2=linphone_core_create_friend(pauline->lc);
+	linphone_friend_add_phone_number(friend2, marie->phone_alias);
+	linphone_friend_edit(friend2);
+	linphone_friend_enable_subscribes(friend2,TRUE);
+	linphone_friend_done(friend2);
+	linphone_core_add_friend(pauline->lc,friend2);
+
+	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOnline, 1, int, "%d");
+	BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(friend2)), LinphonePresenceBasicStatusOpen, int, "%d");
+	if(BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_presence_model(friend2))) {
+		presence_contact = linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2));
+		if (BC_ASSERT_PTR_NOT_NULL(presence_contact)) {
+			BC_ASSERT_STRING_EQUAL(presence_contact, identity);
+			ms_free(presence_contact);
+		}
+	}
+	linphone_friend_unref(friend2);
+	linphone_core_manager_destroy(pauline);
+
+	ms_free(identity);
+	ms_free(phone_addr_uri);
+	linphone_address_destroy(phone_addr);
+	linphone_core_manager_destroy(marie);
+}
+
+
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
@@ -769,6 +807,7 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence phone alias",long_term_presence_phone_alias, "longterm"),
 	TEST_ONE_TAG("Long term presence phone alias 2",long_term_presence_phone_alias2, "longterm"),
 	TEST_ONE_TAG("Long term presence list",long_term_presence_list, "longterm"),
+	TEST_ONE_TAG("Long term presence phone without sip",long_term_presence_phone_without_sip, "longterm"),
 	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
 	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
 };
