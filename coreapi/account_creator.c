@@ -438,8 +438,13 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 		linphone_core_set_firewall_policy(creator->core, LinphonePolicyUseIce);
 	}
 
-	info = linphone_auth_info_new(linphone_address_get_username(identity), NULL, creator->password,
-							creator->password ? NULL : creator->ha1, NULL, linphone_address_get_domain(identity));
+	info = linphone_auth_info_new(linphone_address_get_username(identity), // username
+								NULL, //user id
+								creator->password, // passwd
+								creator->password ? NULL : creator->ha1,  // ha1
+								!creator->password && creator->ha1 ? linphone_address_get_domain(identity) : NULL,  // realm - assumed to be domain
+								linphone_address_get_domain(identity) // domain
+	);
 	linphone_core_add_auth_info(creator->core, info);
 	linphone_address_destroy(identity);
 
@@ -541,7 +546,7 @@ static LinphoneXmlRpcRequest * _create_account_with_email(LinphoneAccountCreator
 LinphoneAccountCreatorStatus linphone_account_creator_create_account(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
 	char *identity = _get_identity(creator);
-	if (!identity || !creator->password || (!(request = _create_account_with_phone(creator))
+	if (!identity || (!(request = _create_account_with_phone(creator))
 		&& !(request = _create_account_with_email(creator)))) {
 		if (creator->callbacks->create_account != NULL) {
 			creator->callbacks->create_account(creator, LinphoneAccountCreatorReqFailed);

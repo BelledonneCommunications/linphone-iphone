@@ -635,6 +635,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFrien
 			bctbx_list_t *phone_numbers = linphone_friend_get_phone_numbers(lf);
 			iterator = phone_numbers;
 			ms_free(uri);
+			if (!phone_number) return NULL;
 			while (iterator && (result == NULL)) {
 				const char *number = (const char *)bctbx_list_get_data(iterator);
 				if (strcmp(number, phone_number) == 0) result = lf;
