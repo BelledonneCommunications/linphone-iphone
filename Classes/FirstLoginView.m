@@ -154,6 +154,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			return NSLocalizedString(@"Unsupported transport", nil);
 		case LinphoneAccountCreatorAccountCreated:
 		case LinphoneAccountCreatorAccountExist:
+		case LinphoneAccountCreatorAccountExistWithAlias:
 		case LinphoneAccountCreatorAccountNotCreated:
 		case LinphoneAccountCreatorAccountNotExist:
 		case LinphoneAccountCreatorAccountNotActivated:

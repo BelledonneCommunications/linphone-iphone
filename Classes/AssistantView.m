@@ -167,7 +167,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 													   assistant_link_phone_number_with_account);
 	linphone_account_creator_cbs_set_activate_phone_number_link(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_activate_phone_number_link);
-
+	linphone_account_creator_cbs_set_recover_phone_account(linphone_account_creator_get_callbacks(account_creator),
+													   assistant_recover_phone_account);
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
@@ -189,22 +190,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
-	BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"];
 	switch (status) {
 		case LinphoneAccountCreatorEmailInvalid:
 			return NSLocalizedString(@"Invalid email.", nil);
 		case LinphoneAccountCreatorUsernameInvalid:
-			return usePhoneNumber ? NSLocalizedString(@"Invalid phone number.", nil)
-								  : NSLocalizedString(@"Invalid username.", nil);
+			return NSLocalizedString(@"Invalid username.", nil);
 		case LinphoneAccountCreatorUsernameTooShort:
-			return usePhoneNumber ? NSLocalizedString(@"Phone number too short.", nil)
-								  : NSLocalizedString(@"Username too short.", nil);
+			return NSLocalizedString(@"Username too short.", nil);
 		case LinphoneAccountCreatorUsernameTooLong:
-			return usePhoneNumber ? NSLocalizedString(@"Phone number too long.", nil)
-								  : NSLocalizedString(@"Username too long.", nil);
+			return NSLocalizedString(@"Username too long.", nil);
 		case LinphoneAccountCreatorUsernameInvalidSize:
-			return usePhoneNumber ? NSLocalizedString(@"Phone number length invalid.", nil)
-								  : NSLocalizedString(@"Username length invalid.", nil);
+			return NSLocalizedString(@"Username length invalid.", nil);
 		case LinphoneAccountCreatorPhoneNumberTooShort:
 		case LinphoneAccountCreatorPhoneNumberTooLong:
 			return nil; /* this is not an error, just user has to finish typing */
@@ -226,6 +222,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			return NSLocalizedString(@"Unsupported transport", nil);
 		case LinphoneAccountCreatorAccountCreated:
 		case LinphoneAccountCreatorAccountExist:
+		case LinphoneAccountCreatorAccountExistWithAlias:
 		case LinphoneAccountCreatorAccountNotCreated:
 		case LinphoneAccountCreatorAccountNotExist:
 		case LinphoneAccountCreatorAccountNotActivated:
@@ -276,21 +273,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	new_config = linphone_account_creator_configure(account_creator);
 
 	if (new_config) {
-		BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number"];
-		if (usePhoneNumber) {
-			char *user = linphone_proxy_config_normalize_phone_number(
-				new_config, linphone_account_creator_get_username(account_creator));
-			if (user) {
-				LinphoneAddress *addr = linphone_address_clone(linphone_proxy_config_get_identity_address(new_config));
-				linphone_address_set_username(addr, user);
-				linphone_proxy_config_edit(new_config);
-				linphone_proxy_config_set_identity_address(new_config, addr);
-				linphone_proxy_config_done(new_config);
-				linphone_address_destroy(addr);
-				ms_free(user);
-			}
-		}
-
 		[lm configurePushTokenForProxyConfig:new_config];
 		linphone_core_set_default_proxy_config(LC, new_config);
 		// reload address book to prepend proxy config domain to contacts' phone number
@@ -317,8 +299,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	static BOOL placement_done = NO; // indicates if the button placement has been done in the assistant choice view
 
 	_backButton.hidden = (view == _welcomeView);
-
-	[self displayUsernameAsPhoneOrUsername];
 
 	if (view == _welcomeView) {
 		BOOL show_logo = [LinphoneManager.instance lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
@@ -460,21 +440,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 #endif
 	}
 	phone_number_length = 0;
-}
-
-- (void)displayUsernameAsPhoneOrUsername {
-	BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number"];
-
-	NSString *label = usePhoneNumber ? NSLocalizedString(@"PHONE NUMBER", nil) : NSLocalizedString(@"USERNAME", nil);
-	[self findLabel:ViewElement_Username_Label].text = label;
-
-	UITextField *text = [self findTextField:ViewElement_Username];
-	if (usePhoneNumber) {
-		text.keyboardType = UIKeyboardTypePhonePad;
-		[text addDoneButton];
-	} else {
-		text.keyboardType = UIKeyboardTypeDefault;
-	}
 }
 
 + (void)cleanTextField:(UIView *)view {
@@ -719,20 +684,36 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[errorView show];
 }
 
+- (void)isAccountUsed:(LinphoneAccountCreatorStatus)status {
+	if (currentView == _createAccountView) {
+		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
+			ViewElement ve =  ([self findTextField:ViewElement_Username].isVisible) ? ViewElement_Username : ViewElement_Phone;
+			[[self findTextField:ve] showError:NSLocalizedString(@"This account already exists.", nil)];
+			[self findButton:ViewElement_NextButton].enabled = NO;
+		} else if (status == LinphoneAccountCreatorAccountNotExist) {
+			linphone_account_creator_create_account(account_creator);
+		} else {
+			[self genericError];
+		}
+	} else if (currentView ==  _linphoneLoginView) {
+		[self findTextField:ViewElement_PhoneCC].enabled =
+		[self findTextField:ViewElement_Phone].enabled =
+		[self findTextField:ViewElement_DisplayName].enabled =
+		[self findTextField:ViewElement_Password].enabled = (status == LinphoneAccountCreatorAccountExist);
+		if (status == LinphoneAccountCreatorAccountExistWithAlias) {
+			[self findButton:ViewElement_NextButton].enabled = YES;
+		} else {
+			[self shouldEnableNextButton];
+		}
+	}
+}
+
 #pragma mark - Account creator callbacks
 
 void assistant_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorAccountExist) {
-		ViewElement ve =  ([thiz findTextField:ViewElement_Username].isVisible) ? ViewElement_Username : ViewElement_Phone;
-		[[thiz findTextField:ve] showError:NSLocalizedString(@"This account already exists.", nil)];
-		[thiz findButton:ViewElement_NextButton].enabled = NO;
-	} else if (status == LinphoneAccountCreatorAccountNotExist) {
-		linphone_account_creator_create_account(thiz->account_creator);
-	} else {
-		[thiz genericError];
-	}
+	[thiz isAccountUsed:status];
 }
 
 void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
@@ -744,6 +725,16 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 		} else {
 			[thiz changeView:thiz.createAccountActivateEmailView back:FALSE animation:TRUE];
 		}
+	} else {
+		[thiz genericError];
+	}
+}
+
+void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorOK) {
+		[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
 	} else {
 		[thiz genericError];
 	}
@@ -836,6 +827,11 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	[atf textFieldDidEndEditing:atf];
+
+	if (textField.tag == ViewElement_Username && currentView == _linphoneLoginView) {
+		linphone_account_creator_is_account_used(account_creator);
+	}
+
 	[self shouldEnableNextButton];
 }
 
@@ -950,7 +946,12 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
         if (phone.length > 0) {
             linphone_account_creator_link_phone_number_with_account(account_creator);
         } else {
-            [self configureProxyConfig];
+			if ((linphone_account_creator_get_phone_number(account_creator) != NULL)
+				&& [self findTextField:ViewElement_Password].text.length == 0) {
+				linphone_account_creator_recover_phone_account(account_creator);
+			} else {
+				[self configureProxyConfig];
+			}
         }
     });
 }

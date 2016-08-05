@@ -13,6 +13,7 @@
 
 INIT_WITH_COMMON_CF {
 	self.delegate = self;
+	self.enabled = self.isEnabled; //force refresh bg color
 	return self;
 }
 
@@ -52,7 +53,8 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)setEnabled:(BOOL)enabled {
-	self.backgroundColor = [self.backgroundColor colorWithAlphaComponent:enabled?1:0.5];
+	[super setEnabled:enabled];
+	self.backgroundColor = [self.backgroundColor colorWithAlphaComponent:enabled?1:0.3];
 }
 
 #pragma mark - UITextFieldDelegate Functions

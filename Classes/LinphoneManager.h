@@ -18,7 +18,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <AssetsLibrary/ALAssetsLibrary.h>
