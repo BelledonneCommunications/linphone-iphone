@@ -42,6 +42,7 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorAccountNotCreated,
 
 	LinphoneAccountCreatorAccountExist,
+	LinphoneAccountCreatorAccountExistWithAlias,
 	LinphoneAccountCreatorAccountNotExist,
 
 	LinphoneAccountCreatorAccountActivated,
@@ -265,6 +266,8 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_create_account(LinphoneAccountCreator *creator);
 
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_recover_account(LinphoneAccountCreator *creator);
+
 /**
  * Send an XML-RPC request to activate a Linphone account.
  * @param[in] creator LinphoneAccountCreator object
@@ -292,6 +295,8 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_link_phone
  * @return LinphoneAccountCreatorOK if the request has been sent, LinphoneAccountCreatorReqFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link(LinphoneAccountCreator *creator);
+
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_recover_phone_account(LinphoneAccountCreator *creator);
 
 /**
  * Configure an account (create a proxy config and authentication info for it).
@@ -410,6 +415,9 @@ LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_g
  * @param[in] cb The validation tested callback to be used.
 **/
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_account_activated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
+
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_recover_phone_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_recover_phone_account(const LinphoneAccountCreatorCbs *cbs);
 
 /**
  * @}

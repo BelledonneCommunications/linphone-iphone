@@ -109,6 +109,13 @@ void linphone_account_creator_cbs_set_is_account_activated(LinphoneAccountCreato
 	cbs->is_account_activated = cb;
 }
 
+LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_recover_phone_account(const LinphoneAccountCreatorCbs *cbs) {
+	return cbs->recover_phone_account;
+}
+
+void linphone_account_creator_cbs_set_recover_phone_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb) {
+	cbs->recover_phone_account = cb;
+}
 
 
 static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
@@ -465,10 +472,12 @@ static void _is_account_used_cb(LinphoneXmlRpcRequest *request) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
 		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
 			const char* resp = linphone_xml_rpc_request_get_string_response(request);
-			status = (strcmp(resp, "OK") == 0) ?
-						LinphoneAccountCreatorAccountExist : (
-							(strcmp(resp, "NOK") == 0) ? LinphoneAccountCreatorAccountNotExist :
-														LinphoneAccountCreatorReqFailed);
+			status = (strcmp(resp, "ERROR_ACCOUNT_DOESNT_EXIST") == 0) ? LinphoneAccountCreatorAccountNotExist : (
+							(strcmp(resp, "ERROR_ALIAS_DOESNT_EXIST") == 0) ? LinphoneAccountCreatorAccountExist :
+														LinphoneAccountCreatorAccountExistWithAlias);
+			if (status == LinphoneAccountCreatorAccountExistWithAlias) {
+				set_string(&creator->phone_number, resp, FALSE);
+			}
 		}
 		creator->callbacks->is_account_used(creator, status);
 	}
@@ -476,28 +485,22 @@ static void _is_account_used_cb(LinphoneXmlRpcRequest *request) {
 
 LinphoneAccountCreatorStatus linphone_account_creator_is_account_used(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
-	char *identity = _get_identity(creator);
-	if (!identity) {
+	if (!creator->username && !creator->phone_number) {
 		if (creator->callbacks->is_account_used != NULL) {
 			creator->callbacks->is_account_used(creator, LinphoneAccountCreatorReqFailed);
 		}
 		return LinphoneAccountCreatorReqFailed;
 	}
 
-	if (creator->phone_number) {
-		request = linphone_xml_rpc_request_new_with_args("is_phone_number_used", LinphoneXmlRpcArgString,
-			LinphoneXmlRpcArgString, creator->phone_number,
-			LinphoneXmlRpcArgNone);
-	} else {
-		request = linphone_xml_rpc_request_new_with_args("is_account_used", LinphoneXmlRpcArgString,
-			LinphoneXmlRpcArgString, creator->username,
-			LinphoneXmlRpcArgNone);
-	}
+	request = linphone_xml_rpc_request_new_with_args("get_phone_number_for_account", LinphoneXmlRpcArgString,
+		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
+		LinphoneXmlRpcArgNone);
+
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _is_account_used_cb);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
-	ms_free(identity);
+
 	return LinphoneAccountCreatorOK;
 }
 /****************** END OF CREATE ACCOUNT USED SECTION ************************/
@@ -711,6 +714,38 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_phone_number_link_cb);
+	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
+	linphone_xml_rpc_request_unref(request);
+	return LinphoneAccountCreatorOK;
+}
+/****************** END OF ACTIVE PHONE NUMBER LINK **************************/
+
+/****************** START OF ACTIVE PHONE NUMBER LINK **************************/
+static void _recover_phone_account_cb(LinphoneXmlRpcRequest *request) {
+	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
+	if (creator->callbacks->recover_phone_account != NULL) {
+		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
+		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
+			const char* resp = linphone_xml_rpc_request_get_string_response(request);
+			status = (strstr(resp, "ERROR_") == resp) ? LinphoneAccountCreatorReqFailed : LinphoneAccountCreatorOK;
+		}
+		creator->callbacks->recover_phone_account(creator, status);
+	}
+}
+
+LinphoneAccountCreatorStatus linphone_account_creator_recover_phone_account(LinphoneAccountCreator *creator) {
+	LinphoneXmlRpcRequest *request;
+	if (!creator->phone_number) {
+		if (creator->callbacks->recover_phone_account != NULL) {
+			creator->callbacks->recover_phone_account(creator, LinphoneAccountCreatorReqFailed);
+		}
+		return LinphoneAccountCreatorReqFailed;
+	}
+	request = linphone_xml_rpc_request_new_with_args("recover_phone_account", LinphoneXmlRpcArgString,
+		LinphoneXmlRpcArgString, creator->phone_number,
+		LinphoneXmlRpcArgNone);
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _recover_phone_account_cb);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
 	return LinphoneAccountCreatorOK;

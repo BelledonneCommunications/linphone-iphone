@@ -1287,6 +1287,7 @@ struct _LinphoneAccountCreatorCbs {
 
 	LinphoneAccountCreatorCbsStatusCb link_phone_number_with_account;
 	LinphoneAccountCreatorCbsStatusCb activate_phone_number_link;
+	LinphoneAccountCreatorCbsStatusCb recover_phone_account;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);
