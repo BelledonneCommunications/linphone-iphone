@@ -86,6 +86,7 @@ set(LINPHONE_SOURCE_FILES_C
 	dial_plan.c
 	dict.c
 	ec-calibrator.c
+	echo-tester.c
 	enum.c
 	enum.h
 	event.c

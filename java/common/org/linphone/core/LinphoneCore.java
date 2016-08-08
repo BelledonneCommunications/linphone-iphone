@@ -1399,7 +1399,20 @@ public interface LinphoneCore {
 	 * If the device has a builtin echo canceller, it will return false.
 	 */
 	boolean hasBuiltInEchoCanceler();
-	
+
+	/**
+	 * Start the speaker and the micro to test the echo
+	 * @param bitrate
+	 * @return the status
+	 */
+	int startEchoTester(int rate);
+
+	/**
+	 * Stop the speaker and the micro
+	 * @return the status
+	 */
+	int stopEchoTester();
+
 	/**
 	 * Returns true if the OpenGL on this device is crappy and we need to use the old Android display
 	 */

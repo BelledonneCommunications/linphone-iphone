@@ -74,6 +74,15 @@ typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
 LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
 					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
 /**
+ * Start the simulation of call to test the latency with an external device
+ *@param bitrate
+**/
+LINPHONE_PUBLIC int linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate);
+/**
+ * Stop the simulation of call
+**/
+LINPHONE_PUBLIC int linphone_core_stop_echo_tester(LinphoneCore *lc);
+/**
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode
  */

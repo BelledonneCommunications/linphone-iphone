@@ -139,6 +139,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void enableKeepAlive(long nativePtr,boolean enable);
 	private native boolean isKeepAliveEnabled(long nativePtr);
 	private native int startEchoCalibration(long nativePtr,Object data);
+	private native int startEchoTester(long nativePtr, int rate);
+	private native int stopEchoTester(long nativePtr);
 	private native int getSignalingTransportPort(long nativePtr, int code);
 	private native void setSignalingTransportPorts(long nativePtr, int udp, int tcp, int tls);
 	private native void enableIpv6(long nativePtr,boolean enable);
@@ -675,6 +677,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized void startEchoCalibration(LinphoneCoreListener listener) throws LinphoneCoreException {
 		startEchoCalibration(nativePtr, listener);
+	}
+
+	public synchronized int startEchoTester(int rate) {
+		return startEchoTester(nativePtr, rate);
+	}
+
+	public synchronized int stopEchoTester() {
+		return stopEchoTester(nativePtr);
 	}
 
 	public synchronized Transports getSignalingTransportPorts() {

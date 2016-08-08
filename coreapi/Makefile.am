@@ -68,6 +68,7 @@ liblinphone_la_SOURCES=\
 	dial_plan.c \
 	dict.c \
 	ec-calibrator.c \
+	echo-tester.c \
 	enum.c enum.h \
 	event.c \
 	friend.c \

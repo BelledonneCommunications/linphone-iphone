@@ -2481,6 +2481,19 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 	return TRUE;
 }
 
+extern "C" int Java_org_linphone_core_LinphoneCoreImpl_startEchoTester(JNIEnv*  env
+																				,jobject  thiz
+																				,jlong lc
+																				,jint rate) {
+	return linphone_core_start_echo_tester((LinphoneCore*)lc, rate);
+}
+
+extern "C" int Java_org_linphone_core_LinphoneCoreImpl_stopEchoTester(JNIEnv*  env
+																				,jobject  thiz
+																				,jlong lc) {
+	return linphone_core_stop_echo_tester((LinphoneCore*)lc);
+}
+
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasCrappyOpenGL(JNIEnv *env, jobject thiz, jlong lcptr) {
 	LinphoneCore *lc = (LinphoneCore*) lcptr;
 	MSFactory * factory = linphone_core_get_ms_factory(lc);

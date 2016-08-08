@@ -974,6 +974,7 @@ struct _LinphoneCore
 	void *preview_window_id;
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
+	struct _EchoTester *ect;
 	LinphoneTaskList hooks; /*tasks periodically executed in linphone_core_iterate()*/
 	LinphoneConference *conf_ctx;
 	char* zrtp_secrets_cache;
@@ -1109,6 +1110,17 @@ typedef struct _EcCalibrator EcCalibrator;
 LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 
 void ec_calibrator_destroy(EcCalibrator *ecc);
+
+struct _EchoTester {
+    MSFactory *factory;
+    MSFilter *in,*out;
+    MSSndCard *capture_card;
+    MSSndCard *playback_card;
+    MSTicker *ticker;
+    unsigned int rate;
+};
+
+typedef struct _EchoTester EchoTester;
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
 void linphone_call_set_broken(LinphoneCall *call);
