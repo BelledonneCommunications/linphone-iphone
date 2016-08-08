@@ -1397,9 +1397,16 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 	}
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"media_encryption_mandatory_checkbox")),
 				     linphone_core_is_media_encryption_mandatory(lc));
-
-	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"chat_lime_combo")), linphone_core_lime_enabled(lc));
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(pb,"chat_lime_combo"), linphone_core_lime_available(lc));
+	
+	gtk_widget_set_visible (linphone_gtk_get_widget(pb,"chat_lime_label"), 0);
+	gtk_widget_set_visible (linphone_gtk_get_widget(pb,"chat_lime_combo"), 0);
+	
+	if (linphone_gtk_get_ui_config_int("lime_experimental_feature", 0)){
+		gtk_widget_set_visible (linphone_gtk_get_widget(pb,"chat_lime_label"), 1);
+		gtk_widget_set_visible (linphone_gtk_get_widget(pb,"chat_lime_combo"), 1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"chat_lime_combo")), linphone_core_lime_enabled(lc));
+		gtk_widget_set_sensitive(linphone_gtk_get_widget(pb,"chat_lime_combo"), linphone_core_lime_available(lc));
+	}
 
 	g_object_unref(G_OBJECT(model));
 }
