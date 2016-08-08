@@ -29,6 +29,7 @@ public interface LinphoneAccountCreator {
 		void onAccountCreatorAccountLinkedWithPhoneNumber(LinphoneAccountCreator accountCreator, Status status);
 		void onAccountCreatorPhoneNumberLinkActivated(LinphoneAccountCreator accountCreator, Status status);
 		void onAccountCreatorIsAccountActivated(LinphoneAccountCreator accountCreator, Status status);
+		void onAccountCreatorPhoneAccountRecovered(LinphoneAccountCreator accountCreator, Status status);
 	}
 	
 	public static class Status {
@@ -131,6 +132,8 @@ public interface LinphoneAccountCreator {
 	Status linkPhoneNumberWithAccount();
 	
 	Status activatePhoneNumberLink();
+	
+	Status recoverPhoneAccount();
 	
 	LinphoneProxyConfig configure();
 }

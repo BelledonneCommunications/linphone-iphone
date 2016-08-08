@@ -266,8 +266,6 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_create_account(LinphoneAccountCreator *creator);
 
-LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_recover_account(LinphoneAccountCreator *creator);
-
 /**
  * Send an XML-RPC request to activate a Linphone account.
  * @param[in] creator LinphoneAccountCreator object

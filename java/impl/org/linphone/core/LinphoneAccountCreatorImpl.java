@@ -184,6 +184,12 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return Status.fromInt(activatePhoneNumberLink(nativePtr));
 	}
 	
+	private native int recoverPhoneAccount(long ptr);
+	@Override
+	public Status recoverPhoneAccount() {
+		return Status.fromInt(recoverPhoneAccount(nativePtr));
+	}
+	
 	private native LinphoneProxyConfig configure(long ptr);
 	@Override
 	public LinphoneProxyConfig configure() {
