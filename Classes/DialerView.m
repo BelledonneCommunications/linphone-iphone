@@ -369,12 +369,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_addressField.text = @"";
 	}
 	_addContactButton.enabled = _backspaceButton.enabled = ([[_addressField text] length] > 0);
+    if ([_addressField.text length] == 0) {
+        [self.view endEditing:YES];
+    }
 }
 
 - (IBAction)onBackspaceClick:(id)sender {
 	if ([_addressField.text length] > 0) {
 		[_addressField setText:[_addressField.text substringToIndex:[_addressField.text length] - 1]];
-	}
+    }
 }
 
 - (void)onBackspaceLongClick:(id)sender {
