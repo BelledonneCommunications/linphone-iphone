@@ -1170,7 +1170,7 @@ static void linphone_create_table(sqlite3* db) {
 	ret = sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS friends ("
 						"id                INTEGER PRIMARY KEY AUTOINCREMENT,"
 						"friend_list_id    INTEGER,"
-						"sip_uri           TEXT NOT NULL,"
+						"sip_uri           TEXT,"
 						"subscribe_policy  INTEGER,"
 						"send_subscribe    INTEGER,"
 						"ref_key           TEXT,"
