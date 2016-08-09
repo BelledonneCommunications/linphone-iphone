@@ -40,6 +40,8 @@
 		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		570742581D5A0691004B9C84 /* ShopView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 570742561D5A0691004B9C84 /* ShopView.xib */; };
+		570742611D5A09B8004B9C84 /* ShopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5707425F1D5A09B8004B9C84 /* ShopView.m */; };
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
 		630589EA1B4E810900EFAE36 /* LinphoneTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E41B4E810900EFAE36 /* LinphoneTestCase.m */; };
@@ -934,6 +936,11 @@
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		570742571D5A0691004B9C84 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ShopView.xib; sourceTree = "<group>"; };
+		5707425F1D5A09B8004B9C84 /* ShopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopView.m; sourceTree = "<group>"; };
+		570742601D5A09B8004B9C84 /* ShopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopView.h; sourceTree = "<group>"; };
+		570742631D5A1860004B9C84 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShopView.strings; sourceTree = "<group>"; };
+		570742651D5A1868004B9C84 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
 		630589E01B4E810900EFAE36 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
@@ -1935,7 +1942,10 @@
 			children = (
 				22E0A81D111C44E100B04932 /* AboutView.h */,
 				22E0A81C111C44E100B04932 /* AboutView.m */,
+				5707425F1D5A09B8004B9C84 /* ShopView.m */,
+				570742601D5A09B8004B9C84 /* ShopView.h */,
 				636316D31A1DEBCB0009B839 /* AboutView.xib */,
+				570742561D5A0691004B9C84 /* ShopView.xib */,
 				D350F20B15A43BB100149E54 /* AssistantView.h */,
 				D350F20C15A43BB100149E54 /* AssistantView.m */,
 				D38187E015FE348A00C3EDCA /* AssistantView.xib */,
@@ -3702,6 +3712,7 @@
 				633FEE121D3CD5590014B822 /* chat_message_not_delivered.png in Resources */,
 				633FEDCE1D3CD5590014B822 /* call_quality_indicator_1.png in Resources */,
 				633FEF4E1D3CD55A0014B822 /* valid_default.png in Resources */,
+				570742581D5A0691004B9C84 /* ShopView.xib in Resources */,
 				633FEE361D3CD5590014B822 /* conference_exit_over.png in Resources */,
 				633FEDAA1D3CD5590014B822 /* backspace_disabled.png in Resources */,
 				F0938159188E629800A55DFA /* iTunesArtwork in Resources */,
@@ -3858,6 +3869,7 @@
 				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
 				F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
 				63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */,
+				570742611D5A09B8004B9C84 /* ShopView.m in Sources */,
 				63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
@@ -3983,6 +3995,16 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		570742561D5A0691004B9C84 /* ShopView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				570742571D5A0691004B9C84 /* Base */,
+				570742631D5A1860004B9C84 /* en */,
+				570742651D5A1868004B9C84 /* fr */,
+			);
+			name = ShopView.xib;
+			sourceTree = "<group>";
+		};
 		63058A0F1B4E821E00EFAE36 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
