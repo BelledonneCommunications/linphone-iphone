@@ -422,8 +422,22 @@ LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
 
 void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 	if (mgr->lc) {
+		const char *record_file = linphone_core_get_record_file(mgr->lc);
+		char *chatdb = ms_strdup(linphone_core_get_chat_database_path(mgr->lc));
+		if (!liblinphone_tester_keep_record_files && record_file) {
+			if ((bc_get_number_of_failures() - mgr->number_of_bcunit_error_at_creation)>0) {
+				ms_error("Test has failed, keeping recorded file [%s]", record_file);
+			}
+			else {
+				unlink(record_file);
+			}
+		}
 		linphone_core_destroy(mgr->lc);
-		mgr->lc=NULL;
+		if (chatdb) {
+			unlink(chatdb);
+			ms_free(chatdb);
+		}
+		mgr->lc = NULL;
 	}
 }
 
@@ -437,22 +451,6 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	}
 	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
-	if (mgr->lc){
-		const char *record_file=linphone_core_get_record_file(mgr->lc);
-		char *chatdb = ms_strdup(linphone_core_get_chat_database_path(mgr->lc));
-		if (!liblinphone_tester_keep_record_files && record_file){
-			if ((bc_get_number_of_failures()-mgr->number_of_bcunit_error_at_creation)>0) {
-				ms_error("Test has failed, keeping recorded file [%s]",record_file);
-			} else {
-				unlink(record_file);
-			}
-		}
-		linphone_core_destroy(mgr->lc);
-		if (chatdb) {
-			unlink(chatdb);
-			ms_free(chatdb);
-		}
-	}
 	if (mgr->identity) {
 		linphone_address_destroy(mgr->identity);
 	}
@@ -472,6 +470,7 @@ void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr) {
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
+	linphone_core_manager_stop(mgr);
 	linphone_core_manager_uninit(mgr);
 	ms_free(mgr);
 }
