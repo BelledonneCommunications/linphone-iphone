@@ -713,6 +713,7 @@ char * linphone_core_compress_log_collection(void) {
 void linphone_core_reset_log_collection(void) {
 	char *filename;
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
+	_close_log_collection_file();
 	clean_log_collection_upload_context(NULL);
 	filename = ms_strdup_printf("%s/%s1.log",
 			liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
