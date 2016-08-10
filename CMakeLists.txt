@@ -44,7 +44,7 @@ cmake_dependent_option(ENABLE_DAEMON "Enable the linphone daemon interface." YES
 option(ENABLE_DOC "Enable documentation generation with Doxygen." YES)
 option(ENABLE_GTK_UI "Turn on or off compilation of gtk interface." YES)
 option(ENABLE_LDAP "Enable LDAP support." NO)
-option(ENABLE_LIME "Enable Instant Messaging Encryption." NO)
+option(ENABLE_LIME "Enable Instant Messaging Encryption." YES)
 option(ENABLE_SQLITE_STORAGE "Turn on compilation sqlite storage, for messages, contacts, history" YES)
 cmake_dependent_option(ENABLE_NOTIFY "Enable libnotify support." YES "ENABLE_GTK_UI;NOT APPLE" NO)
 option(ENABLE_RELATIVE_PREFIX "Find resources relatively to the installation directory." NO)
