@@ -1741,6 +1741,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 									  LOGW(@"It seems that Linphone BG mode was deactivated, just skipping");
 									  return;
 								  }
+									[_iapManager check];
 								  // kick up network cnx, just in case
 								  [self refreshRegisters];
 								  linphone_core_iterate(theLinphoneCore);
@@ -2396,7 +2397,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)inappReady:(NSNotification *)notif {
 	// Query our in-app server to retrieve InApp purchases
-	[_iapManager retrievePurchases];
+	//[_iapManager retrievePurchases];
 }
 
 #pragma mark -

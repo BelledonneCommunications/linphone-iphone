@@ -943,7 +943,6 @@
 		570742631D5A1860004B9C84 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShopView.strings; sourceTree = "<group>"; };
 		570742651D5A1868004B9C84 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
 		570742661D5A63DB004B9C84 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		570742681D5C852B004B9C84 /* RenewalManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenewalManager.h; sourceTree = "<group>"; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
 		630589E01B4E810900EFAE36 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
@@ -2053,7 +2052,6 @@
 				D326483415887D4400930C67 /* Utils */,
 				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
-				570742681D5C852B004B9C84 /* RenewalManager.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";

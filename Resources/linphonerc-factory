@@ -35,3 +35,7 @@ enabled=1
 paid_account_id=sipAccount_12m
 receipt_validation_url=https://www.linphone.org/inapp.php
 products_list=sipAccount_12m
+expiry_check_period=30
+warn_before_expiry_period=160
+expiry_time_test=180
+

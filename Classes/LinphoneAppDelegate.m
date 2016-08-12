@@ -18,6 +18,7 @@
  */
 
 #import "PhoneMainView.h"
+#import "ShopView.h"
 #import "linphoneAppDelegate.h"
 #import "AddressBook/ABPerson.h"
 
@@ -99,6 +100,7 @@
 			[self fixRing];
 		}
 	}
+	[LinphoneManager.instance.iapManager check];
 }
 
 #pragma deploymate push "ignored-api-availability"
@@ -170,6 +172,14 @@
 	return localRingNotifAction;
 }
 
+- (UIUserNotificationCategory *)getAccountExpiryNotificationCategory {
+	
+	UIMutableUserNotificationCategory *expiryNotification = [[UIMutableUserNotificationCategory alloc] init];
+	expiryNotification.identifier = @"expiry_notification";
+	return expiryNotification;
+}
+
+
 - (void)registerForNotifications:(UIApplication *)app {
 	LinphoneManager *instance = [LinphoneManager instance];
 
@@ -179,7 +189,7 @@
 			UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
 
 		NSSet *categories =
-			[NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
+			[NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], [self getAccountExpiryNotificationCategory], nil];
 		UIUserNotificationSettings *userSettings =
 			[UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
 		[app registerUserNotificationSettings:userSettings];
@@ -224,6 +234,7 @@
 	}];
 
 	[LinphoneManager.instance startLinphoneCore];
+	LinphoneManager.instance.iapManager.notificationCategory = @"expiry_notification";
 	// initialize UI
 	[self.window makeKeyAndVisible];
 	[RootViewManager setupWithPortrait:(PhoneMainView *)self.window.rootViewController];
@@ -357,6 +368,11 @@
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
 	LOGI(@"%@ - state = %ld", NSStringFromSelector(_cmd), (long)application.applicationState);
+	
+	if ([notification.category isEqual:LinphoneManager.instance.iapManager.notificationCategory]){
+		[PhoneMainView.instance changeCurrentView:ShopView.compositeViewDescription];
+		return;
+	}
 
 	[self fixRing];
 
