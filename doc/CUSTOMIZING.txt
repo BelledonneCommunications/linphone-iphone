@@ -1,0 +1,20 @@
+# Assistant configuration
+
+The assistant allows to create a new sip account on a pre-defined SIP service using an xml-rpc connection,
+as well as configuring an existing SIP account.
+The files Resources/assistant_linphone_create.rc and Resources/assistant_linphone_existing.rc contain the
+information necessary to create and configure the SIP accounts, most notabily:
+	* proxy_default_values/reg_identity to define the SIP identity
+	* sip/rls_uri to define the SIP URI of the presence server
+	* assistant/domain to specify the SIP domain
+	* assistant/xmlrpc_url to specify the https url of the account creation service
+
+# In-app purchase configuration
+
+The Resources/linphonerc.factory, section [in_app_purchase] is the entry point for configuring
+the in-app purchases available in the application, as well as parameters for account expiry notifications.
+Refer to the inlined comments in this configuration for description of all configurables.
+
+
+
+
