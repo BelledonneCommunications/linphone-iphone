@@ -45,7 +45,7 @@ INIT_WITH_COMMON_CF {
 		LinphoneCallAppData *callAppData = (__bridge LinphoneCallAppData *)linphone_call_get_user_pointer(call);
 		callAppData->videoRequested =
 			TRUE; /* will be used later to notify user if video was not activated because of the linphone core*/
-		LinphoneCallParams *call_params = linphone_call_params_copy(linphone_call_get_current_params(call));
+		LinphoneCallParams *call_params = linphone_core_create_call_params(LC,call);
 		linphone_call_params_enable_video(call_params, TRUE);
 		linphone_core_update_call(LC, call, call_params);
 		linphone_call_params_destroy(call_params);
@@ -64,7 +64,7 @@ INIT_WITH_COMMON_CF {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
-		LinphoneCallParams *call_params = linphone_call_params_copy(linphone_call_get_current_params(call));
+		LinphoneCallParams *call_params = linphone_core_create_call_params(LC,call);
 		linphone_call_params_enable_video(call_params, FALSE);
 		linphone_core_update_call(LC, call, call_params);
 		linphone_call_params_destroy(call_params);

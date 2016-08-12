@@ -696,11 +696,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[sheet
 						addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil)
 												block:^() {
-												  LinphoneCallParams *paramsCopy =
-													  linphone_call_params_copy(linphone_call_get_current_params(call));
+												  LinphoneCallParams *params =
+													  linphone_core_create_call_params(LC,call);
 												  // stop video
-												  linphone_call_params_enable_video(paramsCopy, FALSE);
-												  linphone_core_update_call(LC, call, paramsCopy);
+												  linphone_call_params_enable_video(params, FALSE);
+												  linphone_core_update_call(LC, call, params);
 												}];
 					[sheet showInView:self.view];
 					callData->batteryWarningShown = TRUE;
