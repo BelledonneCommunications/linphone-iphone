@@ -48,6 +48,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
+	InAppProductsManager *aipm = LinphoneManager.instance.iapManager;
+	NSMutableArray *productsAvailable = aipm.productsAvailable;
+	if ( [productsAvailable count] > 0){
+		SKProduct *product = [productsAvailable objectAtIndex:0];
+		[_accountProductTitle setText:product.localizedTitle];
+		[_accountProductDescription setText:product.localizedDescription];
+		
+		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+		[numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+		[numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+		[numberFormatter setLocale:product.priceLocale];
+		NSString *formattedString = [numberFormatter stringFromNumber:product.price];
+		[_accountProductPrice setText:formattedString];
+	}
 	[super viewDidLoad];
 	
 }

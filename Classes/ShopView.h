@@ -23,6 +23,11 @@
 
 @interface ShopView : TPMultiLayoutViewController <UICompositeViewDelegate>
 
+@property(weak, nonatomic) IBOutlet UILabel *accountProductTitle;
+@property(weak, nonatomic) IBOutlet UILabel *accountProductDescription;
+@property(weak, nonatomic) IBOutlet UILabel *accountProductPrice;
+@property(weak, nonatomic) IBOutlet UIButton *accountBuyButton;
+
 - (IBAction)onLinkTap:(id)sender;
 - (IBAction)onDialerBackClick:(id)sender;
 - (IBAction)onPurchaseButtonClick:(id)sender;

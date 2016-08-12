@@ -82,7 +82,7 @@ typedef NSString *IAPPurchaseNotificationStatus;
 			   andEmail:(NSString *)email
 				monthly:(BOOL)monthly;
 // Purchase a product. You should not use this if manager is not available yet.
-- (BOOL)purchaseWitID:(NSString *)productID;
+- (BOOL)purchaseWithID:(NSString *)productID;
 // Activate purchased account.
 - (BOOL)activateAccount:(NSString *)phoneNumber;
 

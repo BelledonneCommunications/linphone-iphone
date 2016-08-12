@@ -12,6 +12,7 @@
 #import "PhoneMainView.h"
 #import "StatusBarView.h"
 #import "ShopView.h"
+#import "LinphoneManager.h"
 
 @implementation SideMenuEntry
 
@@ -48,12 +49,14 @@
 												[PhoneMainView.instance
 													changeCurrentView:SettingsView.compositeViewDescription];
 											  }]];
-	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Shop", nil)
+	InAppProductsManager *iapm = LinphoneManager.instance.iapManager;
+	if (iapm.enabled){
+		[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Shop", nil)
 															tapBlock:^() {
 																[PhoneMainView.instance
 																 changeCurrentView:ShopView.compositeViewDescription];
-																
 															}]];
+	}
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
 															tapBlock:^() {
 															  [PhoneMainView.instance

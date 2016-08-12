@@ -39,7 +39,7 @@
 @implementation InAppProductsManager
 
 // LINPHONE_CAPABILITY_INAPP_PURCHASE must be defined in Linphone Build Settings
-#if LINPHONE_CAPABILITY_INAPP_PURCHASE && !TARGET_IPHONE_SIMULATOR
+#if 1
 
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
@@ -76,7 +76,7 @@
 	return false;
 }
 
-- (BOOL)purchaseWitID:(NSString *)productID {
+- (BOOL)purchaseWithID:(NSString *)productID {
 	if (!_enabled || !_initialized || !_available) {
 		NSDictionary *dict = @{
 			@"product_id" : productID,
@@ -111,7 +111,7 @@
 												 inSection:@"in_app_purchase"];
 		self.accountCreationData = @{ @"phoneNumber" : phoneNumber, @"password" : password, @"email" : email };
 
-		if (![self purchaseWitID:productID]) {
+		if (![self purchaseWithID:productID]) {
 			self.accountCreationData = nil;
 		}
 		return true;
@@ -497,7 +497,7 @@
 	[self postNotificationforStatus:kIAPRestoreFailed];
 	return false;
 }
-- (BOOL)purchaseWitID:(NSString *)productID {
+- (BOOL)purchaseWithID:(NSString *)productID {
 	[self postNotificationforStatus:kIAPPurchaseFailed];
 	return FALSE;
 }

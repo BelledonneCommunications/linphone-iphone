@@ -29,3 +29,9 @@ ringer_dev_id=AQ: Audio Queue Device
 
 [video]
 display_filter_auto_rotate=0
+
+[in_app_purchase]
+enabled=1
+paid_account_id=sipAccount_12m
+receipt_validation_url=https://www.linphone.org/inapp.php
+products_list=sipAccount_12m
