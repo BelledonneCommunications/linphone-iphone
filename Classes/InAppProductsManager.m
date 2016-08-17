@@ -18,6 +18,7 @@
  */
 
 #import "InAppProductsManager.h"
+#import "ShopView.h"
 
 // In app purchase are not supported by the Simulator
 #import <XMLRPCConnection.h>
@@ -36,10 +37,16 @@
 @property(nonatomic, strong) InAppProductsXMLRPCDelegate *xmlrpc;
 @end
 
+
+
 @implementation InAppProductsManager
 
+@synthesize checkPeriod;
+@synthesize warnBeforeExpiryPeriod;
+@synthesize notificationCategory;
+
 // LINPHONE_CAPABILITY_INAPP_PURCHASE must be defined in Linphone Build Settings
-#if LINPHONE_CAPABILITY_INAPP_PURCHASE && !TARGET_IPHONE_SIMULATOR
+#if 1
 
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
@@ -48,6 +55,14 @@
 		_initialized = false;
 		_available = false;
 		_accountActivationInProgress = false;
+		checkPeriod = [LinphoneManager.instance lpConfigIntForKey:@"expiry_check_period" inSection:@"in_app_purchase"];
+		warnBeforeExpiryPeriod = [LinphoneManager.instance lpConfigIntForKey:@"warn_before_expiry_period" inSection:@"in_app_purchase"];
+		lastCheck = 0;
+		
+		int testExpiry = [LinphoneManager.instance lpConfigIntForKey:@"expiry_time_test" inSection:@"in_app_purchase"];
+		if (testExpiry > 0){
+			expiryTime = time(NULL) + testExpiry;
+		}else expiryTime = 0;
 		if (_enabled) {
 			self.xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
 			_status = kIAPNotReady;
@@ -76,7 +91,7 @@
 	return false;
 }
 
-- (BOOL)purchaseWitID:(NSString *)productID {
+- (BOOL)purchaseWithID:(NSString *)productID {
 	if (!_enabled || !_initialized || !_available) {
 		NSDictionary *dict = @{
 			@"product_id" : productID,
@@ -111,7 +126,7 @@
 												 inSection:@"in_app_purchase"];
 		self.accountCreationData = @{ @"phoneNumber" : phoneNumber, @"password" : password, @"email" : email };
 
-		if (![self purchaseWitID:productID]) {
+		if (![self purchaseWithID:productID]) {
 			self.accountCreationData = nil;
 		}
 		return true;
@@ -301,13 +316,9 @@
 	NSString *phoneNumber = @"";
 	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
 	if (config) {
-		const char *identity = linphone_proxy_config_get_identity(config);
+		const LinphoneAddress *identity = linphone_proxy_config_get_identity_address(config);
 		if (identity) {
-			LinphoneAddress *addr = linphone_core_interpret_url(LC, identity);
-			if (addr) {
-				phoneNumber = [NSString stringWithUTF8String:linphone_address_get_username(addr)];
-				linphone_address_destroy(addr);
-			}
+			phoneNumber = [NSString stringWithUTF8String:linphone_address_get_username(identity)];
 		}
 	}
 	return phoneNumber;
@@ -476,6 +487,64 @@
 	NSDictionary *dict = @{ @"error_msg" : errorString };
 	[self postNotificationforStatus:kIAPReceiptFailed withDict:dict];
 }
+
+- (void) presentNotification:(int64_t) remaining{
+	if (notificationCategory == nil) return;
+	int days = (int)remaining / (3600 * 24);
+	NSString * expireText;
+	if (remaining >= 0){
+		expireText = [NSString stringWithFormat:NSLocalizedString(@"Your account will expire in %i days.", nil), days];
+	}else{
+		expireText = [NSString stringWithFormat:NSLocalizedString(@"Your account has expired.", nil), days];
+	}
+
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
+		UILocalNotification *notification = [[UILocalNotification alloc] init];
+		if (notification) {
+			
+			notification.category = notificationCategory;
+			notification.repeatInterval = 0;
+			notification.applicationIconBadgeNumber = 1;
+			notification.alertBody = expireText;
+			
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+		}
+		
+	}else{
+		UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Account expiring"
+																	  message:expireText
+															   preferredStyle:UIAlertControllerStyleAlert];
+ 
+		UIAlertAction* buyAction = [UIAlertAction actionWithTitle:@"Buy" style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {
+															  [PhoneMainView.instance changeCurrentView:ShopView.compositeViewDescription];
+														  }];
+		
+		UIAlertAction* laterAction = [UIAlertAction actionWithTitle:@"Later" style:UIAlertActionStyleCancel
+														  handler:^(UIAlertAction * action) {
+															 // [alert dismissViewControllerAnimated:FALSE];
+														  }];
+		
+		[alert addAction:buyAction];
+		[alert addAction:laterAction];
+		[PhoneMainView.instance presentViewController:alert animated:YES completion:nil];
+	}
+}
+
+- (void) check{
+	if (!_available) return;
+	if (expiryTime == 0 || checkPeriod == 0) return;
+	
+	time_t now = time(NULL);
+
+	if (now < lastCheck + checkPeriod) return;
+	if (now >= expiryTime - warnBeforeExpiryPeriod){
+		lastCheck = now;
+		int64_t remaining = (int64_t)expiryTime - (int64_t)now;
+		[self presentNotification: remaining];
+	}
+}
+
 #else
 - (void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status {
 	_status = status;
@@ -497,7 +566,7 @@
 	[self postNotificationforStatus:kIAPRestoreFailed];
 	return false;
 }
-- (BOOL)purchaseWitID:(NSString *)productID {
+- (BOOL)purchaseWithID:(NSString *)productID {
 	[self postNotificationforStatus:kIAPPurchaseFailed];
 	return FALSE;
 }

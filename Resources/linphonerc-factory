@@ -1,4 +1,12 @@
 [app]
+
+#Hide in the assistant the button to configure an external SIP account.
+hide_assistant_custom_account=0
+
+#Hide in the assistant the button to create a new SIP account
+hide_assistant_create_account=0
+
+
 #contact_display_username_only=1
 #contact_filter_on_default_domain=1
 #debug_popup_magic=**00**
@@ -11,14 +19,41 @@ publish_presence=0
 password_length=-1
 username_length=-1
 
+[in_app_purchase]
+#set to 1 if in-app purchases are to be shown in the application
+enabled=0
+
+#specify here the id of the sip account in-app purchase service to be shown in the shop section of the app
+paid_account_id=sipAccount_12m
+
+#the url of the inapp/account management server, for submitting the receipt and validating the account.
+receipt_validation_url=https://www.linphone.org/inapp.php
+
+#for future use, to specify the full list of paying services to show in the shop view
+products_list=sipAccount_12m
+
+#minimum period of time between notifications to the user about his expiring/expired account, in seconds.
+expiry_check_period=30
+
+#period of time before account expiry, to start notifying the user about expiration arriving, in seconds.
+warn_before_expiry_period=160
+
+#for test only, simulate an account expiry after the specified number of seconds
+expiry_time_test=180
+
+[sip]
+sip_random_port=0
+
 [misc]
 #by default it is set to 30 by liblinphone
 history_max_size=-1
 
-[sip]
-sip_random_port=0
+#whether SIP passwords are to be encrypted in configuration storage file
 store_ha1_passwd=0
 #handle_content_encoding=none
+
+
+
 
 [sound]
 dtmf_player_amp=0.007

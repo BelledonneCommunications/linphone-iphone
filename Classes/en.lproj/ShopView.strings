@@ -1,0 +1,30 @@
+
+/* Class = "UIButton"; accessibilityLabel = "Add contact"; ObjectID = "ETk-tB-ZNl"; */
+"ETk-tB-ZNl.accessibilityLabel" = "Add contact";
+
+/* Class = "UILabel"; text = "GNU General Public License V2\n© 2010-2016 Belledonne Communications"; ObjectID = "ToT-OI-B2F"; */
+"ToT-OI-B2F.text" = "GNU General Public License V2\n© 2010-2016 Belledonne Communications";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Ui2-bF-EnK"; */
+"Ui2-bF-EnK.text" = "Label";
+
+/* Class = "UILabel"; text = "LINPHONE"; ObjectID = "fss-Tl-kRy"; */
+"fss-Tl-kRy.text" = "LINPHONE";
+
+/* Class = "UILabel"; text = "Linphone Core 3.9.0"; ObjectID = "g2W-u5-yxg"; */
+"g2W-u5-yxg.text" = "Linphone Core 3.9.0";
+
+/* Class = "UILabel"; text = "SHOP"; ObjectID = "iNt-9d-7si"; */
+"iNt-9d-7si.text" = "SHOP";
+
+/* Class = "UILabel"; text = "Linphone iPhone 3.0"; ObjectID = "oYk-ih-BBi"; */
+"oYk-ih-BBi.text" = "Linphone iPhone 3.0";
+
+/* Class = "UILabel"; text = "https://www.linphone.org"; ObjectID = "uis-xz-Qsa"; */
+"uis-xz-Qsa.text" = "https://www.linphone.org";
+
+/* Class = "UIButton"; accessibilityLabel = "Add contact"; ObjectID = "vX8-wO-ZEN"; */
+"vX8-wO-ZEN.accessibilityLabel" = "Add contact";
+
+/* Class = "UILabel"; text = "ABOUT"; ObjectID = "wKp-iH-ojJ"; */
+"wKp-iH-ojJ.text" = "ABOUT";

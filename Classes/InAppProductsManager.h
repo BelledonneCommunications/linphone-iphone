@@ -45,6 +45,8 @@ typedef NSString *IAPPurchaseNotificationStatus;
 // paid_account_id=test.autorenew_7days
 // receipt_validation_url=https://www.linphone.org/inapp.php
 // products_list=test.autorenew_7days
+// expiry_check_period = 86400
+// warn_before_expiry_period = 604800
 // Note: in Sandbox mode (test), autorenewal expire time is speed up (see
 // http://stackoverflow.com/questions/8815271/what-expiry-date-should-i-see-for-in-app-purchase-in-the-application-sandbox)
 // so that 7 days renewal is only 3 minutes and:
@@ -57,11 +59,19 @@ typedef NSString *IAPPurchaseNotificationStatus;
 
 @interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
 	NSString *latestReceiptMD5;
+	time_t lastCheck;
+	time_t expiryTime;
 }
 
 @property(nonatomic, strong) IAPPurchaseNotificationStatus status;
 @property(nonatomic, strong) NSMutableArray *productsAvailable;
 @property(nonatomic, strong) NSMutableArray *productsIDPurchased;
+//Period of time between each expiration check. Default value is given in linphonerc.
+@property time_t checkPeriod;
+//Period of time before expiration during which we warn the user about the need to renew the account.
+@property time_t warnBeforeExpiryPeriod;
+//The notification category to use for displaying notification related to account expiry.
+@property NSString *notificationCategory;
 
 // TRUE when in app purchase capability is available - not modified during runtime
 @property(readonly) BOOL enabled;
@@ -82,7 +92,7 @@ typedef NSString *IAPPurchaseNotificationStatus;
 			   andEmail:(NSString *)email
 				monthly:(BOOL)monthly;
 // Purchase a product. You should not use this if manager is not available yet.
-- (BOOL)purchaseWitID:(NSString *)productID;
+- (BOOL)purchaseWithID:(NSString *)productID;
 // Activate purchased account.
 - (BOOL)activateAccount:(NSString *)phoneNumber;
 
@@ -91,6 +101,9 @@ typedef NSString *IAPPurchaseNotificationStatus;
 // retrieve purchases on our server. You should not use this if manager is not available yet.
 // Warning: on first run, this will open a popup to user to provide iTunes Store credentials
 - (BOOL)retrievePurchases;
+
+//Check if account is about to expire, and if yes launch a notification.
+- (void)check;
 
 // internal API only due to methods conflict
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response;
