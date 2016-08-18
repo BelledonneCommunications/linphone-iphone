@@ -1802,10 +1802,16 @@ void linphone_gtk_edit_tunnel(GtkButton *button){
 	if (port==0) port=443;
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")), port);
 
-	if (linphone_tunnel_get_mode(tunnel)){
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")),1);
-	} else{
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_disable")),1);
+	switch(linphone_tunnel_get_mode(tunnel)){
+		case LinphoneTunnelModeDisable:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_disable")),1);
+		break;
+		case LinphoneTunnelModeEnable:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")),1);
+		break;
+		case LinphoneTunnelModeAuto:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"tunnel_autodetect")),1);
+		break;
 	}
 	{
 		const char *proxy=NULL,*username=NULL,*password=NULL;
@@ -1833,11 +1839,13 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 
 	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")));
 	gboolean enabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")));
+	gboolean autodetect=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"tunnel_autodetect")));
 	const char *host=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")));
 	const char *http_host=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"http_host")));
 	gint http_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"http_port")));
 	const char *username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"username")));
 	const char *password=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"password")));
+	LinphoneTunnelMode mode = LinphoneTunnelModeDisable;
 
 	if (tunnel==NULL) return;
 	if (host && *host=='\0') host=NULL;
@@ -1846,7 +1854,13 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	linphone_tunnel_config_set_host(config, host);
 	linphone_tunnel_config_set_port(config, port);
 	linphone_tunnel_add_server(tunnel, config);
-	linphone_tunnel_set_mode(tunnel, (enabled ? LinphoneTunnelModeEnable : LinphoneTunnelModeDisable));
+	
+	if (enabled){
+		mode = LinphoneTunnelModeEnable;
+	}else if (autodetect){
+		mode = LinphoneTunnelModeAuto;
+	}
+	linphone_tunnel_set_mode(tunnel, mode);
 	linphone_tunnel_set_http_proxy(tunnel,http_host,http_port,username,password);
 
 	gtk_widget_destroy(w);

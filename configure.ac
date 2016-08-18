@@ -879,7 +879,7 @@ AC_ARG_ENABLE(tunnel,
 )
 AM_CONDITIONAL(BUILD_TUNNEL, test x$enable_tunnel = xtrue)
 if test x$enable_tunnel = xtrue; then
-	PKG_CHECK_MODULES(TUNNEL, tunnel >= 0.3.3)
+	PKG_CHECK_MODULES(TUNNEL, tunnel >= 0.6.0)
 	AC_DEFINE(TUNNEL_ENABLED,1,[Tells tunnel extension is built-in])
 fi
 
@@ -938,12 +938,12 @@ if test x$enable_sqlite_storage != xfalse; then
 		if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
 			SQLITE3_LIBS+=" -liconv"
 		fi
-		enable_msg_storage=true
+		enable_sqlite_storage=true
 	else
 		if test x$enable_sqlite_storage = xtrue; then
 			AC_MSG_ERROR([sqlite3, required for storage, not found])
 		fi
-		enable_msg_storage=false
+		enable_sqlite_storage=false
 	fi
 
 	AC_SUBST(SQLITE3_CFLAGS)

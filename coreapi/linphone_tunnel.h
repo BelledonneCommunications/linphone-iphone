@@ -322,6 +322,7 @@ LINPHONE_PUBLIC void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const 
  */
 LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
+
 /**
  * Sets whether tunneling of SIP and RTP is required.
  * @param tunnel object
