@@ -18,6 +18,7 @@
  */
 
 #import "Log.h"
+#import <asl.h>
 
 @implementation Log
 
@@ -53,6 +54,11 @@
 
 + (void)enableLogs:(OrtpLogLevel)level {
 	BOOL enabled = (level >= ORTP_DEBUG && level < ORTP_ERROR);
+	static BOOL stderrInUse = NO;
+	if (!stderrInUse) {
+		asl_add_log_file(NULL, STDERR_FILENO);
+		stderrInUse = YES;
+	}
 	linphone_core_set_log_collection_path([self cacheDirectory].UTF8String);
 	linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
 	linphone_core_enable_log_collection(enabled);
@@ -72,34 +78,34 @@
 void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	NSString *format = [[NSString alloc] initWithUTF8String:fmt];
 	NSString *formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-	NSString *lvl = @"";
+	int lvl = ASL_LEVEL_NOTICE;
 	switch (lev) {
 		case ORTP_FATAL:
-			lvl = @"F";
+			lvl = ASL_LEVEL_CRIT;
 			break;
 		case ORTP_ERROR:
-			lvl = @"E";
+			lvl = ASL_LEVEL_ERR;
 			break;
 		case ORTP_WARNING:
-			lvl = @"W";
+			lvl = ASL_LEVEL_WARNING;
 			break;
 		case ORTP_MESSAGE:
-			lvl = @"I";
+			lvl = ASL_LEVEL_NOTICE;
 			break;
 		case ORTP_DEBUG:
 		case ORTP_TRACE:
-			lvl = @"D";
+			lvl = ASL_LEVEL_INFO;
 			break;
 		case ORTP_LOGLEV_END:
 			return;
 	}
 	if (!domain)
-		domain = "liblinphone";
+		domain = "lib";
 	// since \r are interpreted like \n, avoid double new lines when logging network packets (belle-sip)
 	// output format is like: I/ios/some logs. We truncate domain to **exactly** DOMAIN_SIZE characters to have
 	// fixed-length aligned logs
-	NSLog(@"%@/%*.*s/%@", lvl, DOMAIN_SIZE, DOMAIN_SIZE, domain,
-		  [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+	asl_log(NULL, NULL, lvl, "%*.*s/%s", DOMAIN_SIZE, DOMAIN_SIZE, domain,
+			[formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"].UTF8String);
 }
 
 @end
