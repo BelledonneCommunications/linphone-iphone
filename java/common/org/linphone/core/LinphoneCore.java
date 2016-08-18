@@ -1027,7 +1027,7 @@ public interface LinphoneCore {
 	LinphoneFriendList[] getFriendLists();
 
 	/**
-	 * @brief Set my presence status
+	 * Set my presence status
 	 * @param minutes_away how long in away
 	 * @param alternative_contact sip uri used to redirect call in state LinphoneStatusMoved
 	 * @param status OnlineStatus
@@ -1035,18 +1035,18 @@ public interface LinphoneCore {
 	 */
 	void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status);
 	/**
-	 * @brief Get my presence status
+	 * Get my presence status
 	 * @return OnlineStatus
 	 * @deprecated Use getPresenceModel() instead
 	 */
 	OnlineStatus getPresenceInfo();
 	/**
-	 * @brief Set my presence status
+	 * Set my presence status
 	 * @param presence #LinphonePresenceModel
 	 */
 	void setPresenceModel(PresenceModel presence);
 	/**
-	 * @brief Get my presence status
+	 * Get my presence status
 	 * @return A #PresenceModel object, or null if no presence model has been set.
 	 */
 	PresenceModel getPresenceModel();
@@ -1555,7 +1555,7 @@ public interface LinphoneCore {
 	 * which could result in an active call.
 	 * Eg: don't start a new call if one is in outgoing ringing.
 	 * Eg: don't merge to conference either as it could result
-	 *     in two active calls (conference and accepted call).
+	 *   in two active calls (conference and accepted call).
 	 * @return
 	 */
 	boolean soundResourcesLocked();

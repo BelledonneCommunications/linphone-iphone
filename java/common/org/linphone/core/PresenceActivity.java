@@ -22,39 +22,39 @@ package org.linphone.core;
 public interface PresenceActivity {
 
 	/**
-	 * @brief Gets the string representation of a presence activity.
+	 * Gets the string representation of a presence activity.
 	 * @return A String representing the given activity.
 	 */
 	String toString();
 
 	/**
-	 * @brief Gets the activity type of a presence activity.
+	 * Gets the activity type of a presence activity.
 	 * @return The #PresenceActivityType of the activity.
 	 */
 	PresenceActivityType getType();
 
 	/**
-	 * @brief Sets the type of activity of a presence activity.
-	 * @param[in] acttype The activity type to set for the activity.
+	 * Sets the type of activity of a presence activity.
+	 * @param acttype The activity type to set for the activity.
 	 * @return 0 if successful, a value < 0 in case of error.
 	 */
 	int setType(PresenceActivityType type);
 
 	/**
-	 * @brief Gets the description of a presence activity.
+	 * Gets the description of a presence activity.
 	 * @return A String containing the description of the presence activity, or null if no description is specified.
 	 */
 	String getDescription();
 
 	/**
-	 * @brief Sets the description of a presence activity.
-	 * @param[in] description An additional description of the activity. Can be null if no additional description is to be added.
+	 * Sets the description of a presence activity.
+	 * @param description An additional description of the activity. Can be null if no additional description is to be added.
 	 * @return 0 if successful, a value < 0 in case of error.
 	 */
 	int setDescription(String description);
 
 	/**
-	 * @brief Gets the native pointer for this object.
+	 * Gets the native pointer for this object.
 	 */
 	long getNativePtr();
 
