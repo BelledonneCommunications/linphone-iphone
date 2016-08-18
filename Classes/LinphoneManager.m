@@ -269,6 +269,15 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 #endif
 		}
 
+		// by default if handle_content_encoding is not set, we use plain text for debug purposes only
+		if ([self lpConfigStringForKey:@"handle_content_encoding" inSection:@"misc"] == nil) {
+#ifdef DEBUG
+			[self lpConfigSetString:@"none" forKey:@"handle_content_encoding" inSection:@"misc"];
+#else
+			[self lpConfigSetString:@"conflate" forKey:@"handle_content_encoding" inSection:@"misc"];
+#endif
+		}
+
 		[self migrateFromUserPrefs];
 	}
 	return self;

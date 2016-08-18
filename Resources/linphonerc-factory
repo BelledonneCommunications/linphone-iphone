@@ -48,12 +48,8 @@ sip_random_port=0
 #by default it is set to 30 by liblinphone
 history_max_size=-1
 
-#whether SIP passwords are to be encrypted in configuration storage file
+#whether SIP passwords must be encrypted in configuration storage file
 store_ha1_passwd=0
-#handle_content_encoding=none
-
-
-
 
 [sound]
 dtmf_player_amp=0.007
