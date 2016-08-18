@@ -102,9 +102,45 @@ static int add_uri_entry(xmlTextWriterPtr writer, int err, const char *uri) {
 	return err;
 }
 
+static bctbx_list_t * uri_list(const LinphoneFriendList *list) {
+	bctbx_list_t * uri_list = NULL;
+	bctbx_list_t * elem = NULL;
+	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
+		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
+		bctbx_list_t *iterator;
+		bctbx_list_t *addresses = linphone_friend_get_addresses(lf);
+		bctbx_list_t *numbers = linphone_friend_get_phone_numbers(lf);
+		iterator = addresses;
+		while (iterator) {
+			LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(iterator);
+			if (addr) {
+				char *uri = linphone_address_as_string_uri_only(addr);
+				if (uri) {
+					if (bctbx_list_find_custom(uri_list, (bctbx_compare_func)strcmp, uri) == NULL) {
+						uri_list =  bctbx_list_insert_sorted(uri_list, uri, (bctbx_compare_func)strcasecmp);
+					}
+				}
+			}
+			iterator = bctbx_list_next(iterator);
+		}
+		iterator = numbers;
+		while (iterator) {
+			const char *number = (const char *)bctbx_list_get_data(iterator);
+			const char *uri = linphone_friend_phone_number_to_sip_uri(lf, number);
+			if (uri) {
+				if (bctbx_list_find_custom(uri_list, (bctbx_compare_func)strcmp, uri) == NULL) {
+					uri_list = bctbx_list_insert_sorted(uri_list, ms_strdup(uri), (bctbx_compare_func)strcasecmp);
+				}
+			}
+			iterator = bctbx_list_next(iterator);
+		}
+		if (addresses) bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
+	}
+	return uri_list;
+}
+
 static char * create_resource_list_xml(const LinphoneFriendList *list) {
 	char *xml_content = NULL;
-	bctbx_list_t *elem;
 	xmlBufferPtr buf;
 	xmlTextWriterPtr writer;
 	int err;
@@ -135,31 +171,16 @@ static char * create_resource_list_xml(const LinphoneFriendList *list) {
 	if (err>= 0) {
 		err = xmlTextWriterStartElement(writer, (const xmlChar *)"list");
 	}
-	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
-		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
-		bctbx_list_t *iterator;
-		bctbx_list_t *addresses = linphone_friend_get_addresses(lf);
-		bctbx_list_t *numbers = linphone_friend_get_phone_numbers(lf);
-		iterator = addresses;
-		while (iterator) {
-			LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(iterator);
-			if (addr) {
-				char *uri = linphone_address_as_string_uri_only(addr);
-				if (uri) {
-					err = add_uri_entry(writer, err, uri);
-					ms_free(uri);
-				}
-			}
-			iterator = bctbx_list_next(iterator);
+
+	{
+		bctbx_list_t* entries = uri_list(list);
+		bctbx_list_t* it = entries;
+		while (it) {
+			err = add_uri_entry(writer, err, it->data);
+			ms_free(it->data);
+			it = it->next;
 		}
-		iterator = numbers;
-		while (iterator) {
-			const char *number = (const char *)bctbx_list_get_data(iterator);
-			const char *uri = linphone_friend_phone_number_to_sip_uri(lf, number);
-			if (uri) err = add_uri_entry(writer, err, uri);
-			iterator = bctbx_list_next(iterator);
-		}
-		if (addresses) bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
+		bctbx_free(entries);
 	}
 	if (err >= 0) {
 		/* Close the "list" element. */
@@ -858,7 +879,7 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 		ms_error("Can't import into a NULL list");
 		return -1;
 	}
-	
+
 	vcards = linphone_vcard_context_get_vcard_list_from_file(list->lc->vcard_context, vcard_file);
 	vcards_iterator = vcards;
 	if (!vcards) {
@@ -898,7 +919,7 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 		ms_error("Can't import into a NULL list");
 		return -1;
 	}
-	
+
 	vcards = linphone_vcard_context_get_vcard_list_from_buffer(list->lc->vcard_context, vcard_buffer);
 	vcards_iterator = vcards;
 	if (!vcards) {
