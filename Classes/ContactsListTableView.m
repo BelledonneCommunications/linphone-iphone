@@ -133,7 +133,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 				add = (contact.emails.count > 0);
 			}
 
-			NSString *name = [self displayNameForContact:contact];
+			NSMutableString *name = [[NSMutableString alloc] initWithString:[self displayNameForContact:contact]];
 			if (add && name != nil) {
 				NSString *firstChar = [[name substringToIndex:1] uppercaseString];
 
@@ -141,12 +141,18 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 				if ([firstChar characterAtIndex:0] < 'A' || [firstChar characterAtIndex:0] > 'Z') {
 					firstChar = @"#";
 				}
-				OrderedDictionary *subDic = [addressBookMap objectForKey:firstChar];
+				NSMutableArray *subDic = [addressBookMap objectForKey:firstChar];
 				if (subDic == nil) {
-					subDic = [[OrderedDictionary alloc] init];
+					subDic = [[NSMutableArray alloc] init];
 					[addressBookMap insertObject:subDic forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
 				}
-				[subDic insertObject:contact forKey:name selector:@selector(caseInsensitiveCompare:)];
+				NSUInteger idx = [subDic indexOfObject:contact
+										 inSortedRange:(NSRange){0, subDic.count}
+											   options:NSBinarySearchingInsertionIndex
+								  usingComparator:^NSComparisonResult(Contact*  _Nonnull obj1, Contact*  _Nonnull obj2) {
+									  return [[self displayNameForContact:obj1] compare:[self displayNameForContact:obj2]];
+								  }];
+				[subDic insertObject:contact atIndex:idx];
 			}
 		}
 		[super loadData];
@@ -177,20 +183,14 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	return [(OrderedDictionary *)[addressBookMap objectForKey:[addressBookMap keyAtIndex:section]] count];
 }
 
-- (ABRecordRef)contactForIndexPath:(NSIndexPath *)indexPath {
-
-	OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
-	NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
-	return (__bridge ABRecordRef)([subDic objectForKey:key]);
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = NSStringFromClass(UIContactCell.class);
 	UIContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
 		cell = [[UIContactCell alloc] initWithIdentifier:kCellId];
 	}
-	Contact *contact = [self contactForIndexPath:indexPath];
+	NSMutableArray *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+	Contact *contact = subDic[indexPath.row];
 
 	// Cached avatar
 	UIImage *image = [FastAddressBook imageForContact:contact thumbnail:true];
@@ -221,8 +221,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if (![self isEditing]) {
-		OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
-		Contact *contact = [subDic objectForKey:[subDic keyAtIndex:[indexPath row]]];
+		NSMutableArray *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+		Contact *contact = subDic[indexPath.row];
 
 		// Go to Contact details view
 		ContactDetailsView *view = VIEW(ContactDetailsView);
@@ -243,9 +243,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		[tableView beginUpdates];
 
 		NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
-		OrderedDictionary *subDic = [addressBookMap objectForKey:firstChar];
-		NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
-		Contact *contact = [subDic objectForKey:key];
+		NSMutableArray *subDic = [addressBookMap objectForKey:firstChar];
+		Contact *contact = subDic[indexPath.row];
 		[[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 		if ([tableView numberOfRowsInSection:indexPath.section] == 1) {
 			[addressBookMap removeObjectForKey:firstChar];
@@ -269,9 +268,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	  [NSNotificationCenter.defaultCenter removeObserver:self];
 
 	  NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
-	  OrderedDictionary *subDic = [addressBookMap objectForKey:firstChar];
-	  NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
-	  Contact *contact = [subDic objectForKey:key];
+	  NSMutableArray *subDic = [addressBookMap objectForKey:firstChar];
+	  Contact *contact = subDic[indexPath.row];
 	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];
