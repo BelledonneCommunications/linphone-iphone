@@ -137,22 +137,23 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 			if (add && name != nil) {
 				NSString *firstChar = [[name substringToIndex:1] uppercaseString];
 
-				// Put in correct subDic
+				// Put in correct subAr
 				if ([firstChar characterAtIndex:0] < 'A' || [firstChar characterAtIndex:0] > 'Z') {
 					firstChar = @"#";
 				}
-				NSMutableArray *subDic = [addressBookMap objectForKey:firstChar];
-				if (subDic == nil) {
-					subDic = [[NSMutableArray alloc] init];
-					[addressBookMap insertObject:subDic forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
+				NSMutableArray *subAr = [addressBookMap objectForKey:firstChar];
+				if (subAr == nil) {
+					subAr = [[NSMutableArray alloc] init];
+					[addressBookMap insertObject:subAr forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
 				}
-				NSUInteger idx = [subDic indexOfObject:contact
-										 inSortedRange:(NSRange){0, subDic.count}
+				NSUInteger idx = [subAr indexOfObject:contact
+										 inSortedRange:(NSRange){0, subAr.count}
 											   options:NSBinarySearchingInsertionIndex
 								  usingComparator:^NSComparisonResult(Contact*  _Nonnull obj1, Contact*  _Nonnull obj2) {
 									  return [[self displayNameForContact:obj1] compare:[self displayNameForContact:obj2]];
 								  }];
-				[subDic insertObject:contact atIndex:idx];
+                if (![subAr containsObject:contact])
+                    [subAr insertObject:contact atIndex:idx];
 			}
 		}
 		[super loadData];
@@ -189,8 +190,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	if (cell == nil) {
 		cell = [[UIContactCell alloc] initWithIdentifier:kCellId];
 	}
-	NSMutableArray *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
-	Contact *contact = subDic[indexPath.row];
+	NSMutableArray *subAr = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+	Contact *contact = subAr[indexPath.row];
 
 	// Cached avatar
 	UIImage *image = [FastAddressBook imageForContact:contact thumbnail:true];
@@ -221,8 +222,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if (![self isEditing]) {
-		NSMutableArray *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
-		Contact *contact = subDic[indexPath.row];
+		NSMutableArray *subAr = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+		Contact *contact = subAr[indexPath.row];
 
 		// Go to Contact details view
 		ContactDetailsView *view = VIEW(ContactDetailsView);
@@ -243,8 +244,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		[tableView beginUpdates];
 
 		NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
-		NSMutableArray *subDic = [addressBookMap objectForKey:firstChar];
-		Contact *contact = subDic[indexPath.row];
+		NSMutableArray *subAr = [addressBookMap objectForKey:firstChar];
+		Contact *contact = subAr[indexPath.row];
 		[[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 		if ([tableView numberOfRowsInSection:indexPath.section] == 1) {
 			[addressBookMap removeObjectForKey:firstChar];
@@ -268,8 +269,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	  [NSNotificationCenter.defaultCenter removeObserver:self];
 
 	  NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
-	  NSMutableArray *subDic = [addressBookMap objectForKey:firstChar];
-	  Contact *contact = subDic[indexPath.row];
+	  NSMutableArray *subAr = [addressBookMap objectForKey:firstChar];
+	  Contact *contact = subAr[indexPath.row];
 	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];
