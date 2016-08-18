@@ -5122,10 +5122,12 @@ void linphone_core_send_dtmf(LinphoneCore *lc, char dtmf)
 }
 
 void linphone_core_set_stun_server(LinphoneCore *lc, const char *server) {
-	if (lc->nat_policy != NULL)
+	if (lc->nat_policy != NULL) {
 		linphone_nat_policy_set_stun_server(lc->nat_policy, server);
-	else
+		linphone_nat_policy_save_to_config(lc->nat_policy);
+	} else {
 		lp_config_set_string(lc->config, "net", "stun_server", server);
+	}
 }
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc){
@@ -5296,6 +5298,8 @@ void linphone_core_set_nat_policy(LinphoneCore *lc, LinphoneNatPolicy *policy) {
 		lc->nat_policy = policy;
 		/*start an immediate (but asynchronous) resolution.*/
 		linphone_nat_policy_resolve_stun_server(policy);
+		lp_config_set_string(lc->config, "net", "nat_policy_ref", lc->nat_policy->ref);
+		linphone_nat_policy_save_to_config(lc->nat_policy);
 	}
 
 #ifdef BUILD_UPNP
@@ -6434,8 +6438,6 @@ void net_config_uninit(LinphoneCore *lc)
 	}
 	lp_config_set_int(lc->config,"net","mtu",config->mtu);
 	if (lc->nat_policy != NULL) {
-		lp_config_set_string(lc->config, "net", "nat_policy_ref", lc->nat_policy->ref);
-		linphone_nat_policy_save_to_config(lc->nat_policy);
 		linphone_nat_policy_unref(lc->nat_policy);
 		lc->nat_policy = NULL;
 	}
