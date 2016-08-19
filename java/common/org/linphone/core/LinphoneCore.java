@@ -2395,6 +2395,14 @@ public interface LinphoneCore {
 	 * @param path The path from where plugins are to be loaded.
 	**/
 	public void reloadMsPlugins(String path);
+
+	/**
+	 * Reload sound devices.
+	 * Use it if you change the devices table.
+	 */
+	public void reloadSoundDevices();
+
+	public void setDefaultSoundDevices();
 	
 	public boolean isLimeEncryptionAvailable();
 	

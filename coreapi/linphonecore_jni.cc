@@ -2457,6 +2457,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isKeepAliveEnabled(J
 	return (jboolean)linphone_core_keep_alive_enabled((LinphoneCore*)lc);
 
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDefaultSoundDevices(JNIEnv*  env
+                                                                               ,jobject  thiz
+                                                                               ,jlong lc) {
+    linphone_core_set_default_sound_devices((LinphoneCore*)lc);
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNIEnv*  env
 																				,jobject  thiz
 																				,jlong lc
@@ -2467,7 +2474,6 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 	linphone_core_v_table_set_user_data(vTable, ldata);
 
 	return (jint)linphone_core_start_echo_calibration((LinphoneCore*)lc, ldata->ecCalibrationStatus, NULL, NULL, vTable);
-
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lcptr) {
@@ -7595,6 +7601,9 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_reloadMsPlugins(J
 	ReleaseStringUTFChars(env, jpath, path);
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_reloadSoundDevices(JNIEnv *env, jobject jobj, jlong pcore) {
+	linphone_core_reload_sound_devices((LinphoneCore*)pcore);
+}
 
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneNatPolicyImpl_getCore(JNIEnv *env, jobject thiz, jlong jNatPolicy) {
 	LinphoneCore *lc = ((LinphoneNatPolicy *)jNatPolicy)->lc;

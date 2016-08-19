@@ -187,6 +187,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setAndroidWifiLock(long nativePtr,Object wifi_lock);
 	private native void setAndroidMulticastLock(long nativePtr,Object multicast_lock);
 	private native void reloadMsPlugins(long nativePtr, String path);
+	private native void reloadSoundDevices(long nativePtr);
+	private native void setDefaultSoundDevices(long nativePtr);
 
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -1695,6 +1697,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public void reloadMsPlugins(String path) {
 		reloadMsPlugins(nativePtr, path);
+	}
+
+	public void reloadSoundDevices() {
+		reloadSoundDevices(nativePtr);
+	}
+
+	public void setDefaultSoundDevices() {
+		setDefaultSoundDevices(nativePtr);
 	}
 	
 	private native boolean isLimeEncryptionAvailable(long nativePtr);

@@ -3266,6 +3266,11 @@ LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_get_nat_policy(const LinphoneC
 LINPHONE_PUBLIC const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
 
 /**
+ * Use this function when you want to set the default sound devices
+ **/
+LINPHONE_PUBLIC void linphone_core_set_default_sound_devices(LinphoneCore *lc);
+
+/**
  * Update detection of sound devices.
  *
  * Use this function when the application is notified of USB plug events, so that

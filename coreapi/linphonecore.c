@@ -4804,6 +4804,12 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc){
 	return lc->video_conf.cams;
 }
 
+void linphone_core_set_default_sound_devices(LinphoneCore *lc){
+    linphone_core_set_ringer_device(lc, NULL);
+    linphone_core_set_playback_device(lc, NULL);
+    linphone_core_set_capture_device(lc, NULL);
+}
+
 void linphone_core_reload_sound_devices(LinphoneCore *lc){
 	const char *ringer;
 	const char *playback;
