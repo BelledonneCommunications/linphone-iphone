@@ -211,3 +211,13 @@ source_file = Settings/InAppSettings.bundle/en.lproj/Tunnel.strings
 source_lang = en
 file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Video.strings
 source_file = Settings/InAppSettings.bundle/en.lproj/Video.strings
+
+[linphone-ios.countrylistviewcontrollerstrings]
+source_lang = en
+file_filter = Classes/<lang>.lproj/CountryListViewController.strings
+source_file = Classes/Base.lproj/CountryListViewController.strings
+
+[linphone-ios.shopviewstrings]
+source_lang = en
+file_filter = Classes/<lang>.lproj/ShopView.strings
+source_file = Classes/en.lproj/ShopView.strings
