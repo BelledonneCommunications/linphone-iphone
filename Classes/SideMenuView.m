@@ -55,16 +55,14 @@
 	if (default_proxy != NULL) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
-		char *as_string = linphone_address_as_string_uri_only(addr);
-		_addressLabel.text = [NSString stringWithUTF8String:as_string];
-		ms_free(as_string);
+		_addressLabel.text = [NSString stringWithUTF8String:linphone_proxy_config_get_identity(default_proxy)];
 		_presenceImage.image = [StatusBarView imageForState:linphone_proxy_config_get_state(default_proxy)];
 	} else {
 		_nameLabel.text = @"No account";
 		// display direct IP:port address so that we can be reached
 		LinphoneAddress *addr = linphone_core_get_primary_contact_parsed(LC);
 		if (addr) {
-			char *as_string = linphone_address_as_string_uri_only(addr);
+			char *as_string = linphone_address_as_string(addr);
 			_addressLabel.text = [NSString stringWithFormat:@"%s", as_string];
 			ms_free(as_string);
 			linphone_address_destroy(addr);
