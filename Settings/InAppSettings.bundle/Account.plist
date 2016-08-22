@@ -18,6 +18,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Account enabled</string>
+			<key>Key</key>
+			<string>account_is_enabled_preference</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Default account</string>
 			<key>Key</key>
 			<string>account_is_default_preference</string>
@@ -229,16 +239,6 @@
 			<string>Substitute + in phone numbers</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Account enabled</string>
-			<key>Key</key>
-			<string>account_is_enabled_preference</string>
-			<key>DefaultValue</key>
-			<false/>
 		</dict>
 		<dict>
 			<key>Key</key>

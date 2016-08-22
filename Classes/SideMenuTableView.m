@@ -88,7 +88,7 @@
 		int idx =
 			linphone_core_get_default_proxy_config(LC)
 				? bctbx_list_index(linphone_core_get_proxy_config_list(LC), linphone_core_get_default_proxy_config(LC))
-				: 0;
+				: HUGE_VAL;
 		LinphoneProxyConfig *proxy = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
 														 (int)indexPath.row + (idx <= indexPath.row ? 1 : 0));
 		if (proxy) {
