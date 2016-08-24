@@ -246,8 +246,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
 		NSMutableArray *subAr = [addressBookMap objectForKey:firstChar];
 		Contact *contact = subAr[indexPath.row];
-		[[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
-		if ([tableView numberOfRowsInSection:indexPath.section] == 1) {
+		[subAr removeObjectAtIndex:indexPath.row];
+		if (subAr.count == 0) {
 			[addressBookMap removeObjectForKey:firstChar];
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
 					 withRowAnimation:UITableViewRowAnimationFade];
@@ -271,8 +271,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	  NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
 	  NSMutableArray *subAr = [addressBookMap objectForKey:firstChar];
 	  Contact *contact = subAr[indexPath.row];
-	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
-	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
+	  [subAr removeObjectAtIndex:indexPath.row];
+	  if (subAr.count == 0) {
 		  [addressBookMap removeObjectForKey:firstChar];
 	  }
 	  [[LinphoneManager.instance fastAddressBook] removeContact:contact];
