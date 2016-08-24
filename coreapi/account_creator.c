@@ -710,7 +710,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, creator->activation_code,
-		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username, creator->password, creator->domain),
+		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username, creator->domain, creator->password),
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_phone_number_link_cb);
