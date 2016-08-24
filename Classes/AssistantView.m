@@ -498,7 +498,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 							 if (s != LinphoneAccountCreatorOK) linphone_account_creator_set_phone_number(account_creator, NULL, NULL);
 
 							 // if phone is empty and username is empty, this is wrong
-							 if (linphone_account_creator_get_phone_number(account_creator) == NULL) {
+							 if (linphone_account_creator_get_username(account_creator) == NULL) {
 								 s = LinphoneAccountCreatorPhoneNumberTooShort;
 							 }
 
@@ -927,7 +927,11 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
     ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
         linphone_account_creator_set_activation_code(account_creator, ((UITextField*)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text.UTF8String);
-        linphone_account_creator_activate_account(account_creator);
+		if (linphone_account_creator_get_password(account_creator) == NULL) {
+			linphone_account_creator_activate_account(account_creator);
+		} else {
+			linphone_account_creator_activate_phone_number_link(account_creator);
+		}
     });
 }
 

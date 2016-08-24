@@ -19,7 +19,7 @@
  * responded 'OK', in which case the view will return to idle, or if there is an error, an
  * Alert will be displayed with the error message.
  *
- * All the rest is implemented to do nothing, which is what we want for Urmet
+ * All the rest is implemented to do nothing
  */
 
 /**
