@@ -618,14 +618,29 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 
 const LinphonePresenceModel * linphone_friend_get_presence_model(const LinphoneFriend *lf) {
 	const LinphonePresenceModel *presence = NULL;
-	LinphoneAddress *addr = linphone_friend_get_address(lf);
-	if (addr) {
+	LinphoneFriend* fuckconst = (LinphoneFriend*)lf;
+	bctbx_list_t* addrs = linphone_friend_get_addresses(fuckconst);
+	bctbx_list_t* phones = NULL;
+
+	while (addrs) {
+		LinphoneAddress *addr = addrs->data;
 		char *uri = linphone_address_as_string_uri_only(addr);
-		presence = linphone_friend_get_presence_model_for_uri_or_tel(lf, uri);
+		presence = linphone_friend_get_presence_model_for_uri_or_tel(fuckconst, uri);
 		ms_free(uri);
 		linphone_address_unref(addr);
+		if (presence) return presence;
+
+		addrs = addrs->next;
 	}
-	return presence;
+
+	phones = linphone_friend_get_phone_numbers(fuckconst);
+	while (phones) {
+		presence = linphone_friend_get_presence_model_for_uri_or_tel(fuckconst, phones->data);
+		if (presence) return presence;
+
+		phones = phones->next;
+	}
+	return NULL;
 }
 
 const LinphonePresenceModel * linphone_friend_get_presence_model_for_uri_or_tel(const LinphoneFriend *lf, const char *uri_or_tel) {
@@ -1211,7 +1226,7 @@ static bool_t linphone_update_table(sqlite3* db) {
 		}
 	}
     sqlite3_finalize(stmt_version);
-	
+
 	if (database_user_version == 0) {
 		int ret = sqlite3_exec(db,
 			"BEGIN TRANSACTION;\n"
@@ -1252,7 +1267,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 		sqlite3_close(lc->friends_db);
 		_linphone_sqlite3_open(lc->friends_db_file, &db);
 	}
-	
+
 	lc->friends_db = db;
 
 	friends_lists = linphone_core_fetch_friends_lists_from_db(lc);

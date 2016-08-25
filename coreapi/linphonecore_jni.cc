@@ -94,17 +94,17 @@ void linphone_android_log_handler(int prio, char *str) {
 }
 
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreFactoryImpl__1setLogHandler(JNIEnv *env, jobject jfactory, jobject jhandler) {
-	handler_class = (jclass) env->GetObjectClass(jhandler);
-	loghandler_id = env->GetMethodID(handler_class, "log", "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V");
-	
-	if (loghandler_id == NULL) {
-		ms_fatal("log method not found");
-	}
 	if (handler_obj) {
 		env->DeleteGlobalRef(handler_obj);
 		handler_obj = NULL;
 	}
 	if (jhandler) {
+		handler_class = (jclass) env->GetObjectClass(jhandler);
+		loghandler_id = env->GetMethodID(handler_class, "log", "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V");
+		
+		if (loghandler_id == NULL) {
+			ms_fatal("log method not found");
+		}
 		handler_obj = env->NewGlobalRef(jhandler);
 	}
 }
