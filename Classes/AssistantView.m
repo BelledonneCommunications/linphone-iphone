@@ -710,13 +710,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Account creator callbacks
 
-void assistant_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	[thiz isAccountUsed:status];
 }
 
-void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountCreated) {
@@ -730,7 +730,7 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 	}
 }
 
-void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOK) {
@@ -740,7 +740,7 @@ void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAc
 	}
 }
 
-void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountActivated) {
@@ -761,7 +761,7 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 	}
 }
 
-void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountActivated) {
@@ -785,7 +785,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	}
 }
 
-void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOK) {
@@ -801,7 +801,7 @@ void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, L
 	}
 }
 
-void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOK) {
