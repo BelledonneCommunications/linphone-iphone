@@ -80,7 +80,7 @@ typedef struct _LinphoneAccountCreatorCbs LinphoneAccountCreatorCbs;
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] status The status of the LinphoneAccountCreator test existence operation that has just finished
 **/
-typedef void (*LinphoneAccountCreatorCbsStatusCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status);
+typedef void (*LinphoneAccountCreatorCbsStatusCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp);
 
 /**
  * Create a LinphoneAccountCreator.
