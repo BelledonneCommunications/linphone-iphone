@@ -349,7 +349,7 @@ About The Cisco-Provided Binary of OpenH264 Video Codec
 
 Cisco provides this program under the terms of the BSD license.  
 
-Additionally, this binary is licensed under Cisco’s AVC/H.264 Patent Portfolio
+Additionally, this binary is licensed under Cisco's AVC/H.264 Patent Portfolio
 License from MPEG LA, at no cost to you, provided that the requirements and 
 conditions shown below in the AVC/H.264 Patent Portfolio sections are met.  
 
@@ -367,7 +367,7 @@ BSD terms, which can be found at http://www.openh264.org
 BSD License
 -----------
 
-Copyright © 2014 Cisco Systems, Inc.
+Copyright (C) 2014 Cisco Systems, Inc.
 
 All rights reserved.
 

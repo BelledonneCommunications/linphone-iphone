@@ -1,4 +1,6 @@
-linphone-3.10.0 -- May xxth, 2016
+linphone-3.10.0 -- August 8th, 2016
+	* Adding lime_experimental_feature : set to 1 in .linphonerc [GtkUi] to 
+	show the Lime menu in the graphical user interface. Caution : Experimental.
 	* Video conference support through a conference server (SDK only)
 	* Disable dummy STUN packets sending when ICE is activated.
 	* Signal AVPF support as AVP : Enable rtcp feedback on RTP/AVP by default

@@ -35,6 +35,7 @@ void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
 	}
 }
 
+
 void* linphone_vcard_context_get_user_data(const LinphoneVcardContext *context) {
 	return context ? context->user_data : NULL;
 }

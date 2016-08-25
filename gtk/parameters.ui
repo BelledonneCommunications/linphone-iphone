@@ -53,7 +53,7 @@
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="ajustment_auto_answer_delay">
-    <property name="upper">60000</property>
+    <property name="upper">30000</property>
     <property name="value">2000</property>
     <property name="step_increment">100</property>
     <property name="page_increment">500</property>

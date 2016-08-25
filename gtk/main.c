@@ -817,7 +817,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
 	if(conf_frame==NULL){
 		linphone_gtk_enable_transfer_button(lc,call_list_size>1);
-		linphone_gtk_enable_conference_button(lc,call_list_size>0);
+		linphone_gtk_enable_conference_button(lc,call_list_size>1);
 	} else {
 		linphone_gtk_enable_transfer_button(lc,FALSE);
 		linphone_gtk_enable_conference_button(lc,FALSE);
@@ -1939,6 +1939,7 @@ static void linphone_gtk_init_main_window(void){
 		G_CALLBACK (linphone_gtk_close), main_window);
 #ifdef HAVE_GTK_OSX
 	{
+		gtk_widget_show(main_window);
 		GtkWidget *menubar=linphone_gtk_get_widget(main_window,"menubar1");
 		GtkosxApplication *theMacApp = gtkosx_application_get();
 		gtkosx_application_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));

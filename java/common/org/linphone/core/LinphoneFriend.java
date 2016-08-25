@@ -109,18 +109,18 @@ public interface LinphoneFriend {
 	 */
 	boolean isPresenceReceived();
 	/**
-	 * @brief Get the status of a friend
+	 * Get the status of a friend
 	 * @return OnlineStatus
 	 * @deprecated Use getPresenceModel() instead
 	 */
 	OnlineStatus getStatus();
 	/**
-	 * @brief Get the presence information of a friend
+	 * Get the presence information of a friend
 	 * @return A #PresenceModel object, or null if the friend do not have presence information (in which case he is considered offline)
 	 */
 	PresenceModel getPresenceModel();
 	/**
-	 * @brief Set the presence information of a friend
+	 * Set the presence information of a friend
 	 * @param presenceModel A #PresenceModel object
 	 */
 	void setPresenceModel(PresenceModel presenceModel);
