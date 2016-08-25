@@ -278,6 +278,4 @@ install(FILES ${LINPHONE_HEADER_FILES}
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
-if(ENABLE_DOC)
-	add_subdirectory(help)
-endif()
+add_subdirectory(help)
