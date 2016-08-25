@@ -43,7 +43,6 @@
 @property(nonatomic, strong) IBOutlet UIView *createAccountView;
 @property(nonatomic, strong) IBOutlet UIView *createAccountActivateEmailView;
 @property(nonatomic, strong) IBOutlet UIView *linphoneLoginView;
-@property(strong, nonatomic) IBOutlet UIView *linkAccountView;
 @property(nonatomic, strong) IBOutlet UIView *loginView;
 @property(nonatomic, strong) IBOutlet UIView *remoteProvisioningLoginView;
 @property(strong, nonatomic) IBOutlet UIView *remoteProvisioningView;
@@ -56,6 +55,7 @@
 @property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisioningButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
+@property (weak, nonatomic) IBOutlet UIButton *countryButton;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;
 
 + (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status;
@@ -78,7 +78,6 @@
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender;
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender;
 - (IBAction)onCreateAccountCheckActivatedClick:(id)sender;
-- (IBAction)onLinkAccountClick:(id)sender;
 
 - (IBAction)onFormSwitchToggle:(id)sender;
 - (IBAction)onCountryCodeClick:(id)sender;
