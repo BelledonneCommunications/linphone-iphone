@@ -31,7 +31,7 @@ static LinphoneAccountCreator * linphone_gtk_assistant_get_creator(GtkWidget *w)
 	return (LinphoneAccountCreator *)g_object_get_data(G_OBJECT(w), "creator");
 }
 
-static void linphone_gtk_create_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void linphone_gtk_create_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
 	if (status == LinphoneAccountCreatorAccountCreated) {
 		// Go to page_6_linphone_account_validation_wait
@@ -48,7 +48,7 @@ static void create_account(GtkWidget *assistant) {
 	linphone_account_creator_create_account(creator);
 }
 
-static void linphone_gtk_test_account_validation_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void linphone_gtk_test_account_validation_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
 	if (status == LinphoneAccountCreatorAccountActivated) {
 		// Go to page_9_finish
@@ -228,7 +228,7 @@ static gboolean update_interface_with_username_availability(GtkWidget *page) {
 	return FALSE;
 }
 
-static void linphone_gtk_test_account_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void linphone_gtk_test_account_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
 	GtkWidget *page = gtk_assistant_get_nth_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant)));
 	g_object_set_data(G_OBJECT(page), "is_username_used", GINT_TO_POINTER(status));
