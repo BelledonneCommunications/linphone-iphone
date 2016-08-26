@@ -40,22 +40,28 @@ void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
 
 
 void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config){
+	ms_warning("linphone_tunnel_add_server() - stubbed, no implementation");
 }
 
 void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config){
+	ms_warning("linphone_tunnel_remove_server() - stubbed, no implementation");
 }
 
 const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel){
+	ms_warning("linphone_tunnel_get_servers() - stubbed, no implementation");
 	return NULL;
 }
 
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
+	ms_warning("linphone_tunnel_clean_servers() - stubbed, no implementation");
 }
 
 void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode) {
+	ms_warning("linphone_tunnel_set_mode() - stubbed, no implementation");
 }
 
 LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel){
+	ms_warning("linphone_tunnel_get_mode() - stubbed, no implementation");
 	return LinphoneTunnelModeDisable;
 }
 
@@ -83,9 +89,12 @@ void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
+	ms_warning("linphone_tunnel_configure() - stubbed, no implementation");
 }
 
-void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable) {}
+void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable) {
+	ms_warning("linphone_tunnel_enable_sip() - stubbed, no implementation");
+}
 bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) { return FALSE; }
 
 /* Deprecated functions */
