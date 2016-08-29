@@ -38,7 +38,7 @@ endif()
 
 if(GIT_DESCRIBE)
 	if(NOT GIT_TAG STREQUAL LINPHONE_VERSION)
-		message(FATAL_ERROR "LINPHONE_VERSION and git tag differ. Please put them identical")
+		message(FATAL_ERROR "LINPHONE_VERSION (${LINPHONE_VERSION}) and git tag (${GIT_TAG}) differ. Please put them identical")
 	endif()
 	set(LIBLINPHONE_GIT_VERSION "${GIT_DESCRIBE}")
 	configure_file("${WORK_DIR}/gitversion.h.in" "${OUTPUT_DIR}/liblinphone_gitversion.h" @ONLY)
