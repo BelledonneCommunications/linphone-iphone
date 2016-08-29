@@ -51,6 +51,16 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>TURN</string>
+			<key>Key</key>
+			<string>turn_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>

@@ -413,6 +413,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		NSString *stun_server = [notif.userInfo objectForKey:@"stun_preference"];
 		removeFromHiddenKeys = (stun_server && ([stun_server length] > 0));
 		[keys addObject:@"ice_preference"];
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"turn_preference"] boolValue];
+		[keys addObject:@"turn_preference"];
 	} else if ([@"debugenable_preference" compare:notif.object] == NSOrderedSame) {
 		int debugLevel = [[notif.userInfo objectForKey:@"debugenable_preference"] intValue];
 		BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
@@ -596,6 +598,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (linphone_core_get_stun_server(LC) == NULL) {
 		[hiddenKeys addObject:@"ice_preference"];
+		[hiddenKeys addObject:@"turn_preference"];
 	}
 
 	if (![lm lpConfigBoolForKey:@"debugenable_preference"]) {

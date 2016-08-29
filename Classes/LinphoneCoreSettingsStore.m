@@ -304,7 +304,8 @@
 		[self setBool:[lm lpConfigBoolForKey:@"edge_opt_preference" withDefault:NO] forKey:@"edge_opt_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"wifi_only_preference" withDefault:NO] forKey:@"wifi_only_preference"];
 		[self setCString:linphone_core_get_stun_server(LC) forKey:@"stun_preference"];
-		[self setBool:linphone_core_get_firewall_policy(LC) == LinphonePolicyUseIce forKey:@"ice_preference"];
+		[self setBool:linphone_nat_policy_ice_enabled(linphone_core_get_nat_policy(LC)) forKey:@"ice_preference"];
+		[self setBool:linphone_nat_policy_turn_enabled(linphone_core_get_nat_policy(LC)) forKey:@"turn_preference"];
 		int random_port_preference = [lm lpConfigIntForKey:@"random_port_preference" withDefault:1];
 		[self setInteger:random_port_preference forKey:@"random_port_preference"];
 		int port = [lm lpConfigIntForKey:@"port_preference" withDefault:5060];
@@ -713,19 +714,23 @@
 				[LinphoneManager.instance setupNetworkReachabilityCallback];
 			}
 
+			LinphoneNatPolicy *LNP = linphone_core_get_nat_policy(LC);
 			NSString *stun_server = [self stringForKey:@"stun_preference"];
 			if ([stun_server length] > 0) {
+
 				linphone_core_set_stun_server(LC, [stun_server UTF8String]);
 				BOOL ice_preference = [self boolForKey:@"ice_preference"];
-				if (ice_preference) {
-					linphone_core_set_firewall_policy(LC, LinphonePolicyUseIce);
-				} else {
-					linphone_core_set_firewall_policy(LC, LinphonePolicyUseStun);
-				}
+				linphone_nat_policy_enable_ice(LNP, ice_preference);
+
+				BOOL turn_preference = [self boolForKey:@"turn_preference"];
+				linphone_nat_policy_enable_turn(LNP, turn_preference);
 			} else {
+				linphone_nat_policy_enable_stun(LNP, FALSE);
 				linphone_core_set_stun_server(LC, NULL);
-				linphone_core_set_firewall_policy(LC, LinphonePolicyNoFirewall);
+				// TODO :
+				// Do ice and turn should be off too ?
 			}
+			linphone_core_set_nat_policy(LC, LNP);
 
 			{
 				NSString *audio_port_preference = [self stringForKey:@"audio_port_preference"];
