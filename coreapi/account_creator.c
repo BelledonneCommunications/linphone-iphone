@@ -299,7 +299,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneA
 		{
 			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(country_code);
 			int size = (int)strlen(phone_number);
-			if (size < plan->nnl) {
+			if (size < plan->nnl - 1) {
 				return LinphoneAccountCreatorPhoneNumberTooShort;
 			} else if (size > plan->nnl + 1) {
 				return LinphoneAccountCreatorPhoneNumberTooLong;
