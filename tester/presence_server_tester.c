@@ -768,10 +768,11 @@ static void long_term_presence_phone_without_sip(void) {
 
 	friend2=linphone_core_create_friend(pauline->lc);
 	linphone_friend_add_phone_number(friend2, marie->phone_alias);
-	linphone_friend_edit(friend2);
-	linphone_friend_enable_subscribes(friend2,TRUE);
-	linphone_friend_done(friend2);
 	linphone_core_add_friend(pauline->lc,friend2);
+
+	linphone_friend_list_set_rls_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:rls@sip.example.org");
+	linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), TRUE);
+	linphone_core_refresh_registers(pauline->lc);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOnline, 1, int, "%d");
