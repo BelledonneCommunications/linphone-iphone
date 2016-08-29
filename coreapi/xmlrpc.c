@@ -215,7 +215,7 @@ end:
 }
 
 static void notify_xml_rpc_error(LinphoneXmlRpcRequest *request) {
-	request->status = LinphoneXmlRpcStatusOk;
+	request->status = LinphoneXmlRpcStatusFailed;
 	if (request->callbacks->response != NULL) {
 		request->callbacks->response(request);
 	}

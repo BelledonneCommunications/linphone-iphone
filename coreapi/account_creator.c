@@ -288,7 +288,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneA
 		}
 	} else {
 		LinphoneProxyConfig *numCfg = linphone_proxy_config_new();
-		linphone_proxy_config_set_dial_prefix(numCfg, country_code);
+		linphone_proxy_config_set_dial_prefix(numCfg, country_code[0] == '+' ? &country_code[1] : country_code);
 		normalized_phone_number = linphone_proxy_config_normalize_phone_number(numCfg, phone_number);
 		linphone_proxy_config_destroy(numCfg);
 		if (!normalized_phone_number) {
