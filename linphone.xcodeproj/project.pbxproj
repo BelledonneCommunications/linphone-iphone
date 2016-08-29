@@ -79,8 +79,8 @@
 		6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6306440C1BECB08500134C72 /* FirstLoginView.m */; };
 		6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
-		631098491D4660580041F2B3 /* CountryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 631098481D4660580041F2B3 /* CountryListViewController.m */; };
-		631098521D4660630041F2B3 /* CountryListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 631098501D4660630041F2B3 /* CountryListViewController.xib */; };
+		631098491D4660580041F2B3 /* CountryListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 631098481D4660580041F2B3 /* CountryListView.m */; };
+		631098521D4660630041F2B3 /* CountryListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 631098501D4660630041F2B3 /* CountryListView.xib */; };
 		63130FB21C1ED06900371918 /* SideMenuView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */; };
 		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
 		631348321B6FA53300C6BDCB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 631348311B6FA53300C6BDCB /* rootca.pem */; };
@@ -91,6 +91,7 @@
 		633756451B67D2B200E21BAD /* SideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756431B67D2B100E21BAD /* SideMenuView.m */; };
 		633888451BFB2C49001D5E7B /* HPGrowingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633888421BFB2C49001D5E7B /* HPGrowingTextView.m */; };
 		633888461BFB2C49001D5E7B /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 633888441BFB2C49001D5E7B /* HPTextViewInternal.m */; };
+		633E41821D74259000320475 /* AssistantLinkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633E41801D74258F00320475 /* AssistantLinkView.m */; };
 		633FED9C1D3CD5590014B822 /* add_field_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE21D3CD5570014B822 /* add_field_default.png */; };
 		633FED9D1D3CD5590014B822 /* add_field_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE31D3CD5570014B822 /* add_field_default@2x.png */; };
 		633FED9E1D3CD5590014B822 /* add_field_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE41D3CD5570014B822 /* add_field_over.png */; };
@@ -649,6 +650,7 @@
 		63E27A5B1C51392A00D332AE /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A471C50EA7A00D332AE /* libmatroska2.a */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63E802DB1C625AEF000D5509 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		63EC8D391D7438660066547B /* AssistantLinkView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63EC8D3B1D7438660066547B /* AssistantLinkView.xib */; };
 		63F024B91C88792D00EACF1C /* libbctoolbox-tester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63F024B81C88792D00EACF1C /* libbctoolbox-tester.a */; };
 		63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */; };
 		63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */; };
@@ -992,9 +994,9 @@
 		6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMLRPCHelper.m; path = Utils/XMLRPCHelper.m; sourceTree = "<group>"; };
 		630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
-		631098471D4660580041F2B3 /* CountryListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryListViewController.h; sourceTree = "<group>"; };
-		631098481D4660580041F2B3 /* CountryListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryListViewController.m; sourceTree = "<group>"; };
-		631098511D4660630041F2B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/CountryListViewController.xib; sourceTree = "<group>"; };
+		631098471D4660580041F2B3 /* CountryListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryListView.h; sourceTree = "<group>"; };
+		631098481D4660580041F2B3 /* CountryListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryListView.m; sourceTree = "<group>"; };
+		631098511D4660630041F2B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/CountryListView.xib; sourceTree = "<group>"; };
 		63130FB11C1ED06900371918 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/SideMenuView~ipad.xib"; sourceTree = "<group>"; };
 		6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedButton.h; sourceTree = "<group>"; };
 		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
@@ -1010,6 +1012,8 @@
 		633888431BFB2C49001D5E7B /* HPTextViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPTextViewInternal.h; sourceTree = "<group>"; };
 		633888441BFB2C49001D5E7B /* HPTextViewInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPTextViewInternal.m; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		633E417F1D74258F00320475 /* AssistantLinkView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssistantLinkView.h; sourceTree = "<group>"; };
+		633E41801D74258F00320475 /* AssistantLinkView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssistantLinkView.m; sourceTree = "<group>"; };
 		633FEBE21D3CD5570014B822 /* add_field_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_field_default.png; sourceTree = "<group>"; };
 		633FEBE31D3CD5570014B822 /* add_field_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add_field_default@2x.png"; sourceTree = "<group>"; };
 		633FEBE41D3CD5570014B822 /* add_field_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_field_over.png; sourceTree = "<group>"; };
@@ -1567,6 +1571,7 @@
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
+		63EC8D3A1D7438660066547B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AssistantLinkView.xib; sourceTree = "<group>"; };
 		63EEE4091BBA9B110087D3AF /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		63EEE40B1BBA9B1B0087D3AF /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		63EEE40D1BBA9B250087D3AF /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
@@ -1945,10 +1950,10 @@
 			children = (
 				22E0A81D111C44E100B04932 /* AboutView.h */,
 				22E0A81C111C44E100B04932 /* AboutView.m */,
-				5707425F1D5A09B8004B9C84 /* ShopView.m */,
-				570742601D5A09B8004B9C84 /* ShopView.h */,
 				636316D31A1DEBCB0009B839 /* AboutView.xib */,
-				570742561D5A0691004B9C84 /* ShopView.xib */,
+				633E417F1D74258F00320475 /* AssistantLinkView.h */,
+				633E41801D74258F00320475 /* AssistantLinkView.m */,
+				63EC8D3B1D7438660066547B /* AssistantLinkView.xib */,
 				D350F20B15A43BB100149E54 /* AssistantView.h */,
 				D350F20C15A43BB100149E54 /* AssistantView.m */,
 				D38187E015FE348A00C3EDCA /* AssistantView.xib */,
@@ -1995,9 +2000,9 @@
 				D35497FB15875372000081D8 /* ContactsListView.h */,
 				D35497FC15875372000081D8 /* ContactsListView.m */,
 				D38187C015FE342800C3EDCA /* ContactsListView.xib */,
-				631098471D4660580041F2B3 /* CountryListViewController.h */,
-				631098481D4660580041F2B3 /* CountryListViewController.m */,
-				631098501D4660630041F2B3 /* CountryListViewController.xib */,
+				631098471D4660580041F2B3 /* CountryListView.h */,
+				631098481D4660580041F2B3 /* CountryListView.m */,
+				631098501D4660630041F2B3 /* CountryListView.xib */,
 				22F2508B107141E100AC9B3F /* DialerView.h */,
 				22F2508C107141E100AC9B3F /* DialerView.m */,
 				D38187C415FE345B00C3EDCA /* DialerView.xib */,
@@ -2037,6 +2042,9 @@
 				D35E759C159460B50066B1C1 /* SettingsView.h */,
 				D35E759D159460B50066B1C1 /* SettingsView.m */,
 				636316D61A1DEC650009B839 /* SettingsView.xib */,
+				570742601D5A09B8004B9C84 /* ShopView.h */,
+				5707425F1D5A09B8004B9C84 /* ShopView.m */,
+				570742561D5A0691004B9C84 /* ShopView.xib */,
 				633756371B67BAF400E21BAD /* SideMenuTableView.h */,
 				633756381B67BAF400E21BAD /* SideMenuTableView.m */,
 				633756421B67D2B100E21BAD /* SideMenuView.h */,
@@ -3498,7 +3506,7 @@
 				633FEDC91D3CD5590014B822 /* call_missed@2x.png in Resources */,
 				633FEEAE1D3CD55A0014B822 /* numpad_2_over@2x.png in Resources */,
 				633FEDB51D3CD5590014B822 /* call_alt_back_disabled@2x.png in Resources */,
-				631098521D4660630041F2B3 /* CountryListViewController.xib in Resources */,
+				631098521D4660630041F2B3 /* CountryListView.xib in Resources */,
 				633FEF271D3CD55A0014B822 /* route_bluetooth_selected@2x.png in Resources */,
 				633FEE111D3CD5590014B822 /* chat_list_indicator~ipad@2x.png in Resources */,
 				633FEEFC1D3CD55A0014B822 /* options_add_call_default.png in Resources */,
@@ -3590,6 +3598,7 @@
 				633FEDE31D3CD5590014B822 /* call_status_incoming@2x.png in Resources */,
 				633FEE821D3CD5590014B822 /* led_disconnected.png in Resources */,
 				633FEDB01D3CD5590014B822 /* call_add_disabled.png in Resources */,
+				63EC8D391D7438660066547B /* AssistantLinkView.xib in Resources */,
 				633FEE971D3CD55A0014B822 /* micro_disabled@2x.png in Resources */,
 				D38187CD15FE346700C3EDCA /* HistoryDetailsView.xib in Resources */,
 				633FEEA21D3CD55A0014B822 /* numpad_0~ipad@2x.png in Resources */,
@@ -3889,7 +3898,7 @@
 				D3F26BF115986B73005F9CAB /* CallIncomingView.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeView.m in Sources */,
 				D31AAF5E159B3919002C6B02 /* CallPausedTableView.m in Sources */,
-				631098491D4660580041F2B3 /* CountryListViewController.m in Sources */,
+				631098491D4660580041F2B3 /* CountryListView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
@@ -3913,6 +3922,7 @@
 				6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */,
 				D3807FC315C28940005BE9BC /* DCRoundSwitchOutlineLayer.m in Sources */,
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,
+				633E41821D74259000320475 /* AssistantLinkView.m in Sources */,
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
 				D3807FEA15C2894A005BE9BC /* IASKAppSettingsWebViewController.m in Sources */,
 				D3807FEC15C2894A005BE9BC /* IASKSpecifierValuesViewController.m in Sources */,
@@ -4062,12 +4072,12 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		631098501D4660630041F2B3 /* CountryListViewController.xib */ = {
+		631098501D4660630041F2B3 /* CountryListView.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				631098511D4660630041F2B3 /* Base */,
 			);
-			name = CountryListViewController.xib;
+			name = CountryListView.xib;
 			sourceTree = "<group>";
 		};
 		63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */ = {
@@ -4259,6 +4269,14 @@
 				63B8D68D1BCBE65600C12B09 /* Base */,
 			);
 			name = ChatConversationCreateView.xib;
+			sourceTree = "<group>";
+		};
+		63EC8D3B1D7438660066547B /* AssistantLinkView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63EC8D3A1D7438660066547B /* Base */,
+			);
+			name = AssistantLinkView.xib;
 			sourceTree = "<group>";
 		};
 		63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */ = {

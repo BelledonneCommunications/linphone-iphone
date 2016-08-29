@@ -1,5 +1,5 @@
 //
-//  CountryListViewController.h
+//  CountryListView.h
 //  Country List
 //
 //  Created by Pradyumna Doddala on 18/12/13.
@@ -13,7 +13,7 @@
 - (void)didSelectCountry:(NSDictionary *)country;
 @end
 
-@interface CountryListViewController : UIViewController<UICompositeViewDelegate>
+@interface CountryListView : UIViewController<UICompositeViewDelegate>
 
 @property (nonatomic, weak) id<CountryListViewDelegate>delegate;
 

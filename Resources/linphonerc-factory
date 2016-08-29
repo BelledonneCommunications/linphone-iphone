@@ -1,4 +1,6 @@
 [app]
+#time in second between each link account popup
+link_account_popup_time=86400
 
 #Hide in the assistant the button to configure an external SIP account.
 hide_assistant_custom_account=0
@@ -43,13 +45,12 @@ expiry_time_test=180
 
 [sip]
 sip_random_port=0
+#whether SIP passwords must be encrypted in configuration storage file
+store_ha1_passwd=0
 
 [misc]
 #by default it is set to 30 by liblinphone
 history_max_size=-1
-
-#whether SIP passwords must be encrypted in configuration storage file
-store_ha1_passwd=0
 
 [sound]
 dtmf_player_amp=0.007

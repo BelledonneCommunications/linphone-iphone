@@ -1446,6 +1446,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 	[self enableProxyPublish:YES];
 
+	[self shouldPresentLinkPopup];
+
 	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
 
 	// Post event
@@ -1499,6 +1501,61 @@ static BOOL libStarted = FALSE;
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 		// go directly to bg mode
 		[self enterBackgroundMode];
+	}
+}
+
+void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
+	if (status == LinphoneAccountCreatorAccountExistWithAlias) {
+		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
+	} else {
+		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+		if (cfg) {
+			DTAlertView *alert = [[DTAlertView alloc]
+					initWithTitle:NSLocalizedString(@"Link your account", nil)
+						  message:[NSString
+									  stringWithFormat:NSLocalizedString(
+														   @"Link your Linphone.org account %s to your phone number.",
+														   nil),
+													   linphone_address_get_username(
+														   linphone_proxy_config_get_identity_address(cfg))]
+						 delegate:nil
+				cancelButtonTitle:nil
+				otherButtonTitles:NSLocalizedString(@"Maybe later", nil), nil];
+			[alert addButtonWithTitle:NSLocalizedString(@"Let's go", nil)
+								block:^(void) {
+								  [PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
+								}];
+			[alert show];
+
+			[LinphoneManager.instance
+				lpConfigSetInt:[[NSDate date] dateByAddingTimeInterval:[LinphoneManager.instance
+																		   lpConfigIntForKey:@"link_account_popup_time"
+																				 withDefault:84200]]
+								   .timeIntervalSince1970
+						forKey:@"must_link_account_time"];
+		}
+	}
+}
+
+- (void)shouldPresentLinkPopup {
+	LOGW(@"hello!");
+	NSDate *nextTime =
+		[NSDate dateWithTimeIntervalSince1970:[self lpConfigIntForKey:@"must_link_account_time" withDefault:1]];
+	NSDate *now = [NSDate date];
+	if (nextTime.timeIntervalSince1970 > 0 && [now earlierDate:nextTime] == nextTime) {
+		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+		if (cfg) {
+			const char *username = linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg));
+			LinphoneAccountCreator *account_creator = linphone_account_creator_new(
+				LC,
+				[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
+					.UTF8String);
+			linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
+			linphone_account_creator_cbs_set_is_account_used(linphone_account_creator_get_callbacks(account_creator),
+															 popup_link_account_cb);
+			linphone_account_creator_set_username(account_creator, username);
+			linphone_account_creator_is_account_used(account_creator);
+		}
 	}
 }
 

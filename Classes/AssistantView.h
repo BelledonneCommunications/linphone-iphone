@@ -24,6 +24,7 @@
 #import "PhoneMainView.h"
 
 @interface AssistantView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
+
   @private
 	LinphoneAccountCreator *account_creator;
 	UIView *currentView;
@@ -35,6 +36,8 @@
 	long phone_number_length;
 }
 
+@property(nonatomic) UICompositeViewDescription *outgoingView;
+
 @property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
 @property(nonatomic, strong) IBOutlet UIView *waitView;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
@@ -43,7 +46,6 @@
 @property(nonatomic, strong) IBOutlet UIView *createAccountView;
 @property(nonatomic, strong) IBOutlet UIView *createAccountActivateEmailView;
 @property(nonatomic, strong) IBOutlet UIView *linphoneLoginView;
-@property(strong, nonatomic) IBOutlet UIView *linkAccountView;
 @property(nonatomic, strong) IBOutlet UIView *loginView;
 @property(nonatomic, strong) IBOutlet UIView *remoteProvisioningLoginView;
 @property(strong, nonatomic) IBOutlet UIView *remoteProvisioningView;

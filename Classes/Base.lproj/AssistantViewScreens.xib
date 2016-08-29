@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="NO">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -19,7 +19,6 @@
                 <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
                 <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
                 <outlet property="gotoRemoteProvisioningButton" destination="Kbn-dL-C5h" id="zLh-uO-x8P"/>
-                <outlet property="linkAccountView" destination="qEJ-0Q-7RE" id="1J4-k8-htL"/>
                 <outlet property="linphoneLoginView" destination="52" id="9NX-6W-50g"/>
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="remoteProvisioningLoginView" destination="xVK-hL-6pe" id="pKL-9M-Vsa"/>
@@ -1035,151 +1034,6 @@ Once it is done, come back here and click on the button.</string>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="1055.5" y="234.5"/>
-        </view>
-        <view contentMode="scaleToFill" id="qEJ-0Q-7RE" userLabel="linkAccountView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="278"/>
-            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="LINK YOUR ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="CDa-cM-blS" userLabel="titleLabel">
-                    <rect key="frame" x="38" y="0.0" width="299" height="59"/>
-                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="59" id="3lg-Y7-UnM"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="calibratedRGB"/>
-                    <nil key="highlightedColor"/>
-                    <size key="shadowOffset" width="-1" height="-1"/>
-                </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Please enter your phone number below" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Qqd-iE-DFU" userLabel="subtitleLabel">
-                    <rect key="frame" x="38" y="66" width="299" height="29"/>
-                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="29" id="SrE-TI-OC0"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
-                    <nil key="highlightedColor"/>
-                    <size key="shadowOffset" width="-1" height="-1"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z6j-bs-jVX" userLabel="phoneLabel">
-                    <rect key="frame" x="38" y="131" width="171" height="14"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="14" id="oKp-Av-n1K"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W5L-cn-o6e" userLabel="countryButton">
-                    <rect key="frame" x="38" y="153" width="299" height="30"/>
-                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="30" id="lWE-3z-ajx"/>
-                    </constraints>
-                    <state key="normal" title="Select your country">
-                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                    </state>
-                    <state key="highlighted" title="Choose your country" backgroundImage="color_F.png"/>
-                    <connections>
-                        <action selector="onCountryCodeClick:" destination="-1" eventType="touchUpInside" id="Rop-Os-amE"/>
-                    </connections>
-                </button>
-                <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="hbK-lu-zPO" userLabel="countryCodeField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="190" width="54" height="30"/>
-                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="54" id="XHb-7K-yrU"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
-                    <connections>
-                        <action selector="onCountryCodeFieldChange:" destination="-1" eventType="editingChanged" id="HMd-dC-IzC"/>
-                        <action selector="onCountryCodeFieldEnd:" destination="-1" eventType="editingDidEnd" id="H13-GK-0cW"/>
-                        <outlet property="nextFieldResponder" destination="HyT-pf-iCK" id="WS5-hw-BM2"/>
-                    </connections>
-                </textField>
-                <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="HyT-pf-iCK" userLabel="phoneField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="95" y="190" width="242" height="30"/>
-                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
-                    <accessibility key="accessibilityConfiguration" label="Username"/>
-                    <color key="textColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="calibratedRGB"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="phonePad" returnKeyType="next"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="aVN-U0-DLW"/>
-                        <outlet property="errorLabel" destination="R0r-KO-jmx" id="F8j-vr-zo7"/>
-                    </connections>
-                </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="R0r-KO-jmx" userLabel="phoneErrorLabel">
-                    <rect key="frame" x="38" y="220" width="200" height="10"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="10" id="g0D-Yz-jAi"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.9859483242" green="0.0" blue="0.026950567960000001" alpha="1" colorSpace="calibratedRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Mn-ag-IgW" userLabel="infoButton">
-                    <rect key="frame" x="315" y="127" width="22" height="22"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="22" id="Swy-CX-yml"/>
-                    </constraints>
-                    <connections>
-                        <action selector="onPhoneNumberDisclosureClick:" destination="-1" eventType="touchUpInside" id="4Vf-a9-Cbl"/>
-                    </connections>
-                </button>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MIU-HP-fe6" userLabel="createAccountButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="238" width="299" height="40"/>
-                    <accessibility key="accessibilityConfiguration" label="Create account">
-                        <bool key="isElement" value="YES"/>
-                    </accessibility>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <state key="normal" title="LINK ACCOUNT">
-                        <color key="titleColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="calibratedRGB"/>
-                    </state>
-                    <state key="disabled">
-                        <color key="titleColor" red="0.71885228160000003" green="0.71883076430000004" blue="0.71884298319999995" alpha="1" colorSpace="calibratedRGB"/>
-                    </state>
-                    <state key="highlighted" backgroundImage="color_F.png"/>
-                    <connections>
-                        <action selector="onLinkAccountClick:" destination="-1" eventType="touchUpInside" id="abT-AE-d1k"/>
-                    </connections>
-                </button>
-            </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
-            <constraints>
-                <constraint firstItem="CDa-cM-blS" firstAttribute="trailing" secondItem="Qqd-iE-DFU" secondAttribute="trailing" id="3SL-iM-Yp9"/>
-                <constraint firstItem="CDa-cM-blS" firstAttribute="top" secondItem="qEJ-0Q-7RE" secondAttribute="top" id="9tI-Ld-fS1"/>
-                <constraint firstItem="Z6j-bs-jVX" firstAttribute="centerY" secondItem="2Mn-ag-IgW" secondAttribute="centerY" id="HZV-vb-3lP"/>
-                <constraint firstItem="R0r-KO-jmx" firstAttribute="top" secondItem="HyT-pf-iCK" secondAttribute="bottom" id="JFQ-WB-jUr"/>
-                <constraint firstItem="hbK-lu-zPO" firstAttribute="top" secondItem="W5L-cn-o6e" secondAttribute="bottom" constant="7" id="OMJ-cU-xl3"/>
-                <constraint firstItem="Qqd-iE-DFU" firstAttribute="leading" secondItem="Z6j-bs-jVX" secondAttribute="leading" id="PAU-h7-gGF"/>
-                <constraint firstItem="R0r-KO-jmx" firstAttribute="leading" secondItem="MIU-HP-fe6" secondAttribute="leading" id="UeD-vO-92R"/>
-                <constraint firstAttribute="bottom" secondItem="MIU-HP-fe6" secondAttribute="bottom" id="WN4-82-KBg"/>
-                <constraint firstItem="CDa-cM-blS" firstAttribute="centerX" secondItem="qEJ-0Q-7RE" secondAttribute="centerX" id="WdZ-WA-VOR"/>
-                <constraint firstItem="Z6j-bs-jVX" firstAttribute="leading" secondItem="W5L-cn-o6e" secondAttribute="leading" id="bVA-xf-nVy"/>
-                <constraint firstItem="HyT-pf-iCK" firstAttribute="trailing" secondItem="R0r-KO-jmx" secondAttribute="trailing" constant="99.5" id="ehk-Wp-bqO"/>
-                <constraint firstItem="CDa-cM-blS" firstAttribute="leading" secondItem="qEJ-0Q-7RE" secondAttribute="leading" constant="38" id="fUv-Aj-1Hl"/>
-                <constraint firstItem="2Mn-ag-IgW" firstAttribute="top" secondItem="Qqd-iE-DFU" secondAttribute="bottom" constant="32" id="geD-S5-h5h"/>
-                <constraint firstItem="CDa-cM-blS" firstAttribute="leading" secondItem="Qqd-iE-DFU" secondAttribute="leading" id="huu-WP-MNV"/>
-                <constraint firstItem="HyT-pf-iCK" firstAttribute="trailing" secondItem="MIU-HP-fe6" secondAttribute="trailing" id="kXf-yH-2p8"/>
-                <constraint firstItem="hbK-lu-zPO" firstAttribute="bottom" secondItem="HyT-pf-iCK" secondAttribute="bottom" id="m4O-bD-0Ez"/>
-                <constraint firstItem="2Mn-ag-IgW" firstAttribute="leading" secondItem="Z6j-bs-jVX" secondAttribute="trailing" constant="106.5" id="mIZ-5e-5ns"/>
-                <constraint firstItem="Qqd-iE-DFU" firstAttribute="centerX" secondItem="W5L-cn-o6e" secondAttribute="centerX" id="pfp-rp-Aiw"/>
-                <constraint firstItem="W5L-cn-o6e" firstAttribute="trailing" secondItem="HyT-pf-iCK" secondAttribute="trailing" id="qab-e3-iaW"/>
-                <constraint firstItem="2Mn-ag-IgW" firstAttribute="trailing" secondItem="W5L-cn-o6e" secondAttribute="trailing" id="rKj-21-FNt"/>
-                <constraint firstItem="MIU-HP-fe6" firstAttribute="top" secondItem="R0r-KO-jmx" secondAttribute="bottom" constant="8" symbolic="YES" id="rnu-Pp-jmt"/>
-                <constraint firstItem="W5L-cn-o6e" firstAttribute="leading" secondItem="hbK-lu-zPO" secondAttribute="leading" id="tx4-Hp-BLr"/>
-                <constraint firstItem="Qqd-iE-DFU" firstAttribute="top" secondItem="CDa-cM-blS" secondAttribute="bottom" constant="7" id="u1b-5C-8YH"/>
-                <constraint firstItem="hbK-lu-zPO" firstAttribute="top" secondItem="HyT-pf-iCK" secondAttribute="top" id="wcU-NP-wIx"/>
-                <constraint firstItem="W5L-cn-o6e" firstAttribute="top" secondItem="Z6j-bs-jVX" secondAttribute="bottom" constant="8" symbolic="YES" id="x2a-fo-YBm"/>
-                <constraint firstItem="HyT-pf-iCK" firstAttribute="leading" secondItem="hbK-lu-zPO" secondAttribute="trailing" constant="3" id="xJ2-3F-mzN"/>
-                <constraint firstItem="hbK-lu-zPO" firstAttribute="leading" secondItem="R0r-KO-jmx" secondAttribute="leading" id="z2d-Dl-f3b"/>
-            </constraints>
-            <nil key="simulatedStatusBarMetrics"/>
-            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="1055.5" y="676"/>
         </view>
         <view contentMode="scaleToFill" id="56" userLabel="loginView">
             <rect key="frame" x="0.0" y="0.0" width="374" height="576"/>

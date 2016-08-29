@@ -23,11 +23,11 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 #import "AssistantView.h"
+#import "CountryListView.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
-#import "UITextField+DoneButton.h"
 #import "UIAssistantTextField.h"
-#import "CountryListViewController.h"
+#import "UITextField+DoneButton.h"
 
 #import <XMLRPCConnection.h>
 #import <XMLRPCConnectionManager.h>
@@ -115,6 +115,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self changeView:_welcomeView back:FALSE animation:FALSE];
 	}
 	mustRestoreView = NO;
+
+	_outgoingView = DialerView.compositeViewDescription;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -156,11 +158,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 													assistant_activate_account);
 	linphone_account_creator_cbs_set_is_account_activated(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_is_account_activated);
-
-	linphone_account_creator_cbs_set_link_phone_number_with_account(linphone_account_creator_get_callbacks(account_creator),
-													   assistant_link_phone_number_with_account);
-	linphone_account_creator_cbs_set_activate_phone_number_link(linphone_account_creator_get_callbacks(account_creator),
-													   assistant_activate_phone_number_link);
 	linphone_account_creator_cbs_set_recover_phone_account(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_recover_phone_account);
 }
@@ -364,7 +361,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([self findView:ViewElement_PhoneButton inView:currentView ofType:UIButton.class]) {
 		CTTelephonyNetworkInfo *networkInfo = [CTTelephonyNetworkInfo new];
 		CTCarrier *carrier = networkInfo.subscriberCellularProvider;
-		NSDictionary *country = [CountryListViewController countryWithIso:carrier.isoCountryCode];
+		NSDictionary *country = [CountryListView countryWithIso:carrier.isoCountryCode];
 
 		if (!IPAD) {
 			UISwitch *emailSwitch = (UISwitch *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UISwitch.class];
@@ -377,7 +374,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			for (NSString* lang in [NSLocale preferredLanguages]) {
 				NSUInteger idx = [lang rangeOfString:@"-"].location;
 				idx = (idx == NSNotFound) ? idx = 0 : idx + 1;
-				if ((country = [CountryListViewController countryWithIso:[lang substringFromIndex:idx]]) != nil)
+				if ((country = [CountryListView countryWithIso:[lang substringFromIndex:idx]]) != nil)
 					break;
 			}
 		}
@@ -494,9 +491,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[createPhone showError:[AssistantView errorForStatus:LinphoneAccountCreatorPhoneNumberInvalid]
 						 when:^BOOL(NSString *inputEntry) {
 							 UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
-							 NSString *prefix = (inputEntry.length > 0 && countryCodeField.text.length > 0)
-													? [countryCodeField.text substringFromIndex:1]
-													: nil;
+							 NSString *prefix = (inputEntry.length > 0) ? countryCodeField.text : nil;
 							 LinphoneAccountCreatorStatus s =
 							 linphone_account_creator_set_phone_number(account_creator, inputEntry.length > 0 ? inputEntry.UTF8String : NULL, prefix.UTF8String);
 							 if (s != LinphoneAccountCreatorOK) {
@@ -610,7 +605,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	switch (state) {
 		case LinphoneRegistrationOk: {
 			_waitView.hidden = true;
-			[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+
+			[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970
+											  forKey:@"must_link_account_time"];
+			[PhoneMainView.instance popToView:_outgoingView];
 			break;
 		}
 		case LinphoneRegistrationNone:
@@ -649,6 +647,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	switch (status) {
 		case LinphoneConfiguringSuccessful:
 			// we successfully loaded a remote provisioned config, go to dialer
+			[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970
+											  forKey:@"must_link_account_time"];
 			if (number_of_configs_before < bctbx_list_size(linphone_core_get_proxy_config_list(LC))) {
 				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
@@ -734,9 +734,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)isAccountUsed:(LinphoneAccountCreatorStatus)status withResp:(const char *)resp {
 	if (currentView == _linphoneLoginView) {
 		if (status == LinphoneAccountCreatorAccountExistWithAlias) {
+			_outgoingView = DialerView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else if (status == LinphoneAccountCreatorAccountExist) {
-			[self changeView:_linkAccountView back:NO animation:YES];
+			_outgoingView = AssistantLinkView.compositeViewDescription;
+			[self configureProxyConfig];
 		} else {
 			[self showErrorPopup:resp];
 		}
@@ -786,7 +788,8 @@ void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAc
 	}
 }
 
-void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *response) {
+void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
+								const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountActivated) {
@@ -816,31 +819,9 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 		[alert addButtonWithTitle:NSLocalizedString(@"Skip verification", nil)
 							block:^{
 							  [thiz configureProxyConfig];
-							  [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+							  [PhoneMainView.instance popToView:thiz.outgoingView];
 							}];
 		[alert show];
-	} else {
-		[thiz showErrorPopup:resp];
-	}
-}
-
-void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
-											  const char *resp) {
-	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
-	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorOK) {
-		[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
-	} else {
-		[thiz showErrorPopup:resp];
-	}
-}
-
-void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
-										  const char *resp) {
-	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
-	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorOK) {
-		[thiz configureProxyConfig];
 	} else {
 		[thiz showErrorPopup:resp];
 	}
@@ -1066,14 +1047,14 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 - (IBAction)onCountryCodeClick:(id)sender {
 	mustRestoreView = YES;
 
-	CountryListViewController *view = VIEW(CountryListViewController);
+	CountryListView *view = VIEW(CountryListView);
 	[view setDelegate:(id)self];
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (void)updateCountry:(BOOL)force {
 	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
-	NSDictionary *c = [CountryListViewController countryWithCountryCode:countryCodeField.text];
+	NSDictionary *c = [CountryListView countryWithCountryCode:countryCodeField.text];
 	if (c || force) {
 		UIButton *phoneButton =
 			(UIButton *)[self findView:ViewElement_PhoneButton inView:currentView ofType:UIButton.class];

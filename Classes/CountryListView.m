@@ -1,23 +1,23 @@
 //
-//  CountryListViewController.m
+//  CountryListView.m
 //  Country List
 //
 //  Created by Pradyumna Doddala on 18/12/13.
 //  Copyright (c) 2013 Pradyumna Doddala. All rights reserved.
 //
 
-#import "CountryListViewController.h"
+#import "CountryListView.h"
 
 #import "linphone/linphonecore_utils.h"
 
-@interface CountryListViewController ()
+@interface CountryListView ()
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) NSArray *searchResults;
 
 @end
 
-@implementation CountryListViewController
+@implementation CountryListView
 
 static NSMutableArray * dataRows = nil;
 
