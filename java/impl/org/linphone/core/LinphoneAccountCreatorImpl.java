@@ -166,16 +166,16 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return Status.fromInt(activateAccount(nativePtr));
 	}
 	
-	private native int linkPhoneNumberWithAccount(long ptr);
+	private native int isAccountActivated(long ptr);
 	@Override
 	public Status isAccountActivated() {
-		return Status.fromInt(linkPhoneNumberWithAccount(nativePtr));
+		return Status.fromInt(isAccountActivated(nativePtr));
 	}
 	
-	private native int isAccounlinkPhoneNumberWithAccounttUsed(long ptr);
+	private native int linkPhoneNumberWithAccount(long ptr);
 	@Override
 	public Status linkPhoneNumberWithAccount() {
-		return Status.fromInt(isAccounlinkPhoneNumberWithAccounttUsed(nativePtr));
+		return Status.fromInt(linkPhoneNumberWithAccount(nativePtr));
 	}
 	
 	private native int activatePhoneNumberLink(long ptr);
