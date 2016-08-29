@@ -775,7 +775,9 @@ static void eject_from_4_participants_conference(void) {
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
 	BC_ASSERT_TRUE(pause_call_1(marie,marie_call_pauline,pauline,pauline_called_by_marie));
 
-	BC_ASSERT_TRUE(call(marie,michelle));
+	if (!BC_ASSERT_TRUE(call(marie,michelle)))
+		goto end;
+
 	marie_call_michelle=linphone_core_get_current_call(marie->lc);
 	michelle_called_by_marie=linphone_core_get_current_call(michelle->lc);
 	BC_ASSERT_TRUE(pause_call_1(marie,marie_call_michelle,michelle,michelle_called_by_marie));

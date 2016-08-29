@@ -100,9 +100,11 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	LinphoneCore *lc = NULL;
 	char *buf = (char *)buffer;
 
-	if (msg->http_request && !file_transfer_in_progress_and_valid(msg)) {
-		ms_warning("Cancelled request for %s msg [%p], ignoring %s", msg->chat_room?"":"ORPHAN", msg, __FUNCTION__);
-		_release_http_request(msg);
+	if (!file_transfer_in_progress_and_valid(msg)) {
+		if (msg->http_request) {
+			ms_warning("Cancelled request for %s msg [%p], ignoring %s", msg->chat_room?"":"ORPHAN", msg, __FUNCTION__);
+			_release_http_request(msg);
+		}
 		return BELLE_SIP_STOP;
 	}
 
