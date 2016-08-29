@@ -727,7 +727,12 @@ static void _recover_phone_account_cb(LinphoneXmlRpcRequest *request) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
 		const char* resp = linphone_xml_rpc_request_get_string_response(request);
 		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
-			status = (strstr(resp, "ERROR_") == resp) ? LinphoneAccountCreatorReqFailed : LinphoneAccountCreatorOK;
+			if (strstr(resp, "ERROR_") == resp) {
+				status = LinphoneAccountCreatorReqFailed;
+			} else {
+				status = LinphoneAccountCreatorOK;
+				set_string(&creator->username, resp, FALSE);
+			}
 		}
 		creator->callbacks->recover_phone_account(creator, status, resp);
 	}
