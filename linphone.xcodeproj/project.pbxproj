@@ -595,6 +595,7 @@
 		63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */; };
 		63BB26A31D006F4B00DA1F83 /* libbv16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 637835A41CFD971D00599382 /* libbv16.a */; };
 		63BC49E21BA2CDFC004EC273 /* UICallPausedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */; };
+		63BE7A781D75BDF6000990EF /* ShopTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BE7A771D75BDF6000990EF /* ShopTableView.m */; };
 		63C441C31BBC23ED0053DC5E /* UIAssistantTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */; };
 		63CAACDB1C91D10200216F8D /* NotificationTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CAACD51C91D0D100216F8D /* NotificationTester.m */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
@@ -1545,6 +1546,8 @@
 		63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatCreateCell.m; sourceTree = "<group>"; };
 		63BC49E01BA2CDFC004EC273 /* UICallPausedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallPausedCell.h; sourceTree = "<group>"; };
 		63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallPausedCell.m; sourceTree = "<group>"; };
+		63BE7A761D75BDF6000990EF /* ShopTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopTableView.h; sourceTree = "<group>"; };
+		63BE7A771D75BDF6000990EF /* ShopTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopTableView.m; sourceTree = "<group>"; };
 		63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAssistantTextField.h; sourceTree = "<group>"; };
 		63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAssistantTextField.m; sourceTree = "<group>"; };
 		63CAACD41C91D0D100216F8D /* NotificationTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationTester.h; sourceTree = "<group>"; };
@@ -2042,6 +2045,8 @@
 				D35E759C159460B50066B1C1 /* SettingsView.h */,
 				D35E759D159460B50066B1C1 /* SettingsView.m */,
 				636316D61A1DEC650009B839 /* SettingsView.xib */,
+				63BE7A761D75BDF6000990EF /* ShopTableView.h */,
+				63BE7A771D75BDF6000990EF /* ShopTableView.m */,
 				570742601D5A09B8004B9C84 /* ShopView.h */,
 				5707425F1D5A09B8004B9C84 /* ShopView.m */,
 				570742561D5A0691004B9C84 /* ShopView.xib */,
@@ -3876,6 +3881,7 @@
 				D35498211587716B000081D8 /* StatusBarView.m in Sources */,
 				D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */,
 				6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */,
+				63BE7A781D75BDF6000990EF /* ShopTableView.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
