@@ -259,10 +259,12 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		resource_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/rlmi:list/rlmi:resource");
 		if ((resource_object != NULL) && (resource_object->nodesetval != NULL)) {
 			for (i = 1; i <= resource_object->nodesetval->nodeNr; i++) {
+				LinphoneAddress* addr;
 				snprintf(xpath_str, sizeof(xpath_str), "/rlmi:list/rlmi:resource[%i]/@uri", i);
 				uri = linphone_get_xml_text_content(xml_ctx, xpath_str);
 				if (uri == NULL) continue;
-				lf = linphone_friend_list_find_friend_by_uri(list, uri);
+				addr = linphone_address_new(uri);
+				lf = addr ? linphone_friend_list_find_friend_by_address(list, addr) : NULL;
 				if (lf != NULL) {
 					const char *state = NULL;
 					snprintf(xpath_str, sizeof(xpath_str),"/rlmi:list/rlmi:resource[%i]/rlmi:instance/@state", i);
@@ -640,23 +642,21 @@ void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *li
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFriendList *list, const LinphoneAddress *address) {
-	LinphoneFriend *lf = NULL;
 	LinphoneFriend *result = NULL;
 	const bctbx_list_t *elem;
 	const char *param = linphone_address_get_uri_param(address, "user");
-	bool_t find_phone_number = FALSE;
+	bool_t find_phone_number = (param && (strcmp(param, "phone") == 0));
 
-	if (param && (strcmp(param, "phone") == 0)) find_phone_number = TRUE;
 	for (elem = list->friends; (elem != NULL) && (result == NULL); elem = bctbx_list_next(elem)) {
 		bctbx_list_t *iterator;
-		lf = (LinphoneFriend *)bctbx_list_get_data(elem);
+		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
 		if (find_phone_number == TRUE) {
 			char *uri = linphone_address_as_string_uri_only(address);
 			const char *phone_number = linphone_friend_sip_uri_to_phone_number(lf, uri);
 			bctbx_list_t *phone_numbers = linphone_friend_get_phone_numbers(lf);
 			iterator = phone_numbers;
 			ms_free(uri);
-			if (!phone_number) return NULL;
+			if (!phone_number) continue;
 			while (iterator && (result == NULL)) {
 				const char *number = (const char *)bctbx_list_get_data(iterator);
 				if (strcmp(number, phone_number) == 0) result = lf;
