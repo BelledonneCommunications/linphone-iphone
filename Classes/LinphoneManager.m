@@ -299,6 +299,20 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 #pragma mark - Migration
 
+- (void)migrationAll {
+	[self migrationLinphoneSettings];
+	[self migrationFromVersion2To3];
+	[self migratePushNotificationPerAccount];
+
+	// migrate xmlrpc URL if needed
+	if ([[self lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant"] containsSubstring:@"sip3.linphone.org"]) {
+		LOGI(@"Migrating xmlrpc url");
+		[self lpConfigSetString:@"https://subscribe.linphone.org:444/wizard.php"
+						 forKey:@"xmlrpc_url"
+					  inSection:@"assistant"];
+	}
+}
+
 static int check_should_migrate_images(void *data, int argc, char **argv, char **cnames) {
 	*((BOOL *)data) = TRUE;
 	return 0;
@@ -1402,10 +1416,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 	linphone_core_set_call_logs_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 
-	[self migrationLinphoneSettings];
-	[self migrationFromVersion2To3];
-	[self migratePushNotificationPerAccount];
-
+	[self migrationAll];
 	[self setupNetworkReachabilityCallback];
 
 	NSString *path = [LinphoneManager bundleFile:@"nowebcamCIF.jpg"];
