@@ -18,7 +18,20 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[_activationCodeField addDoneButton];
+	// every UITextField subviews with phone keyboard must be tweaked to have a done button
+	[self addDoneButtonRecursivelyInView:self.view];
+}
+
+- (void)addDoneButtonRecursivelyInView:(UIView *)subview {
+	for (UIView *child in [subview subviews]) {
+		if ([child isKindOfClass:UITextField.class]) {
+			UITextField *tf = (UITextField *)child;
+			if (tf.keyboardType == UIKeyboardTypePhonePad || tf.keyboardType == UIKeyboardTypeNumberPad) {
+				[tf addDoneButton];
+			}
+		}
+		[self addDoneButtonRecursivelyInView:child];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {

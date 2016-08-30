@@ -34,6 +34,10 @@
 	// remove separators between empty items, cf
 	// http://stackoverflow.com/questions/1633966/can-i-force-a-uitableview-to-hide-the-separator-between-empty-cells
 	self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 
 	_sideMenuEntries = [[NSMutableArray alloc] init];
 
@@ -43,6 +47,16 @@
 												[PhoneMainView.instance
 													changeCurrentView:AssistantView.compositeViewDescription];
 											  }]];
+	BOOL mustLink = ([LinphoneManager.instance lpConfigIntForKey:@"must_link_account_time"] > 0);
+	if (mustLink) {
+		[_sideMenuEntries
+			addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Link my account", nil)
+												  tapBlock:^() {
+													[PhoneMainView.instance
+														changeCurrentView:AssistantLinkView.compositeViewDescription];
+												  }]];
+	}
+
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
 											  tapBlock:^() {
@@ -51,11 +65,12 @@
 											  }]];
 	InAppProductsManager *iapm = LinphoneManager.instance.iapManager;
 	if (iapm.enabled){
-		[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Shop", nil)
-															tapBlock:^() {
-																[PhoneMainView.instance
-																 changeCurrentView:ShopView.compositeViewDescription];
-															}]];
+		[_sideMenuEntries
+			addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Shop", nil)
+												  tapBlock:^() {
+													[PhoneMainView.instance
+														changeCurrentView:ShopView.compositeViewDescription];
+												  }]];
 	}
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
 															tapBlock:^() {
