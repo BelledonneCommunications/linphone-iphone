@@ -184,6 +184,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	AssistantLinkView *thiz = (__bridge AssistantLinkView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOK) {
+		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 	} else {
 		[thiz showErrorPopup:resp];
