@@ -186,6 +186,8 @@ typedef struct _LinphoneManagerSounds {
 
 + (BOOL)isMyself:(const LinphoneAddress *)addr;
 
+- (void)shouldPresentLinkPopup;
+
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;
 @property Connectivity connectivity;

@@ -10,9 +10,15 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 #import "AssistantLinkView.h"
+#import "UITextField+DoneButton.h"
 
 @implementation AssistantLinkView {
 	LinphoneAccountCreator *account_creator;
+}
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	[_activationCodeField addDoneButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

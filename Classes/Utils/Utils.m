@@ -461,6 +461,22 @@
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 	LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, value.UTF8String);
 
+	// first try to find a friend with the given address
+	Contact *c = [FastAddressBook getContactWithAddress:addr];
+	if (c && c.friend) {
+		LinphoneFriend *f = c.friend;
+		const LinphonePresenceModel *m =
+			f ? linphone_friend_get_presence_model_for_uri_or_tel(f, value.UTF8String) : NULL;
+		const char *contact = m ? linphone_presence_model_get_contact(m) : NULL;
+		if (contact) {
+			LinphoneAddress *contact_addr = linphone_address_new(contact);
+			if (contact_addr) {
+				linphone_address_destroy(addr);
+				return contact_addr;
+			}
+		}
+	}
+
 	// since user wants to escape plus, we assume it expects to have phone numbers by default
 	if (addr && cfg && linphone_proxy_config_get_dial_escape_plus(cfg)) {
 		char *phone = linphone_proxy_config_normalize_phone_number(cfg, value.UTF8String);

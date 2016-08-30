@@ -165,6 +165,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_padView.hidden = !IPAD && UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	[LinphoneManager.instance shouldPresentLinkPopup];
+}
+
 #pragma mark - Event Functions
 
 - (void)callUpdateEvent:(NSNotification *)notif {

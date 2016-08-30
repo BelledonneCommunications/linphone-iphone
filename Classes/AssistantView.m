@@ -391,6 +391,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	countryButton.layer.cornerRadius = 4.f;
 	countryButton.layer.masksToBounds = YES;
 
+	// every UITextField subviews with phone keyboard must be tweaked to have a done button
+	for (UIView *child in [view subviews]) {
+		if ([child.class isSubclassOfClass:UITextField.class]) {
+			UITextField *tf = (UITextField *)child;
+			if (tf.keyboardType == UIKeyboardTypePhonePad || tf.keyboardType == UIKeyboardTypeNumberPad) {
+				[tf addDoneButton];
+			}
+		}
+	}
+
 	[self prepareErrorLabels];
 
 }

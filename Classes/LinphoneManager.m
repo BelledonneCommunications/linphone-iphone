@@ -1446,8 +1446,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 	[self enableProxyPublish:YES];
 
-	[self shouldPresentLinkPopup];
-
 	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
 
 	// Post event
@@ -1538,7 +1536,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 }
 
 - (void)shouldPresentLinkPopup {
-	LOGW(@"hello!");
 	NSDate *nextTime =
 		[NSDate dateWithTimeIntervalSince1970:[self lpConfigIntForKey:@"must_link_account_time" withDefault:1]];
 	NSDate *now = [NSDate date];
