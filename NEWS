@@ -1,4 +1,7 @@
-linphone-3.10.0 -- August 8th, 2016
+linphone-3.10.2 -- August 30th, 2016
+	* Fixing linphone python version compilation - fixing vcards
+
+inphone-3.10.0 -- August 8th, 2016
 	* Adding lime_experimental_feature : set to 1 in .linphonerc [GtkUi] to 
 	show the Lime menu in the graphical user interface. Caution : Experimental.
 	* Video conference support through a conference server (SDK only)
