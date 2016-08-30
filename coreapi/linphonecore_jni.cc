@@ -7786,7 +7786,7 @@ extern "C" void Java_org_linphone_core_LinphoneXmlRpcSessionImpl_sendRequest(JNI
 
 // Account creator
 
-static void account_creator_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void account_creator_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
@@ -7811,7 +7811,7 @@ static void account_creator_is_account_used(LinphoneAccountCreator *creator, Lin
 	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
 }
 
-static void account_creator_create_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void account_creator_create_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
@@ -7837,7 +7837,7 @@ static void account_creator_create_account(LinphoneAccountCreator *creator, Linp
 	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
 }
 
-static void account_creator_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void account_creator_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
@@ -7863,7 +7863,7 @@ static void account_creator_activate_account(LinphoneAccountCreator *creator, Li
 	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
 }
 
-static void account_creator_link_phone_number_with_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void account_creator_link_phone_number_with_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
@@ -7889,7 +7889,7 @@ static void account_creator_link_phone_number_with_account(LinphoneAccountCreato
 	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
 }
 
-static void account_creator_activate_phone_number_link(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void account_creator_activate_phone_number_link(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
@@ -7915,7 +7915,7 @@ static void account_creator_activate_phone_number_link(LinphoneAccountCreator *c
 	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
 }
 
-static void account_creator_is_account_activated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void account_creator_is_account_activated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
@@ -7941,7 +7941,7 @@ static void account_creator_is_account_activated(LinphoneAccountCreator *creator
 	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
 }
 
-static void account_creator_phone_account_recovered(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void account_creator_phone_account_recovered(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
