@@ -165,13 +165,11 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 		lp_config_set_string(config,key,"ha1",obj->ha1);
 	}
 	if (obj->passwd != NULL){
-		if (store_ha1_passwd){
-			if (obj->ha1){
-				/*if we have our ha1 and store_ha1_passwd set to TRUE, then drop the clear text password for security*/
-				linphone_auth_info_set_passwd(obj, NULL);
-			}
+		if (store_ha1_passwd && obj->ha1){
+			/*if we have our ha1 and store_ha1_passwd set to TRUE, then drop the clear text password for security*/
+			linphone_auth_info_set_passwd(obj, NULL);
 		}else{
-			/*we store clear text password only if store_ha1_passwd is FALSE*/
+			/*we store clear text password only if store_ha1_passwd is FALSE AND we have an ha1 to store. Otherwise, passwd would simply be removed, which might bring major auth issue*/
 			lp_config_set_string(config,key,"passwd",obj->passwd);
 		}
 	}

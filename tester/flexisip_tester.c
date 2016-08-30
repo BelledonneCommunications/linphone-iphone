@@ -1076,6 +1076,7 @@ static void test_list_subscribe (void) {
 					"<list>\n"
 						"\t<entry uri=\"%s\" />\n"
 						"\t<entry uri=\"%s\" />\n"
+						"\t<entry uri=\"sip:+33952@toto.com;user=phone\" />\n"
 					"</list>\n"
 					"</resource-lists>\n";
 
