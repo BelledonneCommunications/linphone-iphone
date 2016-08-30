@@ -8040,6 +8040,20 @@ extern "C" jstring Java_org_linphone_core_LinphoneAccountCreatorImpl_getPassword
 	return password ? env->NewStringUTF(password) : NULL;
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setHa1(JNIEnv *env, jobject thiz, jlong ptr, jstring jha1) {
+	const char *ha1 = GetStringUTFChars(env, jha1);
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	LinphoneAccountCreatorStatus status = linphone_account_creator_set_ha1(account_creator, ha1);
+	ReleaseStringUTFChars(env, jha1, ha1);
+	return (jint) status;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneAccountCreatorImpl_getHa1(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	const char *ha1 = linphone_account_creator_get_ha1(account_creator);
+	return ha1 ? env->NewStringUTF(ha1) : NULL;
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setActivationCode(JNIEnv *env, jobject thiz, jlong ptr, jstring jcode) {
 	const char *activation_code = GetStringUTFChars(env, jcode);
 	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;

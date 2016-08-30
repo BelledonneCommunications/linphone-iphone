@@ -164,6 +164,21 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_passwo
 LINPHONE_PUBLIC const char * linphone_account_creator_get_password(const LinphoneAccountCreator *creator);
 
 /**
+ * Set the ha1.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] password The ha1 to set
+ * @return LinphoneAccountCreatorOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_ha1(LinphoneAccountCreator *creator, const char *ha1);
+
+/**
+ * Get the ha1.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return The ha1 of the LinphoneAccountCreator
+**/
+LINPHONE_PUBLIC const char * linphone_account_creator_get_ha1(const LinphoneAccountCreator *creator);
+
+/**
  * Set the activation code.
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] activation_code The activation code to set

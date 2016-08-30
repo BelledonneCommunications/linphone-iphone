@@ -123,6 +123,7 @@ static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	linphone_account_creator_cbs_unref(creator->callbacks);
 	if (creator->username) ms_free(creator->username);
 	if (creator->password) ms_free(creator->password);
+	if (creator->ha1) ms_free(creator->ha1);
 	if (creator->domain) ms_free(creator->domain);
 	if (creator->route) ms_free(creator->route);
 	if (creator->email) ms_free(creator->email);
@@ -334,6 +335,15 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_password(LinphoneAccou
 
 const char * linphone_account_creator_get_password(const LinphoneAccountCreator *creator) {
 	return creator->password;
+}
+
+LinphoneAccountCreatorStatus linphone_account_creator_set_ha1(LinphoneAccountCreator *creator, const char *ha1){
+	set_string(&creator->ha1, ha1, FALSE);
+	return LinphoneAccountCreatorOK;
+}
+
+const char * linphone_account_creator_get_ha1(const LinphoneAccountCreator *creator) {
+	return creator->ha1;
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_activation_code(LinphoneAccountCreator *creator, const char *activation_code){
@@ -700,7 +710,7 @@ static void _activate_phone_number_link_cb(LinphoneXmlRpcRequest *request) {
 
 LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
-	if (!creator->phone_number || !creator->username || !creator->activation_code || !creator->password || !creator->domain) {
+	if (!creator->phone_number || !creator->username || !creator->activation_code || (!creator->password && !creator->ha1) || !creator->domain) {
 		if (creator->callbacks->activate_phone_number_link != NULL) {
 			creator->callbacks->activate_phone_number_link(creator, LinphoneAccountCreatorReqFailed, "Missing required parameters");
 		}
@@ -710,7 +720,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, creator->activation_code,
-		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username, creator->domain, creator->password),
+		LinphoneXmlRpcArgString, creator->ha1 ? creator->ha1 : ha1_for_passwd(creator->username, creator->domain, creator->password),
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_phone_number_link_cb);

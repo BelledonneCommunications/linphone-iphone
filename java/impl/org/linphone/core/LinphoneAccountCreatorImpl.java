@@ -82,6 +82,18 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return getPassword(nativePtr);
 	}
 
+	private native int setHa1(long ptr, String ha1);
+	@Override
+	public Status setHa1(String ha1) {
+		return Status.fromInt(setHa1(nativePtr, ha1));
+	}
+
+	private native String getHa1(long ptr);
+	@Override
+	public String getHa1() {
+		return null;
+	}
+
 	private native int setActivationCode(long ptr, String activationCode);
 	@Override
 	public Status setActivationCode(String activationCode) {

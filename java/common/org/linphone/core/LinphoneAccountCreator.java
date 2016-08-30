@@ -99,6 +99,10 @@ public interface LinphoneAccountCreator {
 	Status setPassword(String password);
 	
 	String getPassword();
+
+	Status setHa1(String ha1);
+
+	String getHa1();
 	
 	Status setActivationCode(String activationCode);
 	
