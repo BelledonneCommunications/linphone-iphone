@@ -147,7 +147,6 @@
 
 - (IBAction)onContactsClick:(id)event {
 	[ContactSelection setAddAddress:nil];
-	[ContactSelection setSipFilter:nil];
 	[ContactSelection enableEmailFilter:FALSE];
 	[ContactSelection setNameOrEmailFilter:nil];
 	[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];

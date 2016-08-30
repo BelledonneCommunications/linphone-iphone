@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="NO">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <development version="7000" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ContactDetailsView">
@@ -23,28 +24,28 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="XnN-PU-Vk7" userLabel="iphone6MetricsView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="1">
-                    <rect key="frame" x="0.0" y="42" width="375" height="559"/>
+                    <rect key="frame" x="0.0" y="42" width="320" height="372"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <view tag="1" contentMode="scaleToFill" id="4" userLabel="topBar">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="Lb6-xa-LB6" userLabel="backgroundColor">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                 </imageView>
                                 <button hidden="YES" opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="bPQ-aJ-Lk6" userLabel="cancelButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="64" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="cancel_edit_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="cancel_edit_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -53,14 +54,14 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="64" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="back_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.28619974851608276" green="0.32144349813461304" blue="0.35980013012886047" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="back_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -69,14 +70,14 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MuB-yy-R9o" userLabel="deleteButton" customClass="UIToggleButton">
-                                    <rect key="frame" x="225" y="0.0" width="75" height="66"/>
+                                    <rect key="frame" x="192" y="0.0" width="64" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="delete_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.28619974851608276" green="0.32144349813461304" blue="0.35980013012886047" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="delete_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -85,14 +86,14 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8" userLabel="editButton" customClass="UIToggleButton">
-                                    <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                                    <rect key="frame" x="256" y="0.0" width="64" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="edit_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.28619974851608276" green="0.32144349813461304" blue="0.35980013012886047" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="edit_disabled.png"/>
                                     <state key="selected" image="valid_default.png"/>
@@ -104,27 +105,27 @@
                             </subviews>
                         </view>
                         <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="7" contentMode="scaleToFill" directionalLockEnabled="YES" showsHorizontalScrollIndicator="NO" id="8D6-vy-obt" userLabel="contentView">
-                            <rect key="frame" x="0.0" y="66" width="375" height="493"/>
+                            <rect key="frame" x="0.0" y="66" width="320" height="306"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView tag="8" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar.png" id="B6X-C9-2vm" userLabel="avatarImage" customClass="UIRoundedImageView">
-                                    <rect key="frame" x="142" y="10" width="90" height="90"/>
+                                    <rect key="frame" x="115" y="10" width="90" height="90"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <connections>
                                         <outletCollection property="gestureRecognizers" destination="8bV-f4-pLL" appends="YES" id="4V5-Px-aHT"/>
                                     </connections>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" tag="9" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="moZ-Bg-zcv" userLabel="nameLabel">
-                                    <rect key="frame" x="0.0" y="108" width="375" height="40"/>
+                                    <rect key="frame" x="0.0" y="108" width="320" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="27"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <tableView clipsSubviews="YES" tag="10" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" style="plain" allowsSelection="NO" allowsSelectionDuringEditing="YES" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="1" sectionFooterHeight="1" id="19" userLabel="tableView">
-                                    <rect key="frame" x="0.0" y="156" width="375" height="337"/>
+                                <tableView clipsSubviews="YES" tag="10" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" style="plain" allowsSelection="NO" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="1" sectionFooterHeight="1" id="19" userLabel="tableView">
+                                    <rect key="frame" x="0.0" y="156" width="320" height="150"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                     <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
                                     <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
                                     <connections>
@@ -135,19 +136,18 @@
                             </subviews>
                         </scrollView>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="40" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No contact selected" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Mdj-Pz-nu4" userLabel="emptyLabel">
-                            <rect key="frame" x="0.0" y="66" width="375" height="493"/>
+                            <rect key="frame" x="0.0" y="66" width="320" height="306"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
             <point key="canvasLocation" x="-436.5" y="192.5"/>
         </view>
         <view contentMode="scaleToFill" id="gnD-7x-PSh" userLabel="iphone6MetricsView">
@@ -172,7 +172,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="cancel_edit_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="cancel_edit_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -187,8 +187,8 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="back_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.28619974851608276" green="0.32144349813461304" blue="0.35980013012886047" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="back_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -203,8 +203,8 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="delete_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.28619974851608276" green="0.32144349813461304" blue="0.35980013012886047" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="delete_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -219,8 +219,8 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="edit_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.28619974851608276" green="0.32144349813461304" blue="0.35980013012886047" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="edit_disabled.png"/>
                                     <state key="selected" image="valid_default.png"/>
@@ -246,10 +246,10 @@
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <tableView clipsSubviews="YES" tag="10" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" style="plain" allowsSelection="NO" allowsSelectionDuringEditing="YES" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="1" sectionFooterHeight="1" id="WMA-Yo-NbI" userLabel="tableView" customClass="TPKeyboardAvoidingTableView">
+                                <tableView clipsSubviews="YES" tag="10" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" style="plain" allowsSelection="NO" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="1" sectionFooterHeight="1" id="WMA-Yo-NbI" userLabel="tableView" customClass="TPKeyboardAvoidingTableView">
                                     <rect key="frame" x="0.0" y="84" width="667" height="183"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                     <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
                                     <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
                                     <connections>
@@ -262,17 +262,16 @@
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="40" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No contact selected" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oFA-SG-IDe" userLabel="emptyLabel">
                             <rect key="frame" x="0.0" y="66" width="667" height="267"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="25.5" y="275.5"/>
         </view>
@@ -290,17 +289,22 @@
         </tapGestureRecognizer>
     </objects>
     <resources>
-        <image name="avatar.png" width="255" height="255"/>
-        <image name="back_default.png" width="24" height="21"/>
-        <image name="back_disabled.png" width="24" height="21"/>
+        <image name="avatar.png" width="259" height="259"/>
+        <image name="back_default.png" width="24" height="22"/>
+        <image name="back_disabled.png" width="24" height="22"/>
         <image name="cancel_edit_default.png" width="29" height="29"/>
         <image name="cancel_edit_disabled.png" width="29" height="29"/>
         <image name="color_E.png" width="2" height="2"/>
         <image name="color_F.png" width="2" height="2"/>
-        <image name="delete_default.png" width="21" height="27"/>
-        <image name="delete_disabled.png" width="21" height="27"/>
-        <image name="edit_default.png" width="28" height="28"/>
-        <image name="edit_disabled.png" width="28" height="28"/>
-        <image name="valid_default.png" width="27" height="19"/>
+        <image name="delete_default.png" width="21" height="28"/>
+        <image name="delete_disabled.png" width="21" height="28"/>
+        <image name="edit_default.png" width="29" height="29"/>
+        <image name="edit_disabled.png" width="29" height="29"/>
+        <image name="valid_default.png" width="28" height="19"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
 </document>

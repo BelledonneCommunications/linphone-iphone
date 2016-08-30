@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="NO">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <development version="7000" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ContactsListView">
@@ -19,7 +20,7 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="1YR-9t-hRk" userLabel="iphone6MetricsView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="2">
@@ -33,7 +34,6 @@
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="Ehd-EB-dCJ" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <animations/>
                                 </imageView>
                                 <view contentMode="scaleToFill" id="93" userLabel="switchView">
                                     <rect key="frame" x="0.0" y="0.0" width="150" height="66"/>
@@ -42,18 +42,17 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
                                             <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                            <animations/>
                                             <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                             <inset key="titleEdgeInsets" minX="-38" minY="15" maxX="0.0" maxY="0.0"/>
                                             <inset key="imageEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="contacts_all_default.png">
-                                                <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <state key="disabled" image="contacts_all_disabled.png"/>
                                             <state key="selected" image="contacts_all_selected.png">
-                                                <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="titleColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_E.png"/>
                                             <connections>
@@ -63,21 +62,19 @@
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="A9k-KU-Dlm" userLabel="selectedButtonImage">
                                             <rect key="frame" x="0.0" y="63" width="75" height="3"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                            <animations/>
                                         </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="sipButton" customClass="UIIconButton">
                                             <rect key="frame" x="75" y="0.0" width="75" height="66"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
-                                            <animations/>
                                             <accessibility key="accessibilityConfiguration" label="Linphone contacts filter"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                             <state key="normal" image="contacts_sip_default.png">
-                                                <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <state key="disabled" image="contacts_sip_disabled.png"/>
                                             <state key="selected" image="contacts_sip_selected.png">
-                                                <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="titleColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_E.png"/>
                                             <connections>
@@ -85,15 +82,13 @@
                                             </connections>
                                         </button>
                                     </subviews>
-                                    <animations/>
                                 </view>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MZP-cb-ntf" userLabel="cancelButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <state key="normal" image="cancel_edit_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="cancel_edit_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -105,11 +100,10 @@
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tFB-Vf-lUX" userLabel="deleteButton" customClass="UIIconButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="delete_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="delete_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -120,11 +114,10 @@
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="DZc-zR-1Q7" userLabel="editButton" customClass="UIIconButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="edit_list_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="edit_list_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -136,12 +129,11 @@
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="5lZ-u7-Yex" userLabel="toggleSelectionButton" customClass="UIIconButton">
                                     <rect key="frame" x="225" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Select all"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="deselect_all.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="select_all_disabled.png"/>
                                     <state key="selected" image="select_all_default.png"/>
@@ -153,11 +145,10 @@
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="addButton" customClass="UIIconButton">
                                     <rect key="frame" x="225" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Add contact"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="contact_add_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <state key="disabled" image="contact_add_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -166,12 +157,10 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <animations/>
                         </view>
                         <searchBar contentMode="redraw" showsCancelButton="YES" id="5jE-oF-d45" userLabel="searchBar">
                             <rect key="frame" x="0.0" y="66" width="375" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <animations/>
                             <textInputTraits key="textInputTraits"/>
                             <connections>
                                 <outlet property="delegate" destination="-1" id="Fk3-Tl-dY0"/>
@@ -180,32 +169,27 @@
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="zOo-FS-W6l" userLabel="tableView">
                             <rect key="frame" x="0.0" y="110" width="375" height="449"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <animations/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
                             <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
-                            <color key="separatorColor" red="0.7254902124" green="0.76862746479999999" blue="0.79607844350000001" alpha="1" colorSpace="deviceRGB"/>
+                            <color key="separatorColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <outlet property="dataSource" destination="TJG-JZ-YRR" id="334-RR-jEi"/>
                                 <outlet property="delegate" destination="TJG-JZ-YRR" id="V1N-gI-U4J"/>
                             </connections>
                         </tableView>
-                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No contact found in your address book" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JR3-k7-gVP" userLabel="emptyTableLabel">
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No contact found in your address book" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JR3-k7-gVP" userLabel="emptyTableLabel">
                             <rect key="frame" x="0.0" y="110" width="375" height="449"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <animations/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <animations/>
                 </view>
             </subviews>
-            <animations/>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
             <point key="canvasLocation" x="4.5" y="212.5"/>
         </view>
         <tableViewController id="TJG-JZ-YRR" userLabel="tableController" customClass="ContactsListTableView">
@@ -231,15 +215,20 @@
         <image name="contacts_all_default.png" width="32" height="27"/>
         <image name="contacts_all_disabled.png" width="32" height="27"/>
         <image name="contacts_all_selected.png" width="32" height="27"/>
-        <image name="contacts_sip_default.png" width="38" height="29"/>
-        <image name="contacts_sip_disabled.png" width="38" height="29"/>
-        <image name="contacts_sip_selected.png" width="38" height="29"/>
-        <image name="delete_default.png" width="21" height="27"/>
-        <image name="delete_disabled.png" width="21" height="27"/>
-        <image name="deselect_all.png" width="26" height="26"/>
-        <image name="edit_list_default.png" width="29" height="28"/>
-        <image name="edit_list_disabled.png" width="29" height="28"/>
-        <image name="select_all_default.png" width="26" height="26"/>
-        <image name="select_all_disabled.png" width="26" height="26"/>
+        <image name="contacts_sip_default.png" width="38" height="30"/>
+        <image name="contacts_sip_disabled.png" width="38" height="30"/>
+        <image name="contacts_sip_selected.png" width="38" height="30"/>
+        <image name="delete_default.png" width="21" height="28"/>
+        <image name="delete_disabled.png" width="21" height="28"/>
+        <image name="deselect_all.png" width="27" height="27"/>
+        <image name="edit_list_default.png" width="30" height="28"/>
+        <image name="edit_list_disabled.png" width="30" height="28"/>
+        <image name="select_all_default.png" width="27" height="27"/>
+        <image name="select_all_disabled.png" width="27" height="27"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
 </document>
