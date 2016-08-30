@@ -5,12 +5,29 @@ Group changes to describe their impact on the project, as follows:
 
     Added for new features.
     Changed for changes in existing functionality.
-    Deprecated for once-stable features removed in upcoming releases.
+    Deprecated for once-stable features removed in upcoming releases.é
     Removed for deprecated features removed in this release.
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
 ## [Unreleased]
+
+### Added
+- Support of iOS 10
+- Added long term presence for linphone.org accounts: any user can now see his/her friends with a linphone.org account
+- Added TURN support
+
+### Changed
+- Updated push notification sound
+- Updated assistant to allow creating and authenticating account with a phone number
+- Updated translations
+- Improve VideoToolbox H264 decoder
+
+### Fixed
+- Correctly display name in Settings when using exotic characters
+- Correctly handle video policy when answering from push notification
+- Hide keyboard on dialer when address is empty
+- Better handling of multi accounts in side menu
 
 ## [3.13.9] - 2016-06-15
 
