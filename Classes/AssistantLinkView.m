@@ -188,6 +188,14 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOK) {
 		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
+		// save country code prefix if none is already entered
+		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+		if (linphone_proxy_config_get_dial_prefix(cfg) == NULL) {
+			const char *prefix = thiz.countryCodeField.text.UTF8String;
+			linphone_proxy_config_edit(cfg);
+			linphone_proxy_config_set_dial_prefix(cfg, prefix[0] == '+' ? &prefix[1] : prefix);
+			linphone_proxy_config_done(cfg);
+		}
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 	} else {
 		[thiz showErrorPopup:resp];
