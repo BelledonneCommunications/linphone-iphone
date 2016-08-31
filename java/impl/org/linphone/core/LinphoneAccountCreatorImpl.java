@@ -91,7 +91,7 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	private native String getHa1(long ptr);
 	@Override
 	public String getHa1() {
-		return null;
+		return getHa1(nativePtr);
 	}
 
 	private native int setActivationCode(long ptr, String activationCode);
