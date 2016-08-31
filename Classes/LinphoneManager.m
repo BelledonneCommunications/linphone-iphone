@@ -305,11 +305,13 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 	[self migratePushNotificationPerAccount];
 
 	// migrate xmlrpc URL if needed
-	if ([[self lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant"] containsSubstring:@"sip3.linphone.org"]) {
-		LOGI(@"Migrating xmlrpc url");
+	if ([self lpConfigBoolForKey:@"migration_xmlrpc"] == NO) {
 		[self lpConfigSetString:@"https://subscribe.linphone.org:444/wizard.php"
 						 forKey:@"xmlrpc_url"
 					  inSection:@"assistant"];
+		[self lpConfigSetString:@"sip:rls@sip.linphone.org" forKey:@"rls_uri" inSection:@"sip"];
+		[self lpConfigSetBool:YES forKey:@"use_rls_presence" inSection:@"sip"];
+		[self lpConfigSetBool:YES forKey:@"migration_xmlrpc"];
 	}
 }
 
