@@ -27,6 +27,5 @@
 		<entry name="username_max_length" overwrite="true">-1</entry>
 		<entry name="username_min_length" overwrite="true">-1</entry>
 		<entry name="username_regex" overwrite="true">.*</entry>
-		<entry name="xmlrpc_url" overwrite="true"></entry>
 	</section>
 </config>
