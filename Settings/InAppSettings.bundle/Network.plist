@@ -61,6 +61,40 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>turn_username</string>
+			<key>Title</key>
+			<string>TURN&apos;s Username</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>turn_password</string>
+			<key>Title</key>
+			<string>TURN&apos;s Password</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>IsSecure</key>
+			<true/>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>

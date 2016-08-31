@@ -306,6 +306,9 @@
 		[self setCString:linphone_core_get_stun_server(LC) forKey:@"stun_preference"];
 		[self setBool:linphone_nat_policy_ice_enabled(linphone_core_get_nat_policy(LC)) forKey:@"ice_preference"];
 		[self setBool:linphone_nat_policy_turn_enabled(linphone_core_get_nat_policy(LC)) forKey:@"turn_preference"];
+		[self setCString:linphone_nat_policy_get_stun_server_username(linphone_core_get_nat_policy(LC))
+				  forKey:@"turn_username"];
+
 		int random_port_preference = [lm lpConfigIntForKey:@"random_port_preference" withDefault:1];
 		[self setInteger:random_port_preference forKey:@"random_port_preference"];
 		int port = [lm lpConfigIntForKey:@"port_preference" withDefault:5060];
@@ -717,21 +720,31 @@
 			LinphoneNatPolicy *LNP = linphone_core_get_nat_policy(LC);
 			NSString *stun_server = [self stringForKey:@"stun_preference"];
 			if ([stun_server length] > 0) {
-
 				linphone_core_set_stun_server(LC, [stun_server UTF8String]);
+				linphone_nat_policy_set_stun_server(LNP, [stun_server UTF8String]);
 				BOOL ice_preference = [self boolForKey:@"ice_preference"];
 				linphone_nat_policy_enable_ice(LNP, ice_preference);
+				linphone_nat_policy_enable_turn(LNP, [self boolForKey:@"turn_preference"]);
+				NSString *turn_username = [self stringForKey:@"turn_username"];
+				NSString *turn_password = [self stringForKey:@"turn_password"];
 
-				BOOL turn_preference = [self boolForKey:@"turn_preference"];
-				linphone_nat_policy_enable_turn(LNP, turn_preference);
+				if ([turn_username length] > 0) {
+					const LinphoneAuthInfo *turnAuthInfo = nil;
+					if ([turn_password length] > 0)
+						turnAuthInfo = linphone_auth_info_new([turn_username UTF8String], NULL,
+															  [turn_password UTF8String], NULL, NULL, NULL);
+					else
+						turnAuthInfo = linphone_core_find_auth_info(LC, NULL, [turn_username UTF8String], NULL);
+					if (turnAuthInfo != NULL)
+						linphone_core_add_auth_info(LC, turnAuthInfo);
+					linphone_nat_policy_set_stun_server_username(LNP, linphone_auth_info_get_username(turnAuthInfo));
+				}
 			} else {
 				linphone_nat_policy_enable_stun(LNP, FALSE);
+				linphone_nat_policy_set_stun_server(LNP, NULL);
 				linphone_core_set_stun_server(LC, NULL);
-				// TODO :
-				// Do ice and turn should be off too ?
 			}
 			linphone_core_set_nat_policy(LC, LNP);
-
 			{
 				NSString *audio_port_preference = [self stringForKey:@"audio_port_preference"];
 				int minPort, maxPort;
