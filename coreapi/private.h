@@ -1322,6 +1322,7 @@ struct _LinphoneAccountCreator {
 	LinphoneTransportType transport;
 	char *activation_code;
 	char *ha1;
+	char *phone_country_code;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);

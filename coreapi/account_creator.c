@@ -128,6 +128,8 @@ static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	if (creator->route) ms_free(creator->route);
 	if (creator->email) ms_free(creator->email);
 	if (creator->display_name) ms_free(creator->display_name);
+	if (creator->phone_country_code) ms_free(creator->phone_country_code);
+	if (creator->activation_code) ms_free(creator->activation_code);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreator);
@@ -283,13 +285,15 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneA
 	if (!phone_number || !country_code) {
 		if (!phone_number && !country_code) {
 			creator->phone_number = NULL;
+			creator->phone_country_code = NULL;
 			return LinphoneAccountCreatorOK;
 		} else {
 			return LinphoneAccountCreatorPhoneNumberInvalid;
 		}
 	} else {
 		LinphoneProxyConfig *numCfg = linphone_proxy_config_new();
-		linphone_proxy_config_set_dial_prefix(numCfg, country_code[0] == '+' ? &country_code[1] : country_code);
+		creator->phone_country_code = ms_strdup(country_code[0] == '+' ? &country_code[1] : country_code);
+		linphone_proxy_config_set_dial_prefix(numCfg, creator->phone_country_code);
 		normalized_phone_number = linphone_proxy_config_normalize_phone_number(numCfg, phone_number);
 		linphone_proxy_config_destroy(numCfg);
 		if (!normalized_phone_number) {
@@ -433,6 +437,7 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 		domain = ms_strdup_printf("%s;transport=%s", creator->domain, linphone_transport_to_string(creator->transport));
 	}
 	linphone_proxy_config_set_identity_address(cfg, identity);
+	if (creator->phone_country_code) linphone_proxy_config_set_dial_prefix(cfg, creator->phone_country_code);
 	linphone_proxy_config_set_server_addr(cfg, domain);
 	linphone_proxy_config_set_route(cfg, route);
 	linphone_proxy_config_enable_publish(cfg, FALSE);
