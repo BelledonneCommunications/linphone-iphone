@@ -29,7 +29,7 @@ enabled=0
 paid_account_id=sipAccount_12m
 
 #the url of the inapp/account management server, for submitting the receipt and validating the account.
-receipt_validation_url=https://www.linphone.org/inapp.php
+receipt_validation_url=https://subscribe.linphone.org:444/inapp.php
 
 #for future use, to specify the full list of paying services to show in the shop view
 products_list=sipAccount_12m

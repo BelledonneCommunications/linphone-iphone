@@ -946,7 +946,8 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
     ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
         linphone_account_creator_set_activation_code(account_creator, ((UITextField*)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text.UTF8String);
-		if (linphone_account_creator_get_password(account_creator) == NULL) {
+		if (linphone_account_creator_get_password(account_creator) == NULL &&
+			linphone_account_creator_get_ha1(account_creator) == NULL) {
 			linphone_account_creator_activate_account(account_creator);
 		} else {
 			linphone_account_creator_activate_phone_number_link(account_creator);
@@ -973,7 +974,8 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
         _waitView.hidden = NO;
 
 		if ((linphone_account_creator_get_phone_number(account_creator) != NULL) &&
-			linphone_account_creator_get_password(account_creator) == NULL) {
+			linphone_account_creator_get_password(account_creator) == NULL &&
+			linphone_account_creator_get_ha1(account_creator) == NULL) {
 			linphone_account_creator_recover_phone_account(account_creator);
 		} else {
 			// check if account is already linked with a phone number.

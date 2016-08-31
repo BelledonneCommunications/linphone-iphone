@@ -55,7 +55,10 @@
 		linphone_account_creator_set_username(
 			account_creator, linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg)));
 		const LinphoneAuthInfo *info = linphone_proxy_config_find_auth_info(cfg);
-		linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(info));
+		if (linphone_auth_info_get_passwd(info))
+			linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(info));
+		else
+			linphone_account_creator_set_ha1(account_creator, linphone_auth_info_get_ha1(info));
 		linphone_account_creator_set_domain(account_creator, linphone_proxy_config_get_domain(cfg));
 	} else {
 		LOGW(@"Default proxy is NOT a sip.linphone.org, aborting");

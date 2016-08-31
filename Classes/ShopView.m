@@ -45,38 +45,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
-#pragma mark - ViewController Functions
-
-- (void)viewDidLoad {
-	InAppProductsManager *aipm = LinphoneManager.instance.iapManager;
-	NSMutableArray *productsAvailable = aipm.productsAvailable;
-	if ( [productsAvailable count] > 0){
-		SKProduct *product = [productsAvailable objectAtIndex:0];
-		[_accountProductTitle setText:product.localizedTitle];
-		[_accountProductDescription setText:product.localizedDescription];
-		
-		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-		[numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
-		[numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-		[numberFormatter setLocale:product.priceLocale];
-		NSString *formattedString = [numberFormatter stringFromNumber:product.price];
-		[_accountProductPrice setText:formattedString];
-	}
-	[super viewDidLoad];
-	
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	[_tableViewController.tableView reloadData];
 }
-
 #pragma mark - Action Functions
-
-- (IBAction)onLinkTap:(id)sender {
-	
-}
 
 - (IBAction)onDialerBackClick:(id)sender {
 	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
-- (IBAction)onPurchaseButtonClick:(id)sender {
-	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
-}
 @end

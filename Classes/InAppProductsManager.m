@@ -58,7 +58,7 @@
 		checkPeriod = [LinphoneManager.instance lpConfigIntForKey:@"expiry_check_period" inSection:@"in_app_purchase"];
 		warnBeforeExpiryPeriod = [LinphoneManager.instance lpConfigIntForKey:@"warn_before_expiry_period" inSection:@"in_app_purchase"];
 		lastCheck = 0;
-		
+
 		int testExpiry = [LinphoneManager.instance lpConfigIntForKey:@"expiry_time_test" inSection:@"in_app_purchase"];
 		if (testExpiry > 0){
 			expiryTime = time(NULL) + testExpiry;
@@ -284,7 +284,7 @@
 		// if ([transaction.transactionIdentifier
 		// isEqualToString:transaction.originalTransaction.transactionIdentifier]) {
 		if (self.accountCreationData.count == 3) {
-			[request setMethod:@"create_account_from_in_app_purchase"
+			[request setMethod:@"update_expiration_date"
 				withParameters:[NSArray arrayWithObjects:@"", [_accountCreationData objectForKey:@"phoneNumber"],
 														 receiptBase64, @"", @"apple",
 														 [_accountCreationData objectForKey:@"email"], nil]];
@@ -292,7 +292,7 @@
 			// otherwise simply renewing
 		} else {
 			if ([[self getPhoneNumber] length] > 0) {
-				[request setMethod:@"get_expiration_date"
+				[request setMethod:@"update_expiration_date"
 					withParameters:[NSArray
 									   arrayWithObjects:[self getPhoneNumber], receiptBase64, @"", @"apple", nil]];
 			} else {
@@ -404,7 +404,7 @@
 
 	// validation succeeded
 	if (![response isFault] && [response object] != nil) {
-		if (([[request method] isEqualToString:@"get_expiration_date"]) ||
+		if (([[request method] isEqualToString:@"get_account_expiration"]) ||
 			([[request method] isEqualToString:@"create_account_from_in_app_purchase"])) {
 			[_productsIDPurchased removeObject:productID];
 			// response object can either be expiration date (long long number or an error string)
@@ -501,30 +501,30 @@
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
 		UILocalNotification *notification = [[UILocalNotification alloc] init];
 		if (notification) {
-			
+
 			notification.category = notificationCategory;
 			notification.repeatInterval = 0;
 			notification.applicationIconBadgeNumber = 1;
 			notification.alertBody = expireText;
-			
+
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 		}
-		
+
 	}else{
 		UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Account expiring"
 																	  message:expireText
 															   preferredStyle:UIAlertControllerStyleAlert];
- 
+
 		UIAlertAction* buyAction = [UIAlertAction actionWithTitle:@"Buy" style:UIAlertActionStyleDefault
 														  handler:^(UIAlertAction * action) {
 															  [PhoneMainView.instance changeCurrentView:ShopView.compositeViewDescription];
 														  }];
-		
+
 		UIAlertAction* laterAction = [UIAlertAction actionWithTitle:@"Later" style:UIAlertActionStyleCancel
 														  handler:^(UIAlertAction * action) {
 															 // [alert dismissViewControllerAnimated:FALSE];
 														  }];
-		
+
 		[alert addAction:buyAction];
 		[alert addAction:laterAction];
 		[PhoneMainView.instance presentViewController:alert animated:YES completion:nil];
@@ -534,7 +534,7 @@
 - (void) check{
 	if (!_available) return;
 	if (expiryTime == 0 || checkPeriod == 0) return;
-	
+
 	time_t now = time(NULL);
 
 	if (now < lastCheck + checkPeriod) return;

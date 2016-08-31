@@ -19,17 +19,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ShopTableView.h"
 #import "UICompositeView.h"
 
-@interface ShopView : TPMultiLayoutViewController <UICompositeViewDelegate>
+@interface ShopView : UIViewController <UICompositeViewDelegate>
 
-@property(weak, nonatomic) IBOutlet UILabel *accountProductTitle;
-@property(weak, nonatomic) IBOutlet UILabel *accountProductDescription;
-@property(weak, nonatomic) IBOutlet UILabel *accountProductPrice;
-@property(weak, nonatomic) IBOutlet UIButton *accountBuyButton;
-
-- (IBAction)onLinkTap:(id)sender;
+@property(strong, nonatomic) IBOutlet ShopTableView *tableViewController;
 - (IBAction)onDialerBackClick:(id)sender;
-- (IBAction)onPurchaseButtonClick:(id)sender;
 
 @end
