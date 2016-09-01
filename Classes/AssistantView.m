@@ -692,7 +692,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (NSString *)stringForError:(const char *)err {
++ (NSString *)StringForXMLRPCError:(const char *)err {
 #define IS(x) (strcmp(err, #x) == 0)
 	if
 		IS(ERROR_ACCOUNT_ALREADY_ACTIVATED)
@@ -727,18 +727,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if
 		IS(ERROR_PHONE_ISNT_E164)
 	return NSLocalizedString(@"Your phone number is invalid.", nil);
+	if
+		IS(ERROR_CANNOT_SEND_SMS)
+	return NSLocalizedString(@"Server error, please try again later.", nil);
 
 	if (!linphone_core_is_network_reachable(LC))
 		return NSLocalizedString(@"There is no network connection available, enable "
-								 @"WIFI or WWAN prior to configure an account",
+								 @"WIFI or WWAN prior to configure an account.",
 								 nil);
 
-	return NSLocalizedString(@"Unknown error, please try again later", nil);
+	return NSLocalizedString(@"Unknown error, please try again later.", nil);
 }
 
 - (void)showErrorPopup:(const char *)err {
 	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account configuration issue", nil)
-														message:[self stringForError:err]
+														message:[self.class StringForXMLRPCError:err]
 													   delegate:nil
 											  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 											  otherButtonTitles:nil, nil];

@@ -113,55 +113,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - popup
 
-- (NSString *)stringForError:(const char *)err {
-#define IS(x) (err && (strcmp(err, #x) == 0))
-	if
-		IS(ERROR_ACCOUNT_ALREADY_ACTIVATED)
-	return NSLocalizedString(@"This account is already activated.", nil);
-	if
-		IS(ERROR_ACCOUNT_ALREADY_IN_USE)
-	return NSLocalizedString(@"This account is already in use.", nil);
-	if
-		IS(ERROR_ACCOUNT_DOESNT_EXIST)
-	return NSLocalizedString(@"This account does not exist.", nil);
-	if
-		IS(ERROR_ACCOUNT_NOT_ACTIVATED)
-	return NSLocalizedString(@"This account is not activated yet.", nil);
-	if
-		IS(ERROR_ALIAS_ALREADY_IN_USE)
-	return NSLocalizedString(@"This alias is already used.", nil);
-	if
-		IS(ERROR_ALIAS_DOESNT_EXIST)
-	return NSLocalizedString(@"This alias does not exist.", nil);
-	if
-		IS(ERROR_EMAIL_ALREADY_IN_USE)
-	return NSLocalizedString(@"This email address is already used.", nil);
-	if
-		IS(ERROR_EMAIL_DOESNT_EXIST)
-	return NSLocalizedString(@"This email does not exist.", nil);
-	if
-		IS(ERROR_KEY_DOESNT_MATCH)
-	return NSLocalizedString(@"The confirmation code is invalid.", nil);
-	if
-		IS(ERROR_PASSWORD_DOESNT_MATCH)
-	return NSLocalizedString(@"Passwords do not match.", nil);
-	if
-		IS(ERROR_PHONE_ISNT_E164)
-	return NSLocalizedString(@"Your phone number is invalid.", nil);
-
-	if (!linphone_core_is_network_reachable(LC))
-		return NSLocalizedString(@"There is no network connection available, enable "
-								 @"WIFI or WWAN prior to configure an account",
-								 nil);
-
-	if (err)
-		LOGW(@"Unhandled error %s", err);
-	return NSLocalizedString(@"Unknown error, please try again later", nil);
-}
-
 - (void)showErrorPopup:(const char *)err {
 	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account configuration issue", nil)
-														message:[self stringForError:err]
+														message:[AssistantView StringForXMLRPCError:err]
 													   delegate:nil
 											  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 											  otherButtonTitles:nil, nil];

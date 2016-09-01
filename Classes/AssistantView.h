@@ -61,6 +61,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;
 
 + (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status;
++ (NSString *)StringForXMLRPCError:(const char *)err;
 
 - (void)reset;
 - (void)fillDefaultValues;
