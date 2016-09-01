@@ -76,7 +76,7 @@ endif
 
 
 linphone_LDADD=	$(top_builddir)/coreapi/liblinphone.la \
-		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS) $(BELLESIP_LIBS)
+		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS) $(BELLESIP_LIBS) $(BCTOOLBOX_LIBS)
 
 
 if BUILD_WIN32
@@ -105,8 +105,9 @@ AM_CPPFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ -I$(top_builddir)/coreapi/ \
 		$(ORTP_CFLAGS) $(BELLESIP_CFLAGS) \
 		$(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
 		$(TUNNEL_CFLAGS) \
-		$(SQLITE3_CFLAGS)
-
+		$(SQLITE3_CFLAGS) \
+		$(BCTOOLBOX_CFLAGS)
+		
 version_date.h: $(top_srcdir)/configure.ac
 	echo "#define LINPHONE_VERSION_DATE \"$(VERSION)-`date +%y%m%d`\"" > $@
 

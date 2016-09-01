@@ -158,6 +158,11 @@ AC_SUBST([GETTEXT_PACKAGE])
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The name of the gettext package name])
 dnl AC_CHECK_LIB(intl,libintl_gettext)
 
+PKG_CHECK_MODULES(BCTOOLBOX, bctoolbox, [found_bctoolbox=yes],[found_bctoolbox=no])
+if test "x$found_bctoolbox" != "xyes" ; then
+	AC_MSG_ERROR(["Could not find bctoolbox (required dependency)"])
+fi
+
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
 AC_ARG_ENABLE(x11,
