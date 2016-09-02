@@ -10,6 +10,14 @@
 
 @implementation ShopTableView
 
+- (void)viewDidLoad {
+	[super viewDidLoad];
+
+	// remove separators between empty items, cf
+	// http://stackoverflow.com/questions/1633966/can-i-force-a-uitableview-to-hide-the-separator-between-empty-cells
+	self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
