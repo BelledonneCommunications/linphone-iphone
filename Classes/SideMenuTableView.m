@@ -34,10 +34,10 @@
 	// remove separators between empty items, cf
 	// http://stackoverflow.com/questions/1633966/can-i-force-a-uitableview-to-hide-the-separator-between-empty-cells
 	self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-	//}
+}
 
-	//- (void)viewWillAppear:(BOOL)animated {
-	//	[super viewWillAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 
 	_sideMenuEntries = [[NSMutableArray alloc] init];
 
