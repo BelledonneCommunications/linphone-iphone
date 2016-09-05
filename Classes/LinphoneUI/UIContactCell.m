@@ -43,14 +43,31 @@
 			frame.origin.x -= frame.size.width / 2;
 			_linphoneImage.frame = frame;
 		}
+
+		[NSNotificationCenter.defaultCenter addObserver:self
+											   selector:@selector(onPresenceChanged:)
+												   name:kLinphoneNotifyPresenceReceivedForUriOrTel
+												 object:nil];
 	}
 	return self;
+}
+
+#pragma mark - Notif
+
+- (void)onPresenceChanged:(NSNotification *)k {
+	LinphoneFriend *f = [[k.userInfo valueForKey:@"friend"] pointerValue];
+	// only consider event if it's about us
+	if (!_contact.friend || f != _contact.friend) {
+		return;
+	}
+	[self setContact:_contact];
 }
 
 #pragma mark - Property Functions
 
 - (void)setContact:(Contact *)acontact {
 	_contact = acontact;
+
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 	_linphoneImage.hidden = ! (_contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(_contact.friend)) == LinphonePresenceBasicStatusOpen);
 }

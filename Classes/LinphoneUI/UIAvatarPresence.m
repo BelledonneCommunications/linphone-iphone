@@ -13,7 +13,7 @@
 INIT_WITH_COMMON_CF {
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(onPresenceChanged:)
-											   name:kLinphoneNotifyPresenceReceived
+											   name:kLinphoneNotifyPresenceReceivedForUriOrTel
 											 object:nil];
 
 	if (!_presenceImage) {
@@ -46,8 +46,7 @@ INIT_WITH_COMMON_CF {
 - (void)onPresenceChanged:(NSNotification *)k {
 	LinphoneFriend *f = [[k.userInfo valueForKey:@"friend"] pointerValue];
 	// only consider event if it's about us
-	if (!_friend ||
-		!linphone_address_weak_equal(linphone_friend_get_address(f), linphone_friend_get_address(_friend))) {
+	if (!_friend || f != _friend) {
 		return;
 	}
 	[self updatePresenceImage];

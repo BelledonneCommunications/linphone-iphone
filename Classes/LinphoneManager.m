@@ -66,7 +66,7 @@ NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvaila
 NSString *const kLinphoneConfiguringStateUpdate = @"LinphoneConfiguringStateUpdate";
 NSString *const kLinphoneGlobalStateUpdate = @"LinphoneGlobalStateUpdate";
 NSString *const kLinphoneNotifyReceived = @"LinphoneNotifyReceived";
-NSString *const kLinphoneNotifyPresenceReceived = @"LinphoneNotifyPresenceReceived";
+NSString *const kLinphoneNotifyPresenceReceivedForUriOrTel = @"LinphoneNotifyPresenceReceivedForUriOrTel";
 NSString *const kLinphoneCallEncryptionChanged = @"LinphoneCallEncryptionChanged";
 NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpdate";
 NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
@@ -1066,15 +1066,27 @@ static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev
 																		  content:body];
 }
 
-- (void)onNotifyPresenceReceived:(LinphoneCore *)lc friend:(LinphoneFriend *)lf {
+- (void)onNotifyPresenceReceivedForUriOrTel:(LinphoneCore *)lc
+									 friend:(LinphoneFriend *)lf
+										uri:(const char *)uri
+							  presenceModel:(const LinphonePresenceModel *)model {
 	// Post event
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 	[dict setObject:[NSValue valueWithPointer:lf] forKey:@"friend"];
-	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneNotifyPresenceReceived object:self userInfo:dict];
+	[dict setObject:[NSValue valueWithPointer:uri] forKey:@"uri"];
+	[dict setObject:[NSValue valueWithPointer:model] forKey:@"presence_model"];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneNotifyPresenceReceivedForUriOrTel
+													  object:self
+													userInfo:dict];
 }
 
-static void linphone_iphone_notify_presence_received(LinphoneCore *lc, LinphoneFriend *lf) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onNotifyPresenceReceived:lc friend:lf];
+static void linphone_iphone_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf,
+																	const char *uri_or_tel,
+																	const LinphonePresenceModel *presence_model) {
+	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onNotifyPresenceReceivedForUriOrTel:lc
+																							  friend:lf
+																								 uri:uri_or_tel
+																					   presenceModel:presence_model];
 }
 
 static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on,
@@ -1362,11 +1374,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 static LinphoneCoreVTable linphonec_vtable = {
 	.call_state_changed = (LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
 	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_presence_received = linphone_iphone_notify_presence_received,
-	.new_subscription_requested = NULL,
+	.notify_presence_received_for_uri_or_tel = linphone_iphone_notify_presence_received_for_uri_or_tel,
 	.auth_info_requested = linphone_iphone_popup_password_request,
 	.message_received = linphone_iphone_message_received,
-	.dtmf_received = NULL,
 	.transfer_state_changed = linphone_iphone_transfer_state_changed,
 	.is_composing_received = linphone_iphone_is_composing_received,
 	.configuring_status = linphone_iphone_configuring_status_changed,

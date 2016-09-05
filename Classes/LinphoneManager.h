@@ -50,7 +50,7 @@ extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 extern NSString *const kLinphoneConfiguringStateUpdate;
 extern NSString *const kLinphoneGlobalStateUpdate;
 extern NSString *const kLinphoneNotifyReceived;
-extern NSString *const kLinphoneNotifyPresenceReceived;
+extern NSString *const kLinphoneNotifyPresenceReceivedForUriOrTel;
 extern NSString *const kLinphoneCallEncryptionChanged;
 extern NSString *const kLinphoneFileTransferSendUpdate;
 extern NSString *const kLinphoneFileTransferRecvUpdate;

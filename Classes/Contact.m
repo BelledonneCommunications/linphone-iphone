@@ -57,8 +57,9 @@
 				linphone_friend_add_phone_number(_friend, phone.UTF8String);
 #endif
 			}
-			if (_friend)
+			if (_friend) {
 				linphone_core_add_friend(LC, _friend);
+			}
 		}
 		linphone_friend_ref(_friend);
 	} else if (_friend) {
