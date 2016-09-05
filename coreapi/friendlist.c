@@ -320,7 +320,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 					LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(iterator);
 					char *uri = linphone_address_as_string_uri_only(addr);
 					const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lf, uri);
-					linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, uri, presence);
+					if (presence) linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, uri, presence);
 					ms_free(uri);
 					iterator = bctbx_list_next(iterator);
 				}
@@ -329,7 +329,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 				while (iterator) {
 					const char *number = (const char *)bctbx_list_get_data(iterator);
 					const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lf, number);
-					linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, number, presence);
+					if (presence) linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, number, presence);
 					iterator = bctbx_list_next(iterator);
 				}
 				if (numbers) bctbx_list_free(numbers);

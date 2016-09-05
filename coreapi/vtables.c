@@ -69,13 +69,10 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 #define NOTIFY_IF_EXIST_INTERNAL(function_name, internal_val, ...) \
 	bctbx_list_t* iterator; \
 	VTableReference *ref; \
-	bool_t has_cb = FALSE; \
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
 		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name && (ref->internal == internal_val)) {\
 			lc->current_vtable->function_name(__VA_ARGS__);\
-			has_cb = TRUE;\
 		}\
-	if (has_cb) ms_message("Linphone core [%p] notifying [%s]",lc,#function_name)
 
 void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
 	NOTIFY_IF_EXIST(global_state_changed,lc,gstate,message);
