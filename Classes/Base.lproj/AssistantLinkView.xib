@@ -30,7 +30,7 @@
                     <subviews>
                         <view tag="2" contentMode="scaleToFill" id="c7I-Cv-d4R" userLabel="topBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="q79-qx-kgb" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
@@ -59,13 +59,13 @@
                                 </label>
                             </subviews>
                         </view>
-                        <view contentMode="scaleToFill" id="ImD-Y4-3nC" userLabel="linkAccountView">
+                        <view hidden="YES" contentMode="scaleToFill" id="ImD-Y4-3nC" userLabel="linkAccountView">
                             <rect key="frame" x="0.0" y="66" width="375" height="535"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="LINK YOUR ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="0xQ-6c-cAc" userLabel="titleLabel">
                                     <rect key="frame" x="38" y="0.0" width="299" height="59"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
                                     <color key="textColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="calibratedRGB"/>
@@ -74,7 +74,7 @@
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Please enter your phone number below" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="RQz-tT-5vp" userLabel="subtitleLabel">
                                     <rect key="frame" x="38" y="66" width="299" height="29"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -83,15 +83,14 @@
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="v2Q-jf-BdL" userLabel="phoneLabel">
                                     <rect key="frame" x="38" y="131" width="171" height="14"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="rLT-uU-cJS" userLabel="countryButton">
+                                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="rLT-uU-cJS" userLabel="countryButton" customClass="UIRoundBorderedButton">
                                     <rect key="frame" x="38" y="153" width="299" height="30"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <state key="normal" title="Select your country">
                                         <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
@@ -102,7 +101,7 @@
                                 </button>
                                 <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" id="DBr-NA-Ibx" userLabel="countryCodeField">
                                     <rect key="frame" x="38" y="190" width="54" height="30"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
@@ -113,7 +112,7 @@
                                 </textField>
                                 <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" id="cEN-WO-5qv" userLabel="phoneField">
                                     <rect key="frame" x="95" y="190" width="242" height="30"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
                                     <accessibility key="accessibilityConfiguration" label="Username"/>
                                     <color key="textColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="calibratedRGB"/>
@@ -122,11 +121,11 @@
                                 </textField>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="9cd-3u-fU5" userLabel="infoButton">
                                     <rect key="frame" x="315" y="127" width="22" height="22"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 </button>
                                 <button opaque="NO" tag="130" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="D25-6f-qRg" userLabel="linkAccountButton" customClass="UIRoundBorderedButton">
                                     <rect key="frame" x="38" y="238" width="299" height="40"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Create account">
                                         <bool key="isElement" value="YES"/>
                                     </accessibility>
@@ -145,13 +144,13 @@
                             </subviews>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
                         </view>
-                        <view hidden="YES" contentMode="scaleToFill" id="2Nl-QG-fTA" userLabel="activateSMSView">
+                        <view contentMode="scaleToFill" id="2Nl-QG-fTA" userLabel="activateSMSView">
                             <rect key="frame" x="0.0" y="66" width="375" height="535"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="LINK YOUR ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="5aj-17-dC2" userLabel="titleLabel">
-                                    <rect key="frame" x="36" y="0.0" width="303" height="59"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <rect key="frame" x="38" y="0.0" width="303" height="59"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
                                     <color key="textColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="calibratedRGB"/>
@@ -159,8 +158,8 @@
                                     <size key="shadowOffset" width="-1" height="-1"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="2/2" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" id="bU8-Tu-9O4" userLabel="subtitleLabel">
-                                    <rect key="frame" x="36" y="66" width="303" height="29"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <rect key="frame" x="38" y="66" width="303" height="29"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -168,8 +167,8 @@
                                     <size key="shadowOffset" width="-1" height="-1"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="ACTIVATE YOUR ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="CJI-8t-QIh" userLabel="activateLabel">
-                                    <rect key="frame" x="36" y="131" width="303" height="59"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <rect key="frame" x="38" y="131" width="303" height="59"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -177,23 +176,31 @@
                                     <size key="shadowOffset" width="-1" height="-1"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="We sent you a SMS, please check your messages and enter the 4 digits code below:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" id="Dvq-wa-3k8" userLabel="activateDescLabel">
-                                    <rect key="frame" x="36" y="192" width="303" height="96"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <rect key="frame" x="38" y="192" width="303" height="96"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                     <size key="shadowOffset" width="-1" height="-1"/>
                                 </label>
-                                <textField opaque="NO" clipsSubviews="YES" tag="108" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Activation code" textAlignment="center" minimumFontSize="17" clearButtonMode="always" id="PXL-cl-haZ" userLabel="activationCodeField">
-                                    <rect key="frame" x="38" y="265" width="299" height="59"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ACTIVATION CODE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="h0Z-ct-Dri" userLabel="activationCodeLabel">
+                                    <rect key="frame" x="38" y="275" width="303" height="14"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" clipsSubviews="YES" tag="108" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" clearButtonMode="always" id="PXL-cl-haZ" userLabel="activationCodeField">
+                                    <rect key="frame" x="38" y="297" width="303" height="30"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done"/>
                                 </textField>
                                 <button opaque="NO" tag="130" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="bIM-bh-Huy" userLabel="checkValidationButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="36" y="332" width="299" height="40"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <rect key="frame" x="38" y="335" width="303" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Finish configuration">
                                         <bool key="isElement" value="YES"/>
                                     </accessibility>

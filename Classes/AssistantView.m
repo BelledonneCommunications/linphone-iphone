@@ -358,7 +358,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self fitContent];
 
 	// also force next button alignement on create account page
-	if ([self findView:ViewElement_PhoneButton inView:currentView ofType:UIButton.class]) {
+	if ([self findView:ViewElement_PhoneButton inView:currentView ofType:UIRoundBorderedButton.class]) {
 		CTTelephonyNetworkInfo *networkInfo = [CTTelephonyNetworkInfo new];
 		CTCarrier *carrier = networkInfo.subscriberCellularProvider;
 		NSDictionary *country = [CountryListView countryWithIso:carrier.isoCountryCode];
@@ -384,12 +384,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		[self onFormSwitchToggle:nil];
 	}
-
-	UIButton *countryButton = [self findButton:ViewElement_PhoneButton];
-	countryButton.layer.borderWidth = .8;
-	countryButton.layer.borderColor = countryButton.backgroundColor.CGColor;
-	countryButton.layer.cornerRadius = 4.f;
-	countryButton.layer.masksToBounds = YES;
 
 	// every UITextField subviews with phone keyboard must be tweaked to have a done button
 	[self addDoneButtonRecursivelyInView:self.view];
@@ -620,8 +614,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneRegistrationOk: {
 			_waitView.hidden = true;
 
-			[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970
-											  forKey:@"must_link_account_time"];
+			[LinphoneManager.instance
+				lpConfigSetInt:[NSDate new].timeIntervalSince1970 +
+							   [LinphoneManager.instance lpConfigIntForKey:@"link_account_popup_time" withDefault:84200]
+						forKey:@"must_link_account_time"];
 			[PhoneMainView.instance popToView:_outgoingView];
 			break;
 		}
@@ -1039,8 +1035,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	emailView.hidden = !emailSwitch.isOn;
 
 	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
-	UIButton *phoneButton =
-		(UIButton *)[self findView:ViewElement_PhoneButton inView:currentView ofType:UIButton.class];
+	UIRoundBorderedButton *phoneButton = [self findButton:ViewElement_PhoneButton];
 	usernameSwitch.enabled = phoneButton.enabled = countryCodeField.enabled = countryCodeField.userInteractionEnabled =
 		[self findTextField:ViewElement_Phone].userInteractionEnabled = [self findTextField:ViewElement_Phone].enabled =
 			!emailSwitch.isOn;
@@ -1075,8 +1070,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
 	NSDictionary *c = [CountryListView countryWithCountryCode:countryCodeField.text];
 	if (c || force) {
-		UIButton *phoneButton =
-			(UIButton *)[self findView:ViewElement_PhoneButton inView:currentView ofType:UIButton.class];
+		UIRoundBorderedButton *phoneButton = [self findButton:ViewElement_PhoneButton];
 		[phoneButton setTitle:c ? [c objectForKey:@"name"] : NSLocalizedString(@"Unknown country code", nil)
 					 forState:UIControlStateNormal];
 	}
@@ -1122,8 +1116,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 #pragma mark - select country delegate
 
 - (void)didSelectCountry:(NSDictionary *)country{
-	UIButton *phoneButton =
-		(UIButton *)[self findView:ViewElement_PhoneButton inView:currentView ofType:UIButton.class];
+	UIRoundBorderedButton *phoneButton = [self findButton:ViewElement_PhoneButton];
 	[phoneButton setTitle:[country objectForKey:@"name"] forState:UIControlStateNormal];
 	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
 	countryCodeField.text = countryCodeField.lastText = [country objectForKey:@"code"];

@@ -186,9 +186,8 @@
                     <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uol-lZ-FNd" userLabel="countryButton">
+                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uol-lZ-FNd" userLabel="countryButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="38" y="153" width="299" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="pz8-ke-WQV"/>
                     </constraints>
@@ -738,7 +737,7 @@ Once it is done, come back here and click on the button.</string>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZFh-2U-bBK" userLabel="phoneLabel">
-                    <rect key="frame" x="52" y="85" width="270" height="14"/>
+                    <rect key="frame" x="38" y="85" width="284" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="jfy-9g-AaO"/>
                     </constraints>
@@ -746,9 +745,8 @@ Once it is done, come back here and click on the button.</string>
                     <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oMl-dS-AW7" userLabel="countryButton">
+                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oMl-dS-AW7" userLabel="countryButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="38" y="107" width="299" height="30"/>
-                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="X9C-Ll-LuK"/>
                     </constraints>
@@ -1003,7 +1001,7 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="Pcj-jL-x9P" firstAttribute="trailing" secondItem="FQZ-mw-ibB" secondAttribute="trailing" id="GDt-xd-skH"/>
                 <constraint firstItem="DCj-jV-PVG" firstAttribute="top" secondItem="1K4-Nb-b3J" secondAttribute="bottom" constant="8" symbolic="YES" id="Gfb-6Z-k1X"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="leading" secondItem="iEA-YK-kua" secondAttribute="leading" id="ITR-1w-nYG"/>
-                <constraint firstItem="ZFh-2U-bBK" firstAttribute="leading" secondItem="oMl-dS-AW7" secondAttribute="leading" constant="14" id="J1d-X0-lKU"/>
+                <constraint firstItem="ZFh-2U-bBK" firstAttribute="leading" secondItem="oMl-dS-AW7" secondAttribute="leading" id="J1d-X0-lKU"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="leading" secondItem="52" secondAttribute="leading" constant="38" id="Jam-Rx-a0C"/>
                 <constraint firstItem="eIr-bh-JLB" firstAttribute="leading" secondItem="4n3-ZD-KVi" secondAttribute="leading" id="KNU-0r-vXb"/>
                 <constraint firstAttribute="bottom" secondItem="eIr-bh-JLB" secondAttribute="bottom" constant="20" id="Lf5-ds-Ht5"/>
@@ -1017,7 +1015,7 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="DCj-jV-PVG" firstAttribute="top" secondItem="TXA-w5-uUE" secondAttribute="bottom" constant="8" symbolic="YES" id="an4-7v-Q7N"/>
                 <constraint firstItem="FQZ-mw-ibB" firstAttribute="leading" secondItem="TXA-w5-uUE" secondAttribute="leading" id="eDe-L9-1E7"/>
                 <constraint firstItem="FQZ-mw-ibB" firstAttribute="centerX" secondItem="DCj-jV-PVG" secondAttribute="centerX" id="fC3-C2-meT"/>
-                <constraint firstItem="4n3-ZD-KVi" firstAttribute="centerX" secondItem="ZFh-2U-bBK" secondAttribute="centerX" id="fyO-c3-bn4"/>
+                <constraint firstItem="4n3-ZD-KVi" firstAttribute="centerX" secondItem="ZFh-2U-bBK" secondAttribute="centerX" constant="7" id="fyO-c3-bn4"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="trailing" secondItem="Pcj-jL-x9P" secondAttribute="trailing" id="jhv-gC-ecD"/>
                 <constraint firstItem="4n3-ZD-KVi" firstAttribute="top" secondItem="LbS-op-QAh" secondAttribute="bottom" constant="7" id="k0S-Jb-iEo"/>
                 <constraint firstItem="iEA-YK-kua" firstAttribute="bottom" secondItem="Pcj-jL-x9P" secondAttribute="bottom" id="nO5-GD-225"/>
