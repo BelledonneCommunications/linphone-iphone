@@ -133,7 +133,9 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 				add = (contact.emails.count > 0);
 			}
 
-			NSMutableString *name = [[NSMutableString alloc] initWithString:[self displayNameForContact:contact]];
+			NSMutableString *name = [self displayNameForContact:contact]
+										? [[NSMutableString alloc] initWithString:[self displayNameForContact:contact]]
+										: nil;
 			if (add && name != nil) {
 				NSString *firstChar = [[name substringToIndex:1] uppercaseString];
 
