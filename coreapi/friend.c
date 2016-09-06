@@ -285,8 +285,8 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 	if (linphone_core_vcard_supported()) {
 		char *address;
 		if (!lf->vcard) {
-			const char *username = linphone_address_get_username(fr);
-			linphone_friend_create_vcard(lf, username);
+			const char *dpname = linphone_address_get_display_name(fr) ? linphone_address_get_display_name(fr) : linphone_address_get_username(fr);
+			linphone_friend_create_vcard(lf, dpname);
 		}
 		address = linphone_address_as_string_uri_only(fr);
 		linphone_vcard_edit_main_sip_address(lf->vcard, address);
@@ -1150,7 +1150,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 	// Currently presence takes too much time when dealing with hundreds of friends, so I disabled it for now
 	fr->pol = LinphoneSPDeny;
 	fr->subscribe = FALSE;
-	fr->vcard = vcard;
+	linphone_friend_set_vcard(fr, vcard);
 	return fr;
 }
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
@@ -1556,6 +1556,7 @@ bctbx_list_t* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFrie
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
 		lf->lc = lc;
 		lf->friend_list = list;
+		linphone_friend_save(lf, lc); /* required if we freshly created vcard but core was not set at this time */
 	}
 	linphone_vcard_context_set_user_data(lc->vcard_context, NULL);
 

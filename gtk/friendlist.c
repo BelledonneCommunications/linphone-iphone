@@ -645,8 +645,8 @@ static int friend_compare_func(const LinphoneFriend *lf1, const LinphoneFriend *
 		if ((addr1 == NULL) && (addr2 == NULL)) return 0;
 		if ((addr1 == NULL) && (addr2 != NULL)) return -1;
 		if ((addr1 != NULL) && (addr2 == NULL)) return 1;
-		u1=linphone_address_get_display_name(addr1) ? linphone_address_get_display_name(addr1) : linphone_address_get_username(addr1);
-		u2=linphone_address_get_display_name(addr2) ? linphone_address_get_display_name(addr2) : linphone_address_get_username(addr2);
+		u1=linphone_friend_get_name(lf1) ? linphone_friend_get_name(lf1) : linphone_address_get_display_name(addr1) ? linphone_address_get_display_name(addr1) : linphone_address_get_username(addr1);
+		u2=linphone_friend_get_name(lf2) ? linphone_friend_get_name(lf2) :linphone_address_get_display_name(addr2) ? linphone_address_get_display_name(addr2) : linphone_address_get_username(addr2);
 		if (u1 && u2) {
 			ret = strcasecmp(u1,u2);
 		} else if (u1) {
