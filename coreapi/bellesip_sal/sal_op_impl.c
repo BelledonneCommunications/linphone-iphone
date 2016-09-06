@@ -821,3 +821,26 @@ void sal_op_set_event(SalOp *op, const char *eventname){
 	}
 	op->event = header;
 }
+
+const char* sal_op_get_public_address(SalOp *op, int *port) {
+	if (op && op->refresher) {
+		return belle_sip_refresher_get_public_address(op->refresher, port);
+	}
+	return NULL;
+}
+
+const char* sal_op_get_local_address(SalOp *op, int *port) {
+	if (op && op->refresher) {
+		return belle_sip_refresher_get_local_address(op->refresher, port);
+	}
+	return NULL;
+}
+
+char* sal_op_get_dialog_id(const SalOp *op) {
+	if (op->dialog != NULL) {
+		return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", ((SalOpBase*)op)->call_id,
+			belle_sip_dialog_get_remote_tag(op->dialog), belle_sip_dialog_get_local_tag(op->dialog));
+	}
+	return NULL;
+}
+

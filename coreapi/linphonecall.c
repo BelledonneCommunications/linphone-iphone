@@ -1048,13 +1048,44 @@ static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, Linphon
  * Fill the local ip that routes to the internet according to the destination, or guess it by other special means (upnp).
  */
 static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress *remote_addr){
-	const char *ip;
+	const char *ip = NULL;
 	int af = call->af;
 	const char *dest = NULL;
+	
+	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
+		&& (ip=linphone_core_get_nat_address_resolved(call->core))!=NULL){
+		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
+		return;
+	}
+#ifdef BUILD_UPNP
+	else if (call->core->upnp != NULL && linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(call->core->upnp) == LinphoneUpnpStateOk) {
+		ip = linphone_upnp_context_get_external_ipaddress(call->core->upnp);
+		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
+		goto found;
+	}
+#endif //BUILD_UPNP
+
+	/*next, sometime, override from config*/
+	if ((ip=lp_config_get_string(call->core->config,"rtp","bind_address",NULL)) != NULL)
+		goto found;
+
+	/*if a known proxy was identified for this call, then we may have a chance to take the local ip address
+	* from the socket that connect to this proxy */
+	if (call->dest_proxy && call->dest_proxy->op){
+		if ((ip = sal_op_get_local_address(call->dest_proxy->op, NULL)) != NULL){
+			ms_message("Found media local-ip from signaling.");
+			goto found;
+		}
+	}
+
+	/*in last resort, attempt to find the local ip that routes to destination if given as an IP address,
+	 or the default route (dest=NULL)*/
 	if (call->dest_proxy == NULL) {
 		struct addrinfo hints;
 		struct addrinfo *res = NULL;
 		int err;
+		/*FIXME the following doesn't work for IPv6 address because of brakets*/
 		const char *domain = linphone_address_get_domain(remote_addr);
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_family = AF_UNSPEC;
@@ -1066,27 +1097,11 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 		}
 		if (res != NULL) freeaddrinfo(res);
 	}
-	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
-		&& (ip=linphone_core_get_nat_address_resolved(call->core))!=NULL){
-		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
-		return;
-	}
-#ifdef BUILD_UPNP
-	else if (call->core->upnp != NULL && linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseUpnp &&
-			linphone_upnp_context_get_state(call->core->upnp) == LinphoneUpnpStateOk) {
-		ip = linphone_upnp_context_get_external_ipaddress(call->core->upnp);
-		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
-		return;
-	}
-#endif //BUILD_UPNP
-	/*first nominal use case*/
+	/*the following cannot fail and puts result directly in media_localip*/
 	linphone_core_get_local_ip(call->core, af, dest, call->media_localip);
-
-	/*next, sometime, override from config*/
-	if ((ip=lp_config_get_string(call->core->config,"rtp","bind_address",NULL)))
-		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
-
 	return;
+found:
+	strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
 }
 
 static void linphone_call_destroy(LinphoneCall *obj);
@@ -1140,6 +1155,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
+	call->dest_proxy=cfg;
 	linphone_call_outgoing_select_ip_version(call,to,cfg);
 	linphone_call_get_local_ip(call, to);
 	call->params = linphone_call_params_copy(params);
@@ -1166,7 +1182,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (params->referer){
 		call->referer=linphone_call_ref(params->referer);
 	}
-	call->dest_proxy=cfg;
+	
 	linphone_call_create_op(call);
 	return call;
 }

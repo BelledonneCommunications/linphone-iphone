@@ -37,10 +37,10 @@
 #include "ringtoneplayer.h"
 #include "vcard.h"
 
-#include <bctoolbox/port.h>
-#include <bctoolbox/vfs.h>
-#include <belle-sip/object.h>
-#include <belle-sip/dict.h>
+#include "bctoolbox/port.h"
+#include "bctoolbox/vfs.h"
+#include "belle-sip/belle-sip.h" /*we need this include for all http operations*/
+
 
 #include <ctype.h>
 

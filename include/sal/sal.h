@@ -32,7 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "mediastreamer2/mediastream.h"
 #include "ortp/rtpsession.h"
-#include "belle-sip/belle-sip.h"
+#include "belle-sip/object.h"
+#include "belle-sip/mainloop.h"
 
 #ifndef LINPHONE_PUBLIC
 	#define LINPHONE_PUBLIC MS2_PUBLIC
@@ -906,8 +907,9 @@ const char * sal_body_handler_get_header(const SalBodyHandler *body_handler, con
 /*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
 
-LINPHONE_PUBLIC belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
-char* sal_op_get_public_uri(SalOp *sal);
+LINPHONE_PUBLIC void *sal_get_stack_impl(Sal *sal);
+const char* sal_op_get_public_address(SalOp *sal, int *port);
+const char* sal_op_get_local_address(SalOp *sal, int *port);
 
 unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data);
 void sal_end_background_task(unsigned long id);

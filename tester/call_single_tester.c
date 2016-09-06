@@ -595,7 +595,7 @@ static void call_with_timeouted_bye(void) {
 	timer_config.T3=0;
 	timer_config.T4=5000;
 
-	belle_sip_stack_set_timer_config(sal_get_belle_sip_stack(pauline->lc->sal),&timer_config);
+	belle_sip_stack_set_timer_config(sal_get_stack_impl(pauline->lc->sal),&timer_config);
 	linphone_core_terminate_all_calls(pauline->lc);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
