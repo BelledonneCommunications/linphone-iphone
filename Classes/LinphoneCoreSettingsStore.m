@@ -327,7 +327,7 @@
 			if (minPort != maxPort)
 				[self setObject:[NSString stringWithFormat:@"%d-%d", minPort, maxPort] forKey:@"video_port_preference"];
 			else
-				[self setObject:[NSString stringWithFormat:@"%d", minPort] forKey:@"video_port_preference"];
+				[self setInteger:minPort forKey:@"video_port_preference"];
 		}
 		[self setBool:linphone_core_ipv6_enabled(LC) forKey:@"use_ipv6"];
 		LinphoneMediaEncryption menc = linphone_core_get_media_encryption(LC);

@@ -52,6 +52,10 @@
 	return self;
 }
 
+- (void)dealloc {
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
 #pragma mark - Notif
 
 - (void)onPresenceChanged:(NSNotification *)k {
