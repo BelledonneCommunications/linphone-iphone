@@ -870,7 +870,7 @@ LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *call,char dtmf);
  * @return -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
  * @ingroup call_control
 **/
-LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
+LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,const char *dtmfs);
 
 /**
  * Stop current DTMF sequence sending.

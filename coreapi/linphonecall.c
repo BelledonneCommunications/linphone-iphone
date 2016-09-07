@@ -4843,7 +4843,7 @@ int linphone_call_send_dtmf(LinphoneCall *call,char dtmf){
 	return 0;
 }
 
-int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs) {
+int linphone_call_send_dtmfs(LinphoneCall *call,const char *dtmfs) {
 	if (call==NULL){
 		ms_warning("linphone_call_send_dtmfs(): invalid call, canceling DTMF sequence.");
 		return -1;

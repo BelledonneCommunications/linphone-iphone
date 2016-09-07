@@ -77,6 +77,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native long interpretUrl(long nativePtr,String destination);
 	private native Object inviteAddress(long nativePtr,long to);
 	private native Object inviteAddressWithParams(long nativePtrLc,long to, long nativePtrParam);
+	private native int sendDtmfs(long nativePtr,String dtmf);
 	private native void sendDtmf(long nativePtr,char dtmf);
 	private native void clearCallLogs(long nativePtr);
 	private native boolean isMicMuted(long nativePtr);
@@ -365,6 +366,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		} else {
 			throw new LinphoneCoreException("Unable to invite address " + to.asString());
 		}
+	}
+
+	public synchronized void sendDtmfs(String dtmf) {
+		sendDtmfs(nativePtr, dtmf);
 	}
 
 	public synchronized void sendDtmf(char number) {

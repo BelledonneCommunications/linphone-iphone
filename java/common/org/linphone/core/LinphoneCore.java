@@ -838,6 +838,11 @@ public interface LinphoneCore {
 	boolean isMicMuted();
 
 	/**
+	 * Initiate dtmf if in call
+	 * @param dtmf send dtmf
+	 */
+	void sendDtmfs(String dtmf);
+	/**
 	 * Initiate a dtmf signal if in call
 	 * @param number send dtmf ['0'..'9'] | '#', '*'
 	 */

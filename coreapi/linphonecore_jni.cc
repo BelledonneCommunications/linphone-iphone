@@ -1946,6 +1946,16 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_interpretUrl(	JNIEnv*  
 	ReleaseStringUTFChars(env, jurl, url);
 	return result;
 }
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_sendDtmfs(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jstring dtmf) {
+	int result;
+	const char* dtmfs = GetStringUTFChars(env, dtmf);
+	result = linphone_call_send_dtmfs(linphone_core_get_current_call((LinphoneCore*)lc),dtmfs);
+	ReleaseStringUTFChars(env, dtmf, dtmfs);
+	return result;
+}
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_sendDtmf(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
