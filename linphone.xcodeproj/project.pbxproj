@@ -667,7 +667,6 @@
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
-		D30562161671DC4900C97967 /* libXMLRPC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3554ED115CA79AA00478841 /* libXMLRPC.a */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
 		D31AAF5E159B3919002C6B02 /* CallPausedTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D31AAF5D159B3919002C6B02 /* CallPausedTableView.m */; };
@@ -834,20 +833,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = FAB8A0141CAC546A00C6DFC1;
 			remoteInfo = KIFFrameworkConsumerTests;
-		};
-		D3554ED015CA79AA00478841 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 903B0DB612F7574800BD6E09;
-			remoteInfo = libXMLRPC;
-		};
-		D3554ED415CA79B900478841 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 903B0DB512F7574800BD6E09;
-			remoteInfo = libXMLRPC;
 		};
 		F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1627,7 +1612,6 @@
 		D3549815158761D0000081D8 /* ContactsListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ContactsListTableView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		D354981E1587716B000081D8 /* StatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StatusBarView.h; path = LinphoneUI/StatusBarView.h; sourceTree = "<group>"; };
 		D354981F1587716B000081D8 /* StatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = StatusBarView.m; path = LinphoneUI/StatusBarView.m; sourceTree = "<group>"; };
-		D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XMLRPC.xcodeproj; path = Utils/XMLRPC/XMLRPC.xcodeproj; sourceTree = "<group>"; };
 		D35860D515B549B500513429 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = Utils/Utils.m; sourceTree = "<group>"; };
 		D35E7594159460560066B1C1 /* ChatsListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsListView.h; sourceTree = "<group>"; };
 		D35E7595159460560066B1C1 /* ChatsListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsListView.m; sourceTree = "<group>"; };
@@ -1862,7 +1846,6 @@
 				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
 				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				D30562161671DC4900C97967 /* libXMLRPC.a in Frameworks */,
 				F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */,
 				F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */,
 				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
@@ -2910,21 +2893,12 @@
 				6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */,
 				C9B3A6FD15B485DB006F52EE /* Utils.h */,
 				D35860D515B549B500513429 /* Utils.m */,
-				D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */,
 				63D11C521C3D501200E8FCEE /* Log.m */,
 				63D11C541C3D503A00E8FCEE /* Log.h */,
 				63423C081C4501D000D9A050 /* Contact.h */,
 				63423C091C4501D000D9A050 /* Contact.m */,
 			);
 			name = Utils;
-			sourceTree = "<group>";
-		};
-		D3554EC615CA79A900478841 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D3554ED115CA79AA00478841 /* libXMLRPC.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		D37E3ECA1619C27A0087659A /* CAAnimationBlocks */ = {
@@ -3060,7 +3034,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				D3554ED515CA79B900478841 /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -3180,10 +3153,6 @@
 					ProductGroup = 630589F31B4E816900EFAE36 /* Products */;
 					ProjectRef = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
 				},
-				{
-					ProductGroup = D3554EC615CA79A900478841 /* Products */;
-					ProjectRef = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -3236,13 +3205,6 @@
 			fileType = wrapper.cfbundle;
 			path = KIFFrameworkConsumerTests.xctest;
 			remoteRef = 633FC7C91CD7466400774B8B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		D3554ED115CA79AA00478841 /* libXMLRPC.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libXMLRPC.a;
-			remoteRef = D3554ED015CA79AA00478841 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -3999,11 +3961,6 @@
 			isa = PBXTargetDependency;
 			name = KIF;
 			targetProxy = 63058A4D1B4E832500EFAE36 /* PBXContainerItemProxy */;
-		};
-		D3554ED515CA79B900478841 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = libXMLRPC;
-			targetProxy = D3554ED415CA79B900478841 /* PBXContainerItemProxy */;
 		};
 		F08F119219C09C6B007D70C2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

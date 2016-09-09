@@ -29,11 +29,6 @@
 #import "UIAssistantTextField.h"
 #import "UITextField+DoneButton.h"
 
-#import <XMLRPCConnection.h>
-#import <XMLRPCConnectionManager.h>
-#import <XMLRPCResponse.h>
-#import <XMLRPCRequest.h>
-
 typedef enum _ViewElement {
 	ViewElement_Username = 100,
 	ViewElement_Password = 101,

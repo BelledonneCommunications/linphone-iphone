@@ -259,17 +259,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	_waitView.hidden = NO;
 
-	[XMLRPCHelper GetProvisioningURL:_usernameField.text
-							password:_passwordField.text
-							  domain:_domainField.text
-						   OnSuccess:^(NSString *url) {
-							 if (url) {
-								 linphone_core_set_provisioning_uri(LC, url.UTF8String);
-								 [LinphoneManager.instance resetLinphoneCore];
-							 } else {
-								 _waitView.hidden = YES;
-							 }
-						   }];
+	void (^onSuccesssCallBack)(NSString *) = ^(NSString *url) {
+	  if (url) {
+		  linphone_core_set_provisioning_uri(LC, url.UTF8String);
+		  [LinphoneManager.instance resetLinphoneCore];
+	  } else {
+		  _waitView.hidden = YES;
+	  }
+	};
+
+	[XMLRPCHelper.self sendXMLRPCRequestWithParams:@"get_remote_provisioning_filename"
+										withParams:@[ _usernameField.text, _passwordField.text, _domainField.text ]
+										 onSuccess:onSuccesssCallBack];
 }
 
 #pragma mark - UITextFieldDelegate Functions

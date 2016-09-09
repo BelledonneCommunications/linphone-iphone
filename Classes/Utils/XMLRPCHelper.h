@@ -1,46 +1,27 @@
 //
-//  UrmetXMLRPC.h
-//  IperVoice
+//  XMLRPCHelper.h
+//  Linphone
 //
-//  Created by guillaume on 27/05/2015.
-//  Copyright (c) 2015 Urmet. All rights reserved.
+//  Created by Brieuc on 06/09/2016.
 //
 
-#import <XMLRPCConnection.h>
-#import <XMLRPCConnectionDelegate.h>
-#import <XMLRPCConnectionManager.h>
-#import <XMLRPCResponse.h>
-#import <XMLRPCRequest.h>
-
-@interface XMLRPCHelper : NSObject <XMLRPCConnectionDelegate>
-/* This class is only here to handle XMLRPC responses.
- *
- * The implementation for didReceiveResponse: (XMLRPCResponse *)response will check if the XMLRPC
- * responded 'OK', in which case the view will return to idle, or if there is an error, an
- * Alert will be displayed with the error message.
+@interface XMLRPCHelper : NSObject
+/* This class is only here to handle
  *
  * All the rest is implemented to do nothing
  */
 
-/**
- * Will send the XML request to the 'xmlrpc_url' server that is defined in the 'assistant' section
- * of the linphonerc file.
- * You must implement the - didReceiveResponse method if you are using this.
- */
-- (void)sendXMLRequestMethod:(NSString *)method withParams:(NSArray *)params;
-- (void)sendXMLRequestMethod:(NSString *)method
-				  withParams:(NSArray *)params
-				   onSuccess:(BOOL (^)(XMLRPCResponse *response))block;
-- (void)sendXMLRequestMethod:(NSString *)method
-				  withParams:(NSArray *)params
-				   onSuccess:(BOOL (^)(XMLRPCResponse *response))successBlock
-					 onError:(BOOL (^)(XMLRPCRequest *response))errorBlock;
++ (void)sendXMLRPCRequest:(NSString *)method;
++ (void)sendXMLRPCRequestWithParams:(NSString *)method withParams:(NSArray *)params;
++ (void)sendXMLRPCRequestWithParams:(NSString *)method
+						 withParams:(NSArray *)params
+						  onSuccess:(void (^)(NSString *response))block;
++ (void)sendXMLRPCRequestWithParams:(NSString *)method
+						 withParams:(NSArray *)params
+						  onSuccess:(void (^)(NSString *response))successBlock
+							onError:(void (^)(NSString *response))errorBlock;
 
-// CUSTOM API
-
-+ (void)GetProvisioningURL:(NSString *)username
-				  password:(NSString *)password
-					domain:(NSString *)domain
-				 OnSuccess:(void (^)(NSString *url))onSucess;
+- (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request;
+- (void)displayErrorPopup:(NSString *)error;
 
 @end

@@ -21,20 +21,14 @@
 #import "ShopView.h"
 
 // In app purchase are not supported by the Simulator
-#import <XMLRPCConnection.h>
-#import <XMLRPCConnectionManager.h>
-#import <XMLRPCResponse.h>
-#import <XMLRPCRequest.h>
-
+#import "XMLRPCHelper.h"
 #import "LinphoneManager.h"
-
 #import "PhoneMainView.h"
 
 @interface InAppProductsManager ()
 @property(strong, nonatomic) NSDate *expirationDate;
 @property(strong, nonatomic) NSDictionary *accountCreationData;
-// needed because request:didFailWithError method is already used by SKProductsRequestDelegate...
-@property(nonatomic, strong) InAppProductsXMLRPCDelegate *xmlrpc;
+
 @end
 
 
@@ -64,7 +58,7 @@
 			expiryTime = time(NULL) + testExpiry;
 		}else expiryTime = 0;
 		if (_enabled) {
-			self.xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
+			// self.xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
 			_status = kIAPNotReady;
 			[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 			[self loadProducts];
@@ -138,24 +132,70 @@
 	if (phoneNumber) {
 		NSString *receiptBase64 = [self getReceipt];
 		if (receiptBase64) {
-			NSURL *URL = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"receipt_validation_url"
-																				   inSection:@"in_app_purchase"]];
-			XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
+			// const char *URL = [LinphoneManager.instance lpConfigStringForKey:@"receipt_validation_url"
+			// inSection:@"in_app_purchase"].UTF8String;
+
 			// buying for the first time: need to create the account
 			// if ([transaction.transactionIdentifier
 			// isEqualToString:transaction.originalTransaction.transactionIdentifier]) {
-			[request setMethod:@"activate_account"
-				withParameters:[NSArray arrayWithObjects:@"", phoneNumber, receiptBase64, @"", @"apple", nil]];
+
+			[XMLRPCHelper.self sendXMLRPCRequestWithParams:@"activate_account"
+												withParams:@[ @"", phoneNumber, receiptBase64, @"", @"apple" ]
+												 onSuccess:^(NSString *response) {
+												   if (response) {
+													   [self setAccountBiteActivationInProgress:NO];
+													   LOGI(@"Account activated callback - response: %@", response);
+												   }
+												 }];
+
 			_accountActivationInProgress = YES;
-			XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
-			[manager spawnConnectionWithXMLRPCRequest:request delegate:self.xmlrpc];
-			LOGI(@"XMLRPC query %@", [request method]);
+			LOGI(@"XMLRPC query ");
 			return true;
 		} else {
 			LOGE(@"Trying to activate account but no receipt available yet (probably doing it too soon)");
 		}
 	}
 	return false;
+}
+
+// onError Callback block
+/*- (void)XMLRPCRequest:(LinphoneXmlRpcRequest *)request didFailWithError:(NSError *)error {
+	if (!_enabled)
+		return;
+
+	_available = true;
+
+	if ([[request method] isEqualToString:@"activate_account"]) {
+		_accountActivationInProgress = NO;
+	}
+
+	LOGE(@"Communication issue (%@)", [error localizedDescription]);
+	NSString *errorString =
+ [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
+	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
+														message:errorString
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+											  otherButtonTitles:nil, nil];
+	[errorView show];
+	latestReceiptMD5 = nil;
+	NSDictionary *dict = @{ @"error_msg" : errorString };
+	[self postNotificationforStatus:kIAPReceiptFailed withDict:dict];
+}
+*/
+
+- (void)setAccountBiteActivationInProgress:(BOOL)activationInProgress {
+	_accountActivationInProgress = activationInProgress;
+}
+
+- (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request {
+	LOGI(@"XMLRPC query ");
+	const char *requestContent = linphone_xml_rpc_request_get_content(request);
+	NSString *rContent = [NSString stringWithFormat:@"%s", requestContent];
+	if ([rContent containsString:@"activate_account"]) {
+		_accountActivationInProgress = NO;
+		LOGI(@"Account activated callback");
+	}
 }
 
 - (BOOL)restore {
@@ -277,24 +317,35 @@
 	if (latestReceiptMD5 == nil || ![latestReceiptMD5 isEqualToString:[receiptBase64 md5]]) {
 		// transaction is null when restoring user purchases at application start or if user clicks the "restore" button
 		// We must validate the receipt on our server
-		NSURL *URL = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"receipt_validation_url"
-																			   inSection:@"in_app_purchase"]];
-		XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 		// buying for the first time: need to create the account
 		// if ([transaction.transactionIdentifier
 		// isEqualToString:transaction.originalTransaction.transactionIdentifier]) {
+
 		if (self.accountCreationData.count == 3) {
-			[request setMethod:@"update_expiration_date"
-				withParameters:[NSArray arrayWithObjects:@"", [_accountCreationData objectForKey:@"phoneNumber"],
-														 receiptBase64, @"", @"apple",
-														 [_accountCreationData objectForKey:@"email"], nil]];
-			self.accountCreationData = nil;
-			// otherwise simply renewing
+			NSString *dataPhone = [_accountCreationData objectForKey:@"phoneNumber"];
+			NSString *dataEmail = [_accountCreationData objectForKey:@"email"];
+			[XMLRPCHelper.self
+				sendXMLRPCRequestWithParams:@"activate_account"
+								 withParams:@[ dataPhone, receiptBase64, @"", @"apple", dataEmail ]
+								  onSuccess:^(NSString *response) {
+									if (response) {
+										LOGI(@"create and activate_account  callback - response: %@", response);
+									}
+								  }];
+
+			self.accountCreationData = nil; // otherwise simply renewing
 		} else {
 			if ([[self getPhoneNumber] length] > 0) {
-				[request setMethod:@"update_expiration_date"
-					withParameters:[NSArray
-									   arrayWithObjects:[self getPhoneNumber], receiptBase64, @"", @"apple", nil]];
+				NSString *phoneNumber = [self getPhoneNumber];
+				[XMLRPCHelper.self
+					sendXMLRPCRequestWithParams:@"update_expiration_date"
+									 withParams:@[ phoneNumber, receiptBase64, @"", @"apple" ]
+									  onSuccess:^(NSString *response) {
+										if (response) {
+											LOGI(@"update_expiration_date callback - response: %@", response);
+										}
+									  }];
+
 			} else {
 				LOGW(@"No SIP URI configured, doing nothing");
 				_available = true;
@@ -303,9 +354,7 @@
 		}
 		latestReceiptMD5 = [receiptBase64 md5];
 
-		XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
-		[manager spawnConnectionWithXMLRPCRequest:request delegate:self.xmlrpc];
-		LOGI(@"XMLRPC query %@", [request method]);
+		LOGI(@"XMLRPC query ");
 	} else {
 		LOGW(@"Not checking receipt since it has already been done!");
 		_available = true;
@@ -388,7 +437,9 @@
 	[NSNotificationCenter.defaultCenter postNotificationName:status object:self userInfo:dict];
 }
 
-- (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
+/*
+
+ - (void)XMLRPCRequest:(LinphoneXmlRpcRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
 	if (!_enabled)
 		return;
 
@@ -399,13 +450,13 @@
 	}
 
 	LOGI(@"XMLRPC response %@: %@", [request method], [response body]);
-	NSString *productID =
-		[LinphoneManager.instance lpConfigStringForKey:@"paid_account_id" inSection:@"in_app_purchase"];
+	NSString *productID = [LinphoneManager.instance lpConfigStringForKey:@"paid_account_id"
+ inSection:@"in_app_purchase"];
 
 	// validation succeeded
 	if (![response isFault] && [response object] != nil) {
-		if (([[request method] isEqualToString:@"get_account_expiration"]) ||
-			([[request method] isEqualToString:@"create_account_from_in_app_purchase"])) {
+		if (([[request method] isEqualToString:@"get_account_expiration"]) || ([[request method]
+ isEqualToString:@"create_account_from_in_app_purchase"])) {
 			[_productsIDPurchased removeObject:productID];
 			// response object can either be expiration date (long long number or an error string)
 			double timeinterval = [[response object] doubleValue];
@@ -431,8 +482,8 @@
 				} else if ([error isEqualToString:@"ERROR_UID_ALREADY_IN_USE"]) {
 					errorMsg = NSLocalizedString(@"You already own an account.", nil);
 				} else if ([error isEqualToString:@"ERROR_ACCOUNT_DOESNT_EXIST"]) {
-					errorMsg =
-						NSLocalizedString(@"You have already purchased an account but it does not exist anymore.", nil);
+					errorMsg = NSLocalizedString(@"You have already purchased an account but it does not exist
+ anymore.", nil);
 				} else if ([error isEqualToString:@"ERROR_PURCHASE_CANCELLED"]) {
 					errorMsg = NSLocalizedString(@"You cancelled your account.", nil);
 				} else {
@@ -445,49 +496,49 @@
 	} else {
 		NSString *errorString = NSLocalizedString(@"Unknown error", nil);
 		if ([response isFault]) {
-			errorString =
-				[NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
+			errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response
+ faultString]];
 		} else if ([response object] == nil) {
 			errorString = NSLocalizedString(@"Invalid server response", nil);
 		}
 		LOGE(@"Communication issue (%@)", [response faultString]);
 		UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
-															message:errorString
-														   delegate:nil
-												  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-												  otherButtonTitles:nil, nil];
+			message:errorString
+			delegate:nil
+			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+			otherButtonTitles:nil, nil];
 		[errorView show];
 
 		latestReceiptMD5 = nil;
 		NSDictionary *dict = @{ @"error_msg" : errorString };
 		[self postNotificationforStatus:kIAPPurchaseFailed withDict:dict];
 	}
-}
+ }
 
-- (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
+ - (void)XMLRPCRequest:(LinphoneXmlRpcRequest *)request didFailWithError:(NSError *)error {
 	if (!_enabled)
-		return;
+ return;
 
 	_available = true;
 
 	if ([[request method] isEqualToString:@"activate_account"]) {
-		_accountActivationInProgress = NO;
+ _accountActivationInProgress = NO;
 	}
 
 	LOGE(@"Communication issue (%@)", [error localizedDescription]);
 	NSString *errorString =
-		[NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
+ [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
 	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
-														message:errorString
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-											  otherButtonTitles:nil, nil];
+ message:errorString
+ delegate:nil
+ cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+ otherButtonTitles:nil, nil];
 	[errorView show];
 	latestReceiptMD5 = nil;
 	NSDictionary *dict = @{ @"error_msg" : errorString };
 	[self postNotificationforStatus:kIAPReceiptFailed withDict:dict];
-}
-
+ }
+ */
 - (void) presentNotification:(int64_t) remaining{
 	if (notificationCategory == nil) return;
 	int days = (int)remaining / (3600 * 24);
@@ -511,19 +562,20 @@
 		}
 
 	}else{
-		UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Account expiring"
-																	  message:expireText
-															   preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Account expiring"
+																	   message:expireText
+																preferredStyle:UIAlertControllerStyleAlert];
 
 		UIAlertAction* buyAction = [UIAlertAction actionWithTitle:@"Buy" style:UIAlertActionStyleDefault
 														  handler:^(UIAlertAction * action) {
 															  [PhoneMainView.instance changeCurrentView:ShopView.compositeViewDescription];
 														  }];
 
-		UIAlertAction* laterAction = [UIAlertAction actionWithTitle:@"Later" style:UIAlertActionStyleCancel
-														  handler:^(UIAlertAction * action) {
-															 // [alert dismissViewControllerAnimated:FALSE];
-														  }];
+		UIAlertAction *laterAction = [UIAlertAction actionWithTitle:@"Later"
+															  style:UIAlertActionStyleCancel
+															handler:^(UIAlertAction *action){
+																// [alert dismissViewControllerAnimated:FALSE];
+															}];
 
 		[alert addAction:buyAction];
 		[alert addAction:laterAction];
@@ -574,10 +626,6 @@
 	return FALSE;
 }
 
-- (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-}
-- (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-}
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
 }
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
@@ -586,29 +634,4 @@
 	return FALSE;
 }
 #endif
-@end
-
-@implementation InAppProductsXMLRPCDelegate {
-	InAppProductsManager *iapm;
-}
-
-#pragma mark - XMLRPCConnectionDelegate Functions
-
-- (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-	[[LinphoneManager.instance iapManager] XMLRPCRequest:request didReceiveResponse:response];
-}
-
-- (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-	[[LinphoneManager.instance iapManager] XMLRPCRequest:request didFailWithError:error];
-}
-
-- (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-	return FALSE;
-}
-
-- (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-}
-
-- (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-}
 @end

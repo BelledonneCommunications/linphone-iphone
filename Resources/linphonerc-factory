@@ -23,7 +23,7 @@ username_length=-1
 
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application
-enabled=0
+enabled=1
 
 #specify here the id of the sip account in-app purchase service to be shown in the shop section of the app
 paid_account_id=sipAccount_12m

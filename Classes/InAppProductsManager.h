@@ -19,11 +19,6 @@
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
-#import <XMLRPCConnectionDelegate.h>
-
-@interface InAppProductsXMLRPCDelegate : NSObject <XMLRPCConnectionDelegate>
-
-@end
 
 #define kIAPNotReady @"IAPNotReady"					  // startup status, manager is not ready yet
 #define kIAPReady @"IAPReady"						  // no data
@@ -105,9 +100,7 @@ typedef NSString *IAPPurchaseNotificationStatus;
 //Check if account is about to expire, and if yes launch a notification.
 - (void)check;
 
-// internal API only due to methods conflict
-- (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response;
-// internal API only due to methods conflict
-- (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error;
+// deal with xmlrpc response
+- (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request;
 
 @end

@@ -13,115 +13,91 @@
 #import "XMLRPCHelper.h"
 #import "Utils.h"
 
-/* This subclass allows use to store the block to execute on success */
-@interface BlockXMLRPCRequest : XMLRPCRequest
-@property(copy, nonatomic) BOOL (^successBlock)(XMLRPCResponse *response);
-@property(copy, nonatomic) BOOL (^xmlErrorBlock)(XMLRPCRequest *request);
-@end
-
-@implementation BlockXMLRPCRequest
-@end
 
 @implementation XMLRPCHelper
 
 #pragma mark - API
 
-static XMLRPCHelper *xmlManager = nil;
+typedef void (^XMLRPCHelperBlock)(NSString *something);
 
-+ (XMLRPCHelper *)xml {
-	@synchronized(self) {
-		if (xmlManager == nil) {
-			xmlManager = [[XMLRPCHelper alloc] init];
-		}
-	}
-	return xmlManager;
+XMLRPCHelperBlock successBlock = nil;
+XMLRPCHelperBlock errorBlock = nil;
+
+/*****************************************************************************************/
+
++ (void)sendXMLRPCRequest:(NSString *)method {
+	[self sendXMLRPCRequestWithParams:method withParams:nil onSuccess:nil onError:nil];
 }
 
-- (void)sendXMLRequestMethod:(NSString *)method withParams:(NSArray *)params {
-	[self sendXMLRequestMethod:method withParams:params onSuccess:nil onError:nil];
++ (void)sendXMLRPCRequestWithParams:(NSString *)method withParams:(NSArray *)params {
+	[self sendXMLRPCRequestWithParams:method withParams:params onSuccess:nil onError:nil];
 }
 
-- (void)sendXMLRequestMethod:(NSString *)method
-				  withParams:(NSArray *)params
-				   onSuccess:(BOOL (^)(XMLRPCResponse *))successBlock {
-	[self sendXMLRequestMethod:method withParams:params onSuccess:successBlock onError:nil];
++ (void)sendXMLRPCRequestWithParams:(NSString *)method
+						 withParams:(NSArray *)params
+						  onSuccess:(void (^)(NSString *))successBk {
+	[self sendXMLRPCRequestWithParams:method withParams:params onSuccess:successBk onError:nil];
 }
 
-- (void)sendXMLRequestMethod:(NSString *)method
-				  withParams:(NSArray *)params
-				   onSuccess:(BOOL (^)(XMLRPCResponse *))successBlock
-					 onError:(BOOL (^)(XMLRPCRequest *req))errorBlock {
+// change block by callback and implement callback with different behavior if success (: call InAppManager) or error (:
+// manage error here)
++ (void)sendXMLRPCRequestWithParams:(NSString *)method
+						 withParams:(NSArray *)params
+						  onSuccess:(void (^)(NSString *))successBk
+							onError:(void (^)(NSString *req))errorBk {
 	LOGI(@"XMLRPC %@ - %@", method, params);
-	NSURL *URL =
-		[NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant"]];
-	BlockXMLRPCRequest *request = [[BlockXMLRPCRequest alloc] initWithURL:URL];
-	[request setMethod:method withParameters:params];
-	if (successBlock) {
-		request.successBlock = successBlock;
-	}
-	if (errorBlock) {
-		request.xmlErrorBlock = errorBlock;
+	const char *URL =
+		[LinphoneManager.instance lpConfigStringForKey:@"receipt_validation_url" inSection:@"in_app_purchase"]
+			.UTF8String;
+
+	successBlock = successBk;
+	errorBlock = errorBk;
+
+	// Create LinphoneXMLRPCRequest
+	LinphoneXmlRpcSession *requestSession = linphone_xml_rpc_session_new(LC, URL);
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new(method.UTF8String, LinphoneXmlRpcArgString);
+
+	// Set argument to this LinphoneXMLRPCRequest
+	for (NSString *item in params) {
+		NSLog(@"Linphone XMLRPC Request with argument: %@", item);
+		linphone_xml_rpc_request_add_string_arg(request, item.UTF8String);
 	}
 
-	XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
-	[manager spawnConnectionWithXMLRPCRequest:request delegate:self];
+	// Ref and send the LinphoneXMLRPCRequest
+	requestSession = linphone_xml_rpc_session_ref(requestSession);
+	linphone_xml_rpc_session_send_request(requestSession, request);
+
+	// Set the callbacks to this LinphoneXMLRPCRequest
+	LinphoneXmlRpcRequestCbs *cbs = linphone_xml_rpc_request_get_callbacks(request);
+
+	// Register XMLRPCHelper in user data to get it back on Callback rised
+	XMLRPCHelper *xMLRPCHelper = [[XMLRPCHelper alloc] init];
+	linphone_xml_rpc_request_set_user_data(request, ((void *)CFBridgingRetain(xMLRPCHelper)));
+
+	// Set the response Callback
+	linphone_xml_rpc_request_cbs_set_response(cbs, linphone_xmlrpc_call_back_received);
 }
 
-#pragma mark - XMLRPCConnectionHandler delegate
-
-- (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-
-	BlockXMLRPCRequest *req = (BlockXMLRPCRequest *)request;
-	NSString *error = nil;
-	BOOL handleHere = YES;
-
-	LOGI(@"XMLRPC %@ - %@", [request method], [response body]);
-
-	if (req.successBlock) {
-		handleHere = req.successBlock(response);
-	}
-	if (!handleHere)
-		return;
-
-	if ([response isFault]) {
-		error = response.faultString;
-	} else if (response.object != nil && ![response.object isEqualToString:@"OK"]) {
-		error = NSLocalizedString(@"Unknown error", nil);
-	} else if ([response.object isEqualToString:@"OK"]) {
-		// do nothing, if the client is interested in the response he will have handled it
-	} else {
-		LOGE(@"Empty object for XMLRPC response: HTTP error");
-		error = NSLocalizedString(@"(no description)", nil);
-	}
-
-	if (error != nil) {
-		[self displayErrorPopup:error];
-	}
+static void linphone_xmlrpc_call_back_received(LinphoneXmlRpcRequest *request) {
+	[(__bridge XMLRPCHelper *)linphone_xml_rpc_request_get_user_data(request) dealWithXmlRpcResponse:request];
 }
 
-- (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-	BlockXMLRPCRequest *req = (BlockXMLRPCRequest *)request;
-	BOOL handleHere = YES;
-	if (req.xmlErrorBlock) {
-		handleHere = req.xmlErrorBlock(request);
+- (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request {
+	NSString *responseString =
+		[NSString stringWithFormat:@"%s", (linphone_xml_rpc_request_get_string_response(request))];
+	LOGI(@"XMLRPC query: %@", responseString);
+	if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
+		// Call success block
+		successBlock(responseString);
+	} else if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusFailed) {
+		if (errorBlock != nil) {
+			LOGI(@"XMLRPC query ErrorBlock rised");
+			errorBlock(responseString);
+		}
+		// Display Error alert
+		[self displayErrorPopup:@"LinphoneXMLRPC Request Failed"];
 	}
-	if (!handleHere)
-		return;
-	// do not display technical message to the user..
-	[self displayErrorPopup:NSLocalizedString(@"Server error", nil)]; // error.localizedDescription];
-	LOGE(@"requestDidFailWithError: %@", error.localizedDescription);
-}
-
-- (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-	return NO;
-}
-
-- (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-	/* Do nothing, not needed */
-}
-
-- (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-	/* Do nothing, not needed */
+	linphone_xml_rpc_request_unref(request);
 }
 
 #pragma mark - Error alerts
@@ -132,34 +108,6 @@ static XMLRPCHelper *xmlManager = nil;
 	[av show];
 }
 
-+ (void)GetProvisioningURL:(NSString *)username
-				  password:(NSString *)password
-					domain:(NSString *)domain
-				 OnSuccess:(void (^)(NSString *response))onSuccess {
-	if (!username || !password || !domain) {
-		onSuccess(nil);
-		return;
-	}
-
-	[self.class.xml sendXMLRequestMethod:@"get_remote_provisioning_filename"
-		withParams:@[ username, password, domain ]
-		onSuccess:^BOOL(XMLRPCResponse *response) {
-		  if (!response.isFault && response.object) {
-			  NSString *url =
-				  [NSString stringWithFormat:@"%@/%@.xml",
-											 [LinphoneManager.instance lpConfigStringForKey:@"remote_prosivioning_root"
-																				  inSection:@"assistant"],
-											 response.object];
-			  onSuccess(url);
-		  } else {
-			  onSuccess(nil);
-		  }
-		  return FALSE;
-
-		}
-		onError:^BOOL(XMLRPCRequest *request) {
-		  onSuccess(nil);
-		  return FALSE;
-		}];
-}
 @end
+
+/*****************************************************************************************/
