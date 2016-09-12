@@ -452,27 +452,12 @@
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit Token invalidated");
-    [LinphoneManager.instance setPushNotificationToken:nil];
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
     didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
              forType:(NSString *)type {
     LOGI(@"PushKit received with payload : %@", payload.description);
-    
-    /*NSDictionary *payloadDict = payload.dictionaryPayload[@"aps"];
-    NSString *message = payloadDict[@"alert"];
-    
-    //present a local notifcation to visually see when we are recieving a VoIP Notification
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        
-        UILocalNotification *localNotification = [UILocalNotification new];
-        localNotification.alertBody = message;
-        localNotification.applicationIconBadgeNumber = 1;
-        localNotification.soundName = UILocalNotificationDefaultSoundName;
-        
-        [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
-    }*/
 
     LOGI(@"incoming voip notfication: %@ ", payload.dictionaryPayload);
     dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
@@ -484,23 +469,9 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit credentials updated");
     LOGI(@"voip token: %@", (credentials.token));
     LOGI(@"%@ : %@", NSStringFromSelector(_cmd), credentials.token);
-    //[LinphoneManager.instance setPushNotificationToken:credentials.token];
 }
 
 #pragma mark - User notifications
-
-/*#pragma deploymate push "ignored-api-availability"
-- (void)application:(UIApplication *)application
-	didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-    //register for voip notifiactions
-    self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-    
-    // Initiate registration.
-    NSLog(@"Initiating PushKit registration");
-    self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-    self.voipRegistry.delegate = self;
-	LOGI(@"%@", NSStringFromSelector(_cmd));
-}*/
 
 - (void)application:(UIApplication *)application
 	handleActionWithIdentifier:(NSString *)identifier
