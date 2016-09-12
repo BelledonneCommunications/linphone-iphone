@@ -452,6 +452,7 @@
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit Token invalidated");
+    [LinphoneManager.instance setPushNotificationToken:nil];
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -469,6 +470,7 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit credentials updated");
     LOGI(@"voip token: %@", (credentials.token));
     LOGI(@"%@ : %@", NSStringFromSelector(_cmd), credentials.token);
+    [LinphoneManager.instance setPushNotificationToken:credentials.token];
 }
 
 #pragma mark - User notifications
