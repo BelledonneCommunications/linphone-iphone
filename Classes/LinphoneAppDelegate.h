@@ -18,12 +18,14 @@
  */                                                                           
 
 #import <UIKit/UIKit.h>
+#import <PushKit/PushKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
 
 #import "LinphoneCoreSettingsStore.h"
 
-@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
+//@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
+@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate, PKPushRegistryDelegate> {
     @private
 	UIBackgroundTaskIdentifier bgStartId;
     BOOL startedInBackground;
@@ -35,6 +37,7 @@
 @property (nonatomic, retain) UIAlertView *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
+@property PKPushRegistry* voipRegistry;
 
 
 @end

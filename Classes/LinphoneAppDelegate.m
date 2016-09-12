@@ -21,6 +21,7 @@
 #import "ShopView.h"
 #import "linphoneAppDelegate.h"
 #import "AddressBook/ABPerson.h"
+#import <PushKit/PushKit.h>
 
 #import "CoreTelephony/CTCallCenter.h"
 #import "CoreTelephony/CTCall.h"
@@ -182,23 +183,17 @@
 
 - (void)registerForNotifications:(UIApplication *)app {
 	LinphoneManager *instance = [LinphoneManager instance];
-
-	if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-		/* iOS8 notifications can be actioned! Awesome: */
-		UIUserNotificationType notifTypes =
-			UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
-
-		NSSet *categories =
-			[NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], [self getAccountExpiryNotificationCategory], nil];
-		UIUserNotificationSettings *userSettings =
-			[UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
-		[app registerUserNotificationSettings:userSettings];
-
-		if (!instance.isTesting) {
-			[app registerForRemoteNotifications];
-		}
+	if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
+        //[app unregisterForRemoteNotifications];
+		// iOS8 and more : PushKit
+        self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+        self.voipRegistry.delegate = self;
+        
+        // Initiate registration.
+        self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 	} else {
 		/* iOS7 and below */
+        self.voipRegistry.delegate = NULL;
 		if (!instance.isTesting) {
 			NSUInteger notifTypes =
 				UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
@@ -209,21 +204,19 @@
 #pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
 	UIApplication *app = [UIApplication sharedApplication];
 	UIApplicationState state = app.applicationState;
 
 	LinphoneManager *instance = [LinphoneManager instance];
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-
 	[self registerForNotifications:app];
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
 		if (!start_at_boot || !background_mode) {
 			// autoboot disabled or no background, and no push: do nothing and wait for a real launch
-			/*output a log with NSLog, because the ortp logging system isn't activated yet at this time*/
+			//output a log with NSLog, because the ortp logging system isn't activated yet at this time
 			NSLog(@"Linphone launch doing nothing because start_at_boot or background_mode are not activated.", NULL);
 			return YES;
 		}
@@ -248,7 +241,16 @@
 	}
 	if (bgStartId != UIBackgroundTaskInvalid)
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
-
+    
+    //Enable all notification type. VoIP Notifications don't present a UI but we will use this to show local nofications later
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert| UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
+    
+    //register the notification settings
+    [application registerUserNotificationSettings:notificationSettings];
+    
+    //output what state the app is in. This will be used to see when the app is started in the background
+    NSLog(@"app launched with state : %li", (long)application.applicationState);
+    
 	return YES;
 }
 
@@ -324,8 +326,10 @@
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
 				linphone_core_set_network_reachable(LC, FALSE);
-				LinphoneManager.instance.connectivity = none; /*force connectivity to be discovered again*/
+                LinphoneManager.instance.connectivity = none; /*force connectivity to be discovered again*/
+                LOGI(@"Registers refreshing");
 				[LinphoneManager.instance refreshRegisters];
+                LOGI(@"Registers refreshed");
 				if (loc_key != nil) {
 
 					NSString *callId = [userInfo objectForKey:@"call-id"];
@@ -344,6 +348,7 @@
 			}
 		}
 	}
+    LOGI(@"Notification %@ processed", userInfo.description);
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -442,13 +447,60 @@
 	[LinphoneManager.instance setPushNotificationToken:nil];
 }
 
+#pragma mark - PushKit Functions
+
+- (void)pushRegistry:(PKPushRegistry *)registry
+didInvalidatePushTokenForType:(NSString *)type {
+    LOGI(@"PushKit Token invalidated");
+    [LinphoneManager.instance setPushNotificationToken:nil];
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry
+    didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
+             forType:(NSString *)type {
+    LOGI(@"PushKit received with payload : %@", payload.description);
+    
+    /*NSDictionary *payloadDict = payload.dictionaryPayload[@"aps"];
+    NSString *message = payloadDict[@"alert"];
+    
+    //present a local notifcation to visually see when we are recieving a VoIP Notification
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        
+        UILocalNotification *localNotification = [UILocalNotification new];
+        localNotification.alertBody = message;
+        localNotification.applicationIconBadgeNumber = 1;
+        localNotification.soundName = UILocalNotificationDefaultSoundName;
+        
+        [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
+    }*/
+
+    LOGI(@"incoming voip notfication: %@ ", payload.dictionaryPayload);
+    dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry
+    didUpdatePushCredentials:(PKPushCredentials *)credentials
+             forType:(NSString *)type {
+    LOGI(@"PushKit credentials updated");
+    LOGI(@"voip token: %@", (credentials.token));
+    LOGI(@"%@ : %@", NSStringFromSelector(_cmd), credentials.token);
+    [LinphoneManager.instance setPushNotificationToken:credentials.token];
+}
+
 #pragma mark - User notifications
 
-#pragma deploymate push "ignored-api-availability"
+/*#pragma deploymate push "ignored-api-availability"
 - (void)application:(UIApplication *)application
 	didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    //register for voip notifiactions
+    self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+    
+    // Initiate registration.
+    NSLog(@"Initiating PushKit registration");
+    self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+    self.voipRegistry.delegate = self;
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-}
+}*/
 
 - (void)application:(UIApplication *)application
 	handleActionWithIdentifier:(NSString *)identifier

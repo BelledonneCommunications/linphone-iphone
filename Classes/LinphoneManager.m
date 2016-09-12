@@ -616,7 +616,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 }
 
 - (void)onCall:(LinphoneCall *)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
-
+    
 	// Handling wrapper
 	LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
 	if (!data) {
@@ -638,7 +638,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	NSString *address = [FastAddressBook displayNameForAddress:addr];
 
 	if (state == LinphoneCallIncomingReceived) {
-
 		/*first step is to re-enable ctcall center*/
 		CTCallCenter *lCTCallCenter = [[CTCallCenter alloc] init];
 
@@ -653,12 +652,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			return;
 		}
 
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 
 			LinphoneCallLog *callLog = linphone_call_get_call_log(call);
 			NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
-			if (![LinphoneManager.instance popPushCallID:callId]) {
+            //if (![LinphoneManager.instance popPushCallID:callId]) {
 				// case where a remote notification is not already received
 				// Create a new local notification
 				data->notification = [[UILocalNotification alloc] init];
@@ -704,7 +703,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 						}
 					}
 				}
-			}
+			//}
 		}
 	}
 
@@ -1925,9 +1924,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (connectivity == none) {
 		// don't trust ios when he says there is no network. Create a new reachability context, the previous one might
 		// be mis-functionning.
+        LOGI(@"None connectivity");
 		[self setupNetworkReachabilityCallback];
 	}
-	linphone_core_refresh_registers(theLinphoneCore); // just to make sure REGISTRATION is up to date
+    LOGI(@"Network reachability callback setup");
+    linphone_core_refresh_registers(theLinphoneCore); // just to make sure REGISTRATION is up to date
+    LOGI(@"Out of refreshRegisters");
 }
 
 - (void)renameDefaultSettings {
@@ -2216,10 +2218,19 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"].lastPathComponent]
 		 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
 		.lastPathComponent;
+        NSString * notif_type;
+        if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
+            //IOS 8 and more
+            notif_type = @".voip";
+        } else {
+            // IOS 7 and below
+            notif_type = @"";
+        }
+        
 		NSString *params = [NSString
-			stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
+			stringWithFormat:@"app-id=%@%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
 							 @"call-snd=%@;pn-msg-snd=msg.caf",
-							 [[NSBundle mainBundle] bundleIdentifier], APPMODE_SUFFIX, tokenString, ring];
+							 [[NSBundle mainBundle] bundleIdentifier], notif_type, APPMODE_SUFFIX, tokenString, ring];
 
 		LOGI(@"Proxy config %s configured for push notifications with contact: %@",
 			 linphone_proxy_config_get_identity(proxyCfg), params);
