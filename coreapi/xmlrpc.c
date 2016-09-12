@@ -230,6 +230,7 @@ static void process_response_from_post_xml_rpc_request(void *data, const belle_h
 		if (code == 200) { /* Valid response from the server. */
 			parse_valid_xml_rpc_response(request, belle_sip_message_get_body((belle_sip_message_t *)event->response));
 		} else {
+			ms_error("process_response_from_post_xml_rpc_request(): error code = %i", code);
 			notify_xml_rpc_error(request);
 		}
 	}
