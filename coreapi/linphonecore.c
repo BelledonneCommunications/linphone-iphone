@@ -3129,26 +3129,33 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 		/*we are offering, set local media description before sending the call*/
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
+	
+	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
+	linphone_core_notify_display_status(lc,barmsg);
+	ms_free(barmsg);
+	
 	err=sal_call(call->op,from,real_url);
+	
+	if (err < 0){
+		if (call->state != LinphoneCallError &&
+			call->state != LinphoneCallReleased){
+			/*sal_call() may invoke call_failure() and call_released() SAL callbacks synchronously,
+			 * in which case there is no need to perform a state change here.*/
+			linphone_core_notify_display_status(lc,_("Could not call"));
+			linphone_call_stop_media_streams(call);
+			linphone_call_set_state(call,LinphoneCallError,"Call failed");
+		}
+		goto end;
+	}
 	if (lc->sip_conf.sdp_200_ack){
 		/*we are NOT offering, set local media description after sending the call so that we are ready to
 		 process the remote offer when it will arrive*/
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
-
 	call->log->call_id=ms_strdup(sal_op_get_call_id(call->op)); /*must be known at that time*/
-
-	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
-	linphone_core_notify_display_status(lc,barmsg);
-	ms_free(barmsg);
-
-	if (err<0){
-		linphone_core_notify_display_status(lc,_("Could not call"));
-		linphone_call_stop_media_streams(call);
-		linphone_call_set_state(call,LinphoneCallError,"Call failed");
-	}else {
-		linphone_call_set_state(call,LinphoneCallOutgoingProgress,"Outgoing call in progress");
-	}
+	linphone_call_set_state(call,LinphoneCallOutgoingProgress,"Outgoing call in progress");
+	
+end:
 	ms_free(real_url);
 	ms_free(from);
 	return err;
@@ -3353,7 +3360,12 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		}
 	}
 
-	if (defer==FALSE) linphone_core_start_invite(lc,call,NULL);
+	if (defer==FALSE) {
+		if (linphone_core_start_invite(lc,call,NULL) != 0){
+			/*the call has already gone to error and released state, so do not return it*/
+			call = NULL;
+		}
+	}
 
 	if (real_url!=NULL) ms_free(real_url);
 	linphone_call_params_destroy(cp);

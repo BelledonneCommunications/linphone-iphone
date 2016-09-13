@@ -509,6 +509,25 @@ static void simple_call(void) {
 	simple_call_base(FALSE);
 }
 
+/*This test is added to reproduce a crash when a call is failed synchronously*/
+static void  simple_call_with_no_sip_transport(void){
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LCSipTransports tr={0};
+	LinphoneCall *call;
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	/*disable all transports so that the call will fail synchronously*/
+	linphone_core_set_sip_transports(marie->lc, &tr);
+
+	call = linphone_core_invite_address(marie->lc, pauline->identity);
+	BC_ASSERT_PTR_NULL(call);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
 static void simple_call_with_udp(void) {
 	LinphoneCoreManager* michelle;
 	LinphoneCoreManager* laure;
@@ -4830,6 +4849,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Cancelled ringing call", cancelled_ringing_call),
 	TEST_NO_TAG("Call busy when calling self", call_busy_when_calling_self),
 	TEST_NO_TAG("Simple call", simple_call),
+	TEST_NO_TAG("Simple call with no SIP transport", simple_call_with_no_sip_transport),
 	TEST_NO_TAG("Simple call with UDP", simple_call_with_udp),
 	TEST_ONE_TAG("Call terminated automatically by linphone_core_destroy", automatic_call_termination, "LeaksMemory"),
 	TEST_NO_TAG("Call with http proxy", call_with_http_proxy),
