@@ -313,6 +313,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		[self lpConfigSetBool:YES forKey:@"use_rls_presence" inSection:@"sip"];
 		[self lpConfigSetBool:YES forKey:@"migration_xmlrpc"];
 	}
+	[self lpConfigSetBool:NO forKey:@"store_friends" inSection:@"misc"]; //so far, storing friends in files is not needed. may change in the futur.
 }
 
 static int check_should_migrate_images(void *data, int argc, char **argv, char **cnames) {
