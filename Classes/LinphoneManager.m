@@ -616,7 +616,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 }
 
 - (void)onCall:(LinphoneCall *)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
-    
 	// Handling wrapper
 	LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
 	if (!data) {

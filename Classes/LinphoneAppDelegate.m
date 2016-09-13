@@ -155,7 +155,7 @@
 	answer.activationMode = UIUserNotificationActivationModeForeground;
 	answer.destructive = NO;
 	answer.authenticationRequired = YES;
-
+    
 	UIMutableUserNotificationAction *decline = [[UIMutableUserNotificationAction alloc] init];
 	decline.identifier = @"decline";
 	decline.title = NSLocalizedString(@"Decline", nil);
@@ -204,7 +204,7 @@
 #pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	UIApplication *app = [UIApplication sharedApplication];
+    UIApplication *app = [UIApplication sharedApplication];
 	UIApplicationState state = app.applicationState;
 
 	LinphoneManager *instance = [LinphoneManager instance];
@@ -233,12 +233,15 @@
 	[RootViewManager setupWithPortrait:(PhoneMainView *)self.window.rootViewController];
 	[PhoneMainView.instance startUp];
 	[PhoneMainView.instance updateStatusBar:nil];
-
-	NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-	if (remoteNotif) {
-		LOGI(@"PushNotification from launch received.");
-		[self processRemoteNotification:remoteNotif];
-	}
+    
+    if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_8_0) {
+        NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (remoteNotif) {
+            LOGI(@"PushNotification from launch received.");
+            [self processRemoteNotification:remoteNotif];
+        }
+    }
+    
 	if (bgStartId != UIBackgroundTaskInvalid)
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
     
@@ -249,7 +252,8 @@
     [application registerUserNotificationSettings:notificationSettings];
     
     //output what state the app is in. This will be used to see when the app is started in the background
-    NSLog(@"app launched with state : %li", (long)application.applicationState);
+    LOGI(@"app launched with state : %li", (long)application.applicationState);
+    LOGI(@"FINISH LAUNCHING WITH OPTION : %@", launchOptions.description);
     
 	return YES;
 }
@@ -452,7 +456,7 @@
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit Token invalidated");
-    [LinphoneManager.instance setPushNotificationToken:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -461,7 +465,7 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit received with payload : %@", payload.description);
 
     LOGI(@"incoming voip notfication: %@ ", payload.dictionaryPayload);
-    dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
+    //dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -470,7 +474,7 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit credentials updated");
     LOGI(@"voip token: %@", (credentials.token));
     LOGI(@"%@ : %@", NSStringFromSelector(_cmd), credentials.token);
-    [LinphoneManager.instance setPushNotificationToken:credentials.token];
+    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
 }
 
 #pragma mark - User notifications
