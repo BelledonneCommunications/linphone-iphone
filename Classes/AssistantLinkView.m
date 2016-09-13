@@ -196,6 +196,23 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
+- (IBAction)onPhoneNumberDisclosureClick:(id)sender {
+	UIAlertView *errorView = [[UIAlertView alloc]
+			initWithTitle:NSLocalizedString(@"What will my phone number be used for?", nil)
+				  message:NSLocalizedString(@"Your friends will find your more easily if you link your account to your "
+											@"phone number. \n\nYou will see in your address book who is using "
+											@"Linphone and your friend will know that they can reach you on Linphone "
+											@"as well. \n\nYou can use your phone number with only one Linphone "
+											@"account. If you had already linked your number to an other account but "
+											@"you prefere to use this one, simply link it now and your number will "
+											@"automatically be moved to this account.",
+											nil)
+				 delegate:nil
+		cancelButtonTitle:NSLocalizedString(@"OK", nil)
+		otherButtonTitles:nil, nil];
+	[errorView show];
+}
+
 #pragma mark - select country delegate
 
 - (void)didSelectCountry:(NSDictionary *)country {

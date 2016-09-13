@@ -25,5 +25,6 @@
 - (IBAction)onCheckValidationButton:(id)sender;
 - (IBAction)onCountryClick:(id)sender;
 - (IBAction)onDialerClick:(id)sender;
+- (IBAction)onPhoneNumberDisclosureClick:(id)sender;
 
 @end
