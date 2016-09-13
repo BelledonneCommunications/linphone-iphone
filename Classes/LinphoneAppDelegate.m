@@ -465,7 +465,7 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit received with payload : %@", payload.description);
 
     LOGI(@"incoming voip notfication: %@ ", payload.dictionaryPayload);
-    //dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
+    dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
