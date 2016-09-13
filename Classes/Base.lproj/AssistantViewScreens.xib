@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AssistantView">
@@ -32,26 +33,23 @@
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="WELCOME" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="126" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="303" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="This assistant will help you to use a SIP account for your calls." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Yci-5h-O4o" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="66" width="303" height="58"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="This assistant will help you to configure and use a SIP account." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Yci-5h-O4o" userLabel="subtitleLabel">
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="58" id="5LG-5A-dY3"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="36" userLabel="createAccountButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="40" y="153" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Create account">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -60,7 +58,7 @@
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="CREATE ACCOUNT">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
@@ -68,7 +66,6 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="38" userLabel="linphoneLoginButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="40" y="227" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Use Linphone account">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -77,17 +74,16 @@
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="USE LINPHONE ACCOUNT">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png">
-                        <color key="titleColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="onGotoLinphoneLoginClick:" destination="-1" eventType="touchUpInside" id="4AG-ng-fIB"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="39" userLabel="loginButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="40" y="301" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Use SIP account">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -96,17 +92,16 @@
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="USE SIP ACCOUNT">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png">
-                        <color key="titleColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="onGotoLoginClick:" destination="-1" eventType="touchUpInside" id="qRw-RY-0ip"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="Kbn-dL-C5h" userLabel="remoteProvisioningButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="40" y="376" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Fetch remote configuration">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -115,17 +110,17 @@
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="FETCH REMOTE CONFIGURATION">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png">
-                        <color key="titleColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="onGotoRemoteProvisioningClick:" destination="-1" eventType="touchUpInside" id="cAo-3u-yUT"/>
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="38" firstAttribute="leading" secondItem="39" secondAttribute="leading" id="23x-IR-Mtg"/>
                 <constraint firstItem="39" firstAttribute="top" secondItem="38" secondAttribute="bottom" constant="34" id="CyI-RI-Fpo"/>
@@ -156,52 +151,50 @@
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CREATE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="4Aj-nv-TyO" userLabel="titleLabel">
-                    <rect key="frame" x="38" y="0.0" width="302" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="59" id="tGG-pC-Rcj"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="1/2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="jFY-Po-QZN" userLabel="subtitleLabel">
-                    <rect key="frame" x="38" y="66" width="302" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="YcK-0D-5AI"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZSJ-Lv-n60" userLabel="phoneLabel">
-                    <rect key="frame" x="38" y="131" width="270" height="14"/>
+                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZSJ-Lv-n60" userLabel="phoneLabel">
+                    <frame key="frameInset" minX="38" minY="136" width="270" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="0Ya-Uc-h5r"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uol-lZ-FNd" userLabel="countryButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="153" width="299" height="30"/>
+                <button opaque="NO" tag="150" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uol-lZ-FNd" userLabel="countryButton" customClass="UIRoundBorderedButton">
+                    <frame key="frameInset" minX="38" minY="153" width="299" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="pz8-ke-WQV"/>
                     </constraints>
                     <state key="normal" title="Select your country">
-                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" title="Choose your country" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onCountryCodeClick:" destination="-1" eventType="touchUpInside" id="pRM-Fe-12o"/>
                     </connections>
                 </button>
-                <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="aG8-DH-06s" userLabel="countryCodeField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="190" width="54" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="aG8-DH-06s" userLabel="countryCodeField" customClass="UIAssistantTextField">
+                    <frame key="frameInset" minX="38" minY="190" width="54" height="30"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                     <connections>
@@ -210,11 +203,11 @@
                         <outlet property="nextFieldResponder" destination="74" id="Qe8-Qy-zAT"/>
                     </connections>
                 </textField>
-                <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="74" userLabel="phoneField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="95" y="190" width="242" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="74" userLabel="phoneField" customClass="UIAssistantTextField">
+                    <frame key="frameInset" minX="95" minY="190" width="242" height="30"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="phonePad" returnKeyType="next"/>
                     <connections>
@@ -223,17 +216,17 @@
                         <outlet property="nextFieldResponder" destination="OLm-Nz-ouj" id="RJT-1m-fS4"/>
                     </connections>
                 </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nOO-ch-4RW" userLabel="phoneErrorLabel">
-                    <rect key="frame" x="38" y="220" width="299" height="10"/>
+                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nOO-ch-4RW" userLabel="phoneErrorLabel">
+                    <frame key="frameInset" minX="38" minY="220" width="299" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="bZz-Ud-i3h"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZuT-FJ-wdo" userLabel="infoButton">
-                    <rect key="frame" x="315" y="127" width="22" height="22"/>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZuT-FJ-wdo" userLabel="infoButton">
+                    <frame key="frameInset" minX="315" minY="132" width="22" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="22" id="hd9-y1-oJW"/>
                     </constraints>
@@ -241,53 +234,51 @@
                         <action selector="onPhoneNumberDisclosureClick:" destination="-1" eventType="touchUpInside" id="IWD-Sn-zg0"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter your phone number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="vh7-65-1js" userLabel="accountLabel">
-                    <rect key="frame" x="38" y="238" width="299" height="21"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Please enter your phone number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="vh7-65-1js" userLabel="accountLabel">
+                    <frame key="frameInset" minX="38" minY="238" width="299" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="gtW-iN-oae"/>
                     </constraints>
                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <switch opaque="NO" tag="181" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="vj2-gD-eqO" userLabel="useUsernameSwitch">
-                    <rect key="frame" x="38" y="269" width="51" height="31"/>
+                <switch opaque="NO" tag="181" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="vj2-gD-eqO" userLabel="useUsernameSwitch">
+                    <frame key="frameInset" minX="38" minY="269" width="51" height="31"/>
                     <connections>
                         <action selector="onFormSwitchToggle:" destination="-1" eventType="valueChanged" id="5ir-05-3Ec"/>
                     </connections>
                 </switch>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Username instead of phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Dyy-Oh-esb" userLabel="useUsernameLabel">
-                    <rect key="frame" x="95" y="269" width="242" height="31"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Use Username (optional)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Dyy-Oh-esb" userLabel="useUsernameLabel">
+                    <frame key="frameInset" minX="95" minY="269" width="242" height="31"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <switch opaque="NO" tag="182" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="pMa-xZ-KDw" userLabel="useEmailSwitch">
-                    <rect key="frame" x="38" y="308" width="51" height="31"/>
+                <switch opaque="NO" tag="182" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="pMa-xZ-KDw" userLabel="useEmailSwitch">
+                    <frame key="frameInset" minX="38" minY="308" width="51" height="31"/>
                     <connections>
                         <action selector="onFormSwitchToggle:" destination="-1" eventType="valueChanged" id="rKZ-eR-jLr"/>
                     </connections>
                 </switch>
-                <label opaque="NO" userInteractionEnabled="NO" tag="182" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't use my phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="fm4-59-oEV" userLabel="useEmailLabel">
-                    <rect key="frame" x="95" y="308" width="242" height="31"/>
+                <label opaque="NO" userInteractionEnabled="NO" tag="182" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Don't use my phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="fm4-59-oEV" userLabel="useEmailLabel">
+                    <frame key="frameInset" minX="95" minY="308" width="242" height="31"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view hidden="YES" tag="181" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SWm-U7-vTI" userLabel="usernameFormView">
-                    <rect key="frame" x="0.0" y="350" width="375" height="76"/>
+                <view hidden="YES" tag="181" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SWm-U7-vTI" userLabel="usernameFormView">
+                    <frame key="frameInset" minY="350" width="375" height="76"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" tag="120" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USERNAME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LHu-Vo-7k8" userLabel="usernameLabel">
-                            <rect key="frame" x="38" y="0.0" width="299" height="15"/>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="OLm-Nz-ouj" userLabel="usernameField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="23" width="299" height="30"/>
-                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Username"/>
-                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
                             <connections>
@@ -296,16 +287,15 @@
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="SJT-EF-scd" userLabel="usernameErrorLabel">
-                            <rect key="frame" x="38" y="57" width="299" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="8CL-eS-SgV"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" notEnabled="YES"/>
                     </accessibility>
@@ -323,23 +313,21 @@
                         <constraint firstItem="LHu-Vo-7k8" firstAttribute="centerX" secondItem="SWm-U7-vTI" secondAttribute="centerX" id="y2b-nm-mfC"/>
                     </constraints>
                 </view>
-                <view hidden="YES" tag="182" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LRn-J3-o72" userLabel="emailFormView">
-                    <rect key="frame" x="0.0" y="426" width="375" height="237"/>
+                <view hidden="YES" tag="182" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LRn-J3-o72" userLabel="emailFormView">
+                    <frame key="frameInset" minY="426" width="375" height="237"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EMAIL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7B-Ag-ltX" userLabel="emailLabel">
-                            <rect key="frame" x="38" y="0.0" width="299" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="14" id="1pi-x8-d7G"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="103" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="IXr-i2-LEh" userLabel="emailField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="22" width="299" height="30"/>
-                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Email"/>
-                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="done"/>
                             <connections>
@@ -348,28 +336,25 @@
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid email" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1r3-gy-l29" userLabel="emailErrorLabel">
-                            <rect key="frame" x="38" y="52" width="299" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="DxN-0P-gw6"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p25-jF-I9X" userLabel="passwordLabel">
-                            <rect key="frame" x="38" y="76" width="299" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="14" id="yWO-rf-S2R"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="t14-fe-grq" userLabel="passwordField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="101" width="299" height="30"/>
-                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Password "/>
-                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
                             <connections>
@@ -378,28 +363,25 @@
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="J5q-GY-AW4" userLabel="passwordErrorLabel">
-                            <rect key="frame" x="38" y="131" width="299" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="EZT-D6-c3H"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD CONFIRMATION" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fpk-Vv-LB0" userLabel="password2Label">
-                            <rect key="frame" x="38" y="153" width="299" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="14" id="aRv-BL-3ug"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="102" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="kHS-3H-oHM" userLabel="password2Field" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="175" width="299" height="30"/>
-                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Password confirmation"/>
-                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
                             <connections>
@@ -407,16 +389,15 @@
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Passwords do not match" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="DgP-rE-2dp" userLabel="password2ErrorLabel">
-                            <rect key="frame" x="38" y="205" width="299" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="gT0-em-DfO"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstItem="t14-fe-grq" firstAttribute="trailing" secondItem="J5q-GY-AW4" secondAttribute="trailing" id="19e-bW-s6G"/>
                         <constraint firstItem="fpk-Vv-LB0" firstAttribute="top" secondItem="J5q-GY-AW4" secondAttribute="bottom" constant="12" id="7mI-Kc-PMb"/>
@@ -448,32 +429,45 @@
                     </constraints>
                 </view>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K99-0e-fHC" userLabel="createAccountButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="679" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Create account">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="CREATE ACCOUNT">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="disabled">
-                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onCreateAccountClick:" destination="-1" eventType="touchUpInside" id="h6e-zF-Xnj"/>
                     </connections>
                 </button>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" misplaced="YES" text="Please confirm your country code and enter your phone number" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="rAy-0V-sqv" userLabel="subtitleTextLabel">
+                    <frame key="frameInset" minX="38" minY="96" width="302" height="29"/>
+                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="29" id="Vzq-Rc-edD"/>
+                        <constraint firstAttribute="width" secondItem="rAy-0V-sqv" secondAttribute="height" multiplier="302:29" id="iu5-Hn-bgb"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                    <size key="shadowOffset" width="-1" height="-1"/>
+                </label>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="ZSJ-Lv-n60" firstAttribute="centerY" secondItem="ZuT-FJ-wdo" secondAttribute="centerY" id="0aC-i3-zVU"/>
                 <constraint firstItem="pMa-xZ-KDw" firstAttribute="top" secondItem="vj2-gD-eqO" secondAttribute="bottom" constant="8" symbolic="YES" id="27q-ue-kWf"/>
                 <constraint firstItem="K99-0e-fHC" firstAttribute="top" secondItem="LRn-J3-o72" secondAttribute="bottom" constant="16" id="2Dz-5r-WKv"/>
                 <constraint firstItem="vj2-gD-eqO" firstAttribute="leading" secondItem="pMa-xZ-KDw" secondAttribute="leading" id="2ox-Iv-o2L"/>
                 <constraint firstItem="pMa-xZ-KDw" firstAttribute="top" secondItem="fm4-59-oEV" secondAttribute="top" id="2yn-iw-qwe"/>
+                <constraint firstItem="ZuT-FJ-wdo" firstAttribute="top" secondItem="rAy-0V-sqv" secondAttribute="bottom" constant="5" id="3Pe-FF-6V9"/>
+                <constraint firstItem="rAy-0V-sqv" firstAttribute="top" secondItem="jFY-Po-QZN" secondAttribute="bottom" constant="5" id="9ro-nc-EU8"/>
+                <constraint firstItem="rAy-0V-sqv" firstAttribute="top" secondItem="jFY-Po-QZN" secondAttribute="bottom" constant="5" id="Axt-1J-Vyg"/>
                 <constraint firstItem="aG8-DH-06s" firstAttribute="top" secondItem="74" secondAttribute="top" id="CTa-7W-HFC"/>
-                <constraint firstItem="ZuT-FJ-wdo" firstAttribute="top" secondItem="jFY-Po-QZN" secondAttribute="bottom" constant="32" id="Chu-lP-Qrw"/>
                 <constraint firstItem="pMa-xZ-KDw" firstAttribute="bottom" secondItem="fm4-59-oEV" secondAttribute="bottom" id="DOg-O7-ZPJ"/>
                 <constraint firstItem="vj2-gD-eqO" firstAttribute="top" secondItem="Dyy-Oh-esb" secondAttribute="top" id="Dyw-SG-eLO"/>
                 <constraint firstItem="Dyy-Oh-esb" firstAttribute="trailing" secondItem="fm4-59-oEV" secondAttribute="trailing" id="ECk-Sg-BEY"/>
@@ -483,8 +477,10 @@
                 <constraint firstItem="Dyy-Oh-esb" firstAttribute="leading" secondItem="vj2-gD-eqO" secondAttribute="trailing" constant="8" symbolic="YES" id="H8O-be-v8E"/>
                 <constraint firstItem="nOO-ch-4RW" firstAttribute="trailing" secondItem="vh7-65-1js" secondAttribute="trailing" id="IPE-PH-wek"/>
                 <constraint firstItem="LRn-J3-o72" firstAttribute="trailing" secondItem="44" secondAttribute="trailingMargin" constant="8" id="IdR-41-Q1d"/>
+                <constraint firstItem="rAy-0V-sqv" firstAttribute="leading" secondItem="44" secondAttribute="leading" constant="38" id="JAU-Gr-Mpv"/>
                 <constraint firstItem="ZSJ-Lv-n60" firstAttribute="leading" secondItem="44" secondAttribute="leading" constant="38" id="KNj-jc-LpX"/>
                 <constraint firstItem="4Aj-nv-TyO" firstAttribute="top" secondItem="44" secondAttribute="top" id="MFh-Iv-ijb"/>
+                <constraint firstItem="rAy-0V-sqv" firstAttribute="top" secondItem="jFY-Po-QZN" secondAttribute="bottom" constant="5" id="Msx-JX-riO"/>
                 <constraint firstItem="aG8-DH-06s" firstAttribute="leading" secondItem="nOO-ch-4RW" secondAttribute="leading" id="NGB-PY-2ad"/>
                 <constraint firstAttribute="bottom" secondItem="LRn-J3-o72" secondAttribute="bottom" constant="76" id="OaF-np-Zn3"/>
                 <constraint firstItem="uol-lZ-FNd" firstAttribute="leading" secondItem="aG8-DH-06s" secondAttribute="leading" id="OcJ-OF-yei"/>
@@ -516,6 +512,7 @@
                 <constraint firstItem="74" firstAttribute="leading" secondItem="Dyy-Oh-esb" secondAttribute="leading" id="rUh-b1-sqi"/>
                 <constraint firstItem="SWm-U7-vTI" firstAttribute="top" secondItem="pMa-xZ-KDw" secondAttribute="bottom" constant="11" id="v1c-sU-Qz1"/>
                 <constraint firstItem="vh7-65-1js" firstAttribute="leading" secondItem="vj2-gD-eqO" secondAttribute="leading" id="wCH-cs-80q"/>
+                <constraint firstAttribute="trailing" secondItem="rAy-0V-sqv" secondAttribute="trailing" constant="35" id="ztG-gW-GVW"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -526,53 +523,50 @@
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CREATE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Gyl-37-emh" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="303" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="59" id="AG9-Zb-Xmh"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="2/2" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="mao-1f-HLz" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="66" width="303" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="5pm-3w-TSE"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="ACTIVATE YOUR ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="9AN-gT-I7D" userLabel="activateLabel">
-                    <rect key="frame" x="36" y="131" width="303" height="59"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="We have sent you a SMS with a validation code. To complete your phone number verification, please enter the 4 digit code below:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="9AN-gT-I7D" userLabel="activateLabel">
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="59" id="yMi-Ul-rcL"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="We sent you a SMS, please check your messages and enter the 4 digits code below:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="UWU-j2-pUb" userLabel="activateDescLabel">
-                    <rect key="frame" x="36" y="192" width="303" height="96"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="UWU-j2-pUb" userLabel="activateDescLabel">
+                    <frame key="frameInset" minX="36" minY="176" width="303" height="20"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <textField opaque="NO" clipsSubviews="YES" tag="108" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Activation code" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="ULe-kp-qZn">
-                    <rect key="frame" x="38" y="265" width="299" height="59"/>
+                <textField opaque="NO" clipsSubviews="YES" tag="108" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Activation code" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="ULe-kp-qZn">
+                    <frame key="frameInset" minX="38" minY="194" width="299" height="71"/>
                     <fontDescription key="fontDescription" type="system" pointSize="26"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done"/>
                 </textField>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR0-Gi-vU3" userLabel="checkValidationButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="36" y="332" width="299" height="40"/>
+                <button opaque="NO" tag="130" contentMode="scaleToFill" misplaced="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PR0-Gi-vU3" userLabel="checkValidationButton" customClass="UIRoundBorderedButton">
+                    <frame key="frameInset" minX="40" minY="273" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Finish configuration">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -580,11 +574,11 @@
                         <constraint firstAttribute="height" constant="40" id="lFm-Ot-Lgy"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <state key="normal" title="FINISH CONFIGURATION">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <state key="normal" title="ACTIVATE YOUR ACCOUNT">
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="disabled">
-                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
@@ -592,26 +586,24 @@
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="PR0-Gi-vU3" firstAttribute="top" secondItem="ULe-kp-qZn" secondAttribute="bottom" constant="8" symbolic="YES" id="0is-D8-ZC4"/>
                 <constraint firstAttribute="trailing" secondItem="PR0-Gi-vU3" secondAttribute="trailing" constant="40" id="24w-HQ-EJS"/>
                 <constraint firstItem="mao-1f-HLz" firstAttribute="leading" secondItem="9AN-gT-I7D" secondAttribute="leading" id="3VE-ib-Wug"/>
+                <constraint firstItem="PR0-Gi-vU3" firstAttribute="top" secondItem="ULe-kp-qZn" secondAttribute="bottom" constant="25" id="6Sa-F3-m9q"/>
                 <constraint firstItem="Gyl-37-emh" firstAttribute="top" secondItem="101" secondAttribute="top" id="6iU-KU-zZk"/>
                 <constraint firstItem="mao-1f-HLz" firstAttribute="trailing" secondItem="9AN-gT-I7D" secondAttribute="trailing" id="807-s3-knI"/>
                 <constraint firstItem="ULe-kp-qZn" firstAttribute="leading" secondItem="101" secondAttribute="leading" constant="38" id="8eT-oh-kho"/>
                 <constraint firstItem="9AN-gT-I7D" firstAttribute="trailing" secondItem="UWU-j2-pUb" secondAttribute="trailing" id="DkS-Hu-NOb"/>
                 <constraint firstItem="UWU-j2-pUb" firstAttribute="leading" secondItem="PR0-Gi-vU3" secondAttribute="leading" id="I4m-Xn-vuT"/>
                 <constraint firstItem="Gyl-37-emh" firstAttribute="centerX" secondItem="101" secondAttribute="centerX" id="Kxy-Fz-7Ur"/>
-                <constraint firstItem="PR0-Gi-vU3" firstAttribute="top" secondItem="UWU-j2-pUb" secondAttribute="bottom" constant="44" id="Nkj-YV-UOs"/>
                 <constraint firstItem="Gyl-37-emh" firstAttribute="trailing" secondItem="mao-1f-HLz" secondAttribute="trailing" id="QwL-n5-Kug"/>
                 <constraint firstItem="9AN-gT-I7D" firstAttribute="leading" secondItem="UWU-j2-pUb" secondAttribute="leading" id="R5y-Je-jB2"/>
-                <constraint firstAttribute="bottom" secondItem="PR0-Gi-vU3" secondAttribute="bottom" id="Swt-6O-0l0"/>
                 <constraint firstItem="Gyl-37-emh" firstAttribute="leading" secondItem="mao-1f-HLz" secondAttribute="leading" id="Ye6-lb-OCg"/>
                 <constraint firstItem="UWU-j2-pUb" firstAttribute="centerX" secondItem="ULe-kp-qZn" secondAttribute="centerX" id="d6j-AI-7U4"/>
                 <constraint firstItem="UWU-j2-pUb" firstAttribute="top" secondItem="9AN-gT-I7D" secondAttribute="bottom" constant="2" id="f2f-if-FV0"/>
-                <constraint firstItem="9AN-gT-I7D" firstAttribute="top" secondItem="mao-1f-HLz" secondAttribute="bottom" constant="36" id="ikP-TN-90A"/>
-                <constraint firstItem="ULe-kp-qZn" firstAttribute="top" secondItem="9AN-gT-I7D" secondAttribute="bottom" constant="75" id="kqL-FB-k3p"/>
+                <constraint firstItem="9AN-gT-I7D" firstAttribute="top" secondItem="mao-1f-HLz" secondAttribute="bottom" constant="20" id="ikP-TN-90A"/>
+                <constraint firstItem="ULe-kp-qZn" firstAttribute="top" secondItem="9AN-gT-I7D" secondAttribute="bottom" constant="20" id="kqL-FB-k3p"/>
                 <constraint firstItem="mao-1f-HLz" firstAttribute="top" secondItem="Gyl-37-emh" secondAttribute="bottom" constant="7" id="sf5-gy-S5L"/>
                 <constraint firstItem="Gyl-37-emh" firstAttribute="leading" secondItem="101" secondAttribute="leading" constant="36" id="vUq-vb-pj5"/>
             </constraints>
@@ -624,50 +616,45 @@
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CREATE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="0ER-xf-LSS" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="303" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="59" id="U1u-Y9-rIc"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="2/2" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="pJ5-CB-byl" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="66" width="303" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="k7T-0v-olM"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="ACTIVATE YOUR ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="F6u-fS-sJs" userLabel="activateLabel">
-                    <rect key="frame" x="36" y="131" width="303" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="59" id="40c-cU-axK"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="mbT-xm-bKk" userLabel="activateDescLabel">
-                    <rect key="frame" x="36" y="192" width="303" height="96"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <string key="text">Your account is created. Please check your mails to validate your account. 
 Once it is done, come back here and click on the button.</string>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XAC-vH-TQ2" userLabel="checkValidationButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="306" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Finish configuration">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -676,10 +663,10 @@ Once it is done, come back here and click on the button.</string>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="FINISH CONFIGURATION">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="disabled">
-                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
@@ -687,7 +674,7 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="pJ5-CB-byl" firstAttribute="leading" secondItem="F6u-fS-sJs" secondAttribute="leading" id="4HK-td-WEu"/>
                 <constraint firstItem="pJ5-CB-byl" firstAttribute="trailing" secondItem="F6u-fS-sJs" secondAttribute="trailing" id="4pC-yR-dSJ"/>
@@ -711,56 +698,44 @@ Once it is done, come back here and click on the button.</string>
             <point key="canvasLocation" x="625.5" y="1354"/>
         </view>
         <view contentMode="scaleToFill" id="52" userLabel="linphoneLoginView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="517"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="485"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CONFIGURE LINPHONE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="LbS-op-QAh" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="302" height="29"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="USE YOUR LINPHONE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="LbS-op-QAh" userLabel="titleLabel">
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="29" id="iKL-h4-J6A"/>
+                        <constraint firstAttribute="height" constant="40" id="iKL-h4-J6A"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Enter your credentials" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="4n3-ZD-KVi" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="36" width="302" height="29"/>
-                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="29" id="hEC-xk-9SE"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
-                    <nil key="highlightedColor"/>
-                    <size key="shadowOffset" width="-1" height="-1"/>
-                </label>
-                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZFh-2U-bBK" userLabel="phoneLabel">
-                    <rect key="frame" x="38" y="85" width="284" height="14"/>
+                <label opaque="NO" userInteractionEnabled="NO" tag="122" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="PHONE NUMBER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZFh-2U-bBK" userLabel="phoneLabel">
+                    <frame key="frameInset" minX="38" minY="120" width="284" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="jfy-9g-AaO"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" tag="150" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oMl-dS-AW7" userLabel="countryButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="107" width="299" height="30"/>
+                <button opaque="NO" tag="150" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oMl-dS-AW7" userLabel="countryButton" customClass="UIRoundBorderedButton">
+                    <frame key="frameInset" minX="38" minY="142" width="299" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="X9C-Ll-LuK"/>
                     </constraints>
                     <state key="normal" title="Select your country">
-                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" title="Choose your country" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onCountryCodeClick:" destination="-1" eventType="touchUpInside" id="cym-v0-Bub"/>
                     </connections>
                 </button>
-                <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="iEA-YK-kua" userLabel="countryCodeField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="144" width="54" height="30"/>
-                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
+                <textField opaque="NO" clipsSubviews="YES" tag="109" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="iEA-YK-kua" userLabel="countryCodeField" customClass="UIAssistantTextField">
+                    <frame key="frameInset" minX="38" minY="179" width="54" height="30"/>
+                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                     <connections>
@@ -769,11 +744,11 @@ Once it is done, come back here and click on the button.</string>
                         <outlet property="nextFieldResponder" destination="Pcj-jL-x9P" id="9Lf-4r-WJi"/>
                     </connections>
                 </textField>
-                <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Pcj-jL-x9P" userLabel="phoneField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="95" y="144" width="242" height="30"/>
-                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="calibratedRGB"/>
+                <textField opaque="NO" clipsSubviews="YES" tag="107" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Pcj-jL-x9P" userLabel="phoneField" customClass="UIAssistantTextField">
+                    <frame key="frameInset" minX="95" minY="179" width="242" height="30"/>
+                    <color key="backgroundColor" red="0.85415387149999999" green="0.85412830110000004" blue="0.85414278509999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
-                    <color key="textColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="phonePad" returnKeyType="next"/>
                     <connections>
@@ -782,17 +757,17 @@ Once it is done, come back here and click on the button.</string>
                         <outlet property="nextFieldResponder" destination="OLm-Nz-ouj" id="0UY-af-M9g"/>
                     </connections>
                 </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="FQZ-mw-ibB" userLabel="phoneErrorLabel">
-                    <rect key="frame" x="38" y="174" width="299" height="10"/>
+                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Invalid phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="FQZ-mw-ibB" userLabel="phoneErrorLabel">
+                    <frame key="frameInset" minX="38" minY="209" width="299" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="ugT-oG-KjN"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.9859483242" green="0.0" blue="0.026950567960000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.9859483242" green="0.0" blue="0.026950567960000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZDs-1W-ZXo" userLabel="infoButton">
-                    <rect key="frame" x="315" y="81" width="22" height="22"/>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoDark" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZDs-1W-ZXo" userLabel="infoButton">
+                    <frame key="frameInset" minX="315" minY="116" width="22" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="22" id="pPH-Xg-pem"/>
                     </constraints>
@@ -800,8 +775,8 @@ Once it is done, come back here and click on the button.</string>
                         <action selector="onPhoneNumberDisclosureClick:" destination="-1" eventType="touchUpInside" id="VSO-kv-tux"/>
                     </connections>
                 </button>
-                <switch opaque="NO" tag="181" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="TXA-w5-uUE" userLabel="useUsernameSwitch">
-                    <rect key="frame" x="38" y="193" width="51" height="31"/>
+                <switch opaque="NO" tag="181" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="TXA-w5-uUE" userLabel="useUsernameSwitch">
+                    <frame key="frameInset" minX="38" minY="228" width="51" height="31"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="49" id="ASn-L4-7ek"/>
                         <constraint firstAttribute="height" constant="31" id="Ovv-bA-UOo"/>
@@ -810,38 +785,35 @@ Once it is done, come back here and click on the button.</string>
                         <action selector="onFormSwitchToggle:" destination="-1" eventType="valueChanged" id="8eU-9f-hUv"/>
                     </connections>
                 </switch>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Username instead of phone number" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1K4-Nb-b3J" userLabel="useUsernameLabel">
-                    <rect key="frame" x="95" y="193" width="242" height="31"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="calibratedRGB"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Use Username and password instead of your phone number " lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1K4-Nb-b3J" userLabel="useUsernameLabel">
+                    <frame key="frameInset" minX="95" minY="228" width="242" height="31"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view hidden="YES" tag="181" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DCj-jV-PVG" userLabel="usernameFormView">
-                    <rect key="frame" x="0.0" y="232" width="375" height="228"/>
+                <view hidden="YES" tag="181" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DCj-jV-PVG" userLabel="usernameFormView">
+                    <frame key="frameInset" minY="267" width="375" height="228"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="CBb-WR-x0g" userLabel="usernameErrorLabel">
-                            <rect key="frame" x="38" y="52" width="299" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="hXy-yP-5sU"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" tag="120" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USERNAME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zRE-5W-snR" userLabel="usernameLabel">
-                            <rect key="frame" x="38" y="0.0" width="299" height="14"/>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="YRW-ex-VZy" userLabel="usernameField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="18" width="299" height="30"/>
-                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Username"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="QcL-i5-g1D"/>
                             </constraints>
-                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
                             <connections>
@@ -851,124 +823,75 @@ Once it is done, come back here and click on the button.</string>
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EXf-qZ-KVL" userLabel="passwordLabel">
-                            <rect key="frame" x="38" y="71" width="299" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="14" id="oHE-eH-zxx"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="lMz-lo-z4b" userLabel="passwordErrorLabel">
-                            <rect key="frame" x="38" y="126" width="154" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="a7c-ra-bma"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="ap4-xh-CVK" userLabel="passwordField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="91" width="299" height="30"/>
-                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Password"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="30" id="BWP-n1-3OS"/>
                             </constraints>
-                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
                             <connections>
                                 <outlet property="delegate" destination="-1" id="nPx-Tc-Acv"/>
                                 <outlet property="errorLabel" destination="lMz-lo-z4b" id="1Se-fB-fYb"/>
-                                <outlet property="nextFieldResponder" destination="buh-Vp-YwP" id="agG-Ue-xBJ"/>
                             </connections>
                         </textField>
-                        <textField opaque="NO" clipsSubviews="YES" tag="106" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="buh-Vp-YwP" userLabel="displayNameField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="170" width="299" height="30"/>
-                            <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
-                            <accessibility key="accessibilityConfiguration" label="Display name"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="30" id="2xT-iR-eTS"/>
-                            </constraints>
-                            <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                            <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
-                            <connections>
-                                <outlet property="delegate" destination="-1" id="QcZ-wS-LhT"/>
-                                <outlet property="errorLabel" destination="YzC-qL-tc0" id="SbI-Cd-cxw"/>
-                            </connections>
-                        </textField>
-                        <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid display name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="YzC-qL-tc0" userLabel="displayNameErrorLabel">
-                            <rect key="frame" x="38" y="200" width="299" height="10"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="10" id="IEs-pK-s1e"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
                         <label opaque="NO" tag="999" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Forgot your password?" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="NtE-0O-Md1" userLabel="passwordForgottenLabel">
-                            <rect key="frame" x="192" y="125" width="145" height="11"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="145" id="Nak-EE-lzi"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                            <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="VEO-W5-GDl" appends="YES" id="0Qx-vd-QmI"/>
                             </connections>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DISPLAY NAME (OPTIONAL)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="emA-TJ-wRm" userLabel="displayNameLabel">
-                            <rect key="frame" x="38" y="148" width="299" height="14"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="14" id="G7Z-C4-N5D"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
                     </subviews>
-                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" notEnabled="YES"/>
                     </accessibility>
                     <constraints>
                         <constraint firstItem="YRW-ex-VZy" firstAttribute="leading" secondItem="CBb-WR-x0g" secondAttribute="leading" id="0E7-AW-Fx8"/>
-                        <constraint firstAttribute="bottom" secondItem="YzC-qL-tc0" secondAttribute="bottom" constant="18" id="7vZ-06-v8D"/>
                         <constraint firstItem="zRE-5W-snR" firstAttribute="top" secondItem="DCj-jV-PVG" secondAttribute="top" id="EMV-1O-s0j"/>
-                        <constraint firstItem="NtE-0O-Md1" firstAttribute="trailing" secondItem="emA-TJ-wRm" secondAttribute="trailing" id="GCa-MS-cIw"/>
                         <constraint firstItem="zRE-5W-snR" firstAttribute="leading" secondItem="DCj-jV-PVG" secondAttribute="leading" constant="38" id="J3v-Ic-gv0"/>
-                        <constraint firstItem="emA-TJ-wRm" firstAttribute="trailing" secondItem="buh-Vp-YwP" secondAttribute="trailing" id="Le9-qh-7Oe"/>
                         <constraint firstItem="CBb-WR-x0g" firstAttribute="leading" secondItem="EXf-qZ-KVL" secondAttribute="leading" id="OVh-Kk-tgh"/>
                         <constraint firstItem="CBb-WR-x0g" firstAttribute="top" secondItem="YRW-ex-VZy" secondAttribute="bottom" constant="4" id="PvO-bt-XzI"/>
                         <constraint firstItem="zRE-5W-snR" firstAttribute="centerX" secondItem="DCj-jV-PVG" secondAttribute="centerX" id="UAR-sK-buS"/>
                         <constraint firstItem="EXf-qZ-KVL" firstAttribute="leading" secondItem="ap4-xh-CVK" secondAttribute="leading" id="aeT-Ac-4dG"/>
                         <constraint firstItem="ap4-xh-CVK" firstAttribute="top" secondItem="EXf-qZ-KVL" secondAttribute="bottom" constant="6" id="agJ-Ch-jLm"/>
-                        <constraint firstItem="emA-TJ-wRm" firstAttribute="leading" secondItem="buh-Vp-YwP" secondAttribute="leading" id="ahf-CN-qd2"/>
                         <constraint firstItem="EXf-qZ-KVL" firstAttribute="trailing" secondItem="ap4-xh-CVK" secondAttribute="trailing" id="d4A-Yx-GFI"/>
                         <constraint firstItem="zRE-5W-snR" firstAttribute="trailing" secondItem="YRW-ex-VZy" secondAttribute="trailing" id="dK7-ew-fZ7"/>
-                        <constraint firstItem="emA-TJ-wRm" firstAttribute="top" secondItem="lMz-lo-z4b" secondAttribute="bottom" constant="12" id="e8c-vc-pbz"/>
                         <constraint firstItem="ap4-xh-CVK" firstAttribute="leading" secondItem="lMz-lo-z4b" secondAttribute="leading" id="emr-rt-kI0"/>
                         <constraint firstItem="EXf-qZ-KVL" firstAttribute="top" secondItem="CBb-WR-x0g" secondAttribute="bottom" constant="9" id="fq4-EL-CW7"/>
                         <constraint firstItem="YRW-ex-VZy" firstAttribute="trailing" secondItem="CBb-WR-x0g" secondAttribute="trailing" id="hBv-B1-qBX"/>
                         <constraint firstItem="CBb-WR-x0g" firstAttribute="trailing" secondItem="EXf-qZ-KVL" secondAttribute="trailing" id="hKS-bH-9Jp"/>
                         <constraint firstItem="NtE-0O-Md1" firstAttribute="leading" secondItem="lMz-lo-z4b" secondAttribute="trailing" id="jhu-pO-EfS"/>
                         <constraint firstItem="lMz-lo-z4b" firstAttribute="baseline" secondItem="NtE-0O-Md1" secondAttribute="firstBaseline" id="kNe-GB-Xy8"/>
-                        <constraint firstItem="buh-Vp-YwP" firstAttribute="top" secondItem="emA-TJ-wRm" secondAttribute="bottom" constant="8" symbolic="YES" id="lBh-jn-uyc"/>
-                        <constraint firstItem="buh-Vp-YwP" firstAttribute="leading" secondItem="YzC-qL-tc0" secondAttribute="leading" id="lU3-yI-x3m"/>
-                        <constraint firstItem="lMz-lo-z4b" firstAttribute="leading" secondItem="emA-TJ-wRm" secondAttribute="leading" id="lcS-NS-Vhy"/>
-                        <constraint firstItem="YzC-qL-tc0" firstAttribute="top" secondItem="buh-Vp-YwP" secondAttribute="bottom" id="nGa-fn-IRI"/>
                         <constraint firstItem="zRE-5W-snR" firstAttribute="leading" secondItem="YRW-ex-VZy" secondAttribute="leading" id="s7M-cn-Wwe"/>
                         <constraint firstItem="ap4-xh-CVK" firstAttribute="trailing" secondItem="NtE-0O-Md1" secondAttribute="trailing" id="uX8-rz-Dfo"/>
                         <constraint firstItem="NtE-0O-Md1" firstAttribute="top" secondItem="ap4-xh-CVK" secondAttribute="bottom" constant="4" id="xGj-xo-RsM"/>
                         <constraint firstItem="YRW-ex-VZy" firstAttribute="top" secondItem="zRE-5W-snR" secondAttribute="bottom" constant="4" id="zP4-JB-Icv"/>
-                        <constraint firstItem="buh-Vp-YwP" firstAttribute="trailing" secondItem="YzC-qL-tc0" secondAttribute="trailing" id="zXV-MW-mkX"/>
                     </constraints>
                 </view>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eIr-bh-JLB" userLabel="linphoneLoginButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="36" y="457" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Login">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -977,18 +900,26 @@ Once it is done, come back here and click on the button.</string>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="LOGIN">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="disabled">
-                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onLinphoneLoginClick:" destination="-1" eventType="touchUpInside" id="EcX-YF-Zzh"/>
                     </connections>
                 </button>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" misplaced="YES" text="Please confirm your country code and enter your phone number" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="4n3-ZD-KVi" userLabel="subtitleLabel">
+                    <frame key="frameInset" minX="36" minY="45" width="303" height="53"/>
+                    <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                    <size key="shadowOffset" width="-1" height="-1"/>
+                </label>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="ZDs-1W-ZXo" firstAttribute="leading" secondItem="ZFh-2U-bBK" secondAttribute="trailing" constant="-7" id="0fB-qP-gK5"/>
@@ -996,6 +927,7 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="iEA-YK-kua" firstAttribute="top" secondItem="oMl-dS-AW7" secondAttribute="bottom" constant="7" id="60n-0M-Zph"/>
                 <constraint firstItem="iEA-YK-kua" firstAttribute="top" secondItem="Pcj-jL-x9P" secondAttribute="top" id="6TX-Qa-DaI"/>
                 <constraint firstAttribute="trailing" secondItem="DCj-jV-PVG" secondAttribute="trailing" id="ALA-D3-F01"/>
+                <constraint firstItem="ZDs-1W-ZXo" firstAttribute="top" secondItem="4n3-ZD-KVi" secondAttribute="bottom" constant="15" id="BNO-yy-L0n"/>
                 <constraint firstItem="LbS-op-QAh" firstAttribute="leading" secondItem="52" secondAttribute="leading" constant="36" id="D5D-Bc-WXJ"/>
                 <constraint firstAttribute="trailing" secondItem="eIr-bh-JLB" secondAttribute="trailing" constant="40" id="Ekx-tz-zlL"/>
                 <constraint firstItem="Pcj-jL-x9P" firstAttribute="trailing" secondItem="FQZ-mw-ibB" secondAttribute="trailing" id="GDt-xd-skH"/>
@@ -1004,6 +936,7 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="ZFh-2U-bBK" firstAttribute="leading" secondItem="oMl-dS-AW7" secondAttribute="leading" id="J1d-X0-lKU"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="leading" secondItem="52" secondAttribute="leading" constant="38" id="Jam-Rx-a0C"/>
                 <constraint firstItem="eIr-bh-JLB" firstAttribute="leading" secondItem="4n3-ZD-KVi" secondAttribute="leading" id="KNU-0r-vXb"/>
+                <constraint firstItem="4n3-ZD-KVi" firstAttribute="top" secondItem="LbS-op-QAh" secondAttribute="bottom" constant="15" id="KnX-iM-ZLp"/>
                 <constraint firstAttribute="bottom" secondItem="eIr-bh-JLB" secondAttribute="bottom" constant="20" id="Lf5-ds-Ht5"/>
                 <constraint firstItem="LbS-op-QAh" firstAttribute="top" secondItem="52" secondAttribute="top" id="P2b-Fr-tq0"/>
                 <constraint firstItem="DCj-jV-PVG" firstAttribute="leading" secondItem="52" secondAttribute="leading" id="PLu-pH-98a"/>
@@ -1017,7 +950,6 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="FQZ-mw-ibB" firstAttribute="centerX" secondItem="DCj-jV-PVG" secondAttribute="centerX" id="fC3-C2-meT"/>
                 <constraint firstItem="4n3-ZD-KVi" firstAttribute="centerX" secondItem="ZFh-2U-bBK" secondAttribute="centerX" constant="7" id="fyO-c3-bn4"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="trailing" secondItem="Pcj-jL-x9P" secondAttribute="trailing" id="jhv-gC-ecD"/>
-                <constraint firstItem="4n3-ZD-KVi" firstAttribute="top" secondItem="LbS-op-QAh" secondAttribute="bottom" constant="7" id="k0S-Jb-iEo"/>
                 <constraint firstItem="iEA-YK-kua" firstAttribute="bottom" secondItem="Pcj-jL-x9P" secondAttribute="bottom" id="nO5-GD-225"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="top" secondItem="ZFh-2U-bBK" secondAttribute="bottom" constant="8" symbolic="YES" id="nSs-l5-wiM"/>
                 <constraint firstItem="ZFh-2U-bBK" firstAttribute="centerY" secondItem="ZDs-1W-ZXo" secondAttribute="centerY" id="naG-Sf-QK3"/>
@@ -1026,53 +958,48 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="1K4-Nb-b3J" firstAttribute="leading" secondItem="TXA-w5-uUE" secondAttribute="trailing" constant="8" symbolic="YES" id="pp3-xL-j4f"/>
                 <constraint firstItem="LbS-op-QAh" firstAttribute="leading" secondItem="4n3-ZD-KVi" secondAttribute="leading" id="qoo-aP-AYy"/>
                 <constraint firstItem="Pcj-jL-x9P" firstAttribute="leading" secondItem="1K4-Nb-b3J" secondAttribute="leading" id="sAm-iq-V5T"/>
-                <constraint firstItem="ZDs-1W-ZXo" firstAttribute="top" secondItem="4n3-ZD-KVi" secondAttribute="bottom" constant="16" id="z9N-wX-mzn"/>
                 <constraint firstItem="ZDs-1W-ZXo" firstAttribute="trailing" secondItem="oMl-dS-AW7" secondAttribute="trailing" id="zSS-Yy-55L"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="1055.5" y="234.5"/>
+            <point key="canvasLocation" x="1051.5" y="231.5"/>
         </view>
         <view contentMode="scaleToFill" id="56" userLabel="loginView">
             <rect key="frame" x="0.0" y="0.0" width="374" height="576"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CONFIGURE SIP ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="wen-Vj-Wgv" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="302" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Enter your username and password with your SIP domain." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="LsE-IY-ocU" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="66" width="302" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="zBn-a3-Iuh"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" tag="120" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USERNAME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tAv-f7-kDI" userLabel="usernameLabel">
-                    <rect key="frame" x="38" y="131" width="298" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="SAQ-co-nAo"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="FJ1-Xt-g7g" userLabel="usernameField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="153" width="298" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="Xxt-U5-krh"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
                     <connections>
@@ -1082,31 +1009,28 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="UJ1-kb-e8g" userLabel="usernameErrorLabel">
-                    <rect key="frame" x="38" y="183" width="298" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="A8w-c1-b4s"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD (OPTIONAL)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XPq-fy-KZS" userLabel="passwordLabel">
-                    <rect key="frame" x="38" y="202" width="298" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="E7u-c8-RAQ"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="zEa-Dj-QiH" userLabel="passwordField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="227" width="298" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="ywR-ZJ-1YN"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
                     <connections>
@@ -1116,31 +1040,28 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Oyr-f0-auK" userLabel="passwordErrorLabel">
-                    <rect key="frame" x="38" y="257" width="298" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="7Bc-nT-wWI"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DOMAIN" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MgC-eB-ar3" userLabel="domainLabel">
-                    <rect key="frame" x="38" y="279" width="298" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="RXd-bt-ksU"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="104" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="5kh-Wo-SMY" userLabel="domainField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="301" width="298" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Domain"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="Evx-tD-kkq"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
                     <connections>
@@ -1150,25 +1071,22 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid domain" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="ths-8b-FoU" userLabel="domainErrorLabel">
-                    <rect key="frame" x="38" y="331" width="298" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="bgJ-B0-bq6"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TRANSPORT" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uqz-B6-2gR" userLabel="transportLabel">
-                    <rect key="frame" x="38" y="433" width="298" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="VcI-xl-cnu"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <segmentedControl opaque="NO" tag="110" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Nrv-SM-lMf" userLabel="transportSegment">
-                    <rect key="frame" x="36" y="455" width="299" height="29"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="28" id="vMv-qV-h8o"/>
                     </constraints>
@@ -1177,25 +1095,23 @@ Once it is done, come back here and click on the button.</string>
                         <segment title="TCP"/>
                         <segment title="TLS"/>
                     </segments>
-                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </segmentedControl>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DISPLAY NAME (OPTIONAL)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F0s-Da-L59" userLabel="displayNameLabel">
-                    <rect key="frame" x="38" y="356" width="298" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="XHQ-Rg-0YO"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="106" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="7Cb-fa-CY5" userLabel="displayNameField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="375" width="298" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Display name"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="Mr8-Nc-w1K"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                     <connections>
@@ -1204,16 +1120,14 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid display name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="3nU-NE-Lke" userLabel="displayNameErrorLabel">
-                    <rect key="frame" x="38" y="405" width="298" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="lBE-o5-qWV"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Ch-Ji-vjA" userLabel="loginButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="516" width="298" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Login">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -1222,10 +1136,10 @@ Once it is done, come back here and click on the button.</string>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="LOGIN">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="disabled">
-                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
@@ -1233,7 +1147,7 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="tAv-f7-kDI" firstAttribute="leading" secondItem="56" secondAttribute="leading" constant="38" id="1fc-cF-x8o"/>
                 <constraint firstItem="UJ1-kb-e8g" firstAttribute="leading" secondItem="XPq-fy-KZS" secondAttribute="leading" id="2Qq-A9-qTY"/>
@@ -1297,41 +1211,37 @@ Once it is done, come back here and click on the button.</string>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="FETCH REMOTE CONFIGURATION" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="dpv-8C-qt6" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="303" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Please provide your provisioning URL." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="hEy-Xe-afq" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="66" width="303" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="vbU-BF-C6f"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0tr-gN-2Ce" userLabel="urlLabel">
-                    <rect key="frame" x="38" y="131" width="299" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="1xT-bm-Ag5"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="105" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ffg-Of-xyh" userLabel="urlField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="153" width="299" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="URL"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="7OB-M5-kU2"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL" returnKeyType="done"/>
                     <connections>
@@ -1340,16 +1250,14 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="uEq-Gk-9iy" userLabel="urlErrorLabel">
-                    <rect key="frame" x="38" y="183" width="299" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="VcL-Iz-4n4"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eM0-bn-v3C" userLabel="downloadButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="201" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Fetch and apply">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -1358,10 +1266,10 @@ Once it is done, come back here and click on the button.</string>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="FETCH AND APPLY">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="disabled">
-                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
@@ -1369,7 +1277,7 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="uEq-Gk-9iy" firstAttribute="leading" secondItem="eM0-bn-v3C" secondAttribute="leading" id="5bG-ki-MFj"/>
                 <constraint firstItem="dpv-8C-qt6" firstAttribute="trailing" secondItem="hEy-Xe-afq" secondAttribute="trailing" id="9Xx-ky-CmY"/>
@@ -1400,41 +1308,37 @@ Once it is done, come back here and click on the button.</string>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="CONFIGURE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="8ko-YU-KdD" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="303" height="59"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="These parameters were retrieved from a remote provisioning profile." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="njd-TT-zP8" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="66" width="303" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="YUS-es-Loa"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" tag="120" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USERNAME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2tf-jf-LQL" userLabel="usernameLabel">
-                    <rect key="frame" x="38" y="131" width="299" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="egg-hp-rpV"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="qgP-7X-pUs" userLabel="usernameField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="153" width="299" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="f5B-bE-Uf0"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next"/>
                     <connections>
@@ -1443,22 +1347,20 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JNj-cr-FwU" userLabel="passwordLabel">
-                    <rect key="frame" x="38" y="192" width="299" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="efw-bX-6rD"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="hfJ-yu-wVn" userLabel="passwordField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="217" width="299" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="cfl-mf-gkE"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" secureTextEntry="YES"/>
                     <connections>
@@ -1467,22 +1369,20 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DOMAIN" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KTG-uK-Lji" userLabel="domainLabel">
-                    <rect key="frame" x="38" y="259" width="299" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="394-Vp-bpj"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.42667588591575623" green="0.4266631007194519" blue="0.42667034268379211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="104" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="gfr-KY-4vo" userLabel="domainField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="281" width="299" height="30"/>
-                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Domain"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="RNp-Me-1Fq"/>
                     </constraints>
-                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                     <connections>
@@ -1491,7 +1391,6 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eKs-or-rqw" userLabel="remoteProvisioningLoginButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="319" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Login">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -1500,10 +1399,10 @@ Once it is done, come back here and click on the button.</string>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <state key="normal" title="LOGIN">
-                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="disabled">
-                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.71885228157043457" green="0.71883076429367065" blue="0.71884298324584961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
@@ -1511,7 +1410,7 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="8ko-YU-KdD" firstAttribute="leading" secondItem="xVK-hL-6pe" secondAttribute="leading" constant="36" id="32f-7K-Fck"/>
                 <constraint firstItem="2tf-jf-LQL" firstAttribute="trailing" secondItem="qgP-7X-pUs" secondAttribute="trailing" id="3ec-OA-Up7"/>

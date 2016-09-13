@@ -699,7 +699,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return NSLocalizedString(@"This account is not activated yet.", nil);
 	if
 		IS(ERROR_ALIAS_ALREADY_IN_USE)
-	return NSLocalizedString(@"This alias is already used.", nil);
+	return NSLocalizedString(@"This phone number is already used. Please type a different number. \nYou can delete "
+							 @"your existing account if you want to reuse your phone number.",
+							 nil);
 	if
 		IS(ERROR_ALIAS_DOESNT_EXIST)
 	return NSLocalizedString(@"This alias does not exist.", nil);
@@ -711,7 +713,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return NSLocalizedString(@"This email does not exist.", nil);
 	if
 		IS(ERROR_KEY_DOESNT_MATCH)
-	return NSLocalizedString(@"The confirmation code is invalid.", nil);
+	return NSLocalizedString(@"The confirmation code is invalid. \nPlease check your SMS and try again.", nil);
 	if
 		IS(ERROR_PASSWORD_DOESNT_MATCH)
 	return NSLocalizedString(@"Passwords do not match.", nil);
@@ -1081,11 +1083,14 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 
 - (IBAction)onPhoneNumberDisclosureClick:(id)sender {
 	UIAlertView *errorView = [[UIAlertView alloc]
-							  initWithTitle:NSLocalizedString(@"What is my phone number for?", nil)
-							  message:NSLocalizedString(@"A SMS code will be sent to your phone number to validate your account.", nil)
-							  delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-							  otherButtonTitles:nil, nil];
+			initWithTitle:NSLocalizedString(@"What will my phone number be used for?", nil)
+				  message:NSLocalizedString(@"Thanks to your phone number, your friends will find you more easily. "
+											@"\nYou will see in your address book who is using Linphone and your "
+											@"friends will know that they can reach you on Linphone as well.",
+											nil)
+				 delegate:nil
+		cancelButtonTitle:NSLocalizedString(@"OK", nil)
+		otherButtonTitles:nil, nil];
 	[errorView show];
 }
 
