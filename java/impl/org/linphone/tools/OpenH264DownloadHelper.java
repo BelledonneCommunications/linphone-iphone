@@ -58,7 +58,9 @@ public class OpenH264DownloadHelper {
         nameLib = "libopenh264-1.5.so";
         urlDownload = "http://ciscobinary.openh264.org/libopenh264-1.5.0-android19.so.bz2";
         nameFileDownload = "libopenh264-1.5.0-android19.so.bz2";
-        fileDirection = context.getFilesDir().toString();
+        if(context.getFilesDir() != null) {
+            fileDirection = context.getFilesDir().toString();
+        }
     }
 
 	/**
