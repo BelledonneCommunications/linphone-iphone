@@ -111,14 +111,22 @@ public interface LinphoneFriend {
 	/**
 	 * Get the status of a friend
 	 * @return OnlineStatus
-	 * @deprecated Use getPresenceModel() instead
+	 * @deprecated Use getPresenceModelForUri() instead
 	 */
 	OnlineStatus getStatus();
 	/**
 	 * Get the presence information of a friend
 	 * @return A #PresenceModel object, or null if the friend do not have presence information (in which case he is considered offline)
+	 * @deprecated Use getPresenceModelForUri() instead
 	 */
 	PresenceModel getPresenceModel();
+	
+	/**
+	 * Get the presence information for a specific uri (phone number or sip address)
+	 * @return A #PresenceModel object or null
+	 */
+	PresenceModel getPresenceModelForUri(String uri);
+	
 	/**
 	 * Set the presence information of a friend
 	 * @param presenceModel A #PresenceModel object

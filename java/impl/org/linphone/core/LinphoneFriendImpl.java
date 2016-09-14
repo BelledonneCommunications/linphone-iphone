@@ -33,6 +33,7 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native boolean isPresenceReceived(long nativePtr);
 	private native int getStatus(long nativePtr);
 	private native Object getPresenceModel(long nativePtr);
+	private native Object getPresenceModelForUri(long nativePtr, String uri);
 	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native void edit(long nativePtr);
 	private native void done(long nativePtr);
@@ -91,6 +92,9 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	}
 	public PresenceModel getPresenceModel() {
 		return (PresenceModel)getPresenceModel(nativePtr);
+	}
+	public PresenceModel getPresenceModelForUri(String uri) {
+		return (PresenceModel)getPresenceModelForUri(nativePtr, uri);
 	}
 	public void setPresenceModel(PresenceModel presenceModel) {
 		setPresenceModel(nativePtr, ((PresenceModelImpl)presenceModel).getNativePtr());

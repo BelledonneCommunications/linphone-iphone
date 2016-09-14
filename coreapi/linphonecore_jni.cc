@@ -3914,6 +3914,15 @@ extern "C" jboolean Java_org_linphone_core_LinphoneFriendImpl_isAlreadyPresentIn
 	return lf->friend_list != NULL;
 }
 
+extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getPresenceModelForUri(JNIEnv* env, jobject thiz, jlong ptr, jstring juri) {
+	LinphoneFriend *lf = (LinphoneFriend *)ptr;
+	const char *uri = GetStringUTFChars(env, juri);
+	LinphonePresenceModel *model = (LinphonePresenceModel *)linphone_friend_get_presence_model_for_uri_or_tel(lf, uri);
+	ReleaseStringUTFChars(env, juri, uri);
+	if (model == NULL) return NULL;
+	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model);
+}
+
 /*
  * Class:     org_linphone_core_LinphoneFriendImpl
  * Method:    getPresenceModel
