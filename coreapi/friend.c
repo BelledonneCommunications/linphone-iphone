@@ -1227,13 +1227,25 @@ static bool_t linphone_update_table(sqlite3* db) {
 	}
     sqlite3_finalize(stmt_version);
 
-	if (database_user_version == 0) {
+	if (database_user_version != 3100) { // Linphone 3.10.0
 		int ret = sqlite3_exec(db,
 			"BEGIN TRANSACTION;\n"
-			"PRAGMA writable_schema = 1;\n"
-			"UPDATE SQLITE_MASTER SET SQL = replace(SQL, 'sip_uri TEXT NOT NULL', 'sip_uri TEXT NULL') WHERE NAME = 'friends';\n"
-			"PRAGMA writable_schema = 0;\n"
-			"PRAGMA user_version = 1;\n"
+			"ALTER TABLE friends RENAME TO temp_friends;\n"
+			"CREATE TABLE IF NOT EXISTS friends ("
+						"id                INTEGER PRIMARY KEY AUTOINCREMENT,"
+						"friend_list_id    INTEGER,"
+						"sip_uri           TEXT,"
+						"subscribe_policy  INTEGER,"
+						"send_subscribe    INTEGER,"
+						"ref_key           TEXT,"
+						"vCard             TEXT,"
+						"vCard_etag        TEXT,"
+						"vCard_url         TEXT,"
+						"presence_received INTEGER"
+						");\n"
+			"INSERT INTO friends SELECT id, friend_list_id, sip_uri, subscribe_policy, send_subscribe, ref_key, vCard, vCard_etag, vCard_url, presence_received FROM temp_friends;\n"
+			"DROP TABLE temp_friends;\n"
+			"PRAGMA user_version = 3100;\n"
 			"COMMIT;", 0, 0, &errmsg);
 		if (ret != SQLITE_OK) {
 			ms_error("Error altering table friends: %s.\n", errmsg);
