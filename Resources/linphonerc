@@ -13,12 +13,18 @@ start_at_boot_preference=1
 stun_preference=stun.linphone.org
 voiceproc_preference=1
 
+[in_app_purchase]
+#set to 1 if in-app purchases are to be shown in the application
+enabled=1
+
 [default_values]
 reg_expires=1314000
 
 [misc]
 file_transfer_server_url=https://www.linphone.org:444/lft.php
 max_calls=3
+#early media to test urmet app
+real_early_media=1
 
 [net]
 download_bw=380
