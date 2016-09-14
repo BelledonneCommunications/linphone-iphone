@@ -633,12 +633,15 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 	LinphoneProxyConfig *tmpproxy = proxy ? proxy : linphone_proxy_config_new();
 	char* result = NULL;
 	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
+		LinphoneDialPlan dialplan = *linphone_dial_plan_by_ccc(tmpproxy->dial_prefix); //copy dial plan;
 		char * flatten=flatten_number(username);
-		LinphoneDialPlan dialplan = *linphone_dial_plan_by_ccc(tmpproxy->dial_prefix); //copy dial plan
 		ms_debug("Flattened number is '%s' for '%s'",flatten, username);
-		if (strcmp(tmpproxy->dial_prefix,dialplan.ccc)!=0){
-			//probably generic dialplan, preserving proxy dial prefix
-			strcpy(dialplan.ccc,tmpproxy->dial_prefix);
+		
+		if (tmpproxy->dial_prefix){
+			if (strcmp(tmpproxy->dial_prefix,dialplan.ccc) != 0){
+				//probably generic dialplan, preserving proxy dial prefix
+				strcpy(dialplan.ccc,tmpproxy->dial_prefix);
+			}
 		}
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
 		if (tmpproxy->dial_prefix!=NULL && tmpproxy->dial_prefix[0]!='\0'){

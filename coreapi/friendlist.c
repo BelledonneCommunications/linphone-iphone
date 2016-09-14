@@ -976,11 +976,12 @@ void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list
 
 void linphone_friend_list_enable_subscriptions(LinphoneFriendList *list, bool_t enabled) {
 	if (list->enable_subscriptions != enabled) {
+		list->enable_subscriptions = enabled;
 		if (enabled) {
 			linphone_friend_list_update_subscriptions(list, NULL, TRUE);
 		} else {
 			linphone_friend_list_close_subscriptions(list);
 		}
-		list->enable_subscriptions = enabled;
+		
 	}
 }
