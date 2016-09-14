@@ -240,15 +240,37 @@ static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const L
 }
 
 
+static LinphoneCall * look_for_broken_call_to_replace(SalOp *h, LinphoneCore *lc) {
+	const bctbx_list_t *calls = linphone_core_get_calls(lc);
+	const bctbx_list_t *it = calls;
+	while (it != NULL) {
+		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(it);
+		if (call->broken && sal_call_compare_op(h, call->op)) {
+			return call;
+		}
+		it = bctbx_list_next(it);
+	}
+	
+	return NULL;
+}
+
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call;
+	LinphoneCall *replaced_call;
 	char *alt_contact;
 	LinphoneAddress *from_addr=NULL;
 	LinphoneAddress  *to_addr=NULL;
 	LinphoneAddress *from_address_to_search_if_me=NULL; /*address used to know if I'm the caller*/
 	SalMediaDescription *md;
 	const char * p_asserted_id;
+
+	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
+	replaced_call = look_for_broken_call_to_replace(h, lc);
+	if (replaced_call != NULL) {
+		linphone_call_replace_op(replaced_call, h);
+		return;
+	}
 
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {

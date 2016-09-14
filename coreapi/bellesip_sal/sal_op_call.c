@@ -295,7 +295,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 				}
 			} else if (code >=200
 						&& code<300
-						&& strcmp("UPDATE",belle_sip_request_get_method(req))==0) {
+						&& strcmp("UPDATE",method)==0) {
 					handle_sdp_from_response(op,response);
 					op->base.root->callbacks.call_accepted(op);
 			}
@@ -496,6 +496,7 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
 	int err=0;
 	SalReason reason;
+
 	if (extract_sdp(op,BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
 			op->sdp_offering=FALSE;
@@ -878,9 +879,9 @@ int sal_call_accept(SalOp*h){
 		return -1;
 	}
 	ms_message("Accepting server transaction [%p] on op [%p]", transaction, h);
+
 	/* sends a 200 OK */
 	response = sal_op_create_response_from_request(h,belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(transaction)),200);
-
 	if (response==NULL){
 		ms_error("Fail to build answer for call");
 		return -1;
@@ -1086,6 +1087,11 @@ int sal_call_is_offerer(const SalOp *h){
 	return h->sdp_offering;
 }
 
+bool_t sal_call_compare_op(const SalOp *op1, const SalOp *op2) {
+	if (strcmp(op1->base.call_id, op2->base.call_id) == 0) return TRUE;
+	return FALSE;
+}
 
-
-
+bool_t sal_call_dialog_request_pending(const SalOp *op) {
+	return belle_sip_dialog_request_pending(op->dialog) ? TRUE : FALSE;
+}

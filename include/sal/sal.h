@@ -751,6 +751,8 @@ bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);
 int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
+bool_t sal_call_compare_op(const SalOp *op1, const SalOp *op2);
+bool_t sal_call_dialog_request_pending(const SalOp *op);
 /* Call test API */
 
 

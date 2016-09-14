@@ -4189,6 +4189,95 @@ static void call_with_network_switch_in_early_state_2(void){
 	_call_with_network_switch_in_early_state(FALSE);
 }
 
+static void recovered_call_on_network_switch_in_early_state_1(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 2));
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void recovered_call_on_network_switch_in_early_state_2(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	linphone_core_set_network_reachable(pauline->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableTrue, 2);
+
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void recovered_call_on_network_switch_in_early_state_3(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	linphone_core_set_network_reachable(pauline->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableTrue, 2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	BC_ASSERT_TRUE(sal_call_dialog_request_pending(incoming_call->op));
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	BC_ASSERT_FALSE(sal_call_dialog_request_pending(incoming_call->op));
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -5000,6 +5089,9 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with network switch", call_with_network_switch),
 	TEST_NO_TAG("Call with network switch in early state 1", call_with_network_switch_in_early_state_1),
 	TEST_NO_TAG("Call with network switch in early state 2", call_with_network_switch_in_early_state_2),
+	TEST_NO_TAG("Recovered call on network switch in early state 1", recovered_call_on_network_switch_in_early_state_1),
+	TEST_NO_TAG("Recovered call on network switch in early state 2", recovered_call_on_network_switch_in_early_state_2),
+	TEST_NO_TAG("Recovered call on network switch in early state 3", recovered_call_on_network_switch_in_early_state_3),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
 	TEST_ONE_TAG("Call with network switch, ICE and RTT", call_with_network_switch_ice_and_rtt, "ICE"),
 	TEST_NO_TAG("Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh),
