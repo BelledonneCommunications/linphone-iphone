@@ -757,9 +757,15 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 		}
 		fr->inc_subscribe_pending = FALSE;
 	}
+#if 0
+	/*triggering a list subscription update from here is probably not a good idea, as linphone_friend_done() may be called 
+	 * for thousand of LinphoneFriend sequentially.
+	 * It is preferable that the application calls linphone_friend_list_update_subscriptions() once it has performmed
+	 * all modifications to friends in the list.*/
 	if (fr->lc) {
 		linphone_friend_list_update_subscriptions(fr->friend_list, NULL, linphone_core_should_subscribe_friends_only_when_registered(fr->lc));
 	}
+#endif
 	ms_debug("linphone_friend_apply() done.");
 	lc->bl_refresh=TRUE;
 	fr->commit=FALSE;
