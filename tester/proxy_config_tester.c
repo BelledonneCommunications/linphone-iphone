@@ -64,7 +64,9 @@ static void phone_normalization_with_proxy(void) {
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+330012345678"), "+330012345678");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+3301 2345678"), "+33012345678");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+3301234567891"), "+3301234567891");
+	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+33 (0) 1 23 45 67 89"), "+33123456789");
 
+	
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "123456789"), "+33123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, " 0123456789"), "+33123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "0012345678"), "+12345678");
