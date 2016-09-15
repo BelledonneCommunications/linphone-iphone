@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "lpconfig.h"
 #include "private.h"
 #include "conference_private.h"
+
 #include <ortp/event.h>
 #include <ortp/b64.h>
 #include <math.h>
@@ -86,6 +87,14 @@ static bool_t generate_b64_crypto_key(size_t key_length, char* key_out, size_t k
 	key_out[b64_size] = '\0';
 	ms_free(tmp);
 	return TRUE;
+}
+
+static bool_t linphone_call_encryption_mandatory(LinphoneCall *call){
+	if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
+		ms_message("Forced encryption mandatory on call [%p] due to SRTP-DTLS",call);
+		return TRUE;
+	}
+	return call->params->encryption_mandatory;
 }
 
 LinphoneCore *linphone_call_get_core(const LinphoneCall *call){
@@ -186,7 +195,7 @@ static void propagate_encryption_changed(LinphoneCall *call){
 		ms_message("All streams are encrypted key exchanged using %s", call->current_params->media_encryption==LinphoneMediaEncryptionZRTP?"ZRTP":call->current_params->media_encryption==LinphoneMediaEncryptionDTLS?"DTLS":"Unknown mechanism");
 		linphone_core_notify_call_encryption_changed(call->core, call, TRUE, call->auth_token);
 #ifdef VIDEO_ENABLED
-		if (call->current_params->encryption_mandatory && call->videostream && media_stream_started((MediaStream *)call->videostream)) {
+		if (linphone_call_encryption_mandatory(call) && call->videostream && media_stream_started((MediaStream *)call->videostream)) {
 			video_stream_send_vfu(call->videostream); /*nothing could have been sent yet so generating key frame*/
 		}
 #endif
@@ -524,7 +533,7 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 
 static void setup_zrtp_hash(LinphoneCall *call, SalMediaDescription *md) {
 	int i;
-	if (ms_zrtp_available()) { /* set the hello hash for all streams */
+	if (linphone_core_media_encryption_supported(call->core, LinphoneMediaEncryptionZRTP)) { /* set the hello hash for all streams */
 		for(i=0; i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 			if (!sal_stream_description_active(&md->streams[i])) continue;
 			if (call->sessions[i].zrtp_context!=NULL) {
@@ -1215,7 +1224,7 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, S
 		call->params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(call->core)*1000;
 	}
 	
-	if ((sal_media_description_has_zrtp(md) == TRUE) && (ms_zrtp_available() == TRUE)) {
+	if ((sal_media_description_has_zrtp(md) == TRUE) && (linphone_core_media_encryption_supported(call->core, LinphoneMediaEncryptionZRTP) == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionZRTP;
 	}else if ((sal_media_description_has_dtls(md) == TRUE) && (media_stream_dtls_supported() == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionDTLS;
@@ -2485,7 +2494,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		setup_dtls_params(call, &audiostream->ms);
 
 		/* init zrtp even if we didn't explicitely set it, just in case peer offers it */
-		if (ms_zrtp_available()) {
+		if (linphone_core_media_encryption_supported(lc, LinphoneMediaEncryptionZRTP)) {
 			char *uri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
 			MSZrtpParams params;
 			memset(&params,0,sizeof(MSZrtpParams));
@@ -2598,7 +2607,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
 			setup_dtls_params(call, &call->videostream->ms);
 			/* init zrtp even if we didn't explicitely set it, just in case peer offers it */
-			if (ms_zrtp_available()) {
+			if (linphone_core_media_encryption_supported(lc, LinphoneMediaEncryptionZRTP)) {
 				video_stream_enable_zrtp(call->videostream, call->audiostream);
 			}
 
@@ -3278,7 +3287,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				}
 			}
 
-			ms_media_stream_sessions_set_encryption_mandatory(&call->audiostream->ms.sessions,call->current_params->encryption_mandatory);
+			ms_media_stream_sessions_set_encryption_mandatory(&call->audiostream->ms.sessions, linphone_call_encryption_mandatory(call));
 
 			if (next_state == LinphoneCallPaused && captcard == NULL && playfile != NULL){
 				int pause_time=500;
@@ -3297,7 +3306,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			call->current_params->low_bandwidth=call->params->low_bandwidth;
 
 			/* start ZRTP engine if needed : set here or remote have a zrtp-hash attribute */
-			if (call->params->media_encryption==LinphoneMediaEncryptionZRTP || remote_stream->haveZrtpHash==1) {
+			if (linphone_core_media_encryption_supported(lc, LinphoneMediaEncryptionZRTP) &&
+				(call->params->media_encryption == LinphoneMediaEncryptionZRTP || remote_stream->haveZrtpHash==1) ){
 				audio_stream_start_zrtp(call->audiostream);
 				if (remote_stream->haveZrtpHash == 1) {
 					int retval;
@@ -3473,7 +3483,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 							used_pt, &io);
 					}
 				}
-				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,call->current_params->encryption_mandatory);
+				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,
+					linphone_call_encryption_mandatory(call));
 				_linphone_call_set_next_video_frame_decoded_trigger(call);
 
 				/* start ZRTP engine if needed : set here or remote have a zrtp-hash attribute */
@@ -3546,7 +3557,8 @@ static void linphone_call_start_text_stream(LinphoneCall *call) {
 			text_stream_start(call->textstream, call->text_profile, rtp_addr, tstream->rtp_port, rtcp_addr, (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, used_pt);
 			ms_filter_add_notify_callback(call->textstream->rttsink, real_time_text_character_received, call, FALSE);
 
-			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,call->current_params->encryption_mandatory);
+			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,
+				linphone_call_encryption_mandatory(call));
 		} else ms_warning("No text stream accepted.");
 	} else {
 		ms_message("No valid text stream defined.");
@@ -3562,6 +3574,7 @@ static void linphone_call_set_symmetric_rtp(LinphoneCall *call, bool_t val){
 		}
 	}
 }
+
 
 void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState next_state){
 	LinphoneCore *lc=call->core;
@@ -3599,11 +3612,6 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 		/*if there is an ICE session when we are about to start streams, then ICE will conduct the media path checking and authentication properly.
 		 * Symmetric RTP must be turned off*/
 		linphone_call_set_symmetric_rtp(call, FALSE);
-	}
-
-	if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
-		call->current_params->encryption_mandatory = TRUE;
-		ms_message("Forcing encryption mandatory on call [%p]",call);
 	}
 
 	call->nb_media_starts++;

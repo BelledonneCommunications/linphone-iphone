@@ -1002,6 +1002,7 @@ struct _LinphoneCore
 	bool_t send_call_stats_periodical_updates;
 	bool_t forced_ice_relay;
 	bool_t short_turn_refresh;
+	
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
@@ -1041,6 +1042,9 @@ struct _LinphoneCore
 	jmethodID multicast_lock_release_id;
 #endif
 	LinphoneVcardContext *vcard_context;
+	
+	/*for tests only*/
+	bool_t zrtp_not_available_simulation;
 };
 
 

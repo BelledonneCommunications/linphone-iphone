@@ -357,7 +357,9 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_callee.number_of_LinphoneCallEncryptedOn+1);
 
 		/* when caller is encryptionNone but callee is ZRTP, we expect ZRTP to take place */
-		if ((linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionNone) && (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP)) {
+		if ((linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionNone) 
+			&& (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP) 
+			&& linphone_core_media_encryption_supported(caller_mgr->lc, LinphoneMediaEncryptionZRTP)) {
 			const LinphoneCallParams* call_param = linphone_call_get_current_params(callee_call);
 			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param), LinphoneMediaEncryptionZRTP, int, "%d");
 			call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
@@ -4792,6 +4794,58 @@ static void call_with_zrtp_configured_callee_side(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static bool_t quick_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
+	linphone_core_invite_address(m1->lc, m2->identity);
+	if (!BC_ASSERT_TRUE(wait_for(m1->lc, m2->lc, &m2->stat.number_of_LinphoneCallIncomingReceived, 1)))
+		return FALSE;
+	linphone_core_accept_call(m2->lc, linphone_core_get_current_call(m2->lc));
+	if (!BC_ASSERT_TRUE(wait_for(m1->lc, m2->lc, &m2->stat.number_of_LinphoneCallStreamsRunning, 1)))
+		return FALSE;
+	if (!BC_ASSERT_TRUE(wait_for(m1->lc, m2->lc, &m1->stat.number_of_LinphoneCallStreamsRunning, 1)))
+		return FALSE;
+	return TRUE;
+}
+
+static void call_with_encryption_mandatory(bool_t caller_has_encryption_mandatory){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	/*marie doesn't support ZRTP at all*/
+	marie->lc->zrtp_not_available_simulation=1;
+	
+	/*pauline requests encryption to be mandatory*/
+	linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionZRTP);
+	linphone_core_set_media_encryption_mandatory(pauline->lc, TRUE);
+	
+	if (!caller_has_encryption_mandatory){
+		if (!BC_ASSERT_TRUE(quick_call(marie, pauline))) goto end;
+	}else{
+		if (!BC_ASSERT_TRUE(quick_call(pauline, marie))) goto end;
+	}
+	wait_for_until(pauline->lc, marie->lc, NULL, 0, 2000);
+	
+	/*assert that no RTP packets have been sent or received by Pauline*/
+	/*testing packet_sent doesn't work, because packets dropped by the transport layer are counted as if they were sent.*/
+#if 0
+	BC_ASSERT_EQUAL(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->rtp_stats.packet_sent, 0, int, "%i");
+#endif
+	/*however we can trust packet_recv from the other party instead */
+	BC_ASSERT_EQUAL(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->rtp_stats.packet_recv, 0, int, "%i");
+	BC_ASSERT_EQUAL(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->rtp_stats.packet_recv, 0, int, "%i");
+	end_call(marie, pauline);
+
+	end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_from_plain_rtp_to_zrtp(void){
+	call_with_encryption_mandatory(FALSE);
+}
+
+static void call_from_zrtp_to_plain_rtp(void){
+	call_with_encryption_mandatory(TRUE);
+}
 
 static void v6_call_over_nat_64(void){
 	LinphoneCoreManager* marie;
@@ -4963,8 +5017,10 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE with default candidate not stun", call_with_ice_with_default_candidate_not_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server", call_with_ice_without_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server one side", call_with_ice_without_stun2, "ICE"),
-	TEST_NO_TAG("call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
-	TEST_NO_TAG("call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side)
+	TEST_NO_TAG("Call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
+	TEST_NO_TAG("Call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side),
+	TEST_NO_TAG("Call from plain RTP to ZRTP mandatory should be silent", call_from_plain_rtp_to_zrtp),
+	TEST_NO_TAG("Call ZRTP mandatory to plain RTP should be silent", call_from_zrtp_to_plain_rtp)
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -7344,7 +7344,7 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 		case LinphoneMediaEncryptionDTLS:
 			return ms_dtls_srtp_available();
 		case LinphoneMediaEncryptionZRTP:
-			return ms_zrtp_available();
+			return ms_zrtp_available() && !lc->zrtp_not_available_simulation;
 		case LinphoneMediaEncryptionNone:
 			return TRUE;
 	}
@@ -7367,7 +7367,7 @@ int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption
 			}
 		break;
 		case LinphoneMediaEncryptionZRTP:
-			if (!ms_zrtp_available()){
+			if (!linphone_core_media_encryption_supported(lc, LinphoneMediaEncryptionZRTP)){
 				ms_warning("ZRTP not supported by library.");
 				type="none";
 				ret=-1;
