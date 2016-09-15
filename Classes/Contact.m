@@ -58,6 +58,8 @@
 #endif
 			}
 			if (_friend) {
+				linphone_friend_enable_subscribes(_friend, FALSE);
+				linphone_friend_set_inc_subscribe_policy(_friend, LinphoneSPDeny);
 				linphone_core_add_friend(LC, _friend);
 			}
 		}
