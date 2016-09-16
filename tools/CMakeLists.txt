@@ -48,6 +48,7 @@ set(LP_GEN_WRAPPERS_LIBS
 apply_compile_flags(LP_GEN_WRAPPERS_SOURCE_FILES "CPP" "CXX")
 add_executable(lp-gen-wrappers ${USE_BUNDLE} ${LP_GEN_WRAPPERS_SOURCE_FILES})
 target_link_libraries(lp-gen-wrappers ${LP_GEN_WRAPPERS_LIBS})
+set_target_properties(lp-gen-wrappers PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(LP_AUTO_ANSWER_SOURCE_FILES	auto_answer.c)
 apply_compile_flags(LP_AUTO_ANSWER_SOURCE_FILES "CPP" "C")
