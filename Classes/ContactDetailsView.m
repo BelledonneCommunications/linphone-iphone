@@ -121,6 +121,8 @@
 - (void)newContact:(NSString *)address {
 	[self selectContact:[[Contact alloc] initWithPerson:ABPersonCreate()] andReload:NO];
 	[self addCurrentContactContactField:address];
+	// force to restart server subscription to add new contact into the list
+	[LinphoneManager.instance becomeActive];
 }
 
 - (void)editContact:(Contact *)acontact {
