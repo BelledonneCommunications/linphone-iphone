@@ -7727,15 +7727,15 @@ const char * linphone_core_get_video_preset(const LinphoneCore *lc) {
 #ifdef ANDROID
 static int linphone_core_call_void_method(jobject obj, jmethodID id) {
 	JNIEnv *env=ms_get_jni_env();
-		if (env && obj) {
-			(*env)->CallVoidMethod(env,obj,id);
-			if ((*env)->ExceptionCheck(env)) {
-				(*env)->ExceptionClear(env);
-				return -1;
-			} else
-				return 0;
-		} else
+	if (env && obj) {
+		(*env)->CallVoidMethod(env,obj,id);
+		if ((*env)->ExceptionCheck(env)) {
+			(*env)->ExceptionClear(env);
 			return -1;
+		} else
+			return 0;
+	} else
+		return -1;
 }
 
 void linphone_core_wifi_lock_acquire(LinphoneCore *lc) {

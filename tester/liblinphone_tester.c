@@ -213,7 +213,8 @@ static const char* liblinphone_helper =
 		"\t\t\t--keep-recorded-files\n"
 		"\t\t\t--disable-leak-detector\n"
 		"\t\t\t--disable-tls-support\n"
-		"\t\t\t--6\n"
+		"\t\t\t--no-ipv6 (turn off IPv6 in LinphoneCore, tests requiring IPv6 will be skipped)\n"
+		"\t\t\t--show-account-manager-logs (show temporary test account creation logs)\n"
 		;
 
 int main (int argc, char *argv[])
@@ -255,8 +256,10 @@ int main (int argc, char *argv[])
 			liblinphone_tester_disable_leak_detector(TRUE);
 		} else if (strcmp(argv[i],"--disable-tls-support")==0){
 			liblinphone_tester_tls_support_disabled = TRUE;
-		} else if (strcmp(argv[i],"--6")==0){
-			liblinphonetester_ipv6=TRUE;
+		} else if (strcmp(argv[i],"--no-ipv6")==0){
+			liblinphonetester_ipv6 = FALSE;
+		} else if (strcmp(argv[i],"--show-account-manager-logs")==0){
+			liblinphonetester_show_account_manager_logs=TRUE;
 		} else {
 			int bret = bc_tester_parse_args(argc, argv, i);
 			if (bret>0) {

@@ -4853,9 +4853,6 @@ static void v6_call_over_nat_64(void){
 
 	if (!liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
 
-		bool_t liblinphonetester_ipv6_save=liblinphonetester_ipv6; /*this test nee v6*/
-		liblinphonetester_ipv6=TRUE;
-
 		marie = linphone_core_manager_new("marie_nat64_rc");
 		pauline = linphone_core_manager_new("pauline_nat64_rc");
 
@@ -4872,26 +4869,22 @@ static void v6_call_over_nat_64(void){
 		end_call(marie,pauline);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
-		liblinphonetester_ipv6=liblinphonetester_ipv6_save; /*this test nee v6*/
 
 	}else ms_warning("Test skipped, no ipv6 nat64 available");
 }
 
 static void call_with_ice_in_ipv4_with_v6_enabled(void) {
-		LinphoneCoreManager* marie;
-		LinphoneCoreManager* pauline;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
 
-		if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
-			bool_t liblinphonetester_ipv6_save=liblinphonetester_ipv6; /*this test nee v6*/
-			liblinphonetester_ipv6=TRUE;
-			marie = linphone_core_manager_new("marie_v4proxy_rc");
-			pauline = linphone_core_manager_new("pauline_v4proxy_rc");
+	if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
+		marie = linphone_core_manager_new("marie_v4proxy_rc");
+		pauline = linphone_core_manager_new("pauline_v4proxy_rc");
 
-			_call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE,FALSE);
-			linphone_core_manager_destroy(marie);
-			linphone_core_manager_destroy(pauline);
-			liblinphonetester_ipv6=liblinphonetester_ipv6_save; /*this test nee v6*/
-	   } else ms_warning("Test skipped, need both ipv6 and v4 available");
+		_call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE,FALSE);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+	} else ms_warning("Test skipped, need both ipv6 and v4 available");
 }
 
 test_t call_tests[] = {

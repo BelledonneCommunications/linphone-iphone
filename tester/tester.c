@@ -56,7 +56,8 @@ const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 const char *userhostsfile = "tester_hosts";
-bool_t liblinphonetester_ipv6 = FALSE;
+bool_t liblinphonetester_ipv6 = TRUE;
+bool_t liblinphonetester_show_account_manager_logs = FALSE;
 
 const char *liblinphone_tester_mire_id="Mire: Mire (synthetic moving picture)";
 
@@ -402,12 +403,10 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 }
 
 LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias) {
-	int old_log_level = ortp_get_log_level_mask(NULL);
 	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
-	linphone_core_set_log_level(ORTP_ERROR);
+	
 	linphone_core_manager_init(manager, rc_file, phone_alias);
 	linphone_core_manager_start(manager, check_for_proxies);
-	linphone_core_set_log_level(old_log_level);
 	return manager;
 }
 
@@ -476,19 +475,21 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 }
 
 int liblinphone_tester_ipv6_available(void){
-	struct addrinfo *ai=bctbx_ip_address_to_addrinfo(AF_INET6,SOCK_STREAM,"2a01:e00::2",53);
-	if (ai){
-		struct sockaddr_storage ss;
-		struct addrinfo src;
-		socklen_t slen=sizeof(ss);
-		char localip[128];
-		int port=0;
-		belle_sip_get_src_addr_for(ai->ai_addr,(socklen_t)ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
-		src.ai_addr=(struct sockaddr*) &ss;
-		src.ai_addrlen=slen;
-		bctbx_addrinfo_to_ip_address(&src,localip, sizeof(localip),&port);
-		freeaddrinfo(ai);
-		return strcmp(localip,"::1")!=0;
+	if (liblinphonetester_ipv6) {
+		struct addrinfo *ai=bctbx_ip_address_to_addrinfo(AF_INET6,SOCK_STREAM,"2a01:e00::2",53);
+		if (ai){
+			struct sockaddr_storage ss;
+			struct addrinfo src;
+			socklen_t slen=sizeof(ss);
+			char localip[128];
+			int port=0;
+			belle_sip_get_src_addr_for(ai->ai_addr,(socklen_t)ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
+			src.ai_addr=(struct sockaddr*) &ss;
+			src.ai_addrlen=slen;
+			bctbx_addrinfo_to_ip_address(&src,localip, sizeof(localip),&port);
+			freeaddrinfo(ai);
+			return strcmp(localip,"::1")!=0;
+		}
 	}
 	return FALSE;
 }
