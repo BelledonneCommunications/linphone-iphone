@@ -50,6 +50,10 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
+    if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max && (linphone_core_get_calls_nb(LC) == 0)) {
+        linphone_core_set_network_reachable(LC, FALSE);
+        LinphoneManager.instance.connectivity = none;
+    }
 	[LinphoneManager.instance enterBackgroundMode];
 }
 
@@ -329,11 +333,11 @@
 			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
-				linphone_core_set_network_reachable(LC, FALSE);
-                LinphoneManager.instance.connectivity = none; /*force connectivity to be discovered again*/
-                LOGI(@"Registers refreshing");
-				[LinphoneManager.instance refreshRegisters];
-                LOGI(@"Registers refreshed");
+				//linphone_core_set_network_reachable(LC, FALSE);
+                if (!linphone_core_is_network_reachable(LC)) {
+                    LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
+                    [LinphoneManager.instance setupNetworkReachabilityCallback];
+                }
 				if (loc_key != nil) {
 
 					NSString *callId = [userInfo objectForKey:@"call-id"];

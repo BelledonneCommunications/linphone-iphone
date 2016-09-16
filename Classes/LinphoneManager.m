@@ -704,6 +704,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					}
 				}
 			//}
+
 		}
 	}
 
@@ -723,6 +724,21 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			_bluetoothEnabled = FALSE;
 			/*IOS specific*/
 			linphone_core_start_dtmf_stream(theLinphoneCore);
+            if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max && ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)) {
+                linphone_core_set_network_reachable(LC, FALSE);
+                LinphoneManager.instance.connectivity = none;
+                
+                LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
+                // handle proxy config if any
+                if (proxyCfg) {
+                    const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
+                    BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
+                    if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
+                        // For registration register
+                        [self refreshRegisters];
+                    }
+                }
+            }
 		}
 		if (incallBgTask) {
 			[[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
@@ -2226,11 +2242,17 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
             // IOS 7 and below
             notif_type = @"";
         }
+        NSString *timeout;
+        if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+            timeout = @";pn-timeout=0";
+        } else {
+            timeout = @"";
+        }
         
 		NSString *params = [NSString
 			stringWithFormat:@"app-id=%@%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
-							 @"call-snd=%@;pn-msg-snd=msg.caf",
-							 [[NSBundle mainBundle] bundleIdentifier], notif_type, APPMODE_SUFFIX, tokenString, ring];
+							 @"call-snd=%@;pn-msg-snd=msg.caf%@",
+							 [[NSBundle mainBundle] bundleIdentifier], notif_type, APPMODE_SUFFIX, tokenString, ring, timeout];
 
 		LOGI(@"Proxy config %s configured for push notifications with contact: %@",
 			 linphone_proxy_config_get_identity(proxyCfg), params);
