@@ -81,6 +81,7 @@ set(RC_FILES
 	rcfiles/marie_nat64_rc
 	rcfiles/marie_quality_reporting_rc
 	rcfiles/marie_rc
+	rcfiles/marie2_rc
 	rcfiles/marie_rc_rtcp_xr
 	rcfiles/marie_remote_404_rc
 	rcfiles/marie_remote_default_values_rc

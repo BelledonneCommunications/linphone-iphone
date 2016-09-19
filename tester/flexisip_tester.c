@@ -1168,6 +1168,25 @@ static void test_subscribe_on_wrong_dialog(void) {
 }
 #endif
 
+static void publish_subscribe(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie2 = NULL;
+	LinphoneAddress *marie_identity = linphone_address_ref(marie->identity);
+	
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	linphone_core_manager_destroy(marie);
+	
+	linphone_core_invite_address(pauline->lc, marie_identity);
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneCallOutgoingProgress, 1, 3000));
+	
+	marie2 = linphone_core_manager_new("marie2_rc");
+	BC_ASSERT_TRUE(wait_for_until(marie2->lc, NULL, &marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
+	
+	linphone_address_unref(marie_identity);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie2);
+}
 
 test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
@@ -1199,8 +1218,9 @@ test_t flexisip_tests[] = {
 	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),
 	TEST_NO_TAG("DoS module trigger by sending a lot of chat messages", dos_module_trigger),
 #if HAVE_SIPP
-	TEST_NO_TAG("Subscribe on wrong dialog", test_subscribe_on_wrong_dialog)
+	TEST_NO_TAG("Subscribe on wrong dialog", test_subscribe_on_wrong_dialog),
 #endif
+	TEST_NO_TAG("Publish/subscribe", publish_subscribe)
 };
 
 test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
