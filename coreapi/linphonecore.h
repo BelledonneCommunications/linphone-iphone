@@ -3385,6 +3385,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_ring(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno);
 LINPHONE_PUBLIC void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno);
 LINPHONE_PUBLIC void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
+LINPHONE_PUBLIC void linphone_core_set_root_ca_data(LinphoneCore *lc, const char *data);
 /**
  * @internal
  * Set the pointer to an externally provided ssl configuration for the crypto library

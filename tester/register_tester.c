@@ -827,6 +827,54 @@ static void tls_certificate_failure(void){
 	}
 }
 
+char *read_file(const char *path) {
+	long  numbytes = 0;
+	size_t readbytes;
+	char *buffer = NULL;
+	FILE *infile = fopen(path, "rb");
+	
+	BC_ASSERT_PTR_NOT_NULL(infile);
+	if (infile) {
+		fseek(infile, 0L, SEEK_END);
+		numbytes = ftell(infile);
+		fseek(infile, 0L, SEEK_SET);
+		buffer = (char*)ms_malloc((numbytes + 1) * sizeof(char));
+		readbytes = fread(buffer, sizeof(char), numbytes, infile);
+		fclose(infile);
+		buffer[readbytes] = '\0';
+	}
+	return buffer;
+}
+
+static void tls_certificate_data(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* lcm;
+		LinphoneCore *lc;
+		char *rootcapath = bc_tester_res("certificates/cn/agent.pem"); /*bad root ca*/
+		char *data = read_file(rootcapath);
+
+		lcm = linphone_core_manager_new2("pauline_rc",FALSE);
+		lc = lcm->lc;
+		linphone_core_set_root_ca_data(lcm->lc, data);
+		linphone_core_set_network_reachable(lc, TRUE);
+		BC_ASSERT_TRUE(wait_for(lcm->lc, lcm->lc, &lcm->stat.number_of_LinphoneRegistrationFailed, 1));
+		linphone_core_set_root_ca_data(lcm->lc, NULL); /*no root ca*/
+		linphone_core_refresh_registers(lcm->lc);
+		BC_ASSERT_TRUE(wait_for(lc, lc, &lcm->stat.number_of_LinphoneRegistrationFailed, 2));
+		ms_free(rootcapath);
+		ms_free(data);
+		rootcapath = bc_tester_res("certificates/cn/cafile.pem"); /*good root ca*/
+		data = read_file(rootcapath);
+		linphone_core_set_root_ca_data(lcm->lc, data);
+		linphone_core_refresh_registers(lcm->lc);
+		BC_ASSERT_TRUE(wait_for(lc, lc, &lcm->stat.number_of_LinphoneRegistrationOk, 1));
+		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed, 2, int, "%d");
+		linphone_core_manager_destroy(lcm);
+		ms_free(rootcapath);
+		ms_free(data);
+	}
+}
+
 /*the purpose of this test is to check that will not block the proxy config during SSL handshake for entire life in case of mistaken configuration*/
 static void tls_with_non_tls_server(void){
 	if (transport_supported(LinphoneTransportTls)) {
@@ -909,6 +957,7 @@ test_t register_tests[] = {
 	TEST_NO_TAG("TLS register with alt. name certificate", tls_alt_name_register),
 	TEST_NO_TAG("TLS register with wildcard certificate", tls_wildcard_register),
 	TEST_NO_TAG("TLS certificate not verified",tls_certificate_failure),
+	TEST_NO_TAG("TLS certificate given by string instead of file",tls_certificate_data),
 	TEST_NO_TAG("TLS with non tls server",tls_with_non_tls_server),
 	TEST_NO_TAG("Simple authenticated register", simple_authenticated_register),
 	TEST_NO_TAG("Ha1 authenticated register", ha1_authenticated_register),

@@ -596,6 +596,7 @@ void sal_uninit(Sal* sal){
 	bctbx_list_free_with_data(sal->supported_tags,ms_free);
 	if (sal->uuid) ms_free(sal->uuid);
 	if (sal->root_ca) ms_free(sal->root_ca);
+	if (sal->root_ca_data) ms_free(sal->root_ca_data);
 	ms_free(sal);
 };
 
@@ -761,21 +762,33 @@ static void set_tls_properties(Sal *ctx){
 		else if (!ctx->tls_verify_cn) verify_exceptions = BELLE_TLS_VERIFY_CN_MISMATCH;
 		belle_tls_crypto_config_set_verify_exceptions(crypto_config, verify_exceptions);
 		if (ctx->root_ca != NULL) belle_tls_crypto_config_set_root_ca(crypto_config, ctx->root_ca);
+		if (ctx->root_ca_data != NULL) belle_tls_crypto_config_set_root_ca_data(crypto_config, ctx->root_ca_data);
 		if (ctx->ssl_config != NULL) belle_tls_crypto_config_set_ssl_config(crypto_config, ctx->ssl_config);
 		belle_sip_tls_listening_point_set_crypto_config(tlp, crypto_config);
 		belle_sip_object_unref(crypto_config);
 	}
 }
 
-void sal_set_root_ca(Sal* ctx, const char* rootCa){
-	if (ctx->root_ca){
+void sal_set_root_ca(Sal* ctx, const char* rootCa) {
+	if (ctx->root_ca) {
 		ms_free(ctx->root_ca);
-		ctx->root_ca=NULL;
+		ctx->root_ca = NULL;
 	}
 	if (rootCa)
-		ctx->root_ca=ms_strdup(rootCa);
+		ctx->root_ca = ms_strdup(rootCa);
 	set_tls_properties(ctx);
-	return ;
+	return;
+}
+
+void sal_set_root_ca_data(Sal* ctx, const char* data) {
+	if (ctx->root_ca_data) {
+		ms_free(ctx->root_ca_data);
+		ctx->root_ca_data = NULL;
+	}
+	if (data)
+		ctx->root_ca_data = ms_strdup(data);
+	set_tls_properties(ctx);
+	return;
 }
 
 void sal_verify_server_certificates(Sal *ctx, bool_t verify){

@@ -37,6 +37,7 @@ struct Sal{
 	int session_expires;
 	unsigned int keep_alive;
 	char *root_ca;
+	char *root_ca_data;
 	char *uuid;
 	int refresher_retry_after; /*retry after value for refresher*/
 	MSList *supported_tags;/*list of char * */
