@@ -29,7 +29,7 @@ public interface LinphoneCoreListener {
 
 	/**< Ask the application some authentication information 
 	 * @return */
-	void authInfoRequested(LinphoneCore lc, String realm, String username, String Domain); 
+	void authInfoRequested(LinphoneCore lc, String realm, String username, String Domain, LinphoneCore.AuthMethod method); 
 
 	/**
 	 * Call stats notification

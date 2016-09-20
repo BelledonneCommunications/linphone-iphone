@@ -662,6 +662,10 @@ struct _LinphoneAuthInfo
 	char *passwd;
 	char *ha1;
 	char *domain;
+	char *tls_cert;
+	char *tls_key;
+	char *tls_cert_path;
+	char *tls_key_path;
 };
 
 typedef enum _LinphoneIsComposingState {
@@ -1045,6 +1049,10 @@ struct _LinphoneCore
 	
 	/*for tests only*/
 	bool_t zrtp_not_available_simulation;
+	
+	/* string for TLS auth instead of path to files */
+	char *tls_cert;
+	char *tls_key;
 };
 
 
@@ -1492,7 +1500,7 @@ void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, con
 void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
 void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
 void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
+void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method);
 void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl);
 void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
 void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);

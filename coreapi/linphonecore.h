@@ -226,6 +226,21 @@ LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
 **/
 typedef struct _LinphoneErrorInfo LinphoneErrorInfo;
 
+/**
+ * Enum describing the authentication methods
+ * @ingroup network_parameters
+**/
+enum _LinphoneAuthMethod {
+	LinphoneAuthHttpDigest, /* Digest authentication requested */
+	LinphoneAuthTls, /* Client certificate requested */
+};
+
+/**
+ * Typedef for authentication methods enum.
+ * @ingroup network_parameters
+**/
+typedef enum _LinphoneAuthMethod LinphoneAuthMethod;
+
 LINPHONE_PUBLIC LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei);
 LINPHONE_PUBLIC const char *linphone_error_info_get_phrase(const LinphoneErrorInfo *ei);
 LINPHONE_PUBLIC const char *linphone_error_info_get_details(const LinphoneErrorInfo *ei);
@@ -1155,6 +1170,34 @@ LINPHONE_PUBLIC void linphone_auth_info_set_domain(LinphoneAuthInfo *info, const
 LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
 
 /**
+ * Sets the TLS certificate.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] ha1 The TLS certificate.
+**/
+LINPHONE_PUBLIC void linphone_auth_info_set_tls_cert(LinphoneAuthInfo *info, const char *tls_cert);
+
+/**
+ * Sets the TLS key.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] ha1 The TLS key.
+**/
+LINPHONE_PUBLIC void linphone_auth_info_set_tls_key(LinphoneAuthInfo *info, const char *tls_key);
+
+/**
+ * Sets the TLS certificate path.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] ha1 The TLS certificate path.
+**/
+LINPHONE_PUBLIC void linphone_auth_info_set_tls_cert_path(LinphoneAuthInfo *info, const char *tls_cert_path);
+
+/**
+ * Sets the TLS key path.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] ha1 The TLS key path.
+**/
+LINPHONE_PUBLIC void linphone_auth_info_set_tls_key_path(LinphoneAuthInfo *info, const char *tls_key_path);
+
+/**
  * Gets the username.
  *
  * @param[in] info The #LinphoneAuthInfo object
@@ -1201,6 +1244,38 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo
  * @return The ha1.
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the TLS certificate.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The TLS certificate.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_tls_cert(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the TLS key.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The TLS key.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_tls_key(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the TLS certificate path.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The TLS certificate path.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_tls_cert_path(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the TLS key path.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The TLS key path.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_tls_key_path(const LinphoneAuthInfo *info);
 
 /* you don't need those function*/
 LINPHONE_PUBLIC void linphone_auth_info_destroy(LinphoneAuthInfo *info);
@@ -1950,9 +2025,10 @@ typedef void (*LinphoneCoreNewSubscriptionRequestedCb)(LinphoneCore *lc, Linphon
  * @param lc the LinphoneCore
  * @param realm the realm (domain) on which authentication is required.
  * @param username the username that needs to be authenticated.
+ * @param method the type of authentication requested
  * Application shall reply to this callback using linphone_core_add_auth_info().
  */
-typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
+typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method);
 
 /**
  * Callback to notify a new call-log entry has been added.
@@ -4555,6 +4631,74 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCallParams *linphone_core_create_def
 typedef struct _LinphoneRingtonePlayer LinphoneRingtonePlayer;
 
 LINPHONE_PUBLIC LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc);
+
+/**
+ * @ingroup network_parameters
+ * Sets a TLS certificate used for TLS authentication
+ * The certificate won't be stored, you have to set it after each LinphoneCore startup
+ * @param lc LinphoneCore object
+ * @param tls_cert the TLS certificate
+ */
+LINPHONE_PUBLIC void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert);
+
+/**
+ * @ingroup network_parameters
+ * Sets a TLS key used for TLS authentication
+ * The key won't be stored, you have to set it after each LinphoneCore startup
+ * @param lc LinphoneCore object
+ * @param tls_key the TLS key
+ */
+LINPHONE_PUBLIC void linphone_core_set_tls_key(LinphoneCore *lc, const char *tls_key);
+
+/**
+ * @ingroup network_parameters
+ * Sets a TLS certificate path used for TLS authentication
+ * The path will be stored in the rc file and automatically restored on startup
+ * @param lc LinphoneCore object
+ * @param tls_cert_path path to the TLS certificate
+ */
+LINPHONE_PUBLIC void linphone_core_set_tls_cert_path(LinphoneCore *lc, const char *tls_cert_path);
+
+/**
+ * @ingroup network_parameters
+ * Sets a TLS key path used for TLS authentication
+ * The path will be stored in the rc file and automatically restored on startup
+ * @param lc LinphoneCore object
+ * @param tls_key_path path to the TLS key
+ */
+LINPHONE_PUBLIC void linphone_core_set_tls_key_path(LinphoneCore *lc, const char *tls_key_path);
+
+/**
+ * @ingroup network_parameters
+ * Gets the TLS certificate
+ * @param lc LinphoneCore object
+ * @return the TLS certificate or NULL if not set yet
+ */
+LINPHONE_PUBLIC const char *linphone_core_get_tls_cert(const LinphoneCore *lc);
+
+/**
+ * @ingroup network_parameters
+ * Gets the TLS key
+ * @param lc LinphoneCore object
+ * @return  the TLS key or NULL if not set yet
+ */
+LINPHONE_PUBLIC const char *linphone_core_get_tls_key(const LinphoneCore *lc);
+
+/**
+ * @ingroup network_parameters
+ * Gets the path to the TLS certificate file
+ * @param lc LinphoneCore object
+ * @return the TLS certificate path or NULL if not set yet
+ */
+LINPHONE_PUBLIC const char *linphone_core_get_tls_cert_path(const LinphoneCore *lc);
+
+/**
+ * @ingroup network_parameters
+ * Gets the path to the TLS key file
+ * @param lc LinphoneCore object
+ * @return the TLS key path or NULL if not set yet
+ */
+LINPHONE_PUBLIC const char *linphone_core_get_tls_key_path(const LinphoneCore *lc);
 
 #include "ringtoneplayer.h"
 

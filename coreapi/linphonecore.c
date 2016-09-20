@@ -7929,3 +7929,45 @@ int linphone_core_stop_conference_recording(LinphoneCore *lc) {
 LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
 	return lc->conf_ctx;
 }
+
+void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert) {
+	if (lc->tls_cert) {
+		ms_free(lc->tls_cert);
+		lc->tls_cert = NULL;
+	}
+	if (tls_cert && strlen(tls_cert) > 0) lc->tls_cert = ms_strdup(tls_cert);
+}
+
+void linphone_core_set_tls_key(LinphoneCore *lc, const char *tls_key) {
+	if (lc->tls_key) {
+		ms_free(lc->tls_key);
+		lc->tls_key = NULL;
+	}
+	if (tls_key && strlen(tls_key) > 0) lc->tls_key = ms_strdup(tls_key);
+}
+
+void linphone_core_set_tls_cert_path(LinphoneCore *lc, const char *tls_cert_path) {
+	lp_config_set_string(lc->config, "sip", "client_cert_key", tls_cert_path);
+}
+
+void linphone_core_set_tls_key_path(LinphoneCore *lc, const char *tls_key_path) {
+	lp_config_set_string(lc->config, "sip", "client_cert_chain", tls_key_path);
+}
+
+const char *linphone_core_get_tls_cert(const LinphoneCore *lc) {
+	return lc->tls_cert;
+}
+
+const char *linphone_core_get_tls_key(const LinphoneCore *lc) {
+	return lc->tls_key;
+}
+
+const char *linphone_core_get_tls_cert_path(const LinphoneCore *lc) {
+	const char *tls_cert_path = lp_config_get_string(lc->config, "sip", "client_cert_chain", NULL);
+	return tls_cert_path;
+}
+
+const char *linphone_core_get_tls_key_path(const LinphoneCore *lc) {
+	const char *tls_key_path = lp_config_get_string(lc->config, "sip", "client_cert_key", NULL);
+	return tls_key_path;
+}

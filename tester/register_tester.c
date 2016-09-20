@@ -23,7 +23,7 @@
 
 
 
-static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method) {
 	LinphoneAuthInfo *info;
 	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,realm,domain); /*create authentication structure from identity*/
 	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/

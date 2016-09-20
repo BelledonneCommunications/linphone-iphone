@@ -1182,7 +1182,7 @@ void sal_enable_unconditional_answer(Sal *sal,int value) {
  * @param format either PEM or DER
  */
 void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path, SalCertificateRawFormat format) {
-	auth_info->certificates = (SalCertificatesChain*) belle_sip_certificates_chain_parse_file(path, (belle_sip_certificate_raw_format_t)format); //
+	auth_info->certificates = (SalCertificatesChain*) belle_sip_certificates_chain_parse_file(path, (belle_sip_certificate_raw_format_t)format);
 	if (auth_info->certificates) belle_sip_object_ref((belle_sip_object_t *) auth_info->certificates);
 }
 
@@ -1193,6 +1193,28 @@ void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path,
  */
 void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const char *passwd) {
 	auth_info->key = (SalSigningKey *) belle_sip_signing_key_parse_file(path, passwd);
+	if (auth_info->key) belle_sip_object_ref((belle_sip_object_t *) auth_info->key);
+}
+
+/** Parse a buffer containing either a certificate chain order in PEM format or a single DER cert
+ * @param auth_info structure where to store the result of parsing
+ * @param buffer the buffer to parse
+ * @param format either PEM or DER
+ */
+void sal_certificates_chain_parse(SalAuthInfo* auth_info, const char* buffer, SalCertificateRawFormat format) {
+	size_t len = buffer != NULL ? strlen(buffer) : 0;
+	auth_info->certificates = (SalCertificatesChain*) belle_sip_certificates_chain_parse(buffer, len, (belle_sip_certificate_raw_format_t)format);
+	if (auth_info->certificates) belle_sip_object_ref((belle_sip_object_t *) auth_info->certificates);
+}
+
+/**
+ * Parse a buffer containing either a private or public rsa key
+ * @param auth_info structure where to store the result of parsing
+ * @param passwd password (optionnal)
+ */
+void sal_signing_key_parse(SalAuthInfo* auth_info, const char* buffer, const char *passwd) {
+	size_t len = buffer != NULL ? strlen(buffer) : 0;
+	auth_info->key = (SalSigningKey *) belle_sip_signing_key_parse(buffer, len, passwd);
 	if (auth_info->key) belle_sip_object_ref((belle_sip_object_t *) auth_info->key);
 }
 

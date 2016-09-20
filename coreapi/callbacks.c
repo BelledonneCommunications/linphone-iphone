@@ -970,19 +970,18 @@ static void call_released(SalOp *op){
 }
 
 static void auth_failure(SalOp *op, SalAuthInfo* info) {
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	LinphoneAuthInfo *ai=NULL;
+	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneAuthInfo *ai = NULL;
 
-	if( info != NULL ){
-		ai = (LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,info->realm,info->username,info->domain, TRUE);
-
+	if (info != NULL) {
+		ai = (LinphoneAuthInfo*)_linphone_core_find_auth_info(lc, info->realm, info->username, info->domain, TRUE);
 		if (ai){
-			ms_message("%s/%s/%s authentication fails.",info->realm,info->username,info->domain);
+			LinphoneAuthMethod method = info->mode == SalAuthModeHttpDigest ? LinphoneAuthHttpDigest : LinphoneAuthTls;
+			ms_message("%s/%s/%s/%s authentication fails.", info->realm, info->username, info->domain, info->mode == SalAuthModeHttpDigest ? "HttpDigest" : "Tls");
 			/*ask again for password if auth info was already supplied but apparently not working*/
-			linphone_core_notify_auth_info_requested(lc,info->realm,info->username,info->domain);
+			linphone_core_notify_auth_info_requested(lc, info->realm, info->username, info->domain, method);
 		}
 	}
-
 }
 
 static void register_success(SalOp *op, bool_t registered){
@@ -1171,35 +1170,50 @@ static void ping_reply(SalOp *op){
 }
 
 static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthInfo* sai) {
-	const char *chain_file = lp_config_get_string(lc->config,"sip","client_cert_chain", 0);
-	const char *key_file = lp_config_get_string(lc->config,"sip","client_cert_key", 0);;
+	const char *chain_file = linphone_core_get_tls_cert_path(lc);
+	const char *key_file = linphone_core_get_tls_key_path(lc);
 
+	if (key_file && chain_file) {
 #ifndef _WIN32
-	{
-	// optinal check for files
-	struct stat st;
-	if (stat(key_file,&st)) {
-		ms_warning("No client certificate key found in %s", key_file);
-		return FALSE;
-	}
-	if (stat(chain_file,&st)) {
-		ms_warning("No client certificate chain found in %s", chain_file);
-		return FALSE;
-	}
-	}
+		// optinal check for files
+		struct stat st;
+		if (stat(key_file, &st)) {
+			ms_warning("No client certificate key found in %s", key_file);
+			return FALSE;
+		}
+		if (stat(chain_file, &st)) {
+			ms_warning("No client certificate chain found in %s", chain_file);
+			return FALSE;
+		}
 #endif
-
-	sal_certificates_chain_parse_file(sai, chain_file, SAL_CERTIFICATE_RAW_FORMAT_PEM );
-	sal_signing_key_parse_file(sai, key_file, "");
+		sal_certificates_chain_parse_file(sai, chain_file, SAL_CERTIFICATE_RAW_FORMAT_PEM);
+		sal_signing_key_parse_file(sai, key_file, "");
+	} else if (lc->tls_cert && lc->tls_key) {
+		sal_certificates_chain_parse(sai, lc->tls_cert, SAL_CERTIFICATE_RAW_FORMAT_PEM);
+		sal_signing_key_parse(sai, lc->tls_key, "");
+	}
 	return sai->certificates && sai->key;
 }
 
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain, FALSE);
 	if (ai) {
-		sai->userid=ms_strdup(ai->userid?ai->userid:ai->username);
-		sai->password=ai->passwd?ms_strdup(ai->passwd):NULL;
-		sai->ha1=ai->ha1?ms_strdup(ai->ha1):NULL;
+		if (sai->mode == SalAuthModeHttpDigest) {
+			sai->userid=ms_strdup(ai->userid?ai->userid:ai->username);
+			sai->password=ai->passwd?ms_strdup(ai->passwd):NULL;
+			sai->ha1=ai->ha1?ms_strdup(ai->ha1):NULL;
+		} else if (sai->mode == SalAuthModeTls) {
+			if (ai->tls_cert && ai->tls_key) {
+				sal_certificates_chain_parse(sai, ai->tls_cert, SAL_CERTIFICATE_RAW_FORMAT_PEM);
+				sal_signing_key_parse(sai, ai->tls_key, "");
+			} else if (ai->tls_cert_path && ai->tls_key_path) {
+				sal_certificates_chain_parse_file(sai, ai->tls_cert_path, SAL_CERTIFICATE_RAW_FORMAT_PEM);
+				sal_signing_key_parse_file(sai, ai->tls_key_path, "");
+			} else {
+				fill_auth_info_with_client_certificate(lc, sai);
+			}
+		}
+		
 		if (sai->realm && !ai->realm){
 			/*if realm was not known, then set it so that ha1 may eventually be calculated and clear text password dropped*/
 			linphone_auth_info_set_realm(ai, sai->realm);
@@ -1211,22 +1225,15 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	}
 }
 static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	if (sai->mode == SalAuthModeHttpDigest) {
-		if (fill_auth_info(lc,sai)) {
-			return TRUE;
-		} else {
-			{
-				linphone_core_notify_auth_info_requested(lc,sai->realm,sai->username,sai->domain);
-				if (fill_auth_info(lc,sai)) {
-					return TRUE;
-				}
-			}
-			return FALSE;
-		}
-	} else if (sai->mode == SalAuthModeTls) {
-		return fill_auth_info_with_client_certificate(lc,sai);
+	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal);
+	if (fill_auth_info(lc,sai)) {
+		return TRUE;
 	} else {
+		LinphoneAuthMethod method = sai->mode == SalAuthModeHttpDigest ? LinphoneAuthHttpDigest : LinphoneAuthTls;
+		linphone_core_notify_auth_info_requested(lc, sai->realm, sai->username, sai->domain, method);
+		if (fill_auth_info(lc, sai)) {
+			return TRUE;
+		}
 		return FALSE;
 	}
 }

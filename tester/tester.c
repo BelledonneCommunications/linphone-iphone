@@ -97,7 +97,7 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 	return addr;
 }
 
-static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method) {
 	stats* counters;
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
 			   ,username

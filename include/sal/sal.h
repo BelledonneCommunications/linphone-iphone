@@ -580,6 +580,20 @@ void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path,
  */
 void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const char *passwd);
 
+/** Parse a buffer containing either a certificate chain order in PEM format or a single DER cert
+ * @param auth_info structure where to store the result of parsing
+ * @param buffer the buffer to parse
+ * @param format either PEM or DER
+ */
+void sal_certificates_chain_parse(SalAuthInfo* auth_info, const char* buffer, SalCertificateRawFormat format);
+
+/**
+ * Parse a buffer containing either a private or public rsa key
+ * @param auth_info structure where to store the result of parsing
+ * @param passwd password (optionnal)
+ */
+void sal_signing_key_parse(SalAuthInfo* auth_info, const char* buffer, const char *passwd);
+
 /**
  * Parse a directory for files containing certificate with the given subject CNAME
  * @param[out]	certificate_pem				the address of a string to store the certificate in PEM format. To be freed by caller

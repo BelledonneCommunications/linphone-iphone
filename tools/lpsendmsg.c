@@ -68,7 +68,7 @@ static void on_msg_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageSt
 	}
 }
 
-static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
+static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method){
 	running = FALSE;
 	if (passwd){
 		fprintf(stderr, "Server rejected the supplied username or password\n");

@@ -277,7 +277,7 @@ static void text_message_within_call_dialog(void) {
 }
 
 static LinphoneAuthInfo* text_message_with_credential_from_auth_cb_auth_info;
-static void text_message_with_credential_from_auth_cb_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+static void text_message_with_credential_from_auth_cb_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method) {
 	ms_message("text_message_with_credential_from_auth_callback:Auth info requested  for user id [%s] at realm [%s]\n"
 						,username
 						,realm);

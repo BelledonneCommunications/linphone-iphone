@@ -82,7 +82,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
-	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
+	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain, LinphoneCore.AuthMethod method) {}
 	public void displayStatus(LinphoneCore lc, String message) {}
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}

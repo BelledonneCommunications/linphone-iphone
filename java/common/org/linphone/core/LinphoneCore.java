@@ -79,7 +79,7 @@ public interface LinphoneCore {
 		public String toString() {
 			return mStringValue;
 		}
-	}
+	}	
 	/**
 	 * linphone remote provisioning states
 	 */
@@ -592,6 +592,40 @@ public interface LinphoneCore {
 				if (menc.mValue == value) return menc;
 			}
 			throw new RuntimeException("LinphoneLimeState not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
+	 * linphone authentication methods
+	 */
+	static public class AuthMethod {
+		static private Vector<AuthMethod> values = new Vector<AuthMethod>();
+		/**
+		 * HTTP Digest
+		 */
+		static public AuthMethod AuthMethodHttpDigest = new AuthMethod(0, "AuthMethodHttpDigest");
+		/**
+		 * TLS
+		 */
+		static public AuthMethod AuthMethodTls = new AuthMethod(1, "AuthMethodTls");
+
+		private final int mValue;
+		private final String mStringValue;
+		
+		private AuthMethod(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static AuthMethod fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				AuthMethod state = (AuthMethod) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("auth method not found ["+value+"]");
 		}
 		public String toString() {
 			return mStringValue;
