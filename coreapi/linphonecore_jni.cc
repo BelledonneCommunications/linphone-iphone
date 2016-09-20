@@ -2437,6 +2437,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRootCA(JNIEnv*  env
 	linphone_core_set_root_ca((LinphoneCore*)lc,path);
 	ReleaseStringUTFChars(env, jpath, path);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRootCAData(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jdata) {
+	const char* data = GetStringUTFChars(env, jdata);
+	linphone_core_set_root_ca_data((LinphoneCore*)lc, data);
+	ReleaseStringUTFChars(env, jdata, data);
+}
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRingback(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc

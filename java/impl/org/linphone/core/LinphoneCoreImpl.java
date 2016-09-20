@@ -129,6 +129,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setRing(long nativePtr, String path);
 	private native String getRing(long nativePtr);
 	private native void setRootCA(long nativePtr, String path);
+	private native void setRootCAData(long nativePtr, String data);
 	private native void setRingback(long nativePtr, String path);
 	private native long[] listVideoPayloadTypes(long nativePtr);
 	private native void setVideoCodecs(long nativePtr, long[] codecs);
@@ -623,6 +624,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void setRootCA(String path) {
 		setRootCA(nativePtr, path);
+	}
+
+	public synchronized void setRootCAData(String data) {
+		setRootCAData(nativePtr, data);
 	}
 
 	public synchronized void setRingback(String path) {

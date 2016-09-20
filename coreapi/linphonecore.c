@@ -4939,6 +4939,14 @@ void linphone_core_set_root_ca(LinphoneCore *lc, const char *path) {
 	lp_config_set_string(lc->config,"sip", "root_ca", path);
 }
 
+/**
+ * Sets the trusted root CAs (PEM format)
+ *
+ * @param path
+ * @param lc The LinphoneCore object
+ *
+ * @ingroup initializing
+**/
 void linphone_core_set_root_ca_data(LinphoneCore *lc, const char *data) {
 	sal_set_root_ca(lc->sal, NULL);
 	sal_set_root_ca_data(lc->sal, data);

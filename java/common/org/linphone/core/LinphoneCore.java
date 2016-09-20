@@ -1307,6 +1307,13 @@ public interface LinphoneCore {
 	void setRootCA(String path);
 
 	/**
+	 * Sets trusted root CAs
+	 *
+	 * @param data String with multiple PEM certif
+	 */
+	void setRootCAData(String data);
+
+	/**
 	 * Sets the path to a wav file used for for ringing back.
 	 *
 	 * Ringback means the ring that is heard when it's ringing at the remote party.
