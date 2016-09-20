@@ -2995,6 +2995,74 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getHa1
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setTlsCertificate
+(JNIEnv *env, jobject, jlong auth_info, jstring jcert) {
+	const char* cert = GetStringUTFChars(env, jcert);
+	linphone_auth_info_set_tls_cert((LinphoneAuthInfo*)auth_info,cert);
+	ReleaseStringUTFChars(env, jcert, cert);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setTlsKey
+(JNIEnv *env, jobject, jlong auth_info, jstring jkey) {
+	const char* key = GetStringUTFChars(env, jkey);
+	linphone_auth_info_set_tls_key((LinphoneAuthInfo*)auth_info,key);
+	ReleaseStringUTFChars(env, jkey, key);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setTlsCertificatePath
+(JNIEnv *env, jobject, jlong auth_info, jstring jpath) {
+	const char* path = GetStringUTFChars(env, jpath);
+	linphone_auth_info_set_tls_cert_path((LinphoneAuthInfo*)auth_info,path);
+	ReleaseStringUTFChars(env, jpath, path);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setTlsKeyPath
+(JNIEnv *env, jobject, jlong auth_info, jstring jpath) {
+	const char* path = GetStringUTFChars(env, jpath);
+	linphone_auth_info_set_tls_key_path((LinphoneAuthInfo*)auth_info,path);
+	ReleaseStringUTFChars(env, jpath, path);
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getTlsCertificate
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* cert = linphone_auth_info_get_tls_cert((LinphoneAuthInfo*)auth_info);
+	if (cert) {
+		return env->NewStringUTF(cert);
+	} else {
+		return NULL;
+	}
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getTlsKey
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* key = linphone_auth_info_get_tls_key((LinphoneAuthInfo*)auth_info);
+	if (key) {
+		return env->NewStringUTF(key);
+	} else {
+		return NULL;
+	}
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getTlsCertificatePath
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* path = linphone_auth_info_get_tls_cert_path((LinphoneAuthInfo*)auth_info);
+	if (path) {
+		return env->NewStringUTF(path);
+	} else {
+		return NULL;
+	}
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getTlsKeyPath
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* path = linphone_auth_info_get_tls_key_path((LinphoneAuthInfo*)auth_info);
+	if (path) {
+		return env->NewStringUTF(path);
+	} else {
+		return NULL;
+	}
+}
+
 
 //LinphoneAddress
 
@@ -8200,4 +8268,64 @@ extern "C" jobject Java_org_linphone_core_LinphoneAccountCreatorImpl_configure(J
 	LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
 	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
 	return getProxy(env, lpc, lcData->core);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setTlsCertificate(JNIEnv *env, jobject thiz, jlong lc, jstring jcert) {
+	const char* cert = GetStringUTFChars(env, jcert);
+	linphone_core_set_tls_cert((LinphoneCore*)lc, cert);
+	ReleaseStringUTFChars(env, jcert, cert);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setTlsKey(JNIEnv *env, jobject, jlong lc, jstring jkey) {
+	const char* key = GetStringUTFChars(env, jkey);
+	linphone_core_set_tls_key((LinphoneCore*)lc, key);
+	ReleaseStringUTFChars(env, jkey, key);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setTlsCertificatePath(JNIEnv *env, jobject, jlong lc, jstring jpath) {
+	const char* path = GetStringUTFChars(env, jpath);
+	linphone_core_set_tls_cert_path((LinphoneCore*)lc, path);
+	ReleaseStringUTFChars(env, jpath, path);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setTlsKeyPath(JNIEnv *env, jobject, jlong lc, jstring jpath) {
+	const char* path = GetStringUTFChars(env, jpath);
+	linphone_core_set_tls_key_path((LinphoneCore*)lc, path);
+	ReleaseStringUTFChars(env, jpath, path);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getTlsCertificate(JNIEnv *env , jobject, jlong lc) {
+	const char* cert = linphone_core_get_tls_cert((LinphoneCore*)lc);
+	if (cert) {
+		return env->NewStringUTF(cert);
+	} else {
+		return NULL;
+	}
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getTlsKey(JNIEnv *env , jobject, jlong lc) {
+	const char* key = linphone_core_get_tls_key((LinphoneCore*)lc);
+	if (key) {
+		return env->NewStringUTF(key);
+	} else {
+		return NULL;
+	}
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getTlsCertificatePath(JNIEnv *env , jobject, jlong lc) {
+	const char* path = linphone_core_get_tls_cert_path((LinphoneCore*)lc);
+	if (path) {
+		return env->NewStringUTF(path);
+	} else {
+		return NULL;
+	}
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getTlsKeyPath(JNIEnv *env , jobject, jlong lc) {
+	const char* path = linphone_core_get_tls_key_path((LinphoneCore*)lc);
+	if (path) {
+		return env->NewStringUTF(path);
+	} else {
+		return NULL;
+	}
 }

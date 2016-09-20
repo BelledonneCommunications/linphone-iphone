@@ -100,6 +100,54 @@ public interface LinphoneAuthInfo {
 	 * @return the clone auth info
 	 */
 	LinphoneAuthInfo clone();
+	
+	/**
+	 * Gets the TLS certificate
+	 * @return the TLS certificate
+	 */
+	String getTlsCertificate();
+	
+	/**
+	 * Gets the TLS key file
+	 * @return the TLS key
+	 */
+	String getTlsKey();
+	
+	/**
+	 * Gets the path to the TLS certificate file
+	 * @return the path to the TLS certificate
+	 */
+	String getTlsCertificatePath();
+	
+	/**
+	 * Gets the path to the TLS key file
+	 * @return the path to the TLS key
+	 */
+	String getTlsKeyPath();
+	
+	/**
+	 * Sets the TLS certificate
+	 * @param cert the certificate
+	 */
+	void setTlsCertificate(String cert);
+	
+	/**
+	 * Sets the TLS key
+	 * @param key the key
+	 */
+	void setTlsKey(String key);
+	
+	/**
+	 * Sets the TLS certificate file path
+	 * @param path the path of the certificate
+	 */
+	void setTlsCertificatePath(String path);
+	
+	/**
+	 * Sets the TLS key file path
+	 * @param path the path of the key
+	 */
+	void setTlsKeyPath(String path);
 }
 
 

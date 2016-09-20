@@ -1726,4 +1726,52 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized LinphoneLimeState getLimeEncryption() {
 		return LinphoneLimeState.fromInt(getLimeEncryption(nativePtr));
 	}
+
+	private native String getTlsCertificate(long ptr);
+	@Override
+	public String getTlsCertificate() {
+		return getTlsCertificate(nativePtr);
+	}
+
+	private native String getTlsKey(long ptr);
+	@Override
+	public String getTlsKey() {
+		return getTlsKey(nativePtr);
+	}
+
+	private native String getTlsCertificatePath(long ptr);
+	@Override
+	public String getTlsCertificatePath() {
+		return getTlsCertificatePath(nativePtr);
+	}
+
+	private native String getTlsKeyPath(long ptr);
+	@Override
+	public String getTlsKeyPath() {
+		return getTlsKeyPath(nativePtr);
+	}
+
+	private native void setTlsCertificate(long ptr, String cert);
+	@Override
+	public void setTlsCertificate(String cert) {
+		setTlsCertificate(nativePtr, cert);
+	}
+
+	private native void setTlsKey(long ptr, String key);
+	@Override
+	public void setTlsKey(String key) {
+		setTlsKey(nativePtr, key);
+	}
+
+	private native void setTlsCertificatePath(long ptr, String path);
+	@Override
+	public void setTlsCertificatePath(String path) {
+		setTlsCertificatePath(nativePtr, path);
+	}
+
+	private native void setTlsKeyPath(long ptr, String path);
+	@Override
+	public void setTlsKeyPath(String path) {
+		setTlsKeyPath(nativePtr, path);
+	}
 }
