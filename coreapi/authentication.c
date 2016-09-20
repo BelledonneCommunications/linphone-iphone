@@ -323,6 +323,18 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 	return ret;
 }
 
+const LinphoneAuthInfo *_linphone_core_find_tls_auth_info(LinphoneCore *lc) {
+	bctbx_list_t *elem;
+	for (elem=lc->auth_info;elem!=NULL;elem=elem->next) {
+		LinphoneAuthInfo *pinfo = (LinphoneAuthInfo*)elem->data;
+		if (pinfo->tls_cert && pinfo->tls_key) {
+			return pinfo;
+		} else if (pinfo->tls_cert_path && pinfo->tls_key_path) {
+			return pinfo;
+		}
+	}
+	return NULL;
+}
 
 const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain, bool_t ignore_realm){
 	const LinphoneAuthInfo *ai=NULL;

@@ -28,7 +28,10 @@ CERTIFICATE_CN_FILES = certificates/cn/agent.pem      \
 					 certificates/cn/cafile.pem     \
 					 certificates/cn/openssl-cn.cnf
 
-CERTIFICATE_FILES = $(CERTIFICATE_ALT_FILES) $(CERTIFICATE_CN_FILES)
+CERTIFICATE_CLIENT_FILES = certificates/client/cert.pem \
+					certificates/client/key.pem
+
+CERTIFICATE_FILES = $(CERTIFICATE_ALT_FILES) $(CERTIFICATE_CN_FILES) $(CERTIFICATE_CLIENT_FILES)
 
 RCFILES = \
 					rcfiles/empty_rc\
@@ -63,6 +66,8 @@ RCFILES = \
 					rcfiles/pauline_rc_rtcp_xr\
 					rcfiles/pauline_sips_rc\
 					rcfiles/pauline_tcp_rc\
+					rcfiles/pauline_tls_client_rc\
+					rcfiles/pauline_tls_client_2_rc\
 					rcfiles/pauline_wild_rc\
 					rcfiles/pauline_zrtp_aes256_rc\
 					rcfiles/pauline_zrtp_b256_rc\

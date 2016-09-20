@@ -1196,12 +1196,17 @@ static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthIn
 }
 
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
-	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain, FALSE);
+	LinphoneAuthInfo *ai = NULL;
+	if (sai->mode == SalAuthModeTls) {
+		ai = (LinphoneAuthInfo*)_linphone_core_find_tls_auth_info(lc);
+	} else {
+		ai = (LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain, FALSE);
+	}
 	if (ai) {
 		if (sai->mode == SalAuthModeHttpDigest) {
-			sai->userid=ms_strdup(ai->userid?ai->userid:ai->username);
-			sai->password=ai->passwd?ms_strdup(ai->passwd):NULL;
-			sai->ha1=ai->ha1?ms_strdup(ai->ha1):NULL;
+			sai->userid = ms_strdup(ai->userid ? ai->userid : ai->username);
+			sai->password = ai->passwd?ms_strdup(ai->passwd) : NULL;
+			sai->ha1 = ai->ha1 ? ms_strdup(ai->ha1) : NULL;
 		} else if (sai->mode == SalAuthModeTls) {
 			if (ai->tls_cert && ai->tls_key) {
 				sal_certificates_chain_parse(sai, ai->tls_cert, SAL_CERTIFICATE_RAW_FORMAT_PEM);
@@ -1221,6 +1226,9 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 		}
 		return TRUE;
 	} else {
+		if (sai->mode == SalAuthModeTls) {
+			return fill_auth_info_with_client_certificate(lc, sai);
+		}
 		return FALSE;
 	}
 }

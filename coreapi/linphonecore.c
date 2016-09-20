@@ -7963,11 +7963,11 @@ void linphone_core_set_tls_key(LinphoneCore *lc, const char *tls_key) {
 }
 
 void linphone_core_set_tls_cert_path(LinphoneCore *lc, const char *tls_cert_path) {
-	lp_config_set_string(lc->config, "sip", "client_cert_key", tls_cert_path);
+	lp_config_set_string(lc->config, "sip", "client_cert_chain", tls_cert_path);
 }
 
 void linphone_core_set_tls_key_path(LinphoneCore *lc, const char *tls_key_path) {
-	lp_config_set_string(lc->config, "sip", "client_cert_chain", tls_key_path);
+	lp_config_set_string(lc->config, "sip", "client_cert_key", tls_key_path);
 }
 
 const char *linphone_core_get_tls_cert(const LinphoneCore *lc) {

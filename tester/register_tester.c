@@ -947,6 +947,83 @@ static void redirect(void){
 	}
 }
 
+static void tls_auth_global_client_cert(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_rc", TRUE);
+		linphone_core_manager_destroy(pauline);
+	}
+}
+
+static void tls_auth_global_client_cert_api(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		char *cert_path = bc_tester_res("certificates/client/cert.pem");
+		char *key_path = bc_tester_res("certificates/client/key.pem");
+		char *cert = read_file(cert_path);
+		char *key = read_file(key_path);
+		LinphoneCore *lc = pauline->lc;
+		linphone_core_set_tls_cert(lc, cert);
+		linphone_core_set_tls_key(lc, key);
+		BC_ASSERT_TRUE(wait_for(lc, lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+		linphone_core_manager_destroy(pauline);
+		ms_free(cert);
+		ms_free(key);
+		ms_free(cert_path);
+		ms_free(key_path);
+	}
+}
+
+static void tls_auth_global_client_cert_api_path(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		char *cert = bc_tester_res("certificates/client/cert.pem");
+		char *key = bc_tester_res("certificates/client/key.pem");
+		LinphoneCore *lc = pauline->lc;
+		linphone_core_set_tls_cert_path(lc, cert);
+		linphone_core_set_tls_key_path(lc, key);
+		BC_ASSERT_TRUE(wait_for(lc, lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+		linphone_core_manager_destroy(pauline);
+		ms_free(cert);
+		ms_free(key);
+	}
+}
+
+static void tls_auth_info_client_cert_api(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		char *cert_path = bc_tester_res("certificates/client/cert.pem");
+		char *key_path = bc_tester_res("certificates/client/key.pem");
+		char *cert = read_file(cert_path);
+		char *key = read_file(key_path);
+		LinphoneCore *lc = pauline->lc;
+		LinphoneAuthInfo *authInfo = (LinphoneAuthInfo *)lc->auth_info->data;
+		linphone_auth_info_set_tls_cert(authInfo, cert);
+		linphone_auth_info_set_tls_key(authInfo, key);
+		BC_ASSERT_TRUE(wait_for(lc, lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+		linphone_core_manager_destroy(pauline);
+		ms_free(cert);
+		ms_free(key);
+		ms_free(cert_path);
+		ms_free(key_path);
+	}
+}
+
+static void tls_auth_info_client_cert_api_path(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		char *cert = bc_tester_res("certificates/client/cert.pem");
+		char *key = bc_tester_res("certificates/client/key.pem");
+		LinphoneCore *lc = pauline->lc;
+		LinphoneAuthInfo *authInfo = (LinphoneAuthInfo *)lc->auth_info->data;
+		linphone_auth_info_set_tls_cert_path(authInfo, cert);
+		linphone_auth_info_set_tls_key_path(authInfo, key);
+		BC_ASSERT_TRUE(wait_for(lc, lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+		linphone_core_manager_destroy(pauline);
+		ms_free(cert);
+		ms_free(key);
+	}
+}
+
 test_t register_tests[] = {
 	TEST_NO_TAG("Simple register", simple_register),
 	TEST_NO_TAG("Simple register unregister", simple_unregister),
@@ -982,7 +1059,12 @@ test_t register_tests[] = {
 	TEST_NO_TAG("Io recv error with recovery", io_recv_error_retry_immediatly),
 	TEST_NO_TAG("Io recv error with late recovery", io_recv_error_late_recovery),
 	TEST_NO_TAG("Io recv error without active registration", io_recv_error_without_active_register),
-	TEST_NO_TAG("Simple redirect", redirect)
+	TEST_NO_TAG("Simple redirect", redirect),
+	TEST_NO_TAG("Global TLS client certificate authentication", tls_auth_global_client_cert),
+	TEST_NO_TAG("Global TLS client certificate authentication using API", tls_auth_global_client_cert_api),
+	TEST_NO_TAG("Global TLS client certificate authentication using API 2", tls_auth_global_client_cert_api_path),
+	TEST_NO_TAG("AuthInfo TLS client certificate authentication using API", tls_auth_info_client_cert_api),
+	TEST_NO_TAG("AuthInfo TLS client certificate authentication using API 2", tls_auth_info_client_cert_api_path),
 };
 
 test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
