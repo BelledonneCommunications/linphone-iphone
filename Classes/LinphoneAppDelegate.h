@@ -21,6 +21,7 @@
 #import <PushKit/PushKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
+#import "ProviderDelegate.h"
 
 #import "LinphoneCoreSettingsStore.h"
 
@@ -38,7 +39,7 @@
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
 @property PKPushRegistry* voipRegistry;
-
+@property ProviderDelegate* del;
 
 @end
 

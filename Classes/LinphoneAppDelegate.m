@@ -215,6 +215,8 @@
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 	[self registerForNotifications:app];
+    
+    self.del = [[ProviderDelegate alloc] init];
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
@@ -350,7 +352,8 @@
 					if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
 						[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
-						[self fixRing];
+                        [self.del reportIncomingCallwithUUID:[NSUUID UUID] handle:userInfo.description];
+                        //[self fixRing];
 					}
 				}
 			}
