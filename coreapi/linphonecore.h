@@ -2025,10 +2025,19 @@ typedef void (*LinphoneCoreNewSubscriptionRequestedCb)(LinphoneCore *lc, Linphon
  * @param lc the LinphoneCore
  * @param realm the realm (domain) on which authentication is required.
  * @param username the username that needs to be authenticated.
+ * @param domain the domain on which authentication is required.
+ * Application shall reply to this callback using linphone_core_add_auth_info().
+ */
+typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
+
+/**
+ * Callback for requesting authentication information to application or user.
+ * @param lc the LinphoneCore
+ * @param auth_info a LinphoneAuthInfo pre-filled with username, realm and domain values as much as possible
  * @param method the type of authentication requested
  * Application shall reply to this callback using linphone_core_add_auth_info().
  */
-typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method);
+typedef void (*LinphoneCoreAuthenticationRequestedCb)(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method);
 
 /**
  * Callback to notify a new call-log entry has been added.
@@ -2209,7 +2218,8 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreNotifyPresenceReceivedCb notify_presence_received; /**< Notify received presence events*/
 	LinphoneCoreNotifyPresenceReceivedForUriOrTelCb notify_presence_received_for_uri_or_tel; /**< Notify received presence events*/
 	LinphoneCoreNewSubscriptionRequestedCb new_subscription_requested; /**< Notify about pending presence subscription request */
-	LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
+	LINPHONE_DEPRECATED LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< @deprecated Use authentication_requested instead. Ask the application some authentication information */
+	LinphoneCoreAuthenticationRequestedCb authentication_requested; /**< Ask the application some authentication information */
 	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
 	LinphoneCoreMessageReceivedCb message_received; /**< a message is received, can be text or external body*/
 	LinphoneCoreIsComposingReceivedCb is_composing_received; /**< An is-composing notification has been received */
@@ -2228,7 +2238,7 @@ typedef struct _LinphoneCoreVTable{
 	LINPHONE_DEPRECATED DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
 	LINPHONE_DEPRECATED DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
 	LINPHONE_DEPRECATED DisplayUrlCb display_url; /**< @deprecated */
-	LINPHONE_DEPRECATED ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
+	LINPHONE_DEPRECATED ShowInterfaceCb show; /**< vNotifies the application that it should show up*/
 	LINPHONE_DEPRECATED LinphoneCoreTextMessageReceivedCb text_received; /**< @deprecated, use #message_received instead <br> A text message has been received */
 	LINPHONE_DEPRECATED LinphoneCoreFileTransferRecvCb file_transfer_recv; /**< @deprecated Callback to store file received attached to a #LinphoneChatMessage */
 	LINPHONE_DEPRECATED LinphoneCoreFileTransferSendCb file_transfer_send; /**< @deprecated Callback to collect file chunk to be sent for a #LinphoneChatMessage */

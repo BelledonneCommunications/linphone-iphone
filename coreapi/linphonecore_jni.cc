@@ -247,7 +247,8 @@ public:
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
 		newSubscriptionRequestId = env->GetMethodID(listenerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
 
-		authInfoRequestedId = env->GetMethodID(listenerClass,"authInfoRequested","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/linphone/core/LinphoneCore$AuthMethod;)V");
+		authInfoRequestedId = env->GetMethodID(listenerClass,"authInfoRequested","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+		authenticationRequestedId = env->GetMethodID(listenerClass,"authenticationRequested","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneAuthInfo;Lorg/linphone/core/LinphoneCore$AuthMethod;)V");
 
 		/*void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);*/
 		notifyPresenceReceivedId = env->GetMethodID(listenerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;)V");
@@ -287,6 +288,9 @@ public:
 
 		chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
 		chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
+		
+		authInfoClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneAuthInfoImpl"));
+		authInfoCtrId = env->GetMethodID(authInfoClass,"<init>", "(J)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(Lorg/linphone/core/LinphoneCoreImpl;J)V");
@@ -359,6 +363,7 @@ public:
 		env->DeleteGlobalRef(registrationStateClass);
 		env->DeleteGlobalRef(callStateClass);
 		env->DeleteGlobalRef(chatMessageStateClass);
+		env->DeleteGlobalRef(authInfoClass);
 		env->DeleteGlobalRef(proxyClass);
 		env->DeleteGlobalRef(callClass);
 		env->DeleteGlobalRef(chatMessageClass);
@@ -391,6 +396,7 @@ public:
 	jmethodID infoReceivedId;
 	jmethodID subscriptionStateId;
 	jmethodID authInfoRequestedId;
+	jmethodID authenticationRequestedId;
 	jmethodID publishStateId;
 	jmethodID notifyRecvId;
 	
@@ -426,6 +432,9 @@ public:
 	jclass ecCalibratorStatusClass;
 	jmethodID ecCalibrationStatusId;
 	jmethodID ecCalibratorStatusFromIntId;
+	
+	jclass authInfoClass;
+	jmethodID authInfoCtrId;
 
 	jclass proxyClass;
 	jmethodID proxyCtrId;
@@ -513,6 +522,16 @@ jobject getProxy(JNIEnv *env, LinphoneProxyConfig *proxy, jobject core){
 				linphone_proxy_config_set_user_data(proxy,(void*)env->NewWeakGlobalRef(jobj));
 			}
 		}
+	}
+	return jobj;
+}
+
+jobject getAuthInfo(JNIEnv *env, LinphoneCore *lc, LinphoneAuthInfo *authInfo, jobject core){
+	jobject jobj = 0;
+
+	if (authInfo && lc) {
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+		jobj = env->NewObject(ljb->authInfoClass, ljb->authInfoCtrId, core, (jlong)authInfo);
 	}
 	return jobj;
 }
@@ -770,6 +789,10 @@ public:
 		if (ljb->authInfoRequestedId) {
 			vTable->auth_info_requested = authInfoRequested;
 		}
+		
+		if (ljb->authenticationRequestedId) {
+			vTable->authentication_requested = authenticationRequested;
+		}
 
 		if (ljb->notifyPresenceReceivedId) {
 			vTable->notify_presence_received = notify_presence_received;
@@ -864,7 +887,7 @@ public:
 			env->DeleteLocalRef(msg);
 		}
 	}
-	static void authInfoRequested(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method) {
+	static void authInfoRequested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
@@ -883,8 +906,7 @@ public:
 							lcData->core,
 							r,
 							u,
-							d,
-							env->CallStaticObjectMethod(ljb->authMethodClass,ljb->authMethodFromIntId,(jint)method)
+							d
    						);
 		handle_possible_java_exception(env, lcData->listener);
 		if (r) {
@@ -896,6 +918,25 @@ public:
 		if (d) {
 			env->DeleteLocalRef(d);
 		}
+	}
+	static void authenticationRequested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		env->CallVoidMethod(lcData->listener,
+							ljb->authenticationRequestedId,
+							lcData->core,
+							getAuthInfo(env, lc, auth_info, lcData->core),
+							env->CallStaticObjectMethod(ljb->authMethodClass,ljb->authMethodFromIntId,(jint)method)
+   						);
+		handle_possible_java_exception(env, lcData->listener);
 	}
 	static void setCoreIfNotDone(JNIEnv *env, jobject jcore, LinphoneCore *lc){
 		jclass objClass = env->GetObjectClass(jcore);

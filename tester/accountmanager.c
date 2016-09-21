@@ -117,7 +117,7 @@ static void account_created_on_server_cb(LinphoneCore *lc, LinphoneProxyConfig *
 // TEMPORARY CODE: remove function below when flexisip is updated, this is not needed anymore!
 // The new flexisip now answer "200 Test account created" when creating a test account, and do not
 // challenge authentication anymore! so this code is not used for newer version
-static void account_created_auth_requested_cb(LinphoneCore *lc, const char *username, const char *realm, const char *domain, LinphoneAuthMethod method){
+static void account_created_auth_requested_cb(LinphoneCore *lc, const char *username, const char *realm, const char *domain){
 	Account *account=(Account*)linphone_core_get_user_data(lc);
 	account->created=1;
 }

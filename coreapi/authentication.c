@@ -50,10 +50,10 @@ LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
 	if (ai->ha1)			obj->ha1 = ms_strdup(ai->ha1);
 	if (ai->realm)			obj->realm = ms_strdup(ai->realm);
 	if (ai->domain)			obj->domain = ms_strdup(ai->domain);
-	if (ai->tls_cert)		obj->domain = ms_strdup(ai->tls_cert);
-	if (ai->tls_key)		obj->domain = ms_strdup(ai->tls_key);
-	if (ai->tls_cert_path)	obj->domain = ms_strdup(ai->tls_cert_path);
-	if (ai->tls_key_path)	obj->domain = ms_strdup(ai->tls_key_path);
+	if (ai->tls_cert)		obj->tls_cert = ms_strdup(ai->tls_cert);
+	if (ai->tls_key)		obj->tls_key = ms_strdup(ai->tls_key);
+	if (ai->tls_cert_path)	obj->tls_cert_path = ms_strdup(ai->tls_cert_path);
+	if (ai->tls_key_path)	obj->tls_key_path = ms_strdup(ai->tls_key_path);
 	return obj;
 }
 
@@ -402,8 +402,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	bool_t updating=FALSE;
 
 	if (info->ha1==NULL && info->passwd==NULL){
-		ms_error("linphone_core_add_auth_info(): info supplied with empty password or ha1.");
-		return;
+		ms_warning("linphone_core_add_auth_info(): info supplied with empty password or ha1.");
 	}
 	/* find if we are attempting to modify an existing auth info */
 	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);

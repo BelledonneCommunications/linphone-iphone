@@ -27,9 +27,19 @@ import java.nio.ByteBuffer;
  */
 public interface LinphoneCoreListener {
 
-	/**< Ask the application some authentication information 
-	 * @return */
-	void authInfoRequested(LinphoneCore lc, String realm, String username, String Domain, LinphoneCore.AuthMethod method); 
+	/**
+	 * @deprecated
+	 * Ask the application some authentication information 
+	 **/
+	void authInfoRequested(LinphoneCore lc, String realm, String username, String domain);
+	
+	/**
+	 * Ask the application some authentication information
+	 * @param lc the LinphoneCore
+	 * @param authInfo a LinphoneAuthInfo pre-filled with username, realm and domain values as much as possible
+	 * @param method the type of authentication requested (HttpDigest, Tls, ...)
+	 **/
+	void authenticationRequested(LinphoneCore lc, LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method); 
 
 	/**
 	 * Call stats notification

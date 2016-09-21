@@ -33,6 +33,7 @@ import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.LogCollectionUploadState;
 import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
+import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -298,9 +299,15 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 	@Override
 	public void authInfoRequested(LinphoneCore lc, String realm,
-			String username, String Domain, LinphoneCore.AuthMethod method) {
+			String username, String domain) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void authenticationRequested(LinphoneCore lc, 
+			LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override

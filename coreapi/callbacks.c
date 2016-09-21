@@ -977,9 +977,13 @@ static void auth_failure(SalOp *op, SalAuthInfo* info) {
 		ai = (LinphoneAuthInfo*)_linphone_core_find_auth_info(lc, info->realm, info->username, info->domain, TRUE);
 		if (ai){
 			LinphoneAuthMethod method = info->mode == SalAuthModeHttpDigest ? LinphoneAuthHttpDigest : LinphoneAuthTls;
+			LinphoneAuthInfo *auth_info = linphone_core_create_auth_info(lc, info->username, NULL, NULL, NULL, info->realm, info->domain);
 			ms_message("%s/%s/%s/%s authentication fails.", info->realm, info->username, info->domain, info->mode == SalAuthModeHttpDigest ? "HttpDigest" : "Tls");
 			/*ask again for password if auth info was already supplied but apparently not working*/
-			linphone_core_notify_auth_info_requested(lc, info->realm, info->username, info->domain, method);
+			linphone_core_notify_authentication_requested(lc, auth_info, method);
+			linphone_auth_info_destroy(auth_info);
+			// Deprecated
+			linphone_core_notify_auth_info_requested(lc, info->realm, info->username, info->domain);
 		}
 	}
 }
@@ -1238,7 +1242,11 @@ static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
 		return TRUE;
 	} else {
 		LinphoneAuthMethod method = sai->mode == SalAuthModeHttpDigest ? LinphoneAuthHttpDigest : LinphoneAuthTls;
-		linphone_core_notify_auth_info_requested(lc, sai->realm, sai->username, sai->domain, method);
+		LinphoneAuthInfo *ai = linphone_core_create_auth_info(lc, sai->username, NULL, NULL, NULL, sai->realm, sai->domain);
+		linphone_core_notify_authentication_requested(lc, ai, method);
+		linphone_auth_info_destroy(ai);
+		// Deprecated
+		linphone_core_notify_auth_info_requested(lc, sai->realm, sai->username, sai->domain);
 		if (fill_auth_info(lc, sai)) {
 			return TRUE;
 		}

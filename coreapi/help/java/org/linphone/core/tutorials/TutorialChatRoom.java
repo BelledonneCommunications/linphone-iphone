@@ -33,6 +33,7 @@ import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.LogCollectionUploadState;
 import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
+import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -77,7 +78,8 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
-	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain, LinphoneCore.AuthMethod method) {}
+	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
+	public void authenticationRequested(LinphoneCore lc, LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method) {}
 	public void displayStatus(LinphoneCore lc, String message) {}
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}

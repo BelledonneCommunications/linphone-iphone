@@ -143,8 +143,13 @@ void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneF
 	cleanup_dead_vtable_refs(lc);
 }
 
-void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain, LinphoneAuthMethod method) {
-	NOTIFY_IF_EXIST(auth_info_requested, lc, realm, username, domain, method);
+void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	NOTIFY_IF_EXIST(auth_info_requested, lc, realm, username, domain);
+	cleanup_dead_vtable_refs(lc);
+}
+
+void linphone_core_notify_authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *ai, LinphoneAuthMethod method) {
+	NOTIFY_IF_EXIST(authentication_requested, lc, ai, method);
 	cleanup_dead_vtable_refs(lc);
 }
 
