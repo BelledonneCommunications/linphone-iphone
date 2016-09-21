@@ -476,6 +476,7 @@ static int setup_encryption_key(SalSrtpCryptoAlgo *crypto, MSCryptoSuite suite, 
 			keylen=30;
 		break;
 		case MS_AES_256_SHA1_80:
+		case MS_AES_CM_256_SHA1_80:
 		case MS_AES_256_SHA1_32:
 			keylen=46;
 		break;
@@ -2435,10 +2436,12 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES1;
 					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
 					break;
+				case MS_AES_CM_256_SHA1_80:
+				    ms_warning("Deprecated crypto suite MS_AES_CM_256_SHA1_80, use MS_AES_256_SHA1_80 instead");
 				case MS_AES_256_SHA1_80:
-					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
-					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
-					break;
+				    params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
+                    params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
+                    break;
 				case MS_AES_256_SHA1_32:
 					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
 					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS32;
