@@ -1045,11 +1045,33 @@ void linphone_call_create_op(LinphoneCall *call){
 **/
 static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, LinphoneAddress *to, LinphoneProxyConfig *cfg){
 	if (linphone_core_ipv6_enabled(call->core)){
-		call->af=AF_INET;
 		if (sal_address_is_ipv6((SalAddress*)to)){
 			call->af=AF_INET6;
 		}else if (cfg && cfg->op){
 			call->af=sal_op_is_ipv6(cfg->op) ? AF_INET6 : AF_INET;
+		}else{
+			char ipv4[LINPHONE_IPADDR_SIZE];
+			char ipv6[LINPHONE_IPADDR_SIZE];
+			bool_t have_ipv6 = FALSE;
+			bool_t have_ipv4 = FALSE;
+			/*check connectivity for IPv4 and IPv6*/
+			if (linphone_core_get_local_ip_for(AF_INET6, NULL, ipv6) == 0){
+				have_ipv6 = TRUE;
+			}
+			if (linphone_core_get_local_ip_for(AF_INET, NULL, ipv4) == 0){
+				have_ipv4 = TRUE;
+			}
+			if (have_ipv6){
+				if (!have_ipv4) {
+					call->af = AF_INET6;
+				}else if (lp_config_get_int(call->core->config, "rtp", "prefer_ipv6", 1)){ /*this property tells whether ipv6 is prefered if two versions are available*/
+					call->af = AF_INET6;
+				}else{
+					call->af = AF_INET;
+				}
+			}else call->af = AF_INET;
+			/*fill the media_localip default value since we have it here*/
+			strncpy(call->media_localip,call->af == AF_INET6 ? ipv6 : ipv4, LINPHONE_IPADDR_SIZE);
 		}
 	}else call->af=AF_INET;
 }
@@ -1107,8 +1129,9 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 		}
 		if (res != NULL) freeaddrinfo(res);
 	}
-	/*the following cannot fail and puts result directly in media_localip*/
-	linphone_core_get_local_ip(call->core, af, dest, call->media_localip);
+	
+	if (dest != NULL || call->media_localip[0] == '\0')
+		linphone_core_get_local_ip(call->core, af, dest, call->media_localip);
 	return;
 found:
 	strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
