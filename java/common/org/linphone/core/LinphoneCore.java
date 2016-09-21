@@ -79,7 +79,7 @@ public interface LinphoneCore {
 		public String toString() {
 			return mStringValue;
 		}
-	}	
+	}
 	/**
 	 * linphone remote provisioning states
 	 */
@@ -2503,4 +2503,16 @@ public interface LinphoneCore {
 	 * @param path the path of the key
 	 */
 	public void setTlsKeyPath(String path);
+	
+	/**
+	 * Enable or not openh264
+	 * @param enable
+     */
+	public void enableOpenH264(boolean enable);
+
+	/**
+	 * Return if we enable openh264
+	 * @return
+     */
+	public boolean openH264Enabled();
 }

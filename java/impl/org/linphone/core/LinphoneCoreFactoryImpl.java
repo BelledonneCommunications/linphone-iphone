@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.linphone.mediastream.Log;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 import org.linphone.tools.OpenH264DownloadHelper;
@@ -97,7 +98,14 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		return LpConfigImpl.fromBuffer(buffer);
 	}
 
-	private void loadOpenH264(Context context) {
+	private boolean loadOpenH264(Context context) {
+		File file = new File(context.getFilesDir()+"/../lib/libmsopenh264.so");
+
+		if (!file.exists()) {
+			Log.i("LinphoneCoreFactoryImpl"," Openh264 disabled on the project");
+			return false;
+		}
+
 		OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper(context);
 		if (downloadHelper.isCodecFound()) {
 			org.linphone.mediastream.Log.i("LinphoneCoreFactoryImpl"," Loading OpenH264 plugin:" + downloadHelper.getFullPathLib());
@@ -105,6 +113,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		} else {
 			org.linphone.mediastream.Log.i("LinphoneCoreFactoryImpl"," Cannot load OpenH264 plugin");
 		}
+
+		return true;
 	}
 
 	@Override
@@ -113,11 +123,12 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			throws LinphoneCoreException {
 		try {
 			fcontext = (Context)context;
-			loadOpenH264(fcontext);
+			boolean openh264Enabled = loadOpenH264(fcontext);
 			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
 			LinphoneCore lc = new LinphoneCoreImpl(listener, user, factory, userdata);
+			lc.enableOpenH264(openh264Enabled);
 			if(context!=null) lc.setContext(context);
 			return lc;
 		} catch (IOException e) {
@@ -129,9 +140,10 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException {
 		try {
 			fcontext = (Context)context;
-			loadOpenH264(fcontext);
+			boolean openh264Enabled = loadOpenH264(fcontext);
 			MediastreamerAndroidContext.setContext(context);
 			LinphoneCore lc = new LinphoneCoreImpl(listener);
+			lc.enableOpenH264(openh264Enabled);
 			if(context!=null) lc.setContext(context);
 			return lc;
 		} catch (IOException e) {
