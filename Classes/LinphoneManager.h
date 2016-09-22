@@ -34,6 +34,8 @@
 #include "linphone/linphonecore.h"
 #include "bctoolbox/list.h"
 
+#import "ProviderDelegate.h"
+
 extern NSString *const LINPHONERC_APPLICATION_KEY;
 
 extern NSString *const kLinphoneCoreUpdate;
@@ -187,6 +189,9 @@ typedef struct _LinphoneManagerSounds {
 + (BOOL)isMyself:(const LinphoneAddress *)addr;
 
 - (void)shouldPresentLinkPopup;
+
+-(void) setProviderDelegate: ProviderDelegate* del;
+@property ProviderDelegate* providerDelegate;
 
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;

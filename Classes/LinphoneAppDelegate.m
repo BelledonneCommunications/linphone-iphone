@@ -50,7 +50,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-    if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max && (linphone_core_get_calls_nb(LC) == 0)) {
+    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && (linphone_core_get_calls_nb(LC) == 0)) {
         linphone_core_set_network_reachable(LC, FALSE);
         LinphoneManager.instance.connectivity = none;
     }
@@ -217,6 +217,7 @@
 	[self registerForNotifications:app];
     
     self.del = [[ProviderDelegate alloc] init];
+    [LinphoneManager.instance setProviderDelegate:self.del];
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
@@ -352,8 +353,14 @@
 					if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
 						[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
-                        [self.del reportIncomingCallwithUUID:[NSUUID UUID] handle:userInfo.description];
-                        //[self fixRing];
+                        if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+                            
+                            NSUUID* uuid = [NSUUID UUID];
+                            [self.del.calls setObject:callId forKey:uuid];
+                            [self.del reportIncomingCallwithUUID:uuid handle:userInfo.description];
+                        } else {
+                            [self fixRing];
+                        }
 					}
 				}
 			}
@@ -392,7 +399,7 @@
 
 	[self fixRing];
 
-	if ([notification.userInfo objectForKey:@"callId"] != nil) {
+	if ([notification.userInfo objectForKey:@"callId"] != nil && (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 		BOOL bypass_incoming_view = TRUE;
 		// some local notifications have an internal timer to relaunch themselves at specified intervals
 		if ([[notification.userInfo objectForKey:@"timer"] intValue] == 1) {

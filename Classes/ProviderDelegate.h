@@ -13,8 +13,10 @@
 
 @interface ProviderDelegate : NSObject <CXProviderDelegate>
 
-- (void)providerDidReset:(CXProvider *)provider;
 @property CXProvider *provider;
+@property NSMutableDictionary* calls;
+
+- (void)providerDidReset:(CXProvider *)provider;
 - (void) reportIncomingCallwithUUID:(NSUUID*)uuid handle:(NSString*) handle;
 
 @end

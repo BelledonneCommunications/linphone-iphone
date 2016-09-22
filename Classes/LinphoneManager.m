@@ -44,6 +44,7 @@
 #import "Utils.h"
 #import "Utils/DTFoundation/DTAlertView.h"
 #import "PhoneMainView.h"
+#import "ProviderDelegate.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
@@ -623,7 +624,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		data = [[LinphoneCallAppData alloc] init];
 		linphone_call_set_user_data(call, (void *)CFBridgingRetain(data));
 	}
-
+    
 #pragma deploymate push "ignored-api-availability"
 	if (_silentPushCompletion) {
 		// we were woken up by a silent push. Call the completion handler with NEWDATA
@@ -642,7 +643,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		CTCallCenter *lCTCallCenter = [[CTCallCenter alloc] init];
 
 		/*should we reject this call ?*/
-		if ([lCTCallCenter currentCalls] != nil) {
+		if (([lCTCallCenter currentCalls]) != nil && [UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
 			char *tmp = linphone_call_get_remote_address_as_string(call);
 			if (tmp) {
 				LOGI(@"Mobile call ongoing... rejecting call from [%s]", tmp);
@@ -651,8 +652,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			linphone_core_decline_call(theLinphoneCore, call, LinphoneReasonBusy);
 			return;
 		}
+        
 
-        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 
 			LinphoneCallLog *callLog = linphone_call_get_call_log(call);
 			NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
@@ -725,6 +727,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			/*IOS specific*/
 			linphone_core_start_dtmf_stream(theLinphoneCore);
             if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max && ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)) {
+                NSUUID *uuid = [[self.providerDelegate.calls allKeys] firstObject];
+                [self.providerDelegate.provider reportCallWithUUID:uuid endedAtDate:NULL reason:CXCallEndedReasonRemoteEnded];
                 linphone_core_set_network_reachable(LC, FALSE);
                 LinphoneManager.instance.connectivity = none;
                 
