@@ -1251,6 +1251,7 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 				if (contact_str != NULL) linphone_presence_service_set_contact(service, contact_str);
 				process_pidf_xml_presence_service_notes(xml_ctx, service, i);
 				linphone_presence_model_add_service(model, service);
+				linphone_presence_service_unref(service);
 			}
 			if (timestamp_str != NULL) linphone_free_xml_text_content(timestamp_str);
 			if (contact_str != NULL) linphone_free_xml_text_content(contact_str);
@@ -1303,6 +1304,7 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 						if (err < 0) break;
 						activity = linphone_presence_activity_new(acttype, description);
 						linphone_presence_person_add_activity(person, activity);
+						linphone_presence_activity_unref(activity);
 						if (description != NULL) linphone_free_xml_text_content(description);
 					}
 				}
@@ -1393,6 +1395,7 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 				}
 				if (err == 0) {
 					presence_model_add_person(model, person);
+					linphone_presence_person_unref(person);
 				} else {
 					linphone_presence_person_unref(person);
 					break;
@@ -1589,6 +1592,7 @@ void linphone_notify_parse_presence(const char *content_type, const char *conten
 			}
 			activity = linphone_presence_activity_new(acttype, NULL);
 			linphone_presence_model_add_activity(model, activity);
+			linphone_presence_activity_unref(activity);
 		}
 	}
 
