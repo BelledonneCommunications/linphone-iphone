@@ -1622,8 +1622,11 @@ void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path){
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
-	linphone_core_add_friend_list(lc, NULL);
-
+	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
+	linphone_friend_list_set_display_name(list, "_default");
+	linphone_core_add_friend_list(lc, list);
+	linphone_friend_list_unref(list);
+	
 	sip_setup_register_all(lc->factory);
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -2064,31 +2067,22 @@ void linphone_core_remove_friend_list(LinphoneCore *lc, LinphoneFriendList *list
 	linphone_core_notify_friend_list_removed(lc, list);
 	list->lc = NULL;
 	linphone_friend_list_unref(list);
-	lc->friends_lists = bctbx_list_remove_link(lc->friends_lists, elem);
+	lc->friends_lists = bctbx_list_erase_link(lc->friends_lists, elem);
 }
 
 void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 	const char *rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
-	if (list) {
-		if (!list->lc) {
-			list->lc = lc;
-		}
-		lc->friends_lists = bctbx_list_append(lc->friends_lists, linphone_friend_list_ref(list));
+	
+	if (!list->lc) {
+		list->lc = lc;
+	}
+	lc->friends_lists = bctbx_list_append(lc->friends_lists, linphone_friend_list_ref(list));
 #ifdef SQLITE_STORAGE_ENABLED
-		linphone_core_store_friends_list_in_db(lc, list);
+	linphone_core_store_friends_list_in_db(lc, list);
 #endif
-		linphone_core_notify_friend_list_created(lc, list);
-		if (!linphone_friend_list_get_rls_uri(list) && rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0)) {
-			linphone_friend_list_set_rls_uri(list, rls_uri);
-		}
-	} else {
-		list = linphone_core_create_friend_list(lc);
-		linphone_friend_list_set_display_name(list, "_default");
-		if (rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0)) {
-			linphone_friend_list_set_rls_uri(list, rls_uri);
-		}
-		lc->friends_lists = bctbx_list_append(lc->friends_lists, linphone_friend_list_ref(list));
-		linphone_friend_list_unref(list);
+	linphone_core_notify_friend_list_created(lc, list);
+	if (!linphone_friend_list_get_rls_uri(list) && rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0)) {
+		linphone_friend_list_set_rls_uri(list, rls_uri);
 	}
 }
 
@@ -2628,7 +2622,7 @@ static void proxy_update(LinphoneCore *lc){
 		LinphoneProxyConfig* cfg = (LinphoneProxyConfig*)elem->data;
 		next=elem->next;
 		if (ms_time(NULL) - cfg->deletion_date > 32) {
-			lc->sip_conf.deleted_proxies =bctbx_list_remove_link(lc->sip_conf.deleted_proxies,elem);
+			lc->sip_conf.deleted_proxies =bctbx_list_erase_link(lc->sip_conf.deleted_proxies,elem);
 			ms_message("Proxy config for [%s] is definitely removed from core.",linphone_proxy_config_get_addr(cfg));
 			_linphone_proxy_config_release_ops(cfg);
 			linphone_proxy_config_unref(cfg);
@@ -2665,7 +2659,7 @@ static void analyze_buddy_lookup_results(LinphoneCore *lc, LinphoneProxyConfig *
 	}
 	/*purge completed requests */
 	while((elem=bctbx_list_find(lc->bl_reqs,NULL))!=NULL){
-		lc->bl_reqs=bctbx_list_remove_link(lc->bl_reqs,elem);
+		lc->bl_reqs=bctbx_list_erase_link(lc->bl_reqs,elem);
 	}
 }
 
@@ -7000,7 +6994,7 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 	it=bctbx_list_find(the_calls,call);
 	if (it)
 	{
-		the_calls = bctbx_list_remove_link(the_calls,it);
+		the_calls = bctbx_list_erase_link(the_calls,it);
 	}
 	else
 	{

@@ -538,7 +538,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	bool_t is_update=FALSE;
 	bool_t drop_op = FALSE;
 
-	if (strcmp("ACK",method)!=0){  /*ACK does'nt create srv transaction*/
+	if (strcmp("ACK",method)!=0){  /*ACK doesn't create a server transaction*/
 		server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
 		belle_sip_object_ref(server_transaction);
 		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(server_transaction),sal_op_ref(op));

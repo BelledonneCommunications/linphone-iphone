@@ -153,6 +153,21 @@ LINPHONE_PUBLIC const char * linphone_friend_list_get_rls_uri(const LinphoneFrie
 **/
 LINPHONE_PUBLIC void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_uri);
 
+
+/**
+ * Get the RLS (Resource List Server) URI associated with the friend list to subscribe to these friends presence.
+ * @param[in] list LinphoneFriendList object.
+ * @return The RLS URI associated with the friend list.
+**/
+LINPHONE_PUBLIC const LinphoneAddress * linphone_friend_list_get_rls_address(const LinphoneFriendList *list);
+
+/**
+ * Set the RLS (Resource List Server) URI associated with the friend list to subscribe to these friends presence.
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] rls_addr The RLS URI to associate with the friend list.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_set_rls_address(LinphoneFriendList *list, const LinphoneAddress *rls_addr);
+
 /**
  * Add a friend to a friend list. If or when a remote CardDAV server will be attached to the list, the friend will be sent to the server.
  * @param[in] list LinphoneFriendList object.
@@ -202,14 +217,19 @@ LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_address(con
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri);
 
 /**
- * Find a frient in the friend list using a ref key.
+ * Find a friend in the friend list using a ref key.
  * @param[in] list LinphoneFriendList object.
  * @param[in] ref_key The ref key string of the friend we want to search for.
  * @return A LinphoneFriend if found, NULL otherwise.
 **/
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key);
 
-LINPHONE_PUBLIC void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered);
+/**
+ * Update presence subscriptions for the entire list. Calling this function is necessary when list subscriptions are enabled,
+ * ie when a RLS presence server is used.
+ * @param[in] list the friend list
+**/
+LINPHONE_PUBLIC void linphone_friend_list_update_subscriptions(LinphoneFriendList *list);
 
 /**
  * Notify our presence to all the friends in the friend list that have subscribed to our presence directly (not using a RLS).

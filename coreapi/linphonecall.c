@@ -1130,8 +1130,10 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 		if (res != NULL) freeaddrinfo(res);
 	}
 	
-	if (dest != NULL || call->media_localip[0] == '\0')
+	if (dest != NULL || call->media_localip[0] == '\0' || call->need_localip_refresh){
+		call->need_localip_refresh = FALSE;
 		linphone_core_get_local_ip(call->core, af, dest, call->media_localip);
+	}
 	return;
 found:
 	strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
@@ -4699,7 +4701,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 			}
 			elem=prevelem;
 			linphone_call_log_unref((LinphoneCallLog*)elem->data);
-			lc->call_logs=bctbx_list_remove_link(lc->call_logs,elem);
+			lc->call_logs=bctbx_list_erase_link(lc->call_logs,elem);
 		}
 		call_logs_write_to_config_file(lc);
 	}
@@ -5023,6 +5025,7 @@ void linphone_call_set_broken(LinphoneCall *call){
 			/*during these states, the dialog is established. A failure of a transaction is not expected to close it.
 			 * Instead we have to repair the dialog by sending a reINVITE*/
 			call->broken = TRUE;
+			call->need_localip_refresh = TRUE;
 		break;
 		default:
 			ms_error("linphone_call_set_broken() unimplemented case.");

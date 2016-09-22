@@ -38,11 +38,10 @@ static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
 
 void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	stats* counters;
-	LinphoneAddress *addr = linphone_friend_get_address(lf);
+	const LinphoneAddress *addr = linphone_friend_get_address(lf);
 	if (addr != NULL) {
 		char* from=linphone_address_as_string(addr);
 		ms_message("New subscription request from [%s] url [%s]",from,url);
-		linphone_address_unref(addr);
 		ms_free(from);
 	}
 	counters = get_stats(lc);
@@ -53,11 +52,10 @@ void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters;
 	unsigned int i;
-	LinphoneAddress *addr = linphone_friend_get_address(lf);
+	const LinphoneAddress *addr = linphone_friend_get_address(lf);
 	if (addr != NULL) {
 		char* from=linphone_address_as_string(addr);
 		ms_message("New Notify request from [%s] ",from);
-		linphone_address_unref(addr);
 		ms_free(from);
 	}
 	counters = get_stats(lc);

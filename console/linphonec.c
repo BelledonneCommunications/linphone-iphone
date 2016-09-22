@@ -291,12 +291,11 @@ linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 static void
 linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid)
 {
-	LinphoneAddress *addr = linphone_friend_get_address(fid);
+	const LinphoneAddress *addr = linphone_friend_get_address(fid);
 	if (addr) {
 		char *tmp=linphone_address_as_string(addr);
 		printf("Friend %s is %s\n", tmp, linphone_online_status_to_string(linphone_friend_get_status(fid)));
 		ms_free(tmp);
-		linphone_address_unref(addr);
 	}
 	// todo: update Friend list state (unimplemented)
 }

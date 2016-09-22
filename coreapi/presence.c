@@ -1471,7 +1471,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 
 void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalOp *op){
 	LinphoneFriend *fl=linphone_core_create_friend_with_address(lc,subscriber);
-	LinphoneAddress *addr;
+	const LinphoneAddress *addr;
 	char *tmp;
 
 	if (fl==NULL) return ;
@@ -1487,7 +1487,6 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 		tmp = linphone_address_as_string(addr);
 		linphone_core_notify_new_subscription_requested(lc,fl,tmp);
 		ms_free(tmp);
-		linphone_address_unref(addr);
 	}
 }
 
@@ -1897,7 +1896,7 @@ end:
 void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model){
 	char *tmp;
 	LinphoneFriend *lf = NULL;
-	LinphoneAddress *friend=NULL;
+	const LinphoneAddress *friend=NULL;
 	LinphonePresenceModel *presence = model ? (LinphonePresenceModel *)model:linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL);
 
 	if (linphone_core_get_default_friend_list(lc) != NULL)
@@ -1917,7 +1916,6 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 			ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
 			if (activity_str != NULL) ms_free(activity_str);
 			ms_free(tmp);
-			linphone_address_unref(friend);
 		}
 		linphone_friend_set_presence_model(lf, presence);
 		lf->subscribe_active=TRUE;

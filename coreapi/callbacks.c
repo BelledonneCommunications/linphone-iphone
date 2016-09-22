@@ -1106,7 +1106,7 @@ static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
 	}
 	if (i>=10){
 		ms_free(tail->data);
-		lc->last_recv_msg_ids=bctbx_list_remove_link(lc->last_recv_msg_ids,tail);
+		lc->last_recv_msg_ids=bctbx_list_erase_link(lc->last_recv_msg_ids,tail);
 	}
 	return is_duplicate;
 }

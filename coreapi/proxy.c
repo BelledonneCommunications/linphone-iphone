@@ -1272,7 +1272,7 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 			ms_message("Updating friends for identity [%s] on core [%p]",linphone_proxy_config_get_identity(cfg),cfg->lc);
 			/* state must be updated before calling linphone_core_update_friends_subscriptions*/
 			cfg->state=state;
-			linphone_core_update_friends_subscriptions(lc,cfg,TRUE);
+			linphone_core_update_friends_subscriptions(lc);
 		} else {
 			/*at this point state must be updated*/
 			cfg->state=state;

@@ -368,6 +368,7 @@ struct _LinphoneCall{
 	bool_t paused_by_app;
 	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
 	bool_t defer_notify_incoming;
+	bool_t need_localip_refresh;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);
@@ -424,7 +425,7 @@ void _linphone_friend_list_release(LinphoneFriendList *list);
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void _linphone_friend_release(LinphoneFriend *lf);
-void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
+void linphone_friend_update_subscribes(LinphoneFriend *fr, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
@@ -438,7 +439,8 @@ LinphoneFriend *linphone_core_find_friend_by_out_subscribe(const LinphoneCore *l
 LinphoneFriend *linphone_core_find_friend_by_inc_subscribe(const LinphoneCore *lc, SalOp *op);
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
 bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc);
-void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyConfig *cfg, bool_t only_when_registered);
+void linphone_core_update_friends_subscriptions(LinphoneCore *lc);
+void _linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 void linphone_core_friends_storage_init(LinphoneCore *lc);
 void linphone_core_friends_storage_close(LinphoneCore *lc);
 void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf);
@@ -754,7 +756,8 @@ struct _LinphoneFriendList {
 	LinphoneCore *lc;
 	LinphoneEvent *event;
 	char *display_name;
-	char *rls_uri;
+	char *rls_uri; /*this field is take in sync with rls_addr*/
+	LinphoneAddress *rls_addr;
 	MSList *friends;
 	unsigned char *content_digest;
 	int expected_notification_version;

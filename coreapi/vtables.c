@@ -48,7 +48,7 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 		next_it=it->next;
 		if (ref->valid==0){
 			ref->valid=0;
-			lc->vtable_refs=bctbx_list_remove_link(lc->vtable_refs, it);
+			lc->vtable_refs=bctbx_list_erase_link(lc->vtable_refs, it);
 			ms_free(ref);
 		}
 		it=next_it;

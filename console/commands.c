@@ -1829,7 +1829,7 @@ linphonec_proxy_use(LinphoneCore *lc, int index)
 static void
 linphonec_friend_display(LinphoneFriend *fr)
 {
-	LinphoneAddress *addr = linphone_friend_get_address(fr);
+	const LinphoneAddress *addr = linphone_friend_get_address(fr);
 	char *str = NULL;
 
 	linphonec_out("name: %s\n", linphone_friend_get_name(fr));
@@ -1875,12 +1875,11 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 		if ( n == num )
 		{
 			int ret;
-			LinphoneAddress *addr = linphone_friend_get_address((LinphoneFriend*)friend->data);
+			const LinphoneAddress *addr = linphone_friend_get_address((LinphoneFriend*)friend->data);
 			if (addr) {
 				addr_str = linphone_address_as_string(addr);
 				ret=lpc_cmd_call(lc, addr_str);
 				ms_free(addr_str);
-				linphone_address_unref(addr);
 				return ret;
 			} else {
 				linphonec_out("Friend %u does not have an address\n", num);

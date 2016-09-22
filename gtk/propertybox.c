@@ -807,7 +807,7 @@ static void linphone_gtk_codec_move(GtkWidget *button, int dir, int type){ /* 0=
 			else before=sel_elem;
 			codec_list=bctbx_list_insert(codec_list,before,pt);
 		}
-		codec_list=bctbx_list_remove_link(codec_list,sel_elem);
+		codec_list=bctbx_list_erase_link(codec_list,sel_elem);
 		if (pt->type==PAYLOAD_VIDEO)
 			linphone_core_set_video_codecs(lc,codec_list);
 		else linphone_core_set_audio_codecs(lc,codec_list);

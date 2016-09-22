@@ -158,11 +158,12 @@ LINPHONE_PUBLIC int linphone_friend_set_address(LinphoneFriend *fr, const Linpho
 #define linphone_friend_set_addr linphone_friend_set_address
 
 /**
- * Get address of this friend
+ * Get address of this friend.
+ * @note the LinphoneAddress object returned is hold by the LinphoneFriend, however calling several time this function may return different objects.
  * @param lf #LinphoneFriend object
  * @return #LinphoneAddress
  */
-LINPHONE_PUBLIC LinphoneAddress * linphone_friend_get_address(const LinphoneFriend *lf);
+LINPHONE_PUBLIC const LinphoneAddress * linphone_friend_get_address(const LinphoneFriend *lf);
 
 /**
  * Adds an address in this friend
@@ -176,7 +177,7 @@ LINPHONE_PUBLIC void linphone_friend_add_address(LinphoneFriend *lf, const Linph
  * @param lf #LinphoneFriend object
  * @return \mslist{LinphoneAddress}
  */
-LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_addresses(LinphoneFriend *lf);
+LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_addresses(const LinphoneFriend *lf);
 
 /**
  * Removes an address in this friend

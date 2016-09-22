@@ -393,7 +393,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_core_remove_friend_list(marie->lc, linphone_core_get_default_friend_list(marie->lc));
 	linphone_core_add_friend_list(marie->lc, lfl);
 	linphone_friend_list_unref(lfl);
-	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(marie->lc), NULL, FALSE);
+	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(marie->lc));
 
 	wait_for_list(lcs, &marie->stat.number_of_NotifyPresenceReceived, 1, 4000);
 	BC_ASSERT_EQUAL(marie->stat.number_of_NotifyPresenceReceived, 1, int, "%d");
@@ -411,7 +411,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_core_remove_friend_list(pauline->lc, linphone_core_get_default_friend_list(pauline->lc));
 	linphone_core_add_friend_list(pauline->lc, lfl);
 	linphone_friend_list_unref(lfl);
-	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(pauline->lc), NULL, FALSE);
+	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(pauline->lc));
 
 	wait_for_list(lcs, &pauline->stat.number_of_NotifyPresenceReceived, 1, 4000);
 	BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyPresenceReceived, 1, int, "%d");
@@ -476,6 +476,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 					, LinphonePresenceActivityOnline, int, "%d"); fixme, should be LinphonePresenceActivityUnknown*/
 
 end:
+	bctbx_list_free(lcs);
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -555,7 +556,7 @@ static void test_presence_list_subscription_expire_for_unknown(void) {
 	linphone_friend_list_add_friend(lfl, lf);
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
-	linphone_friend_list_update_subscriptions(lfl,NULL,FALSE);
+	linphone_friend_list_update_subscriptions(lfl);
 	linphone_friend_list_unref(lfl);
 
 	/* wait for refresh*/
@@ -593,7 +594,7 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
 	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
-	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(laure->lc), NULL, FALSE);
+	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(laure->lc));
 	lcs = bctbx_list_append(lcs, laure->lc);
 	lcs = bctbx_list_append(lcs, pauline->lc);
 

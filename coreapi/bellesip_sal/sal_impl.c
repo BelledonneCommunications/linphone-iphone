@@ -1137,7 +1137,7 @@ void sal_remove_supported_tag(Sal *ctx, const char* tag){
 	bctbx_list_t *elem=bctbx_list_find_custom(ctx->supported_tags,(bctbx_compare_func)strcasecmp,tag);
 	if (elem){
 		ms_free(elem->data);
-		ctx->supported_tags=bctbx_list_remove_link(ctx->supported_tags,elem);
+		ctx->supported_tags=bctbx_list_erase_link(ctx->supported_tags,elem);
 		make_supported_header(ctx);
 	}
 }

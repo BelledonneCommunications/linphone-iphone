@@ -1766,7 +1766,7 @@ void linphone_task_list_remove(LinphoneTaskList *t, LinphoneCoreIterateHook hook
 	for(elem=t->hooks;elem!=NULL;elem=elem->next){
 		Hook *h=(Hook*)elem->data;
 		if (h->fun==hook && h->data==hook_data){
-			t->hooks = bctbx_list_remove_link(t->hooks,elem);
+			t->hooks = bctbx_list_erase_link(t->hooks,elem);
 			ms_free(h);
 			return;
 		}
