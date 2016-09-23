@@ -281,7 +281,7 @@ static void friends_sqlite_storage(void) {
 	bctbx_list_t *friends_lists_from_db = NULL;
 	char *friends_db = bc_tester_file("friends.db");
 	LinphoneFriendListStats *stats = (LinphoneFriendListStats *)ms_new0(LinphoneFriendListStats, 1);
-	LinphoneAddress *laddress = NULL, *laddress2 = NULL;
+	const LinphoneAddress *laddress = NULL, *laddress2 = NULL;
 	char *address = NULL, *address2 = NULL;
 
 	v_table->friend_list_created = friend_list_created_cb;
@@ -340,8 +340,7 @@ static void friends_sqlite_storage(void) {
 	laddress2 = linphone_friend_get_address(lf2);
 	address2 = linphone_address_as_string(laddress2);
 	BC_ASSERT_STRING_EQUAL(address2, address);
-	linphone_address_unref(laddress);
-	linphone_address_unref(laddress2);
+	
 	ms_free(address);
 	ms_free(address2);
 
@@ -593,7 +592,7 @@ static void carddav_integration(void) {
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
 	const char *refkey = "toto";
 	char *address = NULL;
-	LinphoneAddress *addr;
+	const LinphoneAddress *addr;
 
 	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
 	cbs = linphone_friend_list_get_callbacks(lfl);
@@ -651,7 +650,7 @@ static void carddav_integration(void) {
 	address = linphone_address_as_string_uri_only(addr);
 	BC_ASSERT_STRING_EQUAL(address, "sip:sylvain@sip.linphone.org");
 	ms_free(address);
-	linphone_address_unref(addr);
+
 
 	linphone_friend_edit(lf);
 	linphone_friend_done(lf);

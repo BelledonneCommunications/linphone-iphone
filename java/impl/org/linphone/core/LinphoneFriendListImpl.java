@@ -25,11 +25,12 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	protected final long nativePtr;
 	private native void finalize(long nativePtr);
 	private native long newLinphoneFriendList(long corePtr);
+	private native void setRLSAddress(long nativePtr, long addrPtr);
 	private native void setRLSUri(long nativePtr, String uri);
 	private native void addFriend(long nativePtr, long friendPtr);
 	private native void addLocalFriend(long nativePtr, long friendPtr);
 	private native LinphoneFriend[] getFriendList(long nativePtr);
-	private native void updateSubscriptions(long nativePtr, long proxyConfigPtr, boolean onlyWhenRegistered);
+	private native void updateSubscriptions(long nativePtr);
 	private native void enableSubscriptions(long nativePtr, boolean enable);
 	private native Object getCore(long ptr);
 	private native LinphoneFriend findFriendByUri(long nativePtr, String uri);
@@ -37,6 +38,13 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 
 	protected LinphoneFriendListImpl(LinphoneCoreImpl core)  {
 		nativePtr = newLinphoneFriendList(core.nativePtr);
+	}
+
+	@Override
+	public void setRLSAddress(LinphoneAddress addr){
+		synchronized(getSyncObject()){
+			setRLSAddress(nativePtr, ((LinphoneAddressImpl)addr).nativePtr);
+		}
 	}
 
 	@Override
@@ -68,9 +76,9 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	}
 	
 	@Override
-	public void updateSubscriptions(LinphoneProxyConfig proxyConfig,boolean onlyWhenRegistered) {
+	public void updateSubscriptions() {
 		synchronized(getSyncObject()){
-			updateSubscriptions(nativePtr,  ((LinphoneProxyConfigImpl)proxyConfig).nativePtr,onlyWhenRegistered);
+			updateSubscriptions(nativePtr);
 		}
 	}
 	

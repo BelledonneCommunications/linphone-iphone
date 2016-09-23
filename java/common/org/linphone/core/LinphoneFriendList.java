@@ -21,13 +21,15 @@ package org.linphone.core;
 import java.util.Vector;
 
 import org.linphone.core.LinphoneChatMessage.State;
+import org.linphone.core.LinphoneAddress;
 
 public interface LinphoneFriendList {
+	public void setRLSAddress(LinphoneAddress addr);
 	public void setRLSUri(String uri);
 	public void addFriend(LinphoneFriend friend);
 	public void addLocalFriend(LinphoneFriend friend);
 	public LinphoneFriend[] getFriendList();
-	public void updateSubscriptions(LinphoneProxyConfig proxyConfig,boolean onlyWhenRegistered);
+	public void updateSubscriptions();
 	public void enableSubscriptions(boolean enable);
 	public LinphoneFriend findFriendByUri(String uri);
 	public void setUri(String uri);

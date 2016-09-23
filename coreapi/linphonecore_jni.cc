@@ -3752,9 +3752,16 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSUri(JNIEnv* 
 																		,jobject  thiz
 																		,jlong ptr
 																		,jstring jrlsUri) {
-	const char* uri = GetStringUTFChars(env, jrlsUri);
+	const char* uri = jrlsUri ? GetStringUTFChars(env, jrlsUri) : NULL;
 	linphone_friend_list_set_rls_uri((LinphoneFriendList*)ptr, uri);
-	ReleaseStringUTFChars(env, jrlsUri, uri);
+	if (jrlsUri) ReleaseStringUTFChars(env, jrlsUri, uri);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jlong jrlsAddress) {
+	linphone_friend_list_set_rls_address((LinphoneFriendList*)ptr, (LinphoneAddress*)jrlsAddress);
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneFriendListImpl_findFriendByUri(JNIEnv*  env
@@ -3810,10 +3817,8 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneFriendListImpl_getFriendL
 
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscriptions(JNIEnv*  env
 																		,jobject  thiz
-																		,jlong friendListptr
-																		,jlong proxyConfigPtr
-																		,jboolean jonlyWhenRegistered) {
-	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr, (LinphoneProxyConfig*)proxyConfigPtr, jonlyWhenRegistered);
+																		,jlong friendListptr) {
+	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr);
 }
 
 extern "C" jlongArray Java_org_linphone_core_LinphoneFriendImpl_getAddresses(JNIEnv*  env
