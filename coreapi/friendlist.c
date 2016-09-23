@@ -262,7 +262,8 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 				uri = linphone_get_xml_text_content(xml_ctx, xpath_str);
 				if (uri == NULL) continue;
 				addr = linphone_address_new(uri);
-				lf = addr ? linphone_friend_list_find_friend_by_address(list, addr) : NULL;
+				if (!addr) continue;
+				lf = linphone_friend_list_find_friend_by_address(list, addr);
 				linphone_address_unref(addr);
 				if (lf != NULL) {
 					const char *state = NULL;
