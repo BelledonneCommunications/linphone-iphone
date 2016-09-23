@@ -7,6 +7,8 @@
 //
 
 #import "ShopTableView.h"
+#import "ShopView.h"
+#import "PhoneMainView.h"
 
 @implementation ShopTableView
 
@@ -58,6 +60,13 @@
 
 	SKProduct *product = LinphoneManager.instance.iapManager.productsAvailable[indexPath.row];
 	[LinphoneManager.instance.iapManager purchaseWithID:product.productIdentifier];
+
+	/*	UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+		UIView *topView = window.rootViewController.view;
+		UIView *waitview =  (UIView*)[topView viewWithTag:288];
+
+		[waitview setHidden:FALSE];
+	 */
 }
 
 @end

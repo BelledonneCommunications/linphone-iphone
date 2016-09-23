@@ -25,6 +25,8 @@
 @interface ShopView : UIViewController <UICompositeViewDelegate>
 
 @property(strong, nonatomic) IBOutlet ShopTableView *tableViewController;
+@property(weak, nonatomic) IBOutlet UIView *waitingView;
 - (IBAction)onDialerBackClick:(id)sender;
+- (void)hideWaitingView;
 
 @end

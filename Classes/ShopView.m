@@ -55,4 +55,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
+- (IBAction)hideWaitingView {
+	LOGE(@"====>>> ShopView hideWaitingView - bool = %d");
+	if (_waitingView.isHidden) {
+		[_waitingView setHidden:NO];
+	} else {
+		[_waitingView setHidden:YES];
+	}
+}
+
 @end

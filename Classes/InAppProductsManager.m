@@ -24,6 +24,7 @@
 #import "XMLRPCHelper.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "StoreKit/StoreKit.h"
 
 @interface InAppProductsManager ()
 @property(strong, nonatomic) NSDate *expirationDate;
@@ -96,6 +97,12 @@
 	}
 	SKProduct *prod = [self productIDAvailable:productID];
 	if (prod) {
+		// Display waitview on click
+		UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+		UIView *topView = window.rootViewController.view;
+		UIView *waitview = (UIView *)[topView viewWithTag:288];
+		[waitview setHidden:FALSE];
+
 		NSDictionary *dict = @{ @"product_id" : productID };
 		[self postNotificationforStatus:kIAPPurchaseTrying withDict:dict];
 		SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:prod];
@@ -189,6 +196,7 @@
 }
 
 - (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request {
+	//[ShopView hideWaitingView:TRUE];
 	LOGI(@"XMLRPC query ");
 	const char *requestContent = linphone_xml_rpc_request_get_content(request);
 	NSString *rContent = [NSString stringWithFormat:@"%s", requestContent];
@@ -330,6 +338,10 @@
 								  onSuccess:^(NSString *response) {
 									if (response) {
 										LOGI(@"create and activate_account  callback - response: %@", response);
+										UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+										UIView *topView = window.rootViewController.view;
+										UIView *waitview = (UIView *)[topView viewWithTag:288];
+										[waitview setHidden:TRUE];
 									}
 								  }];
 
@@ -343,6 +355,10 @@
 									  onSuccess:^(NSString *response) {
 										if (response) {
 											LOGI(@"update_expiration_date callback - response: %@", response);
+											UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+											UIView *topView = window.rootViewController.view;
+											UIView *waitview = (UIView *)[topView viewWithTag:288];
+											[waitview setHidden:TRUE];
 										}
 									  }];
 
