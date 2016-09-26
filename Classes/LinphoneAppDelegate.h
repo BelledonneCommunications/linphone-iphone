@@ -21,11 +21,12 @@
 #import <PushKit/PushKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
-
 #import "LinphoneCoreSettingsStore.h"
+#import <UserNotifications/UserNotifications.h>
+#import <UserNotificationsUI/UserNotificationsUI.h>
 
 //@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
-@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate, PKPushRegistryDelegate> {
+@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate, PKPushRegistryDelegate, UNUserNotificationCenterDelegate> {
     @private
 	UIBackgroundTaskIdentifier bgStartId;
     BOOL startedInBackground;
