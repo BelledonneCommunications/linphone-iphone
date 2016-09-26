@@ -3425,6 +3425,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteAddress(	JNIEn
 	return (jlong)linphone_call_get_remote_address((LinphoneCall*)ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getDiversionAddress(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)linphone_call_get_diversion_address((LinphoneCall*)ptr);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getErrorInfo(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {

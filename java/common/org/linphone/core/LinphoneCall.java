@@ -176,6 +176,12 @@ public interface LinphoneCall {
 	**/
 	LinphoneCallLog getCallLog();
 
+    /**
+     * Returns the diversion address associated to this call if one exists.
+     *
+     */
+    LinphoneAddress getDiversionAddress();
+
 
 	/**
 	 * Get the audio statistics associated with this call.

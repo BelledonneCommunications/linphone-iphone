@@ -45,6 +45,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native float getAverageQuality(long nativePtr);
 	private native boolean mediaInProgress(long nativePtr);
 	private native void setListener(long ptr, LinphoneCallListener listener);
+	native private long getDiversionAddress(long nativePtr);
 	
 	/*
 	 * This method must always be called from JNI, nothing else.
@@ -269,4 +270,14 @@ class LinphoneCallImpl implements LinphoneCall {
 	public void setListener(LinphoneCallListener listener) {
 		setListener(nativePtr, listener);
 	}
+    
+	public LinphoneAddress getDiversionAddress() {
+        long lNativePtr = getDiversionAddress(nativePtr);
+        if (lNativePtr!=0) {
+            return new LinphoneAddressImpl(lNativePtr,LinphoneAddressImpl.WrapMode.FromConst);
+        } else {
+            return null;
+        }
+    }
+
 }

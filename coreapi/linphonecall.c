@@ -1190,7 +1190,6 @@ void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
 	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
-
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
 	call->dest_proxy=cfg;
@@ -1375,7 +1374,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	SalMediaDescription *md;
 	LinphoneNatPolicy *nat_policy = NULL;
 	int i;
-
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
 	call->op=op;
@@ -2017,6 +2015,14 @@ const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *cal
 **/
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
 	return linphone_address_as_string(linphone_call_get_remote_address(call));
+}
+
+/**
+ * Returns the diversion address associated to this call
+ *
+**/
+const LinphoneAddress * linphone_call_get_diversion_address(const LinphoneCall *call){
+	return call->op?(const LinphoneAddress *)sal_op_get_diversion_address(call->op):NULL;
 }
 
 /**

@@ -301,6 +301,7 @@ struct _LinphoneCall{
 	struct _RtpProfile *rtp_io_video_profile;
 	struct _LinphoneCallLog *log;
 	LinphoneAddress *me; /*Either from or to based on call dir*/
+	LinphoneAddress *diversion_address;
 	SalOp *op;
 	SalOp *ping_op;
 	char media_localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local media ipaddress for this call */

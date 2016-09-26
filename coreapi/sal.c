@@ -575,7 +575,10 @@ void sal_op_set_to_address(SalOp *op, const SalAddress *to){
 	sal_op_set_to(op,address_string);
 	ms_free(address_string);
 }
-
+void sal_op_set_diversion_address(SalOp *op, const SalAddress *diversion){
+	if (((SalOpBase*)op)->diversion_address) sal_address_destroy(((SalOpBase*)op)->diversion_address);
+	((SalOpBase*)op)->diversion_address=diversion?sal_address_clone(diversion):NULL;
+}
 void sal_op_set_user_pointer(SalOp *op, void *up){
 	((SalOpBase*)op)->user_pointer=up;
 }
@@ -597,6 +600,10 @@ const char *sal_op_get_to(const SalOp *op){
 
 const SalAddress *sal_op_get_to_address(const SalOp *op){
 	return ((SalOpBase*)op)->to_address;
+}
+
+const SalAddress *sal_op_get_diversion_address(const SalOp *op){
+	return ((SalOpBase*)op)->diversion_address;
 }
 
 const char *sal_op_get_remote_ua(const SalOp *op){
