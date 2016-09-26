@@ -738,7 +738,7 @@ void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled){
 	op->manual_refresher=enabled;
 }
 
-bool_t sal_op_is_ipv6(SalOp *op){
+int sal_op_get_address_family(SalOp *op){
 	belle_sip_transaction_t *tr=NULL;
 	belle_sip_header_address_t *contact;
 	
@@ -753,7 +753,7 @@ bool_t sal_op_is_ipv6(SalOp *op){
 	
 	if (tr==NULL){
 		ms_error("Unable to determine IP version from signaling operation.");
-		return FALSE;
+		return AF_UNSPEC;
 	}
 	
 	
@@ -762,16 +762,16 @@ bool_t sal_op_is_ipv6(SalOp *op){
 		belle_sip_header_via_t *via = resp ?belle_sip_message_get_header_by_type(resp,belle_sip_header_via_t):NULL;
 		if (!via){
 			ms_error("Unable to determine IP version from signaling operation, no via header found.");
-			return FALSE;
+			return AF_UNSPEC;
 		}
-		return strchr(belle_sip_header_via_get_host(via),':') != NULL;
+		return (strchr(belle_sip_header_via_get_host(via),':') != NULL) ? AF_INET6 : AF_INET;
 	} else {
 		belle_sip_request_t *req = belle_sip_transaction_get_request(tr);
 		contact=(belle_sip_header_address_t*)belle_sip_message_get_header_by_type(req,belle_sip_header_contact_t);
 		if (!contact){
 			ms_error("Unable to determine IP version from signaling operation, no contact header found.");
 		}
-		return sal_address_is_ipv6((SalAddress*)contact);
+		return sal_address_is_ipv6((SalAddress*)contact) ? AF_INET6 : AF_INET;
 	}
 }
 

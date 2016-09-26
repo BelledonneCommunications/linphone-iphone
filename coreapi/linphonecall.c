@@ -1048,8 +1048,11 @@ static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, Linphon
 		if (sal_address_is_ipv6((SalAddress*)to)){
 			call->af=AF_INET6;
 		}else if (cfg && cfg->op){
-			call->af=sal_op_is_ipv6(cfg->op) ? AF_INET6 : AF_INET;
+			call->af=sal_op_get_address_family(cfg->op);
 		}else{
+			call->af=AF_UNSPEC;
+		}
+		if (call->af == AF_UNSPEC) {
 			char ipv4[LINPHONE_IPADDR_SIZE];
 			char ipv6[LINPHONE_IPADDR_SIZE];
 			bool_t have_ipv6 = FALSE;
@@ -1231,9 +1234,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 static void linphone_call_incoming_select_ip_version(LinphoneCall *call, LinphoneProxyConfig *cfg){
 	if (linphone_core_ipv6_enabled(call->core)){
 		if (cfg && cfg->op){
-			call->af=sal_op_is_ipv6(cfg->op) ? AF_INET6 : AF_INET;
+			call->af=sal_op_get_address_family(cfg->op);
 		}else{
-			call->af=sal_op_is_ipv6(call->op) ? AF_INET6 : AF_INET;
+			call->af=sal_op_get_address_family(call->op);
 		}
 	}else call->af=AF_INET;
 }

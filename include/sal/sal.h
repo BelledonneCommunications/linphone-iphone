@@ -710,7 +710,7 @@ const SalAddress* sal_op_get_service_route(const SalOp *op);
 void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);
 
 void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled);
-bool_t sal_op_is_ipv6(SalOp *op);
+int sal_op_get_address_family(SalOp *op);
 /*returns TRUE if there is no pending request that may block a future one */
 bool_t sal_op_is_idle(SalOp *op);
 
