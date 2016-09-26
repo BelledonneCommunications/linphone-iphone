@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 static LinphoneNatPolicy * _linphone_nat_policy_new_with_ref(LinphoneCore *lc, const char *ref) {
 	LinphoneNatPolicy *policy = belle_sip_object_new(LinphoneNatPolicy);
-	belle_sip_object_ref(policy);
 	policy->lc = lc;
 	policy->ref = belle_sip_strdup(ref);
 	return policy;
@@ -57,7 +56,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneNatPolicy, belle_sip_object_t,
 	(belle_sip_object_destroy_t)linphone_nat_policy_destroy,
 	NULL, // clone
 	NULL, // marshal
-	TRUE
+	FALSE
 );
 
 

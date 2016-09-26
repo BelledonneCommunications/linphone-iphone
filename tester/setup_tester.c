@@ -25,6 +25,7 @@
 static void linphone_version_test(void){
 	const char *version=linphone_core_get_version();
 	/*make sure the git version is always included in the version number*/
+	BC_ASSERT_PTR_NOT_NULL(version);
 	BC_ASSERT_PTR_NULL(strstr(version,"unknown"));
 }
 
@@ -186,6 +187,12 @@ static void linphone_lpconfig_from_xml_zerolen_value(void){
 
 	LinphoneCoreManager* mgr = linphone_core_manager_new2("empty_rc",FALSE);
 
+	/* BUG
+	 * This test makes a provisionning by xml outside of the Configuring state of the LinphoneCore.
+	 * It is leaking memory because the config is litterally erased and rewritten by the invocation
+	 * of the private function linphone_remote_provisioning_load_file .
+	 */ 
+	
 	BC_ASSERT_EQUAL(linphone_remote_provisioning_load_file(mgr->lc, xml_path), 0, int, "%d");
 
 	conf = mgr->lc->config;
@@ -387,7 +394,7 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("LPConfig from buffer", linphone_lpconfig_from_buffer),
 	TEST_NO_TAG("LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value),
 	TEST_NO_TAG("LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value),
-	TEST_NO_TAG("LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value),
+	TEST_ONE_TAG("LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value, "LeaksMemory"),
 	TEST_NO_TAG("Chat room", chat_room_test),
 	TEST_NO_TAG("Devices reload", devices_reload_test),
 	TEST_NO_TAG("Codec usability", codec_usability_test),

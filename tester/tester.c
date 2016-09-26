@@ -609,8 +609,8 @@ void liblinphone_tester_before_each(void) {
 
 static char* all_leaks_buffer = NULL;
 
-int liblinphone_tester_after_each(void) {
-	int err = 0;
+void liblinphone_tester_after_each(void) {
+
 	if (!liblinphone_tester_leak_detector_disabled){
 		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
 		if (leaked_objects > 0) {
@@ -634,11 +634,9 @@ int liblinphone_tester_after_each(void) {
 			// if the test is NOT marked as leaking memory and it actually is, we should make it fail
 			if (!leaks_expected && leaked_objects > 0) {
 				BC_FAIL("This test is leaking memory!");
-				err = 1;
 				// and reciprocally
 			} else if (leaks_expected && leaked_objects == 0) {
 				BC_FAIL("This test is not leaking anymore, please remove LeaksMemory tag!");
-				// err = 1; // do not force fail actually, because it can be some false positive warning
 			}
 		}
 	}
@@ -646,7 +644,6 @@ int liblinphone_tester_after_each(void) {
 	if (manager_count != 0) {
 		ms_fatal("%d Linphone core managers are still alive!", manager_count);
 	}
-	return err;
 }
 
 void liblinphone_tester_uninit(void) {
