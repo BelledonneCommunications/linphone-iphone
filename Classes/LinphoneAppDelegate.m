@@ -186,9 +186,9 @@
 
 - (void)registerForNotifications:(UIApplication *)app {
 	LinphoneManager *instance = [LinphoneManager instance];
-    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+    /*if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
         // Set up for UserNotifications framework
-        /*UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:@"Answer" options:UNNotificationActionOptionNone];
+        UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:@"Answer" options:UNNotificationActionOptionNone];
         UNNotificationAction* act_dec = [UNNotificationAction actionWithIdentifier:@"Decline" title:@"Decline" options:UNNotificationActionOptionNone];
         UNNotificationCategory* cat_call = [UNNotificationCategory categoryWithIdentifier:@"call_cat" actions:[NSArray arrayWithObjects:act_ans, act_dec, nil] intentIdentifiers:[[NSMutableArray alloc] init] options:UNNotificationCategoryOptionCustomDismissAction];
         
@@ -202,8 +202,8 @@
                                   }
                               }];
         NSSet* categories = [NSSet setWithObjects:cat_call, nil];
-        [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];*/
-    }
+        [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
+    }*/
         
 	if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
         //[app unregisterForRemoteNotifications];
@@ -510,69 +510,10 @@ didInvalidatePushTokenForType:(NSString *)type {
         NSSet* categories = [NSSet setWithObjects:cat_call, cat_msg, nil];
         [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
         
-        NSDictionary *aps = [payload.dictionaryPayload objectForKey:@"aps"];
-        if (aps != nil) {
-            NSDictionary *alert = [aps objectForKey:@"alert"];
-            if (alert != nil) {
-                
-                NSArray* user = [alert objectForKey:@"loc-args"];
-                NSString *loc_key = [alert objectForKey:@"loc-key"];
-                /*if we receive a remote notification, it is probably because our TCP background socket was no more working.
-                 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
-                if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
-                    //linphone_core_set_network_reachable(LC, FALSE);
-                    if (!linphone_core_is_network_reachable(LC)) {
-                        LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
-                        [LinphoneManager.instance setupNetworkReachabilityCallback];
-                    }
-                    if (loc_key != nil) {
-                        
-                        NSString *callId = [payload.dictionaryPayload objectForKey:@"call-id"];
-                        if (callId != nil) {
-                            [LinphoneManager.instance addPushCallId:callId];
-                        } else {
-                            LOGE(@"PushNotification: does not have call-id yet, fix it !");
-                        }
-                        
-                        if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
-                            UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-                            content.title = @"Message received";
-                            content.subtitle = user[0];
-                            content.body = @"body of the message";
-                            content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
-                            content.categoryIdentifier = @"msg_cat";
-                            
-                            UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-                            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-                                // Enable or disable features based on authorization.
-                                if (error) {
-                                    LOGD(@"Error while adding notification request :");
-                                    LOGD(error.description);
-                                }
-                            }];
-                        } else if ([loc_key isEqualToString:@"IC_MSG"]) {
-                            UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-                            content.title = @"Incoming call";
-                            content.body = user[0];
-                            content.sound = [UNNotificationSound soundNamed:@"shortring.caf"];
-                            content.categoryIdentifier = @"call_cat";
-                            
-                            UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-                            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-                                // Enable or disable features based on authorization.
-                                if (error) {
-                                    LOGD(@"Error while adding notification request :");
-                                    LOGD(error.description);
-                                }
-                            }];
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
+        
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{[self processRemoteNotification:payload.dictionaryPayload];});
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -593,16 +534,35 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     LOGD(response.description);
     
     if ([response.actionIdentifier isEqual:@"Answer"]) {
-        
+        [LinphoneManager.instance acceptCallForCallId:[response.notification.request.content.userInfo objectForKey:@"callId"]];
     } else if ([response.actionIdentifier isEqual:@"Decline"]) {
-        
+        LinphoneCall* call = linphone_core_get_current_call(LC);
+        linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
     } else if ([response.actionIdentifier isEqual:@"Reply"]) {
-        
+        LinphoneCore *lc = [LinphoneManager getLc];
+        NSString *replyText = [(UNTextInputNotificationResponse*)response userText];
+        NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
+        LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
+        if (room) {
+            LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
+            linphone_chat_room_send_chat_message(room, msg);
+            linphone_chat_room_mark_as_read(room);
+            [PhoneMainView.instance updateApplicationBadgeNumber];
+        }
     } else if ([response.actionIdentifier isEqual:@"Seen"]) {
+        NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
+        LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
+        if (room) {
+            linphone_chat_room_mark_as_read(room);
+            TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+                                             getCachedController:NSStringFromClass(TabBarView.class)];
+            [tab update:YES];
+            [PhoneMainView.instance updateApplicationBadgeNumber];
+        }
         
     } else { //in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
         if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
-            
+            [LinphoneManager.instance acceptCallForCallId:[response.notification.request.content.userInfo objectForKey:@"callId"]];
         } else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
             
         }

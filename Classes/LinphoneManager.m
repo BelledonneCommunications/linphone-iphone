@@ -44,6 +44,7 @@
 #import "Utils.h"
 #import "Utils/DTFoundation/DTAlertView.h"
 #import "PhoneMainView.h"
+#import <UserNotifications/UserNotifications.h>
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
@@ -660,6 +661,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
             //if (![LinphoneManager.instance popPushCallID:callId]) {
 				// case where a remote notification is not already received
 				// Create a new local notification
+            if(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 				data->notification = [[UILocalNotification alloc] init];
 				if (data->notification) {
 
@@ -703,7 +705,23 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 						}
 					}
 				}
-			//}
+            } else {
+                UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+                content.title = @"Incoming call";
+                content.body = address;
+                content.sound = [UNNotificationSound soundNamed:@"shortring.caf"];
+                content.categoryIdentifier = @"call_cat";
+                content.userInfo = @{@"callId" : callId};
+                
+                UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+                [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+                    // Enable or disable features based on authorization.
+                    if (error) {
+                        LOGD(@"Error while adding notification request :");
+                        LOGD(error.description);
+                    }
+                }];
+            }
 
 		}
 	}
@@ -724,7 +742,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			_bluetoothEnabled = FALSE;
 			/*IOS specific*/
 			linphone_core_start_dtmf_stream(theLinphoneCore);
-            if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max && ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)) {
+            if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)) {
                 linphone_core_set_network_reachable(LC, FALSE);
                 LinphoneManager.instance.connectivity = none;
                 
@@ -1022,26 +1040,51 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 		// Create a new notification
-		UILocalNotification *notif = [[UILocalNotification alloc] init];
-		if (notif) {
-			NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
-			notif.repeatInterval = 0;
-			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+        
+        if(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+            UILocalNotification *notif = [[UILocalNotification alloc] init];
+            if (notif) {
+                NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
+                notif.repeatInterval = 0;
+                if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 #pragma deploymate push "ignored-api-availability"
-				notif.category = @"incoming_msg";
+                    notif.category = @"incoming_msg";
 #pragma deploymate pop
-			}
-			if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
-			} else {
-				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
-			}
-			notif.alertAction = NSLocalizedString(@"Show", nil);
-			notif.soundName = @"msg.caf";
-			notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
+                }
+                if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
+                    notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
+                } else {
+                    notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
+                }
+                notif.alertAction = NSLocalizedString(@"Show", nil);
+                notif.soundName = @"msg.caf";
+                notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
 
-			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
-		}
+                [[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+            }
+        } else {
+            UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+            content.title = @"Message received";
+            if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
+                content.subtitle = from;
+                content.body = [UIChatBubbleTextCell TextMessageForChat:msg];
+            } else {
+                content.body = from;
+            }
+            
+            content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
+            content.categoryIdentifier = @"msg_cat";
+            content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
+            
+            UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+                                // Enable or disable features based on authorization.
+                                if (error) {
+                                    LOGD(@"Error while adding notification request :");
+                                    LOGD(error.description);
+                                }
+                            }];
+        }
 	}
 
 	// Post event
