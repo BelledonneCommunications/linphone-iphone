@@ -9,6 +9,7 @@
 #import "ShopTableView.h"
 #import "ShopView.h"
 #import "PhoneMainView.h"
+#import "LinphoneUI/UIShopTableCell.h"
 
 @implementation ShopTableView
 
@@ -16,7 +17,6 @@
 	[super viewDidLoad];
 
 	// remove separators between empty items, cf
-	// http://stackoverflow.com/questions/1633966/can-i-force-a-uitableview-to-hide-the-separator-between-empty-cells
 	self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
@@ -31,11 +31,13 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(self.class)];
-	if (!cell) {
-		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-									  reuseIdentifier:NSStringFromClass(self.class)];
+
+	static NSString *kCellId = @"UIShopTableCell";
+	UIShopTableCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+	if (cell == nil) {
+		cell = [[UIShopTableCell alloc] initWithIdentifier:kCellId];
 	}
+
 	SKProduct *product = LinphoneManager.instance.iapManager.productsAvailable[indexPath.row];
 
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -44,13 +46,14 @@
 	[numberFormatter setLocale:product.priceLocale];
 	NSString *price = [numberFormatter stringFromNumber:product.price];
 
-	cell.textLabel.text = [NSString stringWithFormat:@"%@ (%@)", product.localizedTitle, price];
-	cell.detailTextLabel.text = product.localizedDescription;
-	cell.detailTextLabel.numberOfLines = 2;
-	cell.detailTextLabel.minimumScaleFactor = .5;
-	cell.detailTextLabel.adjustsFontSizeToFitWidth = cell.detailTextLabel.adjustsLetterSpacingToFitWidth = YES;
-	cell.accessoryType = UITableViewCellAccessoryDetailButton;
-	[cell setImage:[UIImage imageNamed:@"linphone_logo"]];
+	cell.nameLabel.text = [NSString stringWithFormat:@"%@ (%@)", product.localizedTitle, price];
+	cell.descriptionLabel.numberOfLines = 2;
+	cell.descriptionLabel.minimumScaleFactor = .5;
+	cell.descriptionLabel.adjustsFontSizeToFitWidth = cell.detailTextLabel.adjustsLetterSpacingToFitWidth = YES;
+	cell.descriptionLabel.text = [NSString stringWithFormat:@"%@", product.localizedDescription];
+	LOGE(@"ShopTableView : name = %@ - descr = %@",
+		 [NSString stringWithFormat:@"%@ (%@)", product.localizedTitle, price], product.localizedDescription);
+	[cell.linphoneImage setImage:[UIImage imageNamed:@"linphone_logo"]];
 
 	return cell;
 }
@@ -60,13 +63,6 @@
 
 	SKProduct *product = LinphoneManager.instance.iapManager.productsAvailable[indexPath.row];
 	[LinphoneManager.instance.iapManager purchaseWithID:product.productIdentifier];
-
-	/*	UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-		UIView *topView = window.rootViewController.view;
-		UIView *waitview =  (UIView*)[topView viewWithTag:288];
-
-		[waitview setHidden:FALSE];
-	 */
 }
 
 @end
