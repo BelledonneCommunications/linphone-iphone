@@ -274,7 +274,7 @@ static void linphone_core_log_collection_handler(const char *domain, OrtpLogLeve
 	time_t tt;
 	int ret;
 
-	if (liblinphone_log_func != NULL) {
+	if (liblinphone_log_func != NULL && liblinphone_log_func != linphone_core_log_collection_handler) {
 #ifndef _WIN32
 		va_list args_copy;
 		va_copy(args_copy, args);
