@@ -137,6 +137,9 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 	if (ipv6) {
 		linphone_core_enable_ipv6(marie->lc, TRUE);
 		linphone_core_enable_ipv6(pauline->lc, TRUE);
+	} else {
+		linphone_core_enable_ipv6(marie->lc, FALSE);
+		linphone_core_enable_ipv6(pauline->lc, FALSE);
 	}
 
 	configure_nat_policy(marie->lc, caller_turn_enabled);
