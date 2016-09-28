@@ -186,7 +186,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	}
 
 	// Inserts message body and tags URIs as hypertext links
-	if(message && strlen(message)<1000 /*limit to 1000 chars because overwise it might crash with big messages, such as ":B:B:B:B:B" x 10000*/) {
+	if(message) {
 		g_regex_match(uri_regex, message, 0, &match_info);
 		while(g_match_info_matches(match_info)) {
 			g_match_info_fetch_pos(match_info, 0, &start, &end);
@@ -198,8 +198,6 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		if((size_t)pos < strlen(message)) write_body(buffer, &iter, &message[pos], -1, me, FALSE);
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_match_info_free(match_info);
-	} else {
-		ms_warning("Skipping highlighting too big message '%s'", message);
 	}
 
 	g_hash_table_insert(table,GUINT_TO_POINTER(linphone_chat_message_get_storage_id(msg)),GINT_TO_POINTER(gtk_text_iter_get_line(&iter)));
