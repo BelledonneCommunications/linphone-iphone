@@ -569,7 +569,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         
     } else { //in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
         if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
-            [LinphoneManager.instance acceptCallForCallId:[response.notification.request.content.userInfo objectForKey:@"callId"]];
+            
         } else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
             [PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
         } else { //Missed call
