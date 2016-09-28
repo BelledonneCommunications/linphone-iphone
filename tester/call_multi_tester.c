@@ -559,7 +559,7 @@ static void unattended_call_transfer_with_error(void) {
 }
 
 
-static void call_transfer_existing_call_outgoing_call(void) {
+static void call_transfer_existing_call(bool_t outgoing_call) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
@@ -584,11 +584,20 @@ static void call_transfer_existing_call_outgoing_call(void) {
 			goto end;
 		}
 
-		/*marie call laure*/
-		if (!BC_ASSERT_TRUE(call(marie,laure))) {
-			end_call(marie, pauline);
-			goto end;
+		if (outgoing_call) {
+			/*marie call laure*/
+			if (!BC_ASSERT_TRUE(call(marie,laure))) {
+				end_call(marie, pauline);
+				goto end;
+			}
+		} else {
+			/*laure call pauline*/
+			if (!BC_ASSERT_TRUE(call(laure,marie))) {
+				end_call(marie,pauline);
+				goto end;
+			}
 		}
+			
 		marie_call_laure=linphone_core_get_current_call(marie->lc);
 		laure_called_by_marie=linphone_core_get_current_call(laure->lc);
 
@@ -641,7 +650,12 @@ end:
 	linphone_core_manager_destroy(pauline);
 	bctbx_list_free(lcs);
 }
-
+static void call_transfer_existing_call_outgoing_call(void) {
+	call_transfer_existing_call(TRUE);
+}
+static void call_transfer_existing_call_incoming_call(void) {
+	call_transfer_existing_call(FALSE);
+}
 static void eject_from_3_participants_conference(LinphoneCoreManager *marie, LinphoneCoreManager *pauline, LinphoneCoreManager *laure, LinphoneCoreManager *focus) {
 	stats initial_marie_stat;
 	stats initial_pauline_stat;
@@ -953,6 +967,7 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Unattended call transfer", unattended_call_transfer),
 	TEST_NO_TAG("Unattended call transfer with error", unattended_call_transfer_with_error),
 	TEST_NO_TAG("Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call),
+	TEST_NO_TAG("Call transfer existing call incoming call", call_transfer_existing_call_incoming_call),
 	TEST_NO_TAG("Simple remote conference", simple_remote_conference),
 	TEST_NO_TAG("Simple remote conference with shut down focus", simple_remote_conference_shut_down_focus),
 	TEST_NO_TAG("Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference),

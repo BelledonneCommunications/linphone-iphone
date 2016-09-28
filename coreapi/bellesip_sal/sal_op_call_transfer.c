@@ -88,14 +88,19 @@ int sal_call_refer_with_replaces(SalOp *op, SalOp *other_call_op){
 
 	refer_to=belle_sip_header_refer_to_create(belle_sip_dialog_get_remote_party(other_call_op->dialog));
 	belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(refer_to));
-	if (belle_sip_dialog_is_server(other_call_op->dialog)) {
-		to_tag=belle_sip_dialog_get_local_tag(other_call_op->dialog);
-		from_tag=belle_sip_dialog_get_remote_tag(other_call_op->dialog);
-
-	} else {
-		from_tag=belle_sip_dialog_get_local_tag(other_call_op->dialog);
-		to_tag=belle_sip_dialog_get_remote_tag(other_call_op->dialog);
-	}
+	/*rfc3891
+	 ...
+	 4.  User Agent Client Behavior: Sending a Replaces Header
+	 
+	 A User Agent that wishes to replace a single existing early or
+	 confirmed dialog with a new dialog of its own, MAY send the target
+	 User Agent an INVITE request containing a Replaces header field.  The
+	 User Agent Client (UAC) places the Call-ID, to-tag, and from-tag
+	 information for the target dialog in a single Replaces header field
+	 and sends the new INVITE to the target.*/
+	from_tag=belle_sip_dialog_get_local_tag(other_call_op->dialog);
+	to_tag=belle_sip_dialog_get_remote_tag(other_call_op->dialog);
+	
 	replaces=belle_sip_header_replaces_create(belle_sip_header_call_id_get_call_id(belle_sip_dialog_get_call_id(other_call_op->dialog))
 											,from_tag,to_tag);
 	escaped_replaces=belle_sip_header_replaces_value_to_escaped_string(replaces);
@@ -121,11 +126,30 @@ int sal_call_set_referer(SalOp *h, SalOp *refered_call){
 /* returns the SalOp of a call that should be replaced by h, if any */
 SalOp *sal_call_get_replaces(SalOp *op){
 	if (op && op->replaces){
+		/*rfc3891
+		 3.  User Agent Server Behavior: Receiving a Replaces Header
+			
+		 The Replaces header contains information used to match an existing
+		 SIP dialog (call-id, to-tag, and from-tag).  Upon receiving an INVITE
+		 with a Replaces header, the User Agent (UA) attempts to match this
+		 information with a confirmed or early dialog.  The User Agent Server
+		 (UAS) matches the to-tag and from-tag parameters as if they were tags
+		 present in an incoming request.  In other words, the to-tag parameter
+		 is compared to the local tag, and the from-tag parameter is compared
+		 to the remote tag.
+		 */
 		belle_sip_dialog_t* dialog=belle_sip_provider_find_dialog(op->base.root->prov
 								,belle_sip_header_replaces_get_call_id(op->replaces)
-								,belle_sip_header_replaces_get_from_tag(op->replaces)
-								,belle_sip_header_replaces_get_to_tag(op->replaces));
+								,belle_sip_header_replaces_get_to_tag(op->replaces)
+								,belle_sip_header_replaces_get_from_tag(op->replaces));
 
+		if (!dialog) {
+			/*for backward compatibility with liblinphone <= 3.10.2-243 */
+			dialog=belle_sip_provider_find_dialog(op->base.root->prov
+												  ,belle_sip_header_replaces_get_call_id(op->replaces)
+												  ,belle_sip_header_replaces_get_from_tag(op->replaces)
+												  ,belle_sip_header_replaces_get_to_tag(op->replaces));
+		}
 		if (dialog) {
 			return (SalOp*)belle_sip_dialog_get_application_data(dialog);
 		}
