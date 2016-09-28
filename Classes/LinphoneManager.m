@@ -662,9 +662,33 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				// case where a remote notification is not already received
 				// Create a new local notification
             if(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+                UIMutableUserNotificationAction *answer = [[UIMutableUserNotificationAction alloc] init];
+                answer.identifier = @"answer";
+                answer.title = NSLocalizedString(@"Answer", nil);
+                answer.activationMode = UIUserNotificationActivationModeForeground;
+                answer.destructive = NO;
+                answer.authenticationRequired = YES;
+                
+                UIMutableUserNotificationAction *decline = [[UIMutableUserNotificationAction alloc] init];
+                decline.identifier = @"decline";
+                decline.title = NSLocalizedString(@"Decline", nil);
+                decline.activationMode = UIUserNotificationActivationModeBackground;
+                decline.destructive = YES;
+                decline.authenticationRequired = NO;
+                
+                NSArray *callactions = @[ decline, answer ];
+                
+                UIMutableUserNotificationCategory *callcat = [[UIMutableUserNotificationCategory alloc] init];
+                callcat.identifier = @"incoming_call";
+                [callcat setActions:callactions forContext:UIUserNotificationActionContextDefault];
+                [callcat setActions:callactions forContext:UIUserNotificationActionContextMinimal];
+                
+                NSSet* categories = [NSSet setWithObjects:callcat, nil];
+                
+                UIUserNotificationSettings *set = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound) categories:categories];
+                [[UIApplication sharedApplication] registerUserNotificationSettings:set];
 				data->notification = [[UILocalNotification alloc] init];
 				if (data->notification) {
-
 					// iOS8 doesn't need the timer trick for the local notification.
 					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8 &&
 						[self lpConfigBoolForKey:@"repeat_call_notification"] == NO) {
@@ -673,7 +697,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 								 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
 								.lastPathComponent;
 						data->notification.soundName = ring;
-						data->notification.category = @"incoming_call";
+                        data->notification.category = @"incoming_call";
 					} else {
 						data->notification.soundName = @"shortring.caf";
 						data->timer = [NSTimer scheduledTimerWithTimeInterval:5
@@ -687,11 +711,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 					data->notification.alertBody =
 						[NSString stringWithFormat:NSLocalizedString(@"IC_MSG", nil), address];
-					data->notification.alertAction = NSLocalizedString(@"Answer", nil);
+					//data->notification.alertAction = NSLocalizedString(@"Answer", nil);
 					data->notification.userInfo = @{ @"callId" : callId, @"timer" : [NSNumber numberWithInt:1] };
 					data->notification.applicationIconBadgeNumber = 1;
-
-					[[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
+                    UIApplication *app = [UIApplication sharedApplication];
+                    LOGI([app currentUserNotificationSettings].description);
+					[app presentLocalNotificationNow:data->notification];
 
 					if (!incallBgTask) {
 						incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -1042,6 +1067,50 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		// Create a new notification
         
         if(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+            NSArray *actions;
+            
+            if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
+                [LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
+                
+                UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
+                reply.identifier = @"reply";
+                reply.title = NSLocalizedString(@"Reply", nil);
+                reply.activationMode = UIUserNotificationActivationModeForeground;
+                reply.destructive = NO;
+                reply.authenticationRequired = YES;
+                
+                UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
+                mark_read.identifier = @"mark_read";
+                mark_read.title = NSLocalizedString(@"Mark Read", nil);
+                mark_read.activationMode = UIUserNotificationActivationModeBackground;
+                mark_read.destructive = NO;
+                mark_read.authenticationRequired = NO;
+                
+                actions = @[ mark_read, reply ];
+            } else {
+                // iOS 9 allows for inline reply. We don't propose mark_read in this case
+                UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
+                
+                reply_inline.identifier = @"reply_inline";
+                reply_inline.title = NSLocalizedString(@"Reply", nil);
+                reply_inline.activationMode = UIUserNotificationActivationModeBackground;
+                reply_inline.destructive = NO;
+                reply_inline.authenticationRequired = NO;
+                reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
+                
+                actions = @[ reply_inline ];
+            }
+            
+            UIMutableUserNotificationCategory *msgcat = [[UIMutableUserNotificationCategory alloc] init];
+            msgcat.identifier = @"incoming_msg";
+            [msgcat setActions:actions forContext:UIUserNotificationActionContextDefault];
+            [msgcat setActions:actions forContext:UIUserNotificationActionContextMinimal];
+            
+            NSSet* categories = [NSSet setWithObjects:msgcat, nil];
+            
+            UIUserNotificationSettings *set = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound) categories:categories];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:set];
+            
             UILocalNotification *notif = [[UILocalNotification alloc] init];
             if (notif) {
                 NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
