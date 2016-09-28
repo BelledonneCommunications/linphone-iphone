@@ -305,10 +305,11 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 							||(caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia==initial_caller.number_of_LinphoneCallOutgoingEarlyMedia+1));
 
 
-	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
+	if (linphone_core_get_calls_nb(callee_mgr->lc) == 1)
+		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc)); /*only relevant if one call, otherwise, not always set*/
 	callee_call=linphone_core_get_call_by_remote_address2(callee_mgr->lc,caller_mgr->identity);
 
-	if(!linphone_core_get_current_call(caller_mgr->lc) || !linphone_core_get_current_call(callee_mgr->lc) || !linphone_core_get_current_call_remote_address(callee_mgr->lc)) {
+	if(!linphone_core_get_current_call(caller_mgr->lc) || (!callee_call && !linphone_core_get_current_call(callee_mgr->lc)) /*for privacy case*/) {
 		return 0;
 	} else if (caller_mgr->identity){
 		LinphoneAddress* callee_from=linphone_address_clone(caller_mgr->identity);
@@ -337,7 +338,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	}
 
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
-	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
+	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_caller.number_of_LinphoneCallConnected+1));
 
 	result = wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1, 2000)
 			&&

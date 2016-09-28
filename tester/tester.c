@@ -850,7 +850,7 @@ static void linphone_conference_server_registration_state_changed(LinphoneCore *
 LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bool_t do_registration) {
 	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)ms_new0(LinphoneConferenceServer, 1);
 	LinphoneCoreManager *lm = (LinphoneCoreManager *)conf_srv;
-
+	LinphoneProxyConfig *proxy;
 	conf_srv->vtable = linphone_core_v_table_new();
 	conf_srv->vtable->call_state_changed = linphone_conference_server_call_state_changed;
 	conf_srv->vtable->refer_received = linphone_conference_server_refer_received;
@@ -858,13 +858,17 @@ LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bo
 	conf_srv->vtable->user_data = conf_srv;
 	conf_srv->reg_state = LinphoneRegistrationNone;
 	linphone_core_manager_init(lm, rc_file,NULL);
+	if (!do_registration) {
+		proxy = linphone_core_get_default_proxy_config(lm->lc);
+		linphone_proxy_config_edit(proxy);
+		linphone_proxy_config_enable_register(proxy,FALSE);
+		linphone_proxy_config_done(proxy);
+	}
 	linphone_core_add_listener(lm->lc, conf_srv->vtable);
 	linphone_core_manager_start(lm, do_registration);
 	return conf_srv;
 }
 
 void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv) {
-	linphone_core_manager_uninit((LinphoneCoreManager *)conf_srv);
-	linphone_core_v_table_destroy(conf_srv->vtable);
-	ms_free(conf_srv);
+	linphone_core_manager_destroy((LinphoneCoreManager *)conf_srv);
 }
