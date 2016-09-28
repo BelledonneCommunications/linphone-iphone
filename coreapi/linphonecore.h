@@ -2269,7 +2269,7 @@ LINPHONE_PUBLIC void linphone_core_v_table_set_user_data(LinphoneCoreVTable *tab
  * @param table the vtable
  * @return the data attached to the vtable
  */
-LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table);
+LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(const LinphoneCoreVTable *table);
 
 /**
  * Gets the current VTable.
@@ -4629,15 +4629,6 @@ LINPHONE_PUBLIC const char* linphone_transport_to_string(LinphoneTransportType t
  * @return Transport matching input, or LinphoneTransportUdp if nothing is found
 **/
 LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* transport);
-
-/**
- * @ingroup media_parameters
- * Get default call parameters reflecting current linphone core configuration
- * @param lc LinphoneCore object
- * @return  LinphoneCallParams
- * @deprecated use linphone_core_create_call_params()
- */
-LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 
 typedef struct _LinphoneRingtonePlayer LinphoneRingtonePlayer;
 

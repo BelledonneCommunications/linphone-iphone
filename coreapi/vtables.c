@@ -29,7 +29,7 @@ void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data) 
 	table->user_data = data;
 }
 
-void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
+void* linphone_core_v_table_get_user_data(const LinphoneCoreVTable *table) {
 	return table->user_data;
 }
 
