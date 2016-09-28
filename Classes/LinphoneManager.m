@@ -617,6 +617,22 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	}
 }
 
+- (void)userNotifContinue:(NSTimer *)timer {
+    UNNotificationContent *content = [timer userInfo];
+    if (content) {
+        LOGI(@"cancelling/presenting user notif");
+        UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+            // Enable or disable features based on authorization.
+            if (error) {
+                LOGD(@"Error while adding notification request :");
+                LOGD(error.description);
+            }
+        }];
+    }
+}
+
+
 - (void)onCall:(LinphoneCall *)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
 	// Handling wrapper
 	LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
@@ -689,7 +705,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                 [[UIApplication sharedApplication] registerUserNotificationSettings:set];
 				data->notification = [[UILocalNotification alloc] init];
 				if (data->notification) {
-					// iOS8 doesn't need the timer trick for the local notification.
+                    // iOS8 doesn't need the timer trick for the local notification.
+                    data->notification.category = @"incoming_call";
 					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8 &&
 						[self lpConfigBoolForKey:@"repeat_call_notification"] == NO) {
 						NSString *ring =
@@ -697,7 +714,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 								 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
 								.lastPathComponent;
 						data->notification.soundName = ring;
-                        data->notification.category = @"incoming_call";
 					} else {
 						data->notification.soundName = @"shortring.caf";
 						data->timer = [NSTimer scheduledTimerWithTimeInterval:5
@@ -734,10 +750,16 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                 UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
                 content.title = @"Incoming call";
                 content.body = address;
-                content.sound = [UNNotificationSound soundNamed:@"shortring.caf"];
+                content.sound = [UNNotificationSound soundNamed:@"notes_of_the_optimistic.caf"];
                 content.categoryIdentifier = @"call_cat";
                 content.userInfo = @{@"callId" : callId};
-                
+                if ([self lpConfigBoolForKey:@"repeat_call_notification"] == YES) {
+                    data->timer = [NSTimer scheduledTimerWithTimeInterval:5
+                                                             target:self
+                                                           selector:@selector(userNotifContinue:)
+                                                           userInfo:content
+                                                                     repeats:TRUE];
+                }
                 UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
                 [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
                     // Enable or disable features based on authorization.
@@ -746,6 +768,18 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                         LOGD(error.description);
                     }
                 }];
+                
+                if (!incallBgTask) {
+                    incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+                        LOGW(@"Call cannot ring any more, too late");
+                        [[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
+                        incallBgTask = 0;
+                    }];
+                    
+                    if (data->timer) {
+                        [[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
+                    }
+                }
             }
 
 		}
@@ -768,6 +802,24 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			/*IOS specific*/
 			linphone_core_start_dtmf_stream(theLinphoneCore);
             if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)) {
+                if (data->timer) {
+                    [data->timer invalidate];
+                    data->timer = nil;
+                }
+                LinphoneCallLog *UNlog = linphone_call_get_call_log(call);
+                if (UNlog == NULL || linphone_call_log_get_status(UNlog) == LinphoneCallMissed) {
+                    UNMutableNotificationContent* missed_content = [[UNMutableNotificationContent alloc] init];
+                    missed_content.title = @"Missed call";
+                    missed_content.body = address;
+                    UNNotificationRequest *missed_req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:missed_content trigger:NULL];
+                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:missed_req withCompletionHandler:^(NSError * _Nullable error) {
+                        // Enable or disable features based on authorization.
+                        if (error) {
+                            LOGD(@"Error while adding notification request :");
+                            LOGD(error.description);
+                        }
+                    }];
+                }
                 linphone_core_set_network_reachable(LC, FALSE);
                 LinphoneManager.instance.connectivity = none;
                 

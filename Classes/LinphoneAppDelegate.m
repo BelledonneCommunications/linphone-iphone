@@ -533,10 +533,17 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     LOGD(@"UN : response recieved");
     LOGD(response.description);
     
+    LinphoneCall* call = linphone_core_get_current_call(LC);
+    if (call) {
+        LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+        if (data->timer) {
+            [data->timer invalidate];
+            data->timer = nil;
+        }
+    }
     if ([response.actionIdentifier isEqual:@"Answer"]) {
         [LinphoneManager.instance acceptCallForCallId:[response.notification.request.content.userInfo objectForKey:@"callId"]];
     } else if ([response.actionIdentifier isEqual:@"Decline"]) {
-        LinphoneCall* call = linphone_core_get_current_call(LC);
         linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
     } else if ([response.actionIdentifier isEqual:@"Reply"]) {
         LinphoneCore *lc = [LinphoneManager getLc];
@@ -564,7 +571,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
             [LinphoneManager.instance acceptCallForCallId:[response.notification.request.content.userInfo objectForKey:@"callId"]];
         } else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
-            
+            [PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+        } else { //Missed call
+            [PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
         }
     }
 }
@@ -575,7 +584,16 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	handleActionWithIdentifier:(NSString *)identifier
 		  forLocalNotification:(UILocalNotification *)notification
 			 completionHandler:(void (^)())completionHandler {
-	LOGI(@"%@", NSStringFromSelector(_cmd));
+    
+    LinphoneCall* call = linphone_core_get_current_call(LC);
+    if (call) {
+        LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+        if (data->timer) {
+            [data->timer invalidate];
+            data->timer = nil;
+        }
+    }
+    LOGI(@"%@", NSStringFromSelector(_cmd));
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 		LOGI(@"%@", NSStringFromSelector(_cmd));
 		if ([notification.category isEqualToString:@"incoming_call"]) {
@@ -612,7 +630,15 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		  forLocalNotification:(UILocalNotification *)notification
 			  withResponseInfo:(NSDictionary *)responseInfo
 			 completionHandler:(void (^)())completionHandler {
-
+    
+    LinphoneCall* call = linphone_core_get_current_call(LC);
+    if (call) {
+        LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+        if (data->timer) {
+            [data->timer invalidate];
+            data->timer = nil;
+        }
+    }
 	if ([notification.category isEqualToString:@"incoming_call"]) {
 		if ([identifier isEqualToString:@"answer"]) {
 			// use the standard handler
