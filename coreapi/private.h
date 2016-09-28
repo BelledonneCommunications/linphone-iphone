@@ -962,7 +962,7 @@ struct _LinphoneCore
 	MSList *queued_calls;	/* used by the autoreplier */
 	MSList *call_logs;
 	MSList *chatrooms;
-	unsigned int max_call_logs;
+	int max_call_logs;
 	int missed_calls;
 	VideoPreview *previewstream;
 	struct _MSEventQueue *msevq;
@@ -1160,6 +1160,16 @@ void _linphone_core_codec_config_write(LinphoneCore *lc);
 #ifndef NB_MAX_CALLS
 #define NB_MAX_CALLS	(10)
 #endif
+
+#define LINPHONE_MAX_CALL_HISTORY_UNLIMITED (-1)
+#ifndef LINPHONE_MAX_CALL_HISTORY_SIZE
+	#ifdef SQLITE_STORAGE_ENABLED
+		#define LINPHONE_MAX_CALL_HISTORY_SIZE LINPHONE_MAX_CALL_HISTORY_UNLIMITED 
+	#else
+		#define LINPHONE_MAX_CALL_HISTORY_SIZE 30
+	#endif
+#endif
+
 LINPHONE_PUBLIC void call_logs_read_from_config_file(LinphoneCore *lc);
 void call_logs_write_to_config_file(LinphoneCore *lc);
 void linphone_core_call_log_storage_init(LinphoneCore *lc);

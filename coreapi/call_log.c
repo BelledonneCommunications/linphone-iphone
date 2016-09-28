@@ -81,6 +81,8 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	LpConfig *cfg=lc->config;
 
 	if (linphone_core_get_global_state (lc)==LinphoneGlobalStartup) return;
+	
+	if (lc->max_call_logs == LINPHONE_MAX_CALL_HISTORY_UNLIMITED) return;
 
 	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
@@ -541,7 +543,11 @@ const bctbx_list_t *linphone_core_get_call_history(LinphoneCore *lc) {
 
 	if (!lc || lc->logs_db == NULL) return NULL;
 
-	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %u", lc->max_call_logs);
+	if (lc->max_call_logs != LINPHONE_MAX_CALL_HISTORY_UNLIMITED){
+		buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %i", lc->max_call_logs);
+	}else{
+		buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC");
+	}
 
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_call_log(lc->logs_db, buf, &result);
