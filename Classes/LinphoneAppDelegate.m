@@ -489,7 +489,7 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"incoming voip notfication: %@ ", payload.dictionaryPayload);
     if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
         //Call category
-        UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:@"Answer" options:UNNotificationActionOptionNone];
+        UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:@"Answer" options:UNNotificationActionOptionForeground];
         UNNotificationAction* act_dec = [UNNotificationAction actionWithIdentifier:@"Decline" title:@"Decline" options:UNNotificationActionOptionNone];
         UNNotificationCategory* cat_call = [UNNotificationCategory categoryWithIdentifier:@"call_cat" actions:[NSArray arrayWithObjects:act_ans, act_dec, nil] intentIdentifiers:[[NSMutableArray alloc] init] options:UNNotificationCategoryOptionCustomDismissAction];
         
@@ -542,6 +542,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         }
     }
     if ([response.actionIdentifier isEqual:@"Answer"]) {
+        [PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
         [LinphoneManager.instance acceptCallForCallId:[response.notification.request.content.userInfo objectForKey:@"callId"]];
     } else if ([response.actionIdentifier isEqual:@"Decline"]) {
         linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
