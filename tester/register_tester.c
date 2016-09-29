@@ -951,14 +951,24 @@ static void redirect(void){
 
 static void tls_auth_global_client_cert(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_rc", TRUE);
-		linphone_core_manager_destroy(pauline);
+		LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
+		LpConfig *lpc = NULL;
+		char *cert_path = bc_tester_res("certificates/client/cert.pem");
+		char *key_path = bc_tester_res("certificates/client/key.pem");
+		linphone_core_manager_init(manager, "pauline_tls_client_rc", NULL);
+		lpc = manager->lc->config;
+		lp_config_set_string(lpc, "sip", "client_cert_chain", cert_path);
+		lp_config_set_string(lpc, "sip", "client_cert_key", key_path);
+		linphone_core_manager_start(manager, TRUE);
+		linphone_core_manager_destroy(manager);
+		ms_free(cert_path);
+		ms_free(key_path);
 	}
 }
 
 static void tls_auth_global_client_cert_api(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_rc", FALSE);
 		char *cert_path = bc_tester_res("certificates/client/cert.pem");
 		char *key_path = bc_tester_res("certificates/client/key.pem");
 		char *cert = read_file(cert_path);
@@ -977,7 +987,7 @@ static void tls_auth_global_client_cert_api(void) {
 
 static void tls_auth_global_client_cert_api_path(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_rc", FALSE);
 		char *cert = bc_tester_res("certificates/client/cert.pem");
 		char *key = bc_tester_res("certificates/client/key.pem");
 		LinphoneCore *lc = pauline->lc;
@@ -992,7 +1002,7 @@ static void tls_auth_global_client_cert_api_path(void) {
 
 static void tls_auth_info_client_cert_api(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_rc", FALSE);
 		char *cert_path = bc_tester_res("certificates/client/cert.pem");
 		char *key_path = bc_tester_res("certificates/client/key.pem");
 		char *cert = read_file(cert_path);
@@ -1012,7 +1022,7 @@ static void tls_auth_info_client_cert_api(void) {
 
 static void tls_auth_info_client_cert_api_path(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_2_rc", FALSE);
+		LinphoneCoreManager *pauline = linphone_core_manager_new2("pauline_tls_client_rc", FALSE);
 		char *cert = bc_tester_res("certificates/client/cert.pem");
 		char *key = bc_tester_res("certificates/client/key.pem");
 		LinphoneCore *lc = pauline->lc;

@@ -115,7 +115,6 @@ set(RC_FILES
 	rcfiles/pauline_sips_rc
 	rcfiles/pauline_tcp_rc
 	rcfiles/pauline_tls_client_rc
-	rcfiles/pauline_tls_client_2_rc
 	rcfiles/pauline_tunnel_verify_server_certificate_rc
 	rcfiles/pauline_v4proxy_rc
 	rcfiles/pauline_wild_rc
@@ -297,6 +296,7 @@ if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 		install(FILES ${SIPP_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sipp")
 		install(FILES ${CERTIFICATE_ALT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/altname")
 		install(FILES ${CERTIFICATE_CN_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/cn")
+		install(FILES ${CERTIFICATE_CLIENT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/client")
 		install(FILES ${RC_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/rcfiles")
 		install(FILES ${IMAGE_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/images")
 		install(FILES ${VCARD_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/vcards")

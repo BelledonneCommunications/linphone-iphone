@@ -67,7 +67,6 @@ RCFILES = \
 					rcfiles/pauline_sips_rc\
 					rcfiles/pauline_tcp_rc\
 					rcfiles/pauline_tls_client_rc\
-					rcfiles/pauline_tls_client_2_rc\
 					rcfiles/pauline_wild_rc\
 					rcfiles/pauline_zrtp_aes256_rc\
 					rcfiles/pauline_zrtp_b256_rc\
@@ -102,6 +101,8 @@ certificatesaltdir=$(datadir)/liblinphone_tester/certificates/altname
 certificatesalt_DATA = $(CERTIFICATE_ALT_FILES)
 certificatescndir=$(datadir)/liblinphone_tester/certificates/cn
 certificatescn_DATA = $(CERTIFICATE_CN_FILES)
+certificatesclientdir=$(datadir)/liblinphone_tester/certificates/client
+certificatesclient_DATA = $(CERTIFICATE_CLIENT_FILES)
 rcfilesdir = $(datadir)/liblinphone_tester/rcfiles
 rcfiles_DATA = $(RCFILES)
 imagesdir = $(datadir)/liblinphone_tester/images
