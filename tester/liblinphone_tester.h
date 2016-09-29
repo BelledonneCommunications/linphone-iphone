@@ -210,7 +210,7 @@ typedef struct _stats {
 	LinphoneInfoMessage* last_received_info_message;
 
 	int number_of_LinphoneSubscriptionIncomingReceived;
-	int number_of_LinphoneSubscriptionOutgoingInit;
+	int number_of_LinphoneSubscriptionOutgoingProgress;
 	int number_of_LinphoneSubscriptionPending;
 	int number_of_LinphoneSubscriptionActive;
 	int number_of_LinphoneSubscriptionTerminated;

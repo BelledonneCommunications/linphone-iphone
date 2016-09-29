@@ -46,15 +46,15 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 		if (status_code==200) sss=SalSubscribeActive;
 		else if (status_code==202) sss=SalSubscribePending;
 		set_or_update_dialog(op,belle_sip_transaction_get_dialog(tr));
-		op->base.root->callbacks.subscribe_response(op,sss);
+		op->base.root->callbacks.subscribe_response(op,sss, will_retry);
 	} else if (status_code >= 300) {
 		SalReason reason = SalReasonUnknown;
 		if (status_code == 503) { /*refresher returns 503 for IO error*/
 			reason = SalReasonIOError;
 		}
 		sal_error_info_set(&op->error_info,reason,status_code,reason_phrase,NULL);
-		op->base.root->callbacks.subscribe_response(op,sss);
-	}if (status_code==0){
+		op->base.root->callbacks.subscribe_response(op,sss, will_retry);
+	}else if (status_code==0){
 		op->base.root->callbacks.on_expire(op);
 	}
 	
@@ -83,17 +83,19 @@ static void subscribe_process_dialog_terminated(void *ctx, const belle_sip_dialo
 	belle_sip_dialog_t *dialog = belle_sip_dialog_terminated_event_get_dialog(event);
 	SalOp* op= (SalOp*)ctx;
 	if (op->dialog) {
-		op->dialog=NULL;
-		if (!belle_sip_dialog_is_server(dialog) && belle_sip_dialog_terminated_event_is_expired(event)){
-			/*notify the app that our subscription is dead*/
-			const char *eventname = NULL;
-			if (op->event){
-				eventname = belle_sip_header_event_get_package_name(op->event);
+		if (belle_sip_dialog_terminated_event_is_expired(event)){
+			if (!belle_sip_dialog_is_server(dialog)){
+				/*notify the app that our subscription is dead*/
+				const char *eventname = NULL;
+				if (op->event){
+					eventname = belle_sip_header_event_get_package_name(op->event);
+				}
+				op->base.root->callbacks.notify(op, SalSubscribeTerminated, eventname, NULL);
+			}else{
+				op->base.root->callbacks.incoming_subscribe_closed(op);
 			}
-			op->base.root->callbacks.notify(op, SalSubscribeTerminated, eventname, NULL);
 		}
-		sal_op_unref(op);
-		
+		set_or_update_dialog(op, NULL);
 	}
 }
 
@@ -167,6 +169,7 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 	belle_sip_response_t* resp;
 	const char *eventname=NULL;
 	const char *method=belle_sip_request_get_method(req);
+	belle_sip_dialog_t *dialog = NULL;
 	
 	belle_sip_object_ref(server_transaction);
 	if (op->pending_server_trans)  belle_sip_object_unref(op->pending_server_trans);
@@ -190,14 +193,14 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 	
 	if (!op->dialog) {
 		if (strcmp(method,"SUBSCRIBE")==0){
-			op->dialog = belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
-			if (!op->dialog){
+			dialog = belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
+			if (!dialog){
 				resp=sal_op_create_response_from_request(op,req,481);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
 				sal_op_release(op);
 				return;
 			}
-			belle_sip_dialog_set_application_data(op->dialog, sal_op_ref(op));
+			set_or_update_dialog(op, dialog);
 			ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
 		}else{ /*this is a NOTIFY*/
 			handle_notify(op, req, eventname, (SalBodyHandler *)body_handler);

@@ -68,6 +68,15 @@ LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishStat
 	return NULL;
 }
 
+static void linphone_event_release(LinphoneEvent *lev){
+	if (lev->op) {
+		/*this will stop the refreesher*/
+		sal_op_release(lev->op);
+		lev->op = NULL;
+	}
+	linphone_event_unref(lev);
+}
+
 static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, SalOp *op){
 	LinphoneEvent *lev=belle_sip_object_new(LinphoneEvent);
 	lev->lc=lc;
@@ -112,7 +121,7 @@ void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState stat
 		lev->subscription_state=state;
 		linphone_core_notify_subscription_state_changed(lev->lc,lev,state);
 		if (state==LinphoneSubscriptionTerminated || state == LinphoneSubscriptionError){
-			linphone_event_unref(lev);
+			linphone_event_release(lev);
 		}
 	}
 }
@@ -124,13 +133,17 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 		linphone_core_notify_publish_state_changed(lev->lc,lev,state);
 		switch(state){
 			case LinphonePublishCleared:
-				if (lev->expires!=-1)
-					linphone_event_unref(lev);
+				if (lev->expires!=-1){
+					linphone_event_release(lev);
+				}
 				break;
 			case LinphonePublishOk:
+				if (lev->expires==-1){
+					linphone_event_release(lev);
+				}
+				break;
 			case LinphonePublishError:
-				if (lev->expires==-1)
-					linphone_event_unref(lev);
+				linphone_event_release(lev);
 				break;
 			case LinphonePublishNone:
 			case LinphonePublishProgress:

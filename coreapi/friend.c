@@ -679,7 +679,7 @@ BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
 }
 
 /*
- * updates the subscriptions.
+ * updates the p2p subscriptions.
  * If only_when_registered is TRUE, subscribe will be sent only if the friend's corresponding proxy config is in registered.
  * Otherwise if the proxy config goes to unregistered state, the subscription refresh will be suspended.
  * An optional proxy whose state has changed can be passed to optimize the processing.

@@ -1315,9 +1315,8 @@ static void info_received(SalOp *op, SalBodyHandler *body_handler){
 	linphone_core_notify_info_message(lc,op,body_handler);
 }
 
-static void subscribe_response(SalOp *op, SalSubscribeStatus status){
+static void subscribe_response(SalOp *op, SalSubscribeStatus status, int will_retry){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
-	const SalErrorInfo *ei=sal_op_get_error_info(op);
 
 	if (lev==NULL) return;
 
@@ -1326,7 +1325,7 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	}else if (status==SalSubscribePending){
 		linphone_event_set_state(lev,LinphoneSubscriptionPending);
 	}else{
-		if (lev->subscription_state==LinphoneSubscriptionActive && (ei->reason==SalReasonIOError || ei->reason == SalReasonNoMatch)){
+		if (will_retry){
 			linphone_event_set_state(lev,LinphoneSubscriptionOutgoingProgress);
 		}
 		else linphone_event_set_state(lev,LinphoneSubscriptionError);

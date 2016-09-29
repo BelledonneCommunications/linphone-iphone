@@ -502,7 +502,7 @@ typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
 typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus);
 typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
-typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status);
+typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, int will_retry);
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, SalBodyHandler *body);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBodyHandler *body);
 typedef void (*SalOnIncomingSubscribeClosed)(SalOp *salop);
