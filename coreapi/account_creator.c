@@ -304,6 +304,9 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneA
 		{
 			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(country_code);
 			int size = (int)strlen(phone_number);
+			if (linphone_dial_plan_is_generic(plan)) {
+			    return LinphoneAccountCreatorCountryCodeInvalid;
+			}
 			if (size < plan->nnl - 1) {
 				return LinphoneAccountCreatorPhoneNumberTooShort;
 			} else if (size > plan->nnl + 1) {

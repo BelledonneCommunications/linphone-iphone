@@ -310,3 +310,9 @@ const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc) {
 const LinphoneDialPlan* linphone_dial_plan_get_all() {
 	return dial_plans;
 }
+
+const bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc) {
+	if (strcmp(ccc->country, most_common_dialplan.country) == 0)
+		return TRUE;
+	return FALSE;
+}

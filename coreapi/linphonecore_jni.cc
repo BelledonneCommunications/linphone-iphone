@@ -3346,6 +3346,20 @@ extern "C" void Java_org_linphone_core_LinphoneCallStatsImpl_updateStats(JNIEnv 
 		linphone_call_get_video_stats((LinphoneCall*)call_ptr);
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneCallStatsImpl_getEncoderName(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr, jlong payload_ptr) {
+    LinphoneCore *lc = linphone_call_get_core((LinphoneCall*)call_ptr);
+    PayloadType* jpayload = (PayloadType*)payload_ptr;
+    jstring jencodername =env->NewStringUTF(ms_factory_get_encoder(linphone_core_get_ms_factory(lc), jpayload->mime_type)->text);
+    return jencodername;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCallStatsImpl_getDecoderName(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr, jlong payload_ptr) {
+    LinphoneCore *lc = linphone_call_get_core((LinphoneCall*)call_ptr);
+    PayloadType* jpayload = (PayloadType*)payload_ptr;
+    jstring jdecodername =env->NewStringUTF(ms_factory_get_decoder(linphone_core_get_ms_factory(lc), jpayload->mime_type)->text);
+    return jdecodername;
+}
+
 /*payloadType*/
 extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	PayloadType* pt = (PayloadType*)ptr;

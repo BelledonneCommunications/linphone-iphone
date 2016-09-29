@@ -181,4 +181,9 @@ abstract public class LinphoneCoreFactory {
 	 * Create TunnelConfig object, used to configure voip anti blocking extension.
 	 */
 	abstract public TunnelConfig createTunnelConfig();
+
+	/**
+	 * Create LinphoneAccountCreator object
+	 */
+	abstract public LinphoneAccountCreator createAccountCreator(LinphoneCore lc, String url);
 }

@@ -134,6 +134,11 @@ LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_get_all(void);
 **/
 LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc);
 
+/**
+ * Return if given plan is generic
+**/
+LINPHONE_PUBLIC const bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc);
+
 #ifdef __cplusplus
 }
 #endif

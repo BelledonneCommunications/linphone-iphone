@@ -63,6 +63,7 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorRouteInvalid,
 	LinphoneAccountCreatorDisplayNameInvalid,
 	LinphoneAccountCreatorTransportNotSupported,
+	LinphoneAccountCreatorCountryCodeInvalid,
 } LinphoneAccountCreatorStatus;
 
 /**
