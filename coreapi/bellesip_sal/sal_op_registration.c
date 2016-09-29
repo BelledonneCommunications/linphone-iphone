@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 static void register_refresher_listener (belle_sip_refresher_t* refresher
 		,void* user_pointer
 		,unsigned int status_code
-		,const char* reason_phrase) {
+		,const char* reason_phrase, int will_retry) {
 	SalOp* op = (SalOp*)user_pointer;
 	belle_sip_response_t* response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher)));
 	ms_message("Register refresher [%i] reason [%s] for proxy [%s]",status_code,reason_phrase,sal_op_get_proxy(op));

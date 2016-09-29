@@ -83,7 +83,7 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 	}/* else client dialog is managed by refresher*/
 }
 
-static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase){
+static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase, int will_retry){
 	SalOp* op = (SalOp*)user_pointer;
 	if (status_code >= 300) {
 		ms_message("The SUBSCRIBE dialog no longer works. Let's restart a new one.");
