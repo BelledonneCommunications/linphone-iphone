@@ -361,7 +361,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (!IPAD) {
 			UISwitch *emailSwitch = (UISwitch *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UISwitch.class];
 			UILabel *emailLabel = (UILabel *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UILabel.class];
-			emailSwitch.hidden = emailLabel.hidden = YES;
+			[emailSwitch removeFromSuperview];
+			[emailLabel removeFromSuperview];
+			//Move up the createAccountButton
+			CGRect r1 = [currentView frame];
+			r1.size.height = 460;
+			[currentView setFrame:r1];
 		}
 
 		if (!country) {
