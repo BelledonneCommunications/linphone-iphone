@@ -746,7 +746,7 @@ static void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
 }
 
 static void linphone_friend_list_send_list_subscription(LinphoneFriendList *list){
-	const LinphoneAddress *address = list->rls_addr;
+	const LinphoneAddress *address = _linphone_friend_list_get_rls_address(list);
 	char *xml_content = create_resource_list_xml(list);
 	if ((address != NULL) && (xml_content != NULL) && (linphone_friend_list_has_subscribe_inactive(list) == TRUE)) {
 		unsigned char digest[16];
