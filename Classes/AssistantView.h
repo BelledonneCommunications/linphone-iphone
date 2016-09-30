@@ -40,6 +40,7 @@
 @property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
 @property(nonatomic, strong) IBOutlet UIView *waitView;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
+@property (weak, nonatomic) IBOutlet UIButton *infoLoginButton;
 
 @property(nonatomic, strong) IBOutlet UIView *welcomeView;
 @property(nonatomic, strong) IBOutlet UIView *createAccountView;

@@ -20,6 +20,7 @@
                 <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
                 <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
                 <outlet property="gotoRemoteProvisioningButton" destination="Kbn-dL-C5h" id="zLh-uO-x8P"/>
+                <outlet property="infoLoginButton" destination="ZDs-1W-ZXo" id="aoP-Mb-gPi"/>
                 <outlet property="linphoneLoginView" destination="52" id="9NX-6W-50g"/>
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="remoteProvisioningLoginView" destination="xVK-hL-6pe" id="pKL-9M-Vsa"/>
@@ -562,6 +563,7 @@
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="108" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Activation code" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="ULe-kp-qZn">
                     <frame key="frameInset" minX="38" minY="194" width="299" height="71"/>
+                    <color key="backgroundColor" red="0.81960784313725488" green="0.81960784313725488" blue="0.81960784313725488" alpha="1" colorSpace="calibratedRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="26"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done"/>
                 </textField>
@@ -698,7 +700,7 @@ Once it is done, come back here and click on the button.</string>
             <point key="canvasLocation" x="625.5" y="1354"/>
         </view>
         <view contentMode="scaleToFill" id="52" userLabel="linphoneLoginView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="485"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="405"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="USE YOUR LINPHONE ACCOUNT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="LbS-op-QAh" userLabel="titleLabel">
@@ -775,24 +777,8 @@ Once it is done, come back here and click on the button.</string>
                         <action selector="onPhoneNumberDisclosureClick:" destination="-1" eventType="touchUpInside" id="VSO-kv-tux"/>
                     </connections>
                 </button>
-                <switch opaque="NO" tag="181" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="TXA-w5-uUE" userLabel="useUsernameSwitch">
-                    <frame key="frameInset" minX="38" minY="228" width="51" height="31"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="49" id="ASn-L4-7ek"/>
-                        <constraint firstAttribute="height" constant="31" id="Ovv-bA-UOo"/>
-                    </constraints>
-                    <connections>
-                        <action selector="onFormSwitchToggle:" destination="-1" eventType="valueChanged" id="8eU-9f-hUv"/>
-                    </connections>
-                </switch>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Use Username and password instead of your phone number " lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1K4-Nb-b3J" userLabel="useUsernameLabel">
-                    <frame key="frameInset" minX="95" minY="228" width="242" height="31"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <view hidden="YES" tag="181" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DCj-jV-PVG" userLabel="usernameFormView">
-                    <frame key="frameInset" minY="267" width="375" height="228"/>
+                    <frame key="frameInset" minY="103" width="375" height="158"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="CBb-WR-x0g" userLabel="usernameErrorLabel">
                             <constraints>
@@ -891,7 +877,16 @@ Once it is done, come back here and click on the button.</string>
                         <constraint firstItem="YRW-ex-VZy" firstAttribute="top" secondItem="zRE-5W-snR" secondAttribute="bottom" constant="4" id="zP4-JB-Icv"/>
                     </constraints>
                 </view>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eIr-bh-JLB" userLabel="linphoneLoginButton" customClass="UIRoundBorderedButton">
+                <switch opaque="NO" tag="181" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="TXA-w5-uUE" userLabel="useUsernameSwitch">
+                    <constraints>
+                        <constraint firstAttribute="height" constant="31" id="koR-bG-wd3"/>
+                    </constraints>
+                    <connections>
+                        <action selector="onFormSwitchToggle:" destination="-1" eventType="valueChanged" id="8eU-9f-hUv"/>
+                    </connections>
+                </switch>
+                <button opaque="NO" tag="130" contentMode="scaleToFill" misplaced="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eIr-bh-JLB" userLabel="linphoneLoginButton" customClass="UIRoundBorderedButton">
+                    <frame key="frameInset" minX="31" minY="345" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Login">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -918,6 +913,12 @@ Once it is done, come back here and click on the button.</string>
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" misplaced="YES" text="Use Username and password instead of your phone number " lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1K4-Nb-b3J" userLabel="useUsernameLabel">
+                    <frame key="frameInset" minX="95" minY="272" width="242" height="31"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <gestureRecognizers/>
@@ -930,8 +931,8 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="ZDs-1W-ZXo" firstAttribute="top" secondItem="4n3-ZD-KVi" secondAttribute="bottom" constant="15" id="BNO-yy-L0n"/>
                 <constraint firstItem="LbS-op-QAh" firstAttribute="leading" secondItem="52" secondAttribute="leading" constant="36" id="D5D-Bc-WXJ"/>
                 <constraint firstAttribute="trailing" secondItem="eIr-bh-JLB" secondAttribute="trailing" constant="40" id="Ekx-tz-zlL"/>
+                <constraint firstItem="TXA-w5-uUE" firstAttribute="leading" secondItem="52" secondAttribute="leading" constant="43" id="Epz-bY-5jV"/>
                 <constraint firstItem="Pcj-jL-x9P" firstAttribute="trailing" secondItem="FQZ-mw-ibB" secondAttribute="trailing" id="GDt-xd-skH"/>
-                <constraint firstItem="DCj-jV-PVG" firstAttribute="top" secondItem="1K4-Nb-b3J" secondAttribute="bottom" constant="8" symbolic="YES" id="Gfb-6Z-k1X"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="leading" secondItem="iEA-YK-kua" secondAttribute="leading" id="ITR-1w-nYG"/>
                 <constraint firstItem="ZFh-2U-bBK" firstAttribute="leading" secondItem="oMl-dS-AW7" secondAttribute="leading" id="J1d-X0-lKU"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="leading" secondItem="52" secondAttribute="leading" constant="38" id="Jam-Rx-a0C"/>
@@ -941,15 +942,15 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="LbS-op-QAh" firstAttribute="top" secondItem="52" secondAttribute="top" id="P2b-Fr-tq0"/>
                 <constraint firstItem="DCj-jV-PVG" firstAttribute="leading" secondItem="52" secondAttribute="leading" id="PLu-pH-98a"/>
                 <constraint firstItem="TXA-w5-uUE" firstAttribute="top" secondItem="1K4-Nb-b3J" secondAttribute="top" id="Rwo-AA-SyL"/>
-                <constraint firstItem="FQZ-mw-ibB" firstAttribute="trailing" secondItem="1K4-Nb-b3J" secondAttribute="trailing" id="Rxp-k3-Rrt"/>
                 <constraint firstItem="FQZ-mw-ibB" firstAttribute="top" secondItem="Pcj-jL-x9P" secondAttribute="bottom" id="Tb7-gN-WIf"/>
-                <constraint firstItem="TXA-w5-uUE" firstAttribute="top" secondItem="FQZ-mw-ibB" secondAttribute="bottom" constant="9" id="WlK-kZ-BVV"/>
-                <constraint firstAttribute="bottom" secondItem="DCj-jV-PVG" secondAttribute="bottom" constant="57" id="Z4n-h6-gmC"/>
-                <constraint firstItem="DCj-jV-PVG" firstAttribute="top" secondItem="TXA-w5-uUE" secondAttribute="bottom" constant="8" symbolic="YES" id="an4-7v-Q7N"/>
-                <constraint firstItem="FQZ-mw-ibB" firstAttribute="leading" secondItem="TXA-w5-uUE" secondAttribute="leading" id="eDe-L9-1E7"/>
+                <constraint firstItem="DCj-jV-PVG" firstAttribute="top" secondItem="ZFh-2U-bBK" secondAttribute="top" id="csH-rS-5yJ"/>
+                <constraint firstItem="TXA-w5-uUE" firstAttribute="top" secondItem="DCj-jV-PVG" secondAttribute="bottom" id="dZ6-h7-jTQ"/>
                 <constraint firstItem="FQZ-mw-ibB" firstAttribute="centerX" secondItem="DCj-jV-PVG" secondAttribute="centerX" id="fC3-C2-meT"/>
                 <constraint firstItem="4n3-ZD-KVi" firstAttribute="centerX" secondItem="ZFh-2U-bBK" secondAttribute="centerX" constant="7" id="fyO-c3-bn4"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="trailing" secondItem="Pcj-jL-x9P" secondAttribute="trailing" id="jhv-gC-ecD"/>
+                <constraint firstItem="1K4-Nb-b3J" firstAttribute="centerY" secondItem="TXA-w5-uUE" secondAttribute="centerY" id="jmG-el-rPn"/>
+                <constraint firstItem="1K4-Nb-b3J" firstAttribute="trailing" secondItem="FQZ-mw-ibB" secondAttribute="trailing" id="k91-rk-TqE"/>
+                <constraint firstItem="eIr-bh-JLB" firstAttribute="top" secondItem="TXA-w5-uUE" secondAttribute="bottom" constant="42" id="lBw-OL-Xsn"/>
                 <constraint firstItem="iEA-YK-kua" firstAttribute="bottom" secondItem="Pcj-jL-x9P" secondAttribute="bottom" id="nO5-GD-225"/>
                 <constraint firstItem="oMl-dS-AW7" firstAttribute="top" secondItem="ZFh-2U-bBK" secondAttribute="bottom" constant="8" symbolic="YES" id="nSs-l5-wiM"/>
                 <constraint firstItem="ZFh-2U-bBK" firstAttribute="centerY" secondItem="ZDs-1W-ZXo" secondAttribute="centerY" id="naG-Sf-QK3"/>
@@ -957,12 +958,13 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="iEA-YK-kua" firstAttribute="leading" secondItem="FQZ-mw-ibB" secondAttribute="leading" id="p5Z-1O-qzu"/>
                 <constraint firstItem="1K4-Nb-b3J" firstAttribute="leading" secondItem="TXA-w5-uUE" secondAttribute="trailing" constant="8" symbolic="YES" id="pp3-xL-j4f"/>
                 <constraint firstItem="LbS-op-QAh" firstAttribute="leading" secondItem="4n3-ZD-KVi" secondAttribute="leading" id="qoo-aP-AYy"/>
-                <constraint firstItem="Pcj-jL-x9P" firstAttribute="leading" secondItem="1K4-Nb-b3J" secondAttribute="leading" id="sAm-iq-V5T"/>
+                <constraint firstItem="1K4-Nb-b3J" firstAttribute="leading" secondItem="TXA-w5-uUE" secondAttribute="trailing" constant="8" id="sBh-k0-WUy"/>
+                <constraint firstItem="1K4-Nb-b3J" firstAttribute="leading" secondItem="Pcj-jL-x9P" secondAttribute="leading" id="sNQ-yj-Uld"/>
                 <constraint firstItem="ZDs-1W-ZXo" firstAttribute="trailing" secondItem="oMl-dS-AW7" secondAttribute="trailing" id="zSS-Yy-55L"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="1051.5" y="231.5"/>
+            <point key="canvasLocation" x="1051.5" y="191.5"/>
         </view>
         <view contentMode="scaleToFill" id="56" userLabel="loginView">
             <rect key="frame" x="0.0" y="0.0" width="374" height="576"/>
