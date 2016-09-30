@@ -51,8 +51,8 @@
 	cell.descriptionLabel.minimumScaleFactor = .5;
 	cell.descriptionLabel.adjustsFontSizeToFitWidth = cell.detailTextLabel.adjustsLetterSpacingToFitWidth = YES;
 	cell.descriptionLabel.text = [NSString stringWithFormat:@"%@", product.localizedDescription];
-	LOGE(@"ShopTableView : name = %@ - descr = %@",
-		 [NSString stringWithFormat:@"%@ (%@)", product.localizedTitle, price], product.localizedDescription);
+	// LOGE(@"ShopTableView : name = %@ - descr = %@",
+	//	 [NSString stringWithFormat:@"%@ (%@)", product.localizedTitle, price], product.localizedDescription);
 	[cell.linphoneImage setImage:[UIImage imageNamed:@"linphone_logo"]];
 
 	return cell;

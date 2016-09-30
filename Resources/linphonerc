@@ -13,12 +13,35 @@ start_at_boot_preference=1
 stun_preference=stun.linphone.org
 voiceproc_preference=1
 
+[in_app_purchase]
+#set to 1 if in-app purchases are to be shown in the application
+enabled=0
+
+#specify here the id of the sip account in-app purchase service to be shown in the shop section of the app
+paid_account_id=sipAccount_12m
+
+#the url of the inapp/account management server, for submitting the receipt and validating the account.
+receipt_validation_url=https://subscribe.linphone.org:444/inapp.php
+
+#for future use, to specify the full list of paying services to show in the shop view
+products_list=sipAccount_12m,sipAccount_6m
+
+#minimum period of time between notifications to the user about his expiring/expired account, in seconds.
+expiry_check_period=30
+
+#period of time before account expiry, to start notifying the user about expiration arriving, in seconds.
+warn_before_expiry_period=160
+
+#for test only, simulate an account expiry after the specified number of seconds
+expiry_time_test=180
+
 [default_values]
 reg_expires=1314000
 
 [misc]
 file_transfer_server_url=https://www.linphone.org:444/lft.php
 max_calls=3
+real_early_media=1
 
 [net]
 download_bw=380

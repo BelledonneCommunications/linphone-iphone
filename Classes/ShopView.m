@@ -49,19 +49,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillAppear:animated];
 	[_tableViewController.tableView reloadData];
 }
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	[_waitingView setHidden:TRUE];
+}
 #pragma mark - Action Functions
 
 - (IBAction)onDialerBackClick:(id)sender {
 	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
-}
-
-- (IBAction)hideWaitingView {
-	LOGE(@"====>>> ShopView hideWaitingView - bool = %d");
-	if (_waitingView.isHidden) {
-		[_waitingView setHidden:NO];
-	} else {
-		[_waitingView setHidden:YES];
-	}
 }
 
 @end

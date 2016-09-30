@@ -80,16 +80,22 @@ typedef NSString *IAPPurchaseNotificationStatus;
 // TRUE if accountActivate was started but we did not receive response from server yet
 @property(readonly) BOOL accountActivationInProgress;
 
+// TRUE if accountActivate activated
+@property(readonly) BOOL accountActivated;
+
 - (BOOL)isPurchasedWithID:(NSString *)productId;
 // Purchase an account. You should not use this if manager is not available yet.
-- (BOOL)purchaseAccount:(NSString *)phoneNumber
+/*- (BOOL)purchaseAccount:(NSString *)phoneNumber
 		   withPassword:(NSString *)password
 			   andEmail:(NSString *)email
 				monthly:(BOOL)monthly;
+*/
 // Purchase a product. You should not use this if manager is not available yet.
 - (BOOL)purchaseWithID:(NSString *)productID;
 // Activate purchased account.
-- (BOOL)activateAccount:(NSString *)phoneNumber;
+//- (BOOL)activateAccount:(NSString *)phoneNumber;
+// Check if account is activated.
+//- (BOOL)checkAccountActivated:(NSString *)phoneNumber;
 
 // restore user purchases. You should not use this if manager is not available yet. Must be at a user action ONLY.
 - (BOOL)restore;
@@ -101,6 +107,6 @@ typedef NSString *IAPPurchaseNotificationStatus;
 - (void)check;
 
 // deal with xmlrpc response
-- (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request;
+//- (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request;
 
 @end
