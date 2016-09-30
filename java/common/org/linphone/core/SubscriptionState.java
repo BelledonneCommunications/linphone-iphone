@@ -26,12 +26,12 @@ public enum SubscriptionState {
 	 */
 	Terminated(5), 
 	/**
-	 * Subscription encountered an error, indicated by { @link LinphoneEvent.getReason() }
+	 * Subscription encountered an error, indicated by {@link LinphoneEvent#getReason()}
 	 */
 	Error(6),
 	
 	/**
-	 * Subscription is about to expire, only notified if [sip]->refresh_generic_subscribe property is set to 0
+	 * Subscription is about to expire, only notified if [sip]-&lt;refresh_generic_subscribe property is set to 0
 	 */
 	Expiring(7);
 	protected final int mValue;

@@ -42,14 +42,13 @@ public interface LinphoneChatRoom {
 	
 	/**
 	 * Send a message to peer member of this chat room.
-	 * @param chat message
+	 * @param message chat message
 	 */
 	@Deprecated
 	void sendMessage(LinphoneChatMessage message, LinphoneChatMessage.StateListener listener);
 
 	/**
 	 * Create a LinphoneChatMessage
-	 * @param chatRoom chat room associated to the message
 	 * @param message message to send
 	 * @return LinphoneChatMessage object
 	 */
@@ -143,13 +142,13 @@ public interface LinphoneChatRoom {
 	/**
 	 * get Curent Call associated to this chatroom if any
 	 * To commit a message, use #linphone_chat_room_send_message
-	 * @returns LinphoneCall or NULL.
+	 * @return LinphoneCall or NULL.
 	 */
 	public LinphoneCall getCall();
 	/**
 	 * When realtime text is enabled LinphoneCallParams.realTimeTextEnabled, LinphoneCoreListener.isComposingReceived is call every time a char is received from peer.
 	 * At the end of remote typing a regular LinphoneChatMessage is received with committed data from LinphoneCoreListener.messageReceived .
-	 * @returns  RFC 4103/T.140 char
+	 * @return  RFC 4103/T.140 char
 	 */
 	long getChar();
 	

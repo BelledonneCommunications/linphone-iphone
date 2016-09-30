@@ -172,7 +172,7 @@ public interface LinphoneCall {
 	CallDirection getDirection();
 	/**
 	 * get the call log associated to this call.
-	 * @Return LinphoneCallLog
+	 * @return LinphoneCallLog
 	**/
 	LinphoneCallLog getCallLog();
 
@@ -250,7 +250,7 @@ public interface LinphoneCall {
 	 * 1-2 = very poor quality <br>
 	 * 0-1 = can't be worse, mostly unusable <br>
 	 *
-	 * @returns The function returns -1 if no quality measurement is available, for example if no 
+	 * @return The function returns -1 if no quality measurement is available, for example if no 
 	 * active audio stream exist. Otherwise it returns the quality rating.
 	 */
 	float getCurrentQuality();

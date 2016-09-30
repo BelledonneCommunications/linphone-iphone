@@ -30,7 +30,7 @@ public interface PresenceNote {
 	/**
 	 * Sets the content of a presence note.
 	 * @param content The content of the note.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setContent(String content);
 
@@ -43,7 +43,7 @@ public interface PresenceNote {
 	/**
 	 * Sets the language of a presence note.
 	 * @param lang The language of the note.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setLang(String lang);
 

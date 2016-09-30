@@ -2,7 +2,7 @@ package org.linphone.core;
 
 /**
  * The LinphoneInfoMessage represents an informational message (INFO) to be transmitted or received by the LinphoneCore.
- * It can be created with {@link LinphoneCore.createInfoMessage() }.
+ * It can be created with {@link LinphoneCore#createInfoMessage()}.
  * @author smorlat
  *
  */

@@ -14,12 +14,14 @@ public enum PublishState {
 	 */
 	Ok(2), 
 	/**
-	 * Publish encountered an error. {@link LinphoneEvent.getReason()} gives more information about failure.
+	 * Publish encountered an error.
+	 * {@link LinphoneEvent#getReason()} gives more information about failure.
 	 */
 	Error(3),
 	/**
-	 * Publish is about to expire. Application can trigger a refresh by calling {@link LinphoneCore.updatePublish()}
-	 * [sip]->refresh_generic_subscribe property is set to 0.
+	 * Publish is about to expire.
+	 * Application can trigger a refresh by calling {@link LinphoneEvent#updatePublish(LinphoneContent)}
+	 * [sip]-&gt;refresh_generic_subscribe property is set to 0.
 	 */
 	Expiring(4),
 	/**

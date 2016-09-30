@@ -35,8 +35,8 @@ public interface PresenceActivity {
 
 	/**
 	 * Sets the type of activity of a presence activity.
-	 * @param acttype The activity type to set for the activity.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @param type The activity type to set for the activity.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setType(PresenceActivityType type);
 
@@ -49,7 +49,7 @@ public interface PresenceActivity {
 	/**
 	 * Sets the description of a presence activity.
 	 * @param description An additional description of the activity. Can be null if no additional description is to be added.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setDescription(String description);
 

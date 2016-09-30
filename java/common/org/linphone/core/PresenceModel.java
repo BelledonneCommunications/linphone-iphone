@@ -30,7 +30,7 @@ public interface PresenceModel {
 	/**
 	 * Sets the basic status of a presence model.
 	 * @param basic_status The #BasicStatus to set for the #PresenceModel object.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setBasicStatus(PresenceBasicStatus basic_status);
 
@@ -62,7 +62,7 @@ public interface PresenceModel {
 	 * Sets the activity of a presence model (limits to only one activity).
 	 * @param activity The #PresenceActivityType to set for the model.
 	 * @param description An additional description of the activity to set for the model. Can be null if no additional description is to be added.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 *
 	 * WARNING: This method will modify the basic status of the model according to the activity being set.
 	 * If you don't want the basic status to be modified automatically, you can use the combination of setBasicStatus(), clearActivities() and addActivity().
@@ -85,13 +85,13 @@ public interface PresenceModel {
 	/**
 	 * Adds an activity to a presence model.
 	 * @param activity The #PresenceActivity to add to the model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addActivity(PresenceActivity activity);
 
 	/**
 	 * Clears the activities of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearActivities();
 
@@ -106,7 +106,7 @@ public interface PresenceModel {
 	 * Adds a note to a presence model.
 	 * @param note_content The note to be added to the presence model.
 	 * @param lang The language of the note to be added. Can be null if no language is to be specified for the note.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 *
 	 * Only one note for each language can be set, so e.g. setting a note for the 'fr' language if there is only one will replace the existing one.
 	 */
@@ -114,7 +114,7 @@ public interface PresenceModel {
 
 	/**
 	 * Clears all the notes of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearNotes();
 
@@ -134,13 +134,13 @@ public interface PresenceModel {
 	/**
 	 * Adds a service to a presence model.
 	 * @param service The #PresenceService object to add to the model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addService(PresenceService service);
 
 	/**
 	 * Clears the services of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearServices();
 
@@ -160,13 +160,13 @@ public interface PresenceModel {
 	/**
 	 * Adds a person to a presence model.
 	 * @param person The #PresencePerson object to add to the model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addPerson(PresencePerson person);
 
 	/**
 	 * Clears the persons of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearPersons();
 

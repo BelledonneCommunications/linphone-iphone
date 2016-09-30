@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package org.linphone.core;
 /**
  * The LinphoneProxyConfig object represents a proxy configuration to be used by the LinphoneCore object. Its fields must not be used directly in favour of the accessors methods.
- * Once created and filled properly the LinphoneProxyConfig can be given to LinphoneCore with {@link LinphoneCore#addProxyConfig(LinphoneProxyConfig)}. This will automatically triggers the registration, if enabled.
- *<br>The proxy configuration are persistent to restarts because they are saved in the configuration file. As a consequence, after {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)} there might already be a default proxy that can be examined with {@link LinphoneCore#getDefaultProxyConfig()} .
- *
+ * Once created and filled properly the LinphoneProxyConfig can be given to LinphoneCore with {@link LinphoneCore#addProxyConfig(LinphoneProxyConfig)}. This will automatically triggers the registration, if enabled.<br>
+ * The proxy configuration are persistent to restarts because they are saved in the configuration file. As a consequence, after {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object, Object)}
+ * there might already be a default proxy that can be examined with {@link LinphoneCore#getDefaultProxyConfig()} .
  */
 public interface LinphoneProxyConfig {
 
@@ -37,13 +37,13 @@ public interface LinphoneProxyConfig {
 	public void done();
 	/**
 	 * Sets the user identity as a SIP address.
-	 * @param identity This identity is normally formed with display name, username and domain, such as: Alice <sip:alice@example.net> The REGISTER messages will have from and to set to this identity.
+	 * @param identity This identity is normally formed with display name, username and domain, such as: Alice &lt;sip:alice@example.net&gt; The REGISTER messages will have from and to set to this identity.
 	 */
 	public void setIdentity(String identity) throws LinphoneCoreException;
 	/**
 	 *get  the SIP identity that belongs to this proxy configuration.
 	 *
-	 * @return The SIP identity is a SIP address (Display Name <sip:username> )
+	 * @return The SIP identity is a SIP address (Display Name &lt;sip:username&gt; )
 	 */
 	public String getIdentity();
 	/**
@@ -60,9 +60,11 @@ public interface LinphoneProxyConfig {
 	/**
 	 *Sets the proxy address
 	 * Examples of valid sip proxy address are:
-	 *<li>IP address: sip:87.98.157.38
-	 *<li>IP address with port: sip:87.98.157.38:5062
-	 *<li>hostnames : sip:sip.example.net
+	 * <ul>
+	 *  <li>IP address: sip:87.98.157.38</li>
+	 *  <li>IP address with port: sip:87.98.157.38:5062</li>
+	 *  <li>hostnames : sip:sip.example.net</li>
+	 * </ul>
 	 * @param proxyUri
 	 * @throws LinphoneCoreException
 	 */
@@ -91,7 +93,7 @@ public interface LinphoneProxyConfig {
 	public String normalizePhoneNumber(String number);
 	/**
 	 * Normalize a human readable sip uri into a fully qualified LinphoneAddress.
-	 * A sip address should look like DisplayName \<sip:username\@domain:port\> .
+	 * A sip address should look like DisplayName &lt;sip:username\@domain:port&gt;.
 	 * @param username the string to parse
 	 * @return NULL if invalid input, normalized sip address otherwise.
 	 */
@@ -259,7 +261,7 @@ public interface LinphoneProxyConfig {
 	 * @param contact_params a string containing the additional parameters in text form, like "myparam=something;myparam2=something_else"
 	 *
 	 * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or android push id.
-	 * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421>;android-push-id=43143-DFE23F-2323-FA2232.
+	 * As an example, the contact address in the SIP register sent will look like &lt;sip:joe@15.128.128.93:50421&gt;;android-push-id=43143-DFE23F-2323-FA2232.
 	**/
 	public void setContactParameters(String contact_params);
 
@@ -274,7 +276,7 @@ public interface LinphoneProxyConfig {
 	 * @param params a string containing the additional parameters in text form, like "myparam=something;myparam2=something_else"
 	 *
 	 * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
-	 * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.
+	 * As an example, the contact address in the SIP register sent will look like &lt;sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232&gt;.
 	**/
 	public void setContactUriParameters(String params);
 
@@ -338,15 +340,15 @@ public interface LinphoneProxyConfig {
 	
 	/** 
 	 * Set a custom header
-	 * @param a string containing the name of the header
-	 * @param a string containing the value of the header
+	 * @param name a string containing the name of the header
+	 * @param value a string containing the value of the header
 	 **/
 	public void setCustomHeader(String name, String value);
 	
 	/**
 	 * Return the value of a header
 	 * @param name a string containing the name of the header
-	 * @retur the value of the header
+	 * @return the value of the header
 	 **/
 	public String getCustomHeader(String name);
 	

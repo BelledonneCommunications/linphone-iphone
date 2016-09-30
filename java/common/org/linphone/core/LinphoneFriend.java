@@ -31,8 +31,7 @@ import java.util.Vector;
 public interface LinphoneFriend {
 	/**
 	 * Enum controlling behavior for incoming subscription request. 
-	 *	Use by {@link LinphoneFriend#setIncSubscribePolicy()}
-	 *
+	 * Used by {@link setIncSubscribePolicy(SubscribePolicy)}
 	 */
 	static class SubscribePolicy {
 

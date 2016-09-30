@@ -30,7 +30,7 @@ public interface PresenceService {
 	/**
 	 * Sets the id of a presence service.
 	 * @param id The id string to set. Can be null to generate it automatically.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setId(String id);
 
@@ -43,7 +43,7 @@ public interface PresenceService {
 	/**
 	 * Sets the basic status of a presence service.
 	 * @param status The #PresenceBasicStatus to set for the #PresenceService object.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setBasicStatus(PresenceBasicStatus status);
 
@@ -56,7 +56,7 @@ public interface PresenceService {
 	 /**
 	 * Sets the contact of a presence service.
 	 * @param contact The contact string to set.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setContact(String contact);
 
@@ -76,13 +76,13 @@ public interface PresenceService {
 	/**
 	 * Adds a note to a presence service.
 	 * @param note The #PresenceNote object to add to the service.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addNote(PresenceNote note);
 
 	/**
 	 * Clears the notes of a presence service.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearNotes();
 

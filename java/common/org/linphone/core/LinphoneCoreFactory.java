@@ -32,7 +32,7 @@ abstract public class LinphoneCoreFactory {
 	static LinphoneCoreFactory theLinphoneCoreFactory; 
 	/**
 	 * Indicate the name of the class used by this factory
-	 * @param pathName
+	 * @param className
 	 */
 	public static void setFactoryClassName (String className) {
 		factoryName = className;
@@ -51,11 +51,12 @@ abstract public class LinphoneCoreFactory {
 		return theLinphoneCoreFactory;
 	}
 	/**
-	 * create  {@link LinphoneAuthInfo}
+	 * Create  {@link LinphoneAuthInfo}
 	 * @param username
-	 * @param userid user id as set in auth header
-	 * @param passwd
-	 * */
+	 * @param password
+	 * @param realm
+	 * @param domain
+	 */
 	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm, String domain);
 	/**
 	 * create  {@link LinphoneAuthInfo}

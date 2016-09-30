@@ -30,7 +30,7 @@ public interface PresencePerson {
 	/**
 	 * Sets the id of a presence person.
 	 * @param id The id string to set. Can be null to generate it automatically.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setId(String id);
 
@@ -50,13 +50,13 @@ public interface PresencePerson {
 	/**
 	 * Adds an activity to a presence person.
 	 * @param activity The #PresenceActivity object to add to the person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addActivity(PresenceActivity activity);
 
 	/**
 	 * Clears the activities of a presence person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearActivities();
 
@@ -76,13 +76,13 @@ public interface PresencePerson {
 	/**
 	 * Adds a note to a presence person.
 	 * @param note The #PresenceNote object to add to the person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addNote(PresenceNote note);
 
 	/**
 	 * Clears the notes of a presence person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearNotes();
 
@@ -102,13 +102,13 @@ public interface PresencePerson {
 	/**
 	 * Adds an activities note to a presence person.
 	 * @param note The #PresenceNote object to add to the person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addActivitiesNote(PresenceNote note);
 
 	/**
 	 * Clears the activities notes of a presence person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearActivitesNotes();
 
