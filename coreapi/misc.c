@@ -1951,9 +1951,11 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 	} else {
 		/* Response from remote does not contain mandatory ICE attributes, delete the session. */
 		linphone_call_delete_ice_session(call);
+		linphone_call_set_symmetric_rtp(call, linphone_core_symmetric_rtp_enabled(linphone_call_get_core(call)));
 		return;
 	}
 	if (ice_session_nb_check_lists(call->ice_session) == 0) {
 		linphone_call_delete_ice_session(call);
+		linphone_call_set_symmetric_rtp(call, linphone_core_symmetric_rtp_enabled(linphone_call_get_core(call)));
 	}
 }
