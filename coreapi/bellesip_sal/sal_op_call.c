@@ -1095,3 +1095,16 @@ bool_t sal_call_compare_op(const SalOp *op1, const SalOp *op2) {
 bool_t sal_call_dialog_request_pending(const SalOp *op) {
 	return belle_sip_dialog_request_pending(op->dialog) ? TRUE : FALSE;
 }
+
+const char * sal_call_get_local_tag(SalOp *op) {
+	return belle_sip_dialog_get_local_tag(op->dialog);
+}
+
+const char * sal_call_get_remote_tag(SalOp *op) {
+	return belle_sip_dialog_get_remote_tag(op->dialog);
+}
+
+void sal_call_set_replaces(SalOp *op, const char *call_id, const char *from_tag, const char *to_tag) {
+	belle_sip_header_replaces_t *replaces = belle_sip_header_replaces_create(call_id, from_tag, to_tag);
+	sal_op_set_replaces(op, replaces);
+}

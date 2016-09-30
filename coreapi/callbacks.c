@@ -244,8 +244,12 @@ static LinphoneCall * look_for_broken_call_to_replace(SalOp *h, LinphoneCore *lc
 	const bctbx_list_t *calls = linphone_core_get_calls(lc);
 	const bctbx_list_t *it = calls;
 	while (it != NULL) {
+		LinphoneCall *replaced_call = NULL;
 		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(it);
-		if (call->broken && sal_call_compare_op(h, call->op)) {
+		SalOp *replaced_op = sal_call_get_replaces(h);
+		if (replaced_op) replaced_call = (LinphoneCall*)sal_op_get_user_pointer(replaced_op);
+		if ((call->broken && sal_call_compare_op(h, call->op))
+			|| (replaced_call && replaced_call == call)){
 			return call;
 		}
 		it = bctbx_list_next(it);
@@ -443,8 +447,7 @@ static void call_ringing(SalOp *h){
 			/*already doing early media */
 			return;
 		}
-		if (lc->ringstream!=NULL) return;/*already ringing !*/
-		start_remote_ring(lc, call);
+		if (lc->ringstream == NULL) start_remote_ring(lc, call);
 		ms_message("Remote ringing...");
 		linphone_core_notify_display_status(lc,_("Remote ringing..."));
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");

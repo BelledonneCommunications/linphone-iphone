@@ -5042,6 +5042,16 @@ void linphone_call_set_broken(LinphoneCall *call){
 	}
 }
 
+static void linphone_call_repair_by_invite_with_replaces(LinphoneCall *call) {
+	const char *call_id = sal_op_get_call_id(call->op);
+	const char *from_tag = sal_call_get_local_tag(call->op);
+	const char *to_tag = sal_call_get_remote_tag(call->op);
+	sal_op_kill_dialog(call->op);
+	linphone_call_create_op(call);
+	sal_call_set_replaces(call->op, call_id, from_tag, to_tag);
+	linphone_core_start_invite(call->core, call, NULL);
+}
+
 void linphone_call_repair_if_broken(LinphoneCall *call){
 	LinphoneCallParams *params;
 
@@ -5066,6 +5076,12 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 				linphone_call_params_unref(params);
 			}
 		break;
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingProgress:
+		case LinphoneCallOutgoingRinging:
+			linphone_call_repair_by_invite_with_replaces(call);
+			break;
 		default:
 			ms_warning("linphone_call_resume_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
 			call->broken = FALSE;
@@ -5084,9 +5100,30 @@ void linphone_call_refresh_sockets(LinphoneCall *call){
 }
 
 void linphone_call_replace_op(LinphoneCall *call, SalOp *op) {
+	switch (linphone_call_get_state(call)) {
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning:
+			sal_call_terminate(call->op);
+			break;
+		default:
+			break;
+	}
+	sal_op_kill_dialog(call->op);
 	sal_op_release(call->op);
 	call->op = op;
 	sal_op_set_user_pointer(call->op, call);
 	sal_call_set_local_media_description(call->op, call->localdesc);
-	sal_call_notify_ringing(call->op, (linphone_call_get_state(call) == LinphoneCallIncomingEarlyMedia) ? TRUE : FALSE);
+	switch (linphone_call_get_state(call)) {
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+			sal_call_notify_ringing(call->op, (linphone_call_get_state(call) == LinphoneCallIncomingEarlyMedia) ? TRUE : FALSE);
+			break;
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning:
+			sal_call_accept(call->op);
+			break;
+		default:
+			ms_warning("linphone_call_replace_op(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
+			break;
+	}
 }

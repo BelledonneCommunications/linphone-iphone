@@ -30,6 +30,11 @@ SalOp * sal_op_new(Sal *sal){
 	return op;
 }
 
+void sal_op_kill_dialog(SalOp *op) {
+	ms_warning("op [%p]: force kill of dialog [%p]", op, op->dialog);
+	belle_sip_dialog_delete(op->dialog);
+}
+
 void sal_op_release(SalOp *op){
 	/*if in terminating state, keep this state because it means we are waiting for a response to be able to terminate the operation.*/
 	if (op->state!=SalOpStateTerminating)
@@ -233,6 +238,14 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
 	return sal_op_send_request(op,sal_op_build_request(op,"OPTIONS"));
+}
+
+void sal_op_set_replaces(SalOp* op,belle_sip_header_replaces_t* replaces) {
+	if (op->replaces){
+		belle_sip_object_unref(op->replaces);
+	}
+	op->replaces=replaces;
+	belle_sip_object_ref(op->replaces);
 }
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {

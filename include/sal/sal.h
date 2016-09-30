@@ -679,6 +679,7 @@ SalOp *sal_op_ref(SalOp* h);
 void sal_op_stop_refreshing(SalOp *op);
 int sal_op_refresh(SalOp *op);
 
+void sal_op_kill_dialog(SalOp *op);
 void sal_op_release(SalOp *h);
 /*same as release, but does not stop refresher if any*/
 void* sal_op_unref(SalOp* op);
@@ -753,6 +754,9 @@ int sal_call_is_offerer(const SalOp *h);
 int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
 bool_t sal_call_compare_op(const SalOp *op1, const SalOp *op2);
 bool_t sal_call_dialog_request_pending(const SalOp *op);
+const char * sal_call_get_local_tag(SalOp *op);
+const char * sal_call_get_remote_tag(SalOp *op);
+void sal_call_set_replaces(SalOp *op, const char *call_id, const char *from_tag, const char *to_tag);
 /* Call test API */
 
 
