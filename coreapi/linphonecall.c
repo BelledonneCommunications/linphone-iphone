@@ -1180,8 +1180,8 @@ void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is
 	ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(call->core->config,"net","ice_session_enable_message_integrity_check",1));
 	if (lp_config_get_int(call->core->config, "net", "dont_default_to_stun_candidates", 0)){
 		IceCandidateType types[ICT_CandidateTypeMax];
-		types[0] = ICT_RelayedCandidate;
-		types[1] = ICT_HostCandidate;
+		types[0] = ICT_HostCandidate;
+		types[1] = ICT_RelayedCandidate;
 		types[2] = ICT_CandidateInvalid;
 		ice_session_set_default_candidates_types(call->ice_session, types);
 	}
