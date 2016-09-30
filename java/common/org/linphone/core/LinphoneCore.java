@@ -172,6 +172,7 @@ public interface LinphoneCore {
 	 * Describes firewall policy.
 	 * @deprecated
 	 */
+	@Deprecated
 	static public class FirewallPolicy {
 
 		static private Vector<FirewallPolicy> values = new Vector<FirewallPolicy>();
@@ -1106,12 +1107,14 @@ public interface LinphoneCore {
 	 * @param status OnlineStatus
 	 * @deprecated Use setPresenceModel() instead
 	 */
+	@Deprecated
 	void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status);
 	/**
 	 * Get my presence status
 	 * @return OnlineStatus
 	 * @deprecated Use getPresenceModel() instead
 	 */
+	@Deprecated
 	OnlineStatus getPresenceInfo();
 	/**
 	 * Set my presence status
@@ -1216,12 +1219,14 @@ public interface LinphoneCore {
 	 * @param pol one of the FirewallPolicy members.
 	 * @deprecated
 	 */
+	@Deprecated
 	void setFirewallPolicy(FirewallPolicy pol);
 
 	/**
 	 * @return previously set firewall policy.
 	 * @deprecated
 	 */
+	@Deprecated
 	FirewallPolicy getFirewallPolicy();
 
 	/**
@@ -1467,6 +1472,7 @@ public interface LinphoneCore {
 	 * @deprecated
 	 * @param i
 	 */
+	@Deprecated
 	void adjustSoftwareVolume(int i);
 
 	/**
@@ -1638,6 +1644,7 @@ public interface LinphoneCore {
 	 * @param uri
 	 * @return
 	 */
+	@Deprecated
 	boolean isMyself(String uri);
 
 	/**
@@ -1705,6 +1712,7 @@ public interface LinphoneCore {
 	 * Enable or disable tunnel
 	 * @param enable True to enable and false to disable
 	 */
+	@Deprecated
 	void tunnelEnable(boolean enable);
 	
 	/**
@@ -1740,6 +1748,7 @@ public interface LinphoneCore {
 	 * @deprecated Use tunnelSetMode instaead
 	 * Enable tunnel if the mirror RTP session cannot be established
 	 */
+	@Deprecated
 	void tunnelAutoDetect();
 	
 	/**

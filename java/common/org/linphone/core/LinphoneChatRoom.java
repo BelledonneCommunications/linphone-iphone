@@ -43,6 +43,7 @@ public interface LinphoneChatRoom {
 	/**
 	 * Send a message to peer member of this chat room.
 	 * @param message chat message
+	 * @deprecated
 	 */
 	@Deprecated
 	void sendMessage(LinphoneChatMessage message, LinphoneChatMessage.StateListener listener);

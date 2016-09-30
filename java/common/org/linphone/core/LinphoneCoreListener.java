@@ -31,6 +31,7 @@ public interface LinphoneCoreListener {
 	 * @deprecated
 	 * Ask the application some authentication information 
 	 **/
+	@Deprecated
 	void authInfoRequested(LinphoneCore lc, String realm, String username, String domain);
 	
 	/**
@@ -116,24 +117,28 @@ public interface LinphoneCoreListener {
 	 * Notifies the application that it should show up
 	 * @deprecated
 	 */
+	@Deprecated
 	void show(LinphoneCore lc);
 
 	/**
 	 * Callback that notifies various events with human readable text.
 	 * @deprecated
 	 */
+	@Deprecated
 	void displayStatus(LinphoneCore lc,String message);
 
 	/**
 	 * Callback to display a message to the user 
 	 * @deprecated
 	 */
+	@Deprecated
 	void displayMessage(LinphoneCore lc,String message);
 
 	/**
 	 * Callback to display a warning to the user 
 	 * @deprecated
 	 */
+	@Deprecated
 	void displayWarning(LinphoneCore lc,String message);
 
 	/**
