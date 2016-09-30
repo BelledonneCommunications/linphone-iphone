@@ -182,6 +182,7 @@ LINPHONE_PUBLIC LinphoneXmlRpcSession * linphone_xml_rpc_session_ref(LinphoneXml
 /**
  * Release reference to the XML-RPC session.
  * @param[in] session LinphoneXmlRpcSession object.
+ * @warning This will not stop pending xml-rpc requests. Use linphone_xml_rpc_session_release() instead if this is intended.
 **/
 LINPHONE_PUBLIC void linphone_xml_rpc_session_unref(LinphoneXmlRpcSession *session);
 
@@ -205,6 +206,13 @@ LINPHONE_PUBLIC void linphone_xml_rpc_session_set_user_data(LinphoneXmlRpcSessio
  * @param[in] request The LinphoneXmlRpcRequest to be sent.
 **/
 LINPHONE_PUBLIC void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcRequest *request);
+
+
+/**
+ * Stop and unref an XML rpc session. Pending requests will be aborted.
+ * @param[in] session LinphoneXmlRpcSession object.
+**/
+LINPHONE_PUBLIC void linphone_xml_rpc_session_release(LinphoneXmlRpcSession *session);
 
 
 /**

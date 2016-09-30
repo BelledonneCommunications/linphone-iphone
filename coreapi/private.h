@@ -1313,6 +1313,7 @@ struct _LinphoneXmlRpcSession {
 	void *user_data;
 	LinphoneCore *core;
 	char *url;
+	bool_t released;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcSession);

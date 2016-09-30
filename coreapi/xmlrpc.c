@@ -157,12 +157,23 @@ static void free_arg(LinphoneXmlRpcArg *arg) {
 	belle_sip_free(arg);
 }
 
+static bool_t linphone_xml_rpc_request_aborted(LinphoneXmlRpcRequest *req){
+	LinphoneXmlRpcSession *session = (LinphoneXmlRpcSession*) belle_sip_object_data_get(BELLE_SIP_OBJECT(req), "session");
+	if (!session){
+		ms_error("linphone_xml_rpc_request_aborted(): no session, this should not happen.");
+		return FALSE;
+	}
+	return session->released;
+}
+
 static void process_io_error_from_post_xml_rpc_request(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)data;
 	ms_error("I/O Error during XML-RPC request sending");
-	request->status = LinphoneXmlRpcStatusFailed;
-	if (request->callbacks->response != NULL) {
-		request->callbacks->response(request);
+	if (!linphone_xml_rpc_request_aborted(request)){
+		request->status = LinphoneXmlRpcStatusFailed;
+			if (request->callbacks->response != NULL) {
+			request->callbacks->response(request);
+		}
 	}
 	linphone_xml_rpc_request_unref(request);
 }
@@ -170,9 +181,11 @@ static void process_io_error_from_post_xml_rpc_request(void *data, const belle_s
 static void process_auth_requested_from_post_xml_rpc_request(void *data, belle_sip_auth_event_t *event) {
 	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)data;
 	ms_error("Authentication error during XML-RPC request sending");
-	request->status = LinphoneXmlRpcStatusFailed;
-	if (request->callbacks->response != NULL) {
-		request->callbacks->response(request);
+	if (!linphone_xml_rpc_request_aborted(request)){
+		request->status = LinphoneXmlRpcStatusFailed;
+		if (request->callbacks->response != NULL) {
+			request->callbacks->response(request);
+		}
 	}
 	linphone_xml_rpc_request_unref(request);
 }
@@ -225,7 +238,7 @@ static void process_response_from_post_xml_rpc_request(void *data, const belle_h
 	LinphoneXmlRpcRequest *request = (LinphoneXmlRpcRequest *)data;
 
 	/* Check the answer code */
-	if (event->response) {
+	if (!linphone_xml_rpc_request_aborted(request) && event->response) {
 		int code = belle_http_response_get_status_code(event->response);
 		if (code == 200) { /* Valid response from the server. */
 			parse_valid_xml_rpc_response(request, belle_sip_message_get_body((belle_sip_message_t *)event->response));
@@ -415,6 +428,7 @@ void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, Linph
 	if (!req) {
 		belle_sip_object_unref(uri);
 		process_io_error_from_post_xml_rpc_request(request, NULL);
+		return;
 	}
 	data = linphone_xml_rpc_request_get_content(request);
 	bh = belle_sip_memory_body_handler_new_copy_from_buffer(data, strlen(data), NULL, NULL);
@@ -424,4 +438,14 @@ void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, Linph
 	cbs.process_auth_requested = process_auth_requested_from_post_xml_rpc_request;
 	l = belle_http_request_listener_create_from_callbacks(&cbs, request);
 	belle_http_provider_send_request(session->core->http_provider, req, l);
+	/*ensure that the listener object will be destroyed with the request*/
+	belle_sip_object_data_set(BELLE_SIP_OBJECT(request), "listener", l, belle_sip_object_unref);
+	/*prevent destruction of the session while there are still pending http requests*/
+	belle_sip_object_data_set(BELLE_SIP_OBJECT(request), "session", belle_sip_object_ref(session), belle_sip_object_unref);
 }
+
+void linphone_xml_rpc_session_release(LinphoneXmlRpcSession *session){
+	session->released = TRUE;
+	belle_sip_object_unref(session);
+}
+

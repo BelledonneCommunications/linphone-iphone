@@ -119,7 +119,7 @@ void linphone_account_creator_cbs_set_recover_phone_account(LinphoneAccountCreat
 
 
 static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
-	linphone_xml_rpc_session_unref(creator->xmlrpc_session);
+	linphone_xml_rpc_session_release(creator->xmlrpc_session); /*this will drop all pending requests if any*/
 	linphone_account_creator_cbs_unref(creator->callbacks);
 	if (creator->username) ms_free(creator->username);
 	if (creator->password) ms_free(creator->password);
