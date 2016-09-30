@@ -423,6 +423,9 @@ void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
 void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, LinphoneEvent *lev, const LinphoneContent *body);
 void linphone_friend_list_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 void _linphone_friend_list_release(LinphoneFriendList *list);
+/*get rls either from list or core if any*/
+const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFriendList *list);
+	
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void _linphone_friend_release(LinphoneFriend *lf);
@@ -1058,6 +1061,9 @@ struct _LinphoneCore
 	/* string for TLS auth instead of path to files */
 	char *tls_cert;
 	char *tls_key;
+	
+	/*default resource list server*/
+	LinphoneAddress *default_rls_addr;
 };
 
 

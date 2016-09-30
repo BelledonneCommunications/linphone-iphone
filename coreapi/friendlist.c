@@ -454,7 +454,14 @@ void linphone_friend_list_set_display_name(LinphoneFriendList *list, const char 
 const LinphoneAddress * linphone_friend_list_get_rls_address(const LinphoneFriendList *list){
 	return list->rls_addr;
 }
-
+const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFriendList *list) {
+	if (list->rls_addr)
+		return list->rls_addr;
+	else if (list->lc)
+		return list->lc->default_rls_addr;
+	else
+		return NULL;
+}
 void linphone_friend_list_set_rls_address(LinphoneFriendList *list, const LinphoneAddress *rls_addr){
 	LinphoneAddress *new_rls_addr = rls_addr ? linphone_address_clone(rls_addr) : NULL;
 	
@@ -783,20 +790,18 @@ static void linphone_friend_list_send_list_subscription(LinphoneFriendList *list
 
 void linphone_friend_list_update_subscriptions(LinphoneFriendList *list){
 	LinphoneProxyConfig *cfg = NULL;
-	const LinphoneAddress *address = linphone_friend_list_get_rls_address(list);
+	const LinphoneAddress *address = _linphone_friend_list_get_rls_address(list);
 	bool_t only_when_registered = FALSE;
 	bool_t should_send_list_subscribe = FALSE;
-	bool_t use_rls_presence = FALSE;
 	
 	if (list->lc){
 		if (address)
 			cfg = linphone_core_lookup_known_proxy(list->lc, address);
 		only_when_registered = linphone_core_should_subscribe_friends_only_when_registered(list->lc);
 		should_send_list_subscribe = (!only_when_registered || !cfg || cfg->state == LinphoneRegistrationOk);
-		use_rls_presence = lp_config_get_int(list->lc->config, "sip", "use_rls_presence", 0);
 	}
 	
-	if (use_rls_presence && (list->rls_addr != NULL)) {
+	if (address != NULL) {
 		if (list->enable_subscriptions) {
 			if (should_send_list_subscribe){
 				linphone_friend_list_send_list_subscription(list);

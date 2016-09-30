@@ -1057,6 +1057,8 @@ static void sip_config_read(LinphoneCore *lc)
 	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
 	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound"));
 	lc->sip_conf.save_auth_info = lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
+	if (lp_config_get_string(lc->config, "sip", "rls_uri", NULL))
+		lc->default_rls_addr = linphone_address_new(lp_config_get_string(lc->config, "sip", "rls_uri", NULL));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -2071,8 +2073,6 @@ void linphone_core_remove_friend_list(LinphoneCore *lc, LinphoneFriendList *list
 }
 
 void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
-	const char *rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
-	
 	if (!list->lc) {
 		list->lc = lc;
 	}
@@ -2081,9 +2081,6 @@ void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 	linphone_core_store_friends_list_in_db(lc, list);
 #endif
 	linphone_core_notify_friend_list_created(lc, list);
-	if (!linphone_friend_list_get_rls_uri(list) && rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0)) {
-		linphone_friend_list_set_rls_uri(list, rls_uri);
-	}
 }
 
 void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore* lc, bool_t val)
@@ -6548,6 +6545,8 @@ void sip_config_uninit(LinphoneCore *lc)
 		ms_free(lc->sip_conf.guessed_contact);
 	if (config->contact)
 		ms_free(config->contact);
+	if (lc->default_rls_addr)
+		linphone_address_destroy(lc->default_rls_addr);
 
 }
 

@@ -143,10 +143,6 @@ void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneF
 	cleanup_dead_vtable_refs(lc);
 }
 
-void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
-	NOTIFY_IF_EXIST(auth_info_requested, lc, realm, username, domain);
-	cleanup_dead_vtable_refs(lc);
-}
 
 void linphone_core_notify_authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *ai, LinphoneAuthMethod method) {
 	NOTIFY_IF_EXIST(authentication_requested, lc, ai, method);
@@ -165,6 +161,11 @@ void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *ne
 #else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
+
+void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	NOTIFY_IF_EXIST(auth_info_requested, lc, realm, username, domain);
+	cleanup_dead_vtable_refs(lc);
+}
 
 void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
 	NOTIFY_IF_EXIST(text_received, lc,room,from,message);
