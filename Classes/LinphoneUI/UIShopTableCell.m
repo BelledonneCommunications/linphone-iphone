@@ -54,7 +54,8 @@ UIImageView *infoImage;
 #pragma mark -
 
 - (IBAction)onDetails:(id)event {
-	UIAlertView *descriptionView = [[UIAlertView alloc] initWithTitle:@"Product"
+	NSString *msg = [NSString stringWithFormat:@"Product - %@", self.nameLabel.text];
+	UIAlertView *descriptionView = [[UIAlertView alloc] initWithTitle:msg
 															  message:self.descriptionLabel.text
 															 delegate:nil
 													cancelButtonTitle:@"OK"
