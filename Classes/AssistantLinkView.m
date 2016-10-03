@@ -132,7 +132,11 @@ void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, L
 		thiz.linkAccountView.hidden = thiz.activateSMSView.userInteractionEnabled = YES;
 		thiz.activateSMSView.hidden = thiz.linkAccountView.userInteractionEnabled = NO;
 	} else {
-		[thiz showErrorPopup:resp];
+		if (strcmp(resp, "Missing required parameters") ==0) {
+			[thiz showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
+		} else {
+			[thiz showErrorPopup:resp];
+		}
 	}
 }
 

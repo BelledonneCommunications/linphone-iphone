@@ -727,7 +727,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return NSLocalizedString(@"Your phone number is invalid.", nil);
 	if
 		IS(ERROR_CANNOT_SEND_SMS)
-	return NSLocalizedString(@"Server error, please try again later.", nil);
+		return NSLocalizedString(@"Server error, please try again later.", nil);
+	if
+		IS(ERROR_NO_PHONE_NUMBER)
+		return NSLocalizedString(@"Please confirm your country code and enter your phone number.", nil);
 
 	if (!linphone_core_is_network_reachable(LC))
 		return NSLocalizedString(@"There is no network connection available, enable "
@@ -740,6 +743,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)showErrorPopup:(const char *)err {
 	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account configuration issue", nil)
 														message:[self.class StringForXMLRPCError:err]
+														//message:[NSString stringWithUTF8String:err]
 													   delegate:nil
 											  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 											  otherButtonTitles:nil, nil];
@@ -755,7 +759,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
-			[self showErrorPopup:resp];
+			if (strcmp(resp, "Missing required parameters") == 0) {
+				[self showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
+			} else {
+				[self showErrorPopup:resp];
+			}
 		}
 	} else {
 		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
@@ -765,7 +773,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		} else if (status == LinphoneAccountCreatorAccountNotExist) {
 			linphone_account_creator_create_account(account_creator);
 		} else {
-			[self showErrorPopup:resp];
+			if (linphone_account_creator_get_phone_number(account_creator) == NULL) {
+				[self showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
+			} else {
+				[self showErrorPopup:resp];
+			}
 		}
 	}
 }
@@ -788,7 +800,11 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 			[thiz changeView:thiz.createAccountActivateEmailView back:FALSE animation:TRUE];
 		}
 	} else {
-		[thiz showErrorPopup:resp];
+		if (linphone_account_creator_get_phone_number(creator) == NULL) {
+			[thiz showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
+		} else {
+			[thiz showErrorPopup:resp];
+		}
 	}
 }
 
@@ -938,8 +954,8 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 
 - (IBAction)onCreateAccountClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
-        _waitView.hidden = NO;
-        linphone_account_creator_is_account_used(account_creator);
+		_waitView.hidden = NO;
+		linphone_account_creator_is_account_used(account_creator);
     });
 }
 
@@ -948,8 +964,8 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
         _waitView.hidden = NO;
         linphone_account_creator_set_activation_code(account_creator, ((UITextField*)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text.UTF8String);
 		if (linphone_account_creator_get_password(account_creator) == NULL &&
-			linphone_account_creator_get_ha1(account_creator) == NULL) {
-			linphone_account_creator_activate_account(account_creator);
+				linphone_account_creator_get_ha1(account_creator) == NULL) {
+				linphone_account_creator_activate_account(account_creator);
 		} else {
 			linphone_account_creator_activate_phone_number_link(account_creator);
 		}
