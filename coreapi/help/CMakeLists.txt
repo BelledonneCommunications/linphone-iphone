@@ -45,6 +45,25 @@ if (ENABLE_DOC)
 	endif()
 endif()
 
+if(ENABLE_JAVADOC)
+	find_package(Java REQUIRED)
+	set(JAVADOC_PACKAGES "org.linphone.core org.linphone.mediastream")
+	set(JAVADOC_CLASSPATHS
+		"${PROJECT_SOURCE_DIR}/java/common"
+		"${PROJECT_SOURCE_DIR}/java/j2se"
+		"${PROJECT_SOURCE_DIR}/mediastreamer2/java/src"
+	)
+	string(REPLACE ";" ":" JAVADOC_CLASSPATHS "${JAVADOC_CLASSPATHS}")
+	set(JAVADOC_TITLE "Linphone SDK ${PROJECT_VERSION} reference documentation")
+	set(JAVADOC_JAVA_REFERENCE "http://docs.oracle.com/javase/8/docs/api/")
+	set(JAVADOC_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/java")
+	set(JAVADOC_LOGFILE "${CMAKE_CURRENT_BINARY_DIR}/javadoc.log")
+	configure_file("generate_javadoc.sh.in" "generate_javadoc.sh" @ONLY)
+	add_custom_target(javadoc
+		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/generate_javadoc.sh"
+	)
+endif()
+
 if (ENABLE_TOOLS)
 	set(USE_BUNDLE )
 	if (IOS)
