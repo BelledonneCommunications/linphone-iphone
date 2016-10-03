@@ -43,6 +43,20 @@
 	return self;
 }
 
+- (BOOL) shouldAutorotate{
+	return NO;
+}
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
+- (NSUInteger)supportedInterfaceOrientations {
+	return UIInterfaceOrientationMaskPortrait;
+}
+#else
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
+	return UIInterfaceOrientationMaskPortrait;
+}
+#endif
+
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;
@@ -93,6 +107,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		setStatusBarStyle:UIStatusBarStyleDefault]; // Fix UIImagePickerController status bar style change
 
 	[PhoneMainView.instance hideStatusBar:YES];
+	
+	//Prevent rotation of camera
+	NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
+	[[UIDevice currentDevice] setValue:value forKey:@"orientation"];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

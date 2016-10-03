@@ -740,4 +740,15 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	[LinphoneManager.instance startLinphoneCore];
 }
 
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+	if ([[(PhoneMainView*)self.window.rootViewController currentView] equal:ImagePickerView.compositeViewDescription])
+	{
+		//Prevent rotation of camera
+		NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
+		[[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+		return UIInterfaceOrientationMaskPortrait;
+	}
+	else return UIInterfaceOrientationMaskAll;
+}
+
 @end
