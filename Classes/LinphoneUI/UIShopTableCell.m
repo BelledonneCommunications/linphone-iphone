@@ -53,6 +53,15 @@ UIImageView *infoImage;
 
 #pragma mark -
 
+- (IBAction)onDetails:(id)event {
+	UIAlertView *descriptionView = [[UIAlertView alloc] initWithTitle:@"Product"
+															  message:self.descriptionLabel.text
+															 delegate:nil
+													cancelButtonTitle:@"OK"
+													otherButtonTitles:nil];
+	[descriptionView show];
+}
+
 - (void)touchUp:(id)sender {
 	[self setHighlighted:true animated:true];
 }

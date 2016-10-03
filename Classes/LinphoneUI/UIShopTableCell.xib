@@ -9,7 +9,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIShopTableCell">
             <connections>
                 <outlet property="descriptionLabel" destination="ywN-JT-HTo" id="BnY-8x-cw4"/>
-                <outlet property="infoImage" destination="25" id="R8I-k9-Zg8"/>
                 <outlet property="linphoneImage" destination="ZKs-g7-On2" id="Rg2-R9-glb"/>
                 <outlet property="nameLabel" destination="6" id="26"/>
             </connections>
@@ -35,14 +34,21 @@
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="list_details_default.png" id="25" userLabel="infoImage">
-                    <frame key="frameInset" minY="50.00%" width="25" height="22" maxX="25"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                </imageView>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" image="linphone_logo.png" id="ZKs-g7-On2" userLabel="linphoneImage">
                     <frame key="frameInset" minX="1.22%" minY="50.00%" width="32" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                 </imageView>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Led-cX-5yh" userLabel="detailsButton" customClass="UIIconButton">
+                    <frame key="frameInset" minY="70.00%" width="12.22%" height="44"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <state key="normal" image="list_details_default.png">
+                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <state key="highlighted" image="list_details_over.png"/>
+                    <connections>
+                        <action selector="onDetails:" destination="-1" eventType="touchUpInside" id="zRZ-Dc-emh"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
@@ -53,6 +59,7 @@
     <resources>
         <image name="linphone_logo.png" width="26" height="22"/>
         <image name="list_details_default.png" width="34" height="34"/>
+        <image name="list_details_over.png" width="34" height="34"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
