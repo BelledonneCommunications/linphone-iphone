@@ -59,7 +59,7 @@ if(ENABLE_JAVADOC)
 	set(JAVADOC_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc/java")
 	set(JAVADOC_LOGFILE "${CMAKE_CURRENT_BINARY_DIR}/javadoc.log")
 	configure_file("generate_javadoc.sh.in" "generate_javadoc.sh" @ONLY)
-	add_custom_target(javadoc
+	add_custom_target(javadoc ALL
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/generate_javadoc.sh"
 	)
 endif()
