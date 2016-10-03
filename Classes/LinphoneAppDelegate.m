@@ -740,6 +740,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	[LinphoneManager.instance startLinphoneCore];
 }
 
+#pragma mark - Prevent ImagePickerView from rotating
+
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
 	if ([[(PhoneMainView*)self.window.rootViewController currentView] equal:ImagePickerView.compositeViewDescription])
 	{

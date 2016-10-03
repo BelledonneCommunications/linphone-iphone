@@ -1108,7 +1108,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	UIAlertView *errorView = [[UIAlertView alloc]
 			initWithTitle:NSLocalizedString(@"What will my phone number be used for?", nil)
 				  message:NSLocalizedString(@"Thanks to your phone number, your friends will find you more easily. "
-											@"\nYou will see in your address book who is using Linphone and your "
+											@"\n\nYou will see in your address book who is using Linphone and your "
 											@"friends will know that they can reach you on Linphone as well.",
 											nil)
 				 delegate:nil
