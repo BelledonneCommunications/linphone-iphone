@@ -54,10 +54,15 @@
 		warnBeforeExpiryPeriod = [LinphoneManager.instance lpConfigIntForKey:@"warn_before_expiry_period" inSection:@"in_app_purchase"];
 		lastCheck = 0;
 
-		int testExpiry = [LinphoneManager.instance lpConfigIntForKey:@"expiry_time_test" inSection:@"in_app_purchase"];
-		if (testExpiry > 0){
-			expiryTime = time(NULL) + testExpiry;
-		}else expiryTime = 0;
+		//========// for test only
+		// int testExpiry = [LinphoneManager.instance lpConfigIntForKey:@"expiry_time_test"
+		// inSection:@"in_app_purchase"];
+		// if (testExpiry > 0){
+		//	expiryTime = time(NULL) + testExpiry;
+		//}else expiryTime = 0;
+		//========//
+		[self checkAccountExpirationDate];
+
 		if (_enabled) {
 			// self.xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
 			_status = kIAPNotReady;
@@ -221,7 +226,27 @@
 
 	NSString *receiptBase64 = [[NSData dataWithContentsOfURL:receiptURL] base64EncodedStringWithOptions:0];
 	LOGI(@"Found appstore receipt %@", [receiptBase64 md5]);
+	[self saveReceiptTemp:receiptBase64];
 	return receiptBase64;
+}
+
+/**
+ Save Receipt temporarily until xmlrpc server request completed and confiramation sent
+**/
+- (void)saveReceiptTemp:(NSString *)receipt {
+	[LinphoneManager.instance lpConfigSetString:receipt forKey:@"tmp_receipt" inSection:@"in_app_purchase"];
+}
+
+/**
+ reset Receipt to empty after xmlrpc request confiramation received
+ **/
+- (void)removeTmpReceipt:(NSString *)receipt {
+	if ([LinphoneManager.instance lpConfigStringForKey:@"tmp_receipt" inSection:@"in_app_purchase"])
+		[LinphoneManager.instance lpConfigSetString:@"0" forKey:@"tmp_receipt" inSection:@"in_app_purchase"];
+}
+
+- (NSString *)getTmpReceipt {
+	return [LinphoneManager.instance lpConfigStringForKey:@"tmp_receipt" inSection:@"in_app_purchase"];
 }
 
 - (void)validateReceipt:(SKPaymentTransaction *)transaction {
@@ -243,7 +268,23 @@
 		if ([[self getPhoneNumber] length] > 0) {
 			NSString *phoneNumber = [self getPhoneNumber];
 			NSString *password = [self getPassword];
-			[XMLRPCHelper.self
+			/*if(expiryTime == 0){
+				[XMLRPCHelper.self sendXMLRPCRequestWithParams:@"activate_account"
+													withParams:@[
+																 phoneNumber,
+																 password,
+																 @"",
+																 receiptBase64
+																 ]
+													 onSuccess:^(NSString *response) {
+														 if (response) {
+															 LOGI(@"update_expiration_date callback - response: %@", response);
+															 
+														 }
+													 }];
+			}
+			else{
+			*/ [XMLRPCHelper.self
 				sendXMLRPCRequestWithParams:@"update_expiration_date"
 								 withParams:@[
 									 phoneNumber,
@@ -281,6 +322,7 @@
 										}
 									}
 								  }];
+			//	}
 
 		} else {
 			LOGW(@"No SIP URI configured, doing nothing");
@@ -452,6 +494,30 @@
 		lastCheck = now;
 		int64_t remaining = (int64_t)expiryTime - (int64_t)now;
 		[self presentNotification: remaining];
+	}
+}
+
+- (BOOL)checkAccountExpirationDate {
+	if ([[self getPhoneNumber] length] > 0) {
+		NSString *phoneNumber = [self getPhoneNumber];
+		NSString *password = [self getPassword];
+		[XMLRPCHelper.self
+			sendXMLRPCRequestWithParams:@"get_account_expiration"
+							 withParams:@[ phoneNumber,
+										   password,
+										   @"" ] // keep @"" mandatory for optional domain
+							  onSuccess:^(NSString *response) {
+								if (response) {
+									LOGI(@"get_account_expiration callback - response: %@", response);
+									if ([response containsString:@"ERROR_NO_EXPIRATION"]) {
+										expiryTime = 0;
+									}
+								}
+							  }];
+		return TRUE;
+	} else {
+		LOGW(@"No SIP URI configured, can't get account expiration date.");
+		return FALSE;
 	}
 }
 

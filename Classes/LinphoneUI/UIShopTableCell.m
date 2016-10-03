@@ -55,12 +55,12 @@ UIImageView *infoImage;
 
 - (IBAction)onDetails:(id)event {
 	NSString *msg = [NSString stringWithFormat:@"Product - %@", self.nameLabel.text];
-	UIAlertView *descriptionView = [[UIAlertView alloc] initWithTitle:msg
-															  message:self.descriptionLabel.text
-															 delegate:nil
-													cancelButtonTitle:@"OK"
-													otherButtonTitles:nil];
-	[descriptionView show];
+	UIAlertView *descriptionAlertView = [[UIAlertView alloc] initWithTitle:msg
+																   message:self.descriptionLabel.text
+																  delegate:nil
+														 cancelButtonTitle:@"OK"
+														 otherButtonTitles:nil];
+	[descriptionAlertView show];
 }
 
 - (void)touchUp:(id)sender {
