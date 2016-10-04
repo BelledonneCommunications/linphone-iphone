@@ -42,7 +42,6 @@
 
 #import <AVFoundation/AVAudioPlayer.h>
 #import "Utils.h"
-#import "Utils/DTFoundation/DTAlertView.h"
 #import "PhoneMainView.h"
 #import <UserNotifications/UserNotifications.h>
 
@@ -1047,11 +1046,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 												   const char *domainC) {
 	// let the wizard handle its own errors
 	if ([PhoneMainView.instance currentView] != AssistantView.compositeViewDescription) {
-		static DTAlertView *alertView = nil;
+		static UIAlertController *alertView = nil;
 
 		// avoid having multiple popups
-		if ([alertView isVisible]) {
-			[alertView dismissWithClickedButtonIndex:0 animated:NO];
+		if ([alertView isBeingPresented]) {
+			[alertView dismissViewControllerAnimated:YES completion:nil];
 		}
 
 		// dont pop up if we are in background, in any case we will refresh registers when entering
@@ -1063,34 +1062,45 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		NSString *realm = [NSString stringWithUTF8String:realmC];
 		NSString *username = [NSString stringWithUTF8String:usernameC];
 		NSString *domain = [NSString stringWithUTF8String:domainC];
-		alertView = [[DTAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Authentication needed.", nil)
-					  message:[NSString
-								  stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
-																	 @"missing or invalid for %@@%@.\nYou can "
-																	 @"provide password again, or check your "
-																	 @"account configuration in the settings.",
-																	 nil),
-												   username, realm]
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-			otherButtonTitles:nil];
-
-		alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;
-		[alertView addButtonWithTitle:NSLocalizedString(@"Confirm password", nil)
-								block:^{
-								  NSString *password = [alertView textFieldAtIndex:0].text;
-								  LinphoneAuthInfo *info =
-									  linphone_auth_info_new(username.UTF8String, NULL, password.UTF8String, NULL,
-															 realm.UTF8String, domain.UTF8String);
-								  linphone_core_add_auth_info(LC, info);
-								  [LinphoneManager.instance refreshRegisters];
-								}];
-		[alertView addButtonWithTitle:NSLocalizedString(@"Go to settings", nil)
-								block:^{
-								  [PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
-								}];
-		[alertView show];
+		alertView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Authentification needed", nil)
+														message:[NSString stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
+																											 @"missing or invalid for %@@%@.\nYou can "
+																											 @"provide password again, or check your "
+																											 @"account configuration in the settings.", nil), username, realm]
+												 preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+			textField.placeholder = @"Password";
+			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+			textField.borderStyle = UITextBorderStyleRoundedRect;
+			textField.secureTextEntry = YES;
+		}];
+		
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Confirm password", nil)
+																 style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   NSString *password = alertView.textFields[0].text;
+																   LinphoneAuthInfo *info =
+																   linphone_auth_info_new(username.UTF8String, NULL, password.UTF8String, NULL,
+																						  realm.UTF8String, domain.UTF8String);
+																   linphone_core_add_auth_info(LC, info);
+																   [LinphoneManager.instance refreshRegisters];
+															   }];
+		
+		UIAlertAction* settingsAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Go to settings", nil)
+																 style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   [PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
+															   }];
+		
+		[alertView addAction:defaultAction];
+		[alertView addAction:continueAction];
+		[alertView addAction:settingsAction];
+		[PhoneMainView.instance presentViewController:alertView animated:YES completion:nil];
 	}
 }
 
@@ -1712,22 +1722,24 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	} else {
 		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 		if (cfg) {
-			DTAlertView *alert = [[DTAlertView alloc]
-					initWithTitle:NSLocalizedString(@"Link your account", nil)
-						  message:[NSString
-									  stringWithFormat:NSLocalizedString(
-														   @"Link your Linphone.org account %s to your phone number.",
-														   nil),
-													   linphone_address_get_username(
-														   linphone_proxy_config_get_identity_address(cfg))]
-						 delegate:nil
-				cancelButtonTitle:nil
-				otherButtonTitles:NSLocalizedString(@"Maybe later", nil), nil];
-			[alert addButtonWithTitle:NSLocalizedString(@"Let's go", nil)
-								block:^(void) {
-								  [PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
-								}];
-			[alert show];
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Link your account", nil)
+																			 message:[NSString stringWithFormat:NSLocalizedString(@"Link your Linphone.org account %s to your phone number.", nil),
+																					  linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg))]
+																	  preferredStyle:UIAlertControllerStyleAlert];
+			
+			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Maybe later", nil)
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction * action) {}];
+			
+			UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Let's go", nil)
+																	 style:UIAlertActionStyleDefault
+																   handler:^(UIAlertAction * action) {
+																	   [PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
+																   }];
+			
+			[errView addAction:defaultAction];
+			[errView addAction:continueAction];
+			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 
 			[LinphoneManager.instance
 				lpConfigSetInt:[[NSDate date] dateByAddingTimeInterval:[LinphoneManager.instance

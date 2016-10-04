@@ -34,7 +34,7 @@
 - (void)processRemoteNotification:(NSDictionary*)userInfo;
 - (void)registerForNotifications:(UIApplication *)app;
 
-@property (nonatomic, retain) UIAlertView *waitingIndicator;
+@property (nonatomic, retain) UIAlertController *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
 @property PKPushRegistry* voipRegistry;

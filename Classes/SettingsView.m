@@ -703,18 +703,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
 		return;
 	} else if ([key isEqual:@"account_mandatory_remove_button"]) {
-		DTAlertView *alert = [[DTAlertView alloc]
-			initWithTitle:NSLocalizedString(@"Warning", nil)
-				  message:NSLocalizedString(@"Are you sure to want to remove your proxy setup?", nil)];
-
-		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-		[alert addButtonWithTitle:NSLocalizedString(@"Yes", nil)
-							block:^{
-							  [settingsStore removeAccount];
-							  [self recomputeAccountLabelsAndSync];
-							  [_settingsController.navigationController popViewControllerAnimated:NO];
-							}];
-		[alert show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Warning", nil)
+																		 message:NSLocalizedString(@"Are you sure to want to remove your proxy setup?", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
+																 style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   [settingsStore removeAccount];
+																   [self recomputeAccountLabelsAndSync];
+																   [_settingsController.navigationController popViewControllerAnimated:NO];
+															   }];
+		
+		[errView addAction:defaultAction];
+		[errView addAction:continueAction];
+		[self presentViewController:errView animated:YES completion:nil];
 	} else if ([key isEqual:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {
@@ -735,15 +742,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 										@"important to diagnostize your issue.",
 										nil);
 		}
-
-		DTAlertView *alert =
-			[[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Sending logs", nil) message:message];
-		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-		[alert addButtonWithTitle:NSLocalizedString(@"I got it, continue", nil)
-							block:^{
-							  [self sendEmailWithDebugAttachments];
-							}];
-		[alert show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Sending logs", nil)
+																		 message:message
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"I got it, continue", nil)
+																 style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   [self sendEmailWithDebugAttachments];
+															   }];
+		
+		[errView addAction:defaultAction];
+		[errView addAction:continueAction];
+		[self presentViewController:errView animated:YES completion:nil];
 	}
 }
 
@@ -785,11 +800,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if (attachments.count == 0) {
-		DTAlertView *alert = [[DTAlertView alloc]
-			initWithTitle:NSLocalizedString(@"Cannot send logs", nil)
-				  message:NSLocalizedString(@"Nothing could be collected from your application, aborting now.", nil)];
-		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-		[alert show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Cannot send logs", nil)
+																		 message:NSLocalizedString(@"Nothing could be collected from your application, aborting now.", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 		return;
 	}
 

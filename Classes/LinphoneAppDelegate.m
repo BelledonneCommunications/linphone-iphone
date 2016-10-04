@@ -311,14 +311,25 @@
 		NSString *encodedURL =
 			[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config://" withString:@""];
 		self.configURL = [encodedURL stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-		UIAlertView *confirmation = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Remote configuration", nil)
-					  message:NSLocalizedString(@"This operation will load a remote configuration. Continue ?", nil)
-					 delegate:self
-			cancelButtonTitle:NSLocalizedString(@"No", nil)
-			otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
-		confirmation.tag = 1;
-		[confirmation show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Remote configuration", nil)
+																		 message:NSLocalizedString(@"This operation will load a remote configuration. Continue ?", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		UIAlertAction* yesAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
+																style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {
+															  [self showWaitingIndicator];
+															  [self attemptRemoteConfiguration];
+														  }];
+		
+		[errView addAction:defaultAction];
+		[errView addAction:yesAction];
+
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	} else {
 		if ([[url scheme] isEqualToString:@"sip"]) {
 			// remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
@@ -680,7 +691,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	LinphoneConfiguringState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneConfiguringSuccessful) {
 		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
-		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
+		[_waitingIndicator dismissViewControllerAnimated:YES completion:nil];
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Success", nil)
 																		 message:NSLocalizedString(@"Remote configuration successfully fetched and applied.", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
@@ -696,7 +707,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	}
 	if (state == LinphoneConfiguringFailed) {
 		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
-		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
+		[_waitingIndicator dismissViewControllerAnimated:YES completion:nil];
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Failure", nil)
 																		 message:NSLocalizedString(@"Failed configuring from the specified URL.", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
@@ -711,28 +722,18 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 }
 
 - (void)showWaitingIndicator {
-	_waitingIndicator = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Fetching remote configuration...", nil)
-												   message:@""
-												  delegate:self
-										 cancelButtonTitle:nil
-										 otherButtonTitles:nil];
+	_waitingIndicator = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Fetching remote configuration...", nil)
+															message:@""
+													 preferredStyle:UIAlertControllerStyleAlert];
+	
 	UIActivityIndicatorView *progress = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(125, 60, 30, 30)];
 	progress.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
-		[_waitingIndicator setValue:progress forKey:@"accessoryView"];
-		[progress setColor:[UIColor blackColor]];
-	} else {
-		[_waitingIndicator addSubview:progress];
-	}
+	
+	[_waitingIndicator setValue:progress forKey:@"accessoryView"];
+	[progress setColor:[UIColor blackColor]];
+	
 	[progress startAnimating];
-	[_waitingIndicator show];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if ((alertView.tag == 1) && (buttonIndex == 1)) {
-		[self showWaitingIndicator];
-		[self attemptRemoteConfiguration];
-	}
+	[PhoneMainView.instance presentViewController:_waitingIndicator animated:YES completion:nil];
 }
 
 - (void)attemptRemoteConfiguration {

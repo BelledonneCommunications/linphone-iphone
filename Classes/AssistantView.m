@@ -634,16 +634,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		case LinphoneRegistrationFailed: {
 			_waitView.hidden = true;
-			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
-															message:message
-														   delegate:nil
-												  cancelButtonTitle:@"Cancel"
-												  otherButtonTitles:nil];
-			[alert addButtonWithTitle:@"Continue"
-								block:^(void) {
-								  [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
-								}];
-			[alert show];
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+																			 message:message
+																	  preferredStyle:UIAlertControllerStyleAlert];
+			
+			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction * action) {}];
+			
+			UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Continue", nil)
+																	 style:UIAlertActionStyleDefault
+																   handler:^(UIAlertAction * action) {
+																	   [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+																   }];
+			
+			[errView addAction:defaultAction];
+			[errView addAction:continueAction];
+			[self presentViewController:errView animated:YES completion:nil];
 			break;
 		}
 		case LinphoneRegistrationProgress: {
@@ -851,19 +858,24 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	if (status == LinphoneAccountCreatorAccountActivated) {
 		[thiz configureProxyConfig];
 	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
-		DTAlertView *alert = [[DTAlertView alloc]
-			initWithTitle:NSLocalizedString(@"Account validation failed", nil)
-				  message:
-					  NSLocalizedString(
-						  @"Your account could not be checked yet. You can skip this validation or try again later.",
-						  nil)];
-		[alert addCancelButtonWithTitle:NSLocalizedString(@"Back", nil) block:nil];
-		[alert addButtonWithTitle:NSLocalizedString(@"Skip verification", nil)
-							block:^{
-							  [thiz configureProxyConfig];
-							  [PhoneMainView.instance popToView:thiz.outgoingView];
-							}];
-		[alert show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account validation failed", nil)
+																		 message:NSLocalizedString(@"Your account could not be checked yet. You can skip this validation or try again later.", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Back", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Skip verification", nil)
+																 style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   [thiz configureProxyConfig];
+																   [PhoneMainView.instance popToView:thiz.outgoingView];
+															   }];
+		
+		[errView addAction:defaultAction];
+		[errView addAction:continueAction];
+		[thiz presentViewController:errView animated:YES completion:nil];
 	} else {
 		[thiz showErrorPopup:resp];
 	}

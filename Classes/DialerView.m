@@ -252,61 +252,69 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneManager *mgr = LinphoneManager.instance;
 	NSString *debugAddress = [mgr lpConfigStringForKey:@"debug_popup_magic" withDefault:@""];
 	if (![debugAddress isEqualToString:@""] && [address isEqualToString:debugAddress]) {
-
-		DTAlertView *alertView = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Debug", nil)
-															message:NSLocalizedString(@"Choose an action", nil)];
-
-		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Debug", nil)
+																		 message:NSLocalizedString(@"Choose an action", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
 
 		int debugLevel = [LinphoneManager.instance lpConfigIntForKey:@"debugenable_preference"];
 		BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
 
 		if (debugEnabled) {
-			[alertView
-				addButtonWithTitle:NSLocalizedString(@"Send logs", nil)
-							 block:^{
-							   NSString *appName =
-								   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-							   NSString *logsAddress = [mgr lpConfigStringForKey:@"debug_popup_email" withDefault:@""];
-							   [self presentMailViewWithTitle:appName forRecipients:@[ logsAddress ] attachLogs:true];
-							 }];
+			UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Send logs", nil)
+																	 style:UIAlertActionStyleDefault
+																   handler:^(UIAlertAction * action) {
+																	   NSString *appName =
+																	   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+																	   NSString *logsAddress = [mgr lpConfigStringForKey:@"debug_popup_email" withDefault:@""];
+																	   [self presentMailViewWithTitle:appName forRecipients:@[ logsAddress ] attachLogs:true];
+																   }];
+			[errView addAction:continueAction];
 		}
 		NSString *actionLog =
 			(debugEnabled ? NSLocalizedString(@"Disable logs", nil) : NSLocalizedString(@"Enable logs", nil));
-		[alertView
-			addButtonWithTitle:actionLog
-						 block:^{
-						   int newDebugLevel = debugEnabled ? 0 : ORTP_DEBUG;
-						   [LinphoneManager.instance lpConfigSetInt:newDebugLevel forKey:@"debugenable_preference"];
-						   [Log enableLogs:newDebugLevel];
-						 }];
-
-		[alertView
-			addButtonWithTitle:NSLocalizedString(@"Remove account(s) and self destruct", nil)
-						 block:^{
-						   linphone_core_clear_proxy_config([LinphoneManager getLc]);
-						   linphone_core_clear_all_auth_info([LinphoneManager getLc]);
-						   @try {
-							   [LinphoneManager.instance destroyLinphoneCore];
-						   } @catch (NSException *e) {
-							   LOGW(@"Exception while destroying linphone core: %@", e);
-						   } @finally {
-							   if ([NSFileManager.defaultManager
-									   isDeletableFileAtPath:[LinphoneManager documentFile:@"linphonerc"]] == YES) {
-								   [NSFileManager.defaultManager
-									   removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
-												  error:nil];
-							   }
+		
+		UIAlertAction* logAction = [UIAlertAction actionWithTitle:actionLog
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {
+																   int newDebugLevel = debugEnabled ? 0 : ORTP_DEBUG;
+																   [LinphoneManager.instance lpConfigSetInt:newDebugLevel forKey:@"debugenable_preference"];
+																   [Log enableLogs:newDebugLevel];
+															   }];
+		[errView addAction:logAction];
+		
+		UIAlertAction* remAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove account(s) and self destruct", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {
+															  linphone_core_clear_proxy_config([LinphoneManager getLc]);
+															  linphone_core_clear_all_auth_info([LinphoneManager getLc]);
+															  @try {
+																  [LinphoneManager.instance destroyLinphoneCore];
+															  } @catch (NSException *e) {
+																  LOGW(@"Exception while destroying linphone core: %@", e);
+															  } @finally {
+																  if ([NSFileManager.defaultManager
+																	   isDeletableFileAtPath:[LinphoneManager documentFile:@"linphonerc"]] == YES) {
+																	  [NSFileManager.defaultManager
+																	   removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
+																	   error:nil];
+																  }
 #ifdef DEBUG
-							   [LinphoneManager instanceRelease];
+																  [LinphoneManager instanceRelease];
 #endif
-						   }
-						   [UIApplication sharedApplication].keyWindow.rootViewController = nil;
-						   // make the application crash to be sure that user restart it properly
-						   LOGF(@"Self-destructing in 3..2..1..0!");
-						 }];
-
-		[alertView show];
+															  }
+															  [UIApplication sharedApplication].keyWindow.rootViewController = nil;
+															  // make the application crash to be sure that user restart it properly
+															  LOGF(@"Self-destructing in 3..2..1..0!");
+														  }];
+		[errView addAction:remAction];
+		
+		[self presentViewController:errView animated:YES completion:nil];
 		return true;
 	}
 	return false;

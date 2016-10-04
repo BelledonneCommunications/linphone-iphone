@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 
 #import "LinphoneManager.h"
-#import "DTAlertView.h"
 #import "XMLRPCHelper.h"
 #import "Utils.h"
+#import "PhoneMainView.h"
 
 
 @implementation XMLRPCHelper
@@ -103,9 +103,16 @@ static void linphone_xmlrpc_call_back_received(LinphoneXmlRpcRequest *request) {
 #pragma mark - Error alerts
 
 - (void)displayErrorPopup:(NSString *)error {
-	DTAlertView *av = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Server request error", nil) message:error];
-	[av addCancelButtonWithTitle:NSLocalizedString(@"OK", nil) block:nil];
-	[av show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Server request error", nil)
+																	 message:error
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	
+	[errView addAction:defaultAction];
+	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 }
 
 @end

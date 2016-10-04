@@ -181,16 +181,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	switch (state) {
 		case LinphoneConfiguringFailed: {
 			[_waitView setHidden:true];
-			DTAlertView *alertView = [[DTAlertView alloc]
-					initWithTitle:NSLocalizedString(@"Configuration failed", nil)
-						  message:
-							  NSLocalizedString(
-								  @"Cannot retrieve your configuration. Please check credentials or try again later",
-								  nil)
-						 delegate:nil
-				cancelButtonTitle:NSLocalizedString(@"OK", nil)
-				otherButtonTitles:nil];
-			[alertView show];
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Configuration failed", nil)
+																			 message:NSLocalizedString(@"Cannot retrieve your configuration. Please check credentiels or try again later", nil)
+																	  preferredStyle:UIAlertControllerStyleAlert];
+			
+			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction * action) {}];
+			
+			[errView addAction:defaultAction];
+			[self presentViewController:errView animated:YES completion:nil];
 			linphone_core_set_provisioning_uri([LinphoneManager getLc], NULL);
 			break;
 		}
