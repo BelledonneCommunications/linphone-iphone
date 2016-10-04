@@ -29,18 +29,6 @@
                     <frame key="frameInset" minY="66"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <view hidden="YES" tag="8" contentMode="scaleToFill" id="J3A-Fb-Dpg" userLabel="waitView">
-                            <frame key="frameInset" minY="-33" maxY="-33"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <subviews>
-                                <activityIndicatorView opaque="NO" tag="9" contentMode="scaleToFill" animating="YES" style="gray" id="mQl-pi-5rq" userLabel="activityIndicatorView">
-                                    <frame key="frameInset" minX="50.42%" minY="49.77%" width="20" height="20"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                </activityIndicatorView>
-                            </subviews>
-                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
-                            <gestureRecognizers/>
-                        </view>
                         <view tag="2" contentMode="scaleToFill" misplaced="YES" id="c7I-Cv-d4R" userLabel="topBar">
                             <frame key="frameInset" height="66" maxX="8"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
@@ -191,7 +179,7 @@
                                     <size key="shadowOffset" width="-1" height="-1"/>
                                 </label>
                                 <textField opaque="NO" clipsSubviews="YES" tag="108" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" clearButtonMode="always" id="PXL-cl-haZ" userLabel="activationCodeField">
-                                    <frame key="frameInset" minX="10.13%" minY="36.04%" width="80.80%" height="30"/>
+                                    <frame key="frameInset" minX="10.13%" minY="42.38%" width="80.80%" height="30"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="26"/>
@@ -201,7 +189,7 @@
                                     <frame key="frameInset" minX="10.13%" minY="23.46%" width="80.80%" height="96"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                     <size key="shadowOffset" width="-1" height="-1"/>
@@ -226,6 +214,18 @@
                                 </button>
                             </subviews>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        </view>
+                        <view hidden="YES" tag="8" contentMode="scaleToFill" id="J3A-Fb-Dpg" userLabel="waitView">
+                            <frame key="frameInset" minY="-33" maxY="-33"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <activityIndicatorView opaque="NO" tag="9" contentMode="scaleToFill" animating="YES" style="gray" id="mQl-pi-5rq" userLabel="activityIndicatorView">
+                                    <frame key="frameInset" minX="50.42%" minY="49.77%" width="20" height="20"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                </activityIndicatorView>
+                            </subviews>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
+                            <gestureRecognizers/>
                         </view>
                     </subviews>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
