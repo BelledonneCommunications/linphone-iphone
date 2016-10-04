@@ -767,8 +767,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	} else {
 		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
-			ViewElement ve =  ([self findTextField:ViewElement_Username].isVisible) ? ViewElement_Username : ViewElement_Phone;
-			[[self findTextField:ve] showError:NSLocalizedString(@"This account already exists.", nil)];
+			[self showErrorPopup:"ERROR_ALIAS_ALREADY_IN_USE"];
 			[self findButton:ViewElement_NextButton].enabled = NO;
 		} else if (status == LinphoneAccountCreatorAccountNotExist) {
 			linphone_account_creator_create_account(account_creator);
