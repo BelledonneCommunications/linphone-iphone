@@ -342,6 +342,9 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 			}
 #endif
 		}
+		/*because in case of tunnel, transport can be changed*/
+		transport=belle_sip_uri_get_transport_param(next_hop_uri);
+		
 		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport &&
 			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
 			/*RFC 5923: add 'alias' parameter to tell the server that we want it to keep the connection for future requests*/

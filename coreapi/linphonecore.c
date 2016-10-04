@@ -6514,14 +6514,7 @@ void sip_config_uninit(LinphoneCore *lc)
 
 	lc->auth_info=bctbx_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
 
-	/*now that we are unregisted, we no longer need the tunnel.*/
-#ifdef TUNNEL_ENABLED
-	if (lc->tunnel) {
-		linphone_tunnel_destroy(lc->tunnel);
-		lc->tunnel=NULL;
-		ms_message("Tunnel destroyed.");
-	}
-#endif
+
 
 	if (lc->vcard_context) {
 		linphone_vcard_context_destroy(lc->vcard_context);
@@ -6537,9 +6530,20 @@ void sip_config_uninit(LinphoneCore *lc)
 		belle_sip_object_unref(lc->http_crypto_config);
 		lc->http_crypto_config=NULL;
 	}
+	
+	/*now that we are unregisted, there is no more channel using tunnel socket we no longer need the tunnel.*/
+#ifdef TUNNEL_ENABLED
+	if (lc->tunnel) {
+		linphone_tunnel_destroy(lc->tunnel);
+		lc->tunnel=NULL;
+		ms_message("Tunnel destroyed.");
+	}
+#endif
+
 	sal_iterate(lc->sal); /*make sure event are purged*/
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
+	
 
 	if (lc->sip_conf.guessed_contact)
 		ms_free(lc->sip_conf.guessed_contact);

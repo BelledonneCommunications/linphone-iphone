@@ -24,26 +24,21 @@
 #include "liblinphone_tester.h"
 
 /* Retrieve the public IP from a given hostname */
-static const char* get_ip_from_hostname(const char * tunnel_hostname){
+int get_ip_from_hostname(const char * tunnel_hostname, char *ip, size_t ip_size){
 	struct addrinfo hints;
-	struct addrinfo *res = NULL, *it = NULL;
-	struct sockaddr_in *add;
-	char * output = NULL;
+	struct addrinfo *res = NULL;
 	int err;
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	if ((err = getaddrinfo(tunnel_hostname, NULL, &hints, &res))){
 		ms_error("error while retrieving IP from %s: %s", tunnel_hostname, gai_strerror(err));
-		return NULL;
+		return err;
 	}
 
-	for (it=res; it!=NULL; it=it->ai_next){
-		add = (struct sockaddr_in *) it->ai_addr;
-		output = inet_ntoa( add->sin_addr );
-	}
+	bctbx_addrinfo_to_ip_address(res, ip, ip_size, NULL);
 	freeaddrinfo(res);
-	return output;
+	return err;
 }
 static char* get_public_contact_ip(LinphoneCore* lc)  {
 	const LinphoneAddress * contact = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(lc));
@@ -60,9 +55,10 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 		LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(pauline->lc);
 		LinphoneAddress *server_addr = linphone_address_new(linphone_proxy_config_get_server_addr(proxy));
 		LinphoneAddress *route = linphone_address_new(linphone_proxy_config_get_route(proxy));
-		const char * tunnel_ip = get_ip_from_hostname("tunnel.linphone.org");
+		char  tunnel_ip[64];
 		char *public_ip, *public_ip2=NULL;
-
+		BC_ASSERT_FALSE(get_ip_from_hostname("tunnel.linphone.org",tunnel_ip,sizeof(tunnel_ip)));
+						
 		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,1));
 		public_ip = get_public_contact_ip(pauline->lc);
 		BC_ASSERT_STRING_NOT_EQUAL(public_ip, tunnel_ip);
@@ -245,9 +241,10 @@ static void register_on_second_tunnel(void) {
 		LinphoneTunnel *tunnel = linphone_core_get_tunnel(pauline->lc);
 		LinphoneTunnelConfig *config1 = linphone_tunnel_config_new();
 		LinphoneTunnelConfig *config2 = linphone_tunnel_config_new();
-		const char * tunnel_ip = get_ip_from_hostname("tunnel.linphone.org");
+		char tunnel_ip[64];
 		char* public_ip;
-
+		
+		BC_ASSERT_FALSE(get_ip_from_hostname("tunnel.linphone.org",tunnel_ip,sizeof(tunnel_ip)));
 		linphone_tunnel_simulate_udp_loss(tunnel, TRUE);
 
 		// add a first tunnel config with an invalid port
