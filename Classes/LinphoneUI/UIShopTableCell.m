@@ -20,6 +20,7 @@
 #import "UIShopTableCell.h"
 #import "Utils.h"
 #import "UILabel+Boldify.h"
+#import "PhoneMainView.h"
 
 @implementation UIShopTableCell
 
@@ -55,12 +56,16 @@ UIImageView *infoImage;
 
 - (IBAction)onDetails:(id)event {
 	NSString *msg = [NSString stringWithFormat:@"Product - %@", self.nameLabel.text];
-	UIAlertView *descriptionAlertView = [[UIAlertView alloc] initWithTitle:msg
-																   message:self.descriptionLabel.text
-																  delegate:nil
-														 cancelButtonTitle:@"OK"
-														 otherButtonTitles:nil];
-	[descriptionAlertView show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:msg
+																	 message:self.descriptionLabel.text
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	
+	[errView addAction:defaultAction];
+	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 }
 
 - (void)touchUp:(id)sender {

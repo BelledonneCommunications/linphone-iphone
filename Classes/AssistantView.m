@@ -224,15 +224,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneManager *lm = LinphoneManager.instance;
 
 	if (!linphone_core_is_network_reachable(LC)) {
-		UIAlertView *error =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Network Error", nil)
-									   message:NSLocalizedString(@"There is no network connection available, enable "
-																 @"WIFI or WWAN prior to configure an account",
-																 nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-							 otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
+																		 message:NSLocalizedString(@"There is no network connection available, enable "
+																								   @"WIFI or WWAN prior to configure an account",
+																								   nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+			
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+			
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 		_waitView.hidden = YES;
 		return;
 	}
@@ -265,14 +268,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// todo: STOP doing that!
 		[[LinphoneManager.instance fastAddressBook] reload];
 	} else {
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Assistant error", nil)
-					  message:NSLocalizedString(
-								  @"Could not configure your account, please check parameters or try again later", nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-			otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Assistant error", nil)
+																		 message:NSLocalizedString(@"Could not configure your account, please check parameters or try again later",
+																								   nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 		_waitView.hidden = YES;
 		return;
 	}
@@ -673,12 +679,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 			break;
 		case LinphoneConfiguringFailed: {
 			NSString *error_message = [notif.userInfo valueForKey:@"message"];
-			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
-															message:error_message
-														   delegate:nil
-												  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-												  otherButtonTitles:nil];
-			[alert show];
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
+																			 message:error_message
+																	  preferredStyle:UIAlertControllerStyleAlert];
+				
+			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction * action) {}];
+			
+			[errView addAction:defaultAction];
+			[self presentViewController:errView animated:YES completion:nil];
 			break;
 		}
 
@@ -741,13 +751,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)showErrorPopup:(const char *)err {
-	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account configuration issue", nil)
-														message:[self.class StringForXMLRPCError:err]
-														//message:[NSString stringWithUTF8String:err]
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-											  otherButtonTitles:nil, nil];
-	[errorView show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
+																	 message:[AssistantView StringForXMLRPCError:err]
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
 }
 
 - (void)isAccountUsed:(LinphoneAccountCreatorStatus)status withResp:(const char *)resp {
@@ -1104,16 +1116,22 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 }
 
 - (IBAction)onPhoneNumberDisclosureClick:(id)sender {
-	UIAlertView *errorView = [[UIAlertView alloc]
-			initWithTitle:NSLocalizedString(@"What will my phone number be used for?", nil)
-				  message:NSLocalizedString(@"Thanks to your phone number, your friends will find you more easily. "
-											@"\n\nYou will see in your address book who is using Linphone and your "
-											@"friends will know that they can reach you on Linphone as well.",
-											nil)
-				 delegate:nil
-		cancelButtonTitle:NSLocalizedString(@"OK", nil)
-		otherButtonTitles:nil, nil];
-	[errorView show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"What will my phone number be used for?", nil)
+																	 message:NSLocalizedString(@"Your friends will find your more easily if you link your account to your "
+																							   @"phone number. \n\nYou will see in your address book who is using "
+																							   @"Linphone and your friends will know that they can reach you on Linphone "
+																							   @"as well. \n\nYou can use your phone number with only one Linphone "
+																							   @"account. If you had already linked your number to an other account but "
+																							   @"you prefer to use this one, simply link it now and your number will "
+																							   @"automatically be moved to this account.",
+																							   nil)
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+		
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
 }
 
 - (IBAction)onBackClick:(id)sender {

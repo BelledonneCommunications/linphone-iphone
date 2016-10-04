@@ -8,6 +8,7 @@
 
 #import "FileTransferDelegate.h"
 #import "Utils.h"
+#import "PhoneMainView.h"
 
 @interface FileTransferDelegate ()
 @property(strong) NSMutableData *data;
@@ -60,13 +61,17 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 						   if (error) {
 							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
 							   [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
-							   UIAlertView *errorAlert = [[UIAlertView alloc]
-									   initWithTitle:NSLocalizedString(@"Transfer error", nil)
-											 message:NSLocalizedString(@"Cannot write image to photo library", nil)
-											delegate:nil
-								   cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-								   otherButtonTitles:nil, nil];
-							   [errorAlert show];
+							   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+																								message:NSLocalizedString(@"Cannot write image to photo library",
+																														  nil)
+																						 preferredStyle:UIAlertControllerStyleAlert];
+							   
+							   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																					   style:UIAlertActionStyleDefault
+																					 handler:^(UIAlertAction * action) {}];
+							   
+							   [errView addAction:defaultAction];
+							   [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 						   } else {
 							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
 							   [LinphoneManager setValueInMessageAppData:[assetURL absoluteString]

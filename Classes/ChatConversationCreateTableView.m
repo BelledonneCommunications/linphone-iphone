@@ -83,12 +83,17 @@
 		LC, ((NSString *)[_contacts.allKeys objectAtIndex:indexPath.row]).UTF8String);
 	if (!room) {
 		[PhoneMainView.instance popCurrentView];
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid address", nil)
-														message:@"Please specify the entire SIP address for the chat"
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-											  otherButtonTitles:nil];
-		[alert show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Invalid address", nil)
+																		 message:NSLocalizedString(@"Please specify the entire SIP address for the chat",
+																									   nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+			
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																style:UIAlertActionStyleDefault
+																handler:^(UIAlertAction * action) {}];
+			
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:room];

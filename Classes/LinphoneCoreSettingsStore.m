@@ -19,6 +19,7 @@
 
 #import "LinphoneCoreSettingsStore.h"
 #import "Utils.h"
+#import "PhoneMainView.h"
 
 #include "linphone/lpconfig.h"
 #include "linphone/linphone_tunnel.h"
@@ -395,12 +396,16 @@
 }
 
 - (void)alertAccountError:(NSString *)error {
-	UIAlertView *alertview = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
-														message:error
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-											  otherButtonTitles:nil];
-	[alertview show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil)
+																	 message:error
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	
+	[errView addAction:defaultAction];
+	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 }
 
 - (void)synchronizeAccounts {
@@ -570,12 +575,16 @@
 		// in case of error, show an alert to the user
 		if (error != nil) {
 			linphone_proxy_config_done(proxyCfg);
-
-			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
-										message:error
-									   delegate:nil
-							  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-							  otherButtonTitles:nil] show];
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil)
+																			 message:error
+																	  preferredStyle:UIAlertControllerStyleAlert];
+			
+			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction * action) {}];
+			
+			[errView addAction:defaultAction];
+			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		}
 	}
 	// reload address book to prepend proxy config domain to contacts' phone number

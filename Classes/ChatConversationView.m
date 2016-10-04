@@ -194,15 +194,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(_chatRoom);
 	if (addr == NULL) {
 		[PhoneMainView.instance popCurrentView];
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
-					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to send a "
-												@"message or use a valid SIP address (I.E sip:john@example.net)",
-												nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-			otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
+																		 message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to send a "
+																								   @"message or use a valid SIP address (I.E sip:john@example.net)",
+																								   nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Continue"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 		return;
 	}
 	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
@@ -245,14 +248,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 						 completionBlock:^(NSURL *assetURL, NSError *error) {
 						   if (error) {
 							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-
-							   UIAlertView *errorAlert = [[UIAlertView alloc]
-									   initWithTitle:NSLocalizedString(@"Transfer error", nil)
-											 message:NSLocalizedString(@"Cannot write image to photo library", nil)
-											delegate:nil
-								   cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-								   otherButtonTitles:nil, nil];
-							   [errorAlert show];
+							   
+							   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+																								message:NSLocalizedString(@"Cannot write image to photo library",
+																														  nil)
+																						 preferredStyle:UIAlertControllerStyleAlert];
+							   
+							   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																					   style:UIAlertActionStyleDefault
+																					 handler:^(UIAlertAction * action) {}];
+							   
+							   [errView addAction:defaultAction];
+							   [self presentViewController:errView animated:YES completion:nil];
 						   } else {
 							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
 							   [self startImageUpload:image url:assetURL];

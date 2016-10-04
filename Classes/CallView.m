@@ -541,15 +541,18 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 				if (state == LinphoneCallStreamsRunning && callAppData->videoRequested &&
 					linphone_call_params_low_bandwidth_enabled(param)) {
 					// too bad video was not enabled because low bandwidth
-					UIAlertView *alert = [[UIAlertView alloc]
-							initWithTitle:NSLocalizedString(@"Low bandwidth", nil)
-								  message:NSLocalizedString(@"Video cannot be activated because of low bandwidth "
-															@"condition, only audio is available",
-															nil)
-								 delegate:nil
-						cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-						otherButtonTitles:nil];
-					[alert show];
+					UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Low bandwidth", nil)
+																					 message:NSLocalizedString(@"Video cannot be activated because of low bandwidth "
+																											   @"condition, only audio is available",
+																											   nil)
+																			  preferredStyle:UIAlertControllerStyleAlert];
+						
+					UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Continue"
+																			style:UIAlertActionStyleDefault
+																		  handler:^(UIAlertAction * action) {}];
+						
+					[errView addAction:defaultAction];
+					[self presentViewController:errView animated:YES completion:nil];
 					callAppData->videoRequested = FALSE; /*reset field*/
 				}
 			}

@@ -681,26 +681,32 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	if (state == LinphoneConfiguringSuccessful) {
 		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Success", nil)
+																		 message:NSLocalizedString(@"Remote configuration successfully fetched and applied.", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Success", nil)
-					  message:NSLocalizedString(@"Remote configuration successfully fetched and applied.", nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"OK", nil)
-			otherButtonTitles:nil];
-		[error show];
 		[PhoneMainView.instance startUp];
 	}
 	if (state == LinphoneConfiguringFailed) {
 		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
-		UIAlertView *error =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failure", nil)
-									   message:NSLocalizedString(@"Failed configuring from the specified URL.", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"OK", nil)
-							 otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Failure", nil)
+																		 message:NSLocalizedString(@"Failed configuring from the specified URL.", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	}
 }
 

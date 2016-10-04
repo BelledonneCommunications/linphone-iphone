@@ -126,15 +126,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	if (![FastAddressBook isAuthorized]) {
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Address book", nil)
-					  message:NSLocalizedString(@"You must authorize the application to have access to address book.\n"
-												 "Toggle the application in Settings > Privacy > Contacts",
-												nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-			otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Address book", nil)
+																		 message:NSLocalizedString(@"You must authorize the application to have access to address book.\n"
+																								   "Toggle the application in Settings > Privacy > Contacts",
+																								   nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Continue"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 		[PhoneMainView.instance popCurrentView];
 	}
 }

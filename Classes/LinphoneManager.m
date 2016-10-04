@@ -1688,14 +1688,16 @@ static BOOL libStarted = FALSE;
 		LOGE(@"audioSession setActive failed: %@", [err description]);
 	}
 	if (!bAudioInputAvailable) {
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"No microphone", nil)
-					  message:NSLocalizedString(
-								  @"You need to plug a microphone to your device to use this application.", nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Ok", nil)
-			otherButtonTitles:nil, nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"No microphone", nil)
+																		 message:NSLocalizedString(@"You need to plug a microphone to your device to use the application.", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	}
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
@@ -2271,16 +2273,16 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (BOOL)call:(const LinphoneAddress *)iaddr {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Network Error", nil)
-					  message:
-						  NSLocalizedString(
-							  @"There is no network connection available, enable WIFI or WWAN prior to place a call",
-							  nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-			otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
+																		 message:NSLocalizedString(@"There is no network connection available, enable WIFI or WWAN prior to place a call", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		return FALSE;
 	}
 
@@ -2288,27 +2290,32 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	CTCallCenter *callCenter = [[CTCallCenter alloc] init];
 	if ([callCenter currentCalls] != nil) {
 		LOGE(@"GSM call in progress, cancelling outgoing SIP call request");
-		UIAlertView *error =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cannot make call", nil)
-									   message:NSLocalizedString(@"Please terminate GSM call first.", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-							 otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Cannot make call", nil)
+																		 message:NSLocalizedString(@"Please terminate GSM call first.", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		return FALSE;
 	}
 
 	// Then check that the supplied address is valid
 	if (!iaddr) {
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
-					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "
-												@"call or use a valid SIP address (I.E sip:john@example.net)",
-												nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-			otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
+																		 message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "
+																								   @"call or use a valid SIP address (I.E sip:john@example.net)", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		return FALSE;
 	}
 	LinphoneAddress *addr = linphone_address_clone(iaddr);

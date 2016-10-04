@@ -234,13 +234,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 
 	} else {
-		UIAlertView *alert =
-			[[UIAlertView alloc] initWithTitle:subject
-									   message:NSLocalizedString(@"Error: no mail account configured", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"OK", nil)
-							 otherButtonTitles:nil];
-		[alert show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:subject
+																		 message:NSLocalizedString(@"Error: no mail account configured",
+																								   nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 	}
 }
 

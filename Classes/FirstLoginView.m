@@ -245,15 +245,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)onLoginClick:(id)sender {
 	if (!linphone_core_is_network_reachable(LC)) {
-		UIAlertView *error =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Network Error", nil)
-									   message:NSLocalizedString(@"There is no network connection available, enable "
-																 @"WIFI or WWAN prior to configure an account",
-																 nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-							 otherButtonTitles:nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
+																		 message:NSLocalizedString(@"There is no network connection available, enable "
+																								   @"WIFI or WWAN prior to configure an account",
+																								   nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 		return;
 	}
 

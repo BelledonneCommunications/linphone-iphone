@@ -114,12 +114,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - popup
 
 - (void)showErrorPopup:(const char *)err {
-	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account configuration issue", nil)
-														message:[AssistantView StringForXMLRPCError:err]
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-											  otherButtonTitles:nil, nil];
-	[errorView show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
+																	 message:[AssistantView StringForXMLRPCError:err]
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+		
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
 }
 
 #pragma mark - cbs
@@ -201,20 +205,22 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 }
 
 - (IBAction)onPhoneNumberDisclosureClick:(id)sender {
-	UIAlertView *errorView = [[UIAlertView alloc]
-			initWithTitle:NSLocalizedString(@"What will my phone number be used for?", nil)
-				  message:NSLocalizedString(@"Your friends will find your more easily if you link your account to your "
-											@"phone number. \n\nYou will see in your address book who is using "
-											@"Linphone and your friends will know that they can reach you on Linphone "
-											@"as well. \n\nYou can use your phone number with only one Linphone "
-											@"account. If you had already linked your number to an other account but "
-											@"you prefer to use this one, simply link it now and your number will "
-											@"automatically be moved to this account.",
-											nil)
-				 delegate:nil
-		cancelButtonTitle:NSLocalizedString(@"OK", nil)
-		otherButtonTitles:nil, nil];
-	[errorView show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"What will my phone number be used for?", nil)
+																	 message:NSLocalizedString(@"Your friends will find your more easily if you link your account to your "
+																							   @"phone number. \n\nYou will see in your address book who is using "
+																							   @"Linphone and your friends will know that they can reach you on Linphone "
+																							   @"as well. \n\nYou can use your phone number with only one Linphone "
+																							   @"account. If you had already linked your number to an other account but "
+																							   @"you prefer to use this one, simply link it now and your number will "
+																							   @"automatically be moved to this account.",
+																							   nil)
+															   preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
 }
 
 #pragma mark - select country delegate

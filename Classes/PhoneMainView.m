@@ -287,12 +287,16 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneRegistrationState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneRegistrationFailed && ![currentView equal:AssistantView.compositeViewDescription] &&
 		[UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-		UIAlertView *error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
-														message:[notif.userInfo objectForKey:@"message"]
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-											  otherButtonTitles:nil, nil];
-		[error show];
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+																		 message:[notif.userInfo objectForKey:@"message"]
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Continue", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 	}
 }
 
@@ -633,12 +637,16 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 
 	lTitle = NSLocalizedString(@"Call failed", nil);
-	UIAlertView *error = [[UIAlertView alloc] initWithTitle:lTitle
-													message:lMessage
-												   delegate:nil
-										  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-										  otherButtonTitles:nil];
-	[error show];
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:lTitle
+																	 message:lMessage
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
 }
 
 - (void)addInhibitedEvent:(id)event {
