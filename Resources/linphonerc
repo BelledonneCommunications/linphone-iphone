@@ -35,6 +35,9 @@ warn_before_expiry_period=160
 #for test only, simulate an account expiry after the specified number of seconds
 expiry_time_test=180
 
+#save temporarily the receipt for any purchase in case of XMLRPC server error
+save_tmp_receipt=0
+
 [default_values]
 reg_expires=1314000
 
