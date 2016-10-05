@@ -954,8 +954,6 @@ static void call_with_ice_video_added_with_video_policies_to_false(void) {
 	_call_with_ice_video(vpol, vpol, FALSE, TRUE, FALSE, FALSE);
 }
 
-#if ICE_WAS_WORKING_WITH_REAL_TIME_TEXT /*which is not the case at the moment*/
-
 static void call_with_ice_video_and_rtt(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -980,7 +978,7 @@ static void call_with_ice_video_and_rtt(void) {
 	linphone_core_set_video_port(pauline->lc, -1);
 	linphone_core_set_text_port(pauline->lc, -1);
 
-	params = linphone_core_create_default_call_parameters(pauline->lc);
+	params = linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_enable_realtime_text(params, TRUE);
 	BC_ASSERT_TRUE(call_ok = call_with_caller_params(pauline, marie, params));
 	if (!call_ok) goto end;
@@ -998,7 +996,6 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-#endif
 
 static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -1750,9 +1747,7 @@ test_t call_video_tests[] = {
 	TEST_ONE_TAG("Call with ICE and video added 3", call_with_ice_video_added_3, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added and refused", call_with_ice_video_added_and_refused, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added with video policies to false", call_with_ice_video_added_with_video_policies_to_false, "ICE"),
-#if ICE_WAS_WORKING_WITH_REAL_TIME_TEXT
 	TEST_ONE_TAG("Call with ICE, video and realtime text", call_with_ice_video_and_rtt, "ICE"),
-#endif
 	TEST_ONE_TAG("Video call with ICE accepted using call params", video_call_ice_params, "ICE"),
 	TEST_ONE_TAG("Audio call with ICE paused with caller video policy enabled", audio_call_with_ice_with_video_policy_enabled, "ICE"),
 	TEST_NO_TAG("Video call recording (H264)", video_call_recording_h264_test),

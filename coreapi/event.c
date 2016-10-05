@@ -133,14 +133,9 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 		linphone_core_notify_publish_state_changed(lev->lc,lev,state);
 		switch(state){
 			case LinphonePublishCleared:
-				if (lev->expires!=-1){
-					linphone_event_release(lev);
-				}
+				linphone_event_release(lev);
 				break;
 			case LinphonePublishOk:
-				if (lev->expires==-1){
-					linphone_event_release(lev);
-				}
 				break;
 			case LinphonePublishError:
 				linphone_event_release(lev);
@@ -200,7 +195,7 @@ int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *bod
 	switch (lev->subscription_state){
 		case LinphoneSubscriptionIncomingReceived:
 		case LinphoneSubscriptionTerminated:
-		case LinphoneSubscriptionOutgoingInit:
+		case LinphoneSubscriptionOutgoingProgress:
 			ms_error("linphone_event_send_subscribe(): cannot update subscription while in state [%s]", linphone_subscription_state_to_string(lev->subscription_state));
 			return -1;
 		break;
@@ -223,7 +218,7 @@ int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *bod
 	err=sal_subscribe(lev->op,NULL,NULL,lev->name,lev->expires,body_handler);
 	if (err==0){
 		if (lev->subscription_state==LinphoneSubscriptionNone)
-			linphone_event_set_state(lev,LinphoneSubscriptionOutgoingInit);
+			linphone_event_set_state(lev,LinphoneSubscriptionOutgoingProgress);
 	}
 	return err;
 }
@@ -372,8 +367,8 @@ void linphone_event_terminate(LinphoneEvent *lev){
 
 	if (lev->publish_state!=LinphonePublishNone){
 		if (lev->publish_state==LinphonePublishOk && lev->expires!=-1){
-			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
-		}else sal_op_unpublish(lev->op);
+			sal_op_unpublish(lev->op);
+		}
 		linphone_event_set_publish_state(lev,LinphonePublishCleared);
 		return;
 	}

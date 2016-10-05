@@ -436,8 +436,9 @@ static void publish_test_with_args(bool_t refresh, int expires){
 
 	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
-	linphone_event_send_publish(lev,content);
 	linphone_event_ref(lev);
+	linphone_event_send_publish(lev,content);
+	
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
