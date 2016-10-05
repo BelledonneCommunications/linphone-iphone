@@ -373,10 +373,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_settingsController dismiss:self];
 	// Set observer
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kIASKAppSettingChanged object:nil];
-
-	if (linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer(LC))) {
-		linphone_core_stop_ringing(LC);
-	}
 }
 
 - (void)viewWillAppear:(BOOL)animated {
