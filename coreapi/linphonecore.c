@@ -7435,6 +7435,10 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
 	params->has_audio = TRUE;
 	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
+	if (!linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate){
+		ms_error("LinphoneCore has video disabled for both capture and display, but video policy is to start the call with video. "
+			"This is a possible mis-use of the API. In this case, video is disabled in default LinphoneCallParams");
+	}
 	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
 	params->realtimetext_enabled = linphone_core_realtime_text_enabled(lc);

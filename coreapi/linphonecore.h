@@ -189,7 +189,7 @@ enum _LinphoneReason{
 	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
 	LinphoneReasonDoNotDisturb, /**<Do not disturb reason*/
 	LinphoneReasonUnauthorized, /**<Operation is unauthorized because missing credential*/
-	LinphoneReasonNotAcceptable, /**<Operation like call update rejected by peer*/
+	LinphoneReasonNotAcceptable, /**<Operation is rejected due to incompatible or unsupported media parameters*/
 	LinphoneReasonNoMatch, /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
 	LinphoneReasonMovedPermanently, /**<Resource moved permanently*/
 	LinphoneReasonGone, /**<Resource no longer exists*/
