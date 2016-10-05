@@ -190,8 +190,10 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)shouldPresentLinkPopup;
 
--(void) setProviderDelegate: ProviderDelegate* del;
-@property ProviderDelegate* providerDelegate;
+-(void) setProviderDelegate:(ProviderDelegate*)del;
+@property (nonatomic) ProviderDelegate* providerDelegate;
+-(void) setCallKit:(BOOL)ck;
+@property (nonatomic) BOOL callKit;
 
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;

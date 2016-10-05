@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ProviderDelegate.h"
 #import "PhoneMainView.h"
+#import "LinphoneManager.h"
 
 @implementation ProviderDelegate
 
@@ -33,7 +34,7 @@
     
     // Report incoming call to system
     LOGD(@"CallKit: report new incoming call");
-    [self.provider reportNewIncomingCallWithUUID:uuid update:update completion:^(NSError* error) {
+	[self.provider reportNewIncomingCallWithUUID:uuid update:update completion:^(NSError* error) {
         // Do something
     }];
 }
@@ -41,6 +42,7 @@
 - (instancetype) init {
     self = [super init];
     self.calls = [[NSMutableDictionary alloc] init];
+	self.uuids = [[NSMutableDictionary alloc] init];
     if (!self) {
         LOGD(@"ProviderDelegate not initialized...");
     }
@@ -53,37 +55,16 @@
     self.provider = provider;
     
     NSString* callID = [self.calls objectForKey:uuid];
-    const bctbx_list_t *calls = linphone_core_get_calls(LC);
-    LinphoneCall* call = (LinphoneCall*)bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [callID UTF8String]);
-    linphone_core_accept_call(LC, call);
-    [PhoneMainView.instance popToView:CallView.compositeViewDescription];
-    [self.provider reportCallWithUUID:uuid endedAtDate:NULL reason:CXCallEndedReasonFailed];
+	[LinphoneManager.instance setCallKit:TRUE];
+	[LinphoneManager.instance acceptCallForCallId:callID];
     [action fulfill];
     
 }
 
-static int comp_call_id(const LinphoneCall *call, const char *callid) {
-    if (linphone_call_log_get_call_id(linphone_call_get_call_log(call)) == nil) {
-        ms_error("no callid for call [%p]", call);
-        return 1;
-    }
-    return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
-}
-
-- (void)provider:(CXProvider *)provider performEndCallAction:(CXAnswerCallAction *)action {
+- (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
     LOGD(@"CallKit : Ending the Call");
-    [action fulfill];
-    [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
-    NSUUID* uuid = action.callUUID;
-    //NSString* callID = [self.calls objectForKey:uuid];
-    [self.calls removeObjectForKey:uuid];
-    const bctbx_list_t *calls = linphone_core_get_calls(LC);
-    //LinphoneCall* call = (LinphoneCall*)bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [callID UTF8String]);
-    @try {
-        linphone_core_terminate_call(LC, calls->data);
-    } @catch (NSException* e) {
-        LOGD(e.description);
-    }
+	linphone_core_terminate_call(LC, linphone_core_get_current_call(LC));
+	[action fulfill];
 }
 
 @end

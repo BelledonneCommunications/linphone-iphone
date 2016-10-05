@@ -354,9 +354,9 @@
 						[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
                         if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-                            
                             NSUUID* uuid = [NSUUID UUID];
-                            [self.del.calls setObject:callId forKey:uuid];
+							[self.del.calls setObject:callId forKey:uuid];
+							[self.del.uuids setObject:uuid forKey:callId];
                             [self.del reportIncomingCallwithUUID:uuid handle:userInfo.description];
                         } else {
                             [self fixRing];

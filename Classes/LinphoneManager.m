@@ -654,12 +654,13 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		}
         
 
-        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
+		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 
-			LinphoneCallLog *callLog = linphone_call_get_call_log(call);
-			NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
+				LinphoneCallLog *callLog = linphone_call_get_call_log(call);
+				NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
-            //if (![LinphoneManager.instance popPushCallID:callId]) {
+				//if (![LinphoneManager.instance popPushCallID:callId]) {
 				// case where a remote notification is not already received
 				// Create a new local notification
 				data->notification = [[UILocalNotification alloc] init];
@@ -705,8 +706,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 						}
 					}
 				}
-			//}
-
+			}
 		}
 	}
 
@@ -716,6 +716,16 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 	// Disable speaker when no more call
 	if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
+		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+			LinphoneCallLog *callLog2 = linphone_call_get_call_log(call);
+			NSString *callId2 = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog2)];
+			NSUUID* uuid = (NSUUID*) [self.providerDelegate.uuids objectForKey:callId2];
+			if(uuid) {
+				[self.providerDelegate.uuids removeObjectForKey:callId2];
+				[self.providerDelegate.calls removeObjectForKey:uuid];
+				[self.providerDelegate.provider reportCallWithUUID:uuid endedAtDate:NULL reason:CXCallEndedReasonRemoteEnded];
+			}
+		}
 		speaker_already_enabled = FALSE;
 		if (linphone_core_get_calls_nb(theLinphoneCore) == 0) {
 			[self setSpeakerEnabled:FALSE];
@@ -726,9 +736,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			_bluetoothEnabled = FALSE;
 			/*IOS specific*/
 			linphone_core_start_dtmf_stream(theLinphoneCore);
-            if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max && ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)) {
-                NSUUID *uuid = [[self.providerDelegate.calls allKeys] firstObject];
-                [self.providerDelegate.provider reportCallWithUUID:uuid endedAtDate:NULL reason:CXCallEndedReasonRemoteEnded];
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
                 linphone_core_set_network_reachable(LC, FALSE);
                 LinphoneManager.instance.connectivity = none;
                 
@@ -792,7 +800,11 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 	if (state == LinphoneCallConnected && !mCallCenter) {
 		/*only register CT call center CB for connected call*/
-		[self setupGSMInteraction];
+		if (!self.callKit) {
+			[self setupGSMInteraction];
+		} else {
+			self.callKit = FALSE;
+		}
 	}
 	// Post event
 	NSDictionary *dict = @{
@@ -2552,4 +2564,5 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)exportSymbolsForUITests {
 	linphone_address_set_header(NULL, NULL, NULL);
 }
+
 @end
