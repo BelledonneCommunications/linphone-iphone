@@ -675,6 +675,7 @@ static void call_with_sips_not_achievable(void){
 		if (ei){
 			BC_ASSERT_EQUAL(linphone_error_info_get_reason(ei), LinphoneReasonTemporarilyUnavailable, int, "%d");
 		}
+		linphone_call_unref(call);
 
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline1);
@@ -946,7 +947,7 @@ static void dos_module_trigger(void) {
 	} while (i < number_of_messge_to_send);
 	// At this point we should be banned for a minute
 
-	ms_usleep(65000000); // Wait several seconds to ensure we are not banned anymore
+	ms_sleep(65); // Wait several seconds to ensure we are not banned anymore
 	BC_ASSERT_LOWER(marie->stat.number_of_LinphoneMessageReceived, number_of_messge_to_send, int, "%d");
 
 	reset_counters(&marie->stat);
@@ -1203,7 +1204,7 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Call forking not responded", call_forking_not_responded),
 	TEST_NO_TAG("Early-media call forking", early_media_call_forking),
 	TEST_NO_TAG("Call with sips", call_with_sips),
-	TEST_ONE_TAG("Call with sips not achievable", call_with_sips_not_achievable, "LeaksMemory"),
+	TEST_NO_TAG("Call with sips not achievable", call_with_sips_not_achievable),
 	TEST_NO_TAG("Call ipv6 to ipv6", call_with_ipv6),
 	TEST_NO_TAG("Call ipv6 to ipv4", call_ipv6_to_ipv4),
 	TEST_NO_TAG("Call ipv4 to ipv6", call_ipv4_to_ipv6),
@@ -1212,7 +1213,7 @@ test_t flexisip_tests[] = {
 	/*TEST_ONE_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish, "LeaksMemory"),*/
 #endif
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),
-	TEST_ONE_TAG("List subscribe", test_list_subscribe,"LeaksMemory"),
+	TEST_NO_TAG("List subscribe", test_list_subscribe),
 	TEST_NO_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client),
 	TEST_ONE_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client, "LeaksMemory"),
 	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),
