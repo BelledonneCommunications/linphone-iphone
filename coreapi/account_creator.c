@@ -302,7 +302,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneA
 
 		// if phone is valid, we lastly want to check that length is OK
 		{
-			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(country_code);
+			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(creator->phone_country_code);
 			int size = (int)strlen(phone_number);
 			if (linphone_dial_plan_is_generic(plan)) {
 			    return LinphoneAccountCreatorCountryCodeInvalid;
