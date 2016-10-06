@@ -36,6 +36,7 @@
 }
 
 @property(nonatomic) UICompositeViewDescription *outgoingView;
+@property (weak, nonatomic) IBOutlet UILabel *subtileLabel_useLinphoneAccount;
 
 @property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
 @property(nonatomic, strong) IBOutlet UIView *waitView;

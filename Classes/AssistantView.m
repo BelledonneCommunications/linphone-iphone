@@ -1075,6 +1075,11 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	usernameView.hidden = !usernameSwitch.isOn && !emailSwitch.isOn;
 	emailView.hidden = !emailSwitch.isOn;
 	self.infoLoginButton.hidden = !usernameView.hidden;
+	if (!usernameView.hidden) {
+		self.subtileLabel_useLinphoneAccount.text = @"Please enter your username and password";
+	} else {
+		self.subtileLabel_useLinphoneAccount.text = @"Please confirm your country code and enter your phone number";
+	}
 	
 
 	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
@@ -1132,10 +1137,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 																	 message:NSLocalizedString(@"Your friends will find your more easily if you link your account to your "
 																							   @"phone number. \n\nYou will see in your address book who is using "
 																							   @"Linphone and your friends will know that they can reach you on Linphone "
-																							   @"as well. \n\nYou can use your phone number with only one Linphone "
-																							   @"account. If you had already linked your number to an other account but "
-																							   @"you prefer to use this one, simply link it now and your number will "
-																							   @"automatically be moved to this account.",
+																							   @"as well.",
 																							   nil)
 															  preferredStyle:UIAlertControllerStyleAlert];
 	

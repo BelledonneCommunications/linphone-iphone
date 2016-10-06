@@ -25,6 +25,7 @@
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="remoteProvisioningLoginView" destination="xVK-hL-6pe" id="pKL-9M-Vsa"/>
                 <outlet property="remoteProvisioningView" destination="Zuh-Sd-pcd" id="3pa-2M-5Xq"/>
+                <outlet property="subtileLabel_useLinphoneAccount" destination="4n3-ZD-KVi" id="8d9-0f-2Vi"/>
                 <outlet property="welcomeView" destination="33" id="46a-AR-5mN"/>
             </connections>
         </placeholder>
