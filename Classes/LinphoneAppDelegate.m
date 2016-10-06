@@ -100,12 +100,7 @@
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
 			[self fixRing];
-			if (!self.del.callKit) {
-				[PhoneMainView.instance displayIncomingCall:call];
-			} else {
-				self.del.callKit = FALSE;
-				linphone_core_accept_call(LC, call);
-			}
+			[PhoneMainView.instance displayIncomingCall:call];
 			// in this case, the ringing sound comes from the notification.
 			// To stop it we have to do the iOS7 ring fix...
 		}

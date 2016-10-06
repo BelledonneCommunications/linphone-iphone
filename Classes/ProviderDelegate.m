@@ -74,12 +74,8 @@
 	
     NSString* callID = [self.calls objectForKey:uuid];
 	[LinphoneManager.instance setCallKit:TRUE];
-	//UIApplicationState state = [UIApplication sharedApplication].applicationState;
-	//if (state == UIApplicationStateActive) {
 	[LinphoneManager.instance acceptCallForCallId:callID];
-	//} else {
-	//	self.callKit = TRUE;
-	//}
+
 	[action fulfill];
 }
 
