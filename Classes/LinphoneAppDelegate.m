@@ -99,10 +99,15 @@
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
-			[PhoneMainView.instance displayIncomingCall:call];
+			[self fixRing];
+			if (!self.del.callKit) {
+				[PhoneMainView.instance displayIncomingCall:call];
+			} else {
+				self.del.callKit = FALSE;
+				linphone_core_accept_call(LC, call);
+			}
 			// in this case, the ringing sound comes from the notification.
 			// To stop it we have to do the iOS7 ring fix...
-			[self fixRing];
 		}
 	}
 	[LinphoneManager.instance.iapManager check];
@@ -357,7 +362,8 @@
                             NSUUID* uuid = [NSUUID UUID];
 							[self.del.calls setObject:callId forKey:uuid];
 							[self.del.uuids setObject:uuid forKey:callId];
-                            [self.del reportIncomingCallwithUUID:uuid handle:userInfo.description];
+							NSArray* user = [alert objectForKey:@"loc-args"];
+							[self.del reportIncomingCallwithUUID:uuid handle:user[0]];
                         } else {
                             [self fixRing];
                         }

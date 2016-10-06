@@ -1527,7 +1527,7 @@ static BOOL libStarted = FALSE;
 	// create linphone core
 	[self createLinphoneCore];
 
-	_iapManager = [[InAppProductsManager alloc] init];
+	//_iapManager = [[InAppProductsManager alloc] init];
 
 	linphone_core_migrate_to_multi_transport(theLinphoneCore);
 
@@ -1858,7 +1858,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 									  LOGW(@"It seems that Linphone BG mode was deactivated, just skipping");
 									  return;
 								  }
-									[_iapManager check];
+									//[_iapManager check];
 								  // kick up network cnx, just in case
 								  [self refreshRegisters];
 								  linphone_core_iterate(theLinphoneCore);

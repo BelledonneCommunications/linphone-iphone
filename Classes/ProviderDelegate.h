@@ -16,6 +16,7 @@
 @property CXProvider *provider;
 @property NSMutableDictionary* calls;
 @property NSMutableDictionary* uuids;
+@property BOOL callKit;
 
 - (void)providerDidReset:(CXProvider *)provider;
 - (void) reportIncomingCallwithUUID:(NSUUID*)uuid handle:(NSString*) handle;
