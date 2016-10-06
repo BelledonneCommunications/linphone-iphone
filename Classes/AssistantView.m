@@ -531,7 +531,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				   }];
 
 	UIAssistantTextField *password2 = [self findTextField:ViewElement_Password2];
-	[password2 showError:NSLocalizedString(@"Passwords do not match.", nil)
+	[password2 showError:NSLocalizedString(@"The confirmation code is invalid. \nPlease check your SMS and try again.", nil)
 					when:^BOOL(NSString *inputEntry) {
 					  return ![inputEntry isEqualToString:[self findTextField:ViewElement_Password].text];
 					}];

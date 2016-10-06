@@ -9,7 +9,7 @@
 #import "PhoneMainView.h"
 #import <UIKit/UIKit.h>
 
-@interface AssistantLinkView : UIViewController <UICompositeViewDelegate>
+@interface AssistantLinkView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate>
 @property(weak, nonatomic) IBOutlet UIView *linkAccountView;
 @property(weak, nonatomic) IBOutlet UIView *activateSMSView;
 

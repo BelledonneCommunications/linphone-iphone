@@ -11,6 +11,7 @@
 
 #import "AssistantLinkView.h"
 #import "UITextField+DoneButton.h"
+#import "UIAssistantTextField.h"
 
 @implementation AssistantLinkView {
 	LinphoneAccountCreator *account_creator;
@@ -20,6 +21,7 @@
 	[super viewDidLoad];
 	// every UITextField subviews with phone keyboard must be tweaked to have a done button
 	[self addDoneButtonRecursivelyInView:self.view];
+	self.phoneField.delegate = self;
 }
 
 - (void)addDoneButtonRecursivelyInView:(UIView *)subview {
@@ -228,6 +230,22 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 - (void)didSelectCountry:(NSDictionary *)country {
 	[_countryButton setTitle:[country objectForKey:@"name"] forState:UIControlStateNormal];
 	_countryCodeField.text = [country objectForKey:@"code"];
+}
+
+#pragma mark - UITextFieldDelegate Functions
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	LinphoneAccountCreatorStatus status = linphone_account_creator_set_phone_number(account_creator, [_phoneField.text UTF8String], [_countryCodeField.text UTF8String]);
+	if (status == LinphoneAccountCreatorPhoneNumberTooLong || self.phoneField.text.length < 8 || status == LinphoneAccountCreatorPhoneNumberInvalid) {
+		self.phoneField.layer.borderWidth = .8;
+		self.phoneField.layer.cornerRadius = 4.f;
+		self.phoneField.layer.borderColor = [[UIColor redColor] CGColor];
+		self.linkAccountButton.enabled = FALSE;
+	} else {
+		self.phoneField.layer.borderColor = [[UIColor clearColor] CGColor];
+		self.linkAccountButton.enabled = TRUE;
+	}
+	return YES;
 }
 
 @end
