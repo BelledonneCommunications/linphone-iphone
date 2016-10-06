@@ -70,9 +70,8 @@ LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishStat
 
 static void linphone_event_release(LinphoneEvent *lev){
 	if (lev->op) {
-		/*this will stop the refreesher*/
-		sal_op_release(lev->op);
-		lev->op = NULL;
+		/*this will stop the refresher*/
+		sal_op_stop_refreshing(lev->op);
 	}
 	linphone_event_unref(lev);
 }
