@@ -235,8 +235,10 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 #pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	LinphoneAccountCreatorStatus status = linphone_account_creator_set_phone_number(account_creator, [_phoneField.text UTF8String], [_countryCodeField.text UTF8String]);
-	if (status == LinphoneAccountCreatorPhoneNumberTooLong || self.phoneField.text.length < 8 || status == LinphoneAccountCreatorPhoneNumberInvalid) {
+	//remove the + from the country code to avoir error when checking its validity
+	NSString *newStr = [_countryCodeField.text substringWithRange:NSMakeRange(1, [_countryCodeField.text length]-1)];
+	LinphoneAccountCreatorStatus status = linphone_account_creator_set_phone_number(account_creator, [_phoneField.text UTF8String], [newStr UTF8String]);
+	if (status == LinphoneAccountCreatorPhoneNumberTooLong || self.phoneField.text.length < 8) {
 		self.phoneField.layer.borderWidth = .8;
 		self.phoneField.layer.cornerRadius = 4.f;
 		self.phoneField.layer.borderColor = [[UIColor redColor] CGColor];

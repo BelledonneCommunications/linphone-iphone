@@ -930,6 +930,20 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 			[self refreshYourUsername];
 		}
 		[self shouldEnableNextButton];
+		
+		//remove the + from the country code to avoir error when checking its validity
+		NSString *newStr = [[self findTextField:ViewElement_PhoneCC].text substringWithRange:NSMakeRange(1, [[self findTextField:ViewElement_PhoneCC].text length]-1)];
+		LinphoneAccountCreatorStatus status = linphone_account_creator_set_phone_number(account_creator, [[self findTextField:ViewElement_Phone].text UTF8String], [newStr UTF8String]);
+		if (status == LinphoneAccountCreatorPhoneNumberTooLong || [self findTextField:ViewElement_Phone].text.length < 8) {
+			[self findTextField:ViewElement_Phone].layer.borderWidth = .8;
+			[self findTextField:ViewElement_Phone].layer.cornerRadius = 4.f;
+			[self findTextField:ViewElement_Phone].layer.borderColor = [[UIColor redColor] CGColor];
+			[self findButton:ViewElement_NextButton].enabled = FALSE;
+		} else {
+			[self findTextField:ViewElement_Phone].layer.borderColor = [[UIColor clearColor] CGColor];
+			[self findButton:ViewElement_NextButton].enabled = TRUE;
+		}
+		
 		return replace;
 	}
 }
