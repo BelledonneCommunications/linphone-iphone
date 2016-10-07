@@ -177,6 +177,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
 	switch (status) {
+		case LinphoneAccountCreatorCountryCodeInvalid:
+			return NSLocalizedString(@"Invalid country code.", nil);
 		case LinphoneAccountCreatorEmailInvalid:
 			return NSLocalizedString(@"Invalid email.", nil);
 		case LinphoneAccountCreatorUsernameInvalid:
