@@ -191,8 +191,9 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 
 - (IBAction)onLinkAccount:(id)sender {
 	_waitView.hidden = NO;
+	NSString *newStr = [_countryCodeField.text substringWithRange:NSMakeRange(1, [_countryCodeField.text length]-1)];
 	linphone_account_creator_set_phone_number(account_creator, _phoneField.text.UTF8String,
-											  _countryCodeField.text.UTF8String);
+											  newStr.UTF8String);
 	linphone_account_creator_link_phone_number_with_account(account_creator);
 }
 
