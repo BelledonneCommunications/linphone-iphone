@@ -30,6 +30,7 @@ public interface LinphoneAccountCreator {
 		void onAccountCreatorPhoneNumberLinkActivated(LinphoneAccountCreator accountCreator, Status status);
 		void onAccountCreatorIsAccountActivated(LinphoneAccountCreator accountCreator, Status status);
 		void onAccountCreatorPhoneAccountRecovered(LinphoneAccountCreator accountCreator, Status status);
+		void onAccountCreatorIsAccountLinked(LinphoneAccountCreator accountCreator, Status status);
 	}
 	
 	public static class Status {
@@ -48,21 +49,23 @@ public interface LinphoneAccountCreator {
 		public final static Status AccountActivated = new Status(7, "AccountActivated");
 		public final static Status AccountAlreadyActivated = new Status(8, "AccountAlreadyActivated");
 		public final static Status AccountNotActivated = new Status(9, "AccountNotActivated");
-		public final static Status EmailInvalid = new Status(10, "EmailInvalid");
-		public final static Status UsernameInvalid = new Status(11, "UsernameInvalid");
-		public final static Status UsernameTooShort = new Status(12, "UsernameTooShort");
-		public final static Status UsernameTooLong = new Status(13, "UsernameTooLong");
-		public final static Status UsernameInvalidSize = new Status(14, "UsernameInvalidSize");
-		public final static Status PhoneNumberInvalid = new Status(15, "PhoneNumberInvalid");
-		public final static Status PhoneNumberTooShort = new Status(16, "PhoneNumberTooShort");
-		public final static Status PhoneNumberTooLong = new Status(17, "PhoneNumberTooLong");
-		public final static Status PasswordTooShort = new Status(18, "PasswordTooShort");
-		public final static Status PasswordTooLong = new Status(19, "PasswordTooLong");
-		public final static Status DomainInvalid = new Status(20, "DomainInvalid");
-		public final static Status RouteInvalid = new Status(21, "RouteInvalid");
-		public final static Status DisplayNameInvalid = new Status(22, "DisplayNameInvalid");
-		public final static Status TransportNotSupported = new Status(23, "TransportNotSupported");
-		public final static Status CountryCodeInvalid = new Status(24, "CountryCodeInvalid");
+		public final static Status AccountLinked = new Status(10, "AccountLinked");
+		public final static Status AccountNotLinked = new Status(11, "AccountNotLinked");
+		public final static Status EmailInvalid = new Status(12, "EmailInvalid");
+		public final static Status UsernameInvalid = new Status(13, "UsernameInvalid");
+		public final static Status UsernameTooShort = new Status(14, "UsernameTooShort");
+		public final static Status UsernameTooLong = new Status(15, "UsernameTooLong");
+		public final static Status UsernameInvalidSize = new Status(16, "UsernameInvalidSize");
+		public final static Status PhoneNumberInvalid = new Status(17, "PhoneNumberInvalid");
+		public final static Status PhoneNumberTooShort = new Status(18, "PhoneNumberTooShort");
+		public final static Status PhoneNumberTooLong = new Status(19, "PhoneNumberTooLong");
+		public final static Status PasswordTooShort = new Status(20, "PasswordTooShort");
+		public final static Status PasswordTooLong = new Status(21, "PasswordTooLong");
+		public final static Status DomainInvalid = new Status(22, "DomainInvalid");
+		public final static Status RouteInvalid = new Status(23, "RouteInvalid");
+		public final static Status DisplayNameInvalid = new Status(24, "DisplayNameInvalid");
+		public final static Status TransportNotSupported = new Status(25, "TransportNotSupported");
+		public final static Status CountryCodeInvalid = new Status(26, "CountryCodeInvalid");
 		
 		private Status(int value, String stringValue) {
 			mValue = value;
@@ -138,7 +141,9 @@ public interface LinphoneAccountCreator {
 	Status linkPhoneNumberWithAccount();
 	
 	Status activatePhoneNumberLink();
-	
+
+	Status isAccountLinked();
+
 	Status recoverPhoneAccount();
 	
 	LinphoneProxyConfig configure();
