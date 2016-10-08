@@ -2411,6 +2411,17 @@ static bool_t transports_unchanged(const LCSipTransports * tr1, const LCSipTrans
 		tr2->tls_port==tr1->tls_port;
 }
 
+static void __linphone_core_invalidate_registers(LinphoneCore* lc){
+	const bctbx_list_t *elem=linphone_core_get_proxy_config_list(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		if (linphone_proxy_config_register_enabled(cfg)) {
+			/*this will force a re-registration at next iterate*/
+			cfg->commit = TRUE;
+		}
+	}
+}
+
 int _linphone_core_apply_transports(LinphoneCore *lc){
 	Sal *sal=lc->sal;
 	const char *anyaddr;
@@ -6880,16 +6891,6 @@ void linphone_core_refresh_registers(LinphoneCore* lc) {
 	}
 }
 
-void __linphone_core_invalidate_registers(LinphoneCore* lc){
-	const bctbx_list_t *elem=linphone_core_get_proxy_config_list(lc);
-	for(;elem!=NULL;elem=elem->next){
-		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		if (linphone_proxy_config_register_enabled(cfg)) {
-			linphone_proxy_config_edit(cfg);
-			linphone_proxy_config_done(cfg);
-		}
-	}
-}
 
 static void disable_internal_network_reachability_detection(LinphoneCore *lc){
 	if (lc->auto_net_state_mon) {

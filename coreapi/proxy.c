@@ -29,6 +29,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
+	cfg->saved_sendregister = cfg->reg_sendregister;
 	if (cfg->saved_identity) linphone_address_destroy(cfg->saved_identity);
 	if (cfg->identity_address)
 		cfg->saved_identity = linphone_address_clone(cfg->identity_address);
@@ -786,6 +787,11 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 		}
 		cfg->commit = TRUE;
 	}
+	if ((cfg->saved_sendregister != cfg->reg_sendregister)
+		|| (cfg->saved_expires !=  cfg->expires)){
+		cfg->commit = TRUE;
+	}
+	
 	if (linphone_proxy_config_compute_publish_params_hash(cfg)) {
 		ms_message("Publish params have changed on proxy config [%p]",cfg);
 		if (cfg->long_term_event) {
