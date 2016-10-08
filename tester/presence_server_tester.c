@@ -447,7 +447,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	reset_counters(&laure->stat);
 	reset_counters(&marie->stat);
 
-	/*keep in ming long terme presence*/
+	/*keep in mind long terme presence*/
 
 	if (!BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphonePresenceActivityOnline, 1, 4000)))
 		goto end;
