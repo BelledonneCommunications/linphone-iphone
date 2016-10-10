@@ -1381,8 +1381,8 @@ static void call_with_custom_headers(void) {
 	linphone_call_params_add_custom_header(params,"Weather","bad");
 	linphone_call_params_add_custom_header(params,"Working","yes");
 
-	BC_ASSERT_TRUE(call_with_caller_params(pauline,marie,params));
-	linphone_call_params_destroy(params);
+	if (!BC_ASSERT_TRUE(call_with_caller_params(pauline,marie,params))) goto end;
+	
 
 	call_marie=linphone_core_get_current_call(marie->lc);
 	call_pauline=linphone_core_get_current_call(pauline->lc);
@@ -1419,7 +1419,9 @@ static void call_with_custom_headers(void) {
 	ms_free(marie_remote_contact_header);
 
 	end_call(pauline, marie);
-
+	
+end:
+	linphone_call_params_destroy(params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
