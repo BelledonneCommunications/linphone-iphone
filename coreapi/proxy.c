@@ -65,10 +65,6 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_confi
 	LinphoneAddress *current_proxy=cfg->reg_proxy?linphone_address_new(cfg->reg_proxy):NULL;
 	LinphoneProxyConfigAddressComparisonResult result_identity;
 	LinphoneProxyConfigAddressComparisonResult result;
-
-	ms_message("linphone_proxy_config_is_server_config_changed: %s->%s  %s->%s",
-		   cfg->saved_identity ? linphone_address_as_string(cfg->saved_identity) : "", linphone_address_as_string(cfg->identity_address),
-		   cfg->saved_proxy ? linphone_address_as_string(cfg->saved_proxy) : "", linphone_address_as_string(current_proxy));
 	
 	result = linphone_proxy_config_address_equal(cfg->saved_identity,cfg->identity_address);
 	if (result == LinphoneProxyConfigAddressDifferent) goto end;
