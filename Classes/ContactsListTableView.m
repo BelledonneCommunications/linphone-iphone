@@ -118,7 +118,6 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 
 		for (NSString *addr in LinphoneManager.instance.fastAddressBook.addressBookMap) {
 			Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:addr];
-
 			BOOL add = true;
 
 			// Do not add the contact directly if we set some filter
@@ -128,6 +127,11 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 			if ([FastAddressBook contactHasValidSipDomain:contact]) {
 				add = true;
 			}
+			if (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen){
+				add = true;
+			}
+			
+			
 			if (!add && [ContactSelection emailFilterEnabled]) {
 				// Add this contact if it has an email
 				add = (contact.emails.count > 0);
