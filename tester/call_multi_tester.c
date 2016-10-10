@@ -254,19 +254,21 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	bool_t is_remote_conf;
 	bool_t focus_is_up = (focus && ((LinphoneConferenceServer *)focus)->reg_state == LinphoneRegistrationOk);
 	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+	
 	lcs=bctbx_list_append(lcs,pauline->lc);
 	lcs=bctbx_list_append(lcs,laure->lc);
-	if(focus) lcs=bctbx_list_append(lcs,focus->lc);
+	if (focus) lcs=bctbx_list_append(lcs,focus->lc);
 
 	is_remote_conf = (strcmp(lp_config_get_string(marie->lc->config, "misc", "conference_type", "local"), "remote") == 0);
 	if(is_remote_conf) BC_ASSERT_PTR_NOT_NULL(focus);
 
-	BC_ASSERT_TRUE(call(marie,pauline));
+	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
+	
 	marie_call_pauline=linphone_core_get_current_call(marie->lc);
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
 	BC_ASSERT_TRUE(pause_call_1(marie,marie_call_pauline,pauline,pauline_called_by_marie));
 
-	BC_ASSERT_TRUE(call(marie,laure));
+	if (!BC_ASSERT_TRUE(call(marie,laure))) goto end;
 	initial_marie_stat=marie->stat;
 	initial_pauline_stat=pauline->stat;
 	initial_laure_stat=laure->stat;

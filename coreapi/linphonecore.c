@@ -5114,7 +5114,7 @@ void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
 		call = (LinphoneCall *)elem->data;
 		call->audio_muted = !enable;
 		if (call->audiostream)
-			linphone_core_mute_audio_stream(lc, call->audiostream, enable);
+			linphone_core_mute_audio_stream(lc, call->audiostream, call->audio_muted);
 	}
 }
 
