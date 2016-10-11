@@ -162,6 +162,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorAccountNotActivated:
 		case LinphoneAccountCreatorAccountAlreadyActivated:
 		case LinphoneAccountCreatorAccountActivated:
+		case LinphoneAccountCreatorAccountLinked:
+		case LinphoneAccountCreatorAccountNotLinked:
+		case LinphoneAccountCreatorPhoneNumberNotUsed:
+		case LinphoneAccountCreatorPhoneNumberUsedAlias:
+		case LinphoneAccountCreatorPhoneNumberUsedAccount:
 		case LinphoneAccountCreatorOK:
 			break;
 	}

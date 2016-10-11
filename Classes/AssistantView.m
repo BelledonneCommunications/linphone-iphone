@@ -155,6 +155,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 													   assistant_is_account_activated);
 	linphone_account_creator_cbs_set_recover_phone_account(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_recover_phone_account);
+	linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
+													   assistant_is_account_linked);
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
@@ -216,6 +218,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorAccountNotActivated:
 		case LinphoneAccountCreatorAccountAlreadyActivated:
 		case LinphoneAccountCreatorAccountActivated:
+		case LinphoneAccountCreatorAccountLinked:
+		case LinphoneAccountCreatorAccountNotLinked:
+		case LinphoneAccountCreatorPhoneNumberNotUsed:
+		case LinphoneAccountCreatorPhoneNumberUsedAlias:
+		case LinphoneAccountCreatorPhoneNumberUsedAccount:
 		case LinphoneAccountCreatorOK:
 			break;
 	}
@@ -752,7 +759,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if
 		IS(ERROR_NO_PHONE_NUMBER)
 		return NSLocalizedString(@"Please confirm your country code and enter your phone number.", nil);
-
+	if IS(Missing required parameters)
+		return NSLocalizedString(@"Missing required parameters", nil);
+	
 	if (!linphone_core_is_network_reachable(LC))
 		return NSLocalizedString(@"There is no network connection available, enable "
 								 @"WIFI or WWAN prior to configure an account.",
@@ -782,24 +791,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
-			if (strcmp(resp, "Missing required parameters") == 0) {
-				[self showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
-			} else {
-				[self showErrorPopup:resp];
-			}
+			[self showErrorPopup:resp];
 		}
 	} else {
 		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
-			[self showErrorPopup:"ERROR_ALIAS_ALREADY_IN_USE"];
-			[self findButton:ViewElement_NextButton].enabled = NO;
+			linphone_account_creator_is_account_activated(account_creator);
 		} else if (status == LinphoneAccountCreatorAccountNotExist) {
 			linphone_account_creator_create_account(account_creator);
 		} else {
-			if (linphone_account_creator_get_phone_number(account_creator) == NULL) {
-				[self showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
-			} else {
-				[self showErrorPopup:resp];
-			}
+			[self showErrorPopup:resp];
+	
 		}
 	}
 }
@@ -822,11 +823,7 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 			[thiz changeView:thiz.createAccountActivateEmailView back:FALSE animation:TRUE];
 		}
 	} else {
-		if (linphone_account_creator_get_phone_number(creator) == NULL) {
-			[thiz showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
-		} else {
-			[thiz showErrorPopup:resp];
-		}
+		[thiz showErrorPopup:resp];
 	}
 }
 
@@ -860,26 +857,30 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountActivated) {
-		[thiz configureProxyConfig];
+		[thiz showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
+		[thiz findButton:ViewElement_NextButton].enabled = NO;
 	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account validation failed", nil)
-																		 message:NSLocalizedString(@"Your account could not be checked yet. You can skip this validation or try again later.", nil)
-																  preferredStyle:UIAlertControllerStyleAlert];
-		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Back", nil)
-																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction * action) {}];
-		
-		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Skip verification", nil)
-																 style:UIAlertActionStyleDefault
-															   handler:^(UIAlertAction * action) {
-																   [thiz configureProxyConfig];
-																   [PhoneMainView.instance popToView:thiz.outgoingView];
-															   }];
-		
-		[errView addAction:defaultAction];
-		[errView addAction:continueAction];
-		[thiz presentViewController:errView animated:YES completion:nil];
+		if (!IPAD || linphone_account_creator_get_phone_number(creator) != NULL) {
+			//Re send SMS
+			linphone_account_creator_recover_phone_account(creator);
+		} else {
+			// TO DO : Re send email
+			[thiz showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
+			[thiz findButton:ViewElement_NextButton].enabled = NO;
+		}
+	} else {
+		[thiz showErrorPopup:resp];
+	}
+}
+
+void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
+									const char *resp) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorAccountLinked) {
+		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
+	} else if (status == LinphoneAccountCreatorAccountNotLinked) {
+		[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970 forKey:@"must_link_account_time"];
 	} else {
 		[thiz showErrorPopup:resp];
 	}
@@ -995,7 +996,8 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 				linphone_account_creator_get_ha1(account_creator) == NULL) {
 				linphone_account_creator_activate_account(account_creator);
 		} else {
-			linphone_account_creator_activate_phone_number_link(account_creator);
+			linphone_account_creator_link_phone_number_with_account(account_creator);
+			linphone_account_creator_link_phone_number_with_account(account_creator);
 		}
     });
 }
@@ -1003,7 +1005,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 - (IBAction)onCreateAccountCheckActivatedClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
-        linphone_account_creator_is_account_activated(account_creator);
+		linphone_account_creator_is_account_linked(account_creator);
     });
 }
 
