@@ -694,7 +694,9 @@ static void _is_phone_number_used_cb(LinphoneXmlRpcRequest *request) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
 		const char* resp = linphone_xml_rpc_request_get_string_response(request);
 		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
-			status = (strcmp(resp, "OK") == 0) ? LinphoneAccountCreatorPhoneNumberUsed : LinphoneAccountCreatorPhoneNumberNotUsed;
+			status = (strcmp(resp, "OK_ACCOUNT") == 0) ? LinphoneAccountCreatorPhoneNumberUsedAccount
+			: (strcmp(resp, "OK_ALIAS") == 0) ? LinphoneAccountCreatorPhoneNumberUsedAlias
+			: LinphoneAccountCreatorPhoneNumberNotUsed;
 		}
 		creator->callbacks->is_phone_number_used(creator, status, resp);
 	}
@@ -704,16 +706,17 @@ LinphoneAccountCreatorStatus linphone_account_creator_is_phone_number_used(Linph
 	LinphoneXmlRpcRequest *request;
 	char *identity = _get_identity(creator);
 	if (!identity) {
-		if (creator->callbacks->is_account_activated != NULL) {
-			creator->callbacks->is_account_activated(creator, LinphoneAccountCreatorReqFailed, "Missing required parameters");
+		if (creator->callbacks->is_phone_number_used != NULL) {
+			creator->callbacks->is_phone_number_used(creator, LinphoneAccountCreatorReqFailed, "Missing required parameters");
 		}
 		return LinphoneAccountCreatorReqFailed;
 	}
-	request = linphone_xml_rpc_request_new_with_args("is_account_activated", LinphoneXmlRpcArgString,
-		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
+	request = linphone_xml_rpc_request_new_with_args("is_phone_number_used", LinphoneXmlRpcArgString,
+		LinphoneXmlRpcArgString, creator->phone_number,
+		LinphoneXmlRpcArgString, creator->domain,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
-	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _is_account_activated_cb);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _is_phone_number_used_cb);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
 	ms_free(identity);

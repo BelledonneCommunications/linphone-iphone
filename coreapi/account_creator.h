@@ -62,7 +62,8 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorPhoneNumberInvalid,
 	LinphoneAccountCreatorPhoneNumberTooShort,
 	LinphoneAccountCreatorPhoneNumberTooLong,
-	LinphoneAccountCreatorPhoneNumberUsed,
+	LinphoneAccountCreatorPhoneNumberUsedAccount,
+	LinphoneAccountCreatorPhoneNumberUsedAlias,
 	LinphoneAccountCreatorPhoneNumberNotUsed,
 
 	LinphoneAccountCreatorPasswordTooShort,
