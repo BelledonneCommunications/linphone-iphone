@@ -8216,6 +8216,7 @@ extern "C" void Java_org_linphone_core_LinphoneAccountCreatorImpl_setListener(JN
 	linphone_account_creator_cbs_set_activate_phone_number_link(cbs, account_creator_activate_phone_number_link);
 	linphone_account_creator_cbs_set_is_account_activated(cbs, account_creator_is_account_activated);
 	linphone_account_creator_cbs_set_recover_phone_account(cbs, account_creator_phone_account_recovered);
+	linphone_account_creator_cbs_set_is_phone_number_used(cbs, account_creator_is_phone_number_used);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setUsername(JNIEnv *env, jobject thiz, jlong ptr, jstring jusername) {
