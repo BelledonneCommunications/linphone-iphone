@@ -135,6 +135,7 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 				linphone_event_release(lev);
 				break;
 			case LinphonePublishOk:
+				if (lev->oneshot) linphone_event_release(lev);
 				break;
 			case LinphonePublishError:
 				linphone_event_release(lev);
@@ -272,6 +273,12 @@ LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddr
 	LinphoneEvent *lev=linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event,expires);
 	linphone_configure_op(lc,lev->op,resource,NULL,lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0));
 	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
+	return lev;
+}
+
+LinphoneEvent *linphone_core_create_one_shot_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event){
+	LinphoneEvent *lev = linphone_core_create_publish(lc, resource, event, -1);
+	lev->oneshot = TRUE;
 	return lev;
 }
 

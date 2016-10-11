@@ -1085,6 +1085,7 @@ struct _LinphoneEvent{
 	bool_t terminating;
 	bool_t is_out_of_dialog_op; /*used for out of dialog notify*/
 	bool_t internal;
+	bool_t oneshot;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneEvent);
