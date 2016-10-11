@@ -47,11 +47,19 @@ static void linphone_stun_test_encode(void)
 
 static void linphone_stun_test_grab_ip(void)
 {
+	
 	LinphoneCoreManager* lc_stun = linphone_core_manager_new2("stun_rc", FALSE);
 	LinphoneCall dummy_call;
 	int ping_time;
 	int tmp = 0;
 
+	/*this test verifies the very basic STUN support of liblinphone, which is deprecated.
+	 * It works only in IPv4 mode and there is no plan to make it work over ipv6.*/
+	if (liblinphone_tester_ipv4_available()){
+		goto end;
+	}
+	linphone_core_enable_ipv6(lc_stun->lc, FALSE);
+	
 	memset(&dummy_call, 0, sizeof(LinphoneCall));
 	dummy_call.main_audio_stream_index = 0;
 	dummy_call.main_video_stream_index = 1;
@@ -85,6 +93,7 @@ static void linphone_stun_test_grab_ip(void)
 #endif
 	ms_message("STUN test result: local text port maps to %s:%i", dummy_call.tc.addr, dummy_call.tc.port);
 
+end:
 	linphone_core_manager_destroy(lc_stun);
 }
 

@@ -49,6 +49,9 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorAccountAlreadyActivated,
 	LinphoneAccountCreatorAccountNotActivated,
 
+	LinphoneAccountCreatorAccountLinked,
+	LinphoneAccountCreatorAccountNotLinked,
+
 	LinphoneAccountCreatorEmailInvalid,
 	LinphoneAccountCreatorUsernameInvalid,
 	LinphoneAccountCreatorUsernameTooShort,
@@ -63,6 +66,7 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorRouteInvalid,
 	LinphoneAccountCreatorDisplayNameInvalid,
 	LinphoneAccountCreatorTransportNotSupported,
+	LinphoneAccountCreatorCountryCodeInvalid,
 } LinphoneAccountCreatorStatus;
 
 /**
@@ -312,6 +316,13 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_activate_p
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_recover_phone_account(LinphoneAccountCreator *creator);
 
 /**
+ * Send an XML-RPC request to ask if an account is linked with a phone number
+ * @param[in] creator LinphoneAccountCreator object
+ * @return if this account is linked with a phone number
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account_linked(LinphoneAccountCreator *creator);
+
+/**
  * Configure an account (create a proxy config and authentication info for it).
  * @param[in] creator LinphoneAccountCreator object
  * @return A LinphoneProxyConfig object if successful, NULL otherwise
@@ -344,6 +355,20 @@ LINPHONE_PUBLIC void *linphone_account_creator_cbs_get_user_data(const LinphoneA
  * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorCbs object.
 **/
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, void *ud);
+
+/**
+ * Get the current linked tested callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The current linked tested callback.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_is_account_linked(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Set the linked tested callback
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] cb The existence tested callback to be used.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_account_linked(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * Get the existence tested callback.

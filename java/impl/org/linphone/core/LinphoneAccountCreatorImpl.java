@@ -177,6 +177,12 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	public Status activateAccount() {
 		return Status.fromInt(activateAccount(nativePtr));
 	}
+
+	private native int isAccountLinked(long ptr);
+	@Override
+	public Status isAccountLinked() {
+		return Status.fromInt(isAccountLinked(nativePtr));
+	}
 	
 	private native int isAccountActivated(long ptr);
 	@Override

@@ -2411,6 +2411,17 @@ static bool_t transports_unchanged(const LCSipTransports * tr1, const LCSipTrans
 		tr2->tls_port==tr1->tls_port;
 }
 
+static void __linphone_core_invalidate_registers(LinphoneCore* lc){
+	const bctbx_list_t *elem=linphone_core_get_proxy_config_list(lc);
+	for(;elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		if (linphone_proxy_config_register_enabled(cfg)) {
+			/*this will force a re-registration at next iterate*/
+			cfg->commit = TRUE;
+		}
+	}
+}
+
 int _linphone_core_apply_transports(LinphoneCore *lc){
 	Sal *sal=lc->sal;
 	const char *anyaddr;
@@ -5103,7 +5114,7 @@ void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
 		call = (LinphoneCall *)elem->data;
 		call->audio_muted = !enable;
 		if (call->audiostream)
-			linphone_core_mute_audio_stream(lc, call->audiostream, enable);
+			linphone_core_mute_audio_stream(lc, call->audiostream, call->audio_muted);
 	}
 }
 
@@ -6514,14 +6525,7 @@ void sip_config_uninit(LinphoneCore *lc)
 
 	lc->auth_info=bctbx_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
 
-	/*now that we are unregisted, we no longer need the tunnel.*/
-#ifdef TUNNEL_ENABLED
-	if (lc->tunnel) {
-		linphone_tunnel_destroy(lc->tunnel);
-		lc->tunnel=NULL;
-		ms_message("Tunnel destroyed.");
-	}
-#endif
+
 
 	if (lc->vcard_context) {
 		linphone_vcard_context_destroy(lc->vcard_context);
@@ -6537,9 +6541,20 @@ void sip_config_uninit(LinphoneCore *lc)
 		belle_sip_object_unref(lc->http_crypto_config);
 		lc->http_crypto_config=NULL;
 	}
+	
+	/*now that we are unregisted, there is no more channel using tunnel socket we no longer need the tunnel.*/
+#ifdef TUNNEL_ENABLED
+	if (lc->tunnel) {
+		linphone_tunnel_destroy(lc->tunnel);
+		lc->tunnel=NULL;
+		ms_message("Tunnel destroyed.");
+	}
+#endif
+
 	sal_iterate(lc->sal); /*make sure event are purged*/
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
+	
 
 	if (lc->sip_conf.guessed_contact)
 		ms_free(lc->sip_conf.guessed_contact);
@@ -6876,16 +6891,6 @@ void linphone_core_refresh_registers(LinphoneCore* lc) {
 	}
 }
 
-void __linphone_core_invalidate_registers(LinphoneCore* lc){
-	const bctbx_list_t *elem=linphone_core_get_proxy_config_list(lc);
-	for(;elem!=NULL;elem=elem->next){
-		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		if (linphone_proxy_config_register_enabled(cfg)) {
-			linphone_proxy_config_edit(cfg);
-			linphone_proxy_config_done(cfg);
-		}
-	}
-}
 
 static void disable_internal_network_reachability_detection(LinphoneCore *lc){
 	if (lc->auto_net_state_mon) {
@@ -7431,6 +7436,10 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
 	params->has_audio = TRUE;
 	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
+	if (!linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate){
+		ms_error("LinphoneCore has video disabled for both capture and display, but video policy is to start the call with video. "
+			"This is a possible mis-use of the API. In this case, video is disabled in default LinphoneCallParams");
+	}
 	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
 	params->realtimetext_enabled = linphone_core_realtime_text_enabled(lc);

@@ -239,4 +239,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public TunnelConfig createTunnelConfig() {
 		return (TunnelConfig)_createTunnelConfig();
 	}
+
+	@Override
+	public LinphoneAccountCreator createAccountCreator(LinphoneCore lc, String url) {
+		return new LinphoneAccountCreatorImpl(lc, url);
+	}
 }

@@ -29,6 +29,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
+	cfg->saved_sendregister = cfg->reg_sendregister;
 	if (cfg->saved_identity) linphone_address_destroy(cfg->saved_identity);
 	if (cfg->identity_address)
 		cfg->saved_identity = linphone_address_clone(cfg->identity_address);
@@ -64,7 +65,7 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_confi
 	LinphoneAddress *current_proxy=cfg->reg_proxy?linphone_address_new(cfg->reg_proxy):NULL;
 	LinphoneProxyConfigAddressComparisonResult result_identity;
 	LinphoneProxyConfigAddressComparisonResult result;
-
+	
 	result = linphone_proxy_config_address_equal(cfg->saved_identity,cfg->identity_address);
 	if (result == LinphoneProxyConfigAddressDifferent) goto end;
 	result_identity = result;
@@ -79,6 +80,7 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_confi
 
 	end:
 	if (current_proxy) linphone_address_destroy(current_proxy);
+	ms_message("linphone_proxy_config_is_server_config_changed : %i", result);
 	return result;
 }
 
@@ -762,7 +764,7 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 	if (!linphone_proxy_config_check(cfg->lc,cfg))
 		return -1;
 
-	/*check if server address as changed*/
+	/*check if server address has changed*/
 	res = linphone_proxy_config_is_server_config_changed(cfg);
 	if (res != LinphoneProxyConfigAddressEqual) {
 		/* server config has changed, need to unregister from previous first*/
@@ -778,22 +780,26 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			if (res == LinphoneProxyConfigAddressDifferent) {
 				_linphone_proxy_config_unpublish(cfg);
 			}
-
 		}
+		cfg->commit = TRUE;
 	}
+	if ((cfg->saved_sendregister != cfg->reg_sendregister)
+		|| (cfg->saved_expires !=  cfg->expires)){
+		cfg->commit = TRUE;
+	}
+	
 	if (linphone_proxy_config_compute_publish_params_hash(cfg)) {
 		ms_message("Publish params have changed on proxy config [%p]",cfg);
 		if (cfg->long_term_event) {
-			if (!cfg->publish) {
-				/*publish is terminated*/
-				linphone_event_terminate(cfg->long_term_event);
-			} else {
+			if (cfg->publish) {
 				const char * sip_etag = linphone_event_get_custom_header(cfg->long_term_event, "SIP-ETag");
 				if (sip_etag) {
 					if (cfg->sip_etag) ms_free(cfg->sip_etag);
 					cfg->sip_etag = ms_strdup(sip_etag);
 				}
 			}
+			/*publish is terminated*/
+			linphone_event_terminate(cfg->long_term_event);
 			linphone_event_unref(cfg->long_term_event);
 			cfg->long_term_event = NULL;
 		}
@@ -801,7 +807,7 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 	} else {
 		ms_message("Publish params have not changed on proxy config [%p]",cfg);
 	}
-	cfg->commit=TRUE;
+	
 	linphone_proxy_config_write_all_to_config_file(cfg->lc);
 	return 0;
 }

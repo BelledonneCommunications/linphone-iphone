@@ -652,6 +652,9 @@ struct _LinphoneProxyConfig
 	/*use to check if server config has changed  between edit() and done()*/
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
+	int saved_expires;
+	bool_t saved_sendregister;
+	bool_t unused[3];
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
 	LinphoneEvent *long_term_event;
@@ -1160,7 +1163,6 @@ bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
 void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall);
 unsigned int linphone_core_get_audio_features(LinphoneCore *lc);
 
-void __linphone_core_invalidate_registers(LinphoneCore* lc);
 void _linphone_core_codec_config_write(LinphoneCore *lc);
 
 #define HOLD_OFF	(0)
@@ -1336,6 +1338,7 @@ struct _LinphoneAccountCreatorCbs {
 	LinphoneAccountCreatorCbsStatusCb link_phone_number_with_account;
 	LinphoneAccountCreatorCbsStatusCb activate_phone_number_link;
 	LinphoneAccountCreatorCbsStatusCb recover_phone_account;
+	LinphoneAccountCreatorCbsStatusCb is_account_linked;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);

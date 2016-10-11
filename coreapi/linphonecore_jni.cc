@@ -3346,6 +3346,20 @@ extern "C" void Java_org_linphone_core_LinphoneCallStatsImpl_updateStats(JNIEnv 
 		linphone_call_get_video_stats((LinphoneCall*)call_ptr);
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneCallStatsImpl_getEncoderName(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr, jlong payload_ptr) {
+    LinphoneCore *lc = linphone_call_get_core((LinphoneCall*)call_ptr);
+    PayloadType* jpayload = (PayloadType*)payload_ptr;
+    jstring jencodername =env->NewStringUTF(ms_factory_get_encoder(linphone_core_get_ms_factory(lc), jpayload->mime_type)->text);
+    return jencodername;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCallStatsImpl_getDecoderName(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr, jlong payload_ptr) {
+    LinphoneCore *lc = linphone_call_get_core((LinphoneCall*)call_ptr);
+    PayloadType* jpayload = (PayloadType*)payload_ptr;
+    jstring jdecodername =env->NewStringUTF(ms_factory_get_decoder(linphone_core_get_ms_factory(lc), jpayload->mime_type)->text);
+    return jdecodername;
+}
+
 /*payloadType*/
 extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	PayloadType* pt = (PayloadType*)ptr;
@@ -8052,6 +8066,32 @@ static void account_creator_activate_phone_number_link(LinphoneAccountCreator *c
 		ms_error("cannot attach VM\n");
 		return;
 	}
+
+	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
+	jobject listener = (jobject) linphone_account_creator_cbs_get_user_data(cbs);
+	if (listener == NULL) {
+		ms_error("account_creator_response() notification without listener");
+		return ;
+	}
+
+	LinphoneCore *lc = (LinphoneCore *)creator->core;
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorPhoneNumberLinkActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
+	env->DeleteLocalRef(clazz);
+
+	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
+	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
+}
+
+static void account_creator_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
 	
 	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
 	jobject listener = (jobject) linphone_account_creator_cbs_get_user_data(cbs);
@@ -8064,7 +8104,7 @@ static void account_creator_activate_phone_number_link(LinphoneAccountCreator *c
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	
 	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorPhoneNumberLinkActivated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorIsAccountLinked","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
 	env->DeleteLocalRef(clazz);
 	
 	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
@@ -8299,6 +8339,11 @@ extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_createAccount(
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_activateAccount(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
 	return (jint) linphone_account_creator_activate_account(account_creator);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_isAccountLinked(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	return (jint) linphone_account_creator_is_account_linked(account_creator);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_isAccountActivated(JNIEnv *env, jobject thiz, jlong ptr) {

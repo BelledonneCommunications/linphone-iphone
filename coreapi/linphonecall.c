@@ -5056,11 +5056,16 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 	LinphoneCallParams *params;
 
 	if (!call->broken) return;
-
-	/*First, make sure that the proxy from which we received this call, or to which we routed this call is registered*/
-	if (!call->dest_proxy || linphone_proxy_config_get_state(call->dest_proxy) != LinphoneRegistrationOk) return;
-
 	if (!call->core->media_network_reachable) return;
+
+	/*Make sure that the proxy from which we received this call, or to which we routed this call is registered first*/
+	if (call->dest_proxy){
+		/*in all other cases, ie no proxy config, or a proxy config for which no registration was requested, we can start the 
+		 * call repair immediately.*/
+		if (linphone_proxy_config_register_enabled(call->dest_proxy) 
+			&& linphone_proxy_config_get_state(call->dest_proxy) != LinphoneRegistrationOk) return;
+	}
+	
 
 	switch (call->state){
 		case LinphoneCallStreamsRunning:

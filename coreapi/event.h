@@ -49,6 +49,7 @@ typedef enum _LinphoneSubscriptionDir LinphoneSubscriptionDir;
 
 /**
  * Enum for subscription states.
+ * LinphoneSubscriptionTerminated and LinphoneSubscriptionError are final states.
 **/
 enum _LinphoneSubscriptionState{
 	LinphoneSubscriptionNone, /**< Initial state, should not be used.**/
@@ -57,13 +58,10 @@ enum _LinphoneSubscriptionState{
 	LinphoneSubscriptionPending, /**<Subscription is pending, waiting for user approval*/
 	LinphoneSubscriptionActive, /**<Subscription is accepted.*/
 	LinphoneSubscriptionTerminated, /**<Subscription is terminated normally*/
-	LinphoneSubscriptionError, /**<Subscription encountered an error, indicated by linphone_event_get_reason()*/
+	LinphoneSubscriptionError, /**<Subscription was terminated by an error, indicated by linphone_event_get_reason().*/
 	LinphoneSubscriptionExpiring, /**<Subscription is about to expire, only sent if [sip]->refresh_generic_subscribe property is set to 0.*/
 };
-/*typo compatibility*/
-#define LinphoneSubscriptionOutoingInit LinphoneSubscriptionOutgoingInit
 
-#define LinphoneSubscriptionOutgoingInit LinphoneSubscriptionOutgoingProgress
 /**
  * Typedef for subscription state enum.
 **/
