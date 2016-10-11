@@ -61,15 +61,14 @@
 		//	expiryTime = time(NULL) + testExpiry;
 		//}else expiryTime = 0;
 		//========//
-		[self checkAccountExpirationDate];
-		[self checkAccountTrial];
-		[self checkAccountExpired];
-
 		if (_enabled) {
 			// self.xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
 			_status = kIAPNotReady;
 			[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 			[self loadProducts];
+			[self checkAccountExpirationDate];
+			[self checkAccountTrial];
+			[self checkAccountExpired];
 		}
 		//[self check];
 	}
@@ -218,6 +217,8 @@
 	}
 }
 
+#pragma mark Receipt management
+
 - (NSString *)getReceipt {
 	NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
 	// Test whether the receipt is present at the above URL
@@ -236,6 +237,7 @@
  Save Receipt temporarily until xmlrpc server request completed and confirmation sent
 **/
 - (void)saveReceiptTemp:(NSString *)receipt {
+	LOGE(@"===>>> saveReceiptTemp : TmpReceipt");
 	[LinphoneManager.instance lpConfigSetString:receipt forKey:@"save_tmp_receipt" inSection:@"in_app_purchase"];
 }
 
@@ -243,6 +245,7 @@
  reset Receipt to empty after xmlrpc request confirmation received
  **/
 - (void)removeTmpReceipt:(NSString *)receipt {
+	LOGE(@"===>>> removeReceiptTemp : TmpReceipt");
 	if ([LinphoneManager.instance lpConfigStringForKey:@"save_tmp_receipt" inSection:@"in_app_purchase"])
 		[LinphoneManager.instance lpConfigSetString:@"0" forKey:@"save_tmp_receipt" inSection:@"in_app_purchase"];
 }
@@ -251,6 +254,7 @@
  get temp Receipt to retry xmlrpc request
  **/
 - (NSString *)getTmpReceipt {
+	LOGE(@"===>>> getReceiptTemp : TmpReceipt");
 	return [LinphoneManager.instance lpConfigStringForKey:@"save_tmp_receipt" inSection:@"in_app_purchase"];
 }
 
@@ -279,6 +283,8 @@
 	}
 }
 
+#pragma mark Getters
+
 - (NSString *)getPhoneNumber {
 	NSString *phoneNumber = @"";
 	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
@@ -306,6 +312,8 @@
 	}
 	return pass;
 }
+
+#pragma mark Payment management
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
 	for (SKPaymentTransaction *transaction in transactions) {
@@ -436,7 +444,14 @@
 		int64_t remaining = (int64_t)expiryTime - (int64_t)now;
 		[self presentNotification: remaining];
 	}
+
+	if (![[self getTmpReceipt] isEqualToString:@""]) {
+		LOGE(@"===>>> Check : getTmpReceipt != ''");
+		[self updateAccountExpirationDate:[self getReceipt]];
+	}
 }
+
+#pragma mark Intermediate XMLRPC call method
 
 // Intermediate method to check XMLRPC account expiration date
 - (BOOL)updateAccountExpirationDate:(NSString *)receiptBase64 {
@@ -467,7 +482,9 @@
 									// NSDictionary *dict = @{ @"product_id" : productID, @"error_msg" :
 									// errorMsg };
 									//[self postNotificationforStatus:kIAPPurchaseFailed withDict:dict];
-								}
+
+								} else // remove temporarily receipt
+									[self removeTmpReceipt:receiptBase64];
 							}
 						  }
 							onError:NULL
@@ -507,6 +524,18 @@
 								   onSuccess:^(NSString *response) {
 									 if (response) {
 										 LOGI(@"is_account_expired callback - response: %@", response);
+									 }
+								   }
+									 onError:NULL
+									   extra:NULL];
+}
+
+// Intermediate method to check check payload signature
+- (BOOL)checkPayloadSignature {
+	return [self callXmlrpcRequestWithParams:@"check_payload_signature"
+								   onSuccess:^(NSString *response) {
+									 if (response) {
+										 LOGI(@"check_payload_signature callback - response: %@", response);
 									 }
 								   }
 									 onError:NULL
