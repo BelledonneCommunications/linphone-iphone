@@ -667,7 +667,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_is_account_activated(Linph
 		return LinphoneAccountCreatorReqFailed;
 	}
 	request = linphone_xml_rpc_request_new_with_args("is_account_activated", LinphoneXmlRpcArgString,
-		LinphoneXmlRpcArgString, creator->phone_number ? creator->phone_number : creator->username,
+		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _is_account_activated_cb);
