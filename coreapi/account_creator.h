@@ -53,15 +53,21 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorAccountNotLinked,
 
 	LinphoneAccountCreatorEmailInvalid,
+
 	LinphoneAccountCreatorUsernameInvalid,
 	LinphoneAccountCreatorUsernameTooShort,
 	LinphoneAccountCreatorUsernameTooLong,
 	LinphoneAccountCreatorUsernameInvalidSize,
+
 	LinphoneAccountCreatorPhoneNumberInvalid,
 	LinphoneAccountCreatorPhoneNumberTooShort,
 	LinphoneAccountCreatorPhoneNumberTooLong,
+	LinphoneAccountCreatorPhoneNumberUsed,
+	LinphoneAccountCreatorPhoneNumberNotUsed,
+
 	LinphoneAccountCreatorPasswordTooShort,
 	LinphoneAccountCreatorPasswordTooLong,
+
 	LinphoneAccountCreatorDomainInvalid,
 	LinphoneAccountCreatorRouteInvalid,
 	LinphoneAccountCreatorDisplayNameInvalid,
@@ -300,6 +306,13 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_activate_a
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account_activated(LinphoneAccountCreator *creator);
 
 /**
+ * Send an XML-RPC request to test the existence a phone number with a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorReqFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_phone_number_used(LinphoneAccountCreator *creator);
+
+/**
  * Send an XML-RPC request to link a phone number with a Linphone account.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneAccountCreatorOK if the request has been sent, LinphoneAccountCreatorReqFailed otherwise
@@ -453,6 +466,20 @@ LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_g
  * @param[in] cb The validation tested callback to be used.
 **/
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_account_activated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
+
+/**
+ * Get the is phone number used callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The current is phone number used callback
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_is_phone_number_used(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Set the is phone number used callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] cb is phone number to be used.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_phone_number_used(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_recover_phone_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_recover_phone_account(const LinphoneAccountCreatorCbs *cbs);
