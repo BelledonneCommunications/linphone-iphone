@@ -59,6 +59,9 @@ const char* test_route="sip2.linphone.org";
 const char *userhostsfile = "tester_hosts";
 bool_t liblinphonetester_ipv6 = TRUE;
 bool_t liblinphonetester_show_account_manager_logs = FALSE;
+int liblinphonetester_transport_timeout = 9000; /*milliseconds. it is set to such low value to workaround a problem with our Freebox v6 when connecting to Ipv6 addresses.
+			It was found that the freebox sometimes block SYN-ACK packets, which prevents connection to be succesful.
+			Thanks to the timeout, it will fallback to IPv4*/
 
 const char *liblinphone_tester_mire_id="Mire: Mire (synthetic moving picture)";
 
@@ -158,6 +161,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	chatdb = ms_strdup_printf("%s/messages-%p.db",bc_tester_get_writable_dir_prefix(),lc);
 
 	linphone_core_enable_ipv6(lc, liblinphonetester_ipv6);
+	linphone_core_set_sip_transport_timeout(lc, liblinphonetester_transport_timeout);
 
 	sal_enable_test_features(lc->sal,TRUE);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
