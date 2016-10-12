@@ -1362,6 +1362,7 @@ struct _LinphoneAccountCreator {
 	char *activation_code;
 	char *ha1;
 	char *phone_country_code;
+	char *language;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);

@@ -197,6 +197,13 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_ha1(const LinphoneAcco
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_activation_code(LinphoneAccountCreator *creator, const char *activation_code);
 
 /**
+ * Set the language to use in email or SMS if supported.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] activation_code The language code to use
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_language(LinphoneAccountCreator *creator, const char *lang);
+
+/**
  * Set the transport.
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] transport The transport to set

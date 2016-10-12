@@ -146,6 +146,7 @@ static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	if (creator->display_name) ms_free(creator->display_name);
 	if (creator->phone_country_code) ms_free(creator->phone_country_code);
 	if (creator->activation_code) ms_free(creator->activation_code);
+	if (creator->language) ms_free(creator->language);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreator);
@@ -374,6 +375,11 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_activation_code(Linpho
 	return LinphoneAccountCreatorOK;
 }
 
+LinphoneAccountCreatorStatus linphone_account_creator_set_language(LinphoneAccountCreator *creator, const char *lang) {
+	set_string(&creator->language, lang, FALSE);
+	return LinphoneAccountCreatorOK;
+}
+
 LinphoneAccountCreatorStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport){
 	if (!linphone_core_sip_transport_supported(creator->core, transport)) {
 		return LinphoneAccountCreatorTransportNotSupported;
@@ -528,6 +534,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_is_account_used(LinphoneAc
 
 	request = linphone_xml_rpc_request_new_with_args("get_phone_number_for_account", LinphoneXmlRpcArgString,
 		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
+		LinphoneXmlRpcArgString, creator->domain,
 		LinphoneXmlRpcArgNone);
 
 	linphone_xml_rpc_request_set_user_data(request, creator);
@@ -562,6 +569,8 @@ static LinphoneXmlRpcRequest * _create_account_with_phone(LinphoneAccountCreator
 		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 		LinphoneXmlRpcArgString, creator->password ? ha1_for_passwd(creator->username ? creator->username : creator->phone_number, creator->password, creator->domain) : "",
 		LinphoneXmlRpcArgString, linphone_core_get_user_agent(creator->core),
+		LinphoneXmlRpcArgString, creator->domain,
+		LinphoneXmlRpcArgString, creator->language,
 		LinphoneXmlRpcArgNone);
 	return request;
 }
@@ -576,6 +585,7 @@ static LinphoneXmlRpcRequest * _create_account_with_email(LinphoneAccountCreator
 		LinphoneXmlRpcArgString, creator->email,
 		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username ? creator->username : creator->phone_number, creator->password, creator->domain),
 		LinphoneXmlRpcArgString, linphone_core_get_user_agent(creator->core),
+		LinphoneXmlRpcArgString, creator->domain,
 		LinphoneXmlRpcArgNone);
 	return request;
 }
@@ -636,11 +646,13 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_account(LinphoneA
 			LinphoneXmlRpcArgString, creator->phone_number,
 			LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 			LinphoneXmlRpcArgString, creator->activation_code,
+			LinphoneXmlRpcArgString, creator->domain,
 			LinphoneXmlRpcArgNone);
 	} else {
 		request = linphone_xml_rpc_request_new_with_args("activate_email_account", LinphoneXmlRpcArgString,
 			LinphoneXmlRpcArgString, creator->username,
 			LinphoneXmlRpcArgString, creator->activation_code,
+			LinphoneXmlRpcArgString, creator->domain,
 			LinphoneXmlRpcArgNone);
 	}
 	linphone_xml_rpc_request_set_user_data(request, creator);
@@ -676,6 +688,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_is_account_activated(Linph
 	}
 	request = linphone_xml_rpc_request_new_with_args("is_account_activated", LinphoneXmlRpcArgString,
 		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
+		LinphoneXmlRpcArgString, creator->domain,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _is_account_activated_cb);
@@ -749,6 +762,8 @@ LinphoneAccountCreatorStatus linphone_account_creator_link_phone_number_with_acc
 	request = linphone_xml_rpc_request_new_with_args("link_phone_number_with_account", LinphoneXmlRpcArgString,
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, creator->username,
+		LinphoneXmlRpcArgString, creator->domain,
+		LinphoneXmlRpcArgString, creator->language,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _link_phone_number_with_account_cb);
@@ -814,6 +829,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, creator->activation_code,
 		LinphoneXmlRpcArgString, creator->ha1 ? creator->ha1 : ha1_for_passwd(creator->username, creator->domain, creator->password),
+		LinphoneXmlRpcArgString, creator->domain,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_phone_number_link_cb);
@@ -851,6 +867,8 @@ LinphoneAccountCreatorStatus linphone_account_creator_recover_phone_account(Linp
 	}
 	request = linphone_xml_rpc_request_new_with_args("recover_phone_account", LinphoneXmlRpcArgString,
 		LinphoneXmlRpcArgString, creator->phone_number,
+		LinphoneXmlRpcArgString, creator->domain,
+		LinphoneXmlRpcArgString, creator->language,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _recover_phone_account_cb);

@@ -114,6 +114,8 @@ public interface LinphoneAccountCreator {
 	String getHa1();
 
 	Status setActivationCode(String activationCode);
+	
+	Status setLanguage(String lang);
 
 	Status setTransport(TransportType transport);
 

@@ -100,6 +100,12 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return Status.fromInt(setActivationCode(nativePtr, activationCode));
 	}
 
+	private native int setLanguage(long ptr, String lang);
+	@Override
+	public Status setLanguage(String lang) {
+		return Status.fromInt(setLanguage(nativePtr, lang));
+	}
+
 	private native int setTransport(long ptr, int transport);
 	@Override
 	public Status setTransport(TransportType transport) {

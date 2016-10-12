@@ -8285,6 +8285,14 @@ extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setActivationC
 	return (jint) status;
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setLanguage(JNIEnv *env, jobject thiz, jlong ptr, jstring jlang) {
+	const char *lang = GetStringUTFChars(env, jlang);
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	LinphoneAccountCreatorStatus status = linphone_account_creator_set_language(account_creator, lang);
+	ReleaseStringUTFChars(env, jlang, lang);
+	return (jint) status;
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setTransport(JNIEnv *env, jobject thiz, jlong ptr, jint jtransport) {
 	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
 	LinphoneAccountCreatorStatus status = linphone_account_creator_set_transport(account_creator, (LinphoneTransportType)jtransport);
