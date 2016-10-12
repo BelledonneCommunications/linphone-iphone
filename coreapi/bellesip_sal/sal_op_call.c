@@ -208,7 +208,7 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 	if (op->base.local_media) sdp_process(op);
 }
 
-static void cancelling_invite(SalOp* op ){
+void sal_call_cancel_invite(SalOp* op) {
 	belle_sip_request_t* cancel;
 	ms_message("Cancelling INVITE request from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
 	cancel = belle_sip_client_transaction_create_cancel(op->pending_client_trans);
@@ -229,6 +229,10 @@ static void cancelling_invite(SalOp* op ){
 			break;
 		}
 	}
+}
+
+static void cancelling_invite(SalOp *op) {
+	sal_call_cancel_invite(op);
 	op->state=SalOpStateTerminating;
 }
 
@@ -339,6 +343,9 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 						}
 					}else if (strcmp("UPDATE",method)==0){
 						op->base.root->callbacks.call_accepted(op); /*INVITE*/
+					}else if (strcmp("CANCEL",method)==0){
+						sal_op_set_error_info_from_response(op,response);
+						op->base.root->callbacks.call_failure(op);
 					}
 				break;
 				case SalOpStateTerminating:

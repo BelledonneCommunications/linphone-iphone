@@ -5029,8 +5029,12 @@ void linphone_call_set_broken(LinphoneCall *call){
 			 * hence, there is nothing special to do*/
 		//break;
 		case LinphoneCallStreamsRunning:
+		case LinphoneCallUpdating:
+		case LinphoneCallPausing:
+		case LinphoneCallResuming:
 		case LinphoneCallPaused:
 		case LinphoneCallPausedByRemote:
+		case LinphoneCallUpdatedByRemote:
 			/*during these states, the dialog is established. A failure of a transaction is not expected to close it.
 			 * Instead we have to repair the dialog by sending a reINVITE*/
 			call->broken = TRUE;
@@ -5052,9 +5056,18 @@ static void linphone_call_repair_by_invite_with_replaces(LinphoneCall *call) {
 	linphone_core_start_invite(call->core, call, NULL);
 }
 
-void linphone_call_repair_if_broken(LinphoneCall *call){
+void linphone_call_reinvite_to_recover_from_connection_loss(LinphoneCall *call) {
 	LinphoneCallParams *params;
+	ms_message("LinphoneCall[%p] is going to be updated (reINVITE) in order to recover from lost connectivity", call);
+	if (call->ice_session){
+		ice_session_restart(call->ice_session, IR_Controlling);
+	}
+	params = linphone_core_create_call_params(call->core, call);
+	linphone_core_update_call(call->core, call, params);
+	linphone_call_params_unref(params);
+}
 
+void linphone_call_repair_if_broken(LinphoneCall *call){
 	if (!call->broken) return;
 	if (!call->core->media_network_reachable) return;
 
@@ -5068,19 +5081,26 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 	
 
 	switch (call->state){
+		case LinphoneCallUpdating:
+		case LinphoneCallPausing:
+			if (sal_call_dialog_request_pending(call->op)) {
+				/* Need to cancel first re-INVITE as described in section 5.5 of RFC 6141 */
+				sal_call_cancel_invite(call->op);
+			}
+			break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallPaused:
 		case LinphoneCallPausedByRemote:
 			if (!sal_call_dialog_request_pending(call->op)) {
-				ms_message("LinphoneCall[%p] is going to be updated (reINVITE) in order to recover from lost connectivity", call);
-				if (call->ice_session){
-					ice_session_restart(call->ice_session, IR_Controlling);
-				}
-				params = linphone_core_create_call_params(call->core, call);
-				linphone_core_update_call(call->core, call, params);
-				linphone_call_params_unref(params);
+				linphone_call_reinvite_to_recover_from_connection_loss(call);
 			}
-		break;
+			break;
+		case LinphoneCallUpdatedByRemote:
+			if (sal_call_dialog_request_pending(call->op)) {
+				sal_call_decline(call->op, SalReasonServiceUnavailable, NULL);
+			}
+			linphone_call_reinvite_to_recover_from_connection_loss(call);
+			break;
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallOutgoingProgress:
@@ -5088,7 +5108,7 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 			linphone_call_repair_by_invite_with_replaces(call);
 			break;
 		default:
-			ms_warning("linphone_call_resume_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
+			ms_warning("linphone_call_repair_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
 			call->broken = FALSE;
 		break;
 	}

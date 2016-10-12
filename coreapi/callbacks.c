@@ -669,6 +669,8 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallPausedByRemote:
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
 				call_resumed(lc,call);
+			}else if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
+				call_paused_by_remote(lc,call); /* This can happen if the 200 OK of the re-INVITE has not reached the other party and that this one re-sends a new re-INVITE */
 			}else{
 				call_updated_by_remote(lc, call);
 			}
@@ -684,6 +686,7 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 			break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallConnected:
+		case LinphoneCallUpdatedByRemote: // Can happen on UAC connectivity loss
 			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
 				call_paused_by_remote(lc,call);
 			}else{
@@ -697,7 +700,6 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallUpdating:
 		case LinphoneCallPausing:
 		case LinphoneCallResuming:
-		case LinphoneCallUpdatedByRemote:
 			sal_call_decline(call->op,SalReasonInternalError,NULL);
 			/*no break*/
 		case LinphoneCallIdle:
@@ -943,6 +945,10 @@ static void call_failure(SalOp *op){
 			msg=_("Incompatible media parameters.");
 			linphone_core_notify_display_status(lc,msg);
 		break;
+		case SalReasonNoMatch:
+			/* Call leg does not exist response for case of section 5.5 of RFC 6141 */
+			linphone_call_reinvite_to_recover_from_connection_loss(call);
+			return; /* Do not continue... */
 		default:
 			linphone_core_notify_display_status(lc,_("Call failed."));
 	}

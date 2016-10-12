@@ -737,6 +737,7 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
 int sal_call_update(SalOp *h, const char *subject, bool_t no_user_consent);
+void sal_call_cancel_invite(SalOp *op);
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h);
 LINPHONE_PUBLIC SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_call_refer(SalOp *h, const char *refer_to);
