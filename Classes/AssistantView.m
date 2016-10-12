@@ -762,6 +762,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return NSLocalizedString(@"Please confirm your country code and enter your phone number.", nil);
 	if IS(Missing required parameters)
 		return NSLocalizedString(@"Missing required parameters", nil);
+	if IS(ERROR_BAD_CREDENTIALS)
+		return NSLocalizedString(@"Bad credentials, check your account settings", nil);
 	
 	if (!linphone_core_is_network_reachable(LC))
 		return NSLocalizedString(@"There is no network connection available, enable "
@@ -772,15 +774,33 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)showErrorPopup:(const char *)err {
-	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
-																	 message:[AssistantView StringForXMLRPCError:err]
-															  preferredStyle:UIAlertControllerStyleAlert];
+	if (strcmp(err, "ERROR_BAD_CREDENTIALS") == 0) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+																		 message:[AssistantView StringForXMLRPCError:err]
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+															   }];
+		
+		[errView addAction:defaultAction];
+		[errView addAction:continueAction];
+		[self presentViewController:errView animated:YES completion:nil];
+	} else {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
+																		 message:[AssistantView StringForXMLRPCError:err]
+																  preferredStyle:UIAlertControllerStyleAlert];
 	
-	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-														  handler:^(UIAlertAction * action) {}];
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
 	
-	[errView addAction:defaultAction];
-	[self presentViewController:errView animated:YES completion:nil];
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
+	}
 }
 
 - (void)isAccountUsed:(LinphoneAccountCreatorStatus)status withResp:(const char *)resp {
@@ -792,7 +812,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
-			[self showErrorPopup:resp];
+			[self showErrorPopup:"ERROR_BAD_CREDENTIALS"];
 		}
 	} else {
 		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
