@@ -115,9 +115,11 @@ apply_compile_flags(DAEMON_PIPETEST_SOURCE_FILES "CPP" "C")
 add_executable(linphone-daemon ${DAEMON_SOURCE_FILES})
 target_include_directories(linphone-daemon PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(linphone-daemon ${LINPHONE_LIBS_FOR_TOOLS} ${MEDIASTREAMER2_LIBRARIES})
+set_target_properties(linphone-daemon PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 add_executable(linphone-daemon-pipetest ${DAEMON_PIPETEST_SOURCE_FILES})
 target_link_libraries(linphone-daemon-pipetest ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES})
+set_target_properties(linphone-daemon-pipetest PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(INSTALL_TARGETS linphone-daemon linphone-daemon-pipetest)
 
