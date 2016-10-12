@@ -138,7 +138,7 @@ void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, L
 		thiz.linkAccountView.hidden = thiz.activateSMSView.userInteractionEnabled = YES;
 		thiz.activateSMSView.hidden = thiz.linkAccountView.userInteractionEnabled = NO;
 	} else {
-		if (strcmp(resp, "Missing required parameters") ==0) {
+		if (strcmp(resp, "Missing required parameters") == 0) {
 			[thiz showErrorPopup:"ERROR_NO_PHONE_NUMBER"];
 		} else {
 			[thiz showErrorPopup:resp];
@@ -173,6 +173,17 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 		[_countryButton setTitle:c ? [c objectForKey:@"name"] : NSLocalizedString(@"Unknown country code", nil)
 						forState:UIControlStateNormal];
 	}
+	if ([[_countryButton currentTitle] isEqualToString:@"Unknown country code"]) {
+		_countryCodeField.layer.borderWidth = .8;
+		_countryCodeField.layer.cornerRadius = 4.f;
+		_countryCodeField.layer.borderColor = [[UIColor redColor] CGColor];
+		self.linkAccountButton.enabled = FALSE;
+	} else {
+		_countryCodeField.layer.borderColor = [[UIColor clearColor] CGColor];
+		if (_phoneField.layer.borderColor != [[UIColor redColor] CGColor]) {
+			self.linkAccountButton.enabled = TRUE;
+		}
+	}
 }
 
 - (IBAction)onCountryCodeFieldChange:(id)sender {
@@ -194,6 +205,9 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	NSString *newStr = [_countryCodeField.text substringWithRange:NSMakeRange(1, [_countryCodeField.text length]-1)];
 	linphone_account_creator_set_phone_number(account_creator, _phoneField.text.UTF8String,
 											  newStr.UTF8String);
+	
+	NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+	linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
 	linphone_account_creator_link_phone_number_with_account(account_creator);
 }
 
@@ -246,7 +260,9 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 		self.linkAccountButton.enabled = FALSE;
 	} else {
 		self.phoneField.layer.borderColor = [[UIColor clearColor] CGColor];
-		self.linkAccountButton.enabled = TRUE;
+		if (_countryCodeField.layer.borderColor != [[UIColor redColor] CGColor]){
+			self.linkAccountButton.enabled = TRUE;
+		}
 	}
 	return YES;
 }

@@ -117,6 +117,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	
 }
 
 - (void)fitContent {
@@ -797,6 +798,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
 			linphone_account_creator_is_account_activated(account_creator);
 		} else if (status == LinphoneAccountCreatorAccountNotExist) {
+			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
 			linphone_account_creator_create_account(account_creator);
 		} else {
 			[self showErrorPopup:resp];
@@ -866,6 +869,8 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 				[thiz showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
 				[thiz findButton:ViewElement_NextButton].enabled = NO;
 			} else {
+				NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+				linphone_account_creator_set_language(creator, [[language substringToIndex:2] UTF8String]);
 				linphone_account_creator_recover_phone_account(creator);
 			}
 		} else {
@@ -1001,8 +1006,10 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 				linphone_account_creator_get_ha1(account_creator) == NULL) {
 				linphone_account_creator_activate_account(account_creator);
 		} else {
+			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
 			linphone_account_creator_link_phone_number_with_account(account_creator);
-			linphone_account_creator_link_phone_number_with_account(account_creator);
+			linphone_account_creator_activate_phone_number_link(account_creator);
 		}
     });
 }
@@ -1010,13 +1017,15 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onCreateAccountCheckActivatedClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
-		linphone_account_creator_is_account_linked(account_creator);
+		linphone_account_creator_is_account_activated(account_creator);
     });
 }
 
 - (IBAction)onLinkAccountClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
 		_waitView.hidden = NO;
+		NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+		linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
 		linphone_account_creator_link_phone_number_with_account(account_creator);
 	});
 }
@@ -1028,6 +1037,8 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		if ((linphone_account_creator_get_phone_number(account_creator) != NULL) &&
 			linphone_account_creator_get_password(account_creator) == NULL &&
 			linphone_account_creator_get_ha1(account_creator) == NULL) {
+			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
+			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
 			linphone_account_creator_recover_phone_account(account_creator);
 		} else {
 			// check if account is already linked with a phone number.
