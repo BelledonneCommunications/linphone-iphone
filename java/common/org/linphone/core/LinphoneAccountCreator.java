@@ -70,6 +70,7 @@ public interface LinphoneAccountCreator {
 		public final static Status DisplayNameInvalid = new Status(27, "DisplayNameInvalid");
 		public final static Status TransportNotSupported = new Status(28, "TransportNotSupported");
 		public final static Status CountryCodeInvalid = new Status(29, "CountryCodeInvalid");
+		public final static Status ErrorServeur = new Status(30, "ErrorServer");
 
 		private Status(int value, String stringValue) {
 			mValue = value;
@@ -113,7 +114,7 @@ public interface LinphoneAccountCreator {
 	String getHa1();
 
 	Status setActivationCode(String activationCode);
-	
+
 	Status setLanguage(String lang);
 
 	Status setTransport(TransportType transport);
