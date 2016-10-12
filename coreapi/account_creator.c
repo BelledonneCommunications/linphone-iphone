@@ -299,6 +299,7 @@ const char * linphone_account_creator_get_username(const LinphoneAccountCreator 
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneAccountCreator *creator, const char *phone_number, const char *country_code) {
 	char *normalized_phone_number;
+	LinphoneAccountCreatorStatus return_status;
 	if (!phone_number || !country_code) {
 		if (!phone_number && !country_code) {
 			creator->phone_number = NULL;
@@ -322,19 +323,24 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneA
 			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(creator->phone_country_code);
 			int size = (int)strlen(phone_number);
 			if (linphone_dial_plan_is_generic(plan)) {
-			    return LinphoneAccountCreatorCountryCodeInvalid;
+				return_status = LinphoneAccountCreatorCountryCodeInvalid;
+				goto end;
 			}
 			if (size < plan->nnl - 1) {
-				return LinphoneAccountCreatorPhoneNumberTooShort;
+				return_status = LinphoneAccountCreatorPhoneNumberTooShort;
+				goto end;
 			} else if (size > plan->nnl + 1) {
-				return LinphoneAccountCreatorPhoneNumberTooLong;
+				return_status = LinphoneAccountCreatorPhoneNumberTooLong;
+				goto end;
 			}
 		}
 	}
 	set_string(&creator->phone_number, normalized_phone_number, TRUE);
-	ms_free(normalized_phone_number);
+	return_status = LinphoneAccountCreatorOK;
 
-	return LinphoneAccountCreatorOK;
+end:
+	ms_free(normalized_phone_number);
+	return return_status;
 }
 
 const char * linphone_account_creator_get_phone_number(const LinphoneAccountCreator *creator) {
