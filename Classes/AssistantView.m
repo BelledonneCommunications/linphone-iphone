@@ -861,10 +861,15 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 		[thiz findButton:ViewElement_NextButton].enabled = NO;
 	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
 		if (!IPAD || linphone_account_creator_get_phone_number(creator) != NULL) {
-			//Re send SMS
-			linphone_account_creator_recover_phone_account(creator);
+			//Re send SMS if the username is the phone number
+			if (linphone_account_creator_get_username(creator) != linphone_account_creator_get_phone_number(creator) && linphone_account_creator_get_username(creator) != NULL) {
+				[thiz showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
+				[thiz findButton:ViewElement_NextButton].enabled = NO;
+			} else {
+				linphone_account_creator_recover_phone_account(creator);
+			}
 		} else {
-			// TO DO : Re send email
+			// TO DO : Re send email ?
 			[thiz showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
 			[thiz findButton:ViewElement_NextButton].enabled = NO;
 		}
