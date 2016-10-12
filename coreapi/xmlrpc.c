@@ -118,7 +118,7 @@ static void format_request(LinphoneXmlRpcRequest *request) {
 				err = xmlTextWriterWriteElement(writer, (const xmlChar *)"int", (const xmlChar *)si);
 				break;
 			case LinphoneXmlRpcArgString:
-				err = xmlTextWriterWriteElement(writer, (const xmlChar *)"string", (const xmlChar *)arg->data.s);
+				err = xmlTextWriterWriteElement(writer, (const xmlChar *)"string", arg->data.s ? (const xmlChar *)arg->data.s : (const xmlChar *)"");
 				break;
 		}
 		if (err >= 0) {
