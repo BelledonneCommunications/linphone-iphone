@@ -43,6 +43,8 @@
 #import <AVFoundation/AVAudioPlayer.h>
 #import "Utils.h"
 #import "PhoneMainView.h"
+#import "ChatsListView.h"
+#import "ChatConversationView.h"
 #import <UserNotifications/UserNotifications.h>
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
@@ -1217,7 +1219,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
                             }];
         }
 	}
-
 	// Post event
 	NSDictionary *dict = @{
 		@"room" : [NSValue valueWithPointer:room],

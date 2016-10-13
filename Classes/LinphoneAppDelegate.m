@@ -18,6 +18,7 @@
  */
 
 #import "PhoneMainView.h"
+#import "ContactsListView.h"
 #import "ShopView.h"
 #import "linphoneAppDelegate.h"
 #import "AddressBook/ABPerson.h"
@@ -87,6 +88,20 @@
 	LinphoneManager *instance = LinphoneManager.instance;
 
 	[instance becomeActive];
+	
+	if (instance.fastAddressBook.needToUpdate) {
+		//Update address book for external changes
+		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription) {
+			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+		}
+		[instance.fastAddressBook reload];
+		instance.fastAddressBook.needToUpdate = FALSE;
+		const MSList *lists = linphone_core_get_friends_lists(LC);
+		while (lists) {
+			linphone_friend_list_update_subscriptions(lists->data);
+			lists = lists->next;
+		}
+	}
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 

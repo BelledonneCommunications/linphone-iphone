@@ -26,6 +26,7 @@
 @interface FastAddressBook : NSObject
 
 @property(readonly, nonatomic) NSMutableDictionary *addressBookMap;
+@property BOOL needToUpdate;
 
 - (void)reload;
 - (void)saveAddressBook;
@@ -42,6 +43,7 @@
 + (UIImage *)imageForAddress:(const LinphoneAddress *)addr thumbnail:(BOOL)thumbnail;
 
 + (BOOL)contactHasValidSipDomain:(Contact *)person;
++ (BOOL)isSipURIValid:(NSString*)addr;
 
 + (NSString *)displayNameForContact:(Contact *)person;
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;

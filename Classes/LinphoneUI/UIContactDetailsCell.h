@@ -34,6 +34,7 @@
 @property(weak, nonatomic) IBOutlet UIIconButton *deleteButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *callButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *chatButton;
+@property (weak, nonatomic) IBOutlet UIImageView *linphoneImage;
 
 - (id)initWithIdentifier:(NSString *)identifier;
 - (void)setAddress:(NSString *)address;

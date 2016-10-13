@@ -16,7 +16,9 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
+#ifdef __IPHONE_9_0
+#import <Contacts/Contacts.h>
+#endif
 #import "FastAddressBook.h"
 #import "LinphoneManager.h"
 #import "ContactsListView.h"
@@ -24,6 +26,7 @@
 
 @implementation FastAddressBook {
 	ABAddressBookRef addressBook;
+	CNContactStore* store;
 }
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
@@ -95,6 +98,39 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		addressBook = nil;
 		[self reload];
 	}
+	self.needToUpdate = FALSE;
+	if ([CNContactStore class]) {
+		//ios9 or later
+		CNEntityType entityType = CNEntityTypeContacts;
+		if([CNContactStore authorizationStatusForEntityType:entityType] == CNAuthorizationStatusNotDetermined) {
+			CNContactStore * contactStore = [[CNContactStore alloc] init];
+			[contactStore requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError * _Nullable error) {
+				if(granted){
+					NSError* contactError;
+					store = [[CNContactStore alloc]init];
+					[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers: @[store.defaultContainerIdentifier]] error:&contactError];
+					NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey];
+					CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
+					BOOL success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){}];
+					if(success) {
+						LOGD(@"CNContactStore successfully synchronized");
+					}
+				}
+			}];
+		} else if([CNContactStore authorizationStatusForEntityType:entityType]== CNAuthorizationStatusAuthorized) {
+			NSError* contactError;
+			store = [[CNContactStore alloc]init];
+			[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers: @[store.defaultContainerIdentifier]] error:&contactError];
+			NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey];
+			CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
+			BOOL success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){}];
+			if(success) {
+				LOGD(@"CNContactStore successfully synchronized");
+			}
+		}
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateAddressBook:) name:CNContactStoreDidChangeNotification object:nil];
+	}
+	
 	return self;
 }
 
@@ -117,18 +153,23 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	if (addressBook != nil) {
 		__weak FastAddressBook *weakSelf = self;
 		ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-		  if (!granted) {
-			  LOGE(@"Permission for address book acces was denied: %@", [(__bridge NSError *)error description]);
-			  return;
-		  }
+			if (!granted) {
+				LOGE(@"Permission for address book acces was denied: %@", [(__bridge NSError *)error description]);
+				return;
+			}
 
-		  ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(weakSelf));
-		  [weakSelf loadData];
+			ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(weakSelf));
+			[weakSelf loadData];
 
 		});
 	} else {
 		LOGE(@"Create AddressBook failed, reason: %@", [(__bridge NSError *)error localizedDescription]);
 	}
+}
+
+-(void) updateAddressBook:(NSNotification*) notif {
+	LOGD(@"address book has changed");
+	self.needToUpdate = TRUE;
 }
 
 - (void)registerAddrsFor:(Contact *)contact {
@@ -177,6 +218,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 				}
 				friends = friends->next;
 			}
+			linphone_friend_list_update_subscriptions(fl);
 			lists = lists->next;
 		}
 	}
@@ -223,6 +265,25 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 			linphone_address_destroy(address);
 			if (match)
 				return YES;
+		}
+	}
+	return NO;
+}
+
++ (BOOL) isSipURIValid:(NSString*)addr {
+	NSString *domain = LinphoneManager.instance.contactFilter;
+	LinphoneAddress* address = linphone_core_interpret_url(LC, addr.UTF8String);
+	if (address) {
+		const char *dom = linphone_address_get_domain(address);
+		BOOL match = false;
+		if (dom != NULL) {
+			NSString *contactDomain = [NSString stringWithCString:dom encoding:[NSString defaultCStringEncoding]];
+			match = (([domain compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame) ||
+					 ([domain compare:contactDomain options:NSCaseInsensitiveSearch] == NSOrderedSame));
+		}
+		linphone_address_destroy(address);
+		if (match) {
+			return YES;
 		}
 	}
 	return NO;

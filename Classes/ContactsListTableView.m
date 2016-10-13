@@ -113,6 +113,15 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 - (void)loadData {
 	LOGI(@"Load contact list");
 	@synchronized(addressBookMap) {
+		//Set all contacts from ContactCell to nil
+		for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j)
+		{
+			for (NSInteger i = 0; i < [self.tableView numberOfRowsInSection:j]; ++i)
+			{
+				[[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] setContact:nil];
+			}
+		}
+		
 		// Reset Address book
 		[addressBookMap removeAllObjects];
 
