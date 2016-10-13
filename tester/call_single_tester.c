@@ -4376,6 +4376,7 @@ static void recovered_call_on_network_switch_during_reinvite_2(void) {
 	params = linphone_core_create_call_params(marie->lc, outgoing_call);
 	linphone_call_params_enable_video(params, TRUE);
 	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
 	linphone_core_set_network_reachable(marie->lc, TRUE);
@@ -4387,6 +4388,7 @@ static void recovered_call_on_network_switch_during_reinvite_2(void) {
 	params = linphone_core_create_call_params(pauline->lc, incoming_call);
 	linphone_call_params_enable_video(params, TRUE);
 	linphone_core_accept_call_update(pauline->lc, incoming_call, params);
+	linphone_call_params_unref(params);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
@@ -4421,6 +4423,7 @@ static void recovered_call_on_network_switch_during_reinvite_3(void) {
 	params = linphone_core_create_call_params(marie->lc, outgoing_call);
 	linphone_call_params_enable_video(params, TRUE);
 	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
 
 	linphone_core_set_network_reachable(pauline->lc, FALSE);
@@ -4435,10 +4438,12 @@ static void recovered_call_on_network_switch_during_reinvite_3(void) {
 	params = linphone_core_create_call_params(marie->lc, outgoing_call);
 	linphone_call_params_enable_video(params, TRUE);
 	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
 	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
 	params = linphone_core_create_call_params(pauline->lc, incoming_call);
 	linphone_call_params_enable_video(params, TRUE);
 	linphone_core_accept_call_update(pauline->lc, incoming_call, params);
+	linphone_call_params_unref(params);
 
 	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
 	linphone_core_terminate_call(pauline->lc, incoming_call);
@@ -4471,11 +4476,13 @@ static void recovered_call_on_network_switch_during_reinvite_4(void) {
 	params = linphone_core_create_call_params(marie->lc, outgoing_call);
 	linphone_call_params_enable_video(params, TRUE);
 	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
 
 	params = linphone_core_create_call_params(pauline->lc, incoming_call);
 	linphone_call_params_enable_video(params, TRUE);
 	linphone_core_accept_call_update(pauline->lc, incoming_call, params);
+	linphone_call_params_unref(params);
 	linphone_core_set_network_reachable(pauline->lc, FALSE);
 	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
 	linphone_core_set_network_reachable(pauline->lc, TRUE);
