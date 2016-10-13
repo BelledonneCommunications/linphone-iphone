@@ -165,10 +165,11 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 										 inSortedRange:(NSRange){0, subAr.count}
 											   options:NSBinarySearchingInsertionIndex
 								  usingComparator:^NSComparisonResult(Contact*  _Nonnull obj1, Contact*  _Nonnull obj2) {
-									  return [[self displayNameForContact:obj1] compare:[self displayNameForContact:obj2]];
+									  return [[self displayNameForContact:obj1] compare:[self displayNameForContact:obj2]options:NSCaseInsensitiveSearch];
 								  }];
-                if (![subAr containsObject:contact])
+				if (![subAr containsObject:contact]) {
                     [subAr insertObject:contact atIndex:idx];
+				}
 			}
 		}
 		[super loadData];
@@ -184,6 +185,88 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		});
 	}
 }
+
+- (void)loadSearchedData {
+	LOGI(@"Load contact list");
+	@synchronized(addressBookMap) {
+		//Set all contacts from ContactCell to nil
+		for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j)
+		{
+			for (NSInteger i = 0; i < [self.tableView numberOfRowsInSection:j]; ++i)
+			{
+				[[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] setContact:nil];
+			}
+		}
+		
+		// Reset Address book
+		[addressBookMap removeAllObjects];
+		NSMutableArray *subAr = [NSMutableArray new];
+		NSMutableArray *subArBegin = [NSMutableArray new];
+		NSMutableArray *subArContain = [NSMutableArray new];
+		[addressBookMap insertObject:subAr forKey:@"" selector:@selector(caseInsensitiveCompare:)];
+		for (NSString *addr in LinphoneManager.instance.fastAddressBook.addressBookMap) {
+			Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:addr];
+			BOOL add = true;
+			// Do not add the contact directly if we set some filter
+			if ([ContactSelection getSipFilter] || [ContactSelection emailFilterEnabled]) {
+				add = false;
+			}
+			NSString* filter = [ContactSelection getNameOrEmailFilter];
+			if ([FastAddressBook contactHasValidSipDomain:contact]) {
+				add = true;
+			}
+			if (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen){
+				add = true;
+			}
+			
+			
+			if (!add && [ContactSelection emailFilterEnabled]) {
+				// Add this contact if it has an email
+				add = (contact.emails.count > 0);
+			}
+			NSInteger idx_begin = -1;
+			NSInteger idx_sort = - 1;
+			NSMutableString *name = [self displayNameForContact:contact]
+			? [[NSMutableString alloc] initWithString:[self displayNameForContact:contact]]
+			: nil;
+			if (add && name != nil) {
+				if ([[contact displayName] rangeOfString:filter options:NSCaseInsensitiveSearch].location == 0) {
+					if(![subArBegin containsObject:contact]) {
+						idx_begin = idx_begin + 1;
+						[subArBegin insertObject:contact atIndex:idx_begin];
+					}
+				} else if([[contact displayName] rangeOfString:filter options:NSCaseInsensitiveSearch].location != NSNotFound) {
+					if(![subArContain containsObject:contact]) {
+						idx_sort = idx_sort + 1;
+						[subArContain insertObject:contact atIndex:idx_sort];
+					}
+				}
+			}
+		}
+		[subArBegin sortUsingComparator:^NSComparisonResult(Contact*  _Nonnull obj1, Contact*  _Nonnull obj2) {
+			return [[self displayNameForContact:obj1] compare:[self displayNameForContact:obj2]options:NSCaseInsensitiveSearch];
+		}];
+		
+		[subArContain sortUsingComparator:^NSComparisonResult(Contact*  _Nonnull obj1, Contact*  _Nonnull obj2) {
+			return [[self displayNameForContact:obj1] compare:[self displayNameForContact:obj2]options:NSCaseInsensitiveSearch];
+		}];
+
+		[subAr addObjectsFromArray:subArBegin];
+		[subAr addObjectsFromArray:subArContain];
+		[super loadData];
+		
+		// since we refresh the tableview, we must perform this on main thread
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			if (IPAD) {
+				if (![self selectFirstRow]) {
+					ContactDetailsView *view = VIEW(ContactDetailsView);
+					[view setContact:nil];
+				}
+			}
+		});
+	}
+}
+
 
 #pragma mark - UITableViewDataSource Functions
 

@@ -30,5 +30,6 @@
 }
 
 - (void)loadData;
+- (void)loadSearchedData;
 
 @end

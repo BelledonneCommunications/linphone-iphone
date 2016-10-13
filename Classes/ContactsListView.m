@@ -212,6 +212,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	searchBar.text = @"";
 	[self searchBar:searchBar textDidChange:@""];
+	[tableController loadData];
 	[searchBar resignFirstResponder];
 }
 
@@ -220,9 +221,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
 	// display searchtext in UPPERCASE
 	// searchBar.text = [searchText uppercaseString];
-	searchBar.showsCancelButton = (searchText.length > 0);
 	[ContactSelection setNameOrEmailFilter:searchText];
-	[tableController loadData];
+	if (searchText.length == 0) {
+		[tableController loadData];
+	} else {
+		[tableController loadSearchedData];
+	}
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
