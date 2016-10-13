@@ -635,7 +635,7 @@ static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContact
 	bctbx_list_t* list_entry = bctbx_list_find_custom(ldap_cp->requests, linphone_ldap_request_entry_compare_strong, req);
 	if( list_entry ) {
 		ms_message("Delete search %p", req);
-		ldap_cp->requests = bctbx_list_remove_link(ldap_cp->requests, list_entry);
+		ldap_cp->requests = bctbx_list_erase_link(ldap_cp->requests, list_entry);
 		ldap_cp->req_count--;
 		ret = 0; // return OK if we found it in the monitored requests
 	} else {
