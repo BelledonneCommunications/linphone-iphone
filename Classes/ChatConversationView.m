@@ -128,6 +128,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_pictureButton setEnabled:fileSharingEnabled];
 
 	[self callUpdateEvent:nil];
+	PhoneMainView.instance.currentRoom = self.chatRoom;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -138,6 +139,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	PhoneMainView.instance.currentRoom = NULL;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {

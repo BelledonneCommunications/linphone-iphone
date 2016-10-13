@@ -80,6 +80,7 @@
 
 @property(nonatomic, strong) NSString *name;
 @property(weak, readonly) UICompositeViewDescription *currentView;
+@property LinphoneChatRoom* currentRoom;
 @property(readonly, strong) MPVolumeView *volumeView;
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view;

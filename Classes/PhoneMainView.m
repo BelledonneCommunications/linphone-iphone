@@ -126,6 +126,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)initPhoneMainView {
 	currentView = nil;
+	_currentRoom = NULL;
 	inhibitedEvents = [[NSMutableArray alloc] init];
 }
 

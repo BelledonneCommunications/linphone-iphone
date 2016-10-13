@@ -201,25 +201,6 @@
 
 - (void)registerForNotifications:(UIApplication *)app {
 	LinphoneManager *instance = [LinphoneManager instance];
-    /*if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-        // Set up for UserNotifications framework
-        UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:@"Answer" options:UNNotificationActionOptionNone];
-        UNNotificationAction* act_dec = [UNNotificationAction actionWithIdentifier:@"Decline" title:@"Decline" options:UNNotificationActionOptionNone];
-        UNNotificationCategory* cat_call = [UNNotificationCategory categoryWithIdentifier:@"call_cat" actions:[NSArray arrayWithObjects:act_ans, act_dec, nil] intentIdentifiers:[[NSMutableArray alloc] init] options:UNNotificationCategoryOptionCustomDismissAction];
-        
-        //UNUserNotificationCenter* notifCenter = [UNUserNotificationCenter currentNotificationCenter];
-        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
-                              completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                                  // Enable or disable features based on authorization.
-                                  if (error) {
-                                      LOGD(error.description);
-                                  }
-                              }];
-        NSSet* categories = [NSSet setWithObjects:cat_call, nil];
-        [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
-    }*/
-        
 	if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
         //[app unregisterForRemoteNotifications];
 		// iOS8 and more : PushKit
@@ -391,9 +372,7 @@
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
 
-					if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
-						[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
-					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
+					if ([loc_key isEqualToString:@"IC_MSG"]) {
 						[self fixRing];
 					}
 				}
@@ -552,6 +531,11 @@ didInvalidatePushTokenForType:(NSString *)type {
 }
 
 #pragma mark - UserNotifications Framework
+
+- (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
+}
+
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response

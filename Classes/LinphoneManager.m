@@ -1127,7 +1127,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
 	ms_free(c_address);
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground || ((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) && ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) || (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room != PhoneMainView.instance.currentRoom)) {
 		// Create a new notification
         
         if(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
@@ -1204,7 +1204,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
             } else {
                 content.body = from;
             }
-            
             content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
             content.categoryIdentifier = @"msg_cat";
             content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
