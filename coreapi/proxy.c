@@ -638,11 +638,11 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 		LinphoneDialPlan dialplan = *linphone_dial_plan_by_ccc(tmpproxy->dial_prefix); //copy dial plan;
 		char * flatten=flatten_number(username);
 		ms_debug("Flattened number is '%s' for '%s'",flatten, username);
-		
+
 		if (tmpproxy->dial_prefix){
 			if (strcmp(tmpproxy->dial_prefix,dialplan.ccc) != 0){
 				//probably generic dialplan, preserving proxy dial prefix
-				strcpy(dialplan.ccc,tmpproxy->dial_prefix);
+				strncpy(dialplan.ccc,tmpproxy->dial_prefix,sizeof(dialplan.ccc));
 			}
 		}
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
