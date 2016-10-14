@@ -60,6 +60,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (IPAD) {
 		_backButton.hidden = YES;
 		_backButton.alpha = 0;
+		
 	}
 
 	UITapGestureRecognizer *headerTapGesture =
@@ -81,6 +82,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(coreUpdateEvent:)
 											   name:kLinphoneCoreUpdate
 											 object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(deviceOrientationDidChange:)
+												 name: UIDeviceOrientationDidChangeNotification
+											   object: nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -92,6 +98,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
 	[self update];
+}
+
+- (void) deviceOrientationDidChange:(NSNotification*) notif {
+	if (IPAD) {
+		[self update];
+	}
 }
 
 #pragma mark -

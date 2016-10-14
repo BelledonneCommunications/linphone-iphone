@@ -162,6 +162,25 @@
 	_editButton.hidden = ([ContactSelection getSelectionMode] != ContactSelectionModeEdit &&
 						  [ContactSelection getSelectionMode] != ContactSelectionModeNone);
 	[_tableController.tableView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
+	
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(deviceOrientationDidChange:)
+												 name: UIDeviceOrientationDidChangeNotification
+											   object: nil];
+	if (IPAD && self.contact == NULL) {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
+	}
+}
+
+- (void)deviceOrientationDidChange:(NSNotification*)notif {
+	if (IPAD) {
+		if (self.contact == NULL || (self.contact.firstName == NULL && self.contact.lastName == NULL)) {
+			_editButton.hidden = TRUE;
+			_deleteButton.hidden = TRUE;
+			_avatarImage.hidden = TRUE;
+		}
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -198,6 +217,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	[super setEditing:editing animated:animated];
+	if (editing) {
+		_editButton.hidden = FALSE;
+		_deleteButton.hidden = FALSE;
+		_avatarImage.hidden = FALSE;
+	} else {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
+		_avatarImage.hidden = TRUE;
+	}
 
 	if (animated) {
 		[UIView beginAnimations:nil context:nil];
@@ -256,6 +284,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_emptyLabel.hidden = NO;
 		if (!IPAD) {
 			[PhoneMainView.instance popCurrentView];
+		} else {
+			self.contact = NULL;
 		}
 	}
 }
