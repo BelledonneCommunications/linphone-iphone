@@ -1198,11 +1198,10 @@ SalResolverContext * sal_resolve(Sal *sal, const char *service, const char *tran
 	return (SalResolverContext *)belle_sip_stack_resolve(sal->stack, service, transport, name, port, family, (belle_sip_resolver_callback_t)cb, data);
 }
 
-/*
-void sal_resolve_cancel(Sal *sal, SalResolverContext* ctx){
-	belle_sip_stack_resolve_cancel(sal->stack,ctx);
+void sal_resolve_cancel(SalResolverContext* ctx){
+	belle_sip_resolver_context_cancel((belle_sip_resolver_context_t*)ctx);
 }
-*/
+
 
 void sal_enable_unconditional_answer(Sal *sal,int value) {
 	belle_sip_provider_enable_unconditional_answer(sal->prov,value);
