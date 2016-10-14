@@ -651,8 +651,7 @@ struct _LinphoneProxyConfig
 	/*use to check if server config has changed  between edit() and done()*/
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
-	int saved_expires;
-	bool_t saved_sendregister;
+	bool_t register_changed;
 	bool_t unused[3];
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/

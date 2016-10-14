@@ -240,21 +240,18 @@ static void change_expires(void){
 	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
 
 	linphone_proxy_config_edit(proxy_config);
-	reset_counters(counters); /*clear stats*/
 
 	/*nothing is supposed to arrive until done*/
 	BC_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
 
 	linphone_proxy_config_set_expires(proxy_config,3);
-
+	reset_counters(counters); /*clear stats*/
 	linphone_proxy_config_done(proxy_config);
 	BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
 	/*wait 2s without receive refresh*/
 	BC_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,2,2000));
 	/* now, it should be ok*/
 	BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,2));
-
-
 	linphone_core_manager_destroy(lcm);
 }
 

@@ -29,8 +29,6 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
-	cfg->saved_sendregister = cfg->reg_sendregister;
-	cfg->saved_expires = cfg->expires;
 	if (cfg->saved_identity) linphone_address_destroy(cfg->saved_identity);
 	if (cfg->identity_address)
 		cfg->saved_identity = linphone_address_clone(cfg->identity_address);
@@ -356,11 +354,13 @@ bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 }
 
 void linphone_proxy_config_enableregister(LinphoneProxyConfig *cfg, bool_t val){
+	if (val != cfg->reg_sendregister) cfg->register_changed = TRUE;
 	cfg->reg_sendregister=val;
 }
 
 void linphone_proxy_config_set_expires(LinphoneProxyConfig *cfg, int val){
 	if (val<0) val=600;
+	if (val != cfg->expires) cfg->register_changed = TRUE;
 	cfg->expires=val;
 }
 
@@ -380,8 +380,7 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
 	if (cfg->publish && cfg->long_term_event){
 		linphone_event_pause_publish(cfg->long_term_event);
 	}
-	/*stop refresher in any case*/
-	linphone_proxy_config_pause_register(cfg);
+	/*Don't stop refresher*/
 }
 
 void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
@@ -784,9 +783,12 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 		}
 		cfg->commit = TRUE;
 	}
-	if ((cfg->saved_sendregister != cfg->reg_sendregister)
-		|| (cfg->saved_expires !=  cfg->expires)){
+	if (cfg->register_changed){
 		cfg->commit = TRUE;
+		cfg->register_changed = FALSE;
+	}
+	if (cfg->commit){
+		linphone_proxy_config_pause_register(cfg);
 	}
 	
 	if (linphone_proxy_config_compute_publish_params_hash(cfg)) {
@@ -917,6 +919,7 @@ void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *cfg, cons
 	if (contact_params){
 		cfg->contact_params=ms_strdup(contact_params);
 	}
+	cfg->register_changed = TRUE;
 }
 
 void linphone_proxy_config_set_contact_uri_parameters(LinphoneProxyConfig *cfg, const char *contact_uri_params){
@@ -927,6 +930,7 @@ void linphone_proxy_config_set_contact_uri_parameters(LinphoneProxyConfig *cfg, 
 	if (contact_uri_params){
 		cfg->contact_uri_params=ms_strdup(contact_uri_params);
 	}
+	cfg->register_changed = TRUE;
 }
 
 const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *cfg){
@@ -950,6 +954,7 @@ const char *linphone_proxy_config_get_custom_header(LinphoneProxyConfig *cfg, co
 
 void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const char *header_name, const char *header_value){
 	cfg->sent_headers=sal_custom_header_append(cfg->sent_headers, header_name, header_value);
+	cfg->register_changed = TRUE;
 }
 
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
