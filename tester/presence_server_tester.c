@@ -57,6 +57,7 @@ static void simple(void) {
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	enable_publish(pauline, TRUE);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,1));
 
 	linphone_friend_enable_subscribes(f, TRUE);
 	linphone_friend_set_inc_subscribe_policy(f,LinphoneSPAccept); /* Accept incoming subscription request for this friend*/

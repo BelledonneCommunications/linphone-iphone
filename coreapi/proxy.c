@@ -30,6 +30,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
 	cfg->saved_sendregister = cfg->reg_sendregister;
+	cfg->saved_expires = cfg->expires;
 	if (cfg->saved_identity) linphone_address_destroy(cfg->saved_identity);
 	if (cfg->identity_address)
 		cfg->saved_identity = linphone_address_clone(cfg->identity_address);
