@@ -44,6 +44,10 @@
 
 - (void)setAddress:(NSString *)address {
 	_addressLabel.text = _editTextfield.text = address;
+	if(_addressLabel.text && linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC), _addressLabel.text.UTF8String)) {
+		char * normAddr = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), _addressLabel.text.UTF8String);
+		_addressLabel.text = [NSString stringWithUTF8String:normAddr];
+	}
 	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
 	_chatButton.enabled = _callButton.enabled = (addr != NULL);
 
