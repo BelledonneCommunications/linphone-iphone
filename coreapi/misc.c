@@ -1915,13 +1915,9 @@ static void _create_ice_check_lists_and_parse_ice_attributes(LinphoneCall *call,
 				else remote_family = AF_INET;
 				if (strchr(addr, ':') != NULL) family = AF_INET6;
 				else family = AF_INET;
-				if (remote_family == family) {
-					ice_add_losing_pair(cl, j + 1, family, remote_candidate->addr, remote_candidate->port, addr, port);
-					losing_pairs_added = TRUE;
-				} else {
-					ms_error("Cannot add ICE losing pair this local and remote candidates having different address families.");
-					
-				}
+				
+				ice_add_losing_pair(cl, j + 1, remote_family, remote_candidate->addr, remote_candidate->port, family, addr, port);
+				losing_pairs_added = TRUE;
 			}
 			if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
 		}

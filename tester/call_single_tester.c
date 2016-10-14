@@ -4911,7 +4911,49 @@ static void call_with_ice_in_ipv4_with_v6_enabled(void) {
 		marie = linphone_core_manager_new("marie_v4proxy_rc");
 		pauline = linphone_core_manager_new("pauline_v4proxy_rc");
 
-		_call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE,FALSE);
+		_call_with_ice_base(marie,pauline,TRUE,TRUE,TRUE,TRUE);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+	} else ms_warning("Test skipped, need both ipv6 and v4 available");
+}
+
+static void call_with_ice_ipv4_to_ipv6(void) {
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+
+	if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
+		marie = linphone_core_manager_new("marie_v4proxy_rc");
+		pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+		_call_with_ice_base(marie,pauline,TRUE,TRUE,TRUE,TRUE);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+	} else ms_warning("Test skipped, need both ipv6 and v4 available");
+}
+
+static void call_with_ice_ipv6_to_ipv4(void) {
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+
+	if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
+		marie = linphone_core_manager_new("marie_rc");
+		pauline = linphone_core_manager_new("pauline_v4proxy_rc");
+
+		_call_with_ice_base(marie, pauline,TRUE,TRUE,TRUE,TRUE);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+	} else ms_warning("Test skipped, need both ipv6 and v4 available");
+}
+
+static void call_with_ice_ipv6_to_ipv6(void) {
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+
+	if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
+		marie = linphone_core_manager_new("marie_rc");
+		pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+		_call_with_ice_base(marie, pauline,TRUE,TRUE,TRUE,TRUE);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 	} else ms_warning("Test skipped, need both ipv6 and v4 available");
@@ -4934,7 +4976,10 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Direct call over IPv6", direct_call_over_ipv6),
 	TEST_NO_TAG("Call IPv6 to IPv4 without relay", v6_to_v4_call_without_relay),
 	TEST_NO_TAG("IPv6 call over NAT64", v6_call_over_nat_64),
-	TEST_NO_TAG("Call with ICE in IPv4 with IPv6 enabled", call_with_ice_in_ipv4_with_v6_enabled),
+	TEST_ONE_TAG("Call with ICE in IPv4 with IPv6 enabled", call_with_ice_in_ipv4_with_v6_enabled, "ICE"),
+	TEST_ONE_TAG("Call with ICE IPv4 to IPv6", call_with_ice_ipv4_to_ipv6, "ICE"),
+	TEST_ONE_TAG("Call with ICE IPv6 to IPv4", call_with_ice_ipv6_to_ipv4, "ICE"),
+	TEST_ONE_TAG("Call with ICE IPv6 to IPv6", call_with_ice_ipv6_to_ipv6, "ICE"),
 	TEST_NO_TAG("Outbound call with multiple proxy possible", call_outbound_with_multiple_proxy),
 	TEST_NO_TAG("Audio call recording", audio_call_recording_test),
 #if 0 /* not yet activated because not implemented */

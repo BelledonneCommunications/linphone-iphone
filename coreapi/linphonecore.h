@@ -74,28 +74,36 @@ typedef struct _LinphoneCore LinphoneCore;
  * Use with #LCSipTransports
  * @ingroup initializing
  */
-#define LC_SIP_TRANSPORT_RANDOM -1
+#define LC_SIP_TRANSPORT_RANDOM (-1)
+
+/**
+ * Don't create any server socket for this transport, ie don't bind on any port.
+ * Use with #LCSipTransports
+ * @ingroup initializing
+**/
+#define LC_SIP_TRANSPORT_DONTBIND (-2)
 
 /**
  * Linphone core SIP transport ports.
+ * Special values LC_SIP_TRANSPORT_RANDOM, LC_SIP_TRANSPORT_RANDOM, #define LC_SIP_TRANSPORT_DONTBIND can be used.
  * Use with #linphone_core_set_sip_transports
  * @ingroup initializing
  */
 typedef struct _LCSipTransports{
 	/**
-	 * udp port to listening on, negative value if not set
-	 * */
+	 * SIP/UDP port.
+	 **/
 	int udp_port;
 	/**
-	 * tcp port to listening on, negative value if not set
+	 * SIP/TCP port
 	 * */
 	int tcp_port;
 	/**
-	 * dtls port to listening on, negative value if not set
+	 * SIP/DTLS port
 	 * */
 	int dtls_port;
 	/**
-	 * tls port to listening on, negative value if not set
+	 * SIP/TLS port
 	 * */
 	int tls_port;
 } LCSipTransports;
