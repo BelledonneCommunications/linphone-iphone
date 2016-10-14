@@ -2431,11 +2431,18 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
         } else {
             timeout = @"";
         }
-        
+		
+		NSString *silent;
+		if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
+			silent = @";pn-silent=1";
+		} else {
+			silent = @"";
+		}
+		
 		NSString *params = [NSString
 			stringWithFormat:@"app-id=%@%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
-							 @"call-snd=%@;pn-msg-snd=msg.caf%@",
-							 [[NSBundle mainBundle] bundleIdentifier], notif_type, APPMODE_SUFFIX, tokenString, ring, timeout];
+							 @"call-snd=%@;pn-msg-snd=msg.caf%@%@",
+							 [[NSBundle mainBundle] bundleIdentifier], notif_type, APPMODE_SUFFIX, tokenString, ring, timeout, silent];
 
 		LOGI(@"Proxy config %s configured for push notifications with contact: %@",
 			 linphone_proxy_config_get_identity(proxyCfg), params);
