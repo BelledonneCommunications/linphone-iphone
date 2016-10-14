@@ -224,6 +224,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorPhoneNumberNotUsed:
 		case LinphoneAccountCreatorPhoneNumberUsedAlias:
 		case LinphoneAccountCreatorPhoneNumberUsedAccount:
+		case LinphoneAccountCreatorErrorServer:
 		case LinphoneAccountCreatorOK:
 			break;
 	}
