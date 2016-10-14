@@ -52,7 +52,7 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 	private native String getEncoderName(long nativeStatsPtr, long nativeCallPtr, long payloadPtr);
 	private native String getDecoderName(long nativeStatsPtr, long nativeCallPtr, long payloadPtr);
 	private native void updateStats(long nativeCallPtr, int mediaType);
-	private native boolean getIsIpV6Active(long nativeStatsPtr, long nativeCallPtr);
+	private native int getIpFamilyOfRemote(long nativeStatsPtr);
 
 	protected LinphoneCallStatsImpl(long nativeCallPtr, long nativeStatsPtr) {
 		nativePtr = nativeStatsPtr;
@@ -141,7 +141,7 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 		return getDecoderName(nativePtr, nativeCPtr, ((PayloadTypeImpl)pl).nativePtr);
 	}
 
-	public boolean getIsIpV6Active() {
-		return getIsIpV6Active(nativePtr, nativeCPtr);
+	public int getIpFamilyOfRemote() {
+		return getIpFamilyOfRemote(nativePtr);
 	}
 }

@@ -3360,9 +3360,8 @@ extern "C" jstring Java_org_linphone_core_LinphoneCallStatsImpl_getDecoderName(J
     return jdecodername;
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneCallStatsImpl_getIsIpV6Active(JNIEnv *env, jobject thiz,jlong stats_ptr, jlong call_ptr) {
-	LinphoneCall *call = (LinphoneCall *)call_ptr;
-	return (call->af == AF_INET6);
+extern "C" jint Java_org_linphone_core_LinphoneCallStatsImpl_getIpFamilyOfRemote(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	return (jint) ((LinphoneCallStats *)stats_ptr)->rtp_remote_family;
 }
 
 /*payloadType*/

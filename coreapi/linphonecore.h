@@ -585,6 +585,22 @@ typedef enum _LinphoneUpnpState LinphoneUpnpState;
 #define LINPHONE_CALL_STATS_PERIODICAL_UPDATE (1 << 2) /**< Every seconds LinphoneCallStats object has been updated */
 
 /**
+ * Enum describing Ip family.
+ * @ingroup initializing
+**/
+enum _linphoneAddressFamily {
+	INET, /* IpV4 */
+	INET_6, /* IpV6 */
+	UNSPEC, /* Unknown */
+};
+
+/**
+ * Enum describing Ip family.
+ * @ingroup initializing
+**/
+typedef enum _linphoneAddressFamily linphoneAddressFamily;
+
+/**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
@@ -619,6 +635,7 @@ struct _LinphoneCallStats {
 	float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	rtp_stats_t rtp_stats; /**< RTP stats */
 	bool_t rtcp_received_via_mux; /*private flag, for non-regression test only*/
+	int rtp_remote_family; /* Ip adress family of the remote destination */
 };
 
 /**
@@ -1398,7 +1415,7 @@ LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, cons
  * @param lc the linphone core
  * @return file path or NULL if not exist
  **/
-	
+
 LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneCore *lc);
 /**
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.

@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.linphone.core;
 
+import org.linphone.LinphoneNumberOrAddress;
+
 import java.util.Vector;
 
 
@@ -98,6 +100,22 @@ public interface LinphoneCallStats {
 		}
 		public String toString() {
 			return mStringValue;
+		}
+	}
+
+	static public enum LinphoneAddressFamily {
+		INET(0),
+		INET_6(1),
+		UNSPEC(2);
+
+		private int value;
+
+		LinphoneAddressFamily(int v) {
+			value = v;
+		}
+
+		public int getInt() {
+			return value;
 		}
 	}
 
@@ -193,8 +211,8 @@ public interface LinphoneCallStats {
 	public String getDecoderName(PayloadType pl);
 
 	/**
-	 * Get if ipv6 is activated
-	 * @return ipv6 active
+	 * Get family of remote ip
+	 * @return enum LinphoneAddressFamily
      */
-	public boolean getIsIpV6Active();
+	public int getIpFamilyOfRemote();
 }
