@@ -191,4 +191,10 @@ public interface LinphoneCallStats {
 	 * @return The name of decoder
 	 */
 	public String getDecoderName(PayloadType pl);
+
+	/**
+	 * Get if ipv6 is activated
+	 * @return ipv6 active
+     */
+	public boolean getIsIpV6Active();
 }
