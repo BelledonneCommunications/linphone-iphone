@@ -211,6 +211,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			return NSLocalizedString(@"Failed to query the server. Please try again later", nil);
 		case LinphoneAccountCreatorTransportNotSupported:
 			return NSLocalizedString(@"Unsupported transport", nil);
+		case LinphoneAccountCreatorErrorServer:
+			return NSLocalizedString(@"Server error", nil);
 		case LinphoneAccountCreatorAccountCreated:
 		case LinphoneAccountCreatorAccountExist:
 		case LinphoneAccountCreatorAccountExistWithAlias:
@@ -226,6 +228,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneAccountCreatorPhoneNumberUsedAccount:
 		case LinphoneAccountCreatorErrorServer:
 		case LinphoneAccountCreatorOK:
+		
 			break;
 	}
 	return nil;
