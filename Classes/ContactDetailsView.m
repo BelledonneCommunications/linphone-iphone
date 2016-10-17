@@ -57,6 +57,9 @@
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	[_tableController setContact:_contact];
 	_emptyLabel.hidden = YES;
+	_avatarImage.hidden = !_emptyLabel.hidden;
+	_deleteButton.hidden = !_emptyLabel.hidden;
+	_editButton.hidden = !_emptyLabel.hidden;
 }
 
 - (void)removeContact {
@@ -83,6 +86,9 @@
 
 	_contact = acontact;
 	_emptyLabel.hidden = (_contact != NULL);
+	_avatarImage.hidden = !_emptyLabel.hidden;
+	_deleteButton.hidden = !_emptyLabel.hidden;
+	_editButton.hidden = !_emptyLabel.hidden;
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
@@ -282,10 +288,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self setEditing:FALSE];
 		[self resetData];
 		_emptyLabel.hidden = NO;
+		_avatarImage.hidden = !_emptyLabel.hidden;
+		_deleteButton.hidden = !_emptyLabel.hidden;
+		_editButton.hidden = !_emptyLabel.hidden;
 		if (!IPAD) {
 			[PhoneMainView.instance popCurrentView];
-		} else {
-			self.contact = NULL;
 		}
 	}
 }
