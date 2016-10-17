@@ -1022,13 +1022,7 @@ void linphone_gtk_used_identity_changed(GtkWidget *w){
 
 void on_proxy_refresh_button_clicked(GtkWidget *w){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	bctbx_list_t const *item=linphone_core_get_proxy_config_list(lc);
-	while (item != NULL) {
-		LinphoneProxyConfig *lpc=(LinphoneProxyConfig*)item->data;
-		linphone_proxy_config_edit(lpc);
-		linphone_proxy_config_done(lpc);
-		item = item->next;
-	}
+	linphone_core_refresh_registers(lc);
 }
 
 static gboolean grab_focus(GtkWidget *w){
