@@ -352,7 +352,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_password(LinphoneAccou
 	int max_length = lp_config_get_int(creator->core->config, "assistant", "password_max_length", -1);
 	if (!password) {
 		creator->password = NULL;
-		return LinphoneAccountCreatorOK;
+		return LinphoneAccountCreatorPasswordTooShort;
 	}
 	if (min_length > 0 && strlen(password) < (size_t)min_length) {
 		return LinphoneAccountCreatorPasswordTooShort;
