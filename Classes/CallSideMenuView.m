@@ -68,6 +68,10 @@
 	}
 }
 
++ (NSString*)afinetToString:(int)remote_family {
+	return (remote_family == UNSPEC) ? @"Unspecified":(remote_family == INET) ? @"IPv4" : @"IPv6";
+}
+
 + (NSString *)mediaEncryptionToString:(LinphoneMediaEncryption)enc {
 	switch (enc) {
 		case LinphoneMediaEncryptionDTLS:
@@ -141,6 +145,9 @@
 		[result appendString:[NSString stringWithFormat:@"Upload bandwidth: %1.1f kbits/s", stats->upload_bandwidth]];
 		[result appendString:@"\n"];
 		[result appendString:[NSString stringWithFormat:@"ICE state: %@", [self.class iceToString:stats->ice_state]]];
+		[result appendString:@"\n"];
+		
+		[result appendString:[NSString stringWithFormat:@"Afinet: %@", [self.class afinetToString:stats->rtp_remote_family]]];
 		[result appendString:@"\n"];
 
 		// RTP stats section (packet loss count, etc)
