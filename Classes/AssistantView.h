@@ -57,6 +57,8 @@
 @property(nonatomic, strong) IBOutlet UIButton *gotoLinphoneLoginButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoLoginButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisioningButton;
+@property (weak, nonatomic) IBOutlet UILabel *phoneLabel;
+@property (weak, nonatomic) IBOutlet UILabel *phoneTitle;
 
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;

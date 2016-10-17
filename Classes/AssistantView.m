@@ -1167,6 +1167,13 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	UIView * emailView = [self findView:ViewElement_EmailFormView inView:self.contentView ofType:UIView.class];
 	usernameView.hidden = !usernameSwitch.isOn && !emailSwitch.isOn;
 	emailView.hidden = !emailSwitch.isOn;
+	
+	[self findTextField:ViewElement_Phone].hidden = emailSwitch.isOn;
+	[self findTextField:ViewElement_PhoneCC].hidden = emailSwitch.isOn;
+	[self findButton:ViewElement_PhoneButton].hidden = emailSwitch.isOn;
+	self.phoneLabel.hidden = emailSwitch.isOn;
+	self.phoneTitle.hidden = emailSwitch.isOn;
+	
 	self.infoLoginButton.hidden = !usernameView.hidden;
 	if (!usernameView.hidden) {
 		self.subtileLabel_useLinphoneAccount.text = @"Please enter your username and password";
