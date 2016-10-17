@@ -142,6 +142,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (void) viewWillDisappear:(BOOL)animated {
+	self.view = NULL;
+}
+
 #pragma mark -
 
 - (void)changeView:(ContactsCategory)view {
