@@ -597,8 +597,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[smsCode showError:nil when:^BOOL(NSString *inputEntry) {
 		return inputEntry.length != 4;
 	}];
-
 	[self shouldEnableNextButton];
+
 }
 
 - (void)shouldEnableNextButton {
@@ -610,8 +610,43 @@ static UICompositeViewDescription *compositeDescription = nil;
 			break;
 		}
 	}
+	
+	UISwitch *emailSwitch = (UISwitch *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UISwitch.class];
+	if (!emailSwitch.isOn) {
+		[self findButton:ViewElement_NextButton].enabled = !invalidInputs;
+	}
+}
 
-	[self findButton:ViewElement_NextButton].enabled = !invalidInputs;
+- (BOOL) checkFields {
+	UISwitch *emailSwitch = (UISwitch *)[self findView:ViewElement_EmailFormView inView:self.contentView ofType:UISwitch.class];
+	if (emailSwitch.isOn) {
+		if ([self findTextField:ViewElement_Username].text.length == 0) {
+			[self showErrorPopup:"ERROR_NO_USERNAME"];
+			return FALSE;
+		}
+		if ([self findTextField:ViewElement_Email].text.length == 0) {
+			[self showErrorPopup:"ERROR_NO_EMAIL"];
+			return FALSE;
+		} else {
+			LinphoneAccountCreatorStatus s = linphone_account_creator_set_email(account_creator, [self findTextField:ViewElement_Email].text.UTF8String);
+			if (s == LinphoneAccountCreatorEmailInvalid) {
+				[self showErrorPopup:"ERROR_INVALID_EMAIL"];
+				return FALSE;
+			}
+		}
+		if ([self findTextField:ViewElement_Password].text.length == 0) {
+			[self showErrorPopup:"ERROR_NO_PASSWORD"];
+			return FALSE;
+		}
+		if (![[self findTextField:ViewElement_Password].text isEqualToString:[self findTextField:ViewElement_Password2].text]) {
+			[self showErrorPopup:"ERROR_INVALID_CONFIRMATION"];
+			return FALSE;
+		}
+		
+		return TRUE;
+	} else {
+		return TRUE;
+	}
 }
 
 #pragma mark - Event Functions
@@ -767,7 +802,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return NSLocalizedString(@"Missing required parameters", nil);
 	if IS(ERROR_BAD_CREDENTIALS)
 		return NSLocalizedString(@"Bad credentials, check your account settings", nil);
-	
+	if IS(ERROR_NO_PASSWORD)
+		return NSLocalizedString(@"Please enter a password to your account", nil);
+	if IS(ERROR_NO_EMAIL)
+		return NSLocalizedString(@"Please enter your email", nil);
+	if IS(ERROR_NO_USERNAME)
+		return NSLocalizedString(@"Please enter a username", nil);
+	if IS(ERROR_INVALID_CONFIRMATION)
+		return NSLocalizedString(@"Your confirmation password doesn't match your password", nil);
+	if IS(ERROR_INVALID_EMAIL)
+		return NSLocalizedString(@"Your email is invalid", nil);
+
 	if (!linphone_core_is_network_reachable(LC))
 		return NSLocalizedString(@"There is no network connection available, enable "
 								 @"WIFI or WWAN prior to configure an account.",
@@ -1015,10 +1060,12 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
-	ONCLICKBUTTON(sender, 100, {
-		_waitView.hidden = NO;
-		linphone_account_creator_is_account_used(account_creator);
-    });
+	if ([self checkFields]) {
+		ONCLICKBUTTON(sender, 100, {
+			_waitView.hidden = NO;
+			linphone_account_creator_is_account_used(account_creator);
+		});
+	}
 }
 
 - (IBAction)onCreateAccountActivationClick:(id)sender {
@@ -1149,6 +1196,9 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	CGRect viewframe = currentView.frame;
 	viewframe.size.height = 30 + _createAccountNextButtonPositionConstraint.constant - old + [self findButton:ViewElement_NextButton].frame.origin.y + [self findButton:ViewElement_NextButton].frame.size.height;
 	[_contentView setContentSize:viewframe.size];
+	if (emailSwitch.isOn) {
+		[self findButton:ViewElement_NextButton].enabled = TRUE;
+	}
 	[self shouldEnableNextButton];
 }
 
