@@ -869,8 +869,6 @@ void simple_remote_conference(void) {
 	LinphoneProxyConfig *laure_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)laure)->lc);
 	const char *laure_proxy_uri = linphone_proxy_config_get_server_addr(laure_proxy_config);
 	const char *focus_uri = linphone_proxy_config_get_identity(focus_proxy_config);
-	int laure_n_register = laure->stat.number_of_LinphoneRegistrationOk;
-	bctbx_list_t *lcs = NULL;
 
 	lp_config_set_string(marie_config, "misc", "conference_type", "remote");
 	lp_config_set_string(marie_config, "misc", "conference_focus_addr", focus_uri);
@@ -878,9 +876,6 @@ void simple_remote_conference(void) {
 	linphone_proxy_config_edit(laure_proxy_config);
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
-	lcs = bctbx_list_append(lcs, laure->lc);
-	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneRegistrationOk, laure_n_register+1, 5000));
-	bctbx_list_free(lcs);
 
 	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus);
 
@@ -900,8 +895,6 @@ void simple_remote_conference_shut_down_focus(void) {
 	LinphoneProxyConfig *laure_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)laure)->lc);
 	const char *laure_proxy_uri = linphone_proxy_config_get_server_addr(laure_proxy_config);
 	const char *focus_uri = linphone_proxy_config_get_identity(focus_proxy_config);
-	int laure_n_register = laure->stat.number_of_LinphoneRegistrationOk;
-	bctbx_list_t *lcs = NULL;
 
 	lp_config_set_string(marie_config, "misc", "conference_type", "remote");
 	lp_config_set_string(marie_config, "misc", "conference_focus_addr", focus_uri);
@@ -909,9 +902,6 @@ void simple_remote_conference_shut_down_focus(void) {
 	linphone_proxy_config_edit(laure_proxy_config);
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
-	lcs = bctbx_list_append(lcs, laure->lc);
-	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneRegistrationOk, laure_n_register+1, 5000));
-	bctbx_list_free(lcs);
 
 	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus);
 
@@ -931,8 +921,6 @@ void eject_from_3_participants_remote_conference(void) {
 	LinphoneProxyConfig *laure_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)laure)->lc);
 	const char *laure_proxy_uri = linphone_proxy_config_get_server_addr(laure_proxy_config);
 	const char *focus_uri = linphone_proxy_config_get_identity(focus_proxy_config);
-	int laure_n_register = laure->stat.number_of_LinphoneRegistrationOk;
-	bctbx_list_t *lcs = NULL;
 
 	lp_config_set_string(marie_config, "misc", "conference_type", "remote");
 	lp_config_set_string(marie_config, "misc", "conference_focus_addr", focus_uri);
@@ -940,9 +928,6 @@ void eject_from_3_participants_remote_conference(void) {
 	linphone_proxy_config_edit(laure_proxy_config);
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
-	lcs = bctbx_list_append(lcs, laure->lc);
-	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneRegistrationOk, laure_n_register+1, 5000));
-	bctbx_list_free(lcs);
 
 	eject_from_3_participants_conference(marie, pauline, laure, (LinphoneCoreManager *)focus);
 
