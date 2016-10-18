@@ -761,16 +761,17 @@ static void net_config_read (LinphoneCore *lc)
 	if (nat_policy_ref != NULL) {
 		lc->nat_policy = linphone_core_create_nat_policy_from_config(lc, nat_policy_ref);
 	}
+	if (lc->nat_policy == NULL){
+		/*this will create a default nat policy according to deprecated config keys, or an empty nat policy otherwise*/
+		linphone_core_set_firewall_policy(lc, linphone_core_get_firewall_policy(lc));
+	}
 
 	lc->net_conf.nat_address_ip = NULL;
 	tmp=lp_config_get_int(config,"net","download_bw",0);
 	linphone_core_set_download_bandwidth(lc,tmp);
 	tmp=lp_config_get_int(config,"net","upload_bw",0);
 	linphone_core_set_upload_bandwidth(lc,tmp);
-	if (lc->nat_policy == NULL) /* For compatibility, now the STUN server is stored in the NAT policy. */
-		linphone_core_set_stun_server(lc,lp_config_get_string(config,"net","stun_server",NULL));
-	else
-		linphone_core_set_stun_server(lc, linphone_nat_policy_get_stun_server(lc->nat_policy));
+
 	tmpstr=lp_config_get_string(lc->config,"net","nat_address",NULL);
 	if (tmpstr!=NULL && (strlen(tmpstr)<1)) tmpstr=NULL;
 	linphone_core_set_nat_address(lc,tmpstr);
@@ -787,10 +788,6 @@ static void net_config_read (LinphoneCore *lc)
 	linphone_core_enable_dns_srv(lc, tmp);
 	tmp = lp_config_get_int(lc->config, "net", "dns_search_enabled", 1);
 	linphone_core_enable_dns_search(lc, tmp);
-
-	/* This is to filter out unsupported firewall policies */
-	if (nat_policy_ref == NULL)
-		linphone_core_set_firewall_policy(lc, linphone_core_get_firewall_policy(lc));
 }
 
 static void build_sound_devices_table(LinphoneCore *lc){
@@ -6727,6 +6724,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 #endif
 
 	lc->msevq=NULL;
+	
 	/* save all config */
 	friends_config_uninit(lc);
 	sip_config_uninit(lc);

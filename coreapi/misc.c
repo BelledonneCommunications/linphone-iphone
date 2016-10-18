@@ -569,67 +569,22 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 	}
 }
 
-static void stun_server_resolved(LinphoneCore *lc, const char *name, struct addrinfo *addrinfo){
-	if (lc->net_conf.stun_addrinfo){
-		bctbx_freeaddrinfo(lc->net_conf.stun_addrinfo);
-		lc->net_conf.stun_addrinfo=NULL;
-	}
-	if (addrinfo){
-		ms_message("Stun server resolution successful.");
-	}else{
-		ms_warning("Stun server resolution failed.");
-	}
-	lc->net_conf.stun_addrinfo=addrinfo;
-	lc->net_conf.stun_res=NULL;
-}
 
 void linphone_core_resolve_stun_server(LinphoneCore *lc){
 	if (lc->nat_policy != NULL) {
 		linphone_nat_policy_resolve_stun_server(lc->nat_policy);
 	} else {
-		const char *server=linphone_core_get_stun_server(lc);
-		LinphoneFirewallPolicy firewall_policy = linphone_core_get_firewall_policy(lc);
-		if (lc->sal && server && !lc->net_conf.stun_res
-			&& ((firewall_policy == LinphonePolicyUseStun) || (firewall_policy == LinphonePolicyUseIce))) {
-			char host[NI_MAXHOST];
-			const char *service = "stun";
-			int port=3478;
-			int family = AF_INET;
-			linphone_parse_host_port(server,host,sizeof(host),&port);
-			if (linphone_core_ipv6_enabled(lc) == TRUE) family = AF_INET6;
-			lc->net_conf.stun_res = sal_resolve(lc->sal, service, "udp", host, port, family, (SalResolverCallback)stun_server_resolved, lc);
-		}
+		ms_error("linphone_core_resolve_stun_server(): called without nat_policy, this should not happen.");
 	}
 }
 
-/*
- * This function returns the addrinfo representation of the stun server address.
- * It is critical not to block for a long time if it can't be resolved, otherwise this stucks the main thread when making a call.
- * On the contrary, a fully asynchronous call initiation is complex to develop.
- * The compromise is then:
- * - have a cache of the stun server addrinfo
- * - this cached value is returned when it is non-null
- * - an asynchronous resolution is asked each time this function is called to ensure frequent refreshes of the cached value.
- * - if no cached value exists, block for a short time; this case must be unprobable because the resolution will be asked each time the stun server value is
- * changed.
-**/
 const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
 	if (lc->nat_policy != NULL) {
 		return linphone_nat_policy_get_stun_server_addrinfo(lc->nat_policy);
 	} else {
-		const char *server=linphone_core_get_stun_server(lc);
-		if (server){
-			int wait_ms=0;
-			int wait_limit=1000;
-			linphone_core_resolve_stun_server(lc);
-			while (!lc->net_conf.stun_addrinfo && lc->net_conf.stun_res!=NULL && wait_ms<wait_limit){
-				sal_iterate(lc->sal);
-				ms_usleep(50000);
-				wait_ms+=50;
-			}
-		}
-		return lc->net_conf.stun_addrinfo;
+		ms_error("linphone_core_get_stun_server_addrinfo(): called without nat_policy, this should not happen.");
 	}
+	return NULL;
 }
 
 void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable) {

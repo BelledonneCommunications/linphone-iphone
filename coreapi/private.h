@@ -838,7 +838,6 @@ typedef struct net_config
 	char *nat_address; /* may be IP or host name */
 	char *nat_address_ip; /* ip translated from nat_address */
 	struct addrinfo *stun_addrinfo;
-	SalResolverContext * stun_res;
 	int download_bw;
 	int upload_bw;
 	int mtu;
