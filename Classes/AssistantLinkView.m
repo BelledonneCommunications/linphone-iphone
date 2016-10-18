@@ -21,7 +21,7 @@
 	[super viewDidLoad];
 	// every UITextField subviews with phone keyboard must be tweaked to have a done button
 	[self addDoneButtonRecursivelyInView:self.view];
-	self.phoneField.delegate = self;
+	self.phoneField.delegate = self; self.firstTime = TRUE;
 }
 
 - (void)addDoneButtonRecursivelyInView:(UIView *)subview {
@@ -80,7 +80,7 @@
 		}
 	}
 
-	if (country) {
+	if (country && self.firstTime) {
 		[self didSelectCountry:country];
 	}
 }
@@ -195,6 +195,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 }
 
 - (IBAction)onCountryClick:(id)sender {
+	self.firstTime = FALSE;
 	CountryListView *view = VIEW(CountryListView);
 	[view setDelegate:(id)self];
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
