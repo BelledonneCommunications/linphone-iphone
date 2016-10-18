@@ -28,6 +28,21 @@ This file contains SAL API functions that do not depend on the underlying implem
 
 #include <ctype.h>
 
+
+const char *sal_multicast_role_to_string(SalMulticastRole role){
+	switch(role){
+		case SalMulticastInactive:
+			return "inactive";
+		case SalMulticastReceiver:
+			return "receiver";
+		case SalMulticastSender:
+			return "sender";
+		case SalMulticastSenderReceiver:
+			return "sender-receiver";
+	}
+	return "INVALID";
+}
+
 const char* sal_transport_to_string(SalTransport transport) {
 	switch (transport) {
 		case SalTransportUDP:return "udp";

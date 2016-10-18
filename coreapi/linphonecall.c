@@ -637,11 +637,14 @@ static void transfer_already_assigned_payload_types(SalMediaDescription *old, Sa
 static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int stream_index){
 	const char *bind_ip = lp_config_get_string(call->core->config,"rtp","bind_address",
 				call->af == AF_INET6 ? "::0" : "0.0.0.0");
-
-	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0'){
+	PortConfig *pc = &call->media_ports[stream_index];
+	if (stream_index<2 && pc->multicast_ip[0]!='\0'){
 		if (call->dir==LinphoneCallOutgoing){
 			/*as multicast sender, we must decide a local interface to use to send multicast, and bind to it*/
-			bind_ip=call->media_localip;
+			linphone_core_get_local_ip_for(strchr(pc->multicast_ip,':') ? AF_INET6 : AF_INET,
+				NULL, pc->multicast_bind_ip);
+			bind_ip = pc->multicast_bind_ip;
+			
 		}
 	}
 	return bind_ip;
@@ -1152,6 +1155,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCall, belle_sip_object_t,
 	NULL, // marshal
 	FALSE
 );
+
 void linphone_call_fill_media_multicast_addr(LinphoneCall *call) {
 	if (linphone_call_params_audio_multicast_enabled(call->params)){
 		strncpy(call->media_ports[call->main_audio_stream_index].multicast_ip,
@@ -2410,12 +2414,11 @@ static SalMulticastRole linphone_call_get_multicast_role(const LinphoneCall *cal
 		stream_desc = sal_media_description_find_best_stream(remotedesc, type);
 
 	if (stream_desc)
-		multicast_role=stream_desc->multicast_role;
-	else
-		ms_message("Cannot determine multicast role for stream type [%s] on call [%p]",sal_stream_type_to_string(type),call);
-
+		multicast_role = stream_desc->multicast_role;
 
 	end:
+	ms_message("Call [%p], stream type [%s], multicast role is [%s]",call, sal_stream_type_to_string(type), 
+		sal_multicast_role_to_string(multicast_role));
 	return multicast_role;
 
 }

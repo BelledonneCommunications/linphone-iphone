@@ -272,6 +272,7 @@ typedef struct SalStreamDescription{
 	SalMulticastRole multicast_role;
 } SalStreamDescription;
 
+const char *sal_multicast_role_to_string(SalMulticastRole role);
 const char *sal_stream_description_get_type_as_string(const SalStreamDescription *desc);
 const char *sal_stream_description_get_proto_as_string(const SalStreamDescription *desc);
 
