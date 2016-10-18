@@ -726,6 +726,11 @@ static const struct addrinfo * get_preferred_stun_server_addrinfo(const struct a
 	return preferred_ai;
 }
 
+/* Return values:
+ * 1 :  STUN gathering is started
+ * 0 :  no STUN gathering is started, but it's ok to proceed with ICE anyway (with local candidates only or because STUN gathering was already done before)
+ * -1: no gathering started and something went wrong with local candidates. There is no way to start the ICE session.
+ */
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	char local_addr[64];
 	const struct addrinfo *ai = NULL;

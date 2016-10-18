@@ -883,6 +883,9 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	linphone_core_set_video_policy(marie->lc, &callee_policy);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	
+	linphone_core_manager_wait_for_stun_resolution(marie);
+	linphone_core_manager_wait_for_stun_resolution(pauline);
 
 	/* This is to activate media relay on Flexisip server.
 	 * Indeed, we want to test ICE with relay candidates as well, even though

@@ -2370,11 +2370,13 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 			if (call->params->realtimetext_enabled && call->textstream->ms.state==MSStreamInitialized) {
 				text_stream_prepare_text(call->textstream);
 			}
-
-			if ((err=linphone_core_gather_ice_candidates(call->core,call))<0) {
-				/* Ice candidates gathering failed, proceed with the call anyway. */
-				linphone_call_delete_ice_session(call);
+			err = linphone_core_gather_ice_candidates(call->core,call);
+			if (err == 0) {
+				/* Ice candidates gathering wasn't started, but we can proceed with the call anyway. */
 				linphone_call_stop_media_streams_for_ice_gathering(call);
+			}else if (err == -1) {
+				linphone_call_stop_media_streams_for_ice_gathering(call);
+				linphone_call_delete_ice_session(call);
 			}
 			return err;/* 1= gathering in progress, wait; 0=proceed*/
 		}
