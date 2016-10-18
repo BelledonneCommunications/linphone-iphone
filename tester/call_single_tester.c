@@ -4833,8 +4833,8 @@ static void call_with_encryption_mandatory(bool_t caller_has_encryption_mandator
 	BC_ASSERT_EQUAL(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->rtp_stats.packet_sent, 0, int, "%i");
 #endif
 	/*however we can trust packet_recv from the other party instead */
-	BC_ASSERT_EQUAL(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->rtp_stats.packet_recv, 0, int, "%i");
-	BC_ASSERT_EQUAL(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->rtp_stats.packet_recv, 0, int, "%i");
+	BC_ASSERT_EQUAL((int)linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->rtp_stats.packet_recv, 0, int, "%i");
+	BC_ASSERT_EQUAL((int)linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->rtp_stats.packet_recv, 0, int, "%i");
 	end_call(marie, pauline);
 
 	end:
