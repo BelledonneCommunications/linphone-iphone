@@ -248,7 +248,8 @@ static LinphoneCall * look_for_broken_call_to_replace(SalOp *h, LinphoneCore *lc
 		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(it);
 		SalOp *replaced_op = sal_call_get_replaces(h);
 		if (replaced_op) replaced_call = (LinphoneCall*)sal_op_get_user_pointer(replaced_op);
-		if (call->broken && (sal_call_compare_op(h, call->op) || (replaced_call && replaced_call == call))) {
+		if ((call->broken && sal_call_compare_op(h, call->op))
+			|| ((replaced_call == call) && (strcmp(sal_op_get_from(h), sal_op_get_from(replaced_op)) == 0) && (strcmp(sal_op_get_to(h), sal_op_get_to(replaced_op)) == 0))) {
 			return call;
 		}
 		it = bctbx_list_next(it);
