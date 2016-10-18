@@ -1550,17 +1550,11 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_losses) {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,2));
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,2,1000));
-		/*now try to resume*/
+		/*now try to resume, it should be OK*/
 		sal_set_send_error(pauline->lc->sal,0);
 		linphone_core_resume_call(pauline->lc,call_pauline);
-		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3,2000));
-		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3,2000));
-		/*resume failed because ACK not received to re-invite is rejected*/
-		/*next try is ok*/
-		linphone_core_resume_call(pauline->lc,call_pauline);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
-
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3,2000));
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3,2000));
 	}
 
 
