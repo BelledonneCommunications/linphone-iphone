@@ -1031,7 +1031,8 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onGotoCreateAccountClick:(id)sender {
     ONCLICKBUTTON(sender, 100, {
-        nextView = _createAccountView;
+		nextView = _createAccountView;
+		_accountLabel.text = NSLocalizedString(@"Please enter your phone number", nil);
         [self loadAssistantConfig:@"assistant_linphone_create.rc"];
     });
 }
@@ -1062,6 +1063,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onCreateAccountClick:(id)sender {
 	if ([self checkFields]) {
 		ONCLICKBUTTON(sender, 100, {
+			_activationTitle.text = @"CREATE ACCOUNT";
 			_waitView.hidden = NO;
 			linphone_account_creator_is_account_used(account_creator);
 		});
@@ -1103,7 +1105,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onLinphoneLoginClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
-
+		_activationTitle.text = @"USE LINPHONE ACCOUNT";
 		if ((linphone_account_creator_get_phone_number(account_creator) != NULL) &&
 			linphone_account_creator_get_password(account_creator) == NULL &&
 			linphone_account_creator_get_ha1(account_creator) == NULL) {
