@@ -4544,6 +4544,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEn
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  env
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
+	linphone_chat_message_set_user_data((LinphoneChatMessage*)ptr, NULL);
 	linphone_chat_message_unref((LinphoneChatMessage*)ptr);
 }
 
