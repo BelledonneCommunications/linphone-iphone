@@ -248,8 +248,7 @@ static LinphoneCall * look_for_broken_call_to_replace(SalOp *h, LinphoneCore *lc
 		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(it);
 		SalOp *replaced_op = sal_call_get_replaces(h);
 		if (replaced_op) replaced_call = (LinphoneCall*)sal_op_get_user_pointer(replaced_op);
-		if ((call->broken && sal_call_compare_op(h, call->op))
-			|| (replaced_call && replaced_call == call)){
+		if (call->broken && (sal_call_compare_op(h, call->op) || (replaced_call && replaced_call == call))) {
 			return call;
 		}
 		it = bctbx_list_next(it);
@@ -669,8 +668,6 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallPausedByRemote:
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
 				call_resumed(lc,call);
-			}else if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
-				call_paused_by_remote(lc,call); /* This can happen if the 200 OK of the re-INVITE has not reached the other party and that this one re-sends a new re-INVITE */
 			}else{
 				call_updated_by_remote(lc, call);
 			}
