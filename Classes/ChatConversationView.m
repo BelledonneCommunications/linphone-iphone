@@ -118,6 +118,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 object:nil];
 
 	[_backToCallButton update];
+	_callButton.hidden = !_backToCallButton.hidden;
 
 	if (_tableController.isEditing) {
 		[_tableController setEditing:NO];
@@ -149,6 +150,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	composingVisible = !composingVisible;
 	[self setComposingVisible:!composingVisible withDelay:0];
 	[_backToCallButton update];
+	self.callButton.hidden = !self.backToCallButton.hidden;
 	[_tableController scrollToBottom:true];
 }
 
@@ -185,6 +187,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdateEvent:(NSNotification *)notif {
 	_callButton.hidden = (_tableController.isEditing || linphone_core_get_current_call(LC) != NULL);
+	_backToCallButton.hidden = !_callButton.hidden;
 }
 
 - (void)update {
@@ -525,6 +528,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onEditionChangeClick:(id)sender {
 	_backButton.hidden = _callButton.hidden = _tableController.isEditing;
 	[_backToCallButton update];
+	if (!_backToCallButton.hidden) {
+		_callButton.hidden = TRUE;
+	}
 }
 
 - (IBAction)onCallClick:(id)sender {
