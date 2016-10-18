@@ -428,7 +428,7 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 	if (mgr->lc) {
 		const char *record_file = linphone_core_get_record_file(mgr->lc);
 		char *chatdb = ms_strdup(linphone_core_get_chat_database_path(mgr->lc));
-		if (!liblinphone_tester_keep_record_files && record_file && ortp_file_exist(record_file)) {
+		if (!liblinphone_tester_keep_record_files && record_file && ortp_file_exist(record_file)==0) {
 			if ((bc_get_number_of_failures() - mgr->number_of_bcunit_error_at_creation)>0) {
 				ms_error("Test has failed, keeping recorded file [%s]", record_file);
 			}
@@ -438,7 +438,9 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 		}
 		linphone_core_destroy(mgr->lc);
 		if (chatdb) {
-			unlink(chatdb);
+			if (unlink(chatdb) != 0){
+				ms_error("Could not delete %s: %s", chatdb, strerror(errno));
+			}
 			ms_free(chatdb);
 		}
 		mgr->lc = NULL;
