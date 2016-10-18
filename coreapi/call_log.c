@@ -76,7 +76,7 @@ static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
 void call_logs_write_to_config_file(LinphoneCore *lc){
 	bctbx_list_t *elem;
 	char logsection[32];
-	unsigned int i;
+	int i;
 	char *tmp;
 	LpConfig *cfg=lc->config;
 
