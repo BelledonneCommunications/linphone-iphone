@@ -924,20 +924,24 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
 	check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
 	nb_media_starts++;
-
-	if (video_added_by_caller) {
-		BC_ASSERT_TRUE(add_video(marie, pauline, FALSE));
-	} else if (video_added_by_callee) {
-		BC_ASSERT_TRUE(add_video(pauline, marie, FALSE));
-	}
-	if (video_added_by_caller || video_added_by_callee) {
-		BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
-		if (linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))){
-			/* Wait for ICE reINVITEs to complete if video was really added */
-			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4)
-				&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
-			check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
-			nb_media_starts++;
+	
+	if (caller_policy.automatically_initiate && callee_policy.automatically_accept && (video_added_by_caller || video_added_by_callee)){
+		BC_FAIL("Tired developer detected. You have requested the test to add video while it is already established from the beginning of the call.");
+	}else{
+		if (video_added_by_caller) {
+			BC_ASSERT_TRUE(add_video(marie, pauline, FALSE));
+		} else if (video_added_by_callee) {
+			BC_ASSERT_TRUE(add_video(pauline, marie, FALSE));
+		}
+		if (video_added_by_caller || video_added_by_callee) {
+			BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))){
+				/* Wait for ICE reINVITEs to complete if video was really added */
+				BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4)
+					&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
+				check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
+				nb_media_starts++;
+			}
 		}
 	}
 
