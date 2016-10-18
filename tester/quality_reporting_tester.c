@@ -413,6 +413,8 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 		}
 
 		end_call(marie, pauline);
+		/*wait for publish triggered by the end of call to be completed*/
+		wait_for_until(marie->lc,pauline->lc,NULL,0,3000);
 	}
 
 	linphone_call_params_destroy(marie_params);

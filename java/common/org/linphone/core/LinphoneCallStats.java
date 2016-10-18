@@ -101,6 +101,22 @@ public interface LinphoneCallStats {
 		}
 	}
 
+	static public enum LinphoneAddressFamily {
+		INET(0),
+		INET_6(1),
+		UNSPEC(2);
+
+		private int value;
+
+		LinphoneAddressFamily(int v) {
+			value = v;
+		}
+
+		public int getInt() {
+			return value;
+		}
+	}
+
 	/**
 	 * Get the stats media type
 	 * @return MediaType
@@ -191,4 +207,10 @@ public interface LinphoneCallStats {
 	 * @return The name of decoder
 	 */
 	public String getDecoderName(PayloadType pl);
+
+	/**
+	 * Get family of remote ip
+	 * @return enum LinphoneAddressFamily
+     */
+	public int getIpFamilyOfRemote();
 }

@@ -74,28 +74,36 @@ typedef struct _LinphoneCore LinphoneCore;
  * Use with #LCSipTransports
  * @ingroup initializing
  */
-#define LC_SIP_TRANSPORT_RANDOM -1
+#define LC_SIP_TRANSPORT_RANDOM (-1)
+
+/**
+ * Don't create any server socket for this transport, ie don't bind on any port.
+ * Use with #LCSipTransports
+ * @ingroup initializing
+**/
+#define LC_SIP_TRANSPORT_DONTBIND (-2)
 
 /**
  * Linphone core SIP transport ports.
+ * Special values LC_SIP_TRANSPORT_RANDOM, LC_SIP_TRANSPORT_RANDOM, #define LC_SIP_TRANSPORT_DONTBIND can be used.
  * Use with #linphone_core_set_sip_transports
  * @ingroup initializing
  */
 typedef struct _LCSipTransports{
 	/**
-	 * udp port to listening on, negative value if not set
-	 * */
+	 * SIP/UDP port.
+	 **/
 	int udp_port;
 	/**
-	 * tcp port to listening on, negative value if not set
+	 * SIP/TCP port
 	 * */
 	int tcp_port;
 	/**
-	 * dtls port to listening on, negative value if not set
+	 * SIP/DTLS port
 	 * */
 	int dtls_port;
 	/**
-	 * tls port to listening on, negative value if not set
+	 * SIP/TLS port
 	 * */
 	int tls_port;
 } LCSipTransports;
@@ -577,6 +585,22 @@ typedef enum _LinphoneUpnpState LinphoneUpnpState;
 #define LINPHONE_CALL_STATS_PERIODICAL_UPDATE (1 << 2) /**< Every seconds LinphoneCallStats object has been updated */
 
 /**
+ * Enum describing Ip family.
+ * @ingroup initializing
+**/
+enum _linphoneAddressFamily {
+	INET, /* IpV4 */
+	INET_6, /* IpV6 */
+	UNSPEC, /* Unknown */
+};
+
+/**
+ * Enum describing Ip family.
+ * @ingroup initializing
+**/
+typedef enum _linphoneAddressFamily linphoneAddressFamily;
+
+/**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
@@ -611,6 +635,7 @@ struct _LinphoneCallStats {
 	float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	rtp_stats_t rtp_stats; /**< RTP stats */
 	bool_t rtcp_received_via_mux; /*private flag, for non-regression test only*/
+	int rtp_remote_family; /* Ip adress family of the remote destination */
 };
 
 /**
@@ -1390,7 +1415,7 @@ LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, cons
  * @param lc the linphone core
  * @return file path or NULL if not exist
  **/
-	
+
 LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneCore *lc);
 /**
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.

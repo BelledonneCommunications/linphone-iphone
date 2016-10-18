@@ -48,11 +48,16 @@ static void simple(void) {
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
 	LinphonePresenceActivity *activity = NULL;
+	LinphoneCoreVTable *vtable = linphone_core_v_table_new();
+	vtable->publish_state_changed = linphone_publish_state_changed;
+	_linphone_core_add_listener(pauline->lc, vtable, TRUE, TRUE );
 
+	
 	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 40);
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	enable_publish(pauline, TRUE);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,1));
 
 	linphone_friend_enable_subscribes(f, TRUE);
 	linphone_friend_set_inc_subscribe_policy(f,LinphoneSPAccept); /* Accept incoming subscription request for this friend*/
@@ -66,10 +71,16 @@ static void simple(void) {
 		BC_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityDinner, int, "%d");
 	}
 
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,2));
+				   
 	linphone_friend_unref(f);
 	linphone_core_manager_destroy(marie);
+	
+	linphone_core_manager_stop(pauline);
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishCleared,1,int,"%i");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishOk,2,int,"%i");
 	linphone_core_manager_destroy(pauline);
-}
+	}
 
 static void fast_activity_change(void) {
 #if FIX_ME

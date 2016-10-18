@@ -428,7 +428,7 @@ void linphone_friend_list_subscription_state_changed(LinphoneCore *lc, LinphoneE
 void _linphone_friend_list_release(LinphoneFriendList *list);
 /*get rls either from list or core if any*/
 const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFriendList *list);
-	
+
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void _linphone_friend_release(LinphoneFriend *lf);
@@ -653,8 +653,7 @@ struct _LinphoneProxyConfig
 	/*use to check if server config has changed  between edit() and done()*/
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
-	int saved_expires;
-	bool_t saved_sendregister;
+	bool_t register_changed;
 	bool_t unused[3];
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
@@ -1020,7 +1019,7 @@ struct _LinphoneCore
 	bool_t send_call_stats_periodical_updates;
 	bool_t forced_ice_relay;
 	bool_t short_turn_refresh;
-	
+
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
@@ -1060,14 +1059,14 @@ struct _LinphoneCore
 	jmethodID multicast_lock_release_id;
 #endif
 	LinphoneVcardContext *vcard_context;
-	
+
 	/*for tests only*/
 	bool_t zrtp_not_available_simulation;
-	
+
 	/* string for TLS auth instead of path to files */
 	char *tls_cert;
 	char *tls_key;
-	
+
 	/*default resource list server*/
 	LinphoneAddress *default_rls_addr;
 };
@@ -1087,6 +1086,7 @@ struct _LinphoneEvent{
 	bool_t terminating;
 	bool_t is_out_of_dialog_op; /*used for out of dialog notify*/
 	bool_t internal;
+	bool_t oneshot;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneEvent);
@@ -1176,7 +1176,7 @@ void _linphone_core_codec_config_write(LinphoneCore *lc);
 #define LINPHONE_MAX_CALL_HISTORY_UNLIMITED (-1)
 #ifndef LINPHONE_MAX_CALL_HISTORY_SIZE
 	#ifdef SQLITE_STORAGE_ENABLED
-		#define LINPHONE_MAX_CALL_HISTORY_SIZE LINPHONE_MAX_CALL_HISTORY_UNLIMITED 
+		#define LINPHONE_MAX_CALL_HISTORY_SIZE LINPHONE_MAX_CALL_HISTORY_UNLIMITED
 	#else
 		#define LINPHONE_MAX_CALL_HISTORY_SIZE 30
 	#endif
@@ -1335,7 +1335,7 @@ struct _LinphoneAccountCreatorCbs {
 	LinphoneAccountCreatorCbsStatusCb create_account;
 	LinphoneAccountCreatorCbsStatusCb activate_account;
 	LinphoneAccountCreatorCbsStatusCb is_account_activated;
-
+	LinphoneAccountCreatorCbsStatusCb is_phone_number_used;
 	LinphoneAccountCreatorCbsStatusCb link_phone_number_with_account;
 	LinphoneAccountCreatorCbsStatusCb activate_phone_number_link;
 	LinphoneAccountCreatorCbsStatusCb recover_phone_account;
@@ -1363,6 +1363,7 @@ struct _LinphoneAccountCreator {
 	char *activation_code;
 	char *ha1;
 	char *phone_country_code;
+	char *language;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);

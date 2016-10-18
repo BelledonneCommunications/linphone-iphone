@@ -39,7 +39,9 @@ static void linphone_nat_policy_destroy(LinphoneNatPolicy *policy) {
 	if (policy->stun_server) belle_sip_free(policy->stun_server);
 	if (policy->stun_server_username) belle_sip_free(policy->stun_server_username);
 	if (policy->stun_addrinfo) bctbx_freeaddrinfo(policy->stun_addrinfo);
-	//if (policy->stun_resolver_context) sal_resolve_cancel(policy->stun_resolver_context);
+	if (policy->stun_resolver_context) {
+		sal_resolve_cancel(policy->stun_resolver_context);
+	}
 }
 
 static bool_t linphone_nat_policy_stun_server_activated(LinphoneNatPolicy *policy) {
@@ -213,7 +215,10 @@ static void stun_server_resolved(LinphoneNatPolicy *policy, const char *name, st
 		ms_warning("Stun server resolution failed.");
 	}
 	policy->stun_addrinfo = addrinfo;
-	policy->stun_resolver_context = NULL;
+	if (policy->stun_resolver_context){
+		sal_resolver_context_unref(policy->stun_resolver_context);
+		policy->stun_resolver_context = NULL;
+	}
 }
 
 void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
@@ -229,6 +234,7 @@ void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
 			int family = AF_INET;
 			if (linphone_core_ipv6_enabled(policy->lc) == TRUE) family = AF_INET6;
 			policy->stun_resolver_context = sal_resolve(policy->lc->sal, service, "udp", host, port, family, (SalResolverCallback)stun_server_resolved, policy);
+			if (policy->stun_resolver_context) sal_resolver_context_ref(policy->stun_resolver_context);
 		}
 	}
 }

@@ -21,16 +21,16 @@ import org.linphone.core.LinphoneAddress.TransportType;
 
 public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	protected long nativePtr;
-	
+
 	protected LinphoneAccountCreatorImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
 	}
-	
+
 	private native long newLinphoneAccountCreator(long lc, String url);
 	public LinphoneAccountCreatorImpl(LinphoneCore lc, String url) {
 		nativePtr = newLinphoneAccountCreator(((LinphoneCoreImpl)lc).nativePtr, url);
 	}
-	
+
 	public long getNativePtr() {
 		return nativePtr;
 	}
@@ -45,7 +45,7 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	public void setListener(LinphoneAccountCreatorListener listener) {
 		setListener(nativePtr, listener);
 	}
-	
+
 	private native int setUsername(long ptr, String username);
 	@Override
 	public Status setUsername(String username) {
@@ -100,6 +100,12 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return Status.fromInt(setActivationCode(nativePtr, activationCode));
 	}
 
+	private native int setLanguage(long ptr, String lang);
+	@Override
+	public Status setLanguage(String lang) {
+		return Status.fromInt(setLanguage(nativePtr, lang));
+	}
+
 	private native int setTransport(long ptr, int transport);
 	@Override
 	public Status setTransport(TransportType transport) {
@@ -141,7 +147,7 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	public Status setDisplayName(String displayName) {
 		return Status.fromInt(setDisplayName(nativePtr, displayName));
 	}
-	
+
 	private native String getDisplayName(long ptr);
 	@Override
 	public String getDisplayName() {
@@ -159,19 +165,19 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	public String getEmail() {
 		return getEmail(nativePtr);
 	}
-	
+
 	private native int isAccountUsed(long ptr);
 	@Override
 	public Status isAccountUsed() {
 		return Status.fromInt(isAccountUsed(nativePtr));
 	}
-	
+
 	private native int createAccount(long ptr);
 	@Override
 	public Status createAccount() {
 		return Status.fromInt(createAccount(nativePtr));
 	}
-	
+
 	private native int activateAccount(long ptr);
 	@Override
 	public Status activateAccount() {
@@ -183,31 +189,37 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	public Status isAccountLinked() {
 		return Status.fromInt(isAccountLinked(nativePtr));
 	}
-	
+
+	private native int isPhoneNumberUsed(long ptr);
+	@Override
+	public Status isPhoneNumberUsed() {
+		return Status.fromInt(isPhoneNumberUsed(nativePtr));
+	}
+
 	private native int isAccountActivated(long ptr);
 	@Override
 	public Status isAccountActivated() {
 		return Status.fromInt(isAccountActivated(nativePtr));
 	}
-	
+
 	private native int linkPhoneNumberWithAccount(long ptr);
 	@Override
 	public Status linkPhoneNumberWithAccount() {
 		return Status.fromInt(linkPhoneNumberWithAccount(nativePtr));
 	}
-	
+
 	private native int activatePhoneNumberLink(long ptr);
 	@Override
 	public Status activatePhoneNumberLink() {
 		return Status.fromInt(activatePhoneNumberLink(nativePtr));
 	}
-	
+
 	private native int recoverPhoneAccount(long ptr);
 	@Override
 	public Status recoverPhoneAccount() {
 		return Status.fromInt(recoverPhoneAccount(nativePtr));
 	}
-	
+
 	private native LinphoneProxyConfig configure(long ptr);
 	@Override
 	public LinphoneProxyConfig configure() {

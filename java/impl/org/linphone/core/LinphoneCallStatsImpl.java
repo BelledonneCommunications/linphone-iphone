@@ -52,6 +52,7 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 	private native String getEncoderName(long nativeStatsPtr, long nativeCallPtr, long payloadPtr);
 	private native String getDecoderName(long nativeStatsPtr, long nativeCallPtr, long payloadPtr);
 	private native void updateStats(long nativeCallPtr, int mediaType);
+	private native int getIpFamilyOfRemote(long nativeStatsPtr);
 
 	protected LinphoneCallStatsImpl(long nativeCallPtr, long nativeStatsPtr) {
 		nativePtr = nativeStatsPtr;
@@ -67,7 +68,7 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 		roundTripDelay = getRoundTripDelay(nativeStatsPtr);
 		latePacketsCumulativeNumber = getLatePacketsCumulativeNumber(nativeStatsPtr, nativeCallPtr);
 		jitterBufferSize = getJitterBufferSize(nativeStatsPtr);
-		
+
 	}
 
 	protected void updateRealTimeStats(LinphoneCall call){
@@ -138,5 +139,9 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 		if (pl == null)
 			return "";
 		return getDecoderName(nativePtr, nativeCPtr, ((PayloadTypeImpl)pl).nativePtr);
+	}
+
+	public int getIpFamilyOfRemote() {
+		return getIpFamilyOfRemote(nativePtr);
 	}
 }
