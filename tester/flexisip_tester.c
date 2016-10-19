@@ -926,6 +926,7 @@ static void file_transfer_message_external_body_to_rcs_client(void) {
 static void dos_module_trigger(void) {
 	LinphoneChatRoom *chat_room;
 	int i = 0;
+	int dummy = 0;
 	const char* passmsg = "This one should pass through";
 	int number_of_messge_to_send = 100;
 	LinphoneChatMessage * chat_msg = NULL;
@@ -942,12 +943,12 @@ static void dos_module_trigger(void) {
 		sprintf(msg, "Flood message number %i", i);
 		chat_msg = linphone_chat_room_create_message(chat_room, msg);
 		linphone_chat_room_send_chat_message(chat_room, chat_msg);
-		ms_usleep(10000);
+		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 10);
 		i++;
 	} while (i < number_of_messge_to_send);
 	// At this point we should be banned for a minute
 
-	ms_sleep(65); // Wait several seconds to ensure we are not banned anymore
+	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 65000);; // Wait several seconds to ensure we are not banned anymore
 	BC_ASSERT_LOWER(marie->stat.number_of_LinphoneMessageReceived, number_of_messge_to_send, int, "%d");
 
 	reset_counters(&marie->stat);
