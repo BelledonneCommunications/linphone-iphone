@@ -148,7 +148,7 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 		return FALSE;
 	}
 	bls=req->status;
-	if (last_state==bls) return TRUE;
+	if (last_state==(int)bls) return TRUE;
 	
 	switch(bls){
 		case BuddyLookupNone:

@@ -91,7 +91,7 @@ void file_transfer_received(LinphoneChatMessage *msg, const LinphoneContent* con
 		linphone_chat_message_set_user_data(msg, NULL);
 		fclose(file);
 	} else { /* store content on a file*/
-		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
+		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==0){
 			ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
 		}
 	}

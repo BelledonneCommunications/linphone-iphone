@@ -130,6 +130,7 @@ BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_BEGIN(LinphoneContactProvider)
 		(belle_sip_object_destroy_t) contact_provider_destroy,
 		NULL,/*no clone*/
 		NULL,/*no marshal*/
+		BELLE_SIP_DEFAULT_BUFSIZE_HINT
 	},
 	"",
 	// Pure virtual

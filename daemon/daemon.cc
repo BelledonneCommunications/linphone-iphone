@@ -340,7 +340,8 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 		linphone_core_disable_logs();
 	}
 
-	LinphoneCoreVTable vtable = { 0 };
+	LinphoneCoreVTable vtable;
+	memset(&vtable, 0, sizeof(vtable));
 	vtable.call_state_changed = callStateChanged;
 	vtable.call_stats_updated = callStatsUpdated;
 	vtable.dtmf_received = dtmfReceived;
@@ -618,8 +619,9 @@ void Daemon::sendResponse(const Response &resp) {
 }
 
 char *Daemon::readPipe(char *buffer, int buflen) {
-	struct pollfd pfd[2] = { { 0 }, { 0 } };
+	struct pollfd pfd[2];
 	int nfds = 1;
+	memset(&pfd[0], 0, sizeof(pfd));
 	if (mServerFd != -1) {
 		pfd[0].events = POLLIN;
 		pfd[0].fd = mServerFd;

@@ -448,17 +448,16 @@ static void _bc_status_notifier_method_call_cb(
 static void _bc_status_notifier_bus_acquired_cb(GDBusConnection *conn, const gchar *name, BcStatusNotifier *sn) {
 	char *interface_name = g_strdup_printf("%s.%s", sn->params->prefix, ITEM_NAME);
 	char *item_path = g_strdup_printf("/%s", ITEM_NAME);
-	GDBusInterfaceVTable vtable = {
-		(GDBusInterfaceMethodCallFunc)_bc_status_notifier_method_call_cb,
-		(GDBusInterfaceGetPropertyFunc)_bc_status_notifier_get_property_cb,
-		NULL
-	};
-	
+	GDBusInterfaceVTable vtable;
 	GDBusNodeInfo *node_info = g_dbus_node_info_new_for_xml(STATUS_NOTIFIER_INTROSPECTION_DATA, NULL);
 	GDBusInterfaceInfo *interface = g_dbus_node_info_lookup_interface(
 		node_info,
 		interface_name
 	);
+
+	memset(&vtable, 0, sizeof(vtable));
+	vtable.method_call = (GDBusInterfaceMethodCallFunc)_bc_status_notifier_method_call_cb;
+	vtable.get_property = (GDBusInterfaceGetPropertyFunc)_bc_status_notifier_get_property_cb;
 	g_free(interface_name);
 	
 	sn->conn = conn;

@@ -294,7 +294,8 @@ MSFilterDesc audio_bypass_snd_read_desc = {
 	audio_bypass_snd_read_process,
 	audio_bypass_snd_read_postprocess,
 	audio_bypass_snd_read_uninit,
-	audio_bypass_snd_read_methods
+	audio_bypass_snd_read_methods,
+	0
 };
 
 static void audio_bypass_snd_write_init(MSFilter *f) {
@@ -366,7 +367,8 @@ MSFilterDesc audio_bypass_snd_write_desc = {
 	audio_bypass_snd_write_process,
 	audio_bypass_snd_write_postprocess,
 	audio_bypass_snd_write_uninit,
-	audio_bypass_snd_write_methods
+	audio_bypass_snd_write_methods,
+	0
 };
 
 static MSFilter* audio_bypass_snd_card_create_reader(MSSndCard *sndcard) {
@@ -394,6 +396,9 @@ MSSndCardDesc audio_bypass_snd_card_desc = {
 	NULL,
 	audio_bypass_snd_card_create_reader,
 	audio_bypass_snd_card_create_writer,
+	NULL,
+	NULL,
+	NULL,
 	NULL
 };
 

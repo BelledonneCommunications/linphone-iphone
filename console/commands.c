@@ -133,8 +133,8 @@ static LPC_COMMAND *lpc_find_command(const char *name);
 
 void linphonec_out(const char *fmt,...);
 
-VideoParams lpc_video_params={-1,-1,-1,-1,0,TRUE};
-VideoParams lpc_preview_params={-1,-1,-1,-1,0,TRUE};
+VideoParams lpc_video_params={-1,-1,-1,-1,NULL,TRUE,FALSE};
+VideoParams lpc_preview_params={-1,-1,-1,-1,NULL,TRUE,FALSE};
 
 /***************************************************************************
  *
@@ -212,7 +212,8 @@ static LPC_COMMAND commands[] = {
 		"'ipv6 disable' : do not use ipv6 network."
 	},
 	{ "mute", lpc_cmd_mute_mic,
-	  "Mute microphone and suspend voice transmission."
+		"Mute microphone and suspend voice transmission.",
+		NULL
 	},
 	{ "nat", lpc_cmd_nat, "Set nat address",
 		"'nat'        : show nat settings.\n"
@@ -228,7 +229,8 @@ static LPC_COMMAND commands[] = {
 		"'play <wav file>'    : play a wav file."
 	},
 	{ "playbackgain", lpc_cmd_playback_gain,
-		"Adjust playback gain."
+		"Adjust playback gain.",
+		NULL
 	},
 	{ "proxy", lpc_cmd_proxy, "Manage proxies",
 		"'proxy list' : list all proxy setups.\n"
@@ -269,7 +271,8 @@ static LPC_COMMAND commands[] = {
 		"'transfer <call id1> --to-call <call id2>': transfers the call with 'id1' to the destination of call 'id2' (attended transfer)\n"
 	},
 	{ "unmute", lpc_cmd_unmute_mic,
-		"Unmute microphone and resume voice transmission."
+		"Unmute microphone and resume voice transmission.",
+		NULL
 	},
 	{ "webcam", lpc_cmd_webcam, "Manage webcams",
 		"'webcam list' : list all known devices.\n"
@@ -325,9 +328,11 @@ static LPC_COMMAND advanced_commands[] = {
 		"'snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
 	{ "preview-snapshot", lpc_cmd_preview_snapshot, "Take a snapshot of currently captured video stream",
-		"'preview-snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
+		"'preview-snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n",
+		NULL
 	},
-	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call"
+	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call",
+		NULL
 },
 #endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
@@ -1909,7 +1914,7 @@ static int
 linphonec_friend_delete(LinphoneCore *lc, int num)
 {
 	const bctbx_list_t *friend = linphone_core_get_friend_list(lc);
-	unsigned int n;
+	int n;
 
 	for(n=0; friend!=NULL; friend=bctbx_list_next(friend), ++n )
 	{
@@ -1922,13 +1927,13 @@ linphonec_friend_delete(LinphoneCore *lc, int num)
 
 	if (-1 == num)
 	{
-		unsigned int i;
+		int i;
 		for (i = 0 ; i < n ; i++)
 			linphonec_friend_delete(lc, 0);
 		return 0;
 	}
 
-	linphonec_out("No such friend %u\n", num);
+	linphonec_out("No such friend %i\n", num);
 	return 1;
 }
 

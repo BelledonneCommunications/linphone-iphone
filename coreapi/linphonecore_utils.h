@@ -137,7 +137,7 @@ LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *cc
 /**
  * Return if given plan is generic
 **/
-LINPHONE_PUBLIC const bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc);
+LINPHONE_PUBLIC bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc);
 
 #ifdef __cplusplus
 }

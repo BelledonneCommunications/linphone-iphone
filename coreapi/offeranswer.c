@@ -58,7 +58,7 @@ static PayloadType * opus_match(MSOfferAnswerContext *ctx, const bctbx_list_t *l
 }
 
 static MSOfferAnswerContext *opus_offer_answer_create_context(void){
-	static MSOfferAnswerContext opus_oa = {opus_match, NULL};
+	static MSOfferAnswerContext opus_oa = {opus_match, NULL, NULL};
 	return &opus_oa;
 }
 
@@ -84,7 +84,7 @@ static PayloadType * g729A_match(MSOfferAnswerContext *ctx, const bctbx_list_t *
 }
 
 static MSOfferAnswerContext *g729a_offer_answer_create_context(void){
-	static MSOfferAnswerContext g729_oa = {g729A_match, NULL};
+	static MSOfferAnswerContext g729_oa = {g729A_match, NULL, NULL};
 	return &g729_oa;
 }
 
@@ -122,7 +122,7 @@ static PayloadType * red_match(MSOfferAnswerContext *ctx, const bctbx_list_t *lo
 }
 
 static MSOfferAnswerContext *red_offer_answer_create_context(void){
-	static MSOfferAnswerContext red_oa = {red_match, NULL};
+	static MSOfferAnswerContext red_oa = {red_match, NULL, NULL};
 	return &red_oa;
 }
 

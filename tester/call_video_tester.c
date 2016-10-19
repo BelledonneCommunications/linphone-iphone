@@ -964,34 +964,42 @@ end:
 }
 
 static void call_with_ice_video_added(void) {
-	LinphoneVideoPolicy vpol = { TRUE, TRUE };
+	LinphoneVideoPolicy vpol;
+	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
 	_call_with_ice_video(vpol, vpol, TRUE, FALSE, TRUE, FALSE);
 }
 
 static void call_with_ice_video_added_2(void) {
-	LinphoneVideoPolicy vpol = { TRUE, TRUE };
+	LinphoneVideoPolicy vpol;
+	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
 	_call_with_ice_video(vpol, vpol, TRUE, FALSE, FALSE, TRUE);
 }
 
 static void call_with_ice_video_added_3(void) {
-	LinphoneVideoPolicy vpol = { TRUE, TRUE };
+	LinphoneVideoPolicy vpol;
+	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
 	_call_with_ice_video(vpol, vpol, FALSE, TRUE, TRUE, FALSE);
 }
 
 static void call_with_ice_video_added_and_refused(void) {
-	LinphoneVideoPolicy caller_policy = { TRUE, TRUE };
-	LinphoneVideoPolicy callee_policy = { FALSE, FALSE };
+	LinphoneVideoPolicy caller_policy;
+	LinphoneVideoPolicy callee_policy;
+	caller_policy.automatically_initiate = caller_policy.automatically_accept = TRUE;
+	callee_policy.automatically_initiate = callee_policy.automatically_accept = FALSE;
 	_call_with_ice_video(caller_policy, callee_policy, TRUE, FALSE, FALSE, FALSE);
 }
 
 static void call_with_ice_video_added_with_video_policies_to_false(void) {
-	LinphoneVideoPolicy vpol = { FALSE, FALSE };
+	LinphoneVideoPolicy vpol;
+	vpol.automatically_initiate = vpol.automatically_accept = FALSE;
 	_call_with_ice_video(vpol, vpol, FALSE, TRUE, FALSE, FALSE);
 }
 
 static void call_with_ice_video_declined_then_added_by_callee(void) {
-	LinphoneVideoPolicy caller_policy = { TRUE, TRUE };
-	LinphoneVideoPolicy callee_policy = { FALSE, FALSE };
+	LinphoneVideoPolicy caller_policy;
+	LinphoneVideoPolicy callee_policy;
+	caller_policy.automatically_initiate = caller_policy.automatically_accept = TRUE;
+	callee_policy.automatically_initiate = callee_policy.automatically_accept = FALSE;
 	_call_with_ice_video(caller_policy, callee_policy, FALSE, TRUE, FALSE, FALSE);
 }
 
@@ -999,10 +1007,11 @@ static void call_with_ice_video_and_rtt(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	bool_t call_ok;
-	LinphoneVideoPolicy policy = { TRUE, TRUE };
+	LinphoneVideoPolicy policy;
 	LinphoneCallParams *params = NULL;
 	LinphoneCall *marie_call = NULL;
 
+	policy.automatically_initiate = policy.automatically_accept = TRUE;
 	linphone_core_set_video_policy(pauline->lc, &policy);
 	linphone_core_set_video_policy(marie->lc, &policy);
 	linphone_core_enable_video_capture(marie->lc, TRUE);
@@ -1396,11 +1405,12 @@ static void classic_video_entry_phone_setup(void) {
 	LinphoneCallParams *early_media_params = NULL;
 	LinphoneCallParams *in_call_params = NULL;
 	LinphoneCall *callee_call = NULL;
-	LinphoneVideoPolicy vpol = { TRUE, TRUE };
+	LinphoneVideoPolicy vpol;
 	bctbx_list_t *lcs = NULL;
 	int retry = 0;
 	bool_t ok;
 
+	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
 	lcs = bctbx_list_append(lcs, caller_mgr->lc);
 	lcs = bctbx_list_append(lcs, callee_mgr->lc);
 

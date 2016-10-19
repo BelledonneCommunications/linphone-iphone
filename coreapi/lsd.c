@@ -77,7 +77,10 @@ static MSSndCardDesc proxycard={
 	NULL,
 	/*create_reader*/ NULL,
 	create_writer,
-	/*uninit,*/
+	NULL, /*uninit*/
+	NULL, /* duplicate */
+	NULL, /*unload */
+	NULL /*usage_hint */
 };
 
 LsdPlayer *linphone_sound_daemon_get_player(LinphoneSoundDaemon *obj){

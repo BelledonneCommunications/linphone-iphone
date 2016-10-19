@@ -3426,7 +3426,8 @@ static void call_with_generic_cn(void) {
 	ms_free(audio_file_with_silence);
 	bc_free(recorded_file);
 }
-void static call_state_changed_2(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
+
+static void call_state_changed_2(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	LCSipTransports sip_tr;
 	if (cstate==LinphoneCallReleased) {
 		/*to make sure transport is changed*/
@@ -3437,7 +3438,8 @@ void static call_state_changed_2(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 		linphone_core_set_sip_transports(lc,&sip_tr);
 	}
 }
-void static call_state_changed_3(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
+
+static void call_state_changed_3(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 /*just to check multi listener in such situation*/
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -3448,7 +3450,6 @@ void static call_state_changed_3(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 	ms_free(to);
 	ms_free(from);
 }
-
 
 static void call_with_transport_change_base(bool_t succesfull_call) {
 	LCSipTransports sip_tr;
@@ -3583,9 +3584,10 @@ static void call_with_complex_late_offering(void){
 	LinphoneCoreManager* pauline =  linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline;
 	LinphoneCall* call_marie;
-	LinphoneVideoPolicy vpol = {TRUE, TRUE};
+	LinphoneVideoPolicy vpol;
 	bool_t call_ok;
 
+	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, TRUE);
 	linphone_core_enable_video_capture(marie->lc, TRUE);
@@ -3931,7 +3933,7 @@ static void rtptm_destroy(RtpTransportModifier *rtptm)  {
 }
 
 // This is the callback called when the state of the call change
-void static call_state_changed_4(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
+static void call_state_changed_4(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
 	int i = 0;
 
 	// To add a custom RTP transport modifier, we have to do it before the call is running, but after the RTP session is created.

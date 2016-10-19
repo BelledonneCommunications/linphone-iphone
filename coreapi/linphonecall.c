@@ -3069,7 +3069,8 @@ static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, LinphoneCall *ca
 	}
 	rtp_session_configure_rtcp_xr(session, &currentconfig);
 }
-void static start_dtls( MSMediaStreamSessions *sessions,  const SalStreamDescription *sd,const SalStreamDescription *remote) {
+
+static void start_dtls( MSMediaStreamSessions *sessions,  const SalStreamDescription *sd,const SalStreamDescription *remote) {
 	if (sal_stream_description_has_dtls(sd) == TRUE) {
 		/*DTLS*/
 		SalDtlsRole salRole = sd->dtls_role;
@@ -3083,7 +3084,8 @@ void static start_dtls( MSMediaStreamSessions *sessions,  const SalStreamDescrip
 		}
 	}
 }
-void static start_dtls_on_all_streams(LinphoneCall *call) {
+
+static void start_dtls_on_all_streams(LinphoneCall *call) {
 	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
 	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
 	if( remote_desc == NULL || result_desc == NULL ){
@@ -3108,7 +3110,7 @@ void static start_dtls_on_all_streams(LinphoneCall *call) {
 	return;
 }
 
-void static set_dtls_fingerprint( MSMediaStreamSessions *sessions,  const SalStreamDescription *sd,const SalStreamDescription *remote) {
+static void set_dtls_fingerprint( MSMediaStreamSessions *sessions,  const SalStreamDescription *sd,const SalStreamDescription *remote) {
 	if (sal_stream_description_has_dtls(sd) == TRUE) {
 		/*DTLS*/
 		SalDtlsRole salRole = sd->dtls_role;
@@ -3121,7 +3123,7 @@ void static set_dtls_fingerprint( MSMediaStreamSessions *sessions,  const SalStr
 	}
 }
 
-void static set_dtls_fingerprint_on_all_streams(LinphoneCall *call) {
+static void set_dtls_fingerprint_on_all_streams(LinphoneCall *call) {
 	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
 	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
 

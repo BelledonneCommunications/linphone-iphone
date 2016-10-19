@@ -153,7 +153,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 					belle_sip_object_unref(op->refresher);
 					op->refresher=NULL;
 				}
-				if (expires>0){
+				if ((expires != NULL) && (belle_sip_header_expires_get_expires(expires) > 0)) {
 					op->refresher=belle_sip_client_transaction_create_refresher(client_transaction);
 					belle_sip_refresher_set_listener(op->refresher,presence_refresher_listener,op);
 					belle_sip_refresher_set_realm(op->refresher,op->base.realm);

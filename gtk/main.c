@@ -1030,7 +1030,7 @@ static gboolean grab_focus(GtkWidget *w){
 	return FALSE;
 }
 
-void linphone_gtk_viewswitch_changed(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data){
+void linphone_gtk_viewswitch_changed(GtkNotebook *notebook, GtkWidget *page, gint page_num, gpointer user_data){
 	GtkWidget *main_window = linphone_gtk_get_main_window();
 	GtkWidget *friendlist = linphone_gtk_get_widget(main_window,"contact_list");
 	GtkWidget *w = (GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
