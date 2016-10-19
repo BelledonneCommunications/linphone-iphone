@@ -922,8 +922,8 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2)
 		&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
 	BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
-	check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
-	nb_media_starts++;
+	BC_ASSERT_TRUE(check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts));
+	
 	
 	if (caller_policy.automatically_initiate && callee_policy.automatically_accept && (video_added_by_caller || video_added_by_callee)){
 		BC_FAIL("Tired developer detected. You have requested the test to add video while it is already established from the beginning of the call.");
@@ -939,8 +939,10 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 				/* Wait for ICE reINVITEs to complete if video was really added */
 				BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4)
 					&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
-				check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
+				/*the video addon should have triggered a media start, but the ICE reINVITE shall not*/
 				nb_media_starts++;
+				BC_ASSERT_TRUE(check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts));
+				
 			}
 		}
 	}
@@ -952,8 +954,9 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	}
 	if (video_removed_by_caller || video_removed_by_callee) {
 		BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
-		check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
 		nb_media_starts++;
+		BC_ASSERT_TRUE(check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts));
+		
 	}
 
 	end_call(pauline, marie);
@@ -965,20 +968,26 @@ end:
 
 static void call_with_ice_video_added(void) {
 	LinphoneVideoPolicy vpol;
-	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
+	vpol.automatically_initiate = vpol.automatically_accept = FALSE;
 	_call_with_ice_video(vpol, vpol, TRUE, FALSE, TRUE, FALSE);
 }
 
 static void call_with_ice_video_added_2(void) {
 	LinphoneVideoPolicy vpol;
-	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
+	vpol.automatically_initiate = vpol.automatically_accept = FALSE;
 	_call_with_ice_video(vpol, vpol, TRUE, FALSE, FALSE, TRUE);
 }
 
 static void call_with_ice_video_added_3(void) {
 	LinphoneVideoPolicy vpol;
-	vpol.automatically_initiate = vpol.automatically_accept = TRUE;
+	vpol.automatically_initiate = vpol.automatically_accept = FALSE;
 	_call_with_ice_video(vpol, vpol, FALSE, TRUE, TRUE, FALSE);
+}
+
+static void call_with_ice_video_added_4(void) {
+	LinphoneVideoPolicy vpol;
+	vpol.automatically_initiate = vpol.automatically_accept = FALSE;
+	_call_with_ice_video(vpol, vpol, FALSE, TRUE, FALSE, TRUE);
 }
 
 static void call_with_ice_video_added_and_refused(void) {
@@ -1796,6 +1805,7 @@ test_t call_video_tests[] = {
 	TEST_ONE_TAG("Call with ICE and video added", call_with_ice_video_added, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added 2", call_with_ice_video_added_2, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added 3", call_with_ice_video_added_3, "ICE"),
+	TEST_ONE_TAG("Call with ICE and video added 3", call_with_ice_video_added_4, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added and refused", call_with_ice_video_added_and_refused, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added with video policies to false", call_with_ice_video_added_with_video_policies_to_false, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video declined then added by callee", call_with_ice_video_declined_then_added_by_callee, "ICE"),

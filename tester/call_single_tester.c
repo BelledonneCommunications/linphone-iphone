@@ -1190,17 +1190,23 @@ static void call_with_no_sdp_ack_without_sdp(void){
 	linphone_core_manager_destroy(pauline);
 }
 
-void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts) {
+int check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts) {
+	int c1_ret = FALSE, c2_ret = FALSE;
 	LinphoneCall *c1 = linphone_core_get_current_call(caller->lc);
 	LinphoneCall *c2 = linphone_core_get_current_call(callee->lc);
 	BC_ASSERT_PTR_NOT_NULL(c1);
 	BC_ASSERT_PTR_NOT_NULL(c2);
+	if (!c1 || !c2) return FALSE;
+	
 	if (c1) {
+		c1_ret = c1->nb_media_starts == caller_nb_media_starts;
 		BC_ASSERT_EQUAL(c1->nb_media_starts, caller_nb_media_starts, unsigned int, "%u");
 	}
 	if (c2) {
+		c2_ret = c2->nb_media_starts == callee_nb_media_starts;
 		BC_ASSERT_EQUAL(c2->nb_media_starts, callee_nb_media_starts, unsigned int, "%u");
 	}
+	return c1_ret && c2_ret;
 }
 
 void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay) {
