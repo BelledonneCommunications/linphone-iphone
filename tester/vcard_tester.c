@@ -799,8 +799,8 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("vCard creation for existing friends", linphone_vcard_update_existing_friends_test),
 	TEST_NO_TAG("vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses),
 #ifdef SQLITE_STORAGE_ENABLED
-	TEST_NO_TAG("Friends working if no db set", friends_if_no_db_set),
-	TEST_NO_TAG("Friends storage migration from rc to db", friends_migration),
+	TEST_ONE_TAG("Friends working if no db set", friends_if_no_db_set, "LeaksMemory"),
+	TEST_ONE_TAG("Friends storage migration from rc to db", friends_migration, "LeaksMemory"),
 	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 #endif
 	TEST_NO_TAG("CardDAV clean", carddav_clean), // This is to ensure the content of the test addressbook is in the correct state for the following tests
