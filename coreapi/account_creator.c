@@ -468,7 +468,14 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 		domain = ms_strdup_printf("%s;transport=%s", creator->domain, linphone_transport_to_string(creator->transport));
 	}
 	linphone_proxy_config_set_identity_address(cfg, identity);
-	if (creator->phone_country_code) linphone_proxy_config_set_dial_prefix(cfg, creator->phone_country_code);
+	if (creator->phone_country_code) {
+		linphone_proxy_config_set_dial_prefix(cfg, creator->phone_country_code);
+	} else if (creator->phone_number) {
+		int dial_prefix_number = linphone_dial_plan_lookup_ccc_from_e164(creator->phone_number);
+		char buff[4];
+		snprintf(buff, sizeof(buff), "%d", dial_prefix_number);
+		linphone_proxy_config_set_dial_prefix(cfg, buff);
+	}
 	linphone_proxy_config_set_server_addr(cfg, domain);
 	linphone_proxy_config_set_route(cfg, route);
 	linphone_proxy_config_enable_publish(cfg, FALSE);
