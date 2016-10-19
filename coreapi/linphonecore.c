@@ -3622,7 +3622,13 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallPaused:
 		case LinphoneCallPausedByRemote:
+		case LinphoneCallUpdatedByRemote:
 			nextstate=LinphoneCallUpdating;
+			break;
+		case LinphoneCallPausing:
+		case LinphoneCallResuming:
+		case LinphoneCallUpdating:
+			nextstate=call->state;
 			break;
 		default:
 		ms_error("linphone_core_update_call() is not allowed in [%s] state",linphone_call_state_to_string(call->state));

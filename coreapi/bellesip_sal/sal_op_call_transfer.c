@@ -22,13 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 /*call transfer*/
-static void sal_op_set_replaces(SalOp* op,belle_sip_header_replaces_t* replaces) {
-	if (op->replaces){
-		belle_sip_object_unref(op->replaces);
-	}
-	op->replaces=replaces;
-	belle_sip_object_ref(op->replaces);
-}
 static void sal_op_set_referred_by(SalOp* op,belle_sip_header_referred_by_t* referred_by) {
 	if (op->referred_by){
 		belle_sip_object_unref(op->referred_by);

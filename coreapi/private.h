@@ -390,6 +390,8 @@ void linphone_call_log_destroy(LinphoneCallLog *cl);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 void linphone_call_refresh_sockets(LinphoneCall *call);
+void linphone_call_replace_op(LinphoneCall *call, SalOp *op);
+void linphone_call_reinvite_to_recover_from_connection_loss(LinphoneCall *call);
 
 LinphoneCallParams * linphone_call_params_new(void);
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params);

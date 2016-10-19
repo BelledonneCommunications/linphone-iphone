@@ -240,15 +240,41 @@ static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const L
 }
 
 
+static LinphoneCall * look_for_broken_call_to_replace(SalOp *h, LinphoneCore *lc) {
+	const bctbx_list_t *calls = linphone_core_get_calls(lc);
+	const bctbx_list_t *it = calls;
+	while (it != NULL) {
+		LinphoneCall *replaced_call = NULL;
+		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(it);
+		SalOp *replaced_op = sal_call_get_replaces(h);
+		if (replaced_op) replaced_call = (LinphoneCall*)sal_op_get_user_pointer(replaced_op);
+		if ((call->broken && sal_call_compare_op(h, call->op))
+			|| ((replaced_call == call) && (strcmp(sal_op_get_from(h), sal_op_get_from(replaced_op)) == 0) && (strcmp(sal_op_get_to(h), sal_op_get_to(replaced_op)) == 0))) {
+			return call;
+		}
+		it = bctbx_list_next(it);
+	}
+	
+	return NULL;
+}
+
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call;
+	LinphoneCall *replaced_call;
 	char *alt_contact;
 	LinphoneAddress *from_addr=NULL;
 	LinphoneAddress  *to_addr=NULL;
 	LinphoneAddress *from_address_to_search_if_me=NULL; /*address used to know if I'm the caller*/
 	SalMediaDescription *md;
 	const char * p_asserted_id;
+
+	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
+	replaced_call = look_for_broken_call_to_replace(h, lc);
+	if (replaced_call != NULL) {
+		linphone_call_replace_op(replaced_call, h);
+		return;
+	}
 
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
@@ -421,8 +447,7 @@ static void call_ringing(SalOp *h){
 			/*already doing early media */
 			return;
 		}
-		if (lc->ringstream!=NULL) return;/*already ringing !*/
-		start_remote_ring(lc, call);
+		if (lc->ringstream == NULL) start_remote_ring(lc, call);
 		ms_message("Remote ringing...");
 		linphone_core_notify_display_status(lc,_("Remote ringing..."));
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
@@ -659,6 +684,7 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 			break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallConnected:
+		case LinphoneCallUpdatedByRemote: // Can happen on UAC connectivity loss
 			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
 				call_paused_by_remote(lc,call);
 			}else{
@@ -672,7 +698,6 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallUpdating:
 		case LinphoneCallPausing:
 		case LinphoneCallResuming:
-		case LinphoneCallUpdatedByRemote:
 			sal_call_decline(call->op,SalReasonInternalError,NULL);
 			/*no break*/
 		case LinphoneCallIdle:
@@ -918,6 +943,10 @@ static void call_failure(SalOp *op){
 			msg=_("Incompatible media parameters.");
 			linphone_core_notify_display_status(lc,msg);
 		break;
+		case SalReasonNoMatch:
+			/* Call leg does not exist response for case of section 5.5 of RFC 6141 */
+			linphone_call_reinvite_to_recover_from_connection_loss(call);
+			return; /* Do not continue... */
 		default:
 			linphone_core_notify_display_status(lc,_("Call failed."));
 	}

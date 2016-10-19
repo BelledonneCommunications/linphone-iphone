@@ -1550,17 +1550,11 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_losses) {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,2));
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,2,1000));
-		/*now try to resume*/
+		/*now try to resume, it should be OK*/
 		sal_set_send_error(pauline->lc->sal,0);
 		linphone_core_resume_call(pauline->lc,call_pauline);
-		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3,2000));
-		BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3,2000));
-		/*resume failed because ACK not received to re-invite is rejected*/
-		/*next try is ok*/
-		linphone_core_resume_call(pauline->lc,call_pauline);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
-
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3,2000));
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3,2000));
 	}
 
 
@@ -4156,26 +4150,28 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
-static void _call_with_network_switch_in_early_state(bool_t network_loosed_by_caller){
+static void recovered_call_on_network_switch_in_early_state_1(void) {
+	LinphoneCall *incoming_call;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	linphone_core_invite_address(marie->lc, pauline->identity);
 	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
 	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
-	if (network_loosed_by_caller){
-		linphone_core_set_network_reachable(marie->lc, FALSE);
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallError, 1));
-		linphone_core_set_network_reachable(marie->lc, TRUE);
-		linphone_core_terminate_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	}else{
-		linphone_core_set_network_reachable(pauline->lc, FALSE);
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallError, 1));
-		linphone_core_set_network_reachable(pauline->lc, TRUE);
-		linphone_core_terminate_call(marie->lc, linphone_core_get_current_call(marie->lc));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	}
+
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 2));
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
 end:
@@ -4183,12 +4179,285 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_with_network_switch_in_early_state_1(void){
-	_call_with_network_switch_in_early_state(TRUE);
+static void recovered_call_on_network_switch_in_early_state_2(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	//linphone_core_iterate(pauline->lc);
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
-static void call_with_network_switch_in_early_state_2(void){
-	_call_with_network_switch_in_early_state(FALSE);
+static void recovered_call_on_network_switch_in_early_state_3(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	linphone_core_set_network_reachable(pauline->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableTrue, 2);
+
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void recovered_call_on_network_switch_in_early_state_4(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	linphone_core_set_network_reachable(pauline->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableTrue, 2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	BC_ASSERT_TRUE(sal_call_dialog_request_pending(incoming_call->op));
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	BC_ASSERT_FALSE(sal_call_dialog_request_pending(incoming_call->op));
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void recovered_call_on_network_switch_during_reinvite_1(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCall *outgoing_call;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	outgoing_call = linphone_core_get_current_call(marie->lc);
+	linphone_core_pause_call(marie->lc, outgoing_call);
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void configure_video_policies_for_network_switch(LinphoneCore *marie, LinphoneCore *pauline) {
+	LinphoneVideoPolicy policy;
+	policy.automatically_accept = FALSE;
+	policy.automatically_initiate = FALSE;
+
+	linphone_core_enable_video_capture(marie, TRUE);
+	linphone_core_enable_video_display(marie, TRUE);
+	linphone_core_enable_video_capture(pauline, TRUE);
+	linphone_core_enable_video_display(pauline, TRUE);
+	linphone_core_set_video_policy(marie, &policy);
+	linphone_core_set_video_policy(pauline, &policy);
+	lp_config_set_int(pauline->config, "sip", "defer_update_default", TRUE);
+}
+
+static void recovered_call_on_network_switch_during_reinvite_2(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCall *outgoing_call;
+	LinphoneCallParams *params;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	configure_video_policies_for_network_switch(marie->lc, pauline->lc);
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	outgoing_call = linphone_core_get_current_call(marie->lc);
+	params = linphone_core_create_call_params(marie->lc, outgoing_call);
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	params = linphone_core_create_call_params(pauline->lc, incoming_call);
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_accept_call_update(pauline->lc, incoming_call, params);
+	linphone_call_params_unref(params);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void recovered_call_on_network_switch_during_reinvite_3(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCall *outgoing_call;
+	LinphoneCallParams *params;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	configure_video_policies_for_network_switch(marie->lc, pauline->lc);
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	outgoing_call = linphone_core_get_current_call(marie->lc);
+	params = linphone_core_create_call_params(marie->lc, outgoing_call);
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+
+	linphone_core_set_network_reachable(pauline->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableTrue, 2);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+
+	params = linphone_core_create_call_params(marie->lc, outgoing_call);
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	params = linphone_core_create_call_params(pauline->lc, incoming_call);
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_accept_call_update(pauline->lc, incoming_call, params);
+	linphone_call_params_unref(params);
+
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void recovered_call_on_network_switch_during_reinvite_4(void) {
+	LinphoneCall *incoming_call;
+	LinphoneCall *outgoing_call;
+	LinphoneCallParams *params;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	configure_video_policies_for_network_switch(marie->lc, pauline->lc);
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+
+	incoming_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	outgoing_call = linphone_core_get_current_call(marie->lc);
+	params = linphone_core_create_call_params(marie->lc, outgoing_call);
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_update_call(marie->lc, outgoing_call, params);
+	linphone_call_params_unref(params);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+
+	params = linphone_core_create_call_params(pauline->lc, incoming_call);
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_accept_call_update(pauline->lc, incoming_call, params);
+	linphone_call_params_unref(params);
+	linphone_core_set_network_reachable(pauline->lc, FALSE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+	wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableTrue, 2);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+	linphone_core_terminate_call(pauline->lc, incoming_call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt) {
@@ -5073,8 +5342,14 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier),
 	TEST_NO_TAG("Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier),
 	TEST_NO_TAG("Call with network switch", call_with_network_switch),
-	TEST_NO_TAG("Call with network switch in early state 1", call_with_network_switch_in_early_state_1),
-	TEST_NO_TAG("Call with network switch in early state 2", call_with_network_switch_in_early_state_2),
+	TEST_NO_TAG("Recovered call on network switch in early state 1", recovered_call_on_network_switch_in_early_state_1),
+	TEST_NO_TAG("Recovered call on network switch in early state 2", recovered_call_on_network_switch_in_early_state_2),
+	TEST_NO_TAG("Recovered call on network switch in early state 3", recovered_call_on_network_switch_in_early_state_3),
+	TEST_NO_TAG("Recovered call on network switch in early state 4", recovered_call_on_network_switch_in_early_state_4),
+	TEST_NO_TAG("Recovered call on network switch during re-invite 1", recovered_call_on_network_switch_during_reinvite_1),
+	TEST_NO_TAG("Recovered call on network switch during re-invite 2", recovered_call_on_network_switch_during_reinvite_2),
+	TEST_NO_TAG("Recovered call on network switch during re-invite 3", recovered_call_on_network_switch_during_reinvite_3),
+	TEST_NO_TAG("Recovered call on network switch during re-invite 4", recovered_call_on_network_switch_during_reinvite_4),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
 	TEST_ONE_TAG("Call with network switch, ICE and RTT", call_with_network_switch_ice_and_rtt, "ICE"),
 	TEST_NO_TAG("Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh),

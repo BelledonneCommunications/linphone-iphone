@@ -208,7 +208,7 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 	if (op->base.local_media) sdp_process(op);
 }
 
-static void cancelling_invite(SalOp* op ){
+void sal_call_cancel_invite(SalOp* op) {
 	belle_sip_request_t* cancel;
 	ms_message("Cancelling INVITE request from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
 	cancel = belle_sip_client_transaction_create_cancel(op->pending_client_trans);
@@ -229,6 +229,10 @@ static void cancelling_invite(SalOp* op ){
 			break;
 		}
 	}
+}
+
+static void cancelling_invite(SalOp *op) {
+	sal_call_cancel_invite(op);
 	op->state=SalOpStateTerminating;
 }
 
@@ -295,7 +299,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 				}
 			} else if (code >=200
 						&& code<300
-						&& strcmp("UPDATE",belle_sip_request_get_method(req))==0) {
+						&& strcmp("UPDATE",method)==0) {
 					handle_sdp_from_response(op,response);
 					op->base.root->callbacks.call_accepted(op);
 			}
@@ -339,6 +343,9 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 						}
 					}else if (strcmp("UPDATE",method)==0){
 						op->base.root->callbacks.call_accepted(op); /*INVITE*/
+					}else if (strcmp("CANCEL",method)==0){
+						sal_op_set_error_info_from_response(op,response);
+						op->base.root->callbacks.call_failure(op);
 					}
 				break;
 				case SalOpStateTerminating:
@@ -496,6 +503,7 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
 	int err=0;
 	SalReason reason;
+
 	if (extract_sdp(op,BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
 			op->sdp_offering=FALSE;
@@ -878,9 +886,9 @@ int sal_call_accept(SalOp*h){
 		return -1;
 	}
 	ms_message("Accepting server transaction [%p] on op [%p]", transaction, h);
+
 	/* sends a 200 OK */
 	response = sal_op_create_response_from_request(h,belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(transaction)),200);
-
 	if (response==NULL){
 		ms_error("Fail to build answer for call");
 		return -1;
@@ -1086,6 +1094,24 @@ int sal_call_is_offerer(const SalOp *h){
 	return h->sdp_offering;
 }
 
+bool_t sal_call_compare_op(const SalOp *op1, const SalOp *op2) {
+	if (strcmp(op1->base.call_id, op2->base.call_id) == 0) return TRUE;
+	return FALSE;
+}
 
+bool_t sal_call_dialog_request_pending(const SalOp *op) {
+	return belle_sip_dialog_request_pending(op->dialog) ? TRUE : FALSE;
+}
 
+const char * sal_call_get_local_tag(SalOp *op) {
+	return belle_sip_dialog_get_local_tag(op->dialog);
+}
 
+const char * sal_call_get_remote_tag(SalOp *op) {
+	return belle_sip_dialog_get_remote_tag(op->dialog);
+}
+
+void sal_call_set_replaces(SalOp *op, const char *call_id, const char *from_tag, const char *to_tag) {
+	belle_sip_header_replaces_t *replaces = belle_sip_header_replaces_create(call_id, from_tag, to_tag);
+	sal_op_set_replaces(op, replaces);
+}

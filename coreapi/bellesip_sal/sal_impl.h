@@ -130,6 +130,7 @@ SalOp* sal_op_ref(SalOp* op);
 void* sal_op_unref(SalOp* op);
 void sal_op_release_impl(SalOp *op);
 
+void sal_op_set_replaces(SalOp* op,belle_sip_header_replaces_t* replaces);
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
 int sal_op_send_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires);
