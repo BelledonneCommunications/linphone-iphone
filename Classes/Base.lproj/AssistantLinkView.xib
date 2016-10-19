@@ -15,6 +15,7 @@
                 <outlet property="countryCodeField" destination="DBr-NA-Ibx" id="cRz-xe-r5D"/>
                 <outlet property="linkAccountButton" destination="D25-6f-qRg" id="aid-PS-8mU"/>
                 <outlet property="linkAccountView" destination="ImD-Y4-3nC" id="8yc-Dr-cZ8"/>
+                <outlet property="linkSMSText" destination="Dvq-wa-3k8" id="4Ne-Ud-aA1"/>
                 <outlet property="phoneField" destination="cEN-WO-5qv" id="Ftl-EA-afz"/>
                 <outlet property="view" destination="FBm-gC-sIQ" id="Bhr-VA-MJs"/>
                 <outlet property="waitView" destination="J3A-Fb-Dpg" id="zbb-YB-ace"/>

@@ -557,6 +557,10 @@
 		if (proxyAi) {
 			linphone_core_remove_auth_info(LC, proxyAi);
 		}
+		if (strcmp(password,"") == 0) {
+			password = NULL;
+		}
+		
 		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;

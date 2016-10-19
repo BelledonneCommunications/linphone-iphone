@@ -20,6 +20,7 @@
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *checkValidationButton;
 @property(weak, nonatomic) IBOutlet UIView *waitView;
 @property(weak, nonatomic) IBOutlet UITextField *phoneField;
+@property (weak, nonatomic) IBOutlet UILabel *linkSMSText;
 @property BOOL firstTime;
 
 - (IBAction)onLinkAccount:(id)sender;

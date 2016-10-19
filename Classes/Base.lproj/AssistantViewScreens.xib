@@ -13,6 +13,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AssistantView">
             <connections>
                 <outlet property="accountLabel" destination="vh7-65-1js" id="IU4-gv-v6m"/>
+                <outlet property="activationEmailText" destination="mbT-xm-bKk" id="fho-Ip-bTQ"/>
+                <outlet property="activationSMSText" destination="9AN-gT-I7D" id="GSl-Iw-JjR"/>
                 <outlet property="activationTitle" destination="Gyl-37-emh" id="rBv-NE-1ON"/>
                 <outlet property="createAccountActivateEmailView" destination="Zd9-Ms-s7X" id="6Qs-np-oqS"/>
                 <outlet property="createAccountActivateSMSView" destination="101" id="SAS-8i-4Ao"/>

@@ -60,6 +60,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *phoneLabel;
 @property (weak, nonatomic) IBOutlet UILabel *phoneTitle;
 @property (weak, nonatomic) IBOutlet UILabel *activationTitle;
+@property (weak, nonatomic) IBOutlet UILabel *activationEmailText;
+@property (weak, nonatomic) IBOutlet UILabel *activationSMSText;
 
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;

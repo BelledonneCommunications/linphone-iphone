@@ -271,7 +271,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_account_creator_set_transport(account_creator,
 											   linphone_transport_parse(type.lowercaseString.UTF8String));
 	}
-
+	
 	new_config = linphone_account_creator_configure(account_creator);
 
 	if (new_config) {
@@ -860,11 +860,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
-			[self showErrorPopup:"ERROR_BAD_CREDENTIALS"];
+			[self showErrorPopup:resp];
 		}
 	} else {
 		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
-			linphone_account_creator_is_account_activated(account_creator);
+			if (linphone_account_creator_get_phone_number(account_creator) != NULL) {
+				// Offer the possibility to resend a sms confirmation in some cases
+				linphone_account_creator_is_account_activated(account_creator);
+			} else {
+				[self showErrorPopup:resp];
+			}
 		} else if (status == LinphoneAccountCreatorAccountNotExist) {
 			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
@@ -889,8 +894,12 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountCreated) {
 		if (linphone_account_creator_get_phone_number(creator)) {
+			NSString* phoneNumber = [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(creator)];
+			thiz.activationSMSText.text = [NSString stringWithFormat:NSLocalizedString(@"We have sent a SMS with a validation code to %@. To complete your phone number verification, please enter the 4 digit code below:", nil), phoneNumber];
 			[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
 		} else {
+			NSString* email = [NSString stringWithUTF8String:linphone_account_creator_get_email(creator)];
+			thiz.activationEmailText.text = [NSString stringWithFormat:NSLocalizedString(@" Your account is created. We have sent a confirmation email to %@. Please check your mails to validate your account. Once it is done, come back here and click on the button.", nil), email];
 			[thiz changeView:thiz.createAccountActivateEmailView back:FALSE animation:TRUE];
 		}
 	} else {
@@ -905,7 +914,11 @@ void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAc
 	if (status == LinphoneAccountCreatorOK) {
 		[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
 	} else {
-		[thiz showErrorPopup:resp];
+		if(!resp) {
+			[thiz showErrorPopup:"ERROR_CANNOT_SEND_SMS"];
+		} else {
+			[thiz showErrorPopup:resp];
+		}
 	}
 }
 
@@ -928,8 +941,12 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountActivated) {
-		[thiz showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
-		[thiz findButton:ViewElement_NextButton].enabled = NO;
+		if( linphone_account_creator_get_phone_number(creator) == NULL) {
+			[thiz configureProxyConfig];
+			[PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
+		} else {
+			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+		}
 	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
 		if (!IPAD || linphone_account_creator_get_phone_number(creator) != NULL) {
 			//Re send SMS if the username is the phone number

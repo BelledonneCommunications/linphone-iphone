@@ -136,6 +136,8 @@ void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, L
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOK) {
 		thiz.linkAccountView.hidden = thiz.activateSMSView.userInteractionEnabled = YES;
+		NSString* phoneNumber = [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(creator)];
+		thiz.linkSMSText.text = [NSString stringWithFormat:NSLocalizedString(@"We have sent a SMS with a validation code to %@. To complete your phone number verification, please enter the 4 digit code below:",nil), phoneNumber];
 		thiz.activateSMSView.hidden = thiz.linkAccountView.userInteractionEnabled = NO;
 	} else {
 		if (strcmp(resp, "Missing required parameters") == 0) {
