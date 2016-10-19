@@ -284,7 +284,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onCancelClick:(id)event {
-	if (_contact.phoneNumbers.count + _contact.sipAddresses.count > 0) {
+	if (_contact.phoneNumbers.count + _contact.sipAddresses.count > 0 && (_contact.firstName != NULL || _contact.lastName != NULL)) {
 		[self setEditing:FALSE];
 		[self resetData];
 	} else {
