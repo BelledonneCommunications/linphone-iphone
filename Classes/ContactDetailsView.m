@@ -287,6 +287,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (_contact.phoneNumbers.count + _contact.sipAddresses.count > 0) {
 		[self setEditing:FALSE];
 		[self resetData];
+	} else {
 		_emptyLabel.hidden = NO;
 		_avatarImage.hidden = !_emptyLabel.hidden;
 		_deleteButton.hidden = !_emptyLabel.hidden;
