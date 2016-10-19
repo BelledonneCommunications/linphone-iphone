@@ -350,7 +350,7 @@
 		UIContactDetailsCell *cell = (UIContactDetailsCell *)view;
 		// we cannot use indexPathForCell method here because if the cell is not visible anymore,
 		// it will return nil..
-		NSIndexPath *path = cell.indexPath; // [self.tableView indexPathForCell:cell];
+		NSIndexPath *path = [self.tableView indexPathForCell:cell]; // [self.tableView indexPathForCell:cell];
 		ContactSections sect = (ContactSections)[path section];
 		NSString *value = [textField text];
 
