@@ -328,12 +328,11 @@ static LPC_COMMAND advanced_commands[] = {
 		"'snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
 	{ "preview-snapshot", lpc_cmd_preview_snapshot, "Take a snapshot of currently captured video stream",
-		"'preview-snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n",
-		NULL
+		"'preview-snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
 	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call",
 		NULL
-},
+	},
 #endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
 		"'states global': shows global state of liblinphone \n"
