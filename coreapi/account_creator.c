@@ -577,7 +577,7 @@ static LinphoneXmlRpcRequest * _create_account_with_phone(LinphoneAccountCreator
 	request = linphone_xml_rpc_request_new_with_args("create_phone_account", LinphoneXmlRpcArgString,
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
-		LinphoneXmlRpcArgString, creator->password ? ha1_for_passwd(creator->username ? creator->username : creator->phone_number, creator->password, creator->domain) : "",
+		LinphoneXmlRpcArgString, creator->password ? ha1_for_passwd(creator->username ? creator->username : creator->phone_number, creator->domain, creator->password) : "",
 		LinphoneXmlRpcArgString, linphone_core_get_user_agent(creator->core),
 		LinphoneXmlRpcArgString, creator->domain,
 		LinphoneXmlRpcArgString, creator->language,
@@ -593,7 +593,7 @@ static LinphoneXmlRpcRequest * _create_account_with_email(LinphoneAccountCreator
 	request = linphone_xml_rpc_request_new_with_args("create_email_account", LinphoneXmlRpcArgString,
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, creator->email,
-		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username ? creator->username : creator->phone_number, creator->password, creator->domain),
+		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username ? creator->username : creator->phone_number, creator->domain, creator->password),
 		LinphoneXmlRpcArgString, linphone_core_get_user_agent(creator->core),
 		LinphoneXmlRpcArgString, creator->domain,
 		LinphoneXmlRpcArgNone);
