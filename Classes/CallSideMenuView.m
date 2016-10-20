@@ -69,7 +69,7 @@
 }
 
 + (NSString*)afinetToString:(int)remote_family {
-	return (remote_family == UNSPEC) ? @"Unspecified":(remote_family == INET) ? @"IPv4" : @"IPv6";
+	return (remote_family == LinphoneAddressFamilyUnspec) ? @"Unspecified":(remote_family == LinphoneAddressFamilyInet) ? @"IPv4" : @"IPv6";
 }
 
 + (NSString *)mediaEncryptionToString:(LinphoneMediaEncryption)enc {
