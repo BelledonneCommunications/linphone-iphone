@@ -312,11 +312,8 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 		sqlite3bctbx_nolockCheckReservedLock,
 		sqlite3bctbx_FileControl,
 		NULL,									/* xSectorSize */
-		sqlite3bctbx_DeviceCharacteristics,
-		NULL,									/* xShmMap */
-		NULL,									/* xShmLock */
-		NULL,									/* xShmBarrier */
-		NULL									/* xShmUnmap, xFetch, xUnfetch (not present in all sqlite3 versions */
+		sqlite3bctbx_DeviceCharacteristics
+		/*other function points follows, all NULL but not present in all sqlite3 versions.*/
 	};
 
 	sqlite3_bctbx_file_t * pFile = (sqlite3_bctbx_file_t*)p; /*File handle sqlite3_bctbx_file_t*/
@@ -370,19 +367,7 @@ sqlite3_vfs *sqlite3_bctbx_vfs_create(void){
     sqlite3bctbx_Open,				/* xOpen */
     NULL,							/* xDelete */
     NULL,							/* xAccess */
-    NULL,							/* xFullPathname */
-    NULL,							/* xDlOpen */
-    NULL,							/* xDlError */
-    NULL,							/* xDlSym */
-    NULL,							/* xDlClose */
-    NULL,							/* xRandomness */
-    NULL,							/* xSleep */
-    NULL,							/* xCurrentTime */
-	NULL,							/* xGetLastError */
-	NULL,							/* xCurrentTimeInt64 */
-	NULL,							/* xSetSystemCall */
-	NULL,							/* xGetSystemCall */
-	NULL,							/* xNextSystemCall */
+    NULL							/* xFullPathname */
   };
   return &bctbx_vfs;
 }
