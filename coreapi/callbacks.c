@@ -650,7 +650,12 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	linphone_core_notify_display_status(lc,_("Call is updated by remote."));
 	linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 	if (call->defer_update == FALSE){
-		linphone_core_accept_call_update(lc,call,NULL);
+		if (call->state == LinphoneCallUpdatedByRemote){
+			linphone_core_accept_call_update(lc,call,NULL);
+		}else{
+			/*otherwise it means that the app responded by linphone_core_accept_call_update
+			 * within the callback, so job is already done.*/
+		}
 	}else{
 		if (call->state == LinphoneCallUpdatedByRemote){
 			ms_message("LinphoneCall [%p]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call "

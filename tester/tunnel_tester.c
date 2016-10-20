@@ -140,7 +140,7 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 		}
 #ifdef VIDEO_ENABLED
 		if (with_video_and_ice){
-			BC_ASSERT_TRUE(add_video(pauline, marie, TRUE));
+			BC_ASSERT_TRUE(request_video(pauline, marie, TRUE));
 		}
 #endif
 		end_call(pauline,marie);

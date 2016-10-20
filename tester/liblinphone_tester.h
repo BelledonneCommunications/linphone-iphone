@@ -340,7 +340,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 						, bool_t build_callee_params);
 
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
-bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t change_video_policy);
+bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t use_accept_call_update);
 void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime);

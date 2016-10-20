@@ -1834,7 +1834,7 @@ static void _call_with_media_relay(bool_t random_ports) {
 	liblinphone_tester_check_rtcp(pauline,marie);
 
 #ifdef VIDEO_ENABLED
-	BC_ASSERT_TRUE(add_video(pauline,marie, TRUE));
+	BC_ASSERT_TRUE(request_video(pauline,marie, TRUE));
 	liblinphone_tester_check_rtcp(pauline,marie);
 #endif
 	end_call(pauline, marie);
@@ -2285,7 +2285,7 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 #ifdef VIDEO_ENABLED
 		if (enable_video) {
 			if (linphone_core_video_supported(marie->lc)) {
-				BC_ASSERT_TRUE(add_video(pauline,marie, TRUE));
+				BC_ASSERT_TRUE(request_video(pauline,marie, TRUE));
 				if (policy == LinphonePolicyUseIce){
 					BC_ASSERT_TRUE(check_ice(pauline, marie, enable_tunnel ? LinphoneIceStateReflexiveConnection
 																		   : LinphoneIceStateHostConnection));
@@ -3722,7 +3722,7 @@ static void call_with_fqdn_in_sdp(void) {
 	liblinphone_tester_check_rtcp(pauline,marie);
 
 #ifdef VIDEO_ENABLED
-	BC_ASSERT_TRUE(add_video(pauline,marie, TRUE));
+	BC_ASSERT_TRUE(request_video(pauline,marie, TRUE));
 	liblinphone_tester_check_rtcp(pauline,marie);
 #endif
 	end_call(pauline, marie);
