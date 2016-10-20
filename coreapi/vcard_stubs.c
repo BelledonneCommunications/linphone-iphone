@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "vcard.h"
+#include "linphonecore.h"
 
 struct _LinphoneVcardContext {
 	void *user_data;
