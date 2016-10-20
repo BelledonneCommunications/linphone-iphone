@@ -39,6 +39,7 @@
 @property(weak, nonatomic) IBOutlet UIToggleButton *deleteButton;
 @property(weak, nonatomic) IBOutlet UIScrollView *contentView;
 @property(weak, nonatomic) IBOutlet UILabel *emptyLabel;
+@property BOOL isAdding;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onCancelClick:(id)event;

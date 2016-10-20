@@ -121,6 +121,7 @@
 }
 
 - (void)newContact {
+	_isAdding = TRUE;
 	[self selectContact:[[Contact alloc] initWithPerson:ABPersonCreate()] andReload:YES];
 }
 
@@ -284,18 +285,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onCancelClick:(id)event {
-	if (_contact.phoneNumbers.count + _contact.sipAddresses.count > 0 && (_contact.firstName != NULL || _contact.lastName != NULL)) {
-		[self setEditing:FALSE];
-		[self resetData];
-	} else {
-		_emptyLabel.hidden = NO;
+	[self setEditing:FALSE];
+	[self resetData];
+	
+	if (IPAD) {
+		_emptyLabel.hidden = !_isAdding;
 		_avatarImage.hidden = !_emptyLabel.hidden;
 		_deleteButton.hidden = !_emptyLabel.hidden;
 		_editButton.hidden = !_emptyLabel.hidden;
-		if (!IPAD) {
+	} else {
+		if (_isAdding) {
 			[PhoneMainView.instance popCurrentView];
 		}
 	}
+	_isAdding = FALSE;
 }
 
 - (IBAction)onBackClick:(id)event {
@@ -311,6 +314,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (_tableController.isEditing) {
 		[self setEditing:FALSE];
 		[self saveData];
+		_isAdding = FALSE;
 	} else {
 		[self setEditing:TRUE];
 	}
