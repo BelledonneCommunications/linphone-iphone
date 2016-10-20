@@ -588,17 +588,17 @@ typedef enum _LinphoneUpnpState LinphoneUpnpState;
  * Enum describing Ip family.
  * @ingroup initializing
 **/
-enum _linphoneAddressFamily {
-	INET, /* IpV4 */
-	INET_6, /* IpV6 */
-	UNSPEC, /* Unknown */
+enum _LinphoneAddressFamily {
+	LinphoneAddressFamilyInet, /* IpV4 */
+	LinphoneAddressFamilyInet6, /* IpV6 */
+	LinphoneAddressFamilyUnspec, /* Unknown */
 };
 
 /**
  * Enum describing Ip family.
  * @ingroup initializing
 **/
-typedef enum _linphoneAddressFamily linphoneAddressFamily;
+typedef enum _LinphoneAddressFamily LinphoneAddressFamily;
 
 /**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.

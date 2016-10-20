@@ -644,7 +644,7 @@ static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int 
 			linphone_core_get_local_ip_for(strchr(pc->multicast_ip,':') ? AF_INET6 : AF_INET,
 				NULL, pc->multicast_bind_ip);
 			bind_ip = pc->multicast_bind_ip;
-			
+
 		}
 	}
 	return bind_ip;
@@ -2417,7 +2417,7 @@ static SalMulticastRole linphone_call_get_multicast_role(const LinphoneCall *cal
 		multicast_role = stream_desc->multicast_role;
 
 	end:
-	ms_message("Call [%p], stream type [%s], multicast role is [%s]",call, sal_stream_type_to_string(type), 
+	ms_message("Call [%p], stream type [%s], multicast role is [%s]",call, sal_stream_type_to_string(type),
 		sal_multicast_role_to_string(multicast_role));
 	return multicast_role;
 
@@ -4360,11 +4360,11 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_upload_bandwidth=(ts_active) ? (float)(media_stream_get_rtcp_up_bw(ts)*1e-3) : 0.f;
 	/* If not ipV6, it's not necessary IpV4, should be UNSPEC, TODO */
 	call->stats[LINPHONE_CALL_STATS_AUDIO].rtp_remote_family=(as_active)
-		? ((ortp_stream_is_ipv6((OrtpStream*)&(as->sessions.rtp_session->rtp.gs))) ? INET_6 : INET) : UNSPEC;
+		? ((ortp_stream_is_ipv6((OrtpStream*)&(as->sessions.rtp_session->rtp.gs))) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].rtp_remote_family=(vs_active)
-		? ((ortp_stream_is_ipv6((OrtpStream*)&(vs->sessions.rtp_session->rtp.gs))) ? INET_6 : INET) : UNSPEC;
+		? ((ortp_stream_is_ipv6((OrtpStream*)&(vs->sessions.rtp_session->rtp.gs))) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
 	call->stats[LINPHONE_CALL_STATS_TEXT].rtp_remote_family=(ts_active)
-		? ((ortp_stream_is_ipv6((OrtpStream*)&(ts->sessions.rtp_session->rtp.gs))) ? INET_6 : INET) : UNSPEC;
+		? ((ortp_stream_is_ipv6((OrtpStream*)&(ts->sessions.rtp_session->rtp.gs))) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
 
 	if (call->core->send_call_stats_periodical_updates){
 		call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
