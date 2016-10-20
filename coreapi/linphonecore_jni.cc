@@ -8360,6 +8360,15 @@ extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setEmail(JNIEn
 	return (jint) status;
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneAccountCreatorImpl_getPrefix(JNIEnv *env, jobject thiz, jlong ptr, jstring jphonenumber) {
+	char buff[4];
+	const char *phone_number = GetStringUTFChars(env, jphonenumber);
+	int prefix = linphone_dial_plan_lookup_ccc_from_e164(phone_number);
+	snprintf(buff, sizeof(buff), "%d", prefix);
+	ReleaseStringUTFChars(env, jphonenumber, phone_number);
+	return (jstring) env->NewStringUTF(buff);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneAccountCreatorImpl_getEmail(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
 	const char *email = linphone_account_creator_get_email(account_creator);

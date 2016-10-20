@@ -166,6 +166,12 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return getEmail(nativePtr);
 	}
 
+	private native String getPrefix(long ptr, String s);
+	@Override
+	public String getPrefix(String phone) {
+		return getPrefix(nativePtr, phone);
+	}
+
 	private native int isAccountUsed(long ptr);
 	@Override
 	public Status isAccountUsed() {

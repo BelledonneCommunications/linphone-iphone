@@ -137,6 +137,8 @@ public interface LinphoneAccountCreator {
 
 	String getEmail();
 
+	String getPrefix(String phone);
+
 	Status isAccountUsed();
 
 	Status createAccount();
