@@ -316,9 +316,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 		NULL,									/* xShmMap */
 		NULL,									/* xShmLock */
 		NULL,									/* xShmBarrier */
-		NULL,									/* xShmUnmap */
-		NULL,									/* xFetch */
-		NULL,									/* xUnfetch */
+		NULL									/* xShmUnmap, xFetch, xUnfetch (not present in all sqlite3 versions */
 	};
 
 	sqlite3_bctbx_file_t * pFile = (sqlite3_bctbx_file_t*)p; /*File handle sqlite3_bctbx_file_t*/
