@@ -43,6 +43,7 @@
 	[super viewWillDisappear:animated];
 
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneMessageReceived object:nil];
+	self.view = NULL;
 }
 
 #pragma mark - Event Functions

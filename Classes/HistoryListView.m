@@ -63,6 +63,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 }
 
+- (void) viewWillDisappear:(BOOL)animated {
+	self.view = NULL;
+}
+
 #pragma mark -
 
 - (void)changeView:(HistoryView)view {
