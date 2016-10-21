@@ -191,9 +191,12 @@
 - (void)deviceOrientationDidChange:(NSNotification*)notif {
 	if (IPAD) {
 		if (self.contact == NULL || (self.contact.firstName == NULL && self.contact.lastName == NULL)) {
-			_editButton.hidden = TRUE;
-			_deleteButton.hidden = TRUE;
-			_avatarImage.hidden = TRUE;
+			if (! self.tableController.isEditing) {
+				_editButton.hidden = TRUE;
+				_deleteButton.hidden = TRUE;
+				_avatarImage.hidden = TRUE;
+				_emptyLabel.hidden = FALSE;
+			}
 		}
 	}
 	
