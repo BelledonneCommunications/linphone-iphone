@@ -158,3 +158,6 @@ bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard) {
 bool_t linphone_core_vcard_supported(void) {
 	return FALSE;
 }
+
+void linphone_vcard_clean_cache(LinphoneVcard *vCard) {
+}

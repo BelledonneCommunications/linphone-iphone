@@ -179,11 +179,11 @@ void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_add
 void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_address);
 
 /**
- * Returns the list of SIP addresses (as string) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
+ * Returns the list of SIP addresses (as LinphoneAddress) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
  * @param[in] vCard the LinphoneVcard
- * @return \mslist{const char *}
+ * @return const \mslist{LinphoneAddress *}
  */
-LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
+LINPHONE_PUBLIC const bctbx_list_t* linphone_vcard_get_sip_addresses(LinphoneVcard *vCard);
 
 /**
  * Adds a phone number in the vCard, using the TEL property
@@ -282,6 +282,8 @@ void linphone_vcard_compute_md5_hash(LinphoneVcard *vCard);
  * @return 0 if the md5 hasn't changed, 1 otherwise
  */
 bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard);
+
+void linphone_vcard_clean_cache(LinphoneVcard *vCard);
 
 /**
  * @}

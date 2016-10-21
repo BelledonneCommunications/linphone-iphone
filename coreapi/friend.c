@@ -264,16 +264,9 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 const LinphoneAddress * linphone_friend_get_address(const LinphoneFriend *lf) {
 	if (linphone_core_vcard_supported()) {
 		if (lf->vcard) {
-			bctbx_list_t *sip_addresses = linphone_vcard_get_sip_addresses(lf->vcard);
+			const bctbx_list_t *sip_addresses = linphone_vcard_get_sip_addresses(lf->vcard);
 			if (sip_addresses) {
-				const char *uri = (const char *)bctbx_list_nth_data(sip_addresses, 0);
-				LinphoneAddress *addr = NULL;
-				if (uri) addr = linphone_address_new(uri);
-				bctbx_list_free(sip_addresses);
-				if (lf->uri){
-					linphone_address_unref(lf->uri);
-				}
-				((LinphoneFriend*)lf)->uri = addr;
+				LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_nth_data(sip_addresses, 0);
 				return addr;
 			}
 		}
@@ -327,27 +320,20 @@ void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr
 }
 
 bctbx_list_t* linphone_friend_get_addresses(const LinphoneFriend *lf) {
-	bctbx_list_t *sip_addresses = NULL;
-	bctbx_list_t *addresses = NULL;
-	bctbx_list_t *iterator = NULL;
-
 	if (!lf) return NULL;
 
 	if (linphone_core_vcard_supported()) {
-		sip_addresses = linphone_vcard_get_sip_addresses(lf->vcard);
-		iterator = sip_addresses;
-		while (iterator) {
-			const char *sip_address = (const char *)bctbx_list_get_data(iterator);
-			LinphoneAddress *addr = linphone_address_new(sip_address);
-			if (addr) {
-				addresses = bctbx_list_append(addresses, addr);
-			}
-			iterator = bctbx_list_next(iterator);
+		bctbx_list_t *result = NULL;
+		const bctbx_list_t * addresses = linphone_vcard_get_sip_addresses(lf->vcard);
+		while (addresses) {
+			LinphoneAddress *addr = (LinphoneAddress *)addresses->data;
+			result = bctbx_list_append(result, linphone_address_clone(addr));
+			addresses = bctbx_list_next(addresses);
 		}
-		if (sip_addresses) bctbx_list_free(sip_addresses);
-		return addresses;
+		return result;
 	} else {
-		return lf->uri ? bctbx_list_append(addresses, linphone_address_clone(lf->uri)) : NULL;
+		bctbx_list_t *addresses = NULL;
+		return lf->uri ? bctbx_list_append(addresses, lf->uri) : NULL;
 	}
 }
 
@@ -771,14 +757,17 @@ void linphone_friend_edit(LinphoneFriend *fr) {
 
 void linphone_friend_done(LinphoneFriend *fr) {
 	ms_return_if_fail(fr);
-	if (!fr->lc || !fr->friend_list) return;
+	if (!fr->lc) return;
 	linphone_friend_apply(fr, fr->lc);
 	linphone_friend_save(fr, fr->lc);
 
 	if (fr && linphone_core_vcard_supported() && fr->vcard) {
 		if (linphone_vcard_compare_md5_hash(fr->vcard) != 0) {
-			ms_debug("vCard's md5 has changed, mark friend as dirty");
-			fr->friend_list->dirty_friends_to_update = bctbx_list_append(fr->friend_list->dirty_friends_to_update, linphone_friend_ref(fr));
+			ms_debug("vCard's md5 has changed, mark friend as dirty and clear sip addresses list cache");
+			linphone_vcard_clean_cache(fr->vcard);
+			if (fr->friend_list) {
+				fr->friend_list->dirty_friends_to_update = bctbx_list_append(fr->friend_list->dirty_friends_to_update, linphone_friend_ref(fr));
+			}
 		}
 	}
 }

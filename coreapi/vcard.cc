@@ -37,6 +37,7 @@ struct _LinphoneVcard {
 	char *etag;
 	char *url;
 	unsigned char md5[VCARD_MD5_HASH_SIZE];
+	bctbx_list_t *sip_addresses_cache;
 };
 
 #ifdef __cplusplus
@@ -82,6 +83,7 @@ void linphone_vcard_free(LinphoneVcard *vCard) {
 	if (!vCard) return;
 	if (vCard->etag) ms_free(vCard->etag);
 	if (vCard->url) ms_free(vCard->url);
+	linphone_vcard_clean_cache(vCard);
 	vCard->belCard.reset();
 	ms_free(vCard);
 }
@@ -238,17 +240,17 @@ void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_
 	}
 }
 
-bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
-	bctbx_list_t *result = NULL;
+const bctbx_list_t* linphone_vcard_get_sip_addresses(LinphoneVcard *vCard) {
 	if (!vCard) return NULL;
-
-	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
-		const char *value = (*it)->getValue().c_str();
-		if (strncmp(value, "sip:", 4) == 0) {
-			result = bctbx_list_append(result, (char *)value);
+	if (!vCard->sip_addresses_cache) {
+		for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
+			LinphoneAddress* addr = linphone_address_new((*it)->getValue().c_str());
+			if (addr) {
+				vCard->sip_addresses_cache = bctbx_list_append(vCard->sip_addresses_cache, addr);
+			}
 		}
 	}
-	return result;
+	return vCard->sip_addresses_cache;
 }
 
 void linphone_vcard_add_phone_number(LinphoneVcard *vCard, const char *phone) {
@@ -388,6 +390,11 @@ bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard) {
 
 bool_t linphone_core_vcard_supported(void) {
 	return TRUE;
+}
+
+void linphone_vcard_clean_cache(LinphoneVcard *vCard) {
+	if (vCard->sip_addresses_cache) bctbx_list_free_with_data(vCard->sip_addresses_cache, (void (*)(void*))linphone_address_unref);
+	vCard->sip_addresses_cache = NULL;
 }
 
 #ifdef __cplusplus

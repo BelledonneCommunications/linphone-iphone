@@ -157,6 +157,7 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 
 	lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nTEL;TYPE=work:0952636505\r\nTEL:0476010203\r\nEND:VCARD\r\n");
 	lf = linphone_friend_new_from_vcard(lvc);
+	lf->lc = manager->lc;
 	sip_addresses = linphone_friend_get_addresses(lf);
 	phone_numbers = linphone_friend_get_phone_numbers(lf);
 
@@ -167,7 +168,6 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 
 	addr = linphone_address_new("sip:sylvain@sip.linphone.org");
 	linphone_friend_add_address(lf, addr);
-	linphone_address_unref(addr);
 	sip_addresses = linphone_friend_get_addresses(lf);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(sip_addresses), 1, unsigned int, "%u");
 	if (sip_addresses) bctbx_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
@@ -182,9 +182,9 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(phone_numbers), 0, unsigned int, "%u");
 	if (phone_numbers) bctbx_list_free(phone_numbers);
 
-	addr = linphone_address_new("sip:sylvain@sip.linphone.org");
+	linphone_friend_edit(lf);
 	linphone_friend_remove_address(lf, addr);
-	linphone_address_unref(addr);
+	linphone_friend_done(lf);
 	sip_addresses = linphone_friend_get_addresses(lf);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(sip_addresses), 0, unsigned int, "%u");
 	if (sip_addresses) bctbx_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
@@ -194,6 +194,7 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(phone_numbers), 1, unsigned int, "%u");
 	if (phone_numbers) bctbx_list_free(phone_numbers);
 
+	linphone_address_unref(addr);
 	linphone_friend_unref(lf);
 	lf = NULL;
 	lvc = NULL;
