@@ -114,6 +114,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 								   initWithTarget:self
 								   action:@selector(dismissKeyboards)];
 	
+	[tap setDelegate:self];
 	[self.view addGestureRecognizer:tap];
 }
 
@@ -226,7 +227,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)dismissKeyboards {
-	[self.searchBar resignFirstResponder];
+	if ([self.searchBar isFirstResponder]){
+		[self.searchBar resignFirstResponder];
+	}
 }
 
 #pragma mark - searchBar delegate
@@ -252,6 +255,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
+}
+
+#pragma mark - GestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+	if (![self.searchBar isFirstResponder]) {
+		return NO;
+	}
+	return YES;
 }
 
 @end

@@ -10,7 +10,7 @@
 #import "ChatConversationCreateTableView.h"
 #import "UICompositeView.h"
 
-@interface ChatConversationCreateView : UIViewController <UICompositeViewDelegate>
+@interface ChatConversationCreateView : UIViewController <UICompositeViewDelegate, UIGestureRecognizerDelegate>
 
 @property(strong, nonatomic) IBOutlet ChatConversationCreateTableView *tableController;
 @property(weak, nonatomic) IBOutlet UIIconButton *backButton;

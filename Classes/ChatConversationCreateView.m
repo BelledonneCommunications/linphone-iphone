@@ -42,7 +42,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
 								   initWithTarget:self
 								   action:@selector(dismissKeyboards)];
-	
+	tap.delegate = self;
 	[self.view addGestureRecognizer:tap];
 }
 
@@ -58,7 +58,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)dismissKeyboards {
-	[self.tableController.searchBar resignFirstResponder];
+	if ([self.tableController.searchBar isFirstResponder]) {
+		[self.tableController.searchBar resignFirstResponder];
+	}
+}
+
+#pragma mark - GestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+	if (![self.tableController.searchBar isFirstResponder]) {
+		return NO;
+	}
+	return YES;
 }
 
 @end

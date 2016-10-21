@@ -196,6 +196,16 @@
 			_avatarImage.hidden = TRUE;
 		}
 	}
+	
+	if (self.tableController.isEditing) {
+		_backButton.hidden = TRUE;
+		_cancelButton.hidden = FALSE;
+	} else {
+		if (!IPAD) {
+			_backButton.hidden = FALSE;
+		}
+		_cancelButton.hidden = TRUE;
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -463,4 +473,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 }
+
+
 @end

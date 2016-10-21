@@ -117,11 +117,4 @@
 				  forRowAtIndexPath:indexPath];
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	UIView * txt = self.editTextfield;
-	if ([txt isKindOfClass:[UITextField class]] && [txt isFirstResponder]) {
-		[txt resignFirstResponder];
-	}
-}
-
 @end
