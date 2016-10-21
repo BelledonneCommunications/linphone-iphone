@@ -945,6 +945,7 @@ struct _LinphoneCore
 {
 	MSFactory* factory;
 	MSList* vtable_refs;
+	int vtable_notify_recursion;
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;

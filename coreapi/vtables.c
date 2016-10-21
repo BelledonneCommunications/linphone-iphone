@@ -43,6 +43,8 @@ LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
 
 static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	bctbx_list_t *it,*next_it;
+	
+	if (lc->vtable_notify_recursion > 0) return; /*don't cleanup vtable if we are iterating through a listener list.*/
 	for(it=lc->vtable_refs; it!=NULL; ){
 		VTableReference *ref=(VTableReference*)it->data;
 		next_it=it->next;
@@ -59,20 +61,26 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	bctbx_list_t* iterator; \
 	VTableReference *ref; \
 	bool_t has_cb = FALSE; \
-	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
+	lc->vtable_notify_recursion++;\
+	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next){\
 		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name) {\
 			lc->current_vtable->function_name(__VA_ARGS__);\
 			has_cb = TRUE;\
 		}\
-	if (has_cb) ms_message("Linphone core [%p] notifying [%s]",lc,#function_name)
+	}\
+	lc->vtable_notify_recursion--;\
+	if (has_cb) ms_message("Linphone core [%p] notified [%s]",lc,#function_name)
 
 #define NOTIFY_IF_EXIST_INTERNAL(function_name, internal_val, ...) \
 	bctbx_list_t* iterator; \
 	VTableReference *ref; \
-	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
+	lc->vtable_notify_recursion++;\
+	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next){\
 		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name && (ref->internal == internal_val)) {\
 			lc->current_vtable->function_name(__VA_ARGS__);\
 		}\
+	}\
+	lc->vtable_notify_recursion--;
 
 void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
 	NOTIFY_IF_EXIST(global_state_changed,lc,gstate,message);
