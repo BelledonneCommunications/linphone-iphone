@@ -948,10 +948,6 @@ static void call_failure(SalOp *op){
 			msg=_("Incompatible media parameters.");
 			linphone_core_notify_display_status(lc,msg);
 		break;
-		case SalReasonNoMatch:
-			/* Call leg does not exist response for case of section 5.5 of RFC 6141 */
-			linphone_call_reinvite_to_recover_from_connection_loss(call);
-			return; /* Do not continue... */
 		default:
 			linphone_core_notify_display_status(lc,_("Call failed."));
 	}
@@ -961,9 +957,11 @@ static void call_failure(SalOp *op){
 	case LinphoneCallUpdating:
 	case LinphoneCallPausing:
 	case LinphoneCallResuming:
-		ms_message("Call error on state [%s], restoring previous state",linphone_call_state_to_string(call->prevstate));
-		linphone_call_set_state(call, call->prevstate,ei->full_string);
-		return;
+		if (ei->reason != SalReasonNoMatch){
+			ms_message("Call error on state [%s], restoring previous state",linphone_call_state_to_string(call->prevstate));
+			linphone_call_set_state(call, call->prevstate,ei->full_string);
+			return;
+		}
 	default:
 		break; /*nothing to do*/
 	}
@@ -979,7 +977,11 @@ static void call_failure(SalOp *op){
 		if (ei->reason==SalReasonDeclined){
 			linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
 		}else{
-			linphone_call_set_state(call,LinphoneCallError,ei->full_string);
+			if (linphone_call_state_is_early(call->state)){
+				linphone_call_set_state(call,LinphoneCallError,ei->full_string);
+			}else{
+				linphone_call_set_state(call, LinphoneCallEnd, ei->full_string);
+			}
 		}
 		if (ei->reason!=SalReasonNone) linphone_core_play_call_error_tone(lc,linphone_reason_from_sal(ei->reason));
 	}

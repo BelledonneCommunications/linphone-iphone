@@ -1634,6 +1634,8 @@ char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
 
 void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite);
 
+bool_t linphone_call_state_is_early(LinphoneCallState state);
+
 #ifdef __cplusplus
 }
 #endif

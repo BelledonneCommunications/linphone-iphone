@@ -4559,6 +4559,48 @@ static void call_with_network_switch_and_socket_refresh(void){
 	_call_with_network_switch(TRUE, TRUE, FALSE);
 }
 
+static void call_with_network_switch_no_recovery(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCallParams *pauline_params = NULL;
+	bctbx_list_t *lcs = NULL;
+	bool_t call_ok;
+
+	lcs = bctbx_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
+	
+	linphone_core_set_nortp_timeout(marie->lc, 50000);
+
+	BC_ASSERT_TRUE((call_ok=call_with_params(pauline, marie, pauline_params, NULL)));
+	if (!call_ok) goto end;
+
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
+
+	/*marie looses the network and reconnects*/
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	/*but meanwhile pauline terminates the call.*/
+	linphone_core_terminate_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
+	/*
+	 * We have to wait 32 seconds so that the BYE transaction is terminated, and dialog removed.
+	 * This is the condition to receive a 481 when marie sends the reINVITE.*/
+	wait_for_list(lcs, NULL, 0, 32500);
+	
+	/*marie will reconnect, register, and send an automatic reINVITE to try to repair the call*/
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+	/*This reINVITE should of course fail, so marie's call should be terminated.*/
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	
+end:
+	if (pauline_params) {
+		linphone_call_params_unref(pauline_params);
+	}
+	bctbx_list_free(lcs);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void call_with_sip_and_rtp_independant_switches(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -5350,6 +5392,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier),
 	TEST_NO_TAG("Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier),
 	TEST_NO_TAG("Call with network switch", call_with_network_switch),
+	TEST_NO_TAG("Call with network switch and no recovery possible", call_with_network_switch_no_recovery),
 	TEST_NO_TAG("Recovered call on network switch in early state 1", recovered_call_on_network_switch_in_early_state_1),
 	TEST_NO_TAG("Recovered call on network switch in early state 2", recovered_call_on_network_switch_in_early_state_2),
 	TEST_NO_TAG("Recovered call on network switch in early state 3", recovered_call_on_network_switch_in_early_state_3),

@@ -49,6 +49,35 @@ static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *ca
 void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index);
 
 
+bool_t linphone_call_state_is_early(LinphoneCallState state){
+	switch (state){
+		case LinphoneCallIdle:
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallOutgoingRinging:
+		case LinphoneCallOutgoingProgress:
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallEarlyUpdatedByRemote:
+		case LinphoneCallEarlyUpdating:
+			return TRUE;
+		case LinphoneCallResuming:
+		case LinphoneCallEnd:
+		case LinphoneCallUpdating:
+		case LinphoneCallRefered:
+		case LinphoneCallPausing:
+		case LinphoneCallPausedByRemote:
+		case LinphoneCallPaused:
+		case LinphoneCallConnected:
+		case LinphoneCallError:
+		case LinphoneCallUpdatedByRemote:
+		case LinphoneCallReleased:
+		case LinphoneCallStreamsRunning:
+		break;
+	}
+	return FALSE;
+}
+
 MSWebCam *get_nowebcam_device(MSFactory* f){
 #ifdef VIDEO_ENABLED
 	return ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(f),"StaticImage: Static picture");
