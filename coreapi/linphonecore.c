@@ -3566,10 +3566,12 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 #endif //BUILD_UPNP
 	if (call->params->in_conference){
 		subject="Conference";
+	}else if (call->params->internal_call_update){
+		subject="ICE processing concluded";
 	}else if (!no_user_consent){
-		subject="Media change";
-	}else{
 		subject="Refreshing";
+	}else{
+		subject="Media change";
 	}
 	linphone_core_notify_display_status(lc,_("Modifying call parameters..."));
 	if (!lc->sip_conf.sdp_200_ack){

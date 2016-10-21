@@ -884,6 +884,14 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		transfer_already_assigned_payload_types(old_md,md);
 		call->localdesc_changed=sal_media_description_equals(md,old_md);
 		sal_media_description_unref(old_md);
+		if (call->params->internal_call_update){
+			/*
+			 * An internal call update (ICE reINVITE) is not expected to modify the actual media stream parameters.
+			 * However, the localdesc may change between first INVITE and ICE reINVITE, for example if the remote party has declined a video stream.
+			 * We use the internal_call_update flag to prevent trigger an unnecessary media restart.
+			 */
+			call->localdesc_changed = 0;
+		}
 	}
 	force_streams_dir_according_to_state(call, md);
 }
