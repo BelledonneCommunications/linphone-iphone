@@ -647,7 +647,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 		}
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
 		if (tmpproxy->dial_prefix!=NULL && tmpproxy->dial_prefix[0]!='\0'){
-			ms_debug("Using dial plan '%s'",dialplan->country);
+			ms_debug("Using dial plan '%s'",dialplan.country);
 			/* the number already starts with + or international prefix*/
 			if (flatten[0]=='+'||strstr(flatten,dialplan.icp)==flatten){
 				ms_debug("Prefix already present.");
@@ -659,7 +659,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 			}else{
 				/*0. keep at most national number significant digits */
 				char* flatten_start = flatten + MAX(0, (int)strlen(flatten) - (int)dialplan.nnl);
-				ms_debug("Prefix not present. Keeping at most %d digits: %s", dialplan->nnl, flatten_start);
+				ms_debug("Prefix not present. Keeping at most %d digits: %s", dialplan.nnl, flatten_start);
 
 				/*1. First prepend international calling prefix or +*/
 				/*2. Second add prefix*/
