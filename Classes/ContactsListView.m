@@ -110,6 +110,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	/*if ([tableController totalNumberOfItems] == 0) {
 		[self changeView:ContactsAll];
 	 }*/
+	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+								   initWithTarget:self
+								   action:@selector(dismissKeyboards)];
+	
+	[self.view addGestureRecognizer:tap];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -218,6 +223,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self searchBar:searchBar textDidChange:@""];
 	[tableController loadData];
 	[searchBar resignFirstResponder];
+}
+
+- (void)dismissKeyboards {
+	[self.searchBar resignFirstResponder];
 }
 
 #pragma mark - searchBar delegate

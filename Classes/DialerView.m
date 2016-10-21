@@ -131,6 +131,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UILongPressGestureRecognizer *oneLongGesture =
 		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onOneLongClick:)];
 	[_oneButton addGestureRecognizer:oneLongGesture];
+	
+	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+																					initWithTarget:self
+																					action:@selector(dismissKeyboards)];
+	
+	[self.view addGestureRecognizer:tap];
 
 	if (IPAD) {
 		if (LinphoneManager.instance.frontCamId != nil) {
@@ -421,5 +427,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LOGE(@"Cannot call voice mail because URI not set or invalid!");
 	}
 	linphone_core_stop_dtmf(LC);
+}
+
+- (void)dismissKeyboards {
+	[self.addressField resignFirstResponder];
 }
 @end
