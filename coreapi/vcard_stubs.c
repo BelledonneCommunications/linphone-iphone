@@ -102,7 +102,7 @@ void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_add
 void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 }
 
-bctbx_list_t* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
+const bctbx_list_t* linphone_vcard_get_sip_addresses(LinphoneVcard *vCard) {
 	return NULL;
 }
 

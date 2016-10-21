@@ -380,8 +380,9 @@ static void linphone_core_assign_payload_type_numbers(LinphoneCore *lc, bctbx_li
 
 	if (t140 && red) {
 		int t140_payload_type_number = payload_type_get_number(t140);
-		const char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_type_number, t140_payload_type_number, t140_payload_type_number);
+		char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_type_number, t140_payload_type_number, t140_payload_type_number);
 		payload_type_set_recv_fmtp(red, red_fmtp);
+		ms_free(red_fmtp);
 	}
 }
 
