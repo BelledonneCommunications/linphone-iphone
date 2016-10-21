@@ -203,6 +203,38 @@ extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setLogCollectionP
 	linphone_core_set_log_collection_path(path);
 	ReleaseStringUTFChars(env, jpath, path);
 }
+
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreFactoryImpl_getAllDialPlanNative(JNIEnv *env, jobject thiz) {
+	LinphoneDialPlan *countries;
+	jclass addr_class = env->FindClass("org/linphone/core/DialPlanImpl");
+	jmethodID addr_constructor = env->GetMethodID(addr_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)V");
+	jobjectArray jaddr_array;
+	int i, size = 0;
+	countries = (LinphoneDialPlan *)linphone_dial_plan_get_all();
+
+	while (countries[size].country != NULL) size++;
+
+	jaddr_array = env->NewObjectArray(size, addr_class, NULL);
+
+	for (i=0; i < size ; i++) {
+		jstring jcountry = env->NewStringUTF(countries[i].country);
+		jstring jiso = env->NewStringUTF(countries[i].iso_country_code);
+		jstring jccc = env->NewStringUTF(countries[i].ccc);
+		jint jnnl = (jint)countries[i].nnl;
+		jstring jicp = env->NewStringUTF(countries[i].icp);
+
+		jobject jaddr = env->NewObject(addr_class, addr_constructor, jcountry, jiso, jccc, jnnl, jicp);
+
+		env->SetObjectArrayElement(jaddr_array, i, jaddr);
+
+		env->DeleteLocalRef(jcountry);
+		env->DeleteLocalRef(jiso);
+		env->DeleteLocalRef(jccc);
+		env->DeleteLocalRef(jicp);
+	}
+	return jaddr_array;
+}
+
 // LinphoneCore
 
 class LinphoneJavaBindings {

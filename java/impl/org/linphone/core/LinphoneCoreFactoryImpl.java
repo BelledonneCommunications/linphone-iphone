@@ -22,6 +22,7 @@ import android.content.Context;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.linphone.mediastream.Log;
@@ -31,7 +32,7 @@ import org.linphone.tools.OpenH264DownloadHelper;
 
 public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public static String ABI;
-	
+
 	private static boolean loadOptionalLibrary(String s) {
 		try {
 			System.loadLibrary(s);
@@ -243,5 +244,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	@Override
 	public LinphoneAccountCreator createAccountCreator(LinphoneCore lc, String url) {
 		return new LinphoneAccountCreatorImpl(lc, url);
+	}
+
+	private native DialPlan[] getAllDialPlanNative();
+	@Override
+	public DialPlan[] getAllDialPlan(){
+		return getAllDialPlanNative();
 	}
 }

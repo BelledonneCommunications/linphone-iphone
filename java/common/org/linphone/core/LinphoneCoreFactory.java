@@ -23,13 +23,15 @@ import android.content.Context;
 
 import org.linphone.tools.OpenH264DownloadHelper;
 
+import java.util.ArrayList;
+
 abstract public class LinphoneCoreFactory {
 
 	protected Context fcontext;
 	private static String factoryName = "org.linphone.core.LinphoneCoreFactoryImpl";
-	
-	
-	static LinphoneCoreFactory theLinphoneCoreFactory; 
+
+
+	static LinphoneCoreFactory theLinphoneCoreFactory;
 	/**
 	 * Indicate the name of the class used by this factory
 	 * @param className
@@ -37,8 +39,8 @@ abstract public class LinphoneCoreFactory {
 	public static void setFactoryClassName (String className) {
 		factoryName = className;
 	}
-	
-	
+
+
 	public static final synchronized LinphoneCoreFactory instance() {
 		try {
 			if (theLinphoneCoreFactory == null) {
@@ -67,7 +69,7 @@ abstract public class LinphoneCoreFactory {
 	 * @param realm
 	 * */
 	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1, String realm, String domain);
-	
+
 	/**
 	 * Create a LinphoneCore object. The LinphoneCore is the root for all liblinphone operations. You need only one per application.
 	 * @param listener listener to receive notifications from the core
@@ -91,10 +93,10 @@ abstract public class LinphoneCoreFactory {
 
 	/**
 	 * Constructs a LinphoneAddress object
-	 * @param username 
+	 * @param username
 	 * @param domain
 	 * @param displayName
-	 * @return 
+	 * @return
 	 */
 	abstract public LinphoneAddress createLinphoneAddress(String username,String domain,String displayName);
 	/**
@@ -106,14 +108,14 @@ abstract public class LinphoneCoreFactory {
 	abstract public LinphoneAddress createLinphoneAddress(String address) throws LinphoneCoreException;
 	abstract public LpConfig createLpConfig(String file);
 	abstract public LpConfig createLpConfigFromString(String buffer);
-	
+
 	/**
 	 * Enable verbose traces
 	 * @param enable true to enable debug mode, false to disable it
 	 * @param tag Tag which prefixes each log message.
 	 */
 	abstract public void setDebugMode(boolean enable, String tag);
-	
+
 	/**
 	 * Enable the linphone core log collection to upload logs on a server.
 	 */
@@ -124,7 +126,7 @@ abstract public class LinphoneCoreFactory {
 	 * @param path The path where the log files will be written.
 	 */
 	abstract public void setLogCollectionPath(String path);
-	
+
 	abstract public void setLogHandler(LinphoneLogHandler handler);
 
 	/**
@@ -132,20 +134,20 @@ abstract public class LinphoneCoreFactory {
 	 * @return a new OpenH264DownloadHelper
 	 */
 	abstract public OpenH264DownloadHelper createOpenH264DownloadHelper();
-	
+
 	/**
-	 * Create a LinphoneFriend, similar to {@link #createLinphoneFriend()} + {@link LinphoneFriend#setAddress(LinphoneAddress)} 
+	 * Create a LinphoneFriend, similar to {@link #createLinphoneFriend()} + {@link LinphoneFriend#setAddress(LinphoneAddress)}
 	 * @param friendUri a buddy address, must be a sip uri like sip:joe@sip.linphone.org
 	 * @return a new LinphoneFriend with address initialized
 	 */
 	abstract public LinphoneFriend createLinphoneFriend(String friendUri);
-	
+
 	/**
 	 * Create a new LinphoneFriend
 	 * @return
 	 */
 	abstract public LinphoneFriend createLinphoneFriend();
-	
+
 	/**
 	 * Create a LinphoneContent object from string data.
 	 */
@@ -155,7 +157,7 @@ abstract public class LinphoneCoreFactory {
 	 * Create a LinphoneContent object from byte array.
 	 */
 	abstract public LinphoneContent createLinphoneContent(String type, String subType, byte[] data, String encoding);
-	
+
 	/**
 	 * Create a PresenceActivity object.
 	 */
@@ -186,4 +188,10 @@ abstract public class LinphoneCoreFactory {
 	 * Create LinphoneAccountCreator object
 	 */
 	abstract public LinphoneAccountCreator createAccountCreator(LinphoneCore lc, String url);
+
+	/**
+	 * Array of countries list
+	 * @return countries list
+     */
+	abstract public DialPlan[] getAllDialPlan();
 }
