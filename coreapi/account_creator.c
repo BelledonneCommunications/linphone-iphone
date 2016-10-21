@@ -476,8 +476,10 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 		snprintf(buff, sizeof(buff), "%d", dial_prefix_number);
 		linphone_proxy_config_set_dial_prefix(cfg, buff);
 	}
-	linphone_proxy_config_set_server_addr(cfg, domain);
-	linphone_proxy_config_set_route(cfg, route);
+	if(linphone_proxy_config_get_server_addr == NULL)
+		linphone_proxy_config_set_server_addr(cfg, domain);
+	if(linphone_proxy_config_get_route == NULL)	
+		linphone_proxy_config_set_route(cfg, route);
 	linphone_proxy_config_enable_publish(cfg, FALSE);
 	linphone_proxy_config_enable_register(cfg, TRUE);
 
