@@ -30,6 +30,7 @@
 }
 
 @property(nonatomic, assign, setter=setContact:) Contact *contact;
+@property(nonatomic) Contact *tmpContact;
 @property(nonatomic, strong) IBOutlet ContactDetailsTableView *tableController;
 @property(nonatomic, strong) IBOutlet UIToggleButton *editButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;

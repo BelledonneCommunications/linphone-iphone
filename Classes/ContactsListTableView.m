@@ -29,7 +29,6 @@
 
 - (void)initContactsTableViewController {
 	addressBookMap = [[OrderedDictionary alloc] init];
-
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(onAddressBookUpdate:)
 											   name:kLinphoneAddressBookUpdate

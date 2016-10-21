@@ -28,7 +28,6 @@
   @private
 	OrderedDictionary *addressBookMap;
 }
-
 - (void)loadData;
 - (void)loadSearchedData;
 

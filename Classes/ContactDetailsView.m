@@ -19,6 +19,7 @@
 
 #import "ContactDetailsView.h"
 #import "PhoneMainView.h"
+#import "UIContactDetailsCell.h"
 
 @implementation ContactDetailsView
 
@@ -162,6 +163,12 @@
 
 	[_editButton setImage:[UIImage imageNamed:@"valid_disabled.png"]
 				 forState:(UIControlStateDisabled | UIControlStateSelected)];
+	
+	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+								   initWithTarget:self
+								   action:@selector(dismissKeyboards)];
+	
+	[self.view addGestureRecognizer:tap];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -169,6 +176,7 @@
 	_editButton.hidden = ([ContactSelection getSelectionMode] != ContactSelectionModeEdit &&
 						  [ContactSelection getSelectionMode] != ContactSelectionModeNone);
 	[_tableController.tableView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
+	self.tmpContact = NULL;
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(deviceOrientationDidChange:)
@@ -193,6 +201,41 @@
 - (void)viewWillDisappear:(BOOL)animated {
 	[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
 	[super viewWillDisappear:animated];
+	if (self.tmpContact) {
+		_contact.firstName = _tmpContact.firstName.copy;
+		_contact.lastName = _tmpContact.lastName.copy;
+		while (_contact.sipAddresses.count > 0) {
+			[_contact removeSipAddressAtIndex:0];
+			
+		}
+		NSInteger nbSipAd = 0;
+		while (_tmpContact.sipAddresses.count > nbSipAd) {
+			[_contact addSipAddress:_tmpContact.sipAddresses[nbSipAd]];
+			nbSipAd++;
+		}
+		
+		while (_contact.phoneNumbers.count > 0) {
+			[_contact removePhoneNumberAtIndex:0];
+			
+		}
+		NSInteger nbPhone = 0;
+		while (_tmpContact.phoneNumbers.count> nbPhone) {
+			[_contact addPhoneNumber:_tmpContact.phoneNumbers[nbPhone]];
+			nbPhone++;
+		}
+		
+		while (_contact.emails.count > 0) {
+			[_contact removeEmailAtIndex:0];
+			
+		}
+		NSInteger nbEmail = 0;
+		while (_tmpContact.emails.count> nbEmail) {
+			[_contact addEmail:_tmpContact.emails[nbEmail]];
+			nbEmail++;
+		}
+		self.tmpContact = NULL;
+		[self saveData];
+	}
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -285,9 +328,41 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onCancelClick:(id)event {
-	[self setEditing:FALSE];
-	[self resetData];
+	[self dismissKeyboards];
+	if (!_isAdding) {
+		_contact.firstName = _tmpContact.firstName.copy;
+		_contact.lastName = _tmpContact.lastName.copy;
+		while (_contact.sipAddresses.count > 0) {
+			[_contact removeSipAddressAtIndex:0];
+		}
+		NSInteger nbSipAd = 0;
+		while (_tmpContact.sipAddresses.count > nbSipAd) {
+			[_contact addSipAddress:_tmpContact.sipAddresses[nbSipAd]];
+			nbSipAd++;
+		}
 	
+		while (_contact.phoneNumbers.count > 0) {
+			[_contact removePhoneNumberAtIndex:0];
+		}
+		NSInteger nbPhone = 0;
+		while (_tmpContact.phoneNumbers.count> nbPhone) {
+			[_contact addPhoneNumber:_tmpContact.phoneNumbers[nbPhone]];
+			nbPhone++;
+		}
+	
+		while (_contact.emails.count > 0) {
+			[_contact removeEmailAtIndex:0];
+		}
+		NSInteger nbEmail = 0;
+		while (_tmpContact.emails.count> nbEmail) {
+			[_contact addEmail:_tmpContact.emails[nbEmail]];
+			nbEmail++;
+		}
+		[self saveData];
+		[self.tableController.tableView reloadData];
+	}
+	
+	[self setEditing:FALSE];
 	if (IPAD) {
 		_emptyLabel.hidden = !_isAdding;
 		_avatarImage.hidden = !_emptyLabel.hidden;
@@ -296,8 +371,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else {
 		if (_isAdding) {
 			[PhoneMainView.instance popCurrentView];
+		} else {
+			_avatarImage.hidden = FALSE;
+			_deleteButton.hidden = FALSE;
+			_editButton.hidden = FALSE;
 		}
 	}
+	
+	self.tmpContact = NULL;
 	_isAdding = FALSE;
 }
 
@@ -315,7 +396,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self setEditing:FALSE];
 		[self saveData];
 		_isAdding = FALSE;
+		self.tmpContact = NULL;
+		_avatarImage.hidden = FALSE;
+		_deleteButton.hidden = FALSE;
+		_editButton.hidden = FALSE;
 	} else {
+		_tmpContact = [[Contact alloc] initWithPerson:ABPersonCreate()];
+		_tmpContact.firstName = _contact.firstName.copy;
+		_tmpContact.lastName = _contact.lastName.copy;
+		_tmpContact.sipAddresses = _contact.sipAddresses.copy;
+		_tmpContact.emails = _contact.emails.copy;
+		_tmpContact.phoneNumbers = _contact.phoneNumbers.copy;
 		[self setEditing:TRUE];
 	}
 }
@@ -327,7 +418,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 						   confirmMessage:nil
 							onCancelClick:nil
 					  onConfirmationClick:^() {
-						[self setEditing:FALSE];
+						if (_tableController.isEditing) {
+							[self onCancelClick:sender];
+						}
 						[self removeContact];
 					  }];
 }
@@ -336,6 +429,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 	if (_tableController.isEditing) {
 		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
+	}
+}
+
+- (void)dismissKeyboards {
+	NSArray *cells = [self.tableController.tableView visibleCells];
+	for (UIContactDetailsCell *cell in cells) {
+		UIView * txt = cell.editTextfield;
+		if ([txt isKindOfClass:[UITextField class]] && [txt isFirstResponder]) {
+			[txt resignFirstResponder];
+		}
 	}
 }
 
