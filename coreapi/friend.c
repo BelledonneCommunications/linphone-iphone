@@ -333,7 +333,7 @@ bctbx_list_t* linphone_friend_get_addresses(const LinphoneFriend *lf) {
 		return result;
 	} else {
 		bctbx_list_t *addresses = NULL;
-		return lf->uri ? bctbx_list_append(addresses, lf->uri) : NULL;
+		return lf->uri ? bctbx_list_append(addresses, linphone_address_clone(lf->uri)) : NULL;
 	}
 }
 
