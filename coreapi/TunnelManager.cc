@@ -153,7 +153,7 @@ int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags
 
 int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen){
 	memset(&msg->recv_addr,0,sizeof(msg->recv_addr));
-	int err=((TunnelSocket*)t->data)->recvfrom(msg->b_wptr,msg->b_datap->db_lim-msg->b_datap->db_base,from,*fromlen);
+	int err=((TunnelSocket*)t->data)->recvfrom(msg->b_wptr,dblk_lim(msg->b_datap)-dblk_base(msg->b_datap),from,*fromlen);
 	//to make ice happy
 	inet_aton(((TunnelManager*)((TunnelSocket*)t->data)->getUserPointer())->mLocalAddr,&msg->recv_addr.addr.ipi_addr);
 	msg->recv_addr.family = AF_INET;
