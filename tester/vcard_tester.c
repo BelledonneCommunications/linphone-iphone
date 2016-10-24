@@ -16,10 +16,12 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef VCARD_ENABLED
-
 #include "linphonecore.h"
 #include "private.h"
+
+#ifdef VCARD_ENABLED
+
+
 #include "liblinphone_tester.h"
 #include "carddav.h"
 
