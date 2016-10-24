@@ -3880,8 +3880,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscription
 extern "C" jlongArray Java_org_linphone_core_LinphoneFriendImpl_getAddresses(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	bctbx_list_t *addresses = linphone_friend_get_addresses((LinphoneFriend*)ptr);
-	bctbx_list_t *list = addresses;
+	const bctbx_list_t *addresses = linphone_friend_get_addresses((LinphoneFriend*)ptr);
 	size_t size = bctbx_list_size(addresses);
 	jlongArray jaddresses = env->NewLongArray(size);
 	jlong *jInternalArray = env->GetLongArrayElements(jaddresses, NULL);
@@ -3889,7 +3888,6 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneFriendImpl_getAddresses(JNI
 		jInternalArray[i] = (unsigned long) (addresses->data);
 		addresses = bctbx_list_next(addresses);
 	}
-	bctbx_list_free(list);
 	env->ReleaseLongArrayElements(jaddresses, jInternalArray, 0);
 	return jaddresses;
 }
