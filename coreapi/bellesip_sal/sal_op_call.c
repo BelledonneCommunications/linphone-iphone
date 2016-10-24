@@ -344,8 +344,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 					}else if (strcmp("UPDATE",method)==0){
 						op->base.root->callbacks.call_accepted(op); /*INVITE*/
 					}else if (strcmp("CANCEL",method)==0){
-						sal_op_set_error_info_from_response(op,response);
-						op->base.root->callbacks.call_failure(op);
+						op->base.root->callbacks.call_cancel_done(op);
 					}
 				break;
 				case SalOpStateTerminating:

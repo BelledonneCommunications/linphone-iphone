@@ -1005,6 +1005,14 @@ static void call_released(SalOp *op){
 	}
 }
 
+static void call_cancel_done(SalOp *op) {
+	LinphoneCall *call = (LinphoneCall *)sal_op_get_user_pointer(op);
+	if (call->reinvite_on_cancel_response_requested == TRUE) {
+		call->reinvite_on_cancel_response_requested = FALSE;
+		linphone_call_reinvite_to_recover_from_connection_loss(call);
+	}
+}
+
 static void auth_failure(SalOp *op, SalAuthInfo* info) {
 	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneAuthInfo *ai = NULL;
@@ -1470,6 +1478,7 @@ SalCallbacks linphone_sal_callbacks={
 	call_terminated,
 	call_failure,
 	call_released,
+	call_cancel_done,
 	auth_failure,
 	register_success,
 	register_failure,

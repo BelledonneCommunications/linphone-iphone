@@ -491,6 +491,7 @@ typedef void (*SalOnCallUpdating)(SalOp *op, bool_t is_update);/*< Called when a
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op);
 typedef void (*SalOnCallReleased)(SalOp *salop);
+typedef void (*SalOnCallCancelDone)(SalOp *salop);
 typedef void (*SalOnAuthRequestedLegacy)(SalOp *op, const char *realm, const char *username);
 typedef bool_t (*SalOnAuthRequested)(Sal *sal,SalAuthInfo* info);
 typedef void (*SalOnAuthFailure)(SalOp *op, SalAuthInfo* info);
@@ -530,6 +531,7 @@ typedef struct SalCallbacks{
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
 	SalOnCallReleased call_released;
+	SalOnCallCancelDone call_cancel_done;
 	SalOnAuthFailure auth_failure;
 	SalOnRegisterSuccess register_success;
 	SalOnRegisterFailure register_failure;

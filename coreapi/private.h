@@ -371,6 +371,7 @@ struct _LinphoneCall{
 	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
 	bool_t defer_notify_incoming;
 	bool_t need_localip_refresh;
+	bool_t reinvite_on_cancel_response_requested;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);
