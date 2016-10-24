@@ -912,6 +912,8 @@ void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAc
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOK) {
+		NSString* phoneNumber = [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(creator)];
+		thiz.activationSMSText.text = [NSString stringWithFormat:NSLocalizedString(@"We have sent a SMS with a validation code to %@. To complete your phone number verification, please enter the 4 digit code below:", nil), phoneNumber];
 		[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
 	} else {
 		if(!resp) {
