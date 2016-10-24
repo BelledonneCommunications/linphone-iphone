@@ -88,10 +88,10 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 static int friend_compare(const void * a, const void * b) {
 	LinphoneFriend *lfa = (LinphoneFriend *)a;
 	LinphoneFriend *lfb = (LinphoneFriend *)b;
-	bctbx_list_t *addressesa = linphone_friend_get_addresses(lfa);
-	bctbx_list_t *addressesb = linphone_friend_get_addresses(lfb);
-	bctbx_list_t *iteratora = addressesa;
-	bctbx_list_t *iteratorb = addressesb;
+	const bctbx_list_t *addressesa = linphone_friend_get_addresses(lfa);
+	const bctbx_list_t *addressesb = linphone_friend_get_addresses(lfb);
+	bctbx_list_t *iteratora = (bctbx_list_t *)addressesa;
+	bctbx_list_t *iteratorb = (bctbx_list_t *)addressesb;
 	int ret = 1;
 
 	while (iteratora && (ret == 1)) {
@@ -102,13 +102,6 @@ static int friend_compare(const void * a, const void * b) {
 			iteratorb = bctbx_list_next(iteratorb);
 		}
 		iteratora = bctbx_list_next(iteratora);
-	}
-
-	if (addressesa) {
-		bctbx_list_free_with_data(addressesa, (bctbx_list_free_func)linphone_address_unref);
-	}
-	if (addressesb) {
-		bctbx_list_free_with_data(addressesb, (bctbx_list_free_func)linphone_address_unref);
 	}
 
 	return ret;
@@ -319,21 +312,15 @@ void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr
 	}
 }
 
-bctbx_list_t* linphone_friend_get_addresses(const LinphoneFriend *lf) {
+const bctbx_list_t* linphone_friend_get_addresses(const LinphoneFriend *lf) {
 	if (!lf) return NULL;
 
 	if (linphone_core_vcard_supported()) {
-		bctbx_list_t *result = NULL;
 		const bctbx_list_t * addresses = linphone_vcard_get_sip_addresses(lf->vcard);
-		while (addresses) {
-			LinphoneAddress *addr = (LinphoneAddress *)addresses->data;
-			result = bctbx_list_append(result, linphone_address_clone(addr));
-			addresses = bctbx_list_next(addresses);
-		}
-		return result;
+		return addresses;
 	} else {
 		bctbx_list_t *addresses = NULL;
-		return lf->uri ? bctbx_list_append(addresses, linphone_address_clone(lf->uri)) : NULL;
+		return lf->uri ? bctbx_list_append(addresses, lf->uri) : NULL;
 	}
 }
 
@@ -608,18 +595,17 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 const LinphonePresenceModel * linphone_friend_get_presence_model(const LinphoneFriend *lf) {
 	const LinphonePresenceModel *presence = NULL;
 	LinphoneFriend* fuckconst = (LinphoneFriend*)lf;
-	bctbx_list_t* addrs = linphone_friend_get_addresses(fuckconst);
+	const bctbx_list_t* addrs = linphone_friend_get_addresses(fuckconst);
 	bctbx_list_t* phones = NULL;
 	bctbx_list_t *it;
 
-	for (it = addrs; it!= NULL; it = it->next) {
+	for (it = (bctbx_list_t *)addrs; it!= NULL; it = it->next) {
 		LinphoneAddress *addr = (LinphoneAddress*)it->data;
 		char *uri = linphone_address_as_string_uri_only(addr);
 		presence = linphone_friend_get_presence_model_for_uri_or_tel(fuckconst, uri);
 		ms_free(uri);
 		if (presence) break;
 	}
-	bctbx_list_free_with_data(addrs, (bctbx_list_free_func) linphone_address_unref);
 	if (presence) return presence;
 
 	phones = linphone_friend_get_phone_numbers(fuckconst);

@@ -108,9 +108,9 @@ static bctbx_list_t * uri_list(const LinphoneFriendList *list) {
 	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
 		bctbx_list_t *iterator;
-		bctbx_list_t *addresses = linphone_friend_get_addresses(lf);
+		const bctbx_list_t *addresses = linphone_friend_get_addresses(lf);
 		bctbx_list_t *numbers = linphone_friend_get_phone_numbers(lf);
-		iterator = addresses;
+		iterator = (bctbx_list_t *)addresses;
 		while (iterator) {
 			LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(iterator);
 			if (addr) {
@@ -134,7 +134,6 @@ static bctbx_list_t * uri_list(const LinphoneFriendList *list) {
 			}
 			iterator = bctbx_list_next(iterator);
 		}
-		if (addresses) bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
 	}
 	return uri_list;
 }
@@ -307,7 +306,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		if (resource_object != NULL) xmlXPathFreeObject(resource_object);
 
 		if (full_state == TRUE) {
-			bctbx_list_t *addresses;
+			const bctbx_list_t *addresses;
 			bctbx_list_t *numbers;
 			bctbx_list_t *iterator;
 			bctbx_list_t *l = list->friends;
@@ -315,7 +314,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 				lf = (LinphoneFriend *)bctbx_list_get_data(l);
 				addresses = linphone_friend_get_addresses(lf);
 				numbers = linphone_friend_get_phone_numbers(lf);
-				iterator = addresses;
+				iterator = (bctbx_list_t *)addresses;
 				while (iterator) {
 					LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(iterator);
 					char *uri = linphone_address_as_string_uri_only(addr);
@@ -324,7 +323,6 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 					ms_free(uri);
 					iterator = bctbx_list_next(iterator);
 				}
-				if (addresses) bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
 				iterator = numbers;
 				while (iterator) {
 					const char *number = (const char *)bctbx_list_get_data(iterator);
@@ -687,14 +685,13 @@ LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFrien
 				iterator = bctbx_list_next(iterator);
 			}
 		} else {
-			bctbx_list_t *addresses = linphone_friend_get_addresses(lf);
-			iterator = addresses;
+			const bctbx_list_t *addresses = linphone_friend_get_addresses(lf);
+			iterator = (bctbx_list_t *)addresses;
 			while (iterator && (result == NULL)) {
 				LinphoneAddress *lfaddr = (LinphoneAddress *)bctbx_list_get_data(iterator);
 				if (linphone_address_weak_equal(lfaddr, address)) result = lf;
 				iterator = bctbx_list_next(iterator);
 			}
-			bctbx_list_free_with_data(addresses, (bctbx_list_free_func)linphone_address_unref);
 		}
 	}
 	return result;

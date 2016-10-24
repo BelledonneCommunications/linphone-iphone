@@ -177,7 +177,7 @@ LINPHONE_PUBLIC void linphone_friend_add_address(LinphoneFriend *lf, const Linph
  * @param lf #LinphoneFriend object
  * @return \mslist{LinphoneAddress}
  */
-LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_addresses(const LinphoneFriend *lf);
+LINPHONE_PUBLIC const bctbx_list_t* linphone_friend_get_addresses(const LinphoneFriend *lf);
 
 /**
  * Removes an address in this friend

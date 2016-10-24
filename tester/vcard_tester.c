@@ -145,13 +145,12 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
 	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nIMPP;TYPE=home:sip:sylvain@sip.linphone.org\r\nTEL;TYPE=work:0952636505\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
-	bctbx_list_t *sip_addresses = linphone_friend_get_addresses(lf);
+	const bctbx_list_t *sip_addresses = linphone_friend_get_addresses(lf);
 	bctbx_list_t *phone_numbers = linphone_friend_get_phone_numbers(lf);
 	LinphoneAddress *addr = NULL;
 
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(sip_addresses), 2, unsigned int, "%u");
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(phone_numbers), 1, unsigned int, "%u");
-	if (sip_addresses) bctbx_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
 	if (phone_numbers) bctbx_list_free(phone_numbers);
 	linphone_friend_unref(lf);
 
@@ -163,14 +162,12 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(sip_addresses), 0, unsigned int, "%u");
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(phone_numbers), 2, unsigned int, "%u");
-	if (sip_addresses) bctbx_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
 	if (phone_numbers) bctbx_list_free(phone_numbers);
 
 	addr = linphone_address_new("sip:sylvain@sip.linphone.org");
 	linphone_friend_add_address(lf, addr);
 	sip_addresses = linphone_friend_get_addresses(lf);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(sip_addresses), 1, unsigned int, "%u");
-	if (sip_addresses) bctbx_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
 
 	linphone_friend_remove_phone_number(lf, "0952636505");
 	phone_numbers = linphone_friend_get_phone_numbers(lf);
@@ -187,7 +184,6 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	linphone_friend_done(lf);
 	sip_addresses = linphone_friend_get_addresses(lf);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(sip_addresses), 0, unsigned int, "%u");
-	if (sip_addresses) bctbx_list_free_with_data(sip_addresses, (void (*)(void *))linphone_address_unref);
 
 	linphone_friend_add_phone_number(lf, "+33952636505");
 	phone_numbers = linphone_friend_get_phone_numbers(lf);
