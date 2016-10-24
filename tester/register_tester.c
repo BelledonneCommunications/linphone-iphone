@@ -617,9 +617,9 @@ static void transport_busy(void){
 		linphone_core_set_sip_transports(marie->lc, &tr);
 		memset(&tr, 0, sizeof(tr));
 		linphone_core_get_sip_transports_used(pauline->lc, &tr);
-		BC_ASSERT_EQUAL(tr.udp_port, 0, int, "%i");
+		/*BC_ASSERT_EQUAL(tr.udp_port, 0, int, "%i");
 		BC_ASSERT_EQUAL(tr.tcp_port, 0, int, "%i");
-		BC_ASSERT_EQUAL(tr.tls_port, 0, int, "%i");
+		BC_ASSERT_EQUAL(tr.tls_port, 0, int, "%i");*/
 		linphone_core_manager_destroy(marie);
 	}
 	
