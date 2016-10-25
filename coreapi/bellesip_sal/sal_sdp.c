@@ -548,7 +548,10 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 				candidate->foundation, &candidate->componentID, proto, &candidate->priority, candidate->addr, &candidate->port,
 				candidate->type, candidate->raddr, &candidate->rport);
 			if (strcasecmp("udp",proto)==0 && ((nb == 7) || (nb == 9))) nb_ice_candidates++;
-			else memset(candidate, 0, sizeof(*candidate));
+			else {
+				ms_error("ice: Failed parsing a=candidate SDP attribute");
+				memset(candidate, 0, sizeof(*candidate));
+			}
 		} else if ((keywordcmp("remote-candidates", att_name) == 0) && (value != NULL)) {
 			SalIceRemoteCandidate candidate;
 			unsigned int componentID;
