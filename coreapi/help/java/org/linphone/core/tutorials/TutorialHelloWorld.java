@@ -33,11 +33,13 @@ import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.LogCollectionUploadState;
 import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
+import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PublishState;
@@ -71,6 +73,7 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
 	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
+	public void authenticationRequested(LinphoneCore lc, LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method) {}
 	public void displayStatus(LinphoneCore lc, String message) {}
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}
@@ -257,5 +260,17 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 		
 	}
 
+	
+        @Override
+        public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
 
 }

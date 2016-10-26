@@ -70,14 +70,9 @@ static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2,
 }
 
 static void simple_call_with_different_codec_mappings(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -111,62 +106,50 @@ static void simple_call_with_different_codec_mappings(void) {
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void call_failed_because_of_codecs(void) {
-	int begin,leaked_objects;
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCall* out_call;
 
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
+	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
+	disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
+	out_call = linphone_core_invite_address(pauline->lc,marie->identity);
+	linphone_call_ref(out_call);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
-	{
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-		LinphoneCall* out_call;
+	/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
+	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable, int, "%d");
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0, int, "%d");
 
-		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
-		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
-		out_call = linphone_core_invite_address(pauline->lc,marie->identity);
-		linphone_call_ref(out_call);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
-
-		/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
-		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
-		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0, int, "%d");
-
-		linphone_call_unref(out_call);
-		linphone_core_manager_destroy(marie);
-		linphone_core_manager_destroy(pauline);
-	}
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 
-static void profile_call_base(bool_t avpf1, LinphoneMediaEncryption srtp1,bool_t avpf2, LinphoneMediaEncryption srtp2, bool_t encryption_mandatory, const char *expected_profile) {
+static void profile_call_base(bool_t avpf1
+							  , LinphoneMediaEncryption srtp1
+							  , bool_t avpf2
+							  , LinphoneMediaEncryption srtp2
+							  , bool_t encryption_mandatory
+							  , const char *expected_profile
+							  , bool_t enable_video) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneProxyConfig *lpc;
 	const LinphoneCallParams *params;
 
 	if (avpf1) {
-		linphone_core_get_default_proxy(marie->lc, &lpc);
+		lpc = linphone_core_get_default_proxy_config(marie->lc);
 		linphone_proxy_config_enable_avpf(lpc, TRUE);
 		linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
 	}
 	if (avpf2) {
-		linphone_core_get_default_proxy(pauline->lc, &lpc);
+		lpc = linphone_core_get_default_proxy_config(pauline->lc);
 		linphone_proxy_config_enable_avpf(lpc, TRUE);
 		linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
 	}
@@ -174,6 +157,18 @@ static void profile_call_base(bool_t avpf1, LinphoneMediaEncryption srtp1,bool_t
 	if (encryption_mandatory) {
 		linphone_core_set_media_encryption_mandatory(marie->lc,TRUE);
 		linphone_core_set_media_encryption_mandatory(pauline->lc,TRUE);
+	}
+
+	if (enable_video && linphone_core_video_supported(marie->lc)) {
+		LinphoneVideoPolicy policy;
+		policy.automatically_accept = TRUE;
+		policy.automatically_initiate = TRUE;
+		linphone_core_enable_video_capture(marie->lc, TRUE);
+		linphone_core_enable_video_display(marie->lc, TRUE);
+		linphone_core_set_video_policy(marie->lc,&policy);
+		linphone_core_enable_video_capture(pauline->lc, TRUE);
+		linphone_core_enable_video_display(pauline->lc, TRUE);
+		linphone_core_set_video_policy(pauline->lc,&policy);
 	}
 
 	if (linphone_core_media_encryption_supported(marie->lc, srtp1)) {
@@ -213,90 +208,197 @@ end:
 	linphone_core_manager_destroy(marie);
 }
 
-static void profile_call(bool_t avpf1, LinphoneMediaEncryption srtp1, bool_t avpf2, LinphoneMediaEncryption srtp2, const char *expected_profile) {
-	return profile_call_base(avpf1, srtp1, avpf2,srtp2,FALSE,expected_profile);
+static void profile_call(bool_t avpf1, LinphoneMediaEncryption srtp1, bool_t avpf2, LinphoneMediaEncryption srtp2, const char *expected_profile, bool_t enable_video) {
+	profile_call_base(avpf1, srtp1, avpf2,srtp2,FALSE,expected_profile,enable_video);
 }
+
 static void avp_to_avp_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVP");
+	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVP", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avp_to_avp_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVP", TRUE);
+}
+#endif
 
 static void avp_to_avpf_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionNone, "RTP/AVP");
+	profile_call(FALSE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionNone, "RTP/AVP",FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avp_to_avpf_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionNone, "RTP/AVP",TRUE);
+}
+#endif
 
 static void avp_to_savp_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionSRTP, "RTP/AVP");
+	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionSRTP, "RTP/AVP", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avp_to_savp_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionSRTP, "RTP/AVP", TRUE);
+}
+#endif
 
 static void avp_to_savpf_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionSRTP, "RTP/AVP");
+	profile_call(FALSE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionSRTP, "RTP/AVP", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avp_to_savpf_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionSRTP, "RTP/AVP", TRUE);
+}
+#endif
 
 static void avpf_to_avp_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avpf_to_avp_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVPF", TRUE);
+}
+#endif
 
 static void avpf_to_avpf_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionNone, "RTP/AVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionNone, "RTP/AVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avpf_to_avpf_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionNone, "RTP/AVPF", TRUE);
+}
+#endif
 
 static void avpf_to_savp_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionSRTP, "RTP/AVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionSRTP, "RTP/AVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avpf_to_savp_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionSRTP, "RTP/AVPF", TRUE);
+}
+#endif
 
 static void avpf_to_savpf_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionSRTP, "RTP/AVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionSRTP, "RTP/AVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void avpf_to_savpf_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionNone, TRUE, LinphoneMediaEncryptionSRTP, "RTP/AVPF", TRUE);
+}
+#endif
 
 static void savp_to_avp_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionNone, "RTP/SAVP");
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionNone, "RTP/SAVP", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savp_to_avp_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionNone, "RTP/SAVP", TRUE);
+}
+#endif
 
 static void savp_to_avpf_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionNone, "RTP/SAVP");
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionNone, "RTP/SAVP", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savp_to_avpf_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionNone, "RTP/SAVP", TRUE);
+}
+#endif
 
 static void savp_to_savp_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionSRTP, "RTP/SAVP");
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionSRTP, "RTP/SAVP", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savp_to_savp_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionSRTP, "RTP/SAVP", TRUE);
+}
+#endif
 
 static void savp_to_savpf_call(void) {
-	profile_call(FALSE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionSRTP, "RTP/SAVP");
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionSRTP, "RTP/SAVP", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savp_to_savpf_video_call(void) {
+	profile_call(FALSE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionSRTP, "RTP/SAVP", TRUE);
+}
+#endif
 
 static void savpf_to_avp_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionNone, "RTP/SAVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionNone, "RTP/SAVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savpf_to_avp_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionNone, "RTP/SAVPF", TRUE);
+}
+#endif
 
 static void savpf_to_avpf_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionNone, "RTP/SAVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionNone, "RTP/SAVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savpf_to_avpf_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionNone, "RTP/SAVPF", TRUE);
+}
+#endif
 
 static void savpf_to_savp_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionSRTP, "RTP/SAVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionSRTP, "RTP/SAVPF", FALSE);
 }
-
+#ifdef VIDEO_ENABLED
+static void savpf_to_savp_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, FALSE, LinphoneMediaEncryptionSRTP, "RTP/SAVPF", TRUE);
+}
+#endif
 static void savpf_to_savpf_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionSRTP, "RTP/SAVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionSRTP, "RTP/SAVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savpf_to_savpf_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionSRTP, TRUE, LinphoneMediaEncryptionSRTP, "RTP/SAVPF", TRUE);
+}
+#endif
 
 static void savpf_dtls_to_savpf_dtls_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, "UDP/TLS/RTP/SAVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, "UDP/TLS/RTP/SAVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savpf_dtls_to_savpf_dtls_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, "UDP/TLS/RTP/SAVPF", TRUE);
+}
+#endif
+
 static void savpf_dtls_to_savpf_dtls_encryption_mandatory_call(void) {
-	profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, TRUE, "UDP/TLS/RTP/SAVPF");
+	profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, TRUE, "UDP/TLS/RTP/SAVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savpf_dtls_to_savpf_dtls_encryption_mandatory_video_call(void) {
+	profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, TRUE, "UDP/TLS/RTP/SAVPF", TRUE);
+}
+#endif
+
 static void savpf_dtls_to_savpf_encryption_mandatory_call(void) {
-	/*profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, TRUE, "UDP/TLS/RTP/SAVPF"); not sure of result*/
+	/*profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, TRUE, "UDP/TLS/RTP/SAVPF",FALSE); not sure of result*/
 }
+#ifdef VIDEO_ENABLED
+static void savpf_dtls_to_savpf_encryption_mandatory_video_call(void) {
+	/*profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, TRUE, "UDP/TLS/RTP/SAVPF",TRUE); not sure of result*/
+}
+#endif
 
 static void savpf_dtls_to_savpf_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, "UDP/TLS/RTP/SAVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, "UDP/TLS/RTP/SAVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savpf_dtls_to_savpf_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, "UDP/TLS/RTP/SAVPF", TRUE);
+}
+#endif
 
 static void savpf_dtls_to_avpf_call(void) {
-	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionNone, "UDP/TLS/RTP/SAVPF");
+	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionNone, "UDP/TLS/RTP/SAVPF", FALSE);
 }
+#ifdef VIDEO_ENABLED
+static void savpf_dtls_to_avpf_video_call(void) {
+	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionNone, "UDP/TLS/RTP/SAVPF", TRUE);
+}
+#endif
 
 #ifdef VIDEO_ENABLED
 static LinphonePayloadType * configure_core_for_avpf_and_video(LinphoneCore *lc) {
@@ -306,7 +408,7 @@ static LinphonePayloadType * configure_core_for_avpf_and_video(LinphoneCore *lc)
 
 	policy.automatically_initiate = TRUE;
 	policy.automatically_accept = TRUE;
-	linphone_core_get_default_proxy(lc, &lpc);
+	lpc = linphone_core_get_default_proxy_config(lc);
 	linphone_proxy_config_enable_avpf(lpc, TRUE);
 	linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
 	linphone_core_set_video_device(lc, "StaticImage: Static picture");
@@ -350,7 +452,7 @@ static void compatible_avpf_features(void) {
 
 	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
 	if (!call_ok) goto end;
-	
+
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	check_avpf_features(marie->lc, lpt->avpf.features);
@@ -387,40 +489,57 @@ end:
 #endif
 
 static test_t offeranswer_tests[] = {
-	{ "Start with no config", start_with_no_config },
-	{ "Call failed because of codecs", call_failed_because_of_codecs },
-	{ "Simple call with different codec mappings", simple_call_with_different_codec_mappings},
-	{ "AVP to AVP call", avp_to_avp_call },
-	{ "AVP to AVPF call", avp_to_avpf_call },
-	{ "AVP to SAVP call", avp_to_savp_call },
-	{ "AVP to SAVPF call", avp_to_savpf_call },
-	{ "AVPF to AVP call", avpf_to_avp_call },
-	{ "AVPF to AVPF call", avpf_to_avpf_call },
-	{ "AVPF to SAVP call", avpf_to_savp_call },
-	{ "AVPF to SAVPF call", avpf_to_savpf_call },
-	{ "SAVP to AVP call", savp_to_avp_call },
-	{ "SAVP to AVPF call", savp_to_avpf_call },
-	{ "SAVP to SAVP call", savp_to_savp_call },
-	{ "SAVP to SAVPF call", savp_to_savpf_call },
-	{ "SAVPF to AVP call", savpf_to_avp_call },
-	{ "SAVPF to AVPF call", savpf_to_avpf_call },
-	{ "SAVPF to SAVP call", savpf_to_savp_call },
-	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
-	{ "SAVPF/DTLS to SAVPF/DTLS call", savpf_dtls_to_savpf_dtls_call},
-	{ "SAVPF/DTLS to SAVPF/DTLS encryption mandatory call", savpf_dtls_to_savpf_dtls_encryption_mandatory_call},
-	{ "SAVPF/DTLS to SAVPF call", savpf_dtls_to_savpf_call},
-	{ "SAVPF/DTLS to SAVPF encryption mandatory call", savpf_dtls_to_savpf_encryption_mandatory_call},
-	{ "SAVPF/DTLS to AVPF call", savpf_dtls_to_avpf_call},
+	TEST_NO_TAG("Start with no config", start_with_no_config),
+	TEST_NO_TAG("Call failed because of codecs", call_failed_because_of_codecs),
+	TEST_NO_TAG("Simple call with different codec mappings", simple_call_with_different_codec_mappings),
+	TEST_NO_TAG("AVP to AVP call", avp_to_avp_call),
+	TEST_NO_TAG("AVP to AVPF call", avp_to_avpf_call),
+	TEST_NO_TAG("AVP to SAVP call", avp_to_savp_call),
+	TEST_NO_TAG("AVP to SAVPF call", avp_to_savpf_call),
+	TEST_NO_TAG("AVPF to AVP call", avpf_to_avp_call),
+	TEST_NO_TAG("AVPF to AVPF call", avpf_to_avpf_call),
+	TEST_NO_TAG("AVPF to SAVP call", avpf_to_savp_call),
+	TEST_NO_TAG("AVPF to SAVPF call", avpf_to_savpf_call),
+	TEST_NO_TAG("SAVP to AVP call", savp_to_avp_call),
+	TEST_NO_TAG("SAVP to AVPF call", savp_to_avpf_call),
+	TEST_NO_TAG("SAVP to SAVP call", savp_to_savp_call),
+	TEST_NO_TAG("SAVP to SAVPF call", savp_to_savpf_call),
+	TEST_NO_TAG("SAVPF to AVP call", savpf_to_avp_call),
+	TEST_NO_TAG("SAVPF to AVPF call", savpf_to_avpf_call),
+	TEST_NO_TAG("SAVPF to SAVP call", savpf_to_savp_call),
+	TEST_NO_TAG("SAVPF to SAVPF call", savpf_to_savpf_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF/DTLS call", savpf_dtls_to_savpf_dtls_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF/DTLS encryption mandatory call", savpf_dtls_to_savpf_dtls_encryption_mandatory_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF call", savpf_dtls_to_savpf_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF encryption mandatory call", savpf_dtls_to_savpf_encryption_mandatory_call),
+	TEST_NO_TAG("SAVPF/DTLS to AVPF call", savpf_dtls_to_avpf_call),
 #ifdef VIDEO_ENABLED
-	{ "Compatible AVPF features", compatible_avpf_features },
-	{ "Incompatible AVPF features", incompatible_avpf_features },
+	TEST_NO_TAG("AVP to AVP video call", avp_to_avp_video_call),
+	TEST_NO_TAG("AVP to AVPF video call", avp_to_avpf_video_call),
+	TEST_NO_TAG("AVP to SAVP video call", avp_to_savp_video_call),
+	TEST_NO_TAG("AVP to SAVPF video call", avp_to_savpf_video_call),
+	TEST_NO_TAG("AVPF to AVP video call", avpf_to_avp_video_call),
+	TEST_NO_TAG("AVPF to AVPF video call", avpf_to_avpf_video_call),
+	TEST_NO_TAG("AVPF to SAVP video call", avpf_to_savp_video_call),
+	TEST_NO_TAG("AVPF to SAVPF video call", avpf_to_savpf_video_call),
+	TEST_NO_TAG("SAVP to AVP video call", savp_to_avp_video_call),
+	TEST_NO_TAG("SAVP to AVPF video call", savp_to_avpf_video_call),
+	TEST_NO_TAG("SAVP to SAVP video call", savp_to_savp_video_call),
+	TEST_NO_TAG("SAVP to SAVPF video call", savp_to_savpf_video_call),
+	TEST_NO_TAG("SAVPF to AVP video call", savpf_to_avp_video_call),
+	TEST_NO_TAG("SAVPF to AVPF video call", savpf_to_avpf_video_call),
+	TEST_NO_TAG("SAVPF to SAVP video call", savpf_to_savp_video_call),
+	TEST_NO_TAG("SAVPF to SAVPF video call", savpf_to_savpf_video_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF/DTLS video call", savpf_dtls_to_savpf_dtls_video_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF/DTLS encryption mandatory video call", savpf_dtls_to_savpf_dtls_encryption_mandatory_video_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF video call", savpf_dtls_to_savpf_video_call),
+	TEST_NO_TAG("SAVPF/DTLS to SAVPF encryption mandatory video call", savpf_dtls_to_savpf_encryption_mandatory_video_call),
+	TEST_NO_TAG("SAVPF/DTLS to AVPF video call", savpf_dtls_to_avpf_video_call),
+
+	TEST_NO_TAG("Compatible AVPF features", compatible_avpf_features),
+	TEST_NO_TAG("Incompatible AVPF features", incompatible_avpf_features)
 #endif
 };
 
-test_suite_t offeranswer_test_suite = {
-	"Offer-answer",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(offeranswer_tests) / sizeof(offeranswer_tests[0]),
-	offeranswer_tests
-};
+test_suite_t offeranswer_test_suite = {"Offer-answer", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+									   sizeof(offeranswer_tests) / sizeof(offeranswer_tests[0]), offeranswer_tests};

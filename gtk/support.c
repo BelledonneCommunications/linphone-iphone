@@ -236,14 +236,14 @@ void linphone_gtk_visibility_set(const char *hiddens, const char *window_name, G
 	int len;
 	for(b=i=hiddens;*i!='\0';++i){
 		if (*i==' '){
-			len=MIN(i-b,sizeof(item)-1);
+			len=MIN(i-b,(int)sizeof(item)-1);
 			strncpy(item,b,len);
 			item[len]='\0';
 			b=i+1;
 			parse_item(item,window_name,w,show);
 		}
 	}
-	len=MIN(i-b,sizeof(item)-1);
+	len=MIN(i-b,(int)sizeof(item)-1);
 	if (len>0){
 		strncpy(item,b,len);
 		item[len]='\0';

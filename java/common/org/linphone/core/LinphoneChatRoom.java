@@ -42,14 +42,14 @@ public interface LinphoneChatRoom {
 	
 	/**
 	 * Send a message to peer member of this chat room.
-	 * @param chat message
+	 * @param message chat message
+	 * @deprecated
 	 */
 	@Deprecated
 	void sendMessage(LinphoneChatMessage message, LinphoneChatMessage.StateListener listener);
 
 	/**
 	 * Create a LinphoneChatMessage
-	 * @param chatRoom chat room associated to the message
 	 * @param message message to send
 	 * @return LinphoneChatMessage object
 	 */
@@ -75,11 +75,6 @@ public interface LinphoneChatRoom {
 	 * @return an array of LinphoneChatMessage, empty if nothing has been found
 	 */
 	LinphoneChatMessage[] getHistoryRange(int begin, int end);
-
-	/**
-	 * Destroys a LinphoneChatRoom.
-	 */
-	void destroy();
 
 	/**
 	 * Returns the amount of unread messages associated with the peer of this chatRoom.
@@ -144,4 +139,19 @@ public interface LinphoneChatRoom {
 	 * @param message
 	 */
 	void sendChatMessage(LinphoneChatMessage message);
+	
+	/**
+	 * get Curent Call associated to this chatroom if any
+	 * To commit a message, use #linphone_chat_room_send_message
+	 * @return LinphoneCall or NULL.
+	 */
+	public LinphoneCall getCall();
+	/**
+	 * When realtime text is enabled LinphoneCallParams.realTimeTextEnabled, LinphoneCoreListener.isComposingReceived is call every time a char is received from peer.
+	 * At the end of remote typing a regular LinphoneChatMessage is received with committed data from LinphoneCoreListener.messageReceived .
+	 * @return  RFC 4103/T.140 char
+	 */
+	long getChar();
+	
+	
 }

@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "belle-sip/belle-sdp.h"
 
 struct Sal{
+	MSFactory *factory;
 	SalCallbacks callbacks;
 	MSList *pending_auths;/*MSList of SalOp */
 	belle_sip_stack_t* stack;
@@ -36,6 +37,7 @@ struct Sal{
 	int session_expires;
 	unsigned int keep_alive;
 	char *root_ca;
+	char *root_ca_data;
 	char *uuid;
 	int refresher_retry_after; /*retry after value for refresher*/
 	MSList *supported_tags;/*list of char * */
@@ -52,6 +54,7 @@ struct Sal{
 	bool_t enable_sip_update; /*true by default*/
 	SalOpSDPHandling default_sdp_handling;
 	bool_t pending_trans_checking; /*testing purpose*/
+	void *ssl_config;
 };
 
 typedef enum SalOpState {
@@ -99,7 +102,7 @@ struct SalOp{
 	int ref;
 	SalOpType type;
 	SalPrivacyMask privacy;
-	belle_sip_header_t *event; /*used by SalOpSubscribe kinds*/
+	belle_sip_header_event_t *event; /*used by SalOpSubscribe kinds*/
 	SalOpSDPHandling sdp_handling;
 	int auth_requests; /*number of auth requested for this op*/
 	bool_t cnx_ip_to_0000_if_sendonly_enabled;
@@ -109,6 +112,7 @@ struct SalOp{
 	bool_t manual_refresher;
 	bool_t has_auth_pending;
 	bool_t supports_session_timers;
+	bool_t op_released;
 };
 
 
@@ -126,6 +130,7 @@ SalOp* sal_op_ref(SalOp* op);
 void* sal_op_unref(SalOp* op);
 void sal_op_release_impl(SalOp *op);
 
+void sal_op_set_replaces(SalOp* op,belle_sip_header_replaces_t* replaces);
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
 int sal_op_send_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires);
@@ -165,11 +170,12 @@ belle_sip_response_t *sal_create_response_from_request(Sal *sal, belle_sip_reque
 
 void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming);
 
-void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body);
-bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
+SalBodyHandler * sal_op_get_body_handler(SalOp *op, belle_sip_message_t *msg);
 
-SalReason sal_reason_to_sip_code(SalReason r);
+int sal_reason_to_sip_code(SalReason r);
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
+
+SalSubscribeStatus belle_sip_message_get_subscription_state(const belle_sip_message_t *msg);
 
 #endif /* SAL_IMPL_H_ */

@@ -111,6 +111,18 @@ namespace belledonnecomm {
 		 */
 		bool tunnelizeSipPacketsEnabled() const;
 		/**
+		 * Indicate to the tunnel manager wether server certificate
+		 * must be verified during TLS handshake. Default: disabled
+		 * @param enable If set to TRUE, SIP packets will pass through the tunnel.
+		 * If set to FALSE, SIP packets will pass by the configured proxies.
+		 */
+		void verifyServerCertificate(bool enable);
+		/**
+		 * Check wether the tunnel manager is set to verify server certificate during TLS handshake
+		 * @return True, server certificate is verified(using the linphonecore root certificate)
+		 */
+		bool verifyServerCertificateEnabled() const;
+		/**
 		 * @brief Constructor
 		 * @param lc The LinphoneCore instance of which the TunnelManager will be associated to.
 		 */
@@ -143,14 +155,10 @@ namespace belledonnecomm {
 		bool isConnected() const;
 
 		bool isActivated() const;
-	private:
-		enum State {
-			disabled,
-			connecting,
-			ready,
-			autodetecting
-		};
 
+		void simulateUdpLoss(bool enabled);
+
+	private:
 		enum EventType{
 			UdpMirrorClientEvent,
 			TunnelEvent,
@@ -165,15 +173,16 @@ namespace belledonnecomm {
 		typedef std::list<UdpMirrorClient> UdpMirrorClientList;
 		static int customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen);
 		static int customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen);
-		static int eXosipSendto(int fd,const void *buf, size_t len, int flags, const struct sockaddr *to, socklen_t tolen,void* userdata);
-		static int eXosipRecvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen,void* userdata);
-		static int eXosipSelect(int nfds, fd_set *s1, fd_set *s2, fd_set *s3, struct timeval *tv,void* userdata);
-		static void tunnelCallback(bool connected, TunnelManager *zis);
+		static void tunnelCallback(bool connected, void *zis);
 		static void sOnIterate(TunnelManager *zis);
 		static void sUdpMirrorClientCallback(bool result, void* data);
 		static void networkReachableCb(LinphoneCore *lc, bool_t reachable);
 
 	private:
+		enum State{
+			Off, /*no tunneling */
+			On /*tunneling activated*/
+		};
 		void onIterate();
 		void doRegistration();
 		void doUnregistration();
@@ -182,12 +191,18 @@ namespace belledonnecomm {
 		void processTunnelEvent(const Event &ev);
 		void processUdpMirrorEvent(const Event &ev);
 		void postEvent(const Event &ev);
-
+		void stopClient();
+		void stopAutoDetection();
+		void stopLongRunningTask();
+		void applyMode();
+		void setState(State state);
+		void applyState();
+		void tunnelizeLiblinphone();
+		void untunnelizeLiblinphone();
 	private:
+		
 		LinphoneCore* mCore;
 		LinphoneTunnelMode mMode;
-		State mState;
-		bool mTunnelizeSipPackets;
 		TunnelClient* mTunnelClient;
 		std::string mHttpUserName;
 		std::string mHttpPasswd;
@@ -201,6 +216,14 @@ namespace belledonnecomm {
 		Mutex mMutex;
 		std::queue<Event> mEvq;
 		char mLocalAddr[64];
+		unsigned long mLongRunningTaskId;
+		State mTargetState;
+		State mState;
+		bool mVerifyServerCertificate;
+		bool mStarted;
+		bool mAutodetectionRunning;
+		bool mTunnelizeSipPackets;
+		bool mSimulateUdpLoss;
 	};
 
 /**

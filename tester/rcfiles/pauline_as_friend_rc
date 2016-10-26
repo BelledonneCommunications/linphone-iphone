@@ -1,0 +1,12 @@
+[net]
+mtu=1300
+
+[sip]
+ping_with_options=0
+sip_random_port=1
+
+[friend_0]
+url=sip:pauline@localhost
+pol=accept
+subscribe=1
+

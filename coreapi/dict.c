@@ -103,7 +103,7 @@ int linphone_dictionary_haskey(const LinphoneDictionary* obj, const char* key)
 
 void linphone_dictionary_foreach(const LinphoneDictionary* obj, void (*apply_func)(const char*, void*, void*), void* userdata)
 {
-	return belle_sip_dict_foreach(obj, apply_func, userdata);
+	belle_sip_dict_foreach(obj, apply_func, userdata);
 }
 
 struct lp_config_to_dict {

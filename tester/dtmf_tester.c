@@ -36,7 +36,9 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 	LinphoneCall *marie_call = NULL;
 
 	if (use_opus) {
-		if (!ms_filter_codec_supported("opus")) {
+		//if (!ms_filter_codec_supported("opus")) {
+		if(!ms_factory_codec_supported(marie->lc->factory, "opus") && !ms_factory_codec_supported(pauline->lc->factory, "opus")){
+
 			ms_warning("Opus not supported, skipping test.");
 			return;
 		}
@@ -72,7 +74,7 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 		linphone_call_send_dtmfs(marie_call, dtmf_seq);
 
 		/*wait for the DTMF sequence to be received from pauline*/
-		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev + strlen(dtmf_seq), 10000 + dtmf_delay_ms * strlen(dtmf_seq)));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, (int)(dtmf_count_prev + strlen(dtmf_seq)), (int)(10000 + dtmf_delay_ms * strlen(dtmf_seq))));
 		expected = (dtmf!='\0')?ms_strdup_printf("%c%s",dtmf,dtmf_seq):ms_strdup(dtmf_seq);
 	}
 
@@ -102,38 +104,38 @@ void send_dtmf_cleanup(LinphoneCoreManager *marie, LinphoneCoreManager *pauline)
 	linphone_core_manager_destroy(pauline);
 }
 
-static void send_dtmf_rfc2833() {
+static void send_dtmf_rfc2833(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, TRUE,FALSE,'1',NULL,FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmf_sip_info() {
+static void send_dtmf_sip_info(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, FALSE,TRUE,'#',NULL,FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmfs_sequence_rfc2833() {
+static void send_dtmfs_sequence_rfc2833(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, TRUE,FALSE,'\0',"1230#",FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmfs_sequence_sip_info() {
+static void send_dtmfs_sequence_sip_info(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, FALSE,TRUE,'\0',"1230#",FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmfs_sequence_not_ready() {
+static void send_dtmfs_sequence_not_ready(void) {
 	LinphoneCoreManager *marie;
 	marie = linphone_core_manager_new( "marie_rc");
 	BC_ASSERT_EQUAL(linphone_call_send_dtmfs(linphone_core_get_current_call(marie->lc), "123"), -1, int, "%d");
 	linphone_core_manager_destroy(marie);
 }
 
-static void send_dtmfs_sequence_call_state_changed() {
+static void send_dtmfs_sequence_call_state_changed(void) {
 	LinphoneCoreManager *marie, *pauline;
 	LinphoneCall *marie_call = NULL;
 	send_dtmf_base(&marie, &pauline, FALSE,TRUE,'\0',NULL,FALSE);
@@ -152,29 +154,25 @@ static void send_dtmfs_sequence_call_state_changed() {
 
 		BC_ASSERT_PTR_NULL(pauline->stat.dtmf_list_received);
 	}
+	end_call(marie, pauline);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmf_rfc2833_opus() {
+static void send_dtmf_rfc2833_opus(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, TRUE,FALSE,'1',NULL,TRUE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
 test_t dtmf_tests[] = {
-	{ "Send DTMF using RFC2833",send_dtmf_rfc2833},
-	{ "Send DTMF using SIP INFO",send_dtmf_sip_info},
-	{ "Send DTMF sequence using RFC2833",send_dtmfs_sequence_rfc2833},
-	{ "Send DTMF sequence using SIP INFO",send_dtmfs_sequence_sip_info},
-	{ "DTMF sequence not sent if invalid call",send_dtmfs_sequence_not_ready},
-	{ "DTMF sequence canceled if call state changed",send_dtmfs_sequence_call_state_changed},
-	{ "Send DTMF using RFC2833 using Opus",send_dtmf_rfc2833_opus},
+	TEST_NO_TAG("Send DTMF using RFC2833",send_dtmf_rfc2833),
+	TEST_NO_TAG("Send DTMF using SIP INFO",send_dtmf_sip_info),
+	TEST_NO_TAG("Send DTMF sequence using RFC2833",send_dtmfs_sequence_rfc2833),
+	TEST_NO_TAG("Send DTMF sequence using SIP INFO",send_dtmfs_sequence_sip_info),
+	TEST_NO_TAG("DTMF sequence not sent if invalid call",send_dtmfs_sequence_not_ready),
+	TEST_NO_TAG("DTMF sequence canceled if call state changed",send_dtmfs_sequence_call_state_changed),
+	TEST_NO_TAG("Send DTMF using RFC2833 using Opus",send_dtmf_rfc2833_opus)
 };
 
-test_suite_t dtmf_test_suite = {
-	"DTMF",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(dtmf_tests) / sizeof(dtmf_tests[0]),
-	dtmf_tests
-};
+test_suite_t dtmf_test_suite = {"DTMF", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+								sizeof(dtmf_tests) / sizeof(dtmf_tests[0]), dtmf_tests};

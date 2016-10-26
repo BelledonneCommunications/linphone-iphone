@@ -4,6 +4,7 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="keypad">
     <property name="can_focus">False</property>
+    <signal name="delete-event" handler="linphone_gtk_keypad_destroyed_handler" swapped="no"/>
     <child>
       <object class="GtkFrame" id="frame3">
         <property name="visible">True</property>
@@ -29,12 +30,11 @@
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkButton" id="dtmf_D">
-                    <property name="label" translatable="no">D</property>
+                    <property name="label">D</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
@@ -45,12 +45,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_#">
-                    <property name="label" translatable="no">#</property>
+                    <property name="label">#</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -61,12 +60,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_0">
-                    <property name="label" translatable="no">0</property>
+                    <property name="label">0</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -77,12 +75,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_*">
-                    <property name="label" translatable="no">*</property>
+                    <property name="label">*</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="top_attach">3</property>
@@ -91,12 +88,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_C">
-                    <property name="label" translatable="no">C</property>
+                    <property name="label">C</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
@@ -107,12 +103,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_9">
-                    <property name="label" translatable="no">9</property>
+                    <property name="label">9</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -123,12 +118,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_8">
-                    <property name="label" translatable="no">8</property>
+                    <property name="label">8</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -139,12 +133,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_7">
-                    <property name="label" translatable="no">7</property>
+                    <property name="label">7</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="top_attach">2</property>
@@ -153,12 +146,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_B">
-                    <property name="label" translatable="no">B</property>
+                    <property name="label">B</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
@@ -169,12 +161,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_6">
-                    <property name="label" translatable="no">6</property>
+                    <property name="label">6</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -185,12 +176,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_5">
-                    <property name="label" translatable="no">5</property>
+                    <property name="label">5</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -201,12 +191,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_4">
-                    <property name="label" translatable="no">4</property>
+                    <property name="label">4</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="top_attach">1</property>
@@ -215,12 +204,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_A">
-                    <property name="label" translatable="no">A</property>
+                    <property name="label">A</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
@@ -229,12 +217,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_3">
-                    <property name="label" translatable="no">3</property>
+                    <property name="label">3</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -243,12 +230,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_2">
-                    <property name="label" translatable="no">2</property>
+                    <property name="label">2</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -257,14 +243,13 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="dtmf_1">
-                    <property name="label" translatable="no">1</property>
+                    <property name="label">1</property>
                     <property name="width_request">40</property>
                     <property name="height_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="use_action_appearance">False</property>
                   </object>
                 </child>
               </object>

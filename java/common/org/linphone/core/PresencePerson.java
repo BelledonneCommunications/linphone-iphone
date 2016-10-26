@@ -22,98 +22,98 @@ package org.linphone.core;
 public interface PresencePerson {
 
 	/**
-	 * @brief Gets the id of a presence person.
+	 * Gets the id of a presence person.
 	 * @return A string containing the id.
 	 */
 	String getId();
 
 	/**
-	 * @brief Sets the id of a presence person.
-	 * @param[in] id The id string to set. Can be null to generate it automatically.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Sets the id of a presence person.
+	 * @param id The id string to set. Can be null to generate it automatically.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setId(String id);
 
 	/**
-	 * @brief Gets the number of activities included in the presence person.
+	 * Gets the number of activities included in the presence person.
 	 * @return The number of activities included in the #PresencePerson object.
 	 */
 	long getNbActivities();
 
 	/**
-	 * @brief Gets the nth activity of a presence person.
-	 * @param[in] idx The index of the activity to get (the first activity having the index 0).
+	 * Gets the nth activity of a presence person.
+	 * @param idx The index of the activity to get (the first activity having the index 0).
 	 * @return A #PresenceActivity object if successful, null otherwise.
 	 */
 	PresenceActivity getNthActivity(long idx);
 
 	/**
-	 * @brief Adds an activity to a presence person.
-	 * @param[in] activity The #PresenceActivity object to add to the person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds an activity to a presence person.
+	 * @param activity The #PresenceActivity object to add to the person.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addActivity(PresenceActivity activity);
 
 	/**
-	 * @brief Clears the activities of a presence person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears the activities of a presence person.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearActivities();
 
 	/**
-	 * @brief Gets the number of notes included in the presence person.
+	 * Gets the number of notes included in the presence person.
 	 * @return The number of notes included in the #PresencePerson object.
 	 */
 	long getNbNotes();
 
 	/**
-	 * @brief Gets the nth note of a presence person.
-	 * @param[in] idx The index of the note to get (the first note having the index 0).
+	 * Gets the nth note of a presence person.
+	 * @param idx The index of the note to get (the first note having the index 0).
 	 * @return A pointer to a #PresenceNote object if successful, null otherwise.
 	 */
 	PresenceNote getNthNote(long idx);
 
 	/**
-	 * @brief Adds a note to a presence person.
-	 * @param[in] note The #PresenceNote object to add to the person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds a note to a presence person.
+	 * @param note The #PresenceNote object to add to the person.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addNote(PresenceNote note);
 
 	/**
-	 * @brief Clears the notes of a presence person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears the notes of a presence person.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearNotes();
 
 	/**
-	 * @brief Gets the number of activities notes included in the presence person.
+	 * Gets the number of activities notes included in the presence person.
 	 * @return The number of activities notes included in the #PresencePerson object.
 	 */
 	long getNbActivitiesNotes();
 
 	/**
-	 * @brief Gets the nth activities note of a presence person.
-	 * @param[in] idx The index of the activities note to get (the first note having the index 0).
+	 * Gets the nth activities note of a presence person.
+	 * @param idx The index of the activities note to get (the first note having the index 0).
 	 * @return A pointer to a #PresenceNote object if successful, null otherwise.
 	 */
 	PresenceNote getNthActivitiesNote(long idx);
 
 	/**
-	 * @brief Adds an activities note to a presence person.
-	 * @param[in] note The #PresenceNote object to add to the person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds an activities note to a presence person.
+	 * @param note The #PresenceNote object to add to the person.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addActivitiesNote(PresenceNote note);
 
 	/**
-	 * @brief Clears the activities notes of a presence person.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears the activities notes of a presence person.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearActivitesNotes();
 
 	/**
-	 * @brief Gets the native pointer for this object.
+	 * Gets the native pointer for this object.
 	 */
 	long getNativePtr();
 

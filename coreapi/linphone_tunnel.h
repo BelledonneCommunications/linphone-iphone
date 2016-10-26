@@ -177,10 +177,38 @@ LINPHONE_PUBLIC void linphone_tunnel_config_set_delay(LinphoneTunnelConfig *tunn
 LINPHONE_PUBLIC int linphone_tunnel_config_get_delay(const LinphoneTunnelConfig *tunnel);
 
 /**
+ * Increment the refcount of LinphoneTunnelConfig object.
+ * @param cfg the LinphoneTunnelConfig object.
+ * @return the same cfg object.
+**/
+LINPHONE_PUBLIC LinphoneTunnelConfig * linphone_tunnel_config_ref(LinphoneTunnelConfig *cfg);
+
+
+/**
+ * Decrement the refcount of LinphoneTunnelConfig object.
+ * @param cfg the LinphoneTunnelConfig object.
+**/
+LINPHONE_PUBLIC void linphone_tunnel_config_unref(LinphoneTunnelConfig *cfg);
+/**
  * Destroy a tunnel configuration
  * @param tunnel LinphoneTunnelConfig object
+ * @deprecated use linphone_tunnel_config_unref().
  */
 LINPHONE_PUBLIC void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
+
+/**
+ * Store a user data in the tunnel config object
+ * @param cfg the tunnel config
+ * @param ud the user data
+**/
+LINPHONE_PUBLIC void linphone_tunnel_config_set_user_data(LinphoneTunnelConfig *cfg, void *ud);
+
+/**
+ * Retrieve user data from the tunnel config
+ * @param cfg the tunnel config
+ * @return the user data
+**/
+LINPHONE_PUBLIC void *linphone_tunnel_config_get_user_data(LinphoneTunnelConfig *cfg);
 
 /**
  * Add a tunnel server configuration.
@@ -201,7 +229,7 @@ LINPHONE_PUBLIC void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, Linph
  * @param tunnel LinphoneTunnel object
  * @return \mslist{LinphoneTunnelConfig}
  */
-LINPHONE_PUBLIC const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC const bctbx_list_t *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel);
 
 /**
  * Remove all tunnel server addresses previously entered with linphone_tunnel_add_server()
@@ -294,6 +322,7 @@ LINPHONE_PUBLIC void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const 
  */
 LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
+
 /**
  * Sets whether tunneling of SIP and RTP is required.
  * @param tunnel object
@@ -328,6 +357,8 @@ LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
  * @deprecated Replaced by linphone_tunnel_get_mode()
  */
 LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
+
+LINPHONE_PUBLIC void linphone_tunnel_simulate_udp_loss(LinphoneTunnel *tunnel, bool_t enabled);
 
 /**
  * @}

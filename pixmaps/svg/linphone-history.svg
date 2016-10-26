@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="86px"
+   height="86px"
+   viewBox="0 0 86 86"
+   version="1.1"
+   id="svg3446"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-history.svg">
+  <metadata
+     id="metadata3462">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1141"
+     id="namedview3460"
+     showgrid="false"
+     inkscape:zoom="11.290698"
+     inkscape:cx="28.873326"
+     inkscape:cy="42.955716"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3446" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title3448">footer_history</title>
+  <desc
+     id="desc3450">Created with Sketch.</desc>
+  <defs
+     id="defs3452" />
+  <g
+     id="OUTILS"
+     stroke="none"
+     stroke-width="1"
+     fill="none"
+     fill-rule="evenodd"
+     sketch:type="MSPage"
+     style="stroke:#444444;stroke-opacity:1">
+    <g
+       id="linphone_v2.0_icones_buttons"
+       sketch:type="MSArtboardGroup"
+       transform="translate(-1888.000000, -16901.000000)"
+       style="stroke:#444444;stroke-opacity:1">
+      <g
+         id="footer_history"
+         sketch:type="MSLayerGroup"
+         transform="translate(1886.000000, 16899.000000)"
+         style="stroke:#444444;stroke-opacity:1">
+        <path
+           d="M85,45 C85,67.09 67.094,85 45,85 C22.91,85 5,67.09 5,45 C5,22.909 22.91,5 45,5 C67.094,5 85,22.909 85,45 L85,45 Z M44.99,14.493 L44.99,45.311 L67.939,45.311"
+           stroke="#FFFFFF"
+           stroke-width="5"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           sketch:type="MSShapeGroup"
+           id="path3457"
+           style="stroke:#444444;stroke-opacity:1" />
+        <rect
+           id="Rectangle-250-Copy-8"
+           fill-opacity="0"
+           fill="#FFFFFF"
+           sketch:type="MSShapeGroup"
+           x="0"
+           y="0"
+           width="90"
+           height="90"
+           style="stroke:#444444;stroke-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>

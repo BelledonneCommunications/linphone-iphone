@@ -25,6 +25,7 @@
 #define MAX_LEN 16384
 
 #include "linphonecore.h"
+#include "bctoolbox/vfs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,12 +57,14 @@
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
 
 #include "lpconfig.h"
-
+#include "lpc2xml.h"
 
 typedef struct _LpItem{
 	char *key;
 	char *value;
 	int is_comment;
+	bool_t overwrite; // If set to true, will add overwrite=true when converted to xml
+	bool_t skip; // If set to true, won't be dumped when converted to xml
 } LpItem;
 
 typedef struct _LpSectionParam{
@@ -71,19 +74,24 @@ typedef struct _LpSectionParam{
 
 typedef struct _LpSection{
 	char *name;
-	MSList *items;
-	MSList *params;
+	bctbx_list_t *items;
+	bctbx_list_t *params;
+	bool_t overwrite; // If set to true, will add overwrite=true to all items of this section when converted to xml
+	bool_t skip; // If set to true, won't be dumped when converted to xml
 } LpSection;
 
 struct _LpConfig{
 	int refcnt;
-	FILE *file;
+	bctbx_vfs_file_t* pFile;
 	char *filename;
 	char *tmpfilename;
-	MSList *sections;
+	bctbx_list_t *sections;
 	int modified;
 	int readonly;
+	bctbx_vfs_t* g_bctbx_vfs;
 };
+
+
 
 char* lp_realpath(const char* file, char* name) {
 #if defined(_WIN32) || defined(__QNX__) || defined(ANDROID)
@@ -148,27 +156,32 @@ void lp_section_param_destroy(void *section_param){
 
 void lp_section_destroy(LpSection *sec){
 	ortp_free(sec->name);
-	ms_list_for_each(sec->items,lp_item_destroy);
-	ms_list_for_each(sec->params,lp_section_param_destroy);
-	ms_list_free(sec->items);
+	bctbx_list_for_each(sec->items,lp_item_destroy);
+	bctbx_list_for_each(sec->params,lp_section_param_destroy);
+	bctbx_list_free(sec->items);
 	free(sec);
 }
 
 void lp_section_add_item(LpSection *sec,LpItem *item){
-	sec->items=ms_list_append(sec->items,(void *)item);
+	sec->items=bctbx_list_append(sec->items,(void *)item);
 }
 
 void lp_config_add_section(LpConfig *lpconfig, LpSection *section){
-	lpconfig->sections=ms_list_append(lpconfig->sections,(void *)section);
+	lpconfig->sections=bctbx_list_append(lpconfig->sections,(void *)section);
 }
 
 void lp_config_add_section_param(LpSection *section, LpSectionParam *param){
-	section->params = ms_list_append(section->params, (void *)param);
+	section->params = bctbx_list_append(section->params, (void *)param);
 }
 
 void lp_config_remove_section(LpConfig *lpconfig, LpSection *section){
-	lpconfig->sections=ms_list_remove(lpconfig->sections,(void *)section);
+	lpconfig->sections=bctbx_list_remove(lpconfig->sections,(void *)section);
 	lp_section_destroy(section);
+}
+
+void lp_section_remove_item(LpSection *sec, LpItem *item){
+	sec->items=bctbx_list_remove(sec->items,(void *)item);
+	lp_item_destroy(item);
 }
 
 static bool_t is_first_char(const char *start, const char *pos){
@@ -189,9 +202,9 @@ static int is_a_comment(const char *str){
 
 LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
 	LpSection *sec;
-	MSList *elem;
+	bctbx_list_t *elem;
 	/*printf("Looking for section %s\n",name);*/
-	for (elem=lpconfig->sections;elem!=NULL;elem=ms_list_next(elem)){
+	for (elem=lpconfig->sections;elem!=NULL;elem=bctbx_list_next(elem)){
 		sec=(LpSection*)elem->data;
 		if (strcmp(sec->name,name)==0){
 			/*printf("Section %s found\n",name);*/
@@ -202,9 +215,9 @@ LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
 }
 
 LpSectionParam *lp_section_find_param(const LpSection *sec, const char *key){
-	MSList *elem;
+	bctbx_list_t *elem;
 	LpSectionParam *param;
-	for (elem = sec->params; elem != NULL; elem = ms_list_next(elem)){
+	for (elem = sec->params; elem != NULL; elem = bctbx_list_next(elem)){
 		param = (LpSectionParam*)elem->data;
 		if (strcmp(param->key, key) == 0) {
 			return param;
@@ -213,11 +226,25 @@ LpSectionParam *lp_section_find_param(const LpSection *sec, const char *key){
 	return NULL;
 }
 
-LpItem *lp_section_find_item(const LpSection *sec, const char *name){
-	MSList *elem;
+LpItem *lp_section_find_comment(const LpSection *sec, const char *comment){
+	bctbx_list_t *elem;
 	LpItem *item;
 	/*printf("Looking for item %s\n",name);*/
-	for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
+	for (elem=sec->items;elem!=NULL;elem=bctbx_list_next(elem)){
+		item=(LpItem*)elem->data;
+		if (item->is_comment && strcmp(item->value,comment)==0) {
+			/*printf("Item %s found\n",name);*/
+			return item;
+		}
+	}
+	return NULL;
+}
+
+LpItem *lp_section_find_item(const LpSection *sec, const char *name){
+	bctbx_list_t *elem;
+	LpItem *item;
+	/*printf("Looking for item %s\n",name);*/
+	for (elem=sec->items;elem!=NULL;elem=bctbx_list_next(elem)){
 		item=(LpItem*)elem->data;
 		if (!item->is_comment && strcmp(item->key,name)==0) {
 			/*printf("Item %s found\n",name);*/
@@ -231,7 +258,7 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 	LpSectionParam *params = NULL;
 	char *pos1,*pos2;
 	int nbs;
-	int size=strlen(line)+1;
+	size_t size=strlen(line)+1;
 	char *secname=ms_malloc(size);
 	char *key=ms_malloc(size);
 	char *value=ms_malloc(size);
@@ -283,6 +310,10 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 		if (is_a_comment(line)){
 			if (cur){
 				LpItem *comment=lp_comment_new(line);
+				item=lp_section_find_comment(cur,comment->value);
+				if (item!=NULL) {
+					lp_section_remove_item(cur, item);
+				}
 				lp_section_add_item(cur,comment);
 			}
 		}else{
@@ -330,14 +361,13 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 	return cur;
 }
 
-void lp_config_parse(LpConfig *lpconfig, FILE *file){
+void lp_config_parse(LpConfig *lpconfig, bctbx_vfs_file_t* pFile){
 	char tmp[MAX_LEN]= {'\0'};
 	LpSection* current_section = NULL;
-
-	if (file==NULL) return;
-
-	while(fgets(tmp,MAX_LEN,file)!=NULL){
-		tmp[sizeof(tmp) -1] = '\0';
+	int size  =0;
+	if (pFile==NULL) return;
+	while(( size = bctbx_file_get_nxtline(pFile, tmp, MAX_LEN)) > 0){
+		//tmp[size] = '\0';
 		current_section = lp_config_parse_line(lpconfig, tmp, current_section);
 	}
 }
@@ -368,6 +398,8 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 
 LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
+	lpconfig->g_bctbx_vfs = bctbx_vfs_get_default();
+	
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
 		if(ortp_file_exist(config_filename) == 0) {
@@ -394,21 +426,21 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 			}
 		}
 #endif /*_WIN32*/
+
 		/*open with r+ to check if we can write on it later*/
-		lpconfig->file=fopen(lpconfig->filename,"r+");
+		lpconfig->pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->filename, "r+");
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
-		if (lpconfig->file==NULL){
-			lpconfig->file=fopen(lpconfig->tmpfilename,"r+");
-			if (lpconfig->file){
+		if (lpconfig->pFile == NULL){
+			lpconfig->pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "r+");
+			if (lpconfig->pFile == NULL){
 				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
 			}
 		}
 #endif
-		if (lpconfig->file!=NULL){
-			lp_config_parse(lpconfig,lpconfig->file);
-			fclose(lpconfig->file);
-
-			lpconfig->file=NULL;
+		if (lpconfig->pFile != NULL){
+		    lp_config_parse(lpconfig, lpconfig->pFile);
+			bctbx_file_close(lpconfig->pFile);
+			lpconfig->pFile = NULL;
 			lpconfig->modified=0;
 		}
 	}
@@ -416,7 +448,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		lp_config_read_file(lpconfig, factory_config_filename);
 	}
 	return lpconfig;
-	
+
 fail:
 	ms_free(lpconfig);
 	return NULL;
@@ -424,11 +456,12 @@ fail:
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
-	FILE* f=fopen(path,"r");
-	if (f!=NULL){
+	bctbx_vfs_file_t* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
+	if (pFile != NULL){
 		ms_message("Reading config information from %s", path);
-		lp_config_parse(lpconfig,f);
-		fclose(f);
+		lp_config_parse(lpconfig, pFile);
+		bctbx_file_close(pFile);
+		ms_free(path);
 		return 0;
 	}
 	ms_warning("Fail to open file %s",path);
@@ -446,8 +479,8 @@ void lp_item_set_value(LpItem *item, const char *value){
 static void _lp_config_destroy(LpConfig *lpconfig){
 	if (lpconfig->filename!=NULL) ortp_free(lpconfig->filename);
 	if (lpconfig->tmpfilename) ortp_free(lpconfig->tmpfilename);
-	ms_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
-	ms_list_free(lpconfig->sections);
+	bctbx_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
+	bctbx_list_free(lpconfig->sections);
 	free(lpconfig);
 }
 
@@ -464,11 +497,6 @@ void lp_config_unref(LpConfig *lpconfig){
 
 void lp_config_destroy(LpConfig *lpconfig){
 	lp_config_unref(lpconfig);
-}
-
-void lp_section_remove_item(LpSection *sec, LpItem *item){
-	sec->items=ms_list_remove(sec->items,(void *)item);
-	lp_item_destroy(item);
 }
 
 const char *lp_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value){
@@ -491,6 +519,31 @@ const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, 
 		if (item!=NULL) return item->value;
 	}
 	return default_string;
+}
+
+bctbx_list_t * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, bctbx_list_t *default_list) {
+	LpItem *item;
+	LpSection *sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) {
+			bctbx_list_t *l = NULL;
+			char *str;
+			char *ptr;
+			str = ptr = ms_strdup(item->value);
+			while (ptr != NULL) {
+				char *next = strstr(ptr, ",");
+				if (next != NULL) {
+					*(next++) = '\0';
+				}
+				l = bctbx_list_append(l, ms_strdup(ptr));
+				ptr = next;
+			}
+			ms_free(str);
+			return l;
+		}
+	}
+	return default_list;
 }
 
 bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
@@ -547,6 +600,46 @@ float lp_config_get_float(const LpConfig *lpconfig,const char *section, const ch
 	return ret;
 }
 
+bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) return item->overwrite;
+	}
+	return FALSE;
+}
+
+bool_t lp_config_get_overwrite_flag_for_section(const LpConfig *lpconfig, const char *section) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		return sec->overwrite;
+	}
+	return FALSE;
+}
+
+bool_t lp_config_get_skip_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) return item->skip;
+	}
+	return FALSE;
+}
+
+bool_t lp_config_get_skip_flag_for_section(const LpConfig *lpconfig, const char *section) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		return sec->skip;
+	}
+	return FALSE;
+}
+
 void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value){
 	LpItem *item;
 	LpSection *sec=lp_config_find_section(lpconfig,section);
@@ -566,6 +659,22 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 		lp_section_add_item(sec,lp_item_new(key,value));
 	}
 	lpconfig->modified++;
+}
+
+void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value) {
+	char *strvalue = NULL;
+	char *tmp = NULL;
+	const bctbx_list_t *elem;
+	for (elem = value; elem != NULL; elem = elem->next) {
+		if (strvalue) {
+			tmp = ms_strdup_printf("%s,%s", strvalue, (const char *)elem->data);
+			ms_free(strvalue);
+			strvalue = tmp;
+		}
+		else strvalue = ms_strdup((const char *)elem->data);
+	}
+	lp_config_set_string(lpconfig, section, key, strvalue);
+	if (strvalue) ms_free(strvalue);
 }
 
 void lp_config_set_range(LpConfig *lpconfig, const char *section, const char *key, int min_value, int max_value) {
@@ -599,48 +708,101 @@ void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key
 	lp_config_set_string(lpconfig,section,key,tmp);
 }
 
-void lp_item_write(LpItem *item, FILE *file){
-	if (item->is_comment)
-		fprintf(file,"%s\n",item->value);
-	else if (item->value && item->value[0] != '\0' )
-		fprintf(file,"%s=%s\n",item->key,item->value);
-	else {
-		ms_warning("Not writing item %s to file, it is empty", item->key);
+void lp_config_set_overwrite_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) item->overwrite = value;
 	}
 }
 
-void lp_section_param_write(LpSectionParam *param, FILE *file){
+void lp_config_set_overwrite_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		sec->overwrite = value;
+	}
+}
+
+void lp_config_set_skip_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) item->skip = value;
+	}
+}
+
+void lp_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		sec->skip = value;
+	}
+}
+
+void lp_item_write(LpItem *item, LpConfig *lpconfig){
+	int ret =-1 ;
+	if (item->is_comment){	
+		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s\n",item->value);
+
+	}
+	else if (item->value && item->value[0] != '\0' ){
+		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s=%s\n",item->key,item->value);
+	}
+	
+	else {
+		ms_warning("Not writing item %s to file, it is empty", item->key);
+	}
+	if (ret < 0){
+		ms_error("lp_item_write : not writing item to file" );
+	}
+}
+
+void lp_section_param_write(LpSectionParam *param, LpConfig *lpconfig){
 	if( param->value && param->value[0] != '\0') {
-		fprintf(file, " %s=%s", param->key, param->value);
+		bctbx_file_fprintf(lpconfig->pFile, 0, " %s=%s", param->key, param->value);
+
 	} else {
 		ms_warning("Not writing param %s to file, it is empty", param->key);
 	}
 }
 
-void lp_section_write(LpSection *sec, FILE *file){
-	fprintf(file, "[%s",sec->name);
-	ms_list_for_each2(sec->params, (void (*)(void*, void*))lp_section_param_write, (void *)file);
-	fprintf(file, "]\n");
-	ms_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)file);
-	fprintf(file, "\n");
+void lp_section_write(LpSection *sec,LpConfig *lpconfig){
+
+	if (bctbx_file_fprintf(lpconfig->pFile, 0, "[%s",sec->name) < 0) ms_error("lp_section_write : write error on %s", sec->name);
+	bctbx_list_for_each2(sec->params, (void (*)(void*, void*))lp_section_param_write, (void *)lpconfig);
+
+	if (bctbx_file_fprintf(lpconfig->pFile, 0, "]\n")< 0) ms_error("lp_section_write : write error ");
+	bctbx_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)lpconfig);
+
+	if (bctbx_file_fprintf(lpconfig->pFile, 0, "\n")< 0) ms_error("lp_section_write : write error");
+	
 }
 
 int lp_config_sync(LpConfig *lpconfig){
-	FILE *file;
+	bctbx_vfs_file_t *pFile = NULL;
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
+
 #ifndef _WIN32
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	file=fopen(lpconfig->tmpfilename,"w");
-	if (file==NULL){
+	pFile  = bctbx_file_open(lpconfig->g_bctbx_vfs,lpconfig->tmpfilename, "w");
+	lpconfig->pFile = pFile;
+	if (pFile == NULL){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
 		lpconfig->readonly=1;
 		return -1;
 	}
-	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)file);
-	fclose(file);
+	
+	bctbx_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)lpconfig);
+	bctbx_file_close(pFile);
+
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
 	/* On windows, rename() does not accept that the newpath is an existing file, while it is accepted on Unix.
 	 * As a result, we are forced to first delete the linphonerc file, and then rename.*/
@@ -662,8 +824,8 @@ int lp_config_has_section(const LpConfig *lpconfig, const char *section){
 
 void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const char *section, void *ctx), void *ctx) {
 	LpSection *sec;
-	MSList *elem;
-	for (elem=lpconfig->sections;elem!=NULL;elem=ms_list_next(elem)){
+	bctbx_list_t *elem;
+	for (elem=lpconfig->sections;elem!=NULL;elem=bctbx_list_next(elem)){
 		sec=(LpSection*)elem->data;
 		callback(sec->name, ctx);
 	}
@@ -671,10 +833,10 @@ void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const
 
 void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx) {
 	LpItem *item;
-	MSList *elem;
+	bctbx_list_t *elem;
 	LpSection *sec=lp_config_find_section(lpconfig,section);
 	if (sec!=NULL){
-		for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
+		for (elem=sec->items;elem!=NULL;elem=bctbx_list_next(elem)){
 			item=(LpItem*)elem->data;
 			if (!item->is_comment)
 				callback(item->key, ctx);
@@ -756,26 +918,26 @@ static const char *_lp_config_dirname(char *path) {
 }
 
 bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
+	bctbx_vfs_file_t *pFile;
 	if (lpconfig->filename == NULL) {
 		return FALSE;
 	} else {
-		char *filename = ms_strdup(lpconfig->filename);
-		const char *dir = _lp_config_dirname(filename);
+		char *conf_path = ms_strdup(lpconfig->filename);
+		const char *dir = _lp_config_dirname(conf_path);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
 		char *realfilepath = lp_realpath(filepath, NULL);
-		FILE *file;
-		
-		ms_free(filename);
+
+		ms_free(conf_path);
 		ms_free(filepath);
-		
+
 		if(realfilepath == NULL) return FALSE;
-		
-		file = fopen(realfilepath, "r");
+
+		pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath, "r");
 		ms_free(realfilepath);
-		if (file) {
-			fclose(file);
+		if (pFile != NULL) {
+			bctbx_file_close(pFile);
 		}
-		return file != NULL;
+		return pFile != NULL;
 	}
 }
 
@@ -784,15 +946,15 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	const char *dir = NULL;
 	char *filepath = NULL;
 	char *realfilepath = NULL;
-	FILE *file;
-	
+	bctbx_vfs_file_t *pFile;
+
 	if (lpconfig->filename == NULL) return;
-	
+
 	if(strlen(data) == 0) {
 		ms_warning("%s has not been created because there is no data to write", filename);
 		return;
 	}
-	
+
 	dup_config_file = ms_strdup(lpconfig->filename);
 	dir = _lp_config_dirname(dup_config_file);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
@@ -801,16 +963,15 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		ms_error("Could not resolv %s: %s", filepath, strerror(errno));
 		goto end;
 	}
-	
-	file = fopen(realfilepath, "w");
-	if(file == NULL) {
+
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath, "w");
+	if(pFile == NULL) {
 		ms_error("Could not open %s for write", realfilepath);
 		goto end;
 	}
-	
-	fprintf(file, "%s", data);
-	fclose(file);
-	
+	bctbx_file_fprintf(pFile, 0, "%s",data);
+	bctbx_file_close(pFile);
+
 end:
 	ms_free(dup_config_file);
 	ms_free(filepath);
@@ -821,11 +982,12 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	char *dup_config_file = NULL;
 	const char *dir = NULL;
 	char *filepath = NULL;
-	FILE *file = NULL;
+	bctbx_vfs_file_t* pFile = NULL;
+
 	char* realfilepath = NULL;
-	
+
 	if (lpconfig->filename == NULL) return -1;
-	
+
 	dup_config_file = ms_strdup(lpconfig->filename);
 	dir = _lp_config_dirname(dup_config_file);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
@@ -834,27 +996,106 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		ms_error("Could not resolv %s: %s", filepath, strerror(errno));
 		goto err;
 	}
-	
-	file = fopen(realfilepath, "r");
-	if(file == NULL) {
-		ms_error("Could not open %s for read. %s", realfilepath, strerror(errno));
+
+	pFile = bctbx_file_open(lpconfig->g_bctbx_vfs,realfilepath,"r");
+	if (pFile == NULL) {
+		ms_error("Could not open %s for read.", realfilepath);
 		goto err;
 	}
-	
-	if(fread(data, 1, max_length, file)<=0) {
-		ms_error("%s could not be loaded. %s", realfilepath, strerror(errno));
+
+	if(bctbx_file_read(pFile, data, 1, (off_t)max_length) < 0){
+		ms_error("%s could not be loaded.", realfilepath);
 		goto err;
+		
 	}
-	fclose(file);
-	
+
+	bctbx_file_close(pFile);
+
 	ms_free(dup_config_file);
 	ms_free(filepath);
 	ms_free(realfilepath);
 	return 0;
 
 err:
-	ms_free(filepath);
+	ms_free(dup_config_file);
 	ms_free(filepath);
 	if(realfilepath) ms_free(realfilepath);
 	return -1;
+}
+
+const char** lp_config_get_sections_names(LpConfig *lpconfig) {
+	const char **sections_names;
+	const bctbx_list_t *sections = lpconfig->sections;
+	size_t ndev;
+	int i;
+
+	ndev = bctbx_list_size(sections);
+	sections_names = ms_malloc((ndev + 1) * sizeof(const char *));
+
+	for (i = 0; sections != NULL; sections = sections->next, i++) {
+		LpSection *section = (LpSection *)sections->data;
+		sections_names[i] = ms_strdup(section->name);
+	}
+
+	sections_names[ndev] = NULL;
+	return sections_names;
+}
+
+char* lp_config_dump_as_xml(const LpConfig *lpconfig) {
+	char *buffer;
+
+	lpc2xml_context *ctx = lpc2xml_context_new(NULL, NULL);
+	lpc2xml_set_lpc(ctx, lpconfig);
+	lpc2xml_convert_string(ctx, &buffer);
+	lpc2xml_context_destroy(ctx);
+
+	return buffer;
+}
+
+struct _entry_data {
+	const LpConfig *conf;
+	const char *section;
+	char** buffer;
+};
+
+static void dump_entry(const char *entry, void *data) {
+	struct _entry_data *d = (struct _entry_data *) data;
+	const char *value = lp_config_get_string(d->conf, d->section, entry, "");
+	*d->buffer = ms_strcat_printf(*d->buffer, "\t%s=%s\n", entry, value);
+}
+
+static void dump_section(const char *section, void *data) {
+	struct _entry_data *d = (struct _entry_data *) data;
+	d->section = section;
+	*d->buffer = ms_strcat_printf(*d->buffer, "[%s]\n", section);
+	lp_config_for_each_entry(d->conf, section, dump_entry, d);
+}
+
+char* lp_config_dump(const LpConfig *lpconfig) {
+	char* buffer = NULL;
+	struct _entry_data d = { lpconfig, NULL, &buffer };
+	lp_config_for_each_section(lpconfig, dump_section, &d);
+
+	return buffer;
+}
+
+void lp_config_clean_entry(LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	LpItem *item;
+	sec=lp_config_find_section(lpconfig,section);
+	if (sec!=NULL){
+		item=lp_section_find_item(sec,key);
+		if (item!=NULL)
+			lp_section_remove_item(sec,item);
+	}
+	return ;
+}
+int lp_config_has_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	sec=lp_config_find_section(lpconfig,section);
+	if (sec!=NULL){
+		return lp_section_find_item(sec,key) != NULL;
+	} else
+		return FALSE;
+	
 }

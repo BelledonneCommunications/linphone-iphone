@@ -143,7 +143,7 @@ void linphone_gtk_exit_login_frame(void){
 void linphone_gtk_logout_clicked(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneProxyConfig *cfg=NULL;
-	linphone_core_get_default_proxy(lc,&cfg);
+	cfg = linphone_core_get_default_proxy_config(lc);
 	if (cfg){
 		SipSetupContext *ss=linphone_proxy_config_get_sip_setup_context(cfg);
 		if (ss){

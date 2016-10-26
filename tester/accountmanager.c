@@ -23,14 +23,15 @@ struct _Account{
 	LinphoneAddress *identity;
 	LinphoneAddress *modified_identity;
 	char *password;
-	int created;
+	int registered;
 	int done;
-	int auth_requested;
+	int created;
+	char *phone_alias;
 };
 
 typedef struct _Account Account;
 
-Account *account_new(LinphoneAddress *identity, const char *unique_id){
+static Account *account_new(LinphoneAddress *identity, const char *unique_id){
 	char *modified_username;
 	Account *obj=ms_new0(Account,1);
 
@@ -38,6 +39,7 @@ Account *account_new(LinphoneAddress *identity, const char *unique_id){
 	belle_sip_object_inhibit_leak_detector(TRUE);
 	obj->identity=linphone_address_clone(identity);
 	obj->password=sal_get_random_token(8);
+	obj->phone_alias = NULL;
 	obj->modified_identity=linphone_address_clone(identity);
 	modified_username=ms_strdup_printf("%s_%s",linphone_address_get_username(identity), unique_id);
 	linphone_address_set_username(obj->modified_identity, modified_username);
@@ -55,7 +57,7 @@ void account_destroy(Account *obj){
 
 struct _AccountManager{
 	char *unique_id;
-	MSList *accounts;
+	bctbx_list_t *accounts;
 };
 
 typedef struct _AccountManager AccountManager;
@@ -73,7 +75,7 @@ AccountManager *account_manager_get(void){
 void account_manager_destroy(void){
 	if (the_am){
 		ms_free(the_am->unique_id);
-		ms_list_free_with_data(the_am->accounts,(void(*)(void*))account_destroy);
+		bctbx_list_free_with_data(the_am->accounts,(void(*)(void*))account_destroy);
 		ms_free(the_am);
 	}
 	the_am=NULL;
@@ -81,7 +83,7 @@ void account_manager_destroy(void){
 }
 
 Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *identity){
-	MSList *it;
+	bctbx_list_t *it;
 
 	for(it=m->accounts;it!=NULL;it=it->next){
 		Account *a=(Account*)it->data;
@@ -95,9 +97,15 @@ Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *i
 static void account_created_on_server_cb(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *info){
 	Account *account=(Account*)linphone_core_get_user_data(lc);
 	switch(state){
-		case LinphoneRegistrationOk:
-			account->created=1;
-		break;
+		case LinphoneRegistrationOk: {
+			char * phrase = sal_op_get_error_info((SalOp*)cfg->op)->full_string;
+			if (phrase && strcasecmp("Test account created", phrase) == 0) {
+				account->created=1;
+			} else {
+				account->registered=1;
+			}
+			break;
+		}
 		case LinphoneRegistrationCleared:
 			account->done=1;
 		break;
@@ -106,12 +114,16 @@ static void account_created_on_server_cb(LinphoneCore *lc, LinphoneProxyConfig *
 	}
 }
 
+// TEMPORARY CODE: remove function below when flexisip is updated, this is not needed anymore!
+// The new flexisip now answer "200 Test account created" when creating a test account, and do not
+// challenge authentication anymore! so this code is not used for newer version
 static void account_created_auth_requested_cb(LinphoneCore *lc, const char *username, const char *realm, const char *domain){
 	Account *account=(Account*)linphone_core_get_user_data(lc);
-	account->auth_requested=1;
+	account->created=1;
 }
+// TEMPORARY CODE: remove line above when flexisip is updated, this is not needed anymore!
 
-void account_create_on_server(Account *account, const LinphoneProxyConfig *refcfg){
+void account_create_on_server(Account *account, const LinphoneProxyConfig *refcfg, const char* phone_alias){
 	LinphoneCoreVTable vtable={0};
 	LinphoneCore *lc;
 	LinphoneAddress *tmp_identity=linphone_address_clone(account->modified_identity);
@@ -120,10 +132,13 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	char *tmp;
 	LinphoneAddress *server_addr;
 	LCSipTransports tr;
+	char *chatdb;
 
 	vtable.registration_state_changed=account_created_on_server_cb;
+	// TEMPORARY CODE: remove line below when flexisip is updated, this is not needed anymore!
 	vtable.auth_info_requested=account_created_auth_requested_cb;
 	lc=configure_lc_from(&vtable,bc_tester_get_resource_dir_prefix(),NULL,account);
+	chatdb = ms_strdup(linphone_core_get_chat_database_path(lc));
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
@@ -133,6 +148,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_address_set_secure(tmp_identity, FALSE);
 	linphone_address_set_password(tmp_identity,account->password);
 	linphone_address_set_header(tmp_identity,"X-Create-Account","yes");
+	if (phone_alias) linphone_address_set_header(tmp_identity, "X-Phone-Alias", phone_alias);
 	tmp=linphone_address_as_string(tmp_identity);
 	linphone_proxy_config_set_identity(cfg,tmp);
 	ms_free(tmp);
@@ -146,11 +162,12 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_proxy_config_set_server_addr(cfg,tmp);
 	ms_free(tmp);
 	linphone_address_unref(server_addr);
-	linphone_proxy_config_set_expires(cfg,3600);
+	linphone_proxy_config_set_expires(cfg,3*3600); //accounts are valid 3 hours
 
 	linphone_core_add_proxy_config(lc,cfg);
-
-	if (wait_for_until(lc,NULL,&account->auth_requested,1,10000)==FALSE){
+	/*wait 25 seconds, since the DNS SRV resolution may take a while - and
+	especially if router does NOT support DNS SRV and we have to wait its timeout*/
+	if (wait_for_until(lc,NULL,&account->created,1,25000)==FALSE){
 		ms_fatal("Account for %s could not be created on server.", linphone_proxy_config_get_identity(refcfg));
 	}
 	linphone_proxy_config_edit(cfg);
@@ -168,7 +185,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_core_add_auth_info(lc,ai);
 	linphone_auth_info_destroy(ai);
 
-	if (wait_for_until(lc,NULL,&account->created,1,3000)==FALSE){
+	if (wait_for_until(lc,NULL,&account->registered,1,3000)==FALSE){
 		ms_fatal("Account for %s is not working on server.", linphone_proxy_config_get_identity(refcfg));
 	}
 	linphone_core_remove_proxy_config(lc,cfg);
@@ -177,9 +194,11 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 		ms_error("Account creation could not clean the registration context.");
 	}
 	linphone_core_destroy(lc);
+	unlink(chatdb);
+	ms_free(chatdb);
 }
 
-LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyConfig *cfg){
+static LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyConfig *cfg,const char* phone_alias){
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
 	const char *identity=linphone_proxy_config_get_identity(cfg);
 	LinphoneAddress *id_addr=linphone_address_new(identity);
@@ -192,11 +211,16 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 																		, linphone_address_get_username(id_addr)
 																		, linphone_address_get_domain(id_addr));
 
-	if (!account){
+	if (!account||(phone_alias&&(!account->phone_alias||strcmp(phone_alias,account->phone_alias)!=0))){
+		if (account) {
+			m->accounts=bctbx_list_remove(m->accounts,account);
+			account_destroy(account);
+		}
 		account=account_new(id_addr,m->unique_id);
+		account->phone_alias=ms_strdup(phone_alias);
 		ms_message("No account for %s exists, going to create one.",identity);
 		create_account=TRUE;
-		m->accounts=ms_list_append(m->accounts,account);
+		m->accounts=bctbx_list_append(m->accounts,account);
 	}
 	/*modify the username of the identity of the proxy config*/
 	linphone_address_set_username(id_addr, linphone_address_get_username(account->modified_identity));
@@ -205,7 +229,7 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	ms_free(tmp);
 
 	if (create_account){
-		account_create_on_server(account,cfg);
+		account_create_on_server(account,cfg,phone_alias);
 	}
 
 	/*remove previous auth info to avoid mismatching*/
@@ -223,11 +247,14 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 }
 
 void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
-	const MSList *it;
+	const bctbx_list_t *it;
 	AccountManager *am=account_manager_get();
-
+	int logmask = ortp_get_log_level_mask(NULL);
+	
+	if (!liblinphonetester_show_account_manager_logs) linphone_core_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
 	for(it=linphone_core_get_proxy_config_list(m->lc);it!=NULL;it=it->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig *)it->data;
-		account_manager_check_account(am,cfg);
+		account_manager_check_account(am,cfg,m->phone_alias);
 	}
+	if (!liblinphonetester_show_account_manager_logs) linphone_core_set_log_level_mask(logmask);
 }

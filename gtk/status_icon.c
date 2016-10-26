@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <gtkosxapplication.h>
 #endif
 
-#if !defined(WIN32) && !defined(__APPLE__) && GLIB_CHECK_VERSION(2, 26, 0)
+#if !defined(_WIN32) && !defined(__APPLE__) && GLIB_CHECK_VERSION(2, 26, 0)
 #define STATUS_NOTIFIER_IS_USABLE 1
 #endif
 
@@ -208,7 +208,7 @@ static LinphoneStatusIcon *_linphone_status_icon_new(const _LinphoneStatusIconDe
 }
 
 static void _linphone_status_icon_free(LinphoneStatusIcon *obj) {
-	if(obj->desc->uninit) obj->desc->uninit(obj->data);
+	if(obj->desc->uninit) obj->desc->uninit(obj);
 	if(obj->params) linphone_status_icon_params_unref(obj->params);
 	g_free(obj);
 }
@@ -316,22 +316,20 @@ static void _linphone_status_icon_impl_gtk_popup_menu(GtkStatusIcon *status_icon
 }
 
 static void _linphone_status_icon_impl_gtk_init(LinphoneStatusIcon *si) {
-	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
-	const char *call_icon_path=linphone_gtk_get_ui_config("start_call_icon","call_start.png");
-	GdkPixbuf *pbuf=create_pixbuf(icon_path);
-	GtkStatusIcon *icon=gtk_status_icon_new_from_pixbuf(pbuf);
+	const char *icon_name=linphone_gtk_get_ui_config("icon_name",LINPHONE_ICON_NAME);
+	const char *blinking_icon_name=linphone_gtk_get_ui_config("binking_status_icon_name","linphone-start-call");
+	GtkStatusIcon *icon=gtk_status_icon_new_from_icon_name(icon_name);
 	g_signal_connect_swapped(G_OBJECT(icon),"activate", G_CALLBACK(_linphone_status_icon_impl_gtk_on_click_cb), si);
 	g_signal_connect(G_OBJECT(icon), "popup-menu", G_CALLBACK(_linphone_status_icon_impl_gtk_popup_menu), si);
-	g_object_set_data_full(G_OBJECT(icon),"icon",pbuf, g_object_unref);
-	pbuf=create_pixbuf(call_icon_path);
-	g_object_set_data_full(G_OBJECT(icon),"call_icon",pbuf, g_object_unref);
+	g_object_set_data_full(G_OBJECT(icon), "icon", g_strdup(icon_name), g_free);
+	g_object_set_data_full(G_OBJECT(icon), "call_icon", g_strdup(blinking_icon_name), g_free);
 	si->data = icon;
 }
 
-// static void _linphone_status_icon_impl_gtk_uninit(LinphoneStatusIcon *si) {
-// 	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
-// 	gtk_status_icon_set_visible(icon, FALSE);
-// }
+static void _linphone_status_icon_impl_gtk_uninit(LinphoneStatusIcon *si) {
+	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
+	gtk_status_icon_set_visible(icon, FALSE);
+}
 
 static void _linphone_status_icon_impl_gtk_start(LinphoneStatusIcon *si) {
 	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
@@ -344,13 +342,13 @@ static void _linphone_status_icon_impl_gtk_start(LinphoneStatusIcon *si) {
 }
 
 static gboolean _linphone_status_icon_impl_gtk_do_icon_blink_cb(GtkStatusIcon *gi){
-	GdkPixbuf *call_icon=g_object_get_data(G_OBJECT(gi),"call_icon");
-	GdkPixbuf *normal_icon=g_object_get_data(G_OBJECT(gi),"icon");
-	GdkPixbuf *cur_icon=gtk_status_icon_get_pixbuf(gi);
-	if (cur_icon==call_icon){
-		gtk_status_icon_set_from_pixbuf(gi,normal_icon);
+	const gchar *call_icon = (const gchar *)g_object_get_data(G_OBJECT(gi),"call_icon");
+	const gchar *normal_icon = (const gchar *)g_object_get_data(G_OBJECT(gi),"icon");
+	const gchar *cur_icon = (const gchar *)gtk_status_icon_get_icon_name(gi);
+	if (cur_icon == call_icon){
+		gtk_status_icon_set_from_icon_name(gi,normal_icon);
 	}else{
-		gtk_status_icon_set_from_pixbuf(gi,call_icon);
+		gtk_status_icon_set_from_icon_name(gi,call_icon);
 	}
 	return TRUE;
 }
@@ -363,10 +361,10 @@ static void _linphone_status_icon_impl_enable_blinking(LinphoneStatusIcon *si, g
 		tout=g_timeout_add(500,(GSourceFunc)_linphone_status_icon_impl_gtk_do_icon_blink_cb,icon);
 		g_object_set_data(G_OBJECT(icon),"timeout",GINT_TO_POINTER(tout));
 	}else if (!val && tout!=0){
-		GdkPixbuf *normal_icon=g_object_get_data(G_OBJECT(icon),"icon");
+		const gchar *normal_icon = (const gchar *)g_object_get_data(G_OBJECT(icon),"icon");
 		g_source_remove(tout);
 		g_object_set_data(G_OBJECT(icon),"timeout",NULL);
-		gtk_status_icon_set_from_pixbuf(icon,normal_icon);
+		gtk_status_icon_set_from_icon_name(icon,normal_icon);
 	}
 }
 
@@ -383,7 +381,7 @@ static gboolean _linphone_status_icon_impl_is_supported(
 static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc = {
 	"gtk_status_icon",
 	_linphone_status_icon_impl_gtk_init,
-	NULL,
+	_linphone_status_icon_impl_gtk_uninit,
 	_linphone_status_icon_impl_gtk_start,
 	_linphone_status_icon_impl_enable_blinking,
 	_linphone_status_icon_impl_is_supported

@@ -108,8 +108,8 @@ static void fill_buddy_info(BLReq *blreq, BuddyInfo *bi, GHashTable *ht){
 
 }
 
-static MSList * make_buddy_list(BLReq *blreq, GValue *retval){
-	MSList *ret=NULL;
+static bctbx_list_t * make_buddy_list(BLReq *blreq, GValue *retval){
+	bctbx_list_t *ret=NULL;
 	if (G_VALUE_TYPE(retval)==G_TYPE_VALUE_ARRAY){
 		GValueArray *array=(GValueArray*)g_value_get_boxed(retval);
 		GValue *gelem;
@@ -120,7 +120,7 @@ static MSList * make_buddy_list(BLReq *blreq, GValue *retval){
 				GHashTable *ht=(GHashTable*)g_value_get_boxed(gelem);
 				BuddyInfo *bi=buddy_info_new();
 				fill_buddy_info(blreq,bi,ht);
-				ret=ms_list_append(ret,bi);
+				ret=bctbx_list_append(ret,bi);
 			}else{
 				ms_error("Element is not a hash table");
 			}

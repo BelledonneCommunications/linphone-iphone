@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.8.5],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.10.2],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -17,7 +17,7 @@ if test "$LINPHONE_EXTRA_VERSION" != "" ;then
 	LINPHONE_VERSION=$LINPHONE_VERSION.${LINPHONE_EXTRA_VERSION}
 fi
 
-LIBLINPHONE_SO_CURRENT=7 dnl increment this number when you add/change/remove an interface
+LIBLINPHONE_SO_CURRENT=9 dnl increment this number when you add/change/remove an interface
 LIBLINPHONE_SO_REVISION=0 dnl increment this number when you change source code, without changing interfaces; set to 0 when incrementing CURRENT
 LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to 0 if you remove an interface
 
@@ -39,6 +39,7 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl do not put anythingelse before AC_PROG_CC unless checking if macro still work for clang
 AC_PROG_CXX(["xcrun clang++" g++])
 AC_PROG_CC(["xcrun clang" gcc])
+AC_PROG_OBJC(["xcrun clang" gcc])
 
 gl_LD_OUTPUT_DEF
 
@@ -132,7 +133,7 @@ AC_CONFIG_COMMANDS([libtool-hacking],
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS=$(cd po && echo *.po | sed 's/\.po//g')
+ALL_LINGUAS=$(cd $srcdir/po && echo *.po | sed 's/\.po//g')
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -156,6 +157,11 @@ GETTEXT_PACKAGE=linphone
 AC_SUBST([GETTEXT_PACKAGE])
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The name of the gettext package name])
 dnl AC_CHECK_LIB(intl,libintl_gettext)
+
+PKG_CHECK_MODULES(BCTOOLBOX, bctoolbox, [found_bctoolbox=yes],[found_bctoolbox=no])
+if test "x$found_bctoolbox" != "xyes" ; then
+	AC_MSG_ERROR(["Could not find bctoolbox (required dependency)"])
+fi
 
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
@@ -595,6 +601,8 @@ AC_ARG_WITH(ffmpeg,
 	[ ffmpegdir=/usr ]
 )
 
+AM_CONDITIONAL([BUILD_MACOS], [test "x$build_macos" = "xyes"])
+
 if test "$video" = "true"; then
 
 	if test "$enable_x11" = "true"; then
@@ -768,12 +776,15 @@ AC_ARG_ENABLE(strict,
 )
 
 STRICT_OPTIONS="-Wall -Wuninitialized"
-STRICT_OPTIONS_CC="-Wdeclaration-after-statement "
+STRICT_OPTIONS_CC="-Wdeclaration-after-statement -Wstrict-prototypes"
 STRICT_OPTIONS_CXX=""
 
 #for clang
 
 case $CC in
+	*gcc*)
+		STRICT_OPTIONS="$STRICT_OPTIONS -fno-inline-small-functions"
+	;;
 	*clang*)
 		STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments "
 		#disabled due to wrong optimization false positive with small string
@@ -791,7 +802,7 @@ case "$target_os" in
 	;;
 esac
 if test "$strictness" = "yes" ; then
-	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
+	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Wextra -Wno-unused-parameter -Wno-error=deprecated-declarations -Wno-error=strict-prototypes -Wno-missing-field-initializers"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 
@@ -873,46 +884,81 @@ AC_ARG_ENABLE(tunnel,
 )
 AM_CONDITIONAL(BUILD_TUNNEL, test x$enable_tunnel = xtrue)
 if test x$enable_tunnel = xtrue; then
-	PKG_CHECK_MODULES(TUNNEL, tunnel >= 0.3.3)
+	PKG_CHECK_MODULES(TUNNEL, tunnel >= 0.6.0)
 	AC_DEFINE(TUNNEL_ENABLED,1,[Tells tunnel extension is built-in])
 fi
 
-AC_ARG_ENABLE(msg-storage,
-	[AS_HELP_STRING([--enable-msg-storage=[yes/no]], [Turn on compilation of message storage (default=auto)])],
+AC_ARG_ENABLE(vcard,
+	[AS_HELP_STRING([--enable-vcard=[yes/no]], [Turn on compilation of vcard (default=auto)])],
 	[case "${enableval}" in
-		yes)	enable_msg_storage=true ;;
-		no)	enable_msg_storage=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-msg-storage) ;;
+		yes)	enable_vcard=true ;;
+		no)		enable_vcard=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-vcard) ;;
 	esac],
-	[enable_msg_storage=auto]
+	[enable_vcard=auto]
 )
 
-if test x$enable_msg_storage != xfalse; then
+if test x$enable_vcard != xfalse; then
+	PKG_CHECK_MODULES(BELCARD, belcard, [found_vcard=yes],[found_vcard=no])
+	if test "$found_vcard" = "no"; then
+		dnl Check the lib presence in case the PKG-CONFIG version is not found
+		AC_LANG_CPLUSPLUS
+		AC_CHECK_LIB(belcard, main, [BELCARD_LIBS+=" -lbelr -lbelcard"; found_vcard=yes], [foo=bar])
+		AC_LANG_C
+	fi
+	if test "$found_vcard" = "yes"; then
+		BELCARD_CFLAGS+=" -DVCARD_ENABLED"
+		enable_vcard=true
+	else
+		if test x$enable_vcard = xtrue; then
+			AC_MSG_ERROR([belcard, required for vcard support, not found])
+		fi
+		enable_vcard=false
+	fi
+
+	AC_SUBST(BELCARD_CFLAGS)
+	AC_SUBST(BELCARD_LIBS)
+fi
+
+AM_CONDITIONAL(BUILD_VCARD, test x$enable_vcard = xtrue)
+
+AC_ARG_ENABLE(sqlite-storage,
+	[AS_HELP_STRING([--sqlite-msg-storage=[yes/no]], [Turn on compilation of sqlite storage for call history, messages, friends (default=auto)])],
+	[case "${enableval}" in
+		yes)	enable_sqlite_storage=true ;;
+		no)	enable_sqlite_storage=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-sqlite-storage) ;;
+	esac],
+	[enable_sqlite_storage=auto]
+)
+
+if test x$enable_sqlite_storage != xfalse; then
 	PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
 	if test "$found_sqlite" = "no"; then
 		dnl Check the lib presence in case the PKG-CONFIG version is not found
 		AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
 	fi
 	if test "$found_sqlite" = "yes"; then
-		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		SQLITE3_CFLAGS+=" -DSQLITE_STORAGE_ENABLED"
 		if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
 			SQLITE3_LIBS+=" -liconv"
 		fi
-		enable_msg_storage=true
+		enable_sqlite_storage=true
 	else
-		if test x$enable_msg_storage = xtrue; then
-			AC_MSG_ERROR([sqlite3, required for message storage, not found])
+		if test x$enable_sqlite_storage = xtrue; then
+			AC_MSG_ERROR([sqlite3, required for storage, not found])
 		fi
-		enable_msg_storage=false
+		enable_sqlite_storage=false
 	fi
 
 	AC_SUBST(SQLITE3_CFLAGS)
 	AC_SUBST(SQLITE3_LIBS)
 fi
 
-AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
+AM_CONDITIONAL(BUILD_SQLITE_STORAGE, test x$enable_sqlite_storage = xtrue)
 
-PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.4.0])
+
+PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.4.2])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
 SIPSTACK_LIBS="$BELLESIP_LIBS"
@@ -962,44 +1008,13 @@ AC_ARG_ENABLE(tests,
 )
 AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
 
-PKG_CHECK_MODULES(CUNIT, cunit, [found_cunit=yes],[found_cunit=no])
+PKG_CHECK_MODULES(BCTOOLBOXTESTER, bctoolbox-tester, [found_pkg_config_bctoolboxtester=yes],[found_pkg_config_bctoolboxtester=no])
 
-if test "$found_cunit" = "no" ; then
-        AC_CHECK_HEADERS(CUnit/CUnit.h,
-                [
-                        AC_CHECK_LIB(cunit,CU_add_suite,[
-                                found_cunit=yes
-                                CUNIT_LIBS+=" -lcunit"
-                        ])
-
-                ])
+AM_CONDITIONAL([ENABLE_TESTS], [test x$found_pkg_config_bctoolboxtester = xyes && test x$tests_enabled != xfalse])
+if test "$found_pkg_config_bctoolboxtester" = "no" ; then
+        AC_MSG_WARN([Could not find bctoolbox-tester wrapper, tests are not compiled.])
 fi
 
-case "$target_os" in
-	*darwin*)
-		#hack for macport
-		CUNIT_LIBS+=" -lncurses"
-	;;
-esac
-AM_CONDITIONAL([BUILD_CUNIT_TESTS], [test x$found_cunit = xyes && test x$tests_enabled != xfalse])
-if test "$found_cunit" = "no" ; then
-        AC_MSG_WARN([Could not find cunit framework, tests are not compiled.])
-else
-		AC_CHECK_LIB(cunit,CU_get_suite,[
-										AC_DEFINE(HAVE_CU_GET_SUITE,1,[defined when CU_get_suite is available])
-										],[foo=bar],[$CUNIT_LIBS])
-
-        AC_CHECK_LIB(cunit,CU_curses_run_tests,[
-                                        AC_DEFINE(HAVE_CU_CURSES,1,[defined when CU_curses_run_tests is available])
-                                        ],[foo=bar],[$CUNIT_LIBS])
-fi
-
-case "$target_os" in
-	*linux*)
-		# Eliminate -lstdc++ addition to postdeps for cross compiles.
-		postdeps_CXX=`echo " $postdeps_CXX " | sed 's, -lstdc++ ,,g'`
-	;;
-esac
 
 
 dnl ##################################################
@@ -1022,6 +1037,11 @@ else
 fi
 AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
+AC_PATH_PROG([SIPP],[sipp],[false])
+if test "x$SIPP" != "xfalse" ; then
+	AC_DEFINE(HAVE_SIPP,1,[defined when SIPP is available])
+	AC_DEFINE_UNQUOTED(SIPP_COMMAND,"$SIPP",[defined when SIPP is available])
+fi
 
 AC_CONFIG_FILES([
 	Makefile
@@ -1039,6 +1059,7 @@ AC_CONFIG_FILES([
 	tester/Makefile
 	gtk/Makefile
 	console/Makefile
+	daemon/Makefile
 	share/Makefile
 	share/C/Makefile
 	share/fr/Makefile
@@ -1064,7 +1085,8 @@ printf "* %-30s %s\n" "GTK interface"		$gtk_ui
 printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"				$build_tools
-printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
+printf "* %-30s %s\n" "Sqlite storage"		$enable_sqlite_storage
+printf "* %-30s %s\n" "VCard support"		$enable_vcard
 printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap

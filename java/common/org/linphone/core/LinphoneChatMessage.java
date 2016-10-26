@@ -119,22 +119,18 @@ public interface LinphoneChatMessage {
 	
 	/**
 	 * Linphone message can carry external body as defined by rfc2017
-	 * @param message #LinphoneChatMessage
 	 * @return return external body url null if not present.
 	 */
 	String getExternalBodyUrl();
 	
 	/**
 	 * Linphone message can carry external body as defined by rfc2017
-	 * @param  #LinphoneChatMessage  
 	 * @param url ex: access-type=URL; URL="http://www.foo.com/file"
 	 */
 	void setExternalBodyUrl(String url);
 	
 	/**
 	 * Add a custom header into the message.
-	 * @param name
-	 * @param value
 	 */
 	void addCustomHeader(String name, String value);
 	
@@ -221,10 +217,25 @@ public interface LinphoneChatMessage {
 	/**
 	 * Start the download of the file referenced in a LinphoneChatMessage from remote server.
 	 */
-	void downloadFile();
+	int downloadFile();
 	
 	/**
 	 * Set the callbacks associated with the LinphoneChatMessage.
 	 */
 	void setListener(LinphoneChatMessage.LinphoneChatMessageListener listener);
+	/**
+	 * Fulfill a chat message char by char. Message linked to a Real Time Text Call send char in realtime following RFC 4103/T.140
+	 * To commit a message, use #linphone_chat_room_send_message
+	 * @param character T.140 char
+	 * @throws LinphoneCoreException
+	 */
+	void putChar(long character) throws LinphoneCoreException;
+
+	/**
+	 * Frees the underlying native resource of the message.
+	 * It should not be accessed afterwards.
+	 * This is for optimizing the memory resources at runtime. Not calling this does not result in a memory leak.
+	**/
+	void destroy();
+	
 }

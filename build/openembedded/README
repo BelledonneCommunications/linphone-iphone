@@ -1,0 +1,57 @@
+Recipes for open embedded: http://www.openembedded.org
+
+Documentations:
+http://docs.openembedded.org/usermanual/
+http://bitbake.berlios.de/manual/
+
+
+
+Instructions for compilation from sources: (requires 10 Go of free space)
+- Choose a distribution and build it.
+  For example, to build Angstrom follow the guide at http://www.angstrom-distribution.org/building-angstrom
+  For IGEPv2 use environment variable MACHINE=igep0020
+  It is possible to use MACHINE=qemuarm to build an image that can be run on a computer with qemu.
+
+- Add linphone recipes to the pool with an higher priority:
+  Edit conf/bblayers.conf to set EXTRALAYERS to point to the source repository of linphone. Search the EXTRALAYERS definition in conf/bblayers.conf
+  and modify it like this:
+
+     # Add your overlay location to EXTRALAYERS
+     # Make sure to have a conf/layers.conf in there
+     EXTRALAYERS ?= "/home/smorlat/sources/git/linphone-daemon/build/openembedded"
+
+  This additional layer gives access to the various linphone recipes but also to a recipe to build an entire image containing linphone.
+  To build this image based on the generic console image you will need to use:
+  bitbake console-linphone-image
+
+
+- Prepare compilation
+  Source appropriate environment with "~/.oe/enviro*"  
+  Change directory to where you launched Angstrom install script.
+
+- Compile linphone
+  bitbake -c clean linphone
+  bitbake linphone
+
+- If you want additional codecs (e.g. iLBC or AMR) compile linphone-plugins
+  bitbake -c clean linphone-plugins
+  bitbake linphone-plugins
+
+- Find the generated packages "*.ipk"
+  Example: /Data/work/angstrom/angstrom-setup-scripts/build/tmp-angstrom_2008_1/deploy/glibc/ipk/armv7a/
+
+
+
+ 
+Installation
+- check network connectivity
+	* ping linphone.org
+	* see "route -n"
+	* see "/etc/resolv.conf"
+- update package list
+	* opkg update
+- copy ipk files to install to /tmp
+- eventually remove previously installed packages
+- install with "opkg install libortp*.ipk libmediastreamer*.ipk liblinphone*.ipk linphonec*.ipk"
+
+

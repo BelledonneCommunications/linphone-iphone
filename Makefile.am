@@ -4,8 +4,7 @@
 ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
 SUBDIRS = build m4 pixmaps po @ORTP_DIR@ @MS2_DIR@ \
-		coreapi console gtk share scripts tools tester include
-
+		coreapi console gtk share scripts tools daemon tester include
 
 GITVERSION=`cd $(top_srcdir) && git describe --always || echo $(VERSION)`
 
@@ -61,6 +60,30 @@ EXTRA_DIST =		BUGS  \
 			gen-gtkfilelist.sh \
 			$(LINPHONEDEPS_FILELIST) \
 			$(ISS_SCRIPT).in
+
+EXTRA_DIST += CMakeLists.txt \
+cmake/FindGtkMacIntegration.cmake \
+cmake/FindIconv.cmake \
+cmake/FindIntl.cmake \
+cmake/FindNotify.cmake \
+cmake/FindSqlite3.cmake \
+cmake/FindXML2.cmake \
+cmake/FindZlib.cmake \
+cmake/LinphoneConfig.cmake.in \
+config.h.cmake \
+console/CMakeLists.txt \
+coreapi/CMakeLists.txt \
+coreapi/gitversion.cmake \
+coreapi/help/CMakeLists.txt \
+gtk/CMakeLists.txt \
+java/CMakeLists.txt \
+pixmaps/CMakeLists.txt \
+po/CMakeLists.txt \
+share/CMakeLists.txt \
+share/rings/CMakeLists.txt \
+share/rootca.cmake \
+tester/CMakeLists.txt \
+tools/CMakeLists.txt
 
 DISTCLEANFILES= $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
 
@@ -226,11 +249,7 @@ Linphone.app:
 	MS2_PLUGINS_INSTALL_PREFIX=$(prefix) \
 	LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX=$(LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
-	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
-	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
-	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
-	sed -e 's:@executable_path.*/::g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
-	patch -R ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
+	patch ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
 	rm -f ${BUNDLEDIR}/Contents/Resources/lib/libopenh264*
 
 bundle: $(MACAPPNAME)
@@ -248,7 +267,7 @@ pkg: $(MACAPPNAME)
 	cp ${srcdir}/pixmaps/linphone.png ./packaging
 	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --component $(MACAPPNAME) ./packaging/linphone.pkg
 	productbuild --resources . --distribution ${srcdir}/build/macos/pkg-distribution.xml --package-path ./packaging $(MACAPPPKG)
-	
+
 signed-pkg: pkg
 	mv $(MACAPPPKG) $(MACAPPPKG).tmp
 	productsign --sign "$(BUNDLE_SIGNING_ID)" $(MACAPPPKG).tmp $(MACAPPPKG)
@@ -263,7 +282,7 @@ clean-local:
 discovery:
 	touch specs.c
 	$(CC) --include $(top_builddir)/config.h \
-        $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
+        $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(BCTOOLBOXTESTER_CFLAGS) -E -P -v -dD specs.c
 
 .PHONY: $(MACAPPNAME) pkg
 

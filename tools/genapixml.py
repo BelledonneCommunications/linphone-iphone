@@ -86,6 +86,8 @@ class CArgument(CObject):
 				fullySplittedType.append('*')
 			else:
 				fullySplittedType.append(s)
+		if 'MS2_DEPRECATED' in fullySplittedType:
+			fullySplittedType.remove('MS2_DEPRECATED')
 		isStruct = False
 		isEnum = False
 		self.ctype = 'int' # Default to int so that the result is correct eg. for 'unsigned short'
@@ -436,7 +438,7 @@ class Project:
 			returnarg = CArgument(returntype, enums = self.enums, structs = self.__structs)
 			returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
 			if returndesc is not None:
-				if returnarg.ctype == 'MSList':
+				if returnarg.ctype == 'MSList' or returnarg.ctype == 'bctbx_list_t':
 					n = returndesc.find('.//mslist')
 					if n is not None:
 						returnarg.containedType = n.text
@@ -498,13 +500,16 @@ class Project:
 			self.add(td)
 
 	def __parseCFunctionMemberdef(self, node):
+		internal = node.find("./detaileddescription/internal")
+		if internal is not None:
+			return None
 		missingDocWarning = ''
 		name = node.find('./name').text
 		t = ''.join(node.find('./type').itertext())
 		returnarg = CArgument(t, enums = self.enums, structs = self.__structs)
 		returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
 		if returndesc is not None:
-			if returnarg.ctype == 'MSList':
+			if returnarg.ctype == 'MSList' or returnarg.ctype == 'bctbx_list_t':
 				n = returndesc.find('.//mslist')
 				if n is not None:
 					returnarg.containedType = n.text
@@ -527,7 +532,7 @@ class Project:
 				for arg in argslist.arguments:
 					for paramdesc in paramdescs:
 						if arg.name == paramdesc.find('./parameternamelist').find('./parametername').text:
-							if arg.ctype == 'MSList':
+							if arg.ctype == 'MSList' or arg.ctype == 'bctbx_list_t':
 								n = paramdesc.find('.//mslist')
 								if n is not None:
 									arg.containedType = n.text
@@ -557,7 +562,8 @@ class Project:
 		memberdefs = tree.findall("./compounddef[@kind='group']/sectiondef[@kind='func']/memberdef[@kind='function'][@prot='public'][@static='no']")
 		for m in memberdefs:
 			f = self.__parseCFunctionMemberdef(m)
-			self.add(f)
+			if f is not None:
+				self.add(f)
 
 	def initFromFiles(self, xmlfiles):
 		trees = []

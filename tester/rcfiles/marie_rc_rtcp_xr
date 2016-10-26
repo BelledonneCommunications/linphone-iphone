@@ -4,7 +4,7 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
-register_only_when_network_is_up=0
+
 composing_idle_timeout=1
 
 [auth_info_0]
@@ -33,6 +33,7 @@ subscribe=0
 [rtp]
 audio_rtp_port=20070-22070
 video_rtp_port=24000-25000
+text_rtp_port=26000-30000
 rtcp_xr_enabled=1
 rtcp_xr_rcvr_rtt_mode=all
 rtcp_xr_rcvr_rtt_max_size=10000

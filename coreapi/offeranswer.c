@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "offeranswer.h"
 #include "private.h"
 
-static bool_t only_telephone_event(const MSList *l){
+static bool_t only_telephone_event(const bctbx_list_t *l){
 	for(;l!=NULL;l=l->next){
 		PayloadType *p=(PayloadType*)l->data;
 		if (strcasecmp(p->mime_type,"telephone-event")!=0){
@@ -31,127 +31,159 @@ static bool_t only_telephone_event(const MSList *l){
 	return TRUE;
 }
 
-typedef struct _PayloadTypeMatcher{
-	const char *mime_type;
-	PayloadType *(*match_func)(const MSList *l, const PayloadType *refpt);
-}PayloadTypeMatcher;
 
-static PayloadType * opus_match(const MSList *l, const PayloadType *refpt){
+static PayloadType * opus_match(MSOfferAnswerContext *ctx, const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads, bool_t reading_response){
 	PayloadType *pt;
-	const MSList *elem;
-	PayloadType *candidate=NULL;
+	const bctbx_list_t *elem;
+	PayloadType *legacy_opus=NULL;
 
-	for (elem=l;elem!=NULL;elem=elem->next){
+	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
 		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
 		if (strcasecmp(pt->mime_type,"opus")==0 ){
 			if (refpt->channels==1){
-				pt->channels=1; /*so that we respond with same number of channels */
-				candidate=pt;
+				legacy_opus=pt;
 			}else if (refpt->channels==2){
-				return pt;
+				return payload_type_clone(pt);
 			}
 		}
 	}
-	return candidate;
+	if (legacy_opus){
+		legacy_opus = payload_type_clone(legacy_opus);
+		legacy_opus->channels=1; /*so that we respond with same number of channels */
+		return legacy_opus;
+	}
+	return NULL;
 }
 
+static MSOfferAnswerContext *opus_offer_answer_create_context(void){
+	static MSOfferAnswerContext opus_oa = {opus_match, NULL, NULL};
+	return &opus_oa;
+}
+
+MSOfferAnswerProvider opus_offer_answer_provider={
+	"opus",
+	opus_offer_answer_create_context
+};
+
 /* the reason for this matcher is for some stupid uncompliant phone that offer G729a mime type !*/
-static PayloadType * g729A_match(const MSList *l, const PayloadType *refpt){
+static PayloadType * g729A_match(MSOfferAnswerContext *ctx, const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads, bool_t reading_response){
 	PayloadType *pt;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	PayloadType *candidate=NULL;
 
-	for (elem=l;elem!=NULL;elem=elem->next){
+	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
 		if (strcasecmp(pt->mime_type,"G729")==0 && refpt->channels==pt->channels){
 			candidate=pt;
 		}
 	}
-	return candidate;
+	return candidate ? payload_type_clone(candidate) : NULL;
 }
 
-static PayloadType * amr_match(const MSList *l, const PayloadType *refpt){
-	PayloadType *pt;
-	char value[10];
-	const MSList *elem;
-	PayloadType *candidate=NULL;
+static MSOfferAnswerContext *g729a_offer_answer_create_context(void){
+	static MSOfferAnswerContext g729_oa = {g729A_match, NULL, NULL};
+	return &g729_oa;
+}
 
-	for (elem=l;elem!=NULL;elem=elem->next){
-		pt=(PayloadType*)elem->data;
+MSOfferAnswerProvider g729a_offer_answer_provider={
+	"G729A",
+	g729a_offer_answer_create_context
+};
+
+static PayloadType * red_match(MSOfferAnswerContext *ctx, const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads, bool_t reading_response) {
+	const bctbx_list_t *elem_local, *elem_remote;
+	PayloadType *red = NULL;
+
+	for (elem_local = local_payloads; elem_local != NULL; elem_local = elem_local->next) {
+		PayloadType *pt = (PayloadType*)elem_local->data;
 		
-		if ( pt->mime_type && refpt->mime_type 
-			&& strcasecmp(pt->mime_type, refpt->mime_type)==0
-			&& pt->clock_rate==refpt->clock_rate
-			&& pt->channels==refpt->channels) {
-			int octedalign1=0,octedalign2=0;
-			if (pt->recv_fmtp!=NULL && fmtp_get_value(pt->recv_fmtp,"octet-align",value,sizeof(value))){
-				octedalign1=atoi(value);
+		if (strcasecmp(pt->mime_type, payload_type_t140_red.mime_type) == 0) {
+			red = payload_type_clone(pt);
+			
+			for (elem_remote = remote_payloads; elem_remote != NULL; elem_remote = elem_remote->next) {
+				PayloadType *pt2 = (PayloadType*)elem_remote->data;
+				if (strcasecmp(pt2->mime_type, payload_type_t140.mime_type) == 0) {
+					int t140_payload_number = payload_type_get_number(pt2);
+					char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_number, t140_payload_number, t140_payload_number);
+					/*modify the local payload and the return value*/
+					payload_type_set_recv_fmtp(pt, red_fmtp);
+					payload_type_set_recv_fmtp(red, red_fmtp);
+					ms_free(red_fmtp);
+					break;
+				}
 			}
-			if (refpt->send_fmtp!=NULL && fmtp_get_value(refpt->send_fmtp,"octet-align",value,sizeof(value))){
-				octedalign2=atoi(value);
-			}
-			if (octedalign1==octedalign2) {
-				candidate=pt;
-				break; /*exact match */
-			}
+			break;
 		}
 	}
-	return candidate;
+	return red;
 }
 
-static PayloadType * generic_match(const MSList *l, const PayloadType *refpt){
-	PayloadType *pt;
-	const MSList *elem;
+static MSOfferAnswerContext *red_offer_answer_create_context(void){
+	static MSOfferAnswerContext red_oa = {red_match, NULL, NULL};
+	return &red_oa;
+}
 
-	for (elem=l;elem!=NULL;elem=elem->next){
+MSOfferAnswerProvider red_offer_answer_provider={
+	"red",
+	red_offer_answer_create_context
+};
+
+static PayloadType * generic_match(const bctbx_list_t *local_payloads, const PayloadType *refpt, const bctbx_list_t *remote_payloads){
+	PayloadType *pt;
+	const bctbx_list_t *elem;
+
+	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
 		if ( pt->mime_type && refpt->mime_type 
 			&& strcasecmp(pt->mime_type, refpt->mime_type)==0
 			&& pt->clock_rate==refpt->clock_rate
 			&& pt->channels==refpt->channels)
-			return pt;
+			return payload_type_clone(pt);
 	}
 	return NULL;
 }
 
-static PayloadTypeMatcher matchers[]={
-	{"opus", opus_match},
-	{"G729A", g729A_match},
-	{"AMR", amr_match},
-	{"AMR-WB", amr_match},
-	{NULL, NULL}
-};
 
+void linphone_core_register_offer_answer_providers(LinphoneCore *lc){
+	MSFactory *factory = lc->factory;
+	ms_factory_register_offer_answer_provider(factory, &red_offer_answer_provider);
+	ms_factory_register_offer_answer_provider(factory, &g729a_offer_answer_provider);
+	ms_factory_register_offer_answer_provider(factory, &opus_offer_answer_provider);
+}
 
 /*
  * Returns a PayloadType from the local list that matches a PayloadType offered or answered in the remote list
 */
-static PayloadType * find_payload_type_best_match(const MSList *l, const PayloadType *refpt){
-	PayloadTypeMatcher *m;
-	for(m=matchers;m->mime_type!=NULL;++m){
-		if (refpt->mime_type && strcasecmp(m->mime_type,refpt->mime_type)==0){
-			return m->match_func(l,refpt);
-		}
+static PayloadType * find_payload_type_best_match(MSFactory *factory, const bctbx_list_t *local_payloads, const PayloadType *refpt,
+						  const bctbx_list_t *remote_payloads, bool_t reading_response){
+	PayloadType *ret = NULL;
+	MSOfferAnswerContext *ctx = NULL;
+
+	// When a stream is inactive, refpt->mime_type might be null
+	if (refpt->mime_type && (ctx = ms_factory_create_offer_answer_context(factory, refpt->mime_type))) {
+		ms_message("Doing offer/answer processing with specific provider for codec [%s]", refpt->mime_type); 
+		ret = ms_offer_answer_context_match_payload(ctx, local_payloads, refpt, remote_payloads, reading_response);
+		ms_offer_answer_context_destroy(ctx);
+		return ret;
 	}
-	return generic_match(l,refpt);
+	return generic_match(local_payloads, refpt, remote_payloads);
 }
 
 
-static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t reading_response, bool_t one_matching_codec){
-	const MSList *e2,*e1;
-	MSList *res=NULL;
+static bctbx_list_t *match_payloads(MSFactory *factory, const bctbx_list_t *local, const bctbx_list_t *remote, bool_t reading_response, bool_t one_matching_codec){
+	const bctbx_list_t *e2,*e1;
+	bctbx_list_t *res=NULL;
 	PayloadType *matched;
 	bool_t found_codec=FALSE;
 
 	for(e2=remote;e2!=NULL;e2=e2->next){
 		PayloadType *p2=(PayloadType*)e2->data;
-		matched=find_payload_type_best_match(local,p2);
+		matched=find_payload_type_best_match(factory, local, p2, remote, reading_response);
 		if (matched){
-			PayloadType *newp;
 			int local_number=payload_type_get_number(matched);
 			int remote_number=payload_type_get_number(p2);
 
@@ -163,37 +195,39 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				}
 			}
 
-			newp=payload_type_clone(matched);
 			if (p2->send_fmtp){
-				payload_type_append_send_fmtp(newp,p2->send_fmtp);
+				payload_type_append_send_fmtp(matched,p2->send_fmtp);
 			}
-			newp->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
-			if (p2->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
-				newp->flags |= PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED;
+			payload_type_set_flag(matched, PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND);
+			if (matched->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED && p2->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
+				payload_type_set_flag(matched, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 				/* Negotiation of AVPF features (keep common features) */
-				newp->avpf.features &= p2->avpf.features;
-				newp->avpf.rpsi_compatibility = p2->avpf.rpsi_compatibility;
+				matched->avpf.features &= p2->avpf.features;
+				matched->avpf.rpsi_compatibility = p2->avpf.rpsi_compatibility;
 				/* Take bigger AVPF trr interval */
-				if (p2->avpf.trr_interval < matched->avpf.trr_interval) {
-					newp->avpf.trr_interval = matched->avpf.trr_interval;
+				if (p2->avpf.trr_interval > matched->avpf.trr_interval) {
+					matched->avpf.trr_interval = p2->avpf.trr_interval;
 				}
+			}else{
+				payload_type_unset_flag(matched, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 			}
-			res=ms_list_append(res,newp);
+			res=bctbx_list_append(res,matched);
 			/* we should use the remote numbering even when parsing a response */
-			payload_type_set_number(newp,remote_number);
-			payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
+			payload_type_set_number(matched,remote_number);
+			payload_type_set_flag(matched, PAYLOAD_TYPE_FROZEN_NUMBER);
 			if (reading_response && remote_number!=local_number){
 				ms_warning("For payload type %s, proposed number was %i but the remote phone answered %i",
-						  newp->mime_type, local_number, remote_number);
+						  matched->mime_type, local_number, remote_number);
 				/*
 				 We must add this payload type with our local numbering in order to be able to receive it.
 				 Indeed despite we must sent with the remote numbering, we must be able to receive with
 				 our local one.
 				*/
-				newp=payload_type_clone(newp);
-				payload_type_set_number(newp,local_number);
-				payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
-				res=ms_list_append(res,newp);
+				matched=payload_type_clone(matched);
+				payload_type_set_number(matched,local_number);
+				payload_type_set_flag(matched, PAYLOAD_TYPE_FLAG_CAN_RECV);
+				payload_type_set_flag(matched, PAYLOAD_TYPE_FROZEN_NUMBER);
+				res=bctbx_list_append(res,matched);
 			}
 		}else{
 			if (p2->channels>0)
@@ -218,7 +252,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				p1=payload_type_clone(p1);
 				payload_type_set_flag(p1, PAYLOAD_TYPE_FLAG_CAN_RECV);
 				payload_type_set_flag(p1, PAYLOAD_TYPE_FROZEN_NUMBER);
-				res=ms_list_append(res,p1);
+				res=bctbx_list_append(res,p1);
 			}
 		}
 	}
@@ -296,11 +330,11 @@ static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offere
 	return res;
 }
 
-static void initiate_outgoing(const SalStreamDescription *local_offer,
+static void initiate_outgoing(MSFactory* factory, const SalStreamDescription *local_offer,
 						const SalStreamDescription *remote_answer,
 						SalStreamDescription *result){
 	if (remote_answer->rtp_port!=0)
-		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
+		result->payloads=match_payloads(factory, local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
 	else {
 		ms_message("Local stream description [%p] rejected by peer",local_offer);
 		result->rtp_port=0;
@@ -310,67 +344,66 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	result->type=local_offer->type;
 
 	if (local_offer->rtp_addr[0]!='\0' && ms_is_multicast(local_offer->rtp_addr)) {
-		/*6.2 Multicast Streams
-		...
-	   If a multicast stream is accepted, the address and port information
-	   in the answer MUST match that of the offer.  Similarly, the
-	   directionality information in the answer (sendonly, recvonly, or
-	   sendrecv) MUST equal that of the offer.  This is because all
-	   participants in a multicast session need to have equivalent views of
-	   the parameters of the session, an underlying assumption of the
-	   multicast bias of RFC 2327.*/
-	  if (strcmp(local_offer->rtp_addr,remote_answer->rtp_addr) !=0 ) {
-		  ms_message("Remote answered IP [%s] does not match offered [%s] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->rtp_addr
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->rtp_addr
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->rtp_port!=remote_answer->rtp_port) {
-		  ms_message("Remote answered rtp port [%i] does not match offered [%i] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->rtp_port
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->rtp_port
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->dir!=remote_answer->dir) {
-		  ms_message("Remote answered dir [%s] does not match offered [%s] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,sal_stream_dir_to_string(remote_answer->dir)
-				  	  	  	  	  	  	  	  	  	  	  	  ,sal_stream_dir_to_string(local_offer->dir)
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->bandwidth!=remote_answer->bandwidth) {
-		  ms_message("Remote answered bandwidth [%i] does not match offered [%i] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->bandwidth
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->bandwidth
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->ptime > 0 && local_offer->ptime!=remote_answer->ptime) {
-	  		  ms_message("Remote answered ptime [%i] does not match offered [%i] for local stream description [%p]"
-	  				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->ptime
-	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->ptime
-	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-	  	  result->rtp_port=0;
-	  	  return;
-	  }
-	  if (local_offer->ttl > 0 && local_offer->ttl!=remote_answer->ttl) {
-	  	  ms_message("Remote answered ttl [%i] does not match offered [%i] for local stream description [%p]"
-	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->ttl
-	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->ttl
-	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-	   	  result->rtp_port=0;
-	   	  return;
-	   }
-	  result->ttl=local_offer->ttl;
-	  result->dir=local_offer->dir;
-	  result->multicast_role = SalMulticastSender;
-
+			/*6.2 Multicast Streams
+			...
+		If a multicast stream is accepted, the address and port information
+		in the answer MUST match that of the offer.  Similarly, the
+		directionality information in the answer (sendonly, recvonly, or
+		sendrecv) MUST equal that of the offer.  This is because all
+		participants in a multicast session need to have equivalent views of
+		the parameters of the session, an underlying assumption of the
+		multicast bias of RFC 2327.*/
+		if (strcmp(local_offer->rtp_addr,remote_answer->rtp_addr) !=0 ) {
+			ms_message("Remote answered IP [%s] does not match offered [%s] for local stream description [%p]"
+																,remote_answer->rtp_addr
+																,local_offer->rtp_addr
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->rtp_port!=remote_answer->rtp_port) {
+			ms_message("Remote answered rtp port [%i] does not match offered [%i] for local stream description [%p]"
+																,remote_answer->rtp_port
+																,local_offer->rtp_port
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->dir!=remote_answer->dir) {
+			ms_message("Remote answered dir [%s] does not match offered [%s] for local stream description [%p]"
+																,sal_stream_dir_to_string(remote_answer->dir)
+																,sal_stream_dir_to_string(local_offer->dir)
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->bandwidth!=remote_answer->bandwidth) {
+			ms_message("Remote answered bandwidth [%i] does not match offered [%i] for local stream description [%p]"
+																,remote_answer->bandwidth
+																,local_offer->bandwidth
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->ptime > 0 && local_offer->ptime!=remote_answer->ptime) {
+			ms_message("Remote answered ptime [%i] does not match offered [%i] for local stream description [%p]"
+																,remote_answer->ptime
+																,local_offer->ptime
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->ttl > 0 && local_offer->ttl!=remote_answer->ttl) {
+			ms_message("Remote answered ttl [%i] does not match offered [%i] for local stream description [%p]"
+																		,remote_answer->ttl
+																		,local_offer->ttl
+																		,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		result->ttl=local_offer->ttl;
+		result->dir=local_offer->dir;
+		result->multicast_role = SalMulticastSender;
 	} else {
 		result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
 	}
@@ -409,19 +442,19 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		result->dtls_fingerprint[0] = '\0';
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
-
-
+	result->rtcp_mux = remote_answer->rtcp_mux && local_offer->rtcp_mux;
+	result->implicit_rtcp_fb = local_offer->implicit_rtcp_fb && remote_answer->implicit_rtcp_fb;
 }
 
 
-static void initiate_incoming(const SalStreamDescription *local_cap,
+static void initiate_incoming(MSFactory *factory, const SalStreamDescription *local_cap,
 						const SalStreamDescription *remote_offer,
 						SalStreamDescription *result, bool_t one_matching_codec){
-	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
+	result->payloads=match_payloads(factory, local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
 	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
-	if (!result->payloads || only_telephone_event(result->payloads) || remote_offer->rtp_port==0 || remote_offer->dir==SalStreamRecvOnly){
+	if (!result->payloads || only_telephone_event(result->payloads) || remote_offer->rtp_port==0){
 		result->rtp_port=0;
 		return;
 	}
@@ -449,17 +482,28 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		result->bandwidth=local_cap->bandwidth;
 		result->ptime=local_cap->ptime;
 	}
+
 	if (sal_stream_description_has_srtp(result) == TRUE) {
 		/* select crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
-		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
+		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE)) {
 			result->rtp_port = 0;
+			ms_message("No matching crypto algo for remote stream's offer [%p]",remote_offer);
+		}
 
 	}
+
+	if (remote_offer->haveZrtpHash == 1) {
+		if (local_cap->zrtphash[0] != 0) { /* if ZRTP is available, set the zrtp hash even if it is not selected */
+			strncpy((char *)(result->zrtphash), (char *)(local_cap->zrtphash), sizeof(local_cap->zrtphash));
+			result->haveZrtpHash =  1;
+		}
+	}
+
 	strcpy(result->ice_pwd, local_cap->ice_pwd);
 	strcpy(result->ice_ufrag, local_cap->ice_ufrag);
 	result->ice_mismatch = local_cap->ice_mismatch;
-	result->ice_completed = local_cap->ice_completed;
+	result->set_nortpproxy = local_cap->set_nortpproxy;
 	memcpy(result->ice_candidates, local_cap->ice_candidates, sizeof(result->ice_candidates));
 	memcpy(result->ice_remote_candidates, local_cap->ice_remote_candidates, sizeof(result->ice_remote_candidates));
 	strcpy(result->name,local_cap->name);
@@ -478,8 +522,8 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		result->dtls_fingerprint[0] = '\0';
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
-
-
+	result->rtcp_mux = remote_offer->rtcp_mux && local_cap->rtcp_mux;
+	result->implicit_rtcp_fb = local_cap->implicit_rtcp_fb && remote_offer->implicit_rtcp_fb;
 }
 
 
@@ -487,31 +531,32 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
  * Returns a media description to run the streams with, based on a local offer
  * and the returned response (remote).
 **/
-int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
+int offer_answer_initiate_outgoing(MSFactory *factory, const SalMediaDescription *local_offer,
 					const SalMediaDescription *remote_answer,
 					SalMediaDescription *result){
-	int i,j;
+	int i;
 	const SalStreamDescription *ls,*rs;
 
-	for(i=0,j=0;i<local_offer->nb_streams;++i){
+	for(i=0;i<local_offer->nb_streams;++i){
 		ms_message("Processing for stream %i",i);
 		ls=&local_offer->streams[i];
-		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
-		if (rs) {
-			initiate_outgoing(ls,rs,&result->streams[j]);
+		rs=&remote_answer->streams[i];
+		if (rs && ls->proto == rs->proto && rs->type == ls->type) {
+			initiate_outgoing(factory, ls,rs,&result->streams[i]);
 			memcpy(&result->streams[i].rtcp_xr, &ls->rtcp_xr, sizeof(result->streams[i].rtcp_xr));
 			if ((ls->rtcp_xr.enabled == TRUE) && (rs->rtcp_xr.enabled == FALSE)) {
 				result->streams[i].rtcp_xr.enabled = FALSE;
 			}
 			result->streams[i].rtcp_fb.generic_nack_enabled = ls->rtcp_fb.generic_nack_enabled & rs->rtcp_fb.generic_nack_enabled;
 			result->streams[i].rtcp_fb.tmmbr_enabled = ls->rtcp_fb.tmmbr_enabled & rs->rtcp_fb.tmmbr_enabled;
-			++j;
 		}
 		else ms_warning("No matching stream for %i",i);
 	}
 	result->nb_streams=local_offer->nb_streams;
 	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
+	strcpy(result->ice_pwd, local_offer->ice_pwd);
+	strcpy(result->ice_ufrag, local_offer->ice_ufrag);
 	memcpy(&result->rtcp_xr, &local_offer->rtcp_xr, sizeof(result->rtcp_xr));
 	if ((local_offer->rtcp_xr.enabled == TRUE) && (remote_answer->rtcp_xr.enabled == FALSE)) {
 		result->rtcp_xr.enabled = FALSE;
@@ -520,57 +565,22 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 	return 0;
 }
 
-static bool_t local_stream_not_already_used(const SalMediaDescription *result, const SalStreamDescription *stream){
-	int i;
-	for(i=0;i<result->nb_streams;++i){
-		const SalStreamDescription *ss=&result->streams[i];
-		if (strcmp(ss->name,stream->name)==0){
-			ms_message("video stream already used in answer");
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-/*in answering mode, we consider that if we are able to make AVPF/SAVP/SAVPF, then we can do AVP as well*/
-static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
-	if (local == remote) return TRUE;
-	if ((remote == SalProtoRtpAvp) && ((local == SalProtoRtpSavp) || (local == SalProtoRtpSavpf))) return TRUE;
-	if ((remote == SalProtoRtpAvp) && ((local == SalProtoUdpTlsRtpSavp) || (local == SalProtoUdpTlsRtpSavpf))) return TRUE;
-	if ((remote == SalProtoRtpAvpf) && (local == SalProtoRtpSavpf)) return TRUE;
-	if ((remote == SalProtoRtpAvpf) && (local == SalProtoUdpTlsRtpSavpf)) return TRUE;
-	return FALSE;
-}
-
-static const SalStreamDescription *find_local_matching_stream(const SalMediaDescription *result, const SalMediaDescription *local_capabilities, const SalStreamDescription *remote_stream){
-	int i;
-	for(i=0;i<local_capabilities->nb_streams;++i){
-		const SalStreamDescription *ss=&local_capabilities->streams[i];
-		if (!sal_stream_description_active(ss)) continue;
-		if (ss->type==remote_stream->type && proto_compatible(ss->proto,remote_stream->proto)
-			&& local_stream_not_already_used(result,ss)) return ss;
-	}
-	return NULL;
-}
-
 /**
  * Returns a media description to run the streams with, based on the local capabilities and
  * and the received offer.
  * The returned media description is an answer and should be sent to the offerer.
 **/
-int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
+int offer_answer_initiate_incoming(MSFactory *factory, const SalMediaDescription *local_capabilities,
 					const SalMediaDescription *remote_offer,
 					SalMediaDescription *result, bool_t one_matching_codec){
 	int i;
 	const SalStreamDescription *ls=NULL,*rs;
 
 	for(i=0;i<remote_offer->nb_streams;++i){
-		rs=&remote_offer->streams[i];
-		if (rs->proto!=SalProtoOther){
-			ls=find_local_matching_stream(result,local_capabilities,rs);
-		}else ms_warning("Unknown protocol for mline %i, declining",i);
-		if (ls){
-			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
+		rs = &remote_offer->streams[i];
+		ls = &local_capabilities->streams[i];
+		if (ls && rs->type == ls->type && rs->proto == ls->proto){
+			initiate_incoming(factory, ls,rs,&result->streams[i],one_matching_codec);
 			// Handle global RTCP FB attributes
 			result->streams[i].rtcp_fb.generic_nack_enabled = rs->rtcp_fb.generic_nack_enabled;
 			result->streams[i].rtcp_fb.tmmbr_enabled = rs->rtcp_fb.tmmbr_enabled;
@@ -600,6 +610,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 				strncpy(result->streams[i].proto_other,rs->proto_other,sizeof(rs->proto_other)-1);
 			}
 		}
+		result->streams[i].custom_sdp_attributes = sal_custom_sdp_attribute_clone(ls->custom_sdp_attributes);
 	}
 	result->nb_streams=i;
 	strcpy(result->username, local_capabilities->username);
@@ -610,7 +621,8 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	strcpy(result->ice_pwd, local_capabilities->ice_pwd);
 	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
 	result->ice_lite = local_capabilities->ice_lite;
-	result->ice_completed = local_capabilities->ice_completed;
+	result->set_nortpproxy = local_capabilities->set_nortpproxy;
+	result->custom_sdp_attributes = sal_custom_sdp_attribute_clone(local_capabilities->custom_sdp_attributes);
 
 	strcpy(result->name,local_capabilities->name);
 

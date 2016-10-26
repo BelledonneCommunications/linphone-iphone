@@ -27,9 +27,20 @@ import java.nio.ByteBuffer;
  */
 public interface LinphoneCoreListener {
 
-	/**< Ask the application some authentication information 
-	 * @return */
-	void authInfoRequested(LinphoneCore lc, String realm, String username, String Domain); 
+	/**
+	 * @deprecated
+	 * Ask the application some authentication information 
+	 **/
+	@Deprecated
+	void authInfoRequested(LinphoneCore lc, String realm, String username, String domain);
+	
+	/**
+	 * Ask the application some authentication information
+	 * @param lc the LinphoneCore
+	 * @param authInfo a LinphoneAuthInfo pre-filled with username, realm and domain values as much as possible
+	 * @param method the type of authentication requested (HttpDigest, Tls, ...)
+	 **/
+	void authenticationRequested(LinphoneCore lc, LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method); 
 
 	/**
 	 * Call stats notification
@@ -102,20 +113,32 @@ public interface LinphoneCoreListener {
 	 */
 	void publishStateChanged(LinphoneCore lc, LinphoneEvent ev, PublishState state);
 
-	/**< @Deprecated Notifies the application that it should show up
-	 * @return */
+	/**
+	 * Notifies the application that it should show up
+	 * @deprecated
+	 */
+	@Deprecated
 	void show(LinphoneCore lc);
 
-	/**< @Deprecated Callback that notifies various events with human readable text.
-	 * @return */
+	/**
+	 * Callback that notifies various events with human readable text.
+	 * @deprecated
+	 */
+	@Deprecated
 	void displayStatus(LinphoneCore lc,String message);
 
-	/**< @Deprecated Callback to display a message to the user 
-	 * @return */
+	/**
+	 * Callback to display a message to the user 
+	 * @deprecated
+	 */
+	@Deprecated
 	void displayMessage(LinphoneCore lc,String message);
 
-	/** @Deprecated Callback to display a warning to the user 
-	 * @return */
+	/**
+	 * Callback to display a warning to the user 
+	 * @deprecated
+	 */
+	@Deprecated
 	void displayWarning(LinphoneCore lc,String message);
 
 	/**
@@ -148,10 +171,10 @@ public interface LinphoneCoreListener {
 	 */
 	int fileTransferSend(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, ByteBuffer buffer, int size);
 
-	/** General State notification  
+	/**
+	 * General State notification  
 	 * @param state LinphoneCore.State
-	 * @return 
-	 * */		
+	 */		
 	void globalState(LinphoneCore lc,LinphoneCore.GlobalState state, String message);
 
 	/**
@@ -170,16 +193,15 @@ public interface LinphoneCoreListener {
 	/**
 	 * invoked when a new linphone chat message is received
 	 * @param lc LinphoneCore
-	 * @param  room 	LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
-	 * @param message 	incoming linphone chat message message
+	 * @param cr LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
+	 * @param message incoming linphone chat message message
 	 */
 	void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message);
 
 
 	/** Call  State notification  
 	 * @param state LinphoneCall.State
-	 * @return 
-	 * */		
+	 */		
 	void callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State state, String message);
 
 	/**
@@ -201,7 +223,7 @@ public interface LinphoneCoreListener {
 	/**
 	 * invoked when a composing notification is received
 	 * @param lc LinphoneCore
-	 * @param room LinphoneChatRoom involved in the conversation.
+	 * @param cr LinphoneChatRoom involved in the conversation.
 	 */
 	void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr);
 
@@ -226,5 +248,19 @@ public interface LinphoneCoreListener {
 	 * @param info Additional information: error message in case of error state, URL of uploaded file in case of success.
 	 */
 	void uploadStateChanged(LinphoneCore lc, LinphoneCore.LogCollectionUploadState state, String info);
+	
+	/**
+	 * Callback prototype for reporting LinphoneFriendList creation.
+	 * @param lc LinphoneCore object
+	 * @param list LinphoneFriendList object
+	 */
+	void friendListCreated(LinphoneCore lc, LinphoneFriendList list);
+	
+	/**
+	 * Callback prototype for reporting LinphoneFriendList removal.
+	 * @param lc LinphoneCore object
+	 * @param list LinphoneFriendList object
+	 */
+	void friendListRemoved(LinphoneCore lc, LinphoneFriendList list);
 }
 

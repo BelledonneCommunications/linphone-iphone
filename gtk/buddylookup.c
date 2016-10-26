@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone.h"
 #include "sipsetup.h"
 
-static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *results);
+static void linphone_gtk_display_lookup_results(GtkWidget *w, const bctbx_list_t *results);
 
 enum {
 	LOOKUP_RESULT_NAME,
@@ -136,7 +136,7 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 	SipSetupContext *ctx;
 	int last_state;
 	gchar *tmp;
-	MSList *results=NULL;
+	bctbx_list_t *results=NULL;
 	GtkProgressBar *pb=GTK_PROGRESS_BAR(linphone_gtk_get_widget(w,"progressbar"));
 	BuddyLookupRequest *req=(BuddyLookupRequest*)g_object_get_data(G_OBJECT(w),"buddylookup_request");
 
@@ -148,7 +148,7 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 		return FALSE;
 	}
 	bls=req->status;
-	if (last_state==bls) return TRUE;
+	if (last_state==(int)bls) return TRUE;
 	
 	switch(bls){
 		case BuddyLookupNone:
@@ -177,9 +177,8 @@ static gboolean linphone_gtk_process_buddy_lookup(GtkWidget *w){
 					linphone_gtk_get_widget(w,"search_results"),
 					results);
 			gtk_progress_bar_set_fraction(pb,1);
-			tmp=g_strdup_printf(ngettext("Found %i contact",
-                        "Found %i contacts", ms_list_size(results)),
-                    ms_list_size(results));
+			tmp=g_strdup_printf(ngettext("Found %u contact", "Found %u contacts",
+				(unsigned int)bctbx_list_size(results)), (unsigned int)bctbx_list_size(results));
 			gtk_progress_bar_set_text(pb,tmp);
 			g_free(tmp);
 			sip_setup_context_buddy_lookup_free(ctx,req);
@@ -228,11 +227,11 @@ void linphone_gtk_keyword_changed(GtkEditable *e){
 	g_object_set_data(G_OBJECT(w),"typing_timeout",GINT_TO_POINTER(tid));
 }
 
-static void linphone_gtk_display_lookup_results(GtkWidget *w, const MSList *results){
+static void linphone_gtk_display_lookup_results(GtkWidget *w, const bctbx_list_t *results){
 	GtkTreeStore *store;
 	GtkTreeIter iter;
 	gchar *tmp;
-	const MSList *elem;
+	const bctbx_list_t *elem;
 	store=GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(w)));
 	gtk_tree_store_clear(store);
 	disable_add_buddy_button(gtk_widget_get_toplevel(w));
@@ -283,14 +282,15 @@ void linphone_gtk_add_buddy_from_database(GtkWidget *button){
 		char *name;
 		char *addr;
 		LinphoneFriend *lf;
+		LinphoneCore *lc = linphone_gtk_get_core();
 		int presence=linphone_gtk_get_ui_config_int("use_subscribe_notify",1);
 		gtk_tree_model_get (model, &iter,LOOKUP_RESULT_SIP_URI , &uri,LOOKUP_RESULT_NAME, &name, -1);
 		addr=g_strdup_printf("%s <%s>",name,uri);
 
-		lf=linphone_friend_new_with_address(addr);
+		lf=linphone_core_create_friend_with_address(lc, addr);
 		linphone_friend_set_inc_subscribe_policy(lf,presence ? LinphoneSPAccept : LinphoneSPDeny);
 		linphone_friend_send_subscribe(lf,presence);
-		linphone_core_add_friend(linphone_gtk_get_core(),lf);
+		linphone_core_add_friend(lc, lf);
 		linphone_gtk_show_friends();
 		g_free(addr);
 		g_free(uri);

@@ -121,7 +121,6 @@ public interface LpConfig {
 	 * Gets a int range from the config
 	 * @param section the section in the lpconfig
 	 * @param key the name of the setting
-	 * @param defaultValue the default value if not set
 	 * @return the value of the setting or the default value if not set
 	 */
 	int[] getIntRange(String section, String key, int defaultMin, int defaultMax);

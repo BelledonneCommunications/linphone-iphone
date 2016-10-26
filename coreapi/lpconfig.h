@@ -105,6 +105,18 @@ LINPHONE_PUBLIC int lp_config_read_file(LpConfig *lpconfig, const char *filename
 LINPHONE_PUBLIC const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string);
 
 /**
+ * Retrieves a configuration item as a list of strings, given its section, key, and default value.
+ * The default value is returned if the config item is not found.
+ * @ingroup misc
+ * @param[in] lpconfig A LpConfig object
+ * @param[in] section The section from which to retrieve a configuration item
+ * @param[in] key The name of the configuration item to retrieve
+ * @param[in] default_list \mslist{const char *}
+ * @return \mslist{const char *}
+ */
+LINPHONE_PUBLIC bctbx_list_t * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, bctbx_list_t *default_list);
+
+/**
  * Retrieves a configuration item as a range, given its section, key, and default min and max values.
  *
  * @ingroup misc
@@ -143,6 +155,16 @@ LINPHONE_PUBLIC float lp_config_get_float(const LpConfig *lpconfig,const char *s
  * @ingroup misc
 **/
 LINPHONE_PUBLIC void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value);
+
+/**
+ * Sets a string list config item
+ * @ingroup misc
+ * @param[in] lpconfig A LpConfig object
+ * @param[in] section The name of the section to put the configuration item into
+ * @param[in] key The name of the configuration item to set
+ * @param[in] value \mslist{const char *} The value to set
+ */
+LINPHONE_PUBLIC void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value);
 
 /**
  * Sets a range config item
@@ -199,6 +221,33 @@ LINPHONE_PUBLIC int lp_config_has_section(const LpConfig *lpconfig, const char *
  * @ingroup misc
 **/
 LINPHONE_PUBLIC void lp_config_clean_section(LpConfig *lpconfig, const char *section);
+
+/**
+ * Returns 1 if a given section  with a given key is present in the configuration.
+ * @param[in] lpconfig The LpConfig object
+ * @param[in] section
+ * @param[in] key
+ *
+ * @ingroup misc
+ **/
+LINPHONE_PUBLIC int lp_config_has_entry(const LpConfig *lpconfig, const char *section, const char *key);
+
+/**
+ * Removes entries for key,value in a section.
+ * @param[in] lpconfig The LpConfig object
+ * @param[in] section
+ * @param[in] key
+ *
+ * @ingroup misc
+ **/
+LINPHONE_PUBLIC void lp_config_clean_entry(LpConfig *lpconfig, const char *section, const char *key);
+	
+/**
+ * Returns the list of sections' names in the LpConfig.
+ * @param[in] lpconfig The LpConfig object
+ * @return a null terminated static array of strings
+**/
+LINPHONE_PUBLIC const char** lp_config_get_sections_names(LpConfig *lpconfig);
 
 /**
  * Call a function for each section present in the configuration.
@@ -294,6 +343,80 @@ LINPHONE_PUBLIC int lp_config_read_relative_file(const LpConfig *lpconfig, const
  * @return TRUE if file exists relative to the to the current location
 **/
 LINPHONE_PUBLIC bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename);
+
+/**
+ * Dumps the LpConfig as XML into a buffer
+ * @param[in] lpconfig The LpConfig object
+ * @return The buffer that contains the XML dump
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC char* lp_config_dump_as_xml(const LpConfig *lpconfig);
+
+/**
+ * Dumps the LpConfig as INI into a buffer
+ * @param[in] lpconfig The LpConfig object
+ * @return The buffer that contains the config dump
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC char* lp_config_dump(const LpConfig *lpconfig);
+
+/**
+ * Retrieves the overwrite flag for a config item
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key);
+
+/**
+ * Sets the overwrite flag for a config item (used when dumping config as xml)
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_set_overwrite_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value);
+
+/**
+ * Retrieves the overwrite flag for a config section
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t lp_config_get_overwrite_flag_for_section(const LpConfig *lpconfig, const char *section);
+
+/**
+ * Sets the overwrite flag for a config section (used when dumping config as xml)
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_set_overwrite_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value);
+
+/**
+ * Retrieves the skip flag for a config item
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t lp_config_get_skip_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key);
+
+/**
+ * Sets the skip flag for a config item (used when dumping config as xml)
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_set_skip_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value);
+
+/**
+ * Retrieves the skip flag for a config section
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t lp_config_get_skip_flag_for_section(const LpConfig *lpconfig, const char *section);
+
+/**
+ * Sets the skip flag for a config section (used when dumping config as xml)
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value);
 
 #ifdef __cplusplus
 }

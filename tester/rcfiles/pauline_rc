@@ -4,7 +4,7 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
-register_only_when_network_is_up=0
+
 composing_idle_timeout=1
 
 [auth_info_0]
@@ -15,6 +15,7 @@ realm=sip.example.org
 
 
 [proxy_0]
+realm=sip.example.org
 reg_proxy=sip2.linphone.org;transport=tls
 reg_route=sip2.linphone.org;transport=tls
 reg_identity=sip:pauline@sip.example.org

@@ -80,7 +80,7 @@ static void xml2lpc_log(xml2lpc_context *xmlCtx, int level, const char *fmt, ...
 
 static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
-	int sl = strlen(xmlCtx->errorBuffer);
+	size_t sl = strlen(xmlCtx->errorBuffer);
 	va_list args;
 	va_start(args, fmt);
 	vsnprintf(xmlCtx->errorBuffer + sl, XML2LPC_BZ-sl, fmt, args);
@@ -89,7 +89,7 @@ static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {
 
 static void xml2lpc_genericxml_warning(void *ctx, const char *fmt, ...) {
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
-	int sl = strlen(xmlCtx->warningBuffer);
+	size_t sl = strlen(xmlCtx->warningBuffer);
 	va_list args;
 	va_start(args, fmt);
 	vsnprintf(xmlCtx->warningBuffer + sl, XML2LPC_BZ-sl, fmt, args);

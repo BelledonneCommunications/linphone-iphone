@@ -48,21 +48,16 @@ static void upnp_check_ipaddress(void) {
 	addr = linphone_core_get_upnp_external_ipaddress(lc_upnp->lc);
 	BC_ASSERT_PTR_NOT_NULL(addr);
 	if (addr!=NULL) {
-		BC_ASSERT_GREATER(strlen(addr),7,int,"%d");
+		BC_ASSERT_GREATER((int)strlen(addr),7,int,"%d");
 	}
 	linphone_core_manager_destroy(lc_upnp);
 }
 
 test_t upnp_tests[] = {
-	{ "Start and stop", upnp_start_n_stop },
-	{ "Check state", upnp_check_state },
-	{ "Check ip address", upnp_check_ipaddress },
+	TEST_NO_TAG("Start and stop", upnp_start_n_stop),
+	TEST_NO_TAG("Check state", upnp_check_state),
+	TEST_NO_TAG("Check ip address", upnp_check_ipaddress)
 };
 
-test_suite_t upnp_test_suite = {
-	"Upnp",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(upnp_tests) / sizeof(upnp_tests[0]),
-	upnp_tests
-};
+test_suite_t upnp_test_suite = {"Upnp", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+								sizeof(upnp_tests) / sizeof(upnp_tests[0]), upnp_tests};

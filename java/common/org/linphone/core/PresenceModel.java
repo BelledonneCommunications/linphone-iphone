@@ -22,47 +22,47 @@ package org.linphone.core;
 public interface PresenceModel {
 
 	/**
-	 * @brief Gets the basic status of a presence model.
+	 * Gets the basic status of a presence model.
 	 * @return The #BasicStatus of the #PresenceModel object.
 	 */
 	PresenceBasicStatus getBasicStatus();
 
 	/**
-	 * @brief Sets the basic status of a presence model.
-	 * @param[in] basic_status The #BasicStatus to set for the #PresenceModel object.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Sets the basic status of a presence model.
+	 * @param basic_status The #BasicStatus to set for the #PresenceModel object.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setBasicStatus(PresenceBasicStatus basic_status);
 
 	/**
-	 * @brief Gets the timestamp of a presence model.
+	 * Gets the timestamp of a presence model.
 	 * @return The timestamp of the #LinphonePresenceModel object or -1 on error.
 	 */
 	long getTimestamp();
 
 	/**
-	 * @brief Gets the contact of a presence model.
+	 * Gets the contact of a presence model.
 	 * @return A string containing the contact, or null if no contact is found.
 	 */
 	String getContact();
 
 	/**
-	 * @brief Sets the contact of a presence model.
+	 * Sets the contact of a presence model.
 	 * @param contact The contact string to set.
 	 */
 	void setContact(String contact);
 
 	/**
-	 * @brief Gets the first activity of a presence model (there is usually only one).
+	 * Gets the first activity of a presence model (there is usually only one).
 	 * @return A #PresenceActivity object if successful, null otherwise.
 	 */
 	PresenceActivity getActivity();
 
 	/**
-	 * @brief Sets the activity of a presence model (limits to only one activity).
-	 * @param[in] activity The #PresenceActivityType to set for the model.
-	 * @param[in] description An additional description of the activity to set for the model. Can be null if no additional description is to be added.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Sets the activity of a presence model (limits to only one activity).
+	 * @param activity The #PresenceActivityType to set for the model.
+	 * @param description An additional description of the activity to set for the model. Can be null if no additional description is to be added.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 *
 	 * WARNING: This method will modify the basic status of the model according to the activity being set.
 	 * If you don't want the basic status to be modified automatically, you can use the combination of setBasicStatus(), clearActivities() and addActivity().
@@ -70,103 +70,103 @@ public interface PresenceModel {
 	int setActivity(PresenceActivityType activity, String description);
 
 	/**
-	 * @brief Gets the number of activities included in the presence model.
+	 * Gets the number of activities included in the presence model.
 	 * @return The number of activities included in the #PresenceModel object.
 	 */
 	long getNbActivities();
 
 	/**
-	 * @brief Gets the nth activity of a presence model.
+	 * Gets the nth activity of a presence model.
 	 * @param idx The index of the activity to get (the first activity having the index 0).
 	 * @return A #PresenceActivity object if successful, null otherwise.
 	 */
 	PresenceActivity getNthActivity(long idx);
 
 	/**
-	 * @brief Adds an activity to a presence model.
-	 * @param[in] activity The #PresenceActivity to add to the model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds an activity to a presence model.
+	 * @param activity The #PresenceActivity to add to the model.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addActivity(PresenceActivity activity);
 
 	/**
-	 * @brief Clears the activities of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears the activities of a presence model.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearActivities();
 
 	/**
-	 * @brief Gets the first note of a presence model (there is usually only one).
-	 * @param[in] lang The language of the note to get. Can be null to get a note that has no language specified or to get the first note whatever language it is written into.
+	 * Gets the first note of a presence model (there is usually only one).
+	 * @param lang The language of the note to get. Can be null to get a note that has no language specified or to get the first note whatever language it is written into.
 	 * @return A #PresenceNote object if successful, null otherwise.
 	 */
 	PresenceNote getNote(String lang);
 
 	/**
-	 * @brief Adds a note to a presence model.
-	 * @param[in] note_content The note to be added to the presence model.
-	 * @param[in] lang The language of the note to be added. Can be null if no language is to be specified for the note.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds a note to a presence model.
+	 * @param note_content The note to be added to the presence model.
+	 * @param lang The language of the note to be added. Can be null if no language is to be specified for the note.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 *
 	 * Only one note for each language can be set, so e.g. setting a note for the 'fr' language if there is only one will replace the existing one.
 	 */
 	int addNote(String note_content, String lang);
 
 	/**
-	 * @brief Clears all the notes of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears all the notes of a presence model.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearNotes();
 
 	/**
-	 * @brief Gets the number of services included in the presence model.
+	 * Gets the number of services included in the presence model.
 	 * @return The number of services included in the #PresenceModel object.
 	 */
 	long getNbServices();
 
 	/**
-	 * @brief Gets the nth service of a presence model.
-	 * @param[in] idx The index of the service to get (the first service having the index 0).
+	 * Gets the nth service of a presence model.
+	 * @param idx The index of the service to get (the first service having the index 0).
 	 * @return A #PresenceService object if successful, null otherwise.
 	 */
 	PresenceService getNthService(long idx);
 
 	/**
-	 * @brief Adds a service to a presence model.
-	 * @param[in] service The #PresenceService object to add to the model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds a service to a presence model.
+	 * @param service The #PresenceService object to add to the model.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addService(PresenceService service);
 
 	/**
-	 * @brief Clears the services of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears the services of a presence model.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearServices();
 
 	/**
-	 * @brief Gets the number of persons included in the presence model.
+	 * Gets the number of persons included in the presence model.
 	 * @return The number of persons included in the #PresenceModel object.
 	 */
 	long getNbPersons();
 
 	/**
-	 * @brief Gets the nth person of a presence model.
-	 * @param[in] idx The index of the person to get (the first person having the index 0).
+	 * Gets the nth person of a presence model.
+	 * @param idx The index of the person to get (the first person having the index 0).
 	 * @return A pointer to a #PresencePerson object if successful, null otherwise.
 	 */
 	PresencePerson getNthPerson(long idx);
 
 	/**
-	 * @brief Adds a person to a presence model.
-	 * @param[in] person The #PresencePerson object to add to the model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds a person to a presence model.
+	 * @param person The #PresencePerson object to add to the model.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addPerson(PresencePerson person);
 
 	/**
-	 * @brief Clears the persons of a presence model.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears the persons of a presence model.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearPersons();
 

@@ -132,7 +132,7 @@ void buddy_lookup_request_set_max_results(BuddyLookupRequest *req, int ncount);
 
 
 void sip_setup_register(SipSetup *ss);
-void sip_setup_register_all(void);
+void sip_setup_register_all(MSFactory* factory);
 SipSetup *sip_setup_lookup(const char *type_name);
 void sip_setup_unregister_all(void);
 LINPHONE_PUBLIC unsigned int sip_setup_get_capabilities(SipSetup *s);

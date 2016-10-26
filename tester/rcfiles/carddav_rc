@@ -1,0 +1,12 @@
+[net]
+mtu=1300
+
+[sip]
+ping_with_options=0
+sip_random_port=1
+
+[auth_info_0]
+domain=dav.linphone.org
+username=tester
+ha1=102bdd8ccafef75cf7572c97969afd9a
+realm=BaikalDAV

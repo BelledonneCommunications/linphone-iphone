@@ -1,0 +1,43 @@
+diff -urNad libgsm-1.0.10~/inc/toast.h libgsm-1.0.10/inc/toast.h
+--- libgsm-1.0.10~/inc/toast.h	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/inc/toast.h	2007-11-01 15:52:33.000000000 +0100
+@@ -16,11 +16,12 @@
+ 
+ #include <stdio.h>
+ #include <ctype.h>
++#include <pthread.h>
+ #include <signal.h>
+ 
+ #include <errno.h>
+-#ifndef	HAS_ERRNO_DECL
+-	 extern int	errno;
++#ifndef errno
++ extern int	errno;
+ #endif
+ 
+ #ifdef	HAS_LIMITS_H
+@@ -37,6 +38,10 @@
+ # endif
+ #endif
+ 
++#ifdef  HAS_STDIO_H
++# include <stdio.h>
++#endif
++
+ #include "gsm.h"
+ 
+ #ifndef	S_ISREG
+diff -urNad libgsm-1.0.10~/src/code.c libgsm-1.0.10/src/code.c
+--- libgsm-1.0.10~/src/code.c	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/src/code.c	2007-11-01 15:52:33.000000000 +0100
+@@ -9,8 +9,8 @@
+ #include	"config.h"
+ 
+ 
+-#ifdef	HAS_STDLIB_H
+-#include	<stdlib.h>
++#ifdef	HAS_STRING_H
++#include	<string.h>
+ #else
+ #	include "proto.h"
+ 	extern char	* memcpy P((char *, char *, int));

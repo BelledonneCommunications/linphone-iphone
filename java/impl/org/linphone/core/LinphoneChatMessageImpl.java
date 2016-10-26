@@ -3,7 +3,7 @@ package org.linphone.core;
 import java.io.UnsupportedEncodingException;
 
 public class LinphoneChatMessageImpl implements LinphoneChatMessage {
-	protected final long nativePtr;
+	protected long nativePtr;
 	private native byte[] getText(long ptr);
 	private native long getPeerAddress(long ptr);
 	private native String getExternalBodyUrl(long ptr);
@@ -16,7 +16,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native void store(long ptr);
 	private native int getStorageId(long ptr);
 	private native void setFileTransferFilepath(long ptr, String path);
-	private native void downloadFile(long ptr);
+	private native int downloadFile(long ptr);
 	private native void setListener(long ptr, LinphoneChatMessageListener listener);
 	private native void unref(long ptr);
 	
@@ -112,7 +112,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
 	protected void finalize() throws Throwable{
-		unref(nativePtr);
+		destroy();
 		super.finalize();
 	}
 	
@@ -146,12 +146,24 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	}
 	
 	@Override
-	public void downloadFile() {
-		downloadFile(nativePtr);
+	public int downloadFile() {
+		return downloadFile(nativePtr);
 	}
 	
 	@Override
 	public void setListener(LinphoneChatMessageListener listener) {
 		setListener(nativePtr, listener);
+	}
+	
+	private native void putChar(long nativePtr, long character);
+	@Override
+	public void putChar(long character) throws LinphoneCoreException {
+		putChar(nativePtr, character);
+	}
+	public void destroy(){
+		if (nativePtr != 0) {
+			unref(nativePtr);
+			nativePtr = 0;
+		}
 	}
 }

@@ -118,7 +118,12 @@ public interface LinphoneCallLog {
 	public int getCallDuration();
 	/**
 	 *  Call id from signaling
-	 * @return int
+	 * @return the SIP call-id.
 	 */
-	public int getCallId();
+	public String getCallId();
+	/**
+	 * Tells whether the call was a call to a conference server
+	 * @return true if the call was a call to a conference server
+	 */
+	public boolean wasConference();
 }

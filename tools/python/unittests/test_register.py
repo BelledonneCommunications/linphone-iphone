@@ -143,7 +143,7 @@ class TestRegister:
             port = 5060
         pc.server_addr = "sip:{domain}:{port};transport=tls".format(domain=addr.domain, port=port)
         pc.done()
-        assert_equals(CoreManager.wait_for_until(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == 1, 5000), True)
+        assert_equals(CoreManager.wait_for_until(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == 1, 10000), True)
 
     def test_simple_authenticated_register(self):
         cm = RegisterCoreManager()
@@ -173,7 +173,7 @@ class TestRegister:
         assert_equals(cm.stats.number_of_auth_info_requested, 1)
 
     def test_multiple_accounts(self):
-        CoreManager('multi_account_rc', True)
+        CoreManager('multi_account_rc', False)
 
     def test_transport_change(self):
         cm = CoreManager('multi_account_rc', True)

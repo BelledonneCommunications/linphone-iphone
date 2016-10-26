@@ -94,7 +94,7 @@ int linphone_player_get_current_position(LinphonePlayer *obj) {
  * @param obj the player.
 **/
 void linphone_player_close(LinphonePlayer *obj){
-	return obj->close(obj);
+	obj->close(obj);
 }
 
 /**

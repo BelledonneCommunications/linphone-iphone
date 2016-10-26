@@ -15,7 +15,8 @@ COMMON_CFLAGS=\
 	$(VIDEO_CFLAGS) \
 	$(READLINE_CFLAGS) \
 	$(SQLITE3_CFLAGS) \
-	$(LIBXML2_CFLAGS)
+	$(LIBXML2_CFLAGS) \
+	$(BCTOOLBOX_CFLAGS)
 
 if BUILD_CONSOLE
 
@@ -32,7 +33,8 @@ linphonec_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 		$(SQLITE3_LIBS) \
 		$(X11_LIBS) \
 		$(BELLESIP_LIBS) \
-		$(LIBXML2_LIBS)
+		$(LIBXML2_LIBS) \
+		$(BCTOOLBOX_LIBS)
 
 if BUILD_WIN32
 #special build of linphonec to detach from the windows console

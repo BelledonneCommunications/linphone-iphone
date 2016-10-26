@@ -1,0 +1,2090 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Matti Koivunen <koivunen.matti@gmail.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: linphone-gtk\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-19 14:01+0200\n"
+"PO-Revision-Date: 2016-05-10 09:58+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
+"Language-Team: Finnish (http://www.transifex.com/belledonne-communications/linphone-gtk/language/fi/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fi\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../gtk/calllogs.c:178
+#, c-format
+msgid "Call %s"
+msgstr "Soita %s:lle"
+
+#: ../gtk/calllogs.c:179
+#, c-format
+msgid "Send text to %s"
+msgstr "Lähetä tekstiviesti %s:lle"
+
+#: ../gtk/calllogs.c:181
+#, c-format
+msgid "Add %s to your contact list"
+msgstr "Lisää %s yhtestietoihin"
+
+#: ../gtk/calllogs.c:245 ../gtk/main.ui.h:23
+msgid "Recent calls"
+msgstr "Viimeiset puhelut"
+
+#: ../gtk/calllogs.c:260
+#, c-format
+msgid "<b>Recent calls (%i)</b>"
+msgstr "Viimeiset puhelut (%i)"
+
+#: ../gtk/calllogs.c:334
+msgid "n/a"
+msgstr "tyhjä"
+
+#: ../gtk/calllogs.c:337
+msgid "Aborted"
+msgstr "Kesketetty"
+
+#: ../gtk/calllogs.c:340
+msgid "Missed"
+msgstr "Puuttuu"
+
+#: ../gtk/calllogs.c:343
+msgid "Declined"
+msgstr "Estetty"
+
+#: ../gtk/calllogs.c:349
+#, c-format
+msgid "%i minute"
+msgid_plural "%i minutes"
+msgstr[0] "%i minuuttia"
+msgstr[1] "%i minuuttia"
+
+#: ../gtk/calllogs.c:352
+#, c-format
+msgid "%i second"
+msgid_plural "%i seconds"
+msgstr[0] "%i sekunttia"
+msgstr[1] "%i sekunttia"
+
+#: ../gtk/calllogs.c:357
+#, c-format
+msgid ""
+"<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
+"%s\t%s\t"
+msgstr "<small><i>%s</i>\t<i>Laatu: %s</i></small>\n%s\t%s\t"
+
+#: ../gtk/calllogs.c:361
+#, c-format
+msgid "<big><b>%s</b></big>\t%s"
+msgstr "<big><b>%s</b></big>\t%s"
+
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
+msgid "Conference"
+msgstr "Kokous"
+
+#: ../gtk/conference.c:46
+msgid "Me"
+msgstr "Minä"
+
+#: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
+#, c-format
+msgid "Couldn't find pixmap file: %s"
+msgstr "Ei kyennyt lyötämään Pixmap kuvatiedostoa: %s"
+
+#: ../gtk/chat.c:207 ../gtk/chat.c:265
+msgid "Sending..."
+msgstr "Lähetetään..."
+
+#: ../gtk/chat.c:224 ../gtk/chat.c:274
+msgid "Message not sent"
+msgstr "Viesti ei lähetetty"
+
+#: ../gtk/chat.c:498
+msgid "Copy"
+msgstr "Kopio"
+
+#: ../gtk/main.c:134
+msgid "log to stdout some debug information while running."
+msgstr "Kirjaudu 'stadardi viestin palautukseen' 'stdout' saadaksesi tietoja virheestä käytön aikana."
+
+#: ../gtk/main.c:135
+msgid "display version and exit."
+msgstr "Näytä versio ja poistu."
+
+#: ../gtk/main.c:136
+msgid "path to a file to write logs into."
+msgstr "polku tiedostolle johon loki kirjoitetaan."
+
+#: ../gtk/main.c:137
+msgid "Start linphone with video disabled."
+msgstr "Aloita linphone ilman videota."
+
+#: ../gtk/main.c:138
+msgid "Start only in the system tray, do not show the main interface."
+msgstr "Käynnistä vain tehtäväpalkki, älä pääkäyttöliittymää."
+
+#: ../gtk/main.c:139
+msgid "address to call right now"
+msgstr "osoite mihin nyt soitetaan"
+
+#: ../gtk/main.c:140
+msgid ""
+"Specifiy a working directory (should be the base of the installation, eg: "
+"c:\\Program Files\\Linphone)"
+msgstr "Määritä työkansio (eli mihin asennus tehdään, kuten: c:\\Program Files\\Linphone)"
+
+#: ../gtk/main.c:141
+msgid "Configuration file"
+msgstr "Kokoonpano tiedosto"
+
+#: ../gtk/main.c:142
+msgid "Run the audio assistant"
+msgstr "Käytä ääni avustajaa"
+
+#: ../gtk/main.c:143
+msgid "Run self test and exit 0 if succeed"
+msgstr "Käytä omaa testiä ja poistu 0 jo valmis"
+
+#: ../gtk/main.c:1058
+#, c-format
+msgid ""
+"%s would like to add you to his/her contact list.\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
+"If you answer no, this person will be temporarily blacklisted."
+msgstr "%s haluaa lisätä sinut yhteystitohinsa.\nHaluatko hänen näkevän sinun läsnäolosi?\nJos ei, niin hänet lisätään hetkeksi mustalle listalle."
+
+#: ../gtk/main.c:1135
+#, c-format
+msgid ""
+"Please enter your password for username <i>%s</i>\n"
+" at realm <i>%s</i>:"
+msgstr "Anna salasana käyttäjänimelle <i>%s</i>\nmaasta  <i>%s</i>:"
+
+#: ../gtk/main.c:1244
+msgid "Call error"
+msgstr "Virhe puhelussa"
+
+#: ../gtk/main.c:1247 ../coreapi/linphonecore.c:3942
+msgid "Call ended"
+msgstr "Puhelu päättyi"
+
+#: ../gtk/main.c:1250 ../coreapi/call_log.c:235
+msgid "Incoming call"
+msgstr "Tuleva puhelu"
+
+#: ../gtk/main.c:1253 ../gtk/incall_view.c:579 ../gtk/in_call_frame.ui.h:2
+msgid "Answer"
+msgstr "Vastaa"
+
+#: ../gtk/main.c:1255 ../gtk/in_call_frame.ui.h:3
+msgid "Decline"
+msgstr "Hylkää"
+
+#: ../gtk/main.c:1262
+msgid "Call paused"
+msgstr "Puhelu laitettu tauolle"
+
+#: ../gtk/main.c:1262
+#, c-format
+msgid "<b>by %s</b>"
+msgstr "<b>%s toimesta</b>"
+
+#: ../gtk/main.c:1336
+#, c-format
+msgid "%s proposed to start video. Do you accept ?"
+msgstr "%s pyytää video kuvaa. Sallitaanko?"
+
+#: ../gtk/main.c:1502
+msgid "Website link"
+msgstr "Internet linkki"
+
+#: ../gtk/main.c:1561 ../gtk/waiting.ui.h:1
+msgid "Linphone"
+msgstr "Linphone"
+
+#: ../gtk/main.c:1562
+msgid "A video internet phone"
+msgstr "Internet video puhelu"
+
+#: ../gtk/main.c:1624
+#, c-format
+msgid "%s (Default)"
+msgstr "%s (Vakio)"
+
+#: ../gtk/main.c:1997 ../coreapi/callbacks.c:1080
+#, c-format
+msgid "We are transferred to %s"
+msgstr "Olemme siirtyneet %s"
+
+#: ../gtk/main.c:2008
+msgid ""
+"No sound cards have been detected on this computer.\n"
+"You won't be able to send or receive audio calls."
+msgstr "Tähässä tietokeneessa ei ole havaittavissa ääni korttia.\nEt voi lähettää tai vastaanottaa äänellisiä puheluita."
+
+#: ../gtk/main.c:2173
+msgid "A free SIP video-phone"
+msgstr "Ilmainen SIP video puhelin."
+
+#: ../gtk/main.c:2292
+#, c-format
+msgid "Hello\n"
+msgstr "Hei\n"
+
+#: ../gtk/friendlist.c:460
+msgid "Add to addressbook"
+msgstr "Lisää osoitekirjaan"
+
+#: ../gtk/friendlist.c:626
+#, c-format
+msgid "Search in %s directory"
+msgstr "Etsi %s hakemistosta"
+
+#: ../gtk/friendlist.c:773
+msgid "Invalid sip contact !"
+msgstr "Kelvoton sip yhtyestieto !"
+
+#: ../gtk/friendlist.c:820
+#, c-format
+msgid "Add a new contact"
+msgstr "Lisää uusi yhteystieto"
+
+#: ../gtk/friendlist.c:823
+#, c-format
+msgid "Edit contact '%s'"
+msgstr "Muokkaa yhteystietoa '%s'"
+
+#: ../gtk/friendlist.c:824
+#, c-format
+msgid "Delete contact '%s'"
+msgstr "Poista yhteysto '%s'"
+
+#: ../gtk/friendlist.c:825
+#, c-format
+msgid "Delete chat history of '%s'"
+msgstr "Poista '%s'n keskustelu historia"
+
+#: ../gtk/friendlist.c:862
+#, c-format
+msgid "Add new contact from %s directory"
+msgstr "Lisää uusi yhteystieto %s hakemistoon"
+
+#: ../gtk/propertybox.c:592 ../gtk/contact.ui.h:1
+msgid "Name"
+msgstr "Nimi"
+
+#: ../gtk/propertybox.c:598
+msgid "Rate (Hz)"
+msgstr "Laatutaso (Hz)"
+
+#: ../gtk/propertybox.c:604
+msgid "Status"
+msgstr "Tila"
+
+#: ../gtk/propertybox.c:617
+msgid "IP Bitrate (kbit/s)"
+msgstr "IP Siirtonopeus (kbit/s)"
+
+#: ../gtk/propertybox.c:628
+msgid "Parameters"
+msgstr "Raja-arvot"
+
+#: ../gtk/propertybox.c:670 ../gtk/propertybox.c:824
+msgid "Enabled"
+msgstr "Sallittu"
+
+#: ../gtk/propertybox.c:672 ../gtk/propertybox.c:824 ../gtk/parameters.ui.h:57
+msgid "Disabled"
+msgstr "Kielletty"
+
+#: ../gtk/propertybox.c:902
+msgid "Account"
+msgstr "Tili"
+
+#: ../gtk/propertybox.c:1170
+msgid "English"
+msgstr "eglaniksi"
+
+#: ../gtk/propertybox.c:1171
+msgid "French"
+msgstr "French"
+
+#: ../gtk/propertybox.c:1172
+msgid "Swedish"
+msgstr "Swedish"
+
+#: ../gtk/propertybox.c:1173
+msgid "Italian"
+msgstr "Italian"
+
+#: ../gtk/propertybox.c:1174
+msgid "Spanish"
+msgstr "Spanish"
+
+#: ../gtk/propertybox.c:1175
+msgid "Brazilian Portugese"
+msgstr "Brazilian Portugese"
+
+#: ../gtk/propertybox.c:1176
+msgid "Polish"
+msgstr "Polish"
+
+#: ../gtk/propertybox.c:1177
+msgid "German"
+msgstr "German"
+
+#: ../gtk/propertybox.c:1178
+msgid "Russian"
+msgstr "Russian"
+
+#: ../gtk/propertybox.c:1179
+msgid "Japanese"
+msgstr "Japanese"
+
+#: ../gtk/propertybox.c:1180
+msgid "Dutch"
+msgstr "Dutch"
+
+#: ../gtk/propertybox.c:1181
+msgid "Hungarian"
+msgstr "Hungarian"
+
+#: ../gtk/propertybox.c:1182
+msgid "Czech"
+msgstr "Czech"
+
+#: ../gtk/propertybox.c:1183
+msgid "Chinese"
+msgstr "Chinese"
+
+#: ../gtk/propertybox.c:1184
+msgid "Traditional Chinese"
+msgstr "Traditional Chinese"
+
+#: ../gtk/propertybox.c:1185
+msgid "Norwegian"
+msgstr "Norwegian"
+
+#: ../gtk/propertybox.c:1186
+msgid "Hebrew"
+msgstr "Hebrew"
+
+#: ../gtk/propertybox.c:1187
+msgid "Serbian"
+msgstr "Serbian"
+
+#: ../gtk/propertybox.c:1188
+msgid "Arabic"
+msgstr "Arabic"
+
+#: ../gtk/propertybox.c:1189
+msgid "Turkish"
+msgstr "Turkish"
+
+#: ../gtk/propertybox.c:1246
+msgid ""
+"You need to restart linphone for the new language selection to take effect."
+msgstr "Sinun tarvitsee uudelleen käynnistää linphone, että uudet kieliasetukset tulevat voimaan."
+
+#: ../gtk/propertybox.c:1332
+msgid "None"
+msgstr "Ei mitään"
+
+#: ../gtk/propertybox.c:1336
+msgid "SRTP"
+msgstr "SRTP 'realiaikainen salaus'"
+
+#: ../gtk/propertybox.c:1342
+msgid "DTLS"
+msgstr "DTLS 'paketti kytketty salaus'"
+
+#: ../gtk/propertybox.c:1349
+msgid "ZRTP"
+msgstr "ZRTP 'tunnusteleva realiaikainen salaus'"
+
+#: ../gtk/update.c:80
+#, c-format
+msgid ""
+"A more recent version is availalble from %s.\n"
+"Would you like to open a browser to download it ?"
+msgstr "Uudempi versio on saatavilla: %s\nHaluatko avata selaimen ja ladata sen? "
+
+#: ../gtk/update.c:91
+msgid "You are running the lastest version."
+msgstr "Käytät viimeisintä versiota."
+
+#: ../gtk/buddylookup.c:85
+msgid "Firstname, Lastname"
+msgstr "Etunimi,Sukunimi"
+
+#: ../gtk/buddylookup.c:160
+msgid "Error communicating with server."
+msgstr "Virhe palvelimen yhteyden pidossa"
+
+#: ../gtk/buddylookup.c:164
+msgid "Connecting..."
+msgstr "Yhdistää..."
+
+#: ../gtk/buddylookup.c:168
+msgid "Connected"
+msgstr "Yhdistetty"
+
+#: ../gtk/buddylookup.c:172
+msgid "Receiving data..."
+msgstr "Vastaanottaa tietoa..."
+
+#: ../gtk/buddylookup.c:180
+#, c-format
+msgid "Found %i contact"
+msgid_plural "Found %i contacts"
+msgstr[0] "Lydetty %i yhteystietoa"
+msgstr[1] "Lydetty %i yhteystietoa"
+
+#: ../gtk/setupwizard.c:219
+msgid "Username is already in use!"
+msgstr "Käyttäjätunnus on jo käytössä!"
+
+#: ../gtk/setupwizard.c:223
+msgid "Failed to check username availability. Please try again later."
+msgstr "Käyttäjätunnuksen saatavuuden tarkistus epäonnistui. Yritä uudelleen myöhemmin. "
+
+#: ../gtk/incall_view.c:67 ../gtk/incall_view.c:87
+#, c-format
+msgid "Call #%i"
+msgstr "Puhelu #%i"
+
+#: ../gtk/incall_view.c:145
+#, c-format
+msgid "Transfer to call #%i with %s"
+msgstr "Siirrä puhelu #%i %s kanssa"
+
+#: ../gtk/incall_view.c:202 ../gtk/incall_view.c:205
+msgid "Not used"
+msgstr "Ei ole käytössä"
+
+#: ../gtk/incall_view.c:212
+msgid "ICE not activated"
+msgstr "ICE 'vuorovaikutteinen yhteys' ei ole toiminnassa"
+
+#: ../gtk/incall_view.c:214
+msgid "ICE failed"
+msgstr "ICE 'vuorovaikutteinen yhteys' epäonnistui"
+
+#: ../gtk/incall_view.c:216
+msgid "ICE in progress"
+msgstr "ICE 'vuorovaikutteinen yhteys' toiminnassa"
+
+#: ../gtk/incall_view.c:218
+msgid "Going through one or more NATs"
+msgstr "Menee läpi yhden tai useamman NAT-ositemuutoksen"
+
+#: ../gtk/incall_view.c:220
+msgid "Direct"
+msgstr "Suoraan"
+
+#: ../gtk/incall_view.c:222
+msgid "Through a relay server"
+msgstr "Läpi välityspalvelimen"
+
+#: ../gtk/incall_view.c:230
+msgid "uPnP not activated"
+msgstr "uPnP 'laite tunnistus' ei ole toiminnassa"
+
+#: ../gtk/incall_view.c:232
+msgid "uPnP in progress"
+msgstr "uPnP 'laite tunnistus' on toiminnassa"
+
+#: ../gtk/incall_view.c:234
+msgid "uPnp not available"
+msgstr "uPnP 'laite tunnistus' ei ole saatavilla"
+
+#: ../gtk/incall_view.c:236
+msgid "uPnP is running"
+msgstr "uPnP 'laite tunnistus' on käytössä"
+
+#: ../gtk/incall_view.c:238
+msgid "uPnP failed"
+msgstr "uPnP 'laite tunnistus' epäonnistui"
+
+#: ../gtk/incall_view.c:248 ../gtk/incall_view.c:249
+msgid "Direct or through server"
+msgstr "Suoraan tai palvelimen kautta"
+
+#: ../gtk/incall_view.c:258 ../gtk/incall_view.c:270
+#, c-format
+msgid ""
+"download: %f\n"
+"upload: %f (kbit/s)"
+msgstr "lataa: %f\nlähettää: %f (kbit/s)"
+
+#: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
+#, c-format
+msgid "%ix%i @ %f fps"
+msgstr "%ix%i @ %f fps"
+
+#: ../gtk/incall_view.c:295
+#, c-format
+msgid "%.3f seconds"
+msgstr "%.3f sekunttia"
+
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
+#: ../gtk/videowindow.c:248
+msgid "Hang up"
+msgstr "Katkaise puhelu"
+
+#: ../gtk/incall_view.c:558
+msgid "<b>Calling...</b>"
+msgstr "<b>Soittaa...</b>"
+
+#: ../gtk/incall_view.c:561 ../gtk/incall_view.c:793
+msgid "00:00:00"
+msgstr "00:00:00"
+
+#: ../gtk/incall_view.c:572
+msgid "<b>Incoming call</b>"
+msgstr "<b>tuleva puhelu</b>"
+
+#: ../gtk/incall_view.c:609
+msgid "good"
+msgstr "hyvä"
+
+#: ../gtk/incall_view.c:611
+msgid "average"
+msgstr "keskiverto"
+
+#: ../gtk/incall_view.c:613
+msgid "poor"
+msgstr "heikko"
+
+#: ../gtk/incall_view.c:615
+msgid "very poor"
+msgstr "todella heikko"
+
+#: ../gtk/incall_view.c:617
+msgid "too bad"
+msgstr "liian huono"
+
+#: ../gtk/incall_view.c:618 ../gtk/incall_view.c:634
+msgid "unavailable"
+msgstr "saavuttamattomissa"
+
+#: ../gtk/incall_view.c:732
+msgid "Secured by SRTP"
+msgstr "Käytä SRTP salausta"
+
+#: ../gtk/incall_view.c:738
+msgid "Secured by DTLS"
+msgstr "Käytä DTLS salausta"
+
+#: ../gtk/incall_view.c:744
+#, c-format
+msgid "Secured by ZRTP - [auth token: %s]"
+msgstr "Käytä ZRTP salausta - [todennustunnus: %s]"
+
+#: ../gtk/incall_view.c:748
+msgid "Set unverified"
+msgstr "Aseta vahvistamattomaksi"
+
+#: ../gtk/incall_view.c:748
+msgid "Set verified"
+msgstr "Aseta vahvistetuksi"
+
+#: ../gtk/incall_view.c:788
+msgid "In conference"
+msgstr "Kokouksessa"
+
+#: ../gtk/incall_view.c:788
+msgid "<b>In call</b>"
+msgstr "<b>Puhuu puhelua</b>"
+
+#: ../gtk/incall_view.c:825
+msgid "<b>Paused call</b>"
+msgstr "<b>Puhelu laitettu tauolle</b>"
+
+#: ../gtk/incall_view.c:862
+msgid "<b>Call ended.</b>"
+msgstr "<b>Puhelu loppu.</b>"
+
+#: ../gtk/incall_view.c:893
+msgid "Transfer in progress"
+msgstr "Siirto käynnissä"
+
+#: ../gtk/incall_view.c:896
+msgid "Transfer done."
+msgstr "Siirto tehty."
+
+#: ../gtk/incall_view.c:899
+msgid "Transfer failed."
+msgstr "Siirto epäonnistui."
+
+#: ../gtk/incall_view.c:930
+msgid "Resume"
+msgstr "Yritä uudelleen"
+
+#: ../gtk/incall_view.c:930 ../gtk/in_call_frame.ui.h:7
+msgid "Pause"
+msgstr "Pysäytä"
+
+#: ../gtk/incall_view.c:996
+#, c-format
+msgid ""
+"<small><i>Recording into\n"
+"%s %s</i></small>"
+msgstr "<small><i>Nauhoita\n%s %s</i></small>"
+
+#: ../gtk/incall_view.c:996
+msgid "(Paused)"
+msgstr "(Pysäytetty)"
+
+#: ../gtk/loginframe.c:75
+#, c-format
+msgid "Please enter login information for %s"
+msgstr "Anna kirjautumistiedot %s"
+
+#: ../gtk/config-fetching.c:57
+#, c-format
+msgid "fetching from %s"
+msgstr "hae: %s"
+
+#: ../gtk/config-fetching.c:73
+#, c-format
+msgid "Downloading of remote configuration from %s failed."
+msgstr "Etäsäätöjen lataus %s :stä epäonnistui."
+
+#: ../gtk/audio_assistant.c:103
+msgid "No voice detected"
+msgstr "Laitetta ei havaittu"
+
+#: ../gtk/audio_assistant.c:104
+msgid "Too low"
+msgstr "Liian hiljainen"
+
+#: ../gtk/audio_assistant.c:105
+msgid "Good"
+msgstr "Hyvä"
+
+#: ../gtk/audio_assistant.c:106
+msgid "Too loud"
+msgstr "Liian kova ääninen"
+
+#: ../gtk/audio_assistant.c:188
+msgid "Did you hear three beeps ?"
+msgstr "Kuulitko kolme piippausta ?"
+
+#: ../gtk/audio_assistant.c:301 ../gtk/audio_assistant.c:306
+msgid "Sound preferences not found "
+msgstr "Toivottuja ääniasetuksia ei löytynyt"
+
+#: ../gtk/audio_assistant.c:315
+msgid "Cannot launch system sound control "
+msgstr "Ei voi käynnistää järjestelmän äänien hallintaa"
+
+#: ../gtk/audio_assistant.c:327
+msgid ""
+"Welcome!\n"
+"This assistant will help you to configure audio settings for Linphone"
+msgstr "Tervetuloa!\nTämä avustaja auttaa sinua Linphonen ääniasetuksissa"
+
+#: ../gtk/audio_assistant.c:337
+msgid "Capture device"
+msgstr "Tallennus laite"
+
+#: ../gtk/audio_assistant.c:338
+msgid "Recorded volume"
+msgstr "Tallennuksen äänen voimakkuus"
+
+#: ../gtk/audio_assistant.c:342
+msgid "No voice"
+msgstr "Äänetön"
+
+#: ../gtk/audio_assistant.c:343 ../gtk/audio_assistant.c:382
+msgid "System sound preferences"
+msgstr "Järjestelmän toivotut ääni asetukset"
+
+#: ../gtk/audio_assistant.c:378
+msgid "Playback device"
+msgstr "Kaiutin laite"
+
+#: ../gtk/audio_assistant.c:379
+msgid "Play three beeps"
+msgstr "Anna kolme piippausta"
+
+#: ../gtk/audio_assistant.c:412
+msgid "Press the record button and say some words"
+msgstr "Paina nauhoita nappulaa ja sano muutamia sanoja"
+
+#: ../gtk/audio_assistant.c:413
+msgid "Listen to your record voice"
+msgstr "Kuuntele nauhoittamasi puhe"
+
+#: ../gtk/audio_assistant.c:414 ../gtk/conf_frame.ui.h:2
+#: ../gtk/in_call_frame.ui.h:4
+msgid "Record"
+msgstr "Nauhoita"
+
+#: ../gtk/audio_assistant.c:415
+msgid "Play"
+msgstr "Toista"
+
+#: ../gtk/audio_assistant.c:442
+msgid "Let's start Linphone now"
+msgstr "Käynnitetäänpä Linphone nyt"
+
+#: ../gtk/audio_assistant.c:513
+msgid "Audio Assistant"
+msgstr "Ääni avustaja"
+
+#: ../gtk/audio_assistant.c:523 ../gtk/main.ui.h:15
+msgid "Audio assistant"
+msgstr "Ääni avustaja"
+
+#: ../gtk/audio_assistant.c:528
+msgid "Mic Gain calibration"
+msgstr "Mikrofooni tulon kalibrointi"
+
+#: ../gtk/audio_assistant.c:534
+msgid "Speaker volume calibration"
+msgstr "Kaiuttimen kalibrointi"
+
+#: ../gtk/audio_assistant.c:539
+msgid "Record and Play"
+msgstr "Nauhoita ja Toista"
+
+#: ../gtk/audio_assistant.c:544 ../gtk/setup_wizard.ui.h:38
+msgid "Terminating"
+msgstr "Lopeta"
+
+#: ../gtk/about.ui.h:1
+msgid "About Linphone"
+msgstr "Tietoja Linphonesta"
+
+#: ../gtk/about.ui.h:2
+msgid "(C) Belledonne Communications, 2010\n"
+msgstr "(C) Belledonne Communications, 2010\n"
+
+#: ../gtk/about.ui.h:4
+msgid "An internet video phone using the standard SIP (rfc3261) protocol."
+msgstr "Internet video puhelin, joka kyttää SIP (rfc3261) protokollaa."
+
+#: ../gtk/about.ui.h:5
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"he: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\nfi: Matti Koivunen\n"
+
+#: ../gtk/buddylookup.ui.h:1
+msgid "Search contacts in directory"
+msgstr "Etsi yhteystietoja hakemistosta"
+
+#: ../gtk/buddylookup.ui.h:2
+msgid "Add to my list"
+msgstr "Lisää minun listaan"
+
+#: ../gtk/buddylookup.ui.h:3
+msgid "<b>Search somebody</b>"
+msgstr "<b>Etsi henkilöä</b>"
+
+#: ../gtk/callee_frame.ui.h:1
+msgid "<b>Callee name</b>"
+msgstr "<b>Soitettu</b>"
+
+#: ../gtk/call_logs.ui.h:1
+msgid "Call history"
+msgstr "<b>Soitetut</b>"
+
+#: ../gtk/call_logs.ui.h:2
+msgid "Clear all"
+msgstr "Tyhjennä kaikki"
+
+#: ../gtk/call_logs.ui.h:3
+msgid "Call back"
+msgstr "Soita takaisin"
+
+#: ../gtk/call_statistics.ui.h:1
+msgid "Call statistics"
+msgstr "Soitto tilastot"
+
+#: ../gtk/call_statistics.ui.h:2
+msgid "Audio codec"
+msgstr "Äänen codec 'pakkaus'"
+
+#: ../gtk/call_statistics.ui.h:3
+msgid "Video codec"
+msgstr "Videon codec 'pakkaus'"
+
+#: ../gtk/call_statistics.ui.h:4
+msgid "Audio IP bandwidth usage"
+msgstr "Äänen käyttämä IP kaistaleveys "
+
+#: ../gtk/call_statistics.ui.h:5
+msgid "Audio Media connectivity"
+msgstr "Ääni tiedon yhdistettävyys"
+
+#: ../gtk/call_statistics.ui.h:6
+msgid "Video IP bandwidth usage"
+msgstr "Videon käyttämä IP kaistaleveys"
+
+#: ../gtk/call_statistics.ui.h:7
+msgid "Video Media connectivity"
+msgstr "Video tiedon yhdistettävyys"
+
+#: ../gtk/call_statistics.ui.h:8
+msgid "Round trip time"
+msgstr "Kierto aika"
+
+#: ../gtk/call_statistics.ui.h:9
+msgid "Video resolution received"
+msgstr "Saatu videon tarkkuus"
+
+#: ../gtk/call_statistics.ui.h:10
+msgid "Video resolution sent"
+msgstr "Lähetetty videon tarkkuus"
+
+#: ../gtk/call_statistics.ui.h:11
+msgid "RTP profile"
+msgstr "RTP 'realiaikaisen videon' profiili"
+
+#: ../gtk/call_statistics.ui.h:12
+msgid "<b>Call statistics and information</b>"
+msgstr "<b>Puhelu tilastot ja tiedot</b>"
+
+#: ../gtk/chatroom_frame.ui.h:1
+msgid "Send"
+msgstr "Lähetä"
+
+#: ../gtk/conf_frame.ui.h:1
+msgid "End conference"
+msgstr "Päätä kokous"
+
+#: ../gtk/config-uri.ui.h:1
+msgid "Specifying a remote configuration URI"
+msgstr "Määritetään etäsäätöjä, URI-osoite"
+
+#: ../gtk/config-uri.ui.h:2
+msgid ""
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+msgstr "Anna alapuolelle muokattu URI, eli http tai https. Kun olet painanut OK, Linphone uudelleen käynnistyy ja hakee  tilin uudet säädöt."
+
+#: ../gtk/contact.ui.h:2
+msgid "SIP Address"
+msgstr "SIP osoite"
+
+#: ../gtk/contact.ui.h:3
+msgid "Show this contact presence status"
+msgstr "Näytä henkilön läsnäolo"
+
+#: ../gtk/contact.ui.h:4
+msgid "Allow this contact to see my presence status"
+msgstr "Anna lupa tälle henkilölle nähdä läsnäoloni"
+
+#: ../gtk/contact.ui.h:5
+msgid "<b>Contact information</b>"
+msgstr "<b>Yhteystiedot</b>"
+
+#: ../gtk/dscp_settings.ui.h:1
+msgid "DSCP settings"
+msgstr "DSCP 'pakettien erittely' asetukset"
+
+#: ../gtk/dscp_settings.ui.h:2
+msgid "SIP"
+msgstr "SIP"
+
+#: ../gtk/dscp_settings.ui.h:3
+msgid "Audio RTP stream"
+msgstr "Äänen RTP stream 'realiaikainen virta'"
+
+#: ../gtk/dscp_settings.ui.h:4
+msgid "Video RTP stream"
+msgstr "Videon RTP stream 'realiaikainen virta'"
+
+#: ../gtk/dscp_settings.ui.h:5
+msgid "<b>Set DSCP values (in hexadecimal)</b>"
+msgstr "<b>Aseta DSCP 'pakettien erittely' arvot (heksadesimaaleina)</b>"
+
+#: ../gtk/in_call_frame.ui.h:1
+msgid "Click here to set the speakers volume"
+msgstr "Paina tästä asettaaksesi kaiuttimien äänen voimakkuuden"
+
+#: ../gtk/in_call_frame.ui.h:5
+msgid "Record this call to an audio file"
+msgstr "Nauhoita tämä puhelu äänitiedostoksi"
+
+#: ../gtk/in_call_frame.ui.h:6
+msgid "Video"
+msgstr "Video"
+
+#: ../gtk/in_call_frame.ui.h:8
+msgid "Mute"
+msgstr "Mykkä"
+
+#: ../gtk/in_call_frame.ui.h:9
+msgid "Transfer"
+msgstr "Siirto"
+
+#: ../gtk/in_call_frame.ui.h:12
+msgid "In call"
+msgstr "Puhelussa"
+
+#: ../gtk/in_call_frame.ui.h:13
+msgid "Duration"
+msgstr "Pituus"
+
+#: ../gtk/in_call_frame.ui.h:14
+msgid "Call quality rating"
+msgstr "Puhelun laadun luokitus"
+
+#: ../gtk/ldap.ui.h:1
+msgid "LDAP Settings"
+msgstr "LDAP 'Käyttäjän tunnistus' asetukset"
+
+#: ../gtk/ldap.ui.h:2 ../gtk/parameters.ui.h:90
+msgid "Server address:"
+msgstr "Palvelimen osoite:"
+
+#: ../gtk/ldap.ui.h:3 ../gtk/parameters.ui.h:91
+msgid "Authentication method:"
+msgstr "Todennus menetelmä:"
+
+#: ../gtk/ldap.ui.h:4 ../gtk/parameters.ui.h:92 ../gtk/setup_wizard.ui.h:17
+msgid "Username:"
+msgstr "Käyttäjätunnus:"
+
+#: ../gtk/ldap.ui.h:5 ../gtk/password.ui.h:4 ../gtk/setup_wizard.ui.h:18
+msgid "Password:"
+msgstr "Salasana:"
+
+#: ../gtk/ldap.ui.h:6
+msgid "Use TLS Connection"
+msgstr "Käytä TLS 'lähetyksen salaus' yhteyttä"
+
+#: ../gtk/ldap.ui.h:7
+msgid "Not yet available"
+msgstr "Ei vielä saatavilla"
+
+#: ../gtk/ldap.ui.h:8
+msgid "<b>Connection</b>"
+msgstr "<b>Yhteys</b>"
+
+#: ../gtk/ldap.ui.h:9
+msgid "Bind DN"
+msgstr "Käyttäjän tunnistus: yhdistä DN nimeen"
+
+#: ../gtk/ldap.ui.h:10
+msgid "Authname"
+msgstr "Valtuutettu nimi"
+
+#: ../gtk/ldap.ui.h:11
+msgid "Realm"
+msgstr "Realm 'hallittu alue'"
+
+#: ../gtk/ldap.ui.h:12
+msgid "<b>SASL</b>"
+msgstr "<b>SASL 'yksinkertainen tunnistus ja salaus'</b>"
+
+#: ../gtk/ldap.ui.h:13
+msgid "Base object:"
+msgstr "Perus kohde:"
+
+#: ../gtk/ldap.ui.h:15
+#, no-c-format
+msgid "Filter (%s for name):"
+msgstr "Suodatin (%s nimelle)"
+
+#: ../gtk/ldap.ui.h:16
+msgid "Name Attribute:"
+msgstr "Nimen tuntomerkit"
+
+#: ../gtk/ldap.ui.h:17
+msgid "SIP address attribute:"
+msgstr "SIP osoitteen tuntomerkki:"
+
+#: ../gtk/ldap.ui.h:18
+msgid "Attributes to query:"
+msgstr "Tuntomerkkiä jonossa"
+
+#: ../gtk/ldap.ui.h:19
+msgid "<b>Search</b>"
+msgstr "<b>Hae</b>"
+
+#: ../gtk/ldap.ui.h:20
+msgid "Timeout for search:"
+msgstr "Haun aikakatkaisu:"
+
+#: ../gtk/ldap.ui.h:21
+msgid "Max results:"
+msgstr "Tulosten yläraja:"
+
+#: ../gtk/ldap.ui.h:22
+msgid "Follow Aliases"
+msgstr "Seuraa peitenimiä"
+
+#: ../gtk/ldap.ui.h:23
+msgid "<b>Miscellaneous</b>"
+msgstr "<b>Sekalaiset</b>"
+
+#: ../gtk/ldap.ui.h:24
+msgid "ANONYMOUS"
+msgstr "ANONYYMI"
+
+#: ../gtk/ldap.ui.h:25
+msgid "SIMPLE"
+msgstr "YKSINKERTAINEN"
+
+#: ../gtk/ldap.ui.h:26
+msgid "DIGEST-MD5"
+msgstr "DIGEST-MD5 'tiivistetty käyttäjän tunnistus '"
+
+#: ../gtk/ldap.ui.h:27
+msgid "NTLM"
+msgstr "NTLM 'Microsoft käyttäjän tunnistus'"
+
+#: ../gtk/login_frame.ui.h:1 ../gtk/tunnel_config.ui.h:7
+msgid "Username"
+msgstr "Käyttäjätunnus"
+
+#: ../gtk/login_frame.ui.h:2 ../gtk/tunnel_config.ui.h:8
+msgid "Password"
+msgstr "Salasana"
+
+#: ../gtk/login_frame.ui.h:3
+msgid "Internet connection:"
+msgstr "Internet yhteys:"
+
+#: ../gtk/login_frame.ui.h:4
+msgid "Automatically log me in"
+msgstr "Automaattisesti kirjaudu sisään"
+
+#: ../gtk/login_frame.ui.h:5 ../gtk/password.ui.h:3
+msgid "UserID"
+msgstr "Käyttäjän tiedot"
+
+#: ../gtk/login_frame.ui.h:6
+msgid "Login information"
+msgstr "Kirjautumistiedot"
+
+#: ../gtk/login_frame.ui.h:7
+msgid "<b>Welcome!</b>"
+msgstr "<b>Tervetuloa!</b>"
+
+#: ../gtk/login_frame.ui.h:8
+msgid "ADSL"
+msgstr "ADSL"
+
+#: ../gtk/login_frame.ui.h:9
+msgid "Fiber Channel"
+msgstr "Kuitu kanava"
+
+#: ../gtk/log.ui.h:1
+msgid "Linphone debug window"
+msgstr "Linphone virheen korjaus ikkuna"
+
+#: ../gtk/log.ui.h:2
+msgid "Scroll to end"
+msgstr "Vieritä loppuun"
+
+#: ../gtk/main.ui.h:1
+msgid "Default"
+msgstr "Vakio"
+
+#: ../gtk/main.ui.h:2
+msgid "Delete"
+msgstr "Poista"
+
+#: ../gtk/main.ui.h:3
+msgid "_Options"
+msgstr "_Valinnat"
+
+#: ../gtk/main.ui.h:4
+msgid "Set configuration URI"
+msgstr "Aseta URI säädöt"
+
+#: ../gtk/main.ui.h:5
+msgid "Always start video"
+msgstr "Aloita aina videon kanssa"
+
+#: ../gtk/main.ui.h:6
+msgid "Enable self-view"
+msgstr "Näytä omakuva"
+
+#: ../gtk/main.ui.h:7
+msgid "Show keypad"
+msgstr "Näytä näppäimistö"
+
+#: ../gtk/main.ui.h:8
+msgid "Import contacts from vCards"
+msgstr ""
+
+#: ../gtk/main.ui.h:9
+msgid "Export contacts as vCards"
+msgstr ""
+
+#: ../gtk/main.ui.h:10
+msgid "_Help"
+msgstr "_Apua"
+
+#: ../gtk/main.ui.h:11
+msgid "Show debug window"
+msgstr "Näytä virheen korjaus ikkuna"
+
+#: ../gtk/main.ui.h:12
+msgid "_Homepage"
+msgstr "_Kotisivu"
+
+#: ../gtk/main.ui.h:13
+msgid "Check _Updates"
+msgstr "Tarkista _Päivitykset"
+
+#: ../gtk/main.ui.h:14
+msgid "Account assistant"
+msgstr "Käyttäjätili avustaja"
+
+#: ../gtk/main.ui.h:16
+msgid "SIP address or phone number:"
+msgstr "SIP osoite tai puhelin numero"
+
+#: ../gtk/main.ui.h:17
+msgid "Initiate a new call"
+msgstr "Aloita uusi puhelu"
+
+#: ../gtk/main.ui.h:18
+msgid "Contacts"
+msgstr "Yhteystiedot"
+
+#: ../gtk/main.ui.h:19
+msgid "Search"
+msgstr "Hae"
+
+#: ../gtk/main.ui.h:20
+msgid "<b>Add contacts from directory</b>"
+msgstr "<b>Lisää yhteystiedot hakemistosta</b>"
+
+#: ../gtk/main.ui.h:21
+msgid "Add contact"
+msgstr "Lisää yhteystieto"
+
+#: ../gtk/main.ui.h:22
+msgid "Clear call history"
+msgstr "Tyhjennä puhelu historia"
+
+#: ../gtk/main.ui.h:24
+msgid "My current identity:"
+msgstr "Minun nykyinen henkilllisyys"
+
+#: ../gtk/main.ui.h:25
+msgid "Autoanswer is enabled"
+msgstr "Automaattinen vastaaminen käytössä"
+
+#: ../gtk/parameters.ui.h:1
+msgid "anonymous"
+msgstr "anonyymi"
+
+#: ../gtk/parameters.ui.h:2
+msgid "GSSAPI"
+msgstr "GSSAPI 'tietoturva ohjelmointi käskypohja'"
+
+#: ../gtk/parameters.ui.h:3
+msgid "SASL"
+msgstr "SASL 'yksinkertainen salaus'"
+
+#: ../gtk/parameters.ui.h:4
+msgid "default soundcard"
+msgstr "vakio äänikortti"
+
+#: ../gtk/parameters.ui.h:5
+msgid "a sound card"
+msgstr "äänikortti"
+
+#: ../gtk/parameters.ui.h:6
+msgid "default camera"
+msgstr "vakio kamera"
+
+#: ../gtk/parameters.ui.h:7
+msgid "CIF"
+msgstr "CIF 'keskimääräinen kuvan tarkkuus'"
+
+#: ../gtk/parameters.ui.h:8
+msgid "Audio codecs"
+msgstr "Ääni pakkaukset 'codecs'"
+
+#: ../gtk/parameters.ui.h:9
+msgid "Video codecs"
+msgstr "Video pakkaukset 'codecs'"
+
+#: ../gtk/parameters.ui.h:10
+msgid "C"
+msgstr "C"
+
+#: ../gtk/parameters.ui.h:11
+msgid "SIP (UDP)"
+msgstr "SIP (UDP 'siirto ilman yhteyttä')"
+
+#: ../gtk/parameters.ui.h:12
+msgid "SIP (TCP)"
+msgstr "SIP (TCP 'luotettu siirto tavuttain')"
+
+#: ../gtk/parameters.ui.h:13
+msgid "SIP (TLS)"
+msgstr "SIP (TLS 'siirto SSL varmentimilla')"
+
+#: ../gtk/parameters.ui.h:14
+msgid "Settings"
+msgstr "Asetukset"
+
+#: ../gtk/parameters.ui.h:15
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr "Tämä osio märittää sinun SIP osoitteen kun et käytä SIP tiliä"
+
+#: ../gtk/parameters.ui.h:16
+msgid "Your display name (eg: John Doe):"
+msgstr "Sinun näyttö nimi (esim: Matti Meikäläinen):"
+
+#: ../gtk/parameters.ui.h:17
+msgid "Your username:"
+msgstr "Sinun käyttäjänimi:"
+
+#: ../gtk/parameters.ui.h:18
+msgid "Your resulting SIP address:"
+msgstr "Tuloksena sinun SIP osoitteesi on:"
+
+#: ../gtk/parameters.ui.h:19
+msgid "<b>Default identity</b>"
+msgstr "<b>Vakio henkilöllisyys</b>"
+
+#: ../gtk/parameters.ui.h:20
+msgid "Wizard"
+msgstr "Velho - automaattisäätö"
+
+#: ../gtk/parameters.ui.h:21
+msgid "Add"
+msgstr "Lisää"
+
+#: ../gtk/parameters.ui.h:22
+msgid "Edit"
+msgstr "Muokkaa"
+
+#: ../gtk/parameters.ui.h:23
+msgid "Remove"
+msgstr "Poista"
+
+#: ../gtk/parameters.ui.h:24
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>Välityspalvelin tilit</b>"
+
+#: ../gtk/parameters.ui.h:25
+msgid "Erase all passwords"
+msgstr "Poista kaikki salasanat"
+
+#: ../gtk/parameters.ui.h:26
+msgid "<b>Privacy</b>"
+msgstr "<b>Yksityisyys</b>"
+
+#: ../gtk/parameters.ui.h:27
+msgid "Automatically answer when a call is received"
+msgstr "Automaattinen vastaus kun puhelu on saapunut"
+
+#: ../gtk/parameters.ui.h:28
+msgid "Delay before answering (ms)"
+msgstr "Odota ennen vastaamista (ms)"
+
+#: ../gtk/parameters.ui.h:29
+msgid "<b>Auto-answer</b>"
+msgstr "<b>Automaattinen vastaaja</b>"
+
+#: ../gtk/parameters.ui.h:30
+msgid "Manage SIP Accounts"
+msgstr "Hallitse SIP tilejä"
+
+#: ../gtk/parameters.ui.h:31
+msgid "Ring sound:"
+msgstr "Soittoääni:"
+
+#: ../gtk/parameters.ui.h:32
+msgid "ALSA special device (optional):"
+msgstr "ALSA-'ääne parannus' erikoilaite  (valinnainen):"
+
+#: ../gtk/parameters.ui.h:33
+msgid "Capture device:"
+msgstr "Tallennus laite:"
+
+#: ../gtk/parameters.ui.h:34
+msgid "Ring device:"
+msgstr "Soittoäänen laite:"
+
+#: ../gtk/parameters.ui.h:35
+msgid "Playback device:"
+msgstr "Äänentoistolaite:"
+
+#: ../gtk/parameters.ui.h:36
+msgid "Enable echo cancellation"
+msgstr "Käytä kaiun poistoa"
+
+#: ../gtk/parameters.ui.h:37
+msgid "<b>Audio</b>"
+msgstr "<b>Ääni</b>"
+
+#: ../gtk/parameters.ui.h:38
+msgid "Video input device:"
+msgstr "Videokuvan lähde:"
+
+#: ../gtk/parameters.ui.h:39
+msgid "Preferred video resolution:"
+msgstr "Toivottu videon tarkkuus:"
+
+#: ../gtk/parameters.ui.h:40
+msgid "Video output method:"
+msgstr "Videon ulostulo:"
+
+#: ../gtk/parameters.ui.h:41
+msgid "Show camera preview"
+msgstr "Näytä kameran esikatselu"
+
+#: ../gtk/parameters.ui.h:42
+msgid "Video preset:"
+msgstr "Video esiasetus:"
+
+#: ../gtk/parameters.ui.h:43
+msgid "Preferred video framerate:"
+msgstr "Toivottu videon kuvataajuus:"
+
+#: ../gtk/parameters.ui.h:44
+msgid "0 stands for \"unlimited\""
+msgstr "0 tarkoittaa \"rajoittamaton\""
+
+#: ../gtk/parameters.ui.h:45
+msgid "<b>Video</b>"
+msgstr "<b>Video</b>"
+
+#: ../gtk/parameters.ui.h:46
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "Lähetys nopeus raja Kbit/sec:"
+
+#: ../gtk/parameters.ui.h:47
+msgid "Download speed limit in Kbit/sec:"
+msgstr "Lataus raja Kbit/sec:"
+
+#: ../gtk/parameters.ui.h:48
+msgid "Enable adaptive rate control"
+msgstr "Käytä mukautuvaa tason säätöä"
+
+#: ../gtk/parameters.ui.h:49
+msgid ""
+"<i>Adaptive rate control is a technique to dynamically guess the available "
+"bandwidth during a call.</i>"
+msgstr "<i>Mukautuva tason säätö arvailee käytettävissä olevan kastaleveyden puheun aikana.</i>"
+
+#: ../gtk/parameters.ui.h:50
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>Kastaleveyden hallinta</b>"
+
+#: ../gtk/parameters.ui.h:51
+msgid "Multimedia settings"
+msgstr "Multimedia asetukset"
+
+#: ../gtk/parameters.ui.h:52
+msgid "Set Maximum Transmission Unit:"
+msgstr "Aseta suurin siirto yksikkö:"
+
+#: ../gtk/parameters.ui.h:53
+msgid "Send DTMFs as SIP info"
+msgstr "Lähetä DTMF:t SIP infona"
+
+#: ../gtk/parameters.ui.h:54
+msgid "Allow IPv6"
+msgstr "Salli IPv6"
+
+#: ../gtk/parameters.ui.h:55
+msgid "<b>Transport</b>"
+msgstr "<b>Siirto</b>"
+
+#: ../gtk/parameters.ui.h:56
+msgid "SIP/UDP port"
+msgstr "SIP/UDP portti"
+
+#: ../gtk/parameters.ui.h:58
+msgid "Random"
+msgstr "Satunnainen"
+
+#: ../gtk/parameters.ui.h:59
+msgid "SIP/TCP port"
+msgstr "SIP/TCP portti"
+
+#: ../gtk/parameters.ui.h:60
+msgid "Audio RTP/UDP:"
+msgstr "Ääni RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:61
+msgid "Fixed"
+msgstr "Korjattu"
+
+#: ../gtk/parameters.ui.h:62
+msgid "Video RTP/UDP:"
+msgstr "Video RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:63
+msgid "Tunnel"
+msgstr "Tunneli"
+
+#: ../gtk/parameters.ui.h:64
+msgid "DSCP fields"
+msgstr "DSCP kentät"
+
+#: ../gtk/parameters.ui.h:65
+msgid "<b>Network protocol and ports</b>"
+msgstr "<b>Veskko protokolla ja portti</b>"
+
+#: ../gtk/parameters.ui.h:66
+msgid "Direct connection to the Internet"
+msgstr "Suora yhteys internettiin "
+
+#: ../gtk/parameters.ui.h:67
+msgid "Behind NAT / Firewall (specify gateway IP )"
+msgstr "NAT / Palomuurin takaa (määritä yhdyskäytävä IP)"
+
+#: ../gtk/parameters.ui.h:68
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "NAT-osoitteenmuunnoksen / Palomuurin takaa (käytä STUN:nia)"
+
+#: ../gtk/parameters.ui.h:69
+msgid "Behind NAT / Firewall (use ICE)"
+msgstr "NAT-osoitteenmuunnoksen / Palomuurin takaa (käytä ICE:tä)"
+
+#: ../gtk/parameters.ui.h:70
+msgid "Behind NAT / Firewall (use uPnP)"
+msgstr "NAT-osoitteenmuunnoksen / Palomuurin takaa (käytä uPnP:tä)"
+
+#: ../gtk/parameters.ui.h:71
+msgid "Public IP address:"
+msgstr "Julkinen IP osoite:"
+
+#: ../gtk/parameters.ui.h:72
+msgid "Stun server:"
+msgstr "Stun-palvelin eli 'osoitteenmuunoksen takaisin haku'-palvelin:"
+
+#: ../gtk/parameters.ui.h:73
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>NAT-osoitteenmuunos ja Palomuuri</b>"
+
+#: ../gtk/parameters.ui.h:74
+msgid "Media encryption type"
+msgstr "Median salaus tyyppi"
+
+#: ../gtk/parameters.ui.h:75
+msgid "Use Lime for outgoing chat messages"
+msgstr "Käytä Lime:ä lähteviin viesteihin "
+
+#: ../gtk/parameters.ui.h:76
+msgid "Media encryption is mandatory"
+msgstr "Median salaus on pakollinen"
+
+#: ../gtk/parameters.ui.h:77
+msgid "Mandatory"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:78
+msgid "Preferred"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:79
+msgid "<b>Encryption</b>"
+msgstr "<b>Salaus</b>"
+
+#: ../gtk/parameters.ui.h:80
+msgid "Network settings"
+msgstr "Verkko asetukset:"
+
+#: ../gtk/parameters.ui.h:81 ../gtk/tunnel_config.ui.h:4
+msgid "Enable"
+msgstr "Käytössä"
+
+#: ../gtk/parameters.ui.h:82 ../gtk/tunnel_config.ui.h:5
+msgid "Disable"
+msgstr "Poissa käytöstä"
+
+#: ../gtk/parameters.ui.h:83
+msgid "<b>Audio codecs</b>"
+msgstr "<b>Ääni codecs</b>"
+
+#: ../gtk/parameters.ui.h:84
+msgid "<b>Video codecs</b>"
+msgstr "<b>Video codecs</b>"
+
+#: ../gtk/parameters.ui.h:85
+msgid "Codecs"
+msgstr "Codecs"
+
+#: ../gtk/parameters.ui.h:86
+msgid "<b>Language</b>"
+msgstr "<b>Kieli</b>"
+
+#: ../gtk/parameters.ui.h:87
+msgid "Show advanced settings"
+msgstr "Näytä edistyneet asetukset"
+
+#: ../gtk/parameters.ui.h:88
+msgid "<b>Level</b>"
+msgstr "<b>Taso</b>"
+
+#: ../gtk/parameters.ui.h:89
+msgid "User interface"
+msgstr "Käyttöliittymä"
+
+#: ../gtk/parameters.ui.h:93
+msgid "<b>LDAP Account setup</b>"
+msgstr "<b>LDAP Tili asetukset</b>"
+
+#: ../gtk/parameters.ui.h:94
+msgid "LDAP"
+msgstr "LDAP"
+
+#: ../gtk/parameters.ui.h:95
+msgid "Done"
+msgstr "Tehty"
+
+#: ../gtk/password.ui.h:1
+msgid "Linphone - Authentication required"
+msgstr "Linhone - Tunnistautuminen vaaditaan"
+
+#: ../gtk/password.ui.h:2
+msgid "Please enter the domain password"
+msgstr "Anna domain/verkkotunnussen salasana"
+
+#: ../gtk/provisioning-fetch.ui.h:1
+msgid "Configuring..."
+msgstr "Säädetään..."
+
+#: ../gtk/provisioning-fetch.ui.h:2
+msgid "Please wait while fetching configuration from server..."
+msgstr "Odota, säätöjä noudetaan palvelimelta..."
+
+#: ../gtk/setup_wizard.ui.h:1
+msgid "SIP account configuration assistant"
+msgstr "SIP tilin säätö avustaja"
+
+#: ../gtk/setup_wizard.ui.h:2
+msgid ""
+"Welcome!\n"
+"This assistant will help you to use a SIP account for your calls."
+msgstr "Tervetuoa!\nTämä avustaja auttaa sinua käyttämään SIP tiliä puheluissasi. "
+
+#: ../gtk/setup_wizard.ui.h:4
+msgid "Welcome to the account setup assistant"
+msgstr "Tervetuloa tili asetusten avustajaan"
+
+#: ../gtk/setup_wizard.ui.h:5
+msgid "Create an account on linphone.org"
+msgstr "Luo linphone.org tili"
+
+#: ../gtk/setup_wizard.ui.h:6
+msgid "I have already a linphone.org account and I just want to use it"
+msgstr "Minulla on jo linphone.org tili ja haluan kayttää sitä"
+
+#: ../gtk/setup_wizard.ui.h:7
+msgid "I have already a sip account and I just want to use it"
+msgstr "Minulla on jo sip tilli ja haluan käyttää sitä"
+
+#: ../gtk/setup_wizard.ui.h:8
+msgid "I want to specify a remote configuration URI"
+msgstr "Haluan täsmentää etäsäätöjä; URI-osoite"
+
+#: ../gtk/setup_wizard.ui.h:9
+msgid "Account setup assistant"
+msgstr "Tili asetusten avustaja"
+
+#: ../gtk/setup_wizard.ui.h:10
+msgid "Enter your account information"
+msgstr "Anna tili tietosi"
+
+#: ../gtk/setup_wizard.ui.h:11
+msgid "Username*"
+msgstr "Käyttäjätunnus*"
+
+#: ../gtk/setup_wizard.ui.h:12
+msgid "Password*"
+msgstr "Salasana*"
+
+#: ../gtk/setup_wizard.ui.h:13
+msgid "Domain*"
+msgstr "Domain/verkkotunnus*"
+
+#: ../gtk/setup_wizard.ui.h:14
+msgid "Proxy"
+msgstr "Välitysavelin"
+
+#: ../gtk/setup_wizard.ui.h:15
+msgid "Configure your account (step 1/1)"
+msgstr "Muokkaa tiliäsi (osa 1/1)"
+
+#: ../gtk/setup_wizard.ui.h:16
+msgid "Enter your linphone.org username"
+msgstr "Anna linphone.org käyttäjätunnus"
+
+#: ../gtk/setup_wizard.ui.h:19
+msgid "Enter your sip username (step 1/1)"
+msgstr "Anna sip käyttäjätunnus (osa 1/1)"
+
+#: ../gtk/setup_wizard.ui.h:20
+msgid "(*) Required fields"
+msgstr "(*) Vaaditus kohdat"
+
+#: ../gtk/setup_wizard.ui.h:21
+msgid "Email: (*)"
+msgstr "Sähköposti: (*)"
+
+#: ../gtk/setup_wizard.ui.h:22
+msgid "Username: (*)"
+msgstr "Käyttäjätunnus: (*)"
+
+#: ../gtk/setup_wizard.ui.h:23
+msgid "Password: (*)"
+msgstr "Salasana: (*)"
+
+#: ../gtk/setup_wizard.ui.h:24
+msgid "Confirm your password: (*)"
+msgstr "Vahvista salasana: (*)"
+
+#: ../gtk/setup_wizard.ui.h:25
+msgid "Keep me informed with linphone updates"
+msgstr "Ilmoita linphone päivityksistä"
+
+#: ../gtk/setup_wizard.ui.h:26
+msgid "Enter account information (step 1/2)"
+msgstr "Anna tili tiedot (osa 1/2)"
+
+#: ../gtk/setup_wizard.ui.h:27
+msgid "Your account is being created, please wait."
+msgstr "Sinun tiliäsi luodaan, pyydän odota."
+
+#: ../gtk/setup_wizard.ui.h:28
+msgid "Account creation in progress"
+msgstr "Tilin luominen edistyy"
+
+#: ../gtk/setup_wizard.ui.h:29
+msgid ""
+"Please validate your account by clicking on the link we just sent you by email.\n"
+"Then come back here and press Next button."
+msgstr "Vahvista tilisi avaamala linkin, joka on juuri lähetetty sähköpostiisi.\nSitten palaa ja paina seuraava."
+
+#: ../gtk/setup_wizard.ui.h:31
+msgid "Validation (step 2/2)"
+msgstr "Vahvistus (osa 2/2)"
+
+#: ../gtk/setup_wizard.ui.h:32
+msgid "Checking if your account is been validated, please wait."
+msgstr "Tarkistetaan että tilisi on vahvistettu, pyydän odota."
+
+#: ../gtk/setup_wizard.ui.h:33
+msgid "Account validation check in progress"
+msgstr "Tarkistetaan tilin vahvistusta "
+
+#: ../gtk/setup_wizard.ui.h:34
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr "Virhe, tili ei ole vahvistettu, käyttäjätunnus oli jo käytössä tai palvelin tavoittamattomissa.\nPyydän palaa ja yritä uudelleen."
+
+#: ../gtk/setup_wizard.ui.h:36
+msgid "Error"
+msgstr "Virhe"
+
+#: ../gtk/setup_wizard.ui.h:37
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "Kiitos. Tilisi on muokattu ja valmis käyttöön."
+
+#: ../gtk/sip_account.ui.h:1
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone - Muokkaa SIP tiliä"
+
+#: ../gtk/sip_account.ui.h:2
+msgid "Your SIP identity:"
+msgstr "Sinun SIP henkilöllisyys:"
+
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<username>@<domain>"
+msgstr "Näyttää seuraavalta sip:<username>@<domain>"
+
+#: ../gtk/sip_account.ui.h:4
+msgid "sip:"
+msgstr "sip:"
+
+#: ../gtk/sip_account.ui.h:5
+msgid "SIP Proxy address:"
+msgstr "SIP välityspalvelin osoite:"
+
+#: ../gtk/sip_account.ui.h:6
+msgid "Looks like sip:<proxy hostname>"
+msgstr "Näyttää seuraavalta sip:<proxy hostname>"
+
+#: ../gtk/sip_account.ui.h:7
+msgid "Registration duration (sec):"
+msgstr "Rekisteröinnin kesto (sekunttia):"
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Contact params (optional):"
+msgstr "Yhteystiedot (valinnainen):"
+
+#: ../gtk/sip_account.ui.h:9
+msgid "AVPF regular RTCP interval (sec):"
+msgstr "AVPF-'media siirto' tahdistusväli RTCP-'realiaikaisen tiedonsiirron' kanssa (sekunttia):"
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Route (optional):"
+msgstr "Reitti (valinnainen):"
+
+#: ../gtk/sip_account.ui.h:11
+msgid "Transport"
+msgstr "Siirto"
+
+#: ../gtk/sip_account.ui.h:12
+msgid "Register"
+msgstr "Rekisteri"
+
+#: ../gtk/sip_account.ui.h:13
+msgid "Publish presence information"
+msgstr "Julkaise läsnäolo tiedot"
+
+#: ../gtk/sip_account.ui.h:14
+msgid "Enable AVPF"
+msgstr "Käytä AVPF:ää"
+
+#: ../gtk/sip_account.ui.h:15
+msgid "Configure a SIP account"
+msgstr "Muokkaa SIP tiliä"
+
+#: ../gtk/tunnel_config.ui.h:1
+msgid "Configure VoIP tunnel"
+msgstr "Muokkaa VoIP tunnelia"
+
+#: ../gtk/tunnel_config.ui.h:2
+msgid "Host"
+msgstr "Host eli Verkon solmu"
+
+#: ../gtk/tunnel_config.ui.h:3
+msgid "Port"
+msgstr "Portti"
+
+#: ../gtk/tunnel_config.ui.h:6
+msgid "<b>Configure tunnel</b>"
+msgstr "<b>Muokkaa tunnelia</b>"
+
+#: ../gtk/tunnel_config.ui.h:9
+msgid "<b>Configure http proxy (optional)</b>"
+msgstr "<b>Muokkaa http välityspalinta (valinnainen)</b>"
+
+#: ../gtk/waiting.ui.h:2
+msgid "Please wait"
+msgstr "Odota"
+
+#: ../coreapi/linphonecore.c:1594
+msgid "Ready"
+msgstr "Valmis"
+
+#: ../coreapi/linphonecore.c:2685
+msgid "Configuring"
+msgstr "Säädetään"
+
+#. must be known at that time
+#: ../coreapi/linphonecore.c:3084
+msgid "Contacting"
+msgstr "Yhdistetään"
+
+#: ../coreapi/linphonecore.c:3089
+msgid "Could not call"
+msgstr "Ei voinut soittaa"
+
+#: ../coreapi/linphonecore.c:3228
+msgid "Sorry, we have reached the maximum number of simultaneous calls"
+msgstr "Olen pahoillani, suurin yhtäaikaisten puheluiden määrä on saavutettu"
+
+#: ../coreapi/linphonecore.c:3388
+msgid "is contacting you"
+msgstr "on ottamassa yhteyttä sinuun"
+
+#: ../coreapi/linphonecore.c:3389
+msgid " and asked autoanswer."
+msgstr "ja pyytää automaattista vastausta."
+
+#: ../coreapi/linphonecore.c:3506
+msgid "Modifying call parameters..."
+msgstr "Maukataan soiton raja-arvoja..."
+
+#: ../coreapi/linphonecore.c:3898
+msgid "Connected."
+msgstr "Yhdistetty"
+
+#: ../coreapi/linphonecore.c:3923
+msgid "Call aborted"
+msgstr "Puhelu keskeytetty"
+
+#: ../coreapi/linphonecore.c:4125
+msgid "Could not pause the call"
+msgstr "Ei voinut laittaa puhelua tauolle"
+
+#: ../coreapi/linphonecore.c:4128
+msgid "Pausing the current call..."
+msgstr "Laitetaan tauolle nykyinen puhelu..."
+
+#: ../coreapi/misc.c:441
+msgid "Stun lookup in progress..."
+msgstr "Stun-'osoite haun' lukkiutuminen käynnissä..."
+
+#: ../coreapi/misc.c:657
+msgid "ICE local candidates gathering in progress..."
+msgstr "ICE paikallisia ehdokkaita kerätään..."
+
+#: ../coreapi/friend.c:48
+msgid "Online"
+msgstr "Verkossa"
+
+#: ../coreapi/friend.c:51
+msgid "Busy"
+msgstr "Kiireinen"
+
+#: ../coreapi/friend.c:54
+msgid "Be right back"
+msgstr "Palaan pian"
+
+#: ../coreapi/friend.c:57
+msgid "Away"
+msgstr "Poissa"
+
+#: ../coreapi/friend.c:60
+msgid "On the phone"
+msgstr "Puhuu puhelua"
+
+#: ../coreapi/friend.c:63
+msgid "Out to lunch"
+msgstr "Syömässä"
+
+#: ../coreapi/friend.c:66
+msgid "Do not disturb"
+msgstr "Älä häiritse"
+
+#: ../coreapi/friend.c:69
+msgid "Moved"
+msgstr "Siirtynyt"
+
+#: ../coreapi/friend.c:72
+msgid "Using another messaging service"
+msgstr "Käyttää toista yhteys ohjelmaa"
+
+#: ../coreapi/friend.c:75
+msgid "Offline"
+msgstr "Verkossa"
+
+#: ../coreapi/friend.c:78
+msgid "Pending"
+msgstr "Odottaa"
+
+#: ../coreapi/friend.c:81
+msgid "Vacation"
+msgstr "Lomalla"
+
+#: ../coreapi/friend.c:83
+msgid "Unknown status"
+msgstr "Tuntematon tila"
+
+#: ../coreapi/proxy.c:339
+msgid ""
+"The sip proxy address you entered is invalid, it must start with \"sip:\" "
+"followed by a hostname."
+msgstr "Antamasi välityspalvelin osoite on kelvoton. Se täytyy alkaa \"sip:\" minkä jälkeen tulee host-verkkosolmuntunnus."
+
+#: ../coreapi/proxy.c:345
+msgid ""
+"The sip identity you entered is invalid.\n"
+"It should look like sip:username@proxydomain, such as sip:alice@example.net"
+msgstr "Antamasi sip tiedot ovat kelvoton.\nSen pitäisi näyttää sip:käyttäjätunnus@välityspalvelin, kuten sip:alice@esimerkki.net"
+
+#: ../coreapi/proxy.c:979
+msgid "Looking for telephone number destination..."
+msgstr "Etsitään puhelinnumeron kohdetta..."
+
+#: ../coreapi/proxy.c:983
+msgid "Could not resolve this number."
+msgstr "Ei voi käsittää tätä numeroa."
+
+#: ../coreapi/proxy.c:1437
+#, c-format
+msgid "Could not login as %s"
+msgstr "%s ei pystynyt kirjautumaan"
+
+#: ../coreapi/proxy.c:1522
+#, c-format
+msgid "Refreshing on %s..."
+msgstr "%s on huilaamassa..."
+
+#: ../coreapi/callbacks.c:415
+msgid "Remote ringing."
+msgstr "vastapuoli pirisee"
+
+#: ../coreapi/callbacks.c:427
+msgid "Remote ringing..."
+msgstr "vastapuoli pirisee..."
+
+#: ../coreapi/callbacks.c:450
+msgid "Early media."
+msgstr "Aikainen media eli aloita puhelu ennen yhteyden lukittautumista"
+
+#: ../coreapi/callbacks.c:480
+#, c-format
+msgid "Call answered by %s"
+msgstr "Puheluun vastasi %s"
+
+#: ../coreapi/callbacks.c:522
+msgid "Call resumed."
+msgstr "Puhelu jaettiin."
+
+#: ../coreapi/callbacks.c:577
+msgid "Incompatible, check codecs or security settings..."
+msgstr "Yhteensopimaton, tarkista kodekit tai suojaus asetukset..."
+
+#: ../coreapi/callbacks.c:582 ../coreapi/callbacks.c:918
+msgid "Incompatible media parameters."
+msgstr "Yhteensopimattomat media raja-arvot."
+
+#: ../coreapi/callbacks.c:607
+msgid "We have been resumed."
+msgstr "Meidän puhelu on jaettu."
+
+#. we are being paused
+#: ../coreapi/callbacks.c:615
+msgid "We are paused by other party."
+msgstr "Meidän puhelu on laitettu taauolle toisen osapuolen taholta."
+
+#: ../coreapi/callbacks.c:625
+msgid "Call is updated by remote."
+msgstr "Vastapuoli on päivittänyt puhelun."
+
+#: ../coreapi/callbacks.c:794
+msgid "Call terminated."
+msgstr "Puhelu keskeytetty."
+
+#: ../coreapi/callbacks.c:822
+msgid "User is busy."
+msgstr "Käyttäjä on kiireinen."
+
+#: ../coreapi/callbacks.c:823
+msgid "User is temporarily unavailable."
+msgstr "Käyttäjä hetkellisesti tavoittamattomissa."
+
+#. char *retrymsg=_("%s. Retry after %i minute(s).");
+#: ../coreapi/callbacks.c:825
+msgid "User does not want to be disturbed."
+msgstr "Käyttäjä ei halua tulla häirityksi."
+
+#: ../coreapi/callbacks.c:826
+msgid "Call declined."
+msgstr "Soitto evätty."
+
+#: ../coreapi/callbacks.c:841
+msgid "Request timeout."
+msgstr "Soitto yritys aikakatkaistiin."
+
+#: ../coreapi/callbacks.c:872
+msgid "Redirected"
+msgstr "Uudelleen ohjattu"
+
+#: ../coreapi/callbacks.c:922
+msgid "Call failed."
+msgstr "Puhelu epäonnistui."
+
+#: ../coreapi/callbacks.c:1000
+#, c-format
+msgid "Registration on %s successful."
+msgstr "Rekitöröityminen %sn onnistui."
+
+#: ../coreapi/callbacks.c:1001
+#, c-format
+msgid "Unregistration on %s done."
+msgstr "Rekisterin poisto %s:stä on tehty."
+
+#: ../coreapi/callbacks.c:1019
+msgid "no response timeout"
+msgstr "ei vastausta, aikakatkaistiin"
+
+#: ../coreapi/callbacks.c:1022
+#, c-format
+msgid "Registration on %s failed: %s"
+msgstr "Rekistöröityminen %sn epäonnistui: %s"
+
+#: ../coreapi/callbacks.c:1029
+msgid "Service unavailable, retrying"
+msgstr "Palvelin saavuttamattomissa, uudelleen yritetään"
+
+#. if encryption is DTLS, no status to be displayed
+#: ../coreapi/linphonecall.c:204
+#, c-format
+msgid "Authentication token is %s"
+msgstr "Todennus merkki on %s"
+
+#: ../coreapi/linphonecall.c:1663
+#, c-format
+msgid "Call parameters could not be modified: %s."
+msgstr "Soiton raja-arvoja ei voitu muokata: %s."
+
+#: ../coreapi/linphonecall.c:1665
+msgid "Call parameters were successfully modified."
+msgstr "Soiton raja-arvot ovat onnistuneesti muokattu."
+
+#: ../coreapi/linphonecall.c:4636
+#, c-format
+msgid "You have missed %i call."
+msgid_plural "You have missed %i calls."
+msgstr[0] "Sinulla on %i vastaamaton puhelu."
+msgstr[1] "Sinulla on %i vastaamatonta puhelua."
+
+#: ../coreapi/call_log.c:223
+msgid "aborted"
+msgstr "keskeytetty"
+
+#: ../coreapi/call_log.c:226
+msgid "completed"
+msgstr "valmis"
+
+#: ../coreapi/call_log.c:229
+msgid "missed"
+msgstr "vastaamaton"
+
+#: ../coreapi/call_log.c:232
+msgid "unknown"
+msgstr "tuntematon"
+
+#: ../coreapi/call_log.c:234
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr "%s at %s\nMistä: %s\nMihin: %s\nTila: %s\nKasto: %i minuuttia %i sekunttia\n"
+
+#: ../coreapi/call_log.c:235
+msgid "Outgoing call"
+msgstr "Lähtevä puhelu"
+
+#: ../gtk/videowindow.c:72
+#, c-format
+msgid "Cannot play %s."
+msgstr "Ei voi toistaa %s."
+
+#: ../gtk/videowindow.c:252
+msgid "Take screenshot"
+msgstr ""

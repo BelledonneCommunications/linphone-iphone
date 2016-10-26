@@ -22,72 +22,72 @@ package org.linphone.core;
 public interface PresenceService {
 
 	/**
-	 * @brief Gets the id of a presence service.
+	 * Gets the id of a presence service.
 	 * @return A string containing the id.
 	 */
 	String getId();
 
 	/**
-	 * @brief Sets the id of a presence service.
-	 * @param[in] id The id string to set. Can be null to generate it automatically.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Sets the id of a presence service.
+	 * @param id The id string to set. Can be null to generate it automatically.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setId(String id);
 
 	/**
-	 * @brief Gets the basic status of a presence service.
+	 * Gets the basic status of a presence service.
 	 * @return The #PresenceBasicStatus of the #PresenceService object.
 	 */
 	PresenceBasicStatus getBasicStatus();
 
 	/**
-	 * @brief Sets the basic status of a presence service.
-	 * @param[in] status The #PresenceBasicStatus to set for the #PresenceService object.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Sets the basic status of a presence service.
+	 * @param status The #PresenceBasicStatus to set for the #PresenceService object.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setBasicStatus(PresenceBasicStatus status);
 
 	/**
-	 * @brief Gets the contact of a presence service.
+	 * Gets the contact of a presence service.
 	 * @return A string containing the contact, or null if no contact is found.
 	 */
 	String getContact();
 
 	 /**
-	 * @brief Sets the contact of a presence service.
-	 * @param[in] contact The contact string to set.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Sets the contact of a presence service.
+	 * @param contact The contact string to set.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int setContact(String contact);
 
 	/**
-	 * @brief Gets the number of notes included in the presence service.
+	 * Gets the number of notes included in the presence service.
 	 * @return The number of notes included in the #PresenceService object.
 	 */
 	long getNbNotes();
 
 	/**
-	 * @brief Gets the nth note of a presence service.
-	 * @param[in] idx The index of the note to get (the first note having the index 0).
+	 * Gets the nth note of a presence service.
+	 * @param idx The index of the note to get (the first note having the index 0).
 	 * @return A pointer to a #PresenceNote object if successful, null otherwise.
 	 */
 	PresenceNote getNthNote(long idx);
 
 	/**
-	 * @brief Adds a note to a presence service.
-	 * @param[in] note The #PresenceNote object to add to the service.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Adds a note to a presence service.
+	 * @param note The #PresenceNote object to add to the service.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int addNote(PresenceNote note);
 
 	/**
-	 * @brief Clears the notes of a presence service.
-	 * @return 0 if successful, a value < 0 in case of error.
+	 * Clears the notes of a presence service.
+	 * @return 0 if successful, a value &lt; 0 in case of error.
 	 */
 	int clearNotes();
 
 	/**
-	 * @brief Gets the native pointer for this object.
+	 * Gets the native pointer for this object.
 	 */
 	long getNativePtr();
 

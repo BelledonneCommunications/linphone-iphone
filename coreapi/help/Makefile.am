@@ -46,7 +46,7 @@ clean-local:
 
 if ENABLE_TUTORIALS
 
-noinst_PROGRAMS=helloworld registration buddy_status chatroom notify filetransfer
+noinst_PROGRAMS=helloworld registration buddy_status chatroom notify filetransfer realtimetext_sender realtimetext_receiver
 
 helloworld_SOURCES=helloworld.c
 LINPHONE_TUTOS=$(helloworld_SOURCES)
@@ -80,6 +80,16 @@ filetransfer_SOURCES=filetransfer.c
 LINPHONE_TUTOS+=$(filetransfer_SOURCES)
 
 filetransfer_LDADD=$(helloworld_LDADD)
+
+realtimetext_sender_SOURCES=realtimetext_sender.c
+LINPHONE_TUTOS+=$(realtimetext_sender_SOURCES)
+
+realtimetext_sender_LDADD=$(helloworld_LDADD)
+
+realtimetext_receiver_SOURCES=realtimetext_receiver.c
+LINPHONE_TUTOS+=$(realtimetext_receiver_SOURCES)
+
+realtimetext_receiver_LDADD=$(helloworld_LDADD)
 
 AM_CFLAGS=\
 	-I$(top_srcdir)/coreapi \

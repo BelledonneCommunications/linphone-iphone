@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <wininet.h>
 
@@ -27,13 +27,13 @@ static int linphone_gtk_create_version(const char *version_url, char *version, s
 	DWORD dwDownloaded = 0;
 	HINTERNET  hSession = NULL, hConnect = NULL;
 	int ret=-1;
-	
+
 	hSession=InternetOpen("Linphone",INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
-	
+
 	if (hSession==NULL) return -1;
-	
+
 	hConnect=InternetOpenUrl(hSession,version_url,NULL,0,0,0);
-	
+
 	if (hConnect==NULL) {
 		InternetCloseHandle(hSession);
 		return -1;
@@ -46,7 +46,7 @@ static int linphone_gtk_create_version(const char *version_url, char *version, s
 		if (strstr(version,"html")==0)
 			ret=0;
 	}
-	
+
 	// Close any open handles.
 	if (hConnect) InternetCloseHandle(hConnect);
 	if (hSession) InternetCloseHandle(hSession);
@@ -56,7 +56,7 @@ static int linphone_gtk_create_version(const char *version_url, char *version, s
 #else
 
 static int linphone_gtk_create_version(const char *url, char *version, size_t size){
-	
+
 	return -1;
 }
 
@@ -87,7 +87,7 @@ static gboolean popup_new_version(const char *download_site){
 	return FALSE;
 }
 
-static gboolean popup_version_ok(){
+static gboolean popup_version_ok(void){
 	linphone_gtk_display_something(GTK_MESSAGE_INFO,_("You are running the lastest version."));
 	return FALSE;
 }

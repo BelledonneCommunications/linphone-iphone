@@ -21,19 +21,32 @@
 ############################################################################
 
 if(GIT_EXECUTABLE)
-	execute_process(
-		COMMAND ${GIT_EXECUTABLE} describe --always
-		WORKING_DIRECTORY ${WORK_DIR}
-		OUTPUT_VARIABLE GIT_REVISION
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"${GIT_REVISION}\""
-		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
-	)
+	macro(GIT_COMMAND OUTPUT_VAR)
+		set(GIT_ARGS ${ARGN})
+		execute_process(
+			COMMAND ${GIT_EXECUTABLE} ${ARGN}
+			WORKING_DIRECTORY ${WORK_DIR}
+			OUTPUT_VARIABLE ${OUTPUT_VAR}
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+	endmacro()
+
+	GIT_COMMAND(GIT_DESCRIBE describe --always)
+	GIT_COMMAND(GIT_TAG describe --abbrev=0)
+	GIT_COMMAND(GIT_REVISION rev-parse HEAD)
+endif()
+
+if(GIT_DESCRIBE)
+	if(NOT GIT_TAG STREQUAL LINPHONE_VERSION)
+		message(FATAL_ERROR "LINPHONE_VERSION (${LINPHONE_VERSION}) and git tag (${GIT_TAG}) differ. Please put them identical")
+	endif()
+	set(LIBLINPHONE_GIT_VERSION "${GIT_DESCRIBE}")
+	configure_file("${WORK_DIR}/gitversion.h.in" "${OUTPUT_DIR}/liblinphone_gitversion.h" @ONLY)
+elseif(GIT_REVISION)
+	set(LIBLINPHONE_GIT_VERSION "${LINPHONE_VERSION}_${GIT_REVISION}")
+	configure_file("${WORK_DIR}/gitversion.h.in" "${OUTPUT_DIR}/liblinphone_gitversion.h" @ONLY)
 else()
-	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"unknown\""
-		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
-	)
+	if(NOT EXISTS "${OUTPUT_DIR}/liblinphone_gitversion.h")
+		execute_process(COMMAND ${CMAKE_COMMAND} -E touch "${OUTPUT_DIR}/liblinphone_gitversion.h")
+	endif()
 endif()

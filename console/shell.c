@@ -25,7 +25,7 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <ws2tcpip.h>
 #include <windows.h>
 #include <winbase.h>
@@ -39,6 +39,7 @@
 #endif
 
 #include "ortp/ortp.h"
+#include <bctoolbox/port.h>
 
 #define DEFAULT_REPLY_SIZE 4096
 
@@ -82,7 +83,7 @@ static int send_command(const char *command, char *reply, int reply_len, int pri
 	int i;
 	int err;
 	char path[128];
-#ifndef WIN32
+#ifndef _WIN32
 	snprintf(path,sizeof(path)-1,"linphonec-%i",getuid());
 #else
 	{
@@ -130,7 +131,7 @@ static void print_usage(void){
 	exit(-1);
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 static char *argv_to_line(int argc, char *argv[]) {
 	int i;
 	int line_length;
@@ -157,7 +158,7 @@ static char *argv_to_line(int argc, char *argv[]) {
 
 #define MAX_ARGS 10
 
-#ifndef WIN32
+#ifndef _WIN32
 static void spawn_linphonec(int argc, char *argv[]){
 	char * args[MAX_ARGS];
 	int i,j;

@@ -20,7 +20,8 @@ UI_FILES=	about.ui \
 		in_call_frame.ui \
 		conf_frame.ui \
 		callee_frame.ui \
-		login_frame.ui
+		login_frame.ui \
+		setup_wizard.ui
 
 PIXMAPS=	\
 		stock_people.png
@@ -60,11 +61,11 @@ linphone_SOURCES=	\
 			audio_assistant.c \
 			videowindow.c \
 			status_icon.c status_icon.h \
-			linphone.h
+			linphone.h regex.h
 
 if BUILD_WIZARD
 linphone_SOURCES+= \
-	setupwizard.c
+	setupwizard.c setupwizard.h
 endif
 
 if BUILD_STATUS_NOTIFIER
@@ -73,8 +74,9 @@ linphone_SOURCES+= \
 	status_notifier.h
 endif
 
+
 linphone_LDADD=	$(top_builddir)/coreapi/liblinphone.la \
-		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS) $(BELLESIP_LIBS)
+		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS) $(BELLESIP_LIBS) $(BCTOOLBOX_LIBS)
 
 
 if BUILD_WIN32
@@ -91,17 +93,21 @@ endif
 uidir=$(datadir)/linphone
 dist_ui_DATA=$(UI_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
 
+if BUILD_MACOS
+linphone_SOURCES+=mac.m
+linphone_LDFLAGS+=-framework Cocoa
+endif
 endif
 
 
-AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ -I$(top_builddir)/coreapi/ \
+AM_CPPFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ -I$(top_builddir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) $(BELLESIP_CFLAGS) \
 		$(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
 		$(TUNNEL_CFLAGS) \
-		$(SQLITE3_CFLAGS)
-
-
+		$(SQLITE3_CFLAGS) \
+		$(BCTOOLBOX_CFLAGS)
+		
 version_date.h: $(top_srcdir)/configure.ac
 	echo "#define LINPHONE_VERSION_DATE \"$(VERSION)-`date +%y%m%d`\"" > $@
 

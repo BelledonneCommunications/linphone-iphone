@@ -45,6 +45,8 @@ set(SOUND_FILES
 	hello8000.wav
 	incoming_chat.wav
 	ringback.wav
+	dont_wait_too_long.mkv
+	toy-mono.wav
 )
 
 install(FILES ${SOUND_FILES}

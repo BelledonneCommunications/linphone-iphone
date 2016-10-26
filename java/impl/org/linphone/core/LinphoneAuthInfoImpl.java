@@ -30,10 +30,18 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 	private native void setUsername(long ptr, String username);
 	private native void setUserId(long ptr, String username);
 	private native void setHa1(long ptr, String ha1);
+	private native void setDomain(long ptr, String domain);
+	private native void setTlsCertificate(long ptr, String cert);
+	private native void setTlsKey(long ptr, String key);
+	private native void setTlsCertificatePath(long ptr, String path);
+	private native void setTlsKeyPath(long ptr, String path);
 	private native String getUserId(long ptr);
 	private native String getHa1(long ptr);
 	private native String getDomain(long ptr);
-	private native void setDomain(long ptr, String domain);
+	private native String getTlsCertificate(long ptr);
+	private native String getTlsKey(long ptr);
+	private native String getTlsCertificatePath(long ptr);
+	private native String getTlsKeyPath(long ptr);
 	
 	boolean ownPtr = false;
 	protected LinphoneAuthInfoImpl(String username,String password, String realm, String domain)  {
@@ -110,5 +118,45 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 				getRealm(), 
 				getDomain());
 		return clone;
+	}
+	
+	@Override
+	public String getTlsCertificate() {
+		return getTlsCertificate(nativePtr);
+	}
+	
+	@Override
+	public String getTlsKey() {
+		return getTlsKey(nativePtr);
+	}
+	
+	@Override
+	public String getTlsCertificatePath() {
+		return getTlsCertificatePath(nativePtr);
+	}
+	
+	@Override
+	public String getTlsKeyPath() {
+		return getTlsKeyPath(nativePtr);
+	}
+	
+	@Override
+	public void setTlsCertificate(String cert) {
+		setTlsCertificate(nativePtr, cert);
+	}
+	
+	@Override
+	public void setTlsKey(String key) {
+		setTlsKey(nativePtr, key);
+	}
+	
+	@Override
+	public void setTlsCertificatePath(String path) {
+		setTlsCertificatePath(nativePtr, path);
+	}
+	
+	@Override
+	public void setTlsKeyPath(String path) {
+		setTlsKeyPath(nativePtr, path);
 	}
 }

@@ -4,7 +4,7 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
-register_only_when_network_is_up=0
+
 composing_idle_timeout=1
 
 [auth_info_0]
@@ -31,6 +31,7 @@ dial_escape_plus=0
 [rtp]
 audio_rtp_port=18070-28000
 video_rtp_port=39072-49000
+text_rtp_port=29000-38000
 rtcp_xr_enabled=1
 rtcp_xr_rcvr_rtt_mode=all
 rtcp_xr_rcvr_rtt_max_size=10000

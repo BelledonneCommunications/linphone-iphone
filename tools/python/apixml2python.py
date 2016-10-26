@@ -31,27 +31,36 @@ blacklisted_classes = [
 	'LinphoneTunnelConfig'
 ]
 blacklisted_events = [
+	'LinphoneChatMessageStateChangedCb',	# not respecting naming convention
 	'LinphoneCoreInfoReceivedCb',	# missing LinphoneInfoMessage
 	'LinphoneCoreNotifyReceivedCb',	# missing LinphoneContent
 	'LinphoneCoreFileTransferProgressIndicationCb',	# missing LinphoneContent
 	'LinphoneCoreFileTransferRecvCb',	# missing LinphoneContent
-	'LinphoneCoreFileTransferSendCb'	# missing LinphoneContent
+	'LinphoneCoreFileTransferSendCb',	# missing LinphoneContent
+	'LinphoneCoreTextMessageReceivedCb'	# not respecting naming convention
 ]
 blacklisted_functions = [
 	'linphone_call_log_get_local_stats',	# missing rtp_stats_t
 	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
+	'linphone_chat_message_start_file_download',	# callback function in parameter
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
+	'linphone_chat_room_send_message2',	# callback function in parameter
 	'linphone_core_add_listener',
 	'linphone_core_can_we_add_call',	# private function
 	'linphone_core_enable_log_collection',	# need to handle class properties
+	'linphone_core_enable_logs',	# unhandled argument type FILE
+	'linphone_core_enable_logs_with_cb',	# callback function in parameter
 	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
+	'linphone_core_get_default_proxy',
+	'linphone_core_get_network_simulator_params',	# missing OrtpNetworkSimulatorParams
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
+	'linphone_core_set_dns_servers',
 	'linphone_core_set_log_collection_max_file_size',	# need to handle class properties
 	'linphone_core_set_log_collection_path',	# need to handle class properties
 	'linphone_core_set_log_collection_prefix',	# need to handle class properties
@@ -59,7 +68,9 @@ blacklisted_functions = [
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
 	'linphone_core_set_log_level_mask',	# There is no use to wrap this function
+	'linphone_core_set_network_simulator_params',	# missing OrtpNetworkSimulatorParams
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
+	'linphone_nat_policy_get_stun_server_addrinfo',
 	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
@@ -83,6 +94,7 @@ hand_written_functions = [
 	HandWrittenProperty('Core', 'sip_transports_used', 'linphone_core_get_sip_transports_used', None, "[:py:class:`linphone.SipTransports`] Retrieves the real port number assigned for each sip transport (udp, tcp, tls). A zero value means that the transport is not activated. If LC_SIP_TRANSPORT_RANDOM was passed to :py:attr:`linphone.Core.sip_transports`, the random port choosed by the system is returned."),
 	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None, "[list of string] Get the available sound devices."),
 	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None, "[list of string] Get the available video capture devices."),
+	HandWrittenProperty('LpConfig', 'sections_names', 'lp_config_get_sections_names', None, "[list of string] Get the sections' names in the lp config."),
 	HandWrittenClassMethod('Core', 'new', 'linphone_core_new', "Instantiate a LinphoneCore object.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param configPath: A path to a config file. If it does not exists it will be created. The config file is used to store all settings, call logs, friends, proxies... so that all these settings become persistent over the life of the LinphoneCore object. It is allowed to set to None. In that case LinphoneCore will not store any settings.\n:type configPath: string\n:param factoryConfigPath: A path to a read-only config file that can be used to store hard-coded preference such as proxy settings or internal preferences. The settings in this factory file always override the one in the normal config file. It is OPTIONAL, use None if unneeded.\n:type factoryConfigPath: string\n:rtype: linphone.Core"),
 	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config', "Instantiate a LinphoneCore object from a LpConfig.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param config: A LpConfig object holding the configuration of the LinphoneCore to be instantiated.\n:rtype: linphone.Core"),
 	HandWrittenDeallocMethod('Core', 'linphone_core_destroy')

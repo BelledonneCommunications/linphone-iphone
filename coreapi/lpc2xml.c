@@ -24,6 +24,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <libxml/xmlversion.h>
 
 #define LPC2XML_BZ 2048
+#define ISO_ENCODING "ISO-8859-1"
+
+static xmlChar* convert_iso_to_utf8(const char *in) {
+	xmlChar *out = NULL;
+	int ret, size, out_size, temp;
+	xmlCharEncodingHandlerPtr handler;
+
+	size = (int)strlen(in) + 1; 
+	out_size = size * 2 - 1; 
+	out = ms_malloc((size_t)out_size); 
+
+	if (out) {
+		handler = xmlFindCharEncodingHandler(ISO_ENCODING);
+		if (!handler) {
+			ms_free(out);
+			return NULL;
+		}
+		
+		temp = size-1;
+		ret = handler->input(out, &out_size, (const xmlChar *)in, &temp);
+		if (ret < 0 || temp - size + 1) {
+			ms_free(out);
+			return NULL;
+		} else {
+			out = ms_realloc(out, out_size + 1); 
+			out[out_size] = '\0';
+		}
+	}
+	return out;
+}	
 
 struct _lpc2xml_context {
 	const LpConfig *lpc;
@@ -74,7 +104,7 @@ static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...
 
 static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
 	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
-	int sl = strlen(xmlCtx->errorBuffer);
+	size_t sl = strlen(xmlCtx->errorBuffer);
 	va_list args;
 	va_start(args, fmt);
 	vsnprintf(xmlCtx->errorBuffer + sl, LPC2XML_BZ-sl, fmt, args);
@@ -94,13 +124,28 @@ static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
 
 static int processEntry(const char *section, const char *entry, xmlNode *node, lpc2xml_context *ctx) {
 	const char *content = lp_config_get_string(ctx->lpc, section, entry, NULL);
+	xmlChar *converted_content = NULL;
 	if (content == NULL) {
 		lpc2xml_log(ctx, LPC2XML_ERROR, "Issue when reading the lpc");
 		return -1;
 	}
-
 	lpc2xml_log(ctx, LPC2XML_MESSAGE, "Set %s|%s = %s", section, entry, content);
-	xmlNodeSetContent(node, (const xmlChar *) content);
+	converted_content = convert_iso_to_utf8(content);
+	
+	if (converted_content) {
+		// xmlNodeSetContent expects special characters to be escaped, xmlNodeAddContent doesn't (and escapes what needs to be)
+		xmlNodeSetContent(node, (const xmlChar *) "");
+		xmlNodeAddContent(node, (const xmlChar *) converted_content);
+		ms_free(converted_content);
+	} else {
+		// xmlNodeSetContent expects special characters to be escaped, xmlNodeAddContent doesn't (and escapes what needs to be)
+		xmlNodeSetContent(node, (const xmlChar *) "");
+		xmlNodeAddContent(node, (const xmlChar *) content);
+	}
+	
+	if (lp_config_get_overwrite_flag_for_entry(ctx->lpc, section, entry) || lp_config_get_overwrite_flag_for_section(ctx->lpc, section)) {
+		xmlSetProp(node, (const xmlChar *)"overwrite", (const xmlChar *) "true");
+	}
 	return 0;
 }
 
@@ -118,6 +163,12 @@ static void processSection_cb(const char *entry, struct __processSectionCtx *ctx
 		xmlAttr *name_attr;
 		if (strncmp(comment, entry, strlen(comment)) == 0) {
 			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped commented entry %s", entry);
+			ctx->ret = 0;
+			return;
+		}
+		
+		if (lp_config_get_skip_flag_for_entry(ctx->ctx->lpc, ctx->section, entry)) {
+			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped entry %s", entry);
 			ctx->ret = 0;
 			return;
 		}
@@ -155,8 +206,16 @@ struct __processConfigCtx {
 
 static void processConfig_cb(const char *section, struct __processConfigCtx *ctx) {
 	if(ctx->ret == 0) {
-		xmlNode *node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"section", NULL);
+		xmlNode *node;
 		xmlAttr *name_attr;
+		
+		if (lp_config_get_skip_flag_for_section(ctx->ctx->lpc, section)) {
+			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped section %s", section);
+			ctx->ret = 0;
+			return;
+		}
+		
+		node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"section", NULL);
 		if(node == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create \"section\" element");
 			ctx->ret = -1;

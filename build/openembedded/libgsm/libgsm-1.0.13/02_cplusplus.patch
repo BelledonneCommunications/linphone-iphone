@@ -1,0 +1,25 @@
+diff -urNad libgsm-1.0.10~/inc/gsm.h libgsm-1.0.10/inc/gsm.h
+--- libgsm-1.0.10~/inc/gsm.h	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/inc/gsm.h	2007-11-01 15:44:52.000000000 +0100
+@@ -54,6 +54,10 @@
+ #define	GSM_OPT_FRAME_INDEX	5
+ #define	GSM_OPT_FRAME_CHAIN	6
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ extern gsm  gsm_create 	GSM_P((void));
+ extern void gsm_destroy GSM_P((gsm));	
+ 
+@@ -66,6 +70,10 @@
+ extern int  gsm_explode GSM_P((gsm, gsm_byte   *, gsm_signal *));
+ extern void gsm_implode GSM_P((gsm, gsm_signal *, gsm_byte   *));
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #undef	GSM_P
+ 
+ #endif	/* GSM_H */

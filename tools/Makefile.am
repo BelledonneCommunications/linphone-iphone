@@ -10,7 +10,8 @@ COMMON_CFLAGS=\
 	$(MEDIASTREAMER_CFLAGS) \
 	$(STRICT_OPTIONS) \
 	$(STRICT_OPTIONS_CC) \
-	$(LIBXML2_CFLAGS)
+	$(MEDIASTREAMER_LIBS) \
+	$(BCTOOLBOX_LIBS)
 
 #-fpermissive to workaround a g++ bug on macos 32bit SDK.
 AM_CXXFLAGS=$(LIBXML2_CFLAGS) -fpermissive $(STRICT_OPTIONS) $(STRICT_OPTIONS_CXX)
@@ -19,7 +20,7 @@ EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
 
 if BUILD_TOOLS
 
-bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers lp-autoanswer
+bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers lp-autoanswer lp-test-ecc lp-sendmsg
 
 xml2lpc_test_SOURCES=\
 	xml2lpc_test.c
@@ -48,6 +49,30 @@ lp_autoanswer_LDADD=\
 	$(top_builddir)/coreapi/liblinphone.la \
 	$(MEDIASTREAMER_LIBS)
 
+lp_test_ecc_SOURCES=test_ecc.c
+lp_test_ecc_CFLAGS=$(COMMON_CFLAGS)
+lp_test_ecc_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+lp_sendmsg_SOURCES=lpsendmsg.c
+lp_sendmsg_CFLAGS=$(COMMON_CFLAGS)
+lp_sendmsg_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
 endif
 
 
+
+if ENABLE_TESTS
+
+noinst_PROGRAMS=test_lsd  test_numbers
+
+test_lsd_SOURCES=test_lsd.c
+test_lsd_CFLAGS=$(COMMON_CFLAGS)
+test_lsd_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+
+
+test_numbers_SOURCES=test_numbers.c
+test_numbers_CFLAGS=$(COMMON_CFLAGS)
+test_numbers_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+endif

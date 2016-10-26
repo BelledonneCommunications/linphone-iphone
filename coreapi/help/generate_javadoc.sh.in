@@ -1,0 +1,11 @@
+#!/bin/bash
+
+packages='@JAVADOC_PACKAGES@'
+classpaths='@JAVADOC_CLASSPATHS@'
+title='@JAVADOC_TITLE@'
+javaref='@JAVADOC_JAVA_REFERENCE@'
+outputdir='@JAVADOC_OUTPUT_DIR@'
+
+@Java_JAVADOC_EXECUTABLE@ ${packages} -classpath ${classpaths} -doctitle "${title}" -link ${javaref} -d ${outputdir} 2>&1 | tee @JAVADOC_LOGFILE@
+grep -E '^[0-9]{1,3} errors?' @JAVADOC_LOGFILE@ &> /dev/null && exit 1
+exit 0

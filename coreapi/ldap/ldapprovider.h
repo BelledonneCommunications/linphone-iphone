@@ -38,4 +38,4 @@ LINPHONE_PUBLIC unsigned int                 linphone_ldap_contact_provider_get_
 LINPHONE_PUBLIC LinphoneLDAPContactProvider* linphone_ldap_contact_provider_ref( void* obj );
 void                         linphone_ldap_contact_provider_unref( void* obj );
 LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast( void* obj );
-LINPHONE_PUBLIC int                          linphone_ldap_contact_provider_available();
+LINPHONE_PUBLIC int                          linphone_ldap_contact_provider_available(void);

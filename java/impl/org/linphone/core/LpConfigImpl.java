@@ -18,11 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.linphone.core;
 
-
-
 class LpConfigImpl implements LpConfig {
 
-	private final long nativePtr;
+	private long nativePtr;
 	boolean ownPtr = false;
 	
 	public LpConfigImpl(long ptr) {
@@ -30,11 +28,32 @@ class LpConfigImpl implements LpConfig {
 	}
 	
 	private native long newLpConfigImpl(String file);
+	private native long newLpConfigImplFromBuffer(String buffer);
 	private native void delete(long ptr);
 	
+	@Deprecated
 	public LpConfigImpl(String file) {
 		nativePtr = newLpConfigImpl(file);
 		ownPtr = true;
+	}
+	
+	private LpConfigImpl() {
+		nativePtr = -1;
+		ownPtr = false;
+	}
+	
+	public static LpConfigImpl fromFile(String file) {
+		LpConfigImpl impl = new LpConfigImpl();
+		impl.nativePtr = impl.newLpConfigImpl(file);
+		impl.ownPtr = true;
+		return impl;
+	}
+	
+	public static LpConfigImpl fromBuffer(String buffer) {
+		LpConfigImpl impl = new LpConfigImpl();
+		impl.nativePtr = impl.newLpConfigImplFromBuffer(buffer);
+		impl.ownPtr = true;
+		return impl;
 	}
 	
 	protected void finalize() throws Throwable {

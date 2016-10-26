@@ -20,17 +20,44 @@
 #
 ############################################################################
 
-if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+if(MSVC AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	find_library(LIBGCC NAMES gcc)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
 
 if(NOT WIN32)
-	find_package(Iconv)
+	find_package(Iconv QUIET)
 endif()
 
 
-set(SOURCE_FILES
+set(LINPHONE_HEADER_FILES
+	account_creator.h
+	buffer.h
+	call_log.h
+	call_params.h
+	carddav.h
+	conference.h
+	content.h
+	event.h
+	friendlist.h
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
+	linphonepresence.h
+	linphone_proxy_config.h
+	linphone_tunnel.h
+	lpc2xml.h
+	lpconfig.h
+	nat_policy.h
+	ringtoneplayer.h
+	sipsetup.h
+	sqlite3_bctbx_vfs.h
+	xml2lpc.h
+	xmlrpc.h
+	vcard.h
+)
+
+set(LINPHONE_SOURCE_FILES_C
 	account_creator.c
 	address.c
 	authentication.c
@@ -51,16 +78,20 @@ set(SOURCE_FILES
 	callbacks.c
 	call_log.c
 	call_params.c
+	carddav.c
 	chat.c
-	conference.c
+	chat_file_transfer.c
 	contactprovider.c
 	content.c
+	dial_plan.c
 	dict.c
 	ec-calibrator.c
+	echo-tester.c
 	enum.c
 	enum.h
 	event.c
 	friend.c
+	friendlist.c
 	info.c
 	ldap/ldapprovider.c
 	lime.c
@@ -68,11 +99,13 @@ set(SOURCE_FILES
 	linphonecore.c
 	linphone_tunnel_config.c
 	localplayer.c
+	lpc2xml.c
 	lpconfig.c
 	lpconfig.h
 	lsd.c
 	message_storage.c
 	misc.c
+	nat_policy.c
 	offeranswer.c
 	offeranswer.h
 	player.c
@@ -81,51 +114,43 @@ set(SOURCE_FILES
 	proxy.c
 	quality_reporting.c
 	remote_provisioning.c
+	ringtoneplayer.c
 	sal.c
 	siplogin.c
 	sipsetup.c
+	sqlite3_bctbx_vfs.c
 	xml2lpc.c
 	xml.c
 	xmlrpc.c
 	vtables.c
 )
+set(LINPHONE_SOURCE_FILES_CXX conference.cc)
+if(ANDROID)
+	list(APPEND LINPHONE_SOURCE_FILES_CXX linphonecore_jni.cc)
+	set_source_files_properties(linphonecore_jni.cc PROPERTIES COMPILE_DEFINITIONS "USE_JAVAH")
+endif()
 
-set(HEADER_FILES
-	account_creator.h
-	buffer.h
-	call_log.h
-	call_params.h
-	content.h
-	event.h
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
-	linphonepresence.h
-	linphone_proxy_config.h
-	linphone_tunnel.h
-	lpc2xml.h
-	lpconfig.h
-	sipsetup.h
-	xml2lpc.h
-	xmlrpc.h
-)
+set(LINPHONE_SOURCE_FILES_OBJC)
+if (IOS)
+	list(APPEND LINPHONE_SOURCE_FILES_OBJC ringtoneplayer_ios.m ringtoneplayer_ios.h)
+endif()
+
+
 if(ENABLE_TUNNEL)
-	list(APPEND SOURCE_FILES
+	list(APPEND LINPHONE_SOURCE_FILES_CXX
 		linphone_tunnel.cc
 		TunnelManager.cc
 	)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
-	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
+	list(APPEND LINPHONE_SOURCE_FILES_C linphone_tunnel_stubs.c)
 endif()
 
-set(GENERATED_SOURCE_FILES
-	${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
-)
-set_source_files_properties(${GENERATED_SOURCE_FILES} PROPERTIES GENERATED TRUE)
 find_package(Git)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
-	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake)
+add_custom_target(liblinphone-git-version
+	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DLINPHONE_VERSION=${LINPHONE_VERSION} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake
+	BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h"
+)
 
 add_definitions(
 	-DUSE_BELLESIP
@@ -133,6 +158,7 @@ add_definitions(
 )
 
 set(LIBS
+	${BCTOOLBOX_CORE_LIBRARIES}
 	${BELLESIP_LIBRARIES}
 	${MEDIASTREAMER2_LIBRARIES}
 	${XML2_LIBRARIES}
@@ -149,56 +175,107 @@ endif()
 if(ENABLE_TUNNEL)
 	list(APPEND LIBS ${TUNNEL_LIBRARIES})
 endif()
-if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+if(MSVC AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	list(APPEND LIBS ${LIBGCC} ${LIBMINGWEX})
 endif()
-if(WIN32 AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	list(APPEND LIBS shlwapi)
 endif()
 if(INTL_FOUND)
 	list(APPEND LIBS ${INTL_LIBRARIES})
 endif()
+if(BELCARD_FOUND)
+	list(APPEND LIBS ${BELCARD_LIBRARIES})
+	list(APPEND LINPHONE_SOURCE_FILES_CXX vcard.cc)
+	if(NOT MSVC)
+		list(APPEND STRICT_OPTIONS_CXX "-std=c++11")
+	endif()
+	if(APPLE)
+		list(APPEND STRICT_OPTIONS_CXX "-stdlib=libc++")
+	endif()
+else()
+	list(APPEND LINPHONE_SOURCE_FILES_C vcard_stubs.c)
+endif()
+
+apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
+apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
+apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC "CPP" "OBJC")
 
 if(ENABLE_STATIC)
-	add_library(linphone STATIC ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
-	target_link_libraries(linphone ${LIBS})
-else()
-	add_library(linphone SHARED ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
-	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
-	target_link_libraries(linphone ${LIBS})
+	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
+	set_target_properties(linphone-static PROPERTIES OUTPUT_NAME linphone)
+	add_dependencies(linphone-static liblinphone-git-version)
+	target_link_libraries(linphone-static ${LIBS})
+	if(ANDROID)
+		add_dependencies(linphone-static linphonecore-jni-header)
+	endif()
+	if(IOS)
+		target_link_libraries(linphone-static "-framework Foundation" "-framework AVFoundation")
+	endif()
+	install(TARGETS linphone-static EXPORT ${EXPORT_TARGETS_NAME}Targets
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	)
+endif()
+if(ENABLE_SHARED)
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
+
+	if(BELCARD_FOUND)
+		if(APPLE)
+	        set_target_properties(linphone PROPERTIES LINK_FLAGS "-stdlib=libc++")
+    	endif()
+	endif()
+
+	set_target_properties(linphone PROPERTIES LINKER_LANGUAGE CXX)
+	if(NOT ANDROID)
+		# Do not version shared library on Android
+		set_target_properties(linphone PROPERTIES SOVERSION ${LINPHONE_SO_VERSION})
+	endif()
+	add_dependencies(linphone liblinphone-git-version)
+	target_link_libraries(linphone PRIVATE ${LIBS})
+	if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+		set_target_properties(linphone PROPERTIES PREFIX "lib")
+	elseif(ANDROID)
+		set_target_properties(linphone PROPERTIES OUTPUT_NAME "linphone-${CMAKE_SYSTEM_PROCESSOR}")
+		add_dependencies(linphone linphonecore-jni-header)
+	endif()
 	if(MSVC)
-		if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/linphone.pdb
-				DESTINATION bin
+		if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/linphone.pdb
+				DESTINATION ${CMAKE_INSTALL_BINDIR}
 				PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 			)
 		endif()
 	endif()
-endif()
-if(WIN32 AND "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
-	set_target_properties(linphone PROPERTIES PREFIX "lib")
+	install(TARGETS linphone EXPORT ${EXPORT_TARGETS_NAME}Targets
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	)
 endif()
 if(ICONV_FOUND)
 	if(APPLE)
 		# Prevent conflict between the system iconv.h header and the one from macports.
-		target_compile_options(linphone PRIVATE "-include" "${ICONV_INCLUDE_DIRS}/iconv.h")
+		if(ENABLE_STATIC)
+			target_compile_options(linphone-static PRIVATE "-include" "${ICONV_INCLUDE_DIRS}/iconv.h")
+		endif()
+		if(ENABLE_SHARED)
+			target_compile_options(linphone PRIVATE "-include" "${ICONV_INCLUDE_DIRS}/iconv.h")
+		endif()
 	else()
-		target_include_directories(linphone PRIVATE ${ICONV_INCLUDE_DIRS})
+		if(ENABLE_STATIC)
+			target_include_directories(linphone-static PRIVATE ${ICONV_INCLUDE_DIRS})
+		endif()
+		if(ENABLE_SHARED)
+			target_include_directories(linphone PRIVATE ${ICONV_INCLUDE_DIRS})
+		endif()
 	endif()
 endif()
 
-install(TARGETS linphone EXPORT LinphoneTargets
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
-
-install(FILES ${HEADER_FILES}
-	DESTINATION include/linphone
+install(FILES ${LINPHONE_HEADER_FILES}
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
-if(ENABLE_DOC)
-	add_subdirectory(help)
-endif()
+add_subdirectory(help)

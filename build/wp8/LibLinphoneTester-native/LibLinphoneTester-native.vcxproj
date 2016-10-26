@@ -50,7 +50,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\oRTP\include;$(ProjectDir)..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tester;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\..\..\cunit\build\wp8\cunit\$(Platform)\$(Configuration);$(SolutionDir)$(Platform)\$(Configuration)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\oRTP\include;$(ProjectDir)..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tester;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\..\..\bcunit\build\wp8\bcunit\$(Platform)\$(Configuration);$(SolutionDir)$(Platform)\$(Configuration)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_WINRT_DLL;_CRT_SECURE_NO_WARNINGS;HAVE_CU_GET_SUITE;IN_LINPHONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -124,7 +124,7 @@
     <ProjectReference Include="..\..\..\..\belle-sip\build\wp8\belle-sip\belle-sip.vcxproj">
       <Project>{4c225a82-800b-427b-ba7b-61686a9b347f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\cunit\build\wp8\cunit\cunit.vcxproj">
+    <ProjectReference Include="..\..\..\..\bcunit\build\wp8\bcunit\bcunit.vcxproj">
       <Project>{902daf1d-ebf1-4d03-b598-143500a50ab4}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\msamr\build\wp8\msamr\msamr.vcxproj">

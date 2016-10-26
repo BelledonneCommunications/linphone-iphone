@@ -18,17 +18,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 /**
- This header files defines the Signaling Abstraction Layer.
- The purpose of this layer is too allow experiment different call signaling
- protocols and implementations under linphone, for example SIP, JINGLE...
+This file contains SAL API functions that do not depend on the underlying implementation (like belle-sip).
 **/
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #include "sal/sal.h"
-#include "bellesip_sal/sal_impl.h"
+
 
 #include <ctype.h>
+
+
+const char *sal_multicast_role_to_string(SalMulticastRole role){
+	switch(role){
+		case SalMulticastInactive:
+			return "inactive";
+		case SalMulticastReceiver:
+			return "receiver";
+		case SalMulticastSender:
+			return "sender";
+		case SalMulticastSenderReceiver:
+			return "sender-receiver";
+	}
+	return "INVALID";
+}
 
 const char* sal_transport_to_string(SalTransport transport) {
 	switch (transport) {
@@ -55,18 +68,27 @@ SalTransport sal_transport_parse(const char* param) {
 
 SalMediaDescription *sal_media_description_new(){
 	SalMediaDescription *md=ms_new0(SalMediaDescription,1);
+	int i;
 	md->refcount=1;
+	for(i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		md->streams[i].dir=SalStreamInactive;
+		md->streams[i].rtp_port = 0;
+		md->streams[i].rtcp_port = 0;
+		md->streams[i].haveZrtpHash = 0;
+	}
 	return md;
 }
 
 static void sal_media_description_destroy(SalMediaDescription *md){
 	int i;
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++){
-		ms_list_free_with_data(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
-		ms_list_free_with_data(md->streams[i].already_assigned_payloads,(void (*)(void *))payload_type_destroy);
+		bctbx_list_free_with_data(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
+		bctbx_list_free_with_data(md->streams[i].already_assigned_payloads,(void (*)(void *))payload_type_destroy);
 		md->streams[i].payloads=NULL;
 		md->streams[i].already_assigned_payloads=NULL;
+		sal_custom_sdp_attribute_free(md->streams[i].custom_sdp_attributes);
 	}
+	sal_custom_sdp_attribute_free(md->custom_sdp_attributes);
 	ms_free(md);
 }
 
@@ -82,10 +104,9 @@ void sal_media_description_unref(SalMediaDescription *md){
 	}
 }
 
-SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
-	SalMediaProto proto, SalStreamType type){
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md, SalMediaProto proto, SalStreamType type){
 	int i;
-	for(i=0;i<md->nb_streams;++i){
+	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		SalStreamDescription *ss=&md->streams[i];
 		if (!sal_stream_description_active(ss)) continue;
 		if (ss->proto==proto && ss->type==type) return ss;
@@ -96,7 +117,7 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
 unsigned int sal_media_description_nb_active_streams_of_type(SalMediaDescription *md, SalStreamType type) {
 	unsigned int i;
 	unsigned int nb = 0;
-	for (i = 0; i < md->nb_streams; ++i) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (md->streams[i].type == type) nb++;
 	}
@@ -105,7 +126,7 @@ unsigned int sal_media_description_nb_active_streams_of_type(SalMediaDescription
 
 SalStreamDescription * sal_media_description_get_active_stream_of_type(SalMediaDescription *md, SalStreamType type, unsigned int idx) {
 	unsigned int i;
-	for (i = 0; i < md->nb_streams; ++i) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (md->streams[i].type == type) {
 			if (idx-- == 0) return &md->streams[i];
@@ -137,7 +158,7 @@ bool_t sal_media_description_empty(const SalMediaDescription *md){
 
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	for(i=0;i<md->nb_streams;++i){
+	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		SalStreamDescription *ss=&md->streams[i];
 		if (!sal_stream_description_active(ss)) continue;
 		ss->dir=stream_dir;
@@ -147,7 +168,7 @@ void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_
 int sal_media_description_get_nb_active_streams(const SalMediaDescription *md) {
 	int i;
 	int nb = 0;
-	for (i = 0; i < md->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (sal_stream_description_active(&md->streams[i])) nb++;
 	}
 	return nb;
@@ -160,9 +181,9 @@ static bool_t is_null_address(const char *addr){
 /*check for the presence of at least one stream with requested direction */
 static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	
+
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
-	for(i=0;i<md->nb_streams;++i){
+	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		const SalStreamDescription *ss=&md->streams[i];
 		if (!sal_stream_description_active(ss)) continue;
 		if (ss->dir==stream_dir) {
@@ -196,32 +217,89 @@ bool_t sal_stream_description_active(const SalStreamDescription *sd) {
 	return (sd->rtp_port > 0);
 }
 
+/*these are switch case, so that when a new proto is added we can't forget to modify this function*/
 bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpAvpf) || (sd->proto == SalProtoRtpSavpf) || (sd->proto == SalProtoUdpTlsRtpSavpf));
+	switch (sd->proto){
+		case SalProtoRtpAvpf:
+		case SalProtoRtpSavpf:
+		case SalProtoUdpTlsRtpSavpf:
+			return TRUE;
+		case SalProtoRtpAvp:
+		case SalProtoRtpSavp:
+		case SalProtoUdpTlsRtpSavp:
+		case SalProtoOther:
+			return FALSE;
+	}
+	return FALSE;
 }
 
+bool_t sal_stream_description_has_ipv6(const SalStreamDescription *sd){
+	return strchr(sd->rtp_addr,':') != NULL;
+}
+
+bool_t sal_stream_description_has_implicit_avpf(const SalStreamDescription *sd){
+	return sd->implicit_rtcp_fb;
+}
+/*these are switch case, so that when a new proto is added we can't forget to modify this function*/
 bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpSavp) || (sd->proto == SalProtoRtpSavpf));
+	switch (sd->proto){
+		case SalProtoRtpSavp:
+		case SalProtoRtpSavpf:
+			return TRUE;
+		case SalProtoRtpAvp:
+		case SalProtoRtpAvpf:
+		case SalProtoUdpTlsRtpSavpf:
+		case SalProtoUdpTlsRtpSavp:
+		case SalProtoOther:
+			return FALSE;
+	}
+	return FALSE;
 }
 
 bool_t sal_stream_description_has_dtls(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoUdpTlsRtpSavp) || (sd->proto == SalProtoUdpTlsRtpSavpf));
+	switch (sd->proto){
+		case SalProtoUdpTlsRtpSavpf:
+		case SalProtoUdpTlsRtpSavp:
+			return TRUE;
+		case SalProtoRtpSavp:
+		case SalProtoRtpSavpf:
+		case SalProtoRtpAvp:
+		case SalProtoRtpAvpf:
+		case SalProtoOther:
+			return FALSE;
+	}
+	return FALSE;
+}
+
+bool_t sal_stream_description_has_zrtp(const SalStreamDescription *sd) {
+	if (sd->haveZrtpHash==1) return TRUE;
+	return FALSE;
 }
 
 bool_t sal_media_description_has_avpf(const SalMediaDescription *md) {
 	int i;
 	if (md->nb_streams == 0) return FALSE;
-	for (i = 0; i < md->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_avpf(&md->streams[i]) != TRUE) return FALSE;
 	}
 	return TRUE;
 }
 
+bool_t sal_media_description_has_implicit_avpf(const SalMediaDescription *md) {
+    int i;
+    if (md->nb_streams == 0) return FALSE;
+    for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+        if (!sal_stream_description_active(&md->streams[i])) continue;
+        if (sal_stream_description_has_implicit_avpf(&md->streams[i]) != TRUE) return FALSE;
+    }
+    return TRUE;
+}
+
 bool_t sal_media_description_has_srtp(const SalMediaDescription *md) {
 	int i;
 	if (md->nb_streams == 0) return FALSE;
-	for (i = 0; i < md->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_srtp(&md->streams[i]) != TRUE) return FALSE;
 	}
@@ -231,9 +309,33 @@ bool_t sal_media_description_has_srtp(const SalMediaDescription *md) {
 bool_t sal_media_description_has_dtls(const SalMediaDescription *md) {
 	int i;
 	if (md->nb_streams == 0) return FALSE;
-	for (i = 0; i < md->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_dtls(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_media_description_has_zrtp(const SalMediaDescription *md) {
+	int i;
+	if (md->nb_streams == 0) return FALSE;
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (sal_stream_description_has_zrtp(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_media_description_has_ipv6(const SalMediaDescription *md){
+	int i;
+	if (md->nb_streams == 0) return FALSE;
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (md->streams[i].rtp_addr[0] != '\0'){
+			if (!sal_stream_description_has_ipv6(&md->streams[i])) return FALSE;
+		}else{
+			if (strchr(md->addr,':') == NULL) return FALSE;
+		}
 	}
 	return TRUE;
 }
@@ -267,8 +369,8 @@ static bool_t is_recv_only(PayloadType *p){
 	return (p->flags & PAYLOAD_TYPE_FLAG_CAN_RECV) && ! (p->flags & PAYLOAD_TYPE_FLAG_CAN_SEND);
 }
 
-static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
-	const MSList *e1,*e2;
+static bool_t payload_list_equals(const bctbx_list_t *l1, const bctbx_list_t *l2){
+	const bctbx_list_t *e1,*e2;
 	for(e1=l1,e2=l2;e1!=NULL && e2!=NULL; e1=e1->next,e2=e2->next){
 		PayloadType *p1=(PayloadType*)e1->data;
 		PayloadType *p2=(PayloadType*)e2->data;
@@ -320,11 +422,56 @@ int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStre
 	if (sd1->ptime != sd2->ptime) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	if (sd1->dir != sd2->dir) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 
+	/* ICE */
+	if (strcmp(sd1->ice_ufrag, sd2->ice_ufrag) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(sd1->ice_pwd, sd2->ice_pwd) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+
 	/*DTLS*/
 	if (sd1->dtls_role != sd2->dtls_role) result |= SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
 	if (strcmp(sd1->dtls_fingerprint, sd2->dtls_fingerprint) != 0) result |= SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
 
 	return result;
+}
+
+char * sal_media_description_print_differences(int result){
+	char *out = NULL;
+	if (result & SAL_MEDIA_DESCRIPTION_CODEC_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "CODEC_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "NETWORK_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED){
+		out = ms_strcat_printf(out, "%s ", "ICE_RESTART_DETECTED");
+		result &= ~SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "CRYPTO_KEYS_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "NETWORK_XXXCAST_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "STREAMS_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "CRYPTO_POLICY_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION){
+		out = ms_strcat_printf(out, "%s ", "FORCE_STREAM_RECONSTRUCTION");
+		result &= ~SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION;
+	}
+	if (result){
+		ms_fatal("There are unhandled result bitmasks in sal_media_description_print_differences(), fix it");
+	}
+	if (!out) out = ms_strdup("NONE");
+	return out;
 }
 
 int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2) {
@@ -336,11 +483,18 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 		result |= SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED;
 	if (md1->nb_streams != md2->nb_streams) result |= SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED;
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
-	for(i = 0; i < md1->nb_streams; ++i){
+
+	/* ICE */
+	if (strcmp(md1->ice_ufrag, md2->ice_ufrag) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(md1->ice_pwd, md2->ice_pwd) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+
+	for(i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
+		if (!sal_stream_description_active(&md1->streams[i]) && !sal_stream_description_active(&md2->streams[i])) continue;
 		result |= sal_stream_description_equals(&md1->streams[i], &md2->streams[i]);
 	}
 	return result;
 }
+
 static void assign_address(SalAddress** address, const char *value){
 	if (*address){
 		sal_address_destroy(*address);
@@ -386,18 +540,18 @@ void sal_op_set_route(SalOp *op, const char *route){
 	char* route_string=(void *)0;
 	SalOpBase* op_base = (SalOpBase*)op;
 	if (op_base->route_addresses) {
-		ms_list_for_each(op_base->route_addresses,(void (*)(void *))sal_address_destroy);
-		op_base->route_addresses=ms_list_free(op_base->route_addresses);
+		bctbx_list_for_each(op_base->route_addresses,(void (*)(void *))sal_address_destroy);
+		op_base->route_addresses=bctbx_list_free(op_base->route_addresses);
 	}
 	if (route) {
-		op_base->route_addresses=ms_list_append(NULL,NULL);
+		op_base->route_addresses=bctbx_list_append(NULL,NULL);
 		assign_address((SalAddress**)&(op_base->route_addresses->data),route);
 		route_string=sal_address_as_string((SalAddress*)op_base->route_addresses->data); \
 	}
 	assign_string(&op_base->route,route_string); \
 	if(route_string) ms_free(route_string);
 }
-const MSList* sal_op_get_route_addresses(const SalOp *op) {
+const bctbx_list_t* sal_op_get_route_addresses(const SalOp *op) {
 	return ((SalOpBase*)op)->route_addresses;
 }
 void sal_op_set_route_address(SalOp *op, const SalAddress *address){
@@ -408,7 +562,7 @@ void sal_op_set_route_address(SalOp *op, const SalAddress *address){
 void sal_op_add_route_address(SalOp *op, const SalAddress *address){
 	SalOpBase* op_base = (SalOpBase*)op;
 	if (op_base->route_addresses) {
-		op_base->route_addresses=ms_list_append(op_base->route_addresses,(void*)sal_address_clone(address));
+		op_base->route_addresses=bctbx_list_append(op_base->route_addresses,(void*)sal_address_clone(address));
 	} else {
 		sal_op_set_route_address(op,address);
 	}
@@ -436,7 +590,10 @@ void sal_op_set_to_address(SalOp *op, const SalAddress *to){
 	sal_op_set_to(op,address_string);
 	ms_free(address_string);
 }
-
+void sal_op_set_diversion_address(SalOp *op, const SalAddress *diversion){
+	if (((SalOpBase*)op)->diversion_address) sal_address_destroy(((SalOpBase*)op)->diversion_address);
+	((SalOpBase*)op)->diversion_address=diversion?sal_address_clone(diversion):NULL;
+}
 void sal_op_set_user_pointer(SalOp *op, void *up){
 	((SalOpBase*)op)->user_pointer=up;
 }
@@ -460,11 +617,8 @@ const SalAddress *sal_op_get_to_address(const SalOp *op){
 	return ((SalOpBase*)op)->to_address;
 }
 
-const char *sal_op_get_route(const SalOp *op){
-#ifdef BELLE_SIP
-ms_fatal("sal_op_get_route not supported, use sal_op_get_route_addresses instead");
-#endif
-	return ((SalOpBase*)op)->route;
+const SalAddress *sal_op_get_diversion_address(const SalOp *op){
+	return ((SalOpBase*)op)->diversion_address;
 }
 
 const char *sal_op_get_remote_ua(const SalOp *op){
@@ -485,14 +639,7 @@ const char *sal_op_get_network_origin(const SalOp *op){
 const char* sal_op_get_call_id(const SalOp *op) {
 	return  ((SalOpBase*)op)->call_id;
 }
-char* sal_op_get_dialog_id(const SalOp *op) {
-	if (op->dialog != NULL) {
-		return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", ((SalOpBase*)op)->call_id,
-			belle_sip_dialog_get_remote_tag(op->dialog), belle_sip_dialog_get_local_tag(op->dialog));
-	}
-	return NULL;
 
-}
 void __sal_op_init(SalOp *b, Sal *sal){
 	memset(b,0,sizeof(SalOpBase));
 	((SalOpBase*)b)->root=sal;
@@ -503,7 +650,9 @@ void __sal_op_set_network_origin(SalOp *op, const char *origin){
 }
 
 void __sal_op_set_remote_contact(SalOp *op, const char* remote_contact){
-	SET_PARAM(op,remote_contact);
+	assign_address(&((SalOpBase*)op)->remote_contact_address,remote_contact);\
+	/*to preserve header params*/
+	assign_string(&((SalOpBase*)op)->remote_contact,remote_contact); \
 }
 
 void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin){
@@ -577,13 +726,18 @@ void __sal_op_free(SalOp *op){
 		sal_address_destroy(b->service_route);
 	}
 	if (b->route_addresses){
-		ms_list_for_each(b->route_addresses,(void (*)(void*)) sal_address_destroy);
-		b->route_addresses=ms_list_free(b->route_addresses);
+		bctbx_list_for_each(b->route_addresses,(void (*)(void*)) sal_address_destroy);
+		b->route_addresses=bctbx_list_free(b->route_addresses);
 	}
 	if (b->recv_custom_headers)
 		sal_custom_header_free(b->recv_custom_headers);
 	if (b->sent_custom_headers)
 		sal_custom_header_free(b->sent_custom_headers);
+	
+	if (b->entity_tag != NULL){
+		ms_free(b->entity_tag);
+		b->entity_tag = NULL;
+	}
 	ms_free(op);
 }
 
@@ -617,8 +771,9 @@ void sal_auth_info_delete(SalAuthInfo* auth_info) {
 
 const char* sal_stream_type_to_string(SalStreamType type) {
 	switch (type) {
-	case SalAudio:return "audio";
-	case SalVideo:return "video";
+	case SalAudio: return "audio";
+	case SalVideo: return "video";
+	case SalText: return "text";
 	default: return "other";
 	}
 }
@@ -711,15 +866,16 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 	}
 }
 
-static void remove_trailing_spaces(char *line){
-	int i;
-	for(i=strlen(line)-1;i>=0;--i){
-		if (isspace(line[i])) line[i]='\0';
-		else break;
+static void remove_trailing_spaces(char *line) {
+	size_t size = size = strlen(line);
+	char *end = line + size - 1;
+	while (end >= line && isspace(*end)) {
+		end--;
 	}
+    *(end + 1) = '\0';
 }
 
-static int line_get_value(const char *input, const char *key, char *value, size_t value_size, int *read){
+static int line_get_value(const char *input, const char *key, char *value, size_t value_size, size_t *read){
 	const char *end=strchr(input,'\n');
 	char line[256]={0};
 	char key_candidate[256];
@@ -744,7 +900,7 @@ static int line_get_value(const char *input, const char *key, char *value, size_
 }
 
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size){
-	int read=0;
+	size_t read=0;
 
 	do{
 		if (line_get_value(data,key,value,value_size,&read))
@@ -754,19 +910,23 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 	return FALSE;
 }
 
-int sal_body_has_type(const SalBody *body, const char *type, const char *subtype){
-	return body->type && body->subtype
-		&& strcmp(body->type,type)==0
-		&& strcmp(body->subtype,subtype)==0;
+const char *sal_op_get_entity_tag(const SalOp* op) {
+	SalOpBase* op_base = (SalOpBase*)op;
+	return op_base->entity_tag;
 }
 
-belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal) {
-	return sal->stack;
-}
 
-char* sal_op_get_public_uri(SalOp *op) {
-	if (op && op->refresher) {
-		return belle_sip_refresher_get_public_uri(op->refresher);
+void sal_op_set_entity_tag(SalOp *op, const char* entity_tag) {
+	SalOpBase* op_base = (SalOpBase*)op;
+	if (op_base->entity_tag != NULL){
+		ms_free(op_base->entity_tag);
 	}
-	return NULL;
+	if (entity_tag)
+		op_base->entity_tag = ms_strdup(entity_tag);
+	else
+		op_base->entity_tag = NULL;
 }
+
+#ifdef BELLE_SIP_H
+#error "You included belle-sip header other than just belle-sip/object.h in sal.c. This breaks design rules !"
+#endif

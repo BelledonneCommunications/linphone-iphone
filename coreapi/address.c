@@ -89,37 +89,42 @@ const char *linphone_address_get_domain(const LinphoneAddress *u){
 /**
  * Sets the display name.
 **/
-void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name){
+int linphone_address_set_display_name(LinphoneAddress *u, const char *display_name){
 	sal_address_set_display_name(u,display_name);
+	return 0;
 }
 
 /**
  * Sets the username.
 **/
-void linphone_address_set_username(LinphoneAddress *uri, const char *username){
+int linphone_address_set_username(LinphoneAddress *uri, const char *username){
 	sal_address_set_username(uri,username);
+	return 0;
 }
 
 /**
  * Sets the domain.
 **/
-void linphone_address_set_domain(LinphoneAddress *uri, const char *host){
+int linphone_address_set_domain(LinphoneAddress *uri, const char *host){
 	sal_address_set_domain(uri,host);
+	return 0;
 }
 
 
 /**
  * Sets the port number.
 **/
-void linphone_address_set_port(LinphoneAddress *uri, int port){
+int linphone_address_set_port(LinphoneAddress *uri, int port){
 	sal_address_set_port(uri,port);
+	return 0;
 }
 
 /**
  * Set a transport.
 **/
-void linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
+int linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
 	sal_address_set_transport(uri,(SalTransport)tp);
+	return 0;
 }
 
 /**
@@ -127,6 +132,20 @@ void linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType 
 **/
 LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri){
 	return (LinphoneTransportType)sal_address_get_transport(uri);
+}
+
+/**
+ * Set the value of the method parameter
+**/
+void linphone_address_set_method_param(LinphoneAddress *addr, const char *method) {
+	sal_address_set_method_param(addr, method);
+}
+
+/**
+ * Get the value of the method parameter
+**/
+const char *linphone_address_get_method_param(const LinphoneAddress *addr) {
+	return sal_address_get_method_param(addr);
 }
 
 /**
@@ -169,7 +188,8 @@ bool_t linphone_address_get_secure(const LinphoneAddress *uri){
 
 /**
  * Make the address refer to a secure location (sips scheme)
- * @param enabled TRUE if address is requested to be secure.
+ * @param[in] addr A #LinphoneAddress object
+ * @param[in] enabled TRUE if address is requested to be secure.
 **/
 void linphone_address_set_secure(LinphoneAddress *addr, bool_t enabled){
 	sal_address_set_secure(addr, enabled);
@@ -277,6 +297,38 @@ const char *linphone_address_get_password(const LinphoneAddress *addr){
 **/
 void linphone_address_set_header(LinphoneAddress *addr, const char *header_name, const char *header_value){
 	sal_address_set_header(addr,header_name,header_value);
+}
+
+bool_t linphone_address_has_param(const LinphoneAddress *addr, const char *name) {
+	return sal_address_has_param(addr, name);
+}
+
+const char * linphone_address_get_param(const LinphoneAddress *addr, const char *name) {
+	return sal_address_get_param(addr, name);
+}
+
+void linphone_address_set_param(LinphoneAddress *addr, const char *name, const char *value) {
+	sal_address_set_param(addr, name, value);
+}
+
+void linphone_address_set_params(LinphoneAddress *addr, const char *params) {
+	sal_address_set_params(addr, params);
+}
+
+void linphone_address_set_uri_param(LinphoneAddress *addr, const char *name, const char *value) {
+	sal_address_set_uri_param(addr, name, value);
+}
+
+void linphone_address_set_uri_params(LinphoneAddress *addr, const char *params) {
+	sal_address_set_uri_params(addr, params);
+}
+
+bool_t linphone_address_has_uri_param(const LinphoneAddress *addr, const char *name) {
+	return sal_address_has_uri_param(addr, name);
+}
+
+const char * linphone_address_get_uri_param(const LinphoneAddress *addr, const char *name) {
+	return sal_address_get_uri_param(addr, name);
 }
 
 LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {

@@ -87,6 +87,7 @@ LINPHONE_PUBLIC int linphone_proxy_config_set_identity_address(LinphoneProxyConf
  * Sets a SIP route.
  * When a route is set, all outgoing calls will go to the route's destination if this proxy
  * is the default one (see linphone_core_set_default_proxy() ).
+ * @return -1 if route is invalid, 0 otherwise.
 **/
 LINPHONE_PUBLIC int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route);
 
@@ -393,23 +394,23 @@ LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfi
 LINPHONE_PUBLIC bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username);
 
 /**
- * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
- * or +33888444222 depending on the #LinphoneProxyConfig object. However this argument is OPTIONNAL
- * and if not provided, a default one will be used.
- * This function will always generate a normalized username; if input is not a phone number, output will be a copy of input.
+ * See linphone_proxy_config_normalize_phone_number
  * @param proxy #LinphoneProxyConfig object containing country code and/or escape symbol. If NULL passed, will use default configuration.
  * @param username the string to parse
  * @param result the newly normalized number
  * @param result_len the size of the normalized number \a result
  * @return TRUE if a phone number was recognized, FALSE otherwise.
+ * @deprecated use linphone_proxy_config_normalize_phone_number()
  */
 LINPHONE_PUBLIC bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
 
 /**
- * Same objective as linphone_proxy_config_normalize_number but allocates a new string
+ * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
+ * or +33888444222 depending on the #LinphoneProxyConfig object.
+ * This function will always generate a normalized username if input is a phone number.
  * @param proxy #LinphoneProxyConfig object containing country code and/or escape symbol. If NULL passed, will use default configuration.
  * @param username the string to parse
- * @return NULL if invalid phone number, normalized phone number from username input otherwise.
+ * @return NULL if input is an invalid phone number, normalized phone number from username input otherwise.
 */
 LINPHONE_PUBLIC char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, const char *username);
 
@@ -515,6 +516,54 @@ LINPHONE_PUBLIC const char *linphone_proxy_config_get_custom_header(LinphoneProx
  * @param header_value the header's value
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const char *header_name, const char *header_value);
+
+/**
+ * Find authentication info matching proxy config, if any, similarly to linphone_core_find_auth_info.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return a #LinphoneAuthInfo matching proxy config criteria if possible, NULL if nothing can be found.
+**/
+LINPHONE_PUBLIC const LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg);
+
+
+/**
+ * Get the persistent reference key associated to the proxy config.
+ *
+ * The reference key can be for example an id to an external database.
+ * It is stored in the config file, thus can survive to process exits/restarts.
+ *
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return The reference key string that has been associated to the proxy config, or NULL if none has been associated.
+**/
+LINPHONE_PUBLIC const char * linphone_proxy_config_get_ref_key(const LinphoneProxyConfig *cfg);
+
+/**
+ * Associate a persistent reference key to the proxy config.
+ *
+ * The reference key can be for example an id to an external database.
+ * It is stored in the config file, thus can survive to process exits/restarts.
+ *
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @param[in] refkey The reference key string to associate to the proxy config.
+**/
+LINPHONE_PUBLIC void linphone_proxy_config_set_ref_key(LinphoneProxyConfig *cfg, const char *refkey);
+
+/**
+ * Get The policy that is used to pass through NATs/firewalls when using this proxy config.
+ * If it is set to NULL, the default NAT policy from the core will be used instead.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return LinphoneNatPolicy object in use.
+ * @see linphone_core_get_nat_policy()
+ */
+LINPHONE_PUBLIC LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg);
+
+/**
+ * Set the policy to use to pass through NATs/firewalls when using this proxy config.
+ * If it is set to NULL, the default NAT policy from the core will be used instead.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] policy LinphoneNatPolicy object
+ * @see linphone_core_set_nat_policy()
+ */
+LINPHONE_PUBLIC void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy);
 
 /**
  * @}

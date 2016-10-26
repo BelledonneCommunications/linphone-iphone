@@ -44,7 +44,7 @@ bool_t lsd_player_loop_enabled(const LsdPlayer *p);
 void lsd_player_set_gain(LsdPlayer *p, float gain);
 LinphoneSoundDaemon *lsd_player_get_daemon(const LsdPlayer *p);
 
-LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, int nchannels);
+LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *cardname, int rate, int nchannels);
 LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
 void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
 void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon *obj);
@@ -74,6 +74,15 @@ typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
 LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
 					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
 /**
+ * Start the simulation of call to test the latency with an external device
+ *@param bitrate
+**/
+LINPHONE_PUBLIC int linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate);
+/**
+ * Stop the simulation of call
+**/
+LINPHONE_PUBLIC int linphone_core_stop_echo_tester(LinphoneCore *lc);
+/**
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode
  */
@@ -90,13 +99,22 @@ typedef bool_t (*LinphoneCoreIterateHook)(void *data);
 void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
 
 void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
+
+typedef struct _LinphoneDialPlan {
+	const char *country;
+	const char* iso_country_code; /* ISO 3166-1 alpha-2 code, ex: FR for France*/
+	char  ccc[8]; /*country calling code*/
+	int nnl; /*maximum national number length*/
+	const char * icp; /*international call prefix, ex: 00 in europe*/
+} LinphoneDialPlan;
+
 /**
  * @ingroup misc
  *Function to get  call country code from  ISO 3166-1 alpha-2 code, ex: FR returns 33
  *@param iso country code alpha2
  *@return call country code or -1 if not found
  */
-LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_iso(const char* iso); 
+LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_iso(const char* iso);
 /**
  * @ingroup misc
  *Function to get  call country code from  an e164 number, ex: +33952650121 will return 33
@@ -104,6 +122,22 @@ LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_iso(const char* iso);
  *@return call country code or -1 if not found
  */
 LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_e164(const char* e164);
+
+/**
+ * Return NULL-terminated array of all known dial plans
+**/
+LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_get_all(void);
+
+/**
+ * Find best match for given CCC
+ * @return Return matching dial plan, or a generic one if none found
+**/
+LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc);
+
+/**
+ * Return if given plan is generic
+**/
+LINPHONE_PUBLIC bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc);
 
 #ifdef __cplusplus
 }

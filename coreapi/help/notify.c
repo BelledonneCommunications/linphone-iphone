@@ -152,16 +152,16 @@ int main(int argc, char *argv[]){
 		ms_usleep(50000);
 		++i;
 		if (data->ev && i%100==0){
-			LinphoneContentPrivate content;
-			content.type="application";
-			content.subtype="goodxml";
-			content.data="really cool";
-			content.size=strlen((const char*)content.data);
-			linphone_event_notify(data->ev,LINPHONE_CONTENT(&content));
+			LinphoneContent *content = linphone_core_create_content(lc);
+			linphone_content_set_type(content, "application");
+			linphone_content_set_subtype(content, "goodxml");
+			linphone_content_set_string_buffer(content, "really cool");
+			linphone_event_notify(data->ev, content);
+			linphone_content_unref(content);
 		}
 	}
 
-	linphone_core_get_default_proxy(lc,&proxy_cfg); /* get default proxy config*/
+	proxy_cfg = linphone_core_get_default_proxy_config(lc); /* get default proxy config*/
 	linphone_proxy_config_edit(proxy_cfg); /*start editing proxy configuration*/
 	linphone_proxy_config_enable_register(proxy_cfg,FALSE); /*de-activate registration for this proxy config*/
 	linphone_proxy_config_done(proxy_cfg); /*initiate REGISTER with expire = 0*/

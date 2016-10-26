@@ -1,75 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <!-- interface-local-resource-path /home/francois/projects/linphone/linphone/pixmaps/hicolor -->
-  <object class="GtkImage" id="add_image">
+  <object class="GtkImage" id="add_call_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-add</property>
+    <property name="xpad">2</property>
+    <property name="pixel_size">30</property>
+    <property name="icon_name">linphone-add-call</property>
   </object>
   <object class="GtkImage" id="add_image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-add</property>
+    <property name="icon_name">linphone-contact-add</property>
+  </object>
+  <object class="GtkImage" id="clear_call_history_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="xpad">4</property>
+    <property name="icon_name">linphone-delete</property>
   </object>
   <object class="GtkImage" id="connect_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-connect</property>
+    <property name="icon-size">1</property>
   </object>
-  <object class="GtkImage" id="edit_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-edit</property>
+  <object class="GtkListStore" id="contact_list_model">
+    <columns>
+      <!-- column-name presence_icon -->
+      <column type="gchararray"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name id -->
+      <column type="gpointer"/>
+      <!-- column-name chatroom -->
+      <column type="gpointer"/>
+      <!-- column-name sip_address -->
+      <column type="gchararray"/>
+      <!-- column-name chat_icon -->
+      <column type="gchararray"/>
+      <!-- column-name call_button_visible -->
+      <column type="gboolean"/>
+      <!-- column-name chat_button_visible -->
+      <column type="gboolean"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">linphone-status-online</col>
+        <col id="1">Toto</col>
+        <col id="4">toto@sip.linphone.org</col>
+        <col id="5">linphone-chat-nothing</col>
+        <col id="6">False</col>
+        <col id="7">False</col>
+      </row>
+      <row>
+        <col id="0">linphone-status-offline</col>
+        <col id="1">Toto2</col>
+        <col id="4">toto2@sip.linphone.org</col>
+        <col id="5">linphone-chat-nothing</col>
+        <col id="6">False</col>
+        <col id="7">False</col>
+      </row>
+      <row>
+        <col id="0">linphone-status-offline</col>
+        <col id="1">Toto3</col>
+        <col id="4">toto3@sip.linphone.org</col>
+        <col id="5">linphone-chat-nothing</col>
+        <col id="6">False</col>
+        <col id="7">False</col>
+      </row>
+    </data>
   </object>
   <object class="GtkImage" id="edit_image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-edit</property>
+    <property name="icon_name">linphone-edit</property>
   </object>
   <object class="GtkImage" id="execute_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-execute</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkImage" id="home_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-home</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkImage" id="info_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-info</property>
-  </object>
-  <object class="GtkListStore" id="model1">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">All users</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Online users</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="model2">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">ADSL</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Fiber Channel</col>
-      </row>
-    </data>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkListStore" id="model3">
     <columns>
@@ -85,22 +110,32 @@
   <object class="GtkImage" id="properties_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="yalign">0.49000000953674316</property>
     <property name="stock">gtk-properties</property>
-  </object>
-  <object class="GtkImage" id="remove_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="tooltip_text" translatable="yes">Delete</property>
-    <property name="stock">gtk-remove</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkImage" id="remove_image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="tooltip_text" translatable="yes">Delete</property>
-    <property name="stock">gtk-remove</property>
+    <property name="icon_name">linphone-delete</property>
+  </object>
+  <object class="GtkImage" id="start_call_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="xpad">2</property>
+    <property name="pixel_size">30</property>
+    <property name="icon_name">linphone-start-call</property>
+  </object>
+  <object class="GtkImage" id="start_chat_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="xpad">2</property>
+    <property name="pixel_size">30</property>
+    <property name="icon_name">linphone-start-chat</property>
   </object>
   <object class="GtkWindow" id="main">
+    <property name="width_request">640</property>
+    <property name="height_request">480</property>
     <property name="can_focus">False</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="default_width">660</property>
@@ -132,11 +167,12 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="p" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="linphone_gtk_show_parameters" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="provisionning_item">
+                      <object class="GtkMenuItem" id="provisioning_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Set configuration URI</property>
@@ -179,7 +215,40 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkCheckMenuItem" id="show_keypad_menu_item">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Show keypad</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="linphone_gtk_show_keypad_checked" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="contacts_import_item">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Import contacts from vCards</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="linphone_gtk_import_contacts" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="contacts_export_item">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Export contacts as vCards</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="linphone_gtk_export_contacts" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -190,6 +259,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="gtk_main_quit" swapped="no"/>
                       </object>
                     </child>
@@ -224,6 +294,7 @@
                         <property name="can_focus">False</property>
                         <property name="image">info_image</property>
                         <property name="use_stock">False</property>
+                        <accelerator key="d" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="linphone_gtk_log_show" swapped="no"/>
                       </object>
                     </child>
@@ -312,10 +383,11 @@
                                 <property name="can_focus">True</property>
                                 <property name="invisible_char">●</property>
                                 <property name="invisible_char_set">True</property>
+                                <property name="secondary_icon_name">linphone-contact-add</property>
                                 <property name="primary_icon_activatable">False</property>
-                                <property name="secondary_icon_activatable">False</property>
+                                <property name="secondary_icon_activatable">True</property>
                                 <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
+                                <property name="secondary_icon_sensitive">False</property>
                                 <signal name="activate" handler="linphone_gtk_uri_bar_activate" swapped="no"/>
                               </object>
                               <packing>
@@ -346,30 +418,17 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="keypad">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <signal name="clicked" handler="linphone_gtk_create_keypad" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton" id="add_call">
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Initiate a new call</property>
+                    <property name="image">add_call_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_call" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">6</property>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -377,12 +436,13 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="image">start_call_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_call" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -390,20 +450,15 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="image">start_chat_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_chat" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="pack_type">end</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -417,6 +472,8 @@
               <object class="GtkHPaned" id="central_paned">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="position">200</property>
+                <property name="position_set">True</property>
                 <child>
                   <object class="GtkVBox" id="vbox12">
                     <property name="visible">True</property>
@@ -449,13 +506,66 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="model">contact_list_model</property>
+                            <property name="headers_visible">False</property>
                             <property name="reorderable">True</property>
-                            <property name="enable_search">False</property>
                             <property name="search_column">1</property>
+                            <property name="tooltip_column">4</property>
                             <signal name="button-press-event" handler="linphone_gtk_contact_list_button_pressed" swapped="no"/>
-                            <signal name="cursor-changed" handler="linphone_gtk_contact_clicked" swapped="no"/>
-                            <signal name="row-activated" handler="linphone_gtk_contact_activated" swapped="no"/>
+                            <signal name="leave-notify-event" handler="linphone_gtk_friend_list_leave_event_handler" swapped="no"/>
+                            <signal name="enter-notify-event" handler="linphone_gtk_friend_list_enter_event_handler" swapped="no"/>
+                            <signal name="motion-notify-event" handler="linphone_gtk_friend_list_motion_event_handler" swapped="no"/>
                             <signal name="popup-menu" handler="linphone_gtk_popup_contact_menu" swapped="no"/>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="presence_status_column">
+                                <child>
+                                  <object class="GtkCellRendererPixbuf" id="status_img_cell">
+                                    <property name="stock_size">3</property>
+                                  </object>
+                                  <attributes>
+                                    <attribute name="icon-name">0</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="contact_name_column">
+                                <property name="max_width">60</property>
+                                <property name="expand">True</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="contact_name_cell"/>
+                                  <attributes>
+                                    <attribute name="text">1</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="contact_call_column">
+                                <child>
+                                  <object class="GtkCellRendererPixbuf" id="contact_call_renderer">
+                                    <property name="icon_name">linphone-start-call2</property>
+                                    <property name="stock_size">3</property>
+                                  </object>
+                                  <attributes>
+                                    <attribute name="visible">6</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="contact_chat_column">
+                                <child>
+                                  <object class="GtkCellRendererPixbuf" id="contact_chat_renderer">
+                                    <property name="stock_size">3</property>
+                                  </object>
+                                  <attributes>
+                                    <attribute name="visible">7</attribute>
+                                    <attribute name="icon-name">5</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -470,14 +580,16 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="spacing">2</property>
                         <child>
                           <object class="GtkButton" id="add_button">
+                            <property name="width_request">32</property>
+                            <property name="height_request">32</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="resize_mode">immediate</property>
                             <property name="image">add_image1</property>
-                            <property name="xalign">1</property>
                             <signal name="clicked" handler="linphone_gtk_add_button_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -488,7 +600,10 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="edit_button">
+                            <property name="width_request">32</property>
+                            <property name="height_request">32</property>
                             <property name="visible">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">edit_image1</property>
@@ -502,7 +617,10 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="remove_button">
+                            <property name="width_request">32</property>
+                            <property name="height_request">32</property>
                             <property name="visible">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">remove_image1</property>
@@ -518,19 +636,21 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="padding">4</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="resize">False</property>
-                    <property name="shrink">False</property>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkNotebook" id="viewswitch">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <signal name="switch-page" handler="linphone_gtk_viewswitch_changed" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -557,6 +677,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="headers_visible">False</property>
+                                    <property name="show_expanders">False</property>
                                     <signal name="cursor-changed" handler="linphone_gtk_history_row_selected" swapped="no"/>
                                     <signal name="row-activated" handler="linphone_gtk_history_row_activated" swapped="no"/>
                                   </object>
@@ -698,11 +819,11 @@
                                 <property name="layout_style">end</property>
                                 <child>
                                   <object class="GtkButton" id="erase_call_logs_button">
-                                    <property name="label">gtk-clear</property>
+                                    <property name="label" translatable="yes">Clear call history</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="use_stock">True</property>
+                                    <property name="image">clear_call_history_image</property>
                                     <signal name="clicked" handler="linphone_gtk_clear_call_logs" swapped="no"/>
                                   </object>
                                   <packing>
@@ -710,12 +831,6 @@
                                     <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
                                 </child>
                               </object>
                               <packing>
@@ -737,35 +852,43 @@
                       </packing>
                     </child>
                     <child type="tab">
-                      <object class="GtkHBox" id="hbox6">
+                      <object class="GtkEventBox" id="history_tab_eventbox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                        <property name="visible_window">False</property>
                         <signal name="button-press-event" handler="linphone_gtk_call_log_reset_missed_call" swapped="no"/>
                         <child>
-                          <object class="GtkImage" id="history_tab_icon">
+                          <object class="GtkHBox" id="history_tab_hbox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="stock">gtk-refresh</property>
-                            <property name="icon-size">1</property>
+                            <child>
+                              <object class="GtkImage" id="history_tab_icon">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_name">linphone-history</property>
+                                <property name="icon-size">1</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">4</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="history_tab_label">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Recent calls</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label3">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="yalign">0.49000000953674316</property>
-                            <property name="label" translatable="yes">Recent calls</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -891,15 +1014,39 @@
           </packing>
         </child>
         <child>
-          <object class="GtkStatusbar" id="status_bar">
+          <object class="GtkHBox" id="status_bar_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+            <child>
+              <object class="GtkStatusbar" id="status_bar">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="has_resize_grip">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="autoanswer_icon">
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Autoanswer is enabled</property>
+                <property name="pixel_size">16</property>
+                <property name="icon_name">linphone-warning</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
             <property name="position">2</property>
           </packing>
         </child>

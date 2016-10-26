@@ -4,8 +4,9 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
-register_only_when_network_is_up=0
+
 composing_idle_timeout=1
+store_ha1_passwd=0 #used for sipp
 
 [auth_info_0]
 username=marie
@@ -32,6 +33,7 @@ subscribe=0
 [rtp]
 audio_rtp_port=18070-28000
 video_rtp_port=28070-38000
+text_rtp_port=39000-49000
 
 [video]
 display=0
@@ -51,3 +53,8 @@ echocancellation=0 #to not overload cpu in case of VG
 dns_srv_enabled=0 #no srv needed in general
 stun_server=stun.linphone.org
 
+#leave this section, which is used by "Codec setup" test of "Setup" suite.
+[video_codec_0]
+mime=VP8
+rate=90000
+enabled=1

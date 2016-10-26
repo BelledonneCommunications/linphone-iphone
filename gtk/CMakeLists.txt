@@ -24,26 +24,27 @@ set(UI_FILES
 	about.ui
 	audio_assistant.ui
 	buddylookup.ui
+	callee_frame.ui
 	call_logs.ui
 	call_statistics.ui
+	chatroom_frame.ui
+	conf_frame.ui
 	config-uri.ui
 	contact.ui
 	dscp_settings.ui
+	in_call_frame.ui
 	keypad.ui
 	ldap.ui
+	login_frame.ui
 	log.ui
 	main.ui
 	parameters.ui
 	password.ui
 	provisioning-fetch.ui
+	setup_wizard.ui
 	sip_account.ui
 	tunnel_config.ui
 	waiting.ui
-	chatroom_frame.ui
-	in_call_frame.ui
-	conf_frame.ui
-	callee_frame.ui
-	login_frame.ui
 )
 
 set(PIXMAPS stock_people.png)
@@ -70,6 +71,7 @@ set(SOURCE_FILES
 	utils.c
 	videowindow.c
 )
+
 if(ENABLE_ASSISTANT)
 	list(APPEND SOURCE_FILES setupwizard.c)
 endif()
@@ -77,18 +79,26 @@ if(WIN32)
 	list(APPEND SOURCE_FILES linphone.rc)
 endif()
 
+set(OBJC_FILES)
+if (APPLE)
+	list(APPEND OBJC_FILES mac.m)
+endif()
+
+apply_compile_flags(OBJC_FILES "CPP" "OBJC")
+apply_compile_flags(SOURCE_FILES "CPP" "C")
+
 if(WIN32)
 	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})
 else()
-	add_executable(linphone-gtk ${SOURCE_FILES})
+	add_executable(linphone-gtk ${SOURCE_FILES} ${OBJC_FILES})
 endif()
 set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone LINKER_LANGUAGE CXX)
 target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS} ${INTL_INCLUDE_DIRS})
-target_link_libraries(linphone-gtk linphone ${GTK2_LIBRARIES})
+target_link_libraries(linphone-gtk ${LINPHONE_LIBS_FOR_TOOLS} ${GTK2_LIBRARIES} ${BCTOOLBOX_CORE_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
+set_target_properties(linphone-gtk PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 if(INTL_FOUND)
 	target_link_libraries(linphone-gtk ${INTL_LIBRARIES})
 endif()
-
 if(WIN32)
 	target_link_libraries(linphone-gtk Wininet)
 endif()
@@ -96,15 +106,24 @@ if(ENABLE_NOTIFY)
 	target_include_directories(linphone-gtk PUBLIC ${NOTIFY_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})
 endif()
-
-if (HAVE_LIBUDEV_H)
+if(HAVE_LIBUDEV_H)
 	target_link_libraries(linphone-gtk udev)
 endif()
+if(GTKMACINTEGRATION_FOUND)
+	target_include_directories(linphone-gtk PUBLIC ${GTKMACINTEGRATION_INCLUDE_DIRS})
+	target_link_libraries(linphone-gtk ${GTKMACINTEGRATION_LIBRARIES})
+endif()
+if(APPLE)
+	target_link_libraries(linphone-gtk "-framework Cocoa")
+endif()
+
+set_target_properties(linphone-gtk PROPERTIES XCODE_ATTRIBUTE_WARNING_CFLAGS "")
+
 
 install(TARGETS linphone-gtk
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 

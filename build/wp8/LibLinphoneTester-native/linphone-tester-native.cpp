@@ -2,7 +2,7 @@
 
 #include "linphone-tester-native.h"
 #include "ortp/logging.h"
-#include "cunit/Util.h"
+#include "bcunit/Util.h"
 
 
 using namespace linphone_tester_native;
@@ -52,7 +52,7 @@ static void LinphoneNativeVerboseOutputTraceHandler(OrtpLogLevel lev, const char
 	LinphoneNativeGenericOutputTraceHandler(lev, fmt, args);
 }
 
-static void CUnitNativeOutputTraceHandler(int lev, const char *fmt, va_list args)
+static void BCUnitNativeOutputTraceHandler(int lev, const char *fmt, va_list args)
 {
 	nativeOutputTraceHandler(Raw, fmt, args);
 }
@@ -87,7 +87,7 @@ void LinphoneTesterNative::run(Platform::String^ suiteName, Platform::String^ ca
 	} else {
 		linphone_core_enable_logs_with_cb(LinphoneNativeOutputTraceHandler);
 	}
-	CU_set_trace_handler(CUnitNativeOutputTraceHandler);
+	CU_set_trace_handler(BCUnitNativeOutputTraceHandler);
 
 	liblinphone_tester_run_tests(wssuitename == all ? 0 : csuitename, wscasename == all ? 0 : ccasename);
 }

@@ -26,6 +26,7 @@ import java.util.Vector;
  * @deprecated Use #PresenceModel and #PresenceActivity instead
  */
 
+@Deprecated
 public class OnlineStatus {
 	
 	static private Vector<OnlineStatus> values = new Vector<OnlineStatus>();

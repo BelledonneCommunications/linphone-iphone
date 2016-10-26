@@ -1,5 +1,8 @@
 package org.linphone.core;
 
+/**
+ * LinphoneEvent
+ */
 public interface LinphoneEvent {
 	/**
 	 * Get the event name as standardized by the event package RFC.
@@ -20,7 +23,7 @@ public interface LinphoneEvent {
 	SubscriptionState getSubscriptionState();
 	/**
 	 * Accept an incoming subscription. After it is accepted the application can immediately start to send notifications with
-	 * {@link LinphoneEvent.notify() }.
+	 * {@link #notify(LinphoneContent) notify()}.
 	 */
 	void acceptSubscription();
 	
@@ -37,13 +40,13 @@ public interface LinphoneEvent {
 	void notify(LinphoneContent content);
 	
 	/**
-	 * Update a subscription initiated previously with {@link LinphoneCore.subscribe() }
+	 * Update a subscription initiated previously with {@link LinphoneCore#subscribe(LinphoneAddress, String, int, LinphoneContent) LinphoneCore.subscribe()}
 	 * @param content the data to be put in the subscribe request.
 	 */
 	void updateSubscribe(LinphoneContent content);
 	
 	/**
-	 * Update a Publish previously started with {@link LinphoneCore.publish() }.
+	 * Update a Publish previously started with {@link LinphoneCore#publish(LinphoneAddress, String, int, LinphoneContent)}.
 	 * @param content the data to be put in the publish request.
 	 */
 	void updatePublish(LinphoneContent content);

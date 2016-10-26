@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="53"
+   height="53"
+   viewBox="0 0 53 53"
+   version="1.1"
+   id="svg4228"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-security-ok.svg"
+   inkscape:export-filename="/home/ghislain/code/linphone-desktop/submodules/linphone/pixmaps/linphone-security-ok.png"
+   inkscape:export-xdpi="33.23"
+   inkscape:export-ydpi="33.23">
+  <metadata
+     id="metadata4245">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>security_ok</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1141"
+     id="namedview4243"
+     showgrid="false"
+     inkscape:zoom="9.1603774"
+     inkscape:cx="20.5"
+     inkscape:cy="26.472709"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4228" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4230">security_ok</title>
+  <desc
+     id="desc4232">Created with Sketch.</desc>
+  <defs
+     id="defs4234" />
+  <g
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     sketch:type="MSShapeGroup"
+     transform="translate(7,2)"
+     id="security_ok-copy">
+    <path
+       inkscape:connector-curvature="0"
+       style="stroke:#444444;stroke-opacity:1"
+       id="Imported-Layers"
+       d="m 1.0857143,17.193966 36.9142857,0 0,31.719077 -36.9142857,0 0,-31.719077 z m 31.3912567,-0.06233 0,-3.873067 C 32.476971,5.9353628 26.685771,0 19.540686,0 12.399943,0 6.6076571,5.9353628 6.6076571,13.258574 l 0,3.873067 25.8693139,0 z" />
+    <path
+       inkscape:connector-curvature="0"
+       style="stroke:#444444;stroke-opacity:1"
+       id="Path"
+       d="M 9.7714286,31.96087 17.999514,39.279348 29.023265,27.173913" />
+  </g>
+</svg>

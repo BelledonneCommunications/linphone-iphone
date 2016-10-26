@@ -1,7 +1,12 @@
 This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 
+# Warning
 
-******************Building linphone ***********************************
+Unless you exactly know what you are doing, you should take at look at [linphone-desktop](https://github.com/BelledonneCommunications/linphone-desktop).
+
+# Otherwise…
+
+## Building Linphone
 
 - Install build time dependencies
 	- libtool
@@ -11,6 +16,7 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
  	- belle-sip>=1.3.0
 	- speex>=1.2.0 (including libspeexdsp part)
 	- libxml2
+	- bctoolbox
 
 	+ if you want the gtk/glade interface:
 		- libgtk >=2.16.0
@@ -41,7 +47,7 @@ libglew1.6-dev libv4l-dev libxml2-dev
 libsqlite3-dev libupnp4-dev libsrtp-dev
 
 	+ Install zrtp (optional), for unbreakable call encryption
-		$ git clone git://git.linphone.org:bzrtp
+		$ git clone git://git.linphone.org/bzrtp.git
 		$ cd bzrtp && ./autogen.sh && ./configure && make
 		$ sudo make install
 
@@ -58,7 +64,7 @@ For windows compilation see README.mingw.
 For macOS X, see README.macos
 
 
-******************************** Notes for developers *****************************
+## Notes for developers
 
 Here is a short description of the content of the source tree.
 
