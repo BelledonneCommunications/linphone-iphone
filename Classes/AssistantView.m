@@ -110,7 +110,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self changeView:_welcomeView back:FALSE animation:FALSE];
 	}
 	mustRestoreView = NO;
-
 	_outgoingView = DialerView.compositeViewDescription;
 }
 
@@ -1177,9 +1176,9 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	UIAssistantTextField *username = [self findTextField:ViewElement_Username];
 	UIAssistantTextField *phone = [self findTextField:ViewElement_Phone];
 	const char* uri = NULL;
-	if (!username.superview.hidden) {
+	if (!username.superview.hidden && ![username.text isEqualToString:@""]) {
 		uri = linphone_account_creator_get_username(account_creator);
-	} else if (!phone.superview.hidden) {
+	} else if (!phone.superview.hidden && ![phone.text isEqualToString:@""]) {
 		uri = linphone_account_creator_get_phone_number(account_creator);
 	}
 
