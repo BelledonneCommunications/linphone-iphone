@@ -3,6 +3,8 @@
 "Stun Server" = "Stun Server";
 "ICE" = "ICE";
 "TURN" = "TURN";
+"TURN&apos;s Username" = "TURN&apos;s Username";
+"TURN&apos;s Password" = "TURN&apos;s Password";
 "Random Port" = "Random Port";
 "Port" = "Port";
 "Audio Port(s)" = "Audio Port(s)";

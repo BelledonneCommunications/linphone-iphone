@@ -51,7 +51,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	_emptyView.hidden = _editButton.enabled = ([self totalNumberOfItems] != 0);
+	_emptyView.hidden = _editButton.enabled = ([self totalNumberOfItems] > 0);
 }
 
 - (void)toggleRowSelectionForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -123,8 +123,8 @@
 - (void)loadData {
 	[_selectedItems removeAllObjects];
 	[self.tableView reloadData];
-
-	_editButton.enabled = _emptyView.hidden = ([self totalNumberOfItems] > 0);
+	
+	_emptyView.hidden = _editButton.enabled = ([self totalNumberOfItems] > 0);
 }
 
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *indexPath))remover {

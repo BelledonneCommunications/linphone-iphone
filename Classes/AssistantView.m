@@ -881,6 +881,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (void) isAccountActivated:(const char *)resp {
+	if (currentView != _createAccountView) {
+		if( linphone_account_creator_get_phone_number(account_creator) == NULL) {
+			[self configureProxyConfig];
+			[PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
+		} else {
+			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+		}
+	} else {
+		if (!linphone_account_creator_get_username(account_creator)) {
+			[self showErrorPopup:"ERROR_ALIAS_ALREADY_IN_USE"];
+		} else {
+			[self showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
+		}
+	}
+}
+
 #pragma mark - Account creator callbacks
 
 void assistant_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
@@ -943,12 +960,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountActivated) {
-		if( linphone_account_creator_get_phone_number(creator) == NULL) {
-			[thiz configureProxyConfig];
-			[PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
-		} else {
-			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-		}
+		[thiz isAccountActivated:resp];
 	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
 		if (!IPAD || linphone_account_creator_get_phone_number(creator) != NULL) {
 			//Re send SMS if the username is the phone number
