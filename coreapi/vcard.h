@@ -88,7 +88,7 @@ LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVcard *vCard);
  * Uses belcard to parse the content of a file and returns all the vcards it contains as LinphoneVcards, or NULL if it contains none.
  * @param[in] context the vCard context to use (speed up the process by not creating a Belcard parser each time)
  * @param[in] file the path to the file to parse
- * @return \mslist{LinphoneVcard}
+ * @return \bctbx_list{LinphoneVcard}
  */
 LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *file);
 
@@ -96,7 +96,7 @@ LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(Li
  * Uses belcard to parse the content of a buffer and returns all the vcards it contains as LinphoneVcards, or NULL if it contains none.
  * @param[in] context the vCard context to use (speed up the process by not creating a Belcard parser each time)
  * @param[in] buffer the buffer to parse
- * @return \mslist{LinphoneVcard}
+ * @return \bctbx_list{LinphoneVcard}
  */
 LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardContext *context, const char *buffer);
 
@@ -181,7 +181,7 @@ void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_
 /**
  * Returns the list of SIP addresses (as LinphoneAddress) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
  * @param[in] vCard the LinphoneVcard
- * @return const \mslist{LinphoneAddress *}
+ * @return \bctbx_list{LinphoneAddress}
  */
 LINPHONE_PUBLIC const bctbx_list_t* linphone_vcard_get_sip_addresses(LinphoneVcard *vCard);
 
@@ -202,7 +202,7 @@ void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone)
 /**
  * Returns the list of phone numbers (as string) in the vCard (all the TEL attributes) or NULL
  * @param[in] vCard the LinphoneVcard
- * @return \mslist{const char *}
+ * @return \bctbx_list{const char *}
  */
 LINPHONE_PUBLIC bctbx_list_t* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard);
 

@@ -1583,7 +1583,7 @@ LINPHONE_PUBLIC int linphone_chat_room_get_history_size(LinphoneChatRoom *cr);
  * Gets nb_message most recent messages from cr chat room, sorted from oldest to most recent.
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which messages should be retrieved
  * @param[in] nb_message Number of message to retrieve. 0 means everything.
- * @return \mslist{LinphoneChatMessage}
+ * @return \bctbx_list{LinphoneChatMessage}
  */
 LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
 
@@ -1592,7 +1592,7 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *c
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which messages should be retrieved
  * @param[in] begin The first message of the range to be retrieved. History most recent message has index 0.
  * @param[in] end The last message of the range to be retrieved. History oldest message has index of history size - 1 (use #linphone_chat_room_get_history_size to retrieve history size)
- * @return \mslist{LinphoneChatMessage}
+ * @return \bctbx_list{LinphoneChatMessage}
  */
 LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end);
 
@@ -1643,7 +1643,7 @@ LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr)
 /**
  * Returns an list of chat rooms
  * @param[in] lc #LinphoneCore object
- * @return \mslist{LinphoneChatRoom}
+ * @return \bctbx_list{LinphoneChatRoom}
 **/
 LINPHONE_PUBLIC const bctbx_list_t* linphone_core_get_chat_rooms(LinphoneCore *lc);
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
@@ -2912,7 +2912,7 @@ LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx
 /**
  * Returns the list of available audio codecs.
  * @param[in] lc The LinphoneCore object
- * @return \mslist{PayloadType}
+ * @return \bctbx_list{PayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
@@ -2927,7 +2927,7 @@ LINPHONE_PUBLIC int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_
 /**
  * Returns the list of available video codecs.
  * @param[in] lc The LinphoneCore object
- * @return \mslist{PayloadType}
+ * @return \bctbx_list{PayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
@@ -2942,7 +2942,7 @@ LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_
 /**
  * Returns the list of available text codecs.
  * @param[in] lc The LinphoneCore object
- * @return \mslist{PayloadType}
+ * @return \bctbx_list{PayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
@@ -3078,7 +3078,7 @@ LINPHONE_PUBLIC void linphone_core_remove_proxy_config(LinphoneCore *lc, Linphon
 /**
  * Returns an unmodifiable list of entered proxy configurations.
  * @param[in] lc The LinphoneCore object
- * @return \mslist{LinphoneProxyConfig}
+ * @return \bctbx_list{LinphoneProxyConfig}
 **/
 LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
 
@@ -3539,7 +3539,7 @@ LINPHONE_PUBLIC void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *l
 /**
  * Get the list of call logs (past calls).
  * @param[in] lc LinphoneCore object
- * @return \mslist{LinphoneCallLog}
+ * @return \bctbx_list{LinphoneCallLog}
 **/
 LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_call_logs(LinphoneCore *lc);
 
@@ -3548,7 +3548,7 @@ LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_call_logs(LinphoneCore *l
  * At the contrary of linphone_core_get_call_logs, it is your responsability to unref the logs and free this list once you are done using it.
  * @param[in] lc LinphoneCore object
  * @param[in] addr LinphoneAddress object
- * @return \mslist{LinphoneCallLog}
+ * @return \bctbx_list{LinphoneCallLog}
 **/
 LINPHONE_PUBLIC bctbx_list_t * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
