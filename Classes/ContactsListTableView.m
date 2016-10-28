@@ -176,7 +176,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		// since we refresh the tableview, we must perform this on main thread
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 		  if (IPAD) {
-			  if (![self selectFirstRow]) {
+			  if (!([self totalNumberOfItems] > 0)) {
 				  ContactDetailsView *view = VIEW(ContactDetailsView);
 				  [view setContact:nil];
 			  }
@@ -257,7 +257,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		// since we refresh the tableview, we must perform this on main thread
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			if (IPAD) {
-				if (![self selectFirstRow]) {
+				if (!([self totalNumberOfItems] > 0)) {
 					ContactDetailsView *view = VIEW(ContactDetailsView);
 					[view setContact:nil];
 				}
