@@ -349,6 +349,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
 					 withRowAnimation:UITableViewRowAnimationFade];
 		}
+		UIContactCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+		[cell setContact:NULL];
 		[[LinphoneManager.instance fastAddressBook] removeContact:contact];
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];
@@ -358,6 +360,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 											   selector:@selector(onAddressBookUpdate:)
 												   name:kLinphoneAddressBookUpdate
 												 object:nil];
+		[self loadData];
 	}
 }
 
@@ -372,6 +375,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	  if (subAr.count == 0) {
 		  [addressBookMap removeObjectForKey:firstChar];
 	  }
+	  UIContactCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+	  [cell setContact:NULL];
 	  [[LinphoneManager.instance fastAddressBook] removeContact:contact];
 
 	  [NSNotificationCenter.defaultCenter addObserver:self
