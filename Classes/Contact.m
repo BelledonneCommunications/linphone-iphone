@@ -507,7 +507,7 @@
 	// SIP (IM)
 	{
 		_sipAddresses = [[NSMutableArray alloc] init];
-		MSList *sips = linphone_friend_get_addresses(_friend);
+		const MSList *sips = linphone_friend_get_addresses(_friend);
 		while (sips) {
 			LinphoneAddress *addr = sips->data;
 			char *uri = linphone_address_as_string_uri_only(addr);

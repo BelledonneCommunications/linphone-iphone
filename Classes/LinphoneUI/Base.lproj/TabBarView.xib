@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TabBarView">
@@ -27,11 +28,11 @@
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
             <subviews>
                 <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_C.png" id="svE-vh-ct2" userLabel="backgroundImage">
-                    <rect key="frame" x="0.0" y="0.0" width="360" height="66"/>
+                    <frame key="frameInset" minX="0.0%" minY="0.0%" width="100.00%" height="100.00%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                 </imageView>
                 <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="6" userLabel="historyButton" customClass="UIIconButton">
-                    <rect key="frame" x="0.0" y="0.0" width="90" height="66"/>
+                    <frame key="frameInset" minX="0.0%" minY="0.0%" width="25.00%" height="100.00%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
                     <state key="normal" image="footer_history_default.png"/>
@@ -42,14 +43,14 @@
                     </connections>
                 </button>
                 <button opaque="NO" tag="3" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="8" userLabel="contactsButton" customClass="UIIconButton">
-                    <rect key="frame" x="90" y="0.0" width="90" height="66"/>
+                    <frame key="frameInset" minX="25.00%" minY="0.0%" width="25.00%" height="100.00%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contacts"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
                     <state key="normal" image="footer_contacts_default.png"/>
                     <state key="disabled" image="footer_contacts_disabled.png"/>
                     <state key="selected">
-                        <color key="titleColor" red="0.81176471709999998" green="0.29803922770000002" blue="0.16078431900000001" alpha="1" colorSpace="deviceRGB"/>
+                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
@@ -57,7 +58,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="7" userLabel="dialerButton" customClass="UIIconButton">
-                    <rect key="frame" x="180" y="0.0" width="90" height="66"/>
+                    <frame key="frameInset" minX="50.00%" minY="0.0%" width="25.00%" height="100.00%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
                     <state key="normal" image="footer_dialer_default.png"/>
@@ -68,7 +69,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="5" userLabel="chatButton" customClass="UIIconButton">
-                    <rect key="frame" x="270" y="0.0" width="90" height="66"/>
+                    <frame key="frameInset" minX="75.00%" minY="0.0%" width="25.00%" height="100.00%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Chat"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
@@ -80,50 +81,50 @@
                     </connections>
                 </button>
                 <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="eC3-Hw-cqQ" userLabel="selectedButtonImage">
-                    <rect key="frame" x="180" y="63" width="90" height="3"/>
+                    <frame key="frameInset" minX="50.00%" width="25.00%" height="3"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </imageView>
                 <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" id="37" userLabel="chatNotificationView" customClass="UIBouncingView">
-                    <rect key="frame" x="317" y="0.0" width="22" height="22"/>
+                    <frame key="frameInset" minX="88.06%" minY="0.0%" width="6.11%" height="33.33%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="39" userLabel="chatNotificationImage">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <frame key="frameInset" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="9" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="38" userLabel="chatNotificationLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <frame key="frameInset" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Missed message(s)">
                                 <accessibilityTraits key="traits" none="YES"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="10" contentMode="scaleToFill" id="32" userLabel="historyNotificationView" customClass="UIBouncingView">
-                    <rect key="frame" x="48" y="0.0" width="22" height="22"/>
+                    <frame key="frameInset" minX="13.33%" minY="0.0%" width="6.11%" height="33.33%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" tag="11" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="33" userLabel="historyNotificationImage">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <frame key="frameInset" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="12" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="34" userLabel="historyNotificationLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <frame key="frameInset" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Missed call(s)">
                                 <accessibilityTraits key="traits" none="YES"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
             <nil key="simulatedStatusBarMetrics"/>
@@ -135,11 +136,11 @@
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
                 <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_C.png" id="V07-hP-Heu" userLabel="backgroundImage">
-                    <rect key="frame" x="0.0" y="0.0" width="90" height="333"/>
+                    <frame key="frameInset" minX="0.0%" minY="0.0%" width="100.00%" height="100.00%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="hlj-lf-AGD" userLabel="historyButton" customClass="UIIconButton">
-                    <rect key="frame" x="0.0" y="35" width="90" height="66"/>
+                <button opaque="NO" tag="2" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="hlj-lf-AGD" userLabel="historyButton" customClass="UIIconButton">
+                    <frame key="frameInset" minX="0.0%" minY="0.0%" width="100.00%" height="24.93%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
                     <state key="normal" image="footer_history_default.png"/>
@@ -149,23 +150,23 @@
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="apg-Ia-q2O"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="ea1-DR-JeN" userLabel="contactsButton" customClass="UIIconButton">
-                    <rect key="frame" x="0.0" y="101" width="90" height="66"/>
+                <button opaque="NO" tag="3" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="ea1-DR-JeN" userLabel="contactsButton" customClass="UIIconButton">
+                    <frame key="frameInset" minX="0.0%" minY="25.23%" width="100.00%" height="24.93%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contacts"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
                     <state key="normal" image="footer_contacts_default.png"/>
                     <state key="disabled" image="footer_contacts_disabled.png"/>
                     <state key="selected">
-                        <color key="titleColor" red="0.81176471709999998" green="0.29803922770000002" blue="0.16078431900000001" alpha="1" colorSpace="deviceRGB"/>
+                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onContactsClick:" destination="-1" eventType="touchUpInside" id="Mha-05-jl6"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Leo-2i-huu" userLabel="dialerButton" customClass="UIIconButton">
-                    <rect key="frame" x="0.0" y="167" width="90" height="66"/>
+                <button opaque="NO" tag="4" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Leo-2i-huu" userLabel="dialerButton" customClass="UIIconButton">
+                    <frame key="frameInset" minX="0.0%" minY="50.45%" width="100.00%" height="24.93%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
                     <state key="normal" image="footer_dialer_default.png"/>
@@ -175,8 +176,33 @@
                         <action selector="onDialerClick:" destination="-1" eventType="touchUpInside" id="f7N-Mt-lPq"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="TbS-j0-yv4" userLabel="chatButton" customClass="UIIconButton">
-                    <rect key="frame" x="0.0" y="233" width="90" height="66"/>
+                <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_A.png" id="Dxb-ca-vcU" userLabel="selectedButtonImage">
+                    <frame key="frameInset" minY="30.33%" width="3.33%" height="24.93%"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                </imageView>
+                <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="10" contentMode="scaleToFill" misplaced="YES" id="Ldd-jk-0kY" userLabel="historyNotificationView" customClass="UIBouncingView">
+                    <frame key="frameInset" minX="51.11%" minY="0.0%" width="23.33%" height="24.93%"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" tag="11" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="toi-dz-eTS" userLabel="historyNotificationImage">
+                            <frame key="frameInset" width="21" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="12" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="eU2-w3-nYr" userLabel="historyNotificationLabel">
+                            <frame key="frameInset" width="21" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Missed call(s)">
+                                <accessibilityTraits key="traits" none="YES"/>
+                            </accessibility>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                </view>
+                <button opaque="NO" tag="5" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="TbS-j0-yv4" userLabel="chatButton" customClass="UIIconButton">
+                    <frame key="frameInset" minX="0.0%" minY="77.78%" width="100.00%" height="24.93%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Chat"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
@@ -187,51 +213,26 @@
                         <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="B7q-6N-lWO"/>
                     </connections>
                 </button>
-                <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="Dxb-ca-vcU" userLabel="selectedButtonImage">
-                    <rect key="frame" x="0.0" y="101" width="3" height="66"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                </imageView>
-                <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" id="djA-EL-HUt" userLabel="chatNotificationView" customClass="UIBouncingView">
-                    <rect key="frame" x="48" y="233" width="21" height="21"/>
+                <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" misplaced="YES" id="djA-EL-HUt" userLabel="chatNotificationView" customClass="UIBouncingView">
+                    <frame key="frameInset" minX="53.33%" minY="77.78%" width="23.33%" height="6.31%"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="EKN-Nr-bdt" userLabel="chatNotificationImage">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <frame key="frameInset" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="9" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="cWJ-ol-R0k" userLabel="chatNotificationLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <frame key="frameInset" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Missed message(s)">
                                 <accessibilityTraits key="traits" none="YES"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="10" contentMode="scaleToFill" id="Ldd-jk-0kY" userLabel="historyNotificationView" customClass="UIBouncingView">
-                    <rect key="frame" x="46" y="35" width="21" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <imageView userInteractionEnabled="NO" tag="11" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="toi-dz-eTS" userLabel="historyNotificationImage">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="12" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="eU2-w3-nYr" userLabel="historyNotificationLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Missed call(s)">
-                                <accessibilityTraits key="traits" none="YES"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
             <nil key="simulatedStatusBarMetrics"/>
@@ -250,6 +251,11 @@
         <image name="footer_dialer_disabled.png" width="27" height="27"/>
         <image name="footer_history_default.png" width="29" height="29"/>
         <image name="footer_history_disabled.png" width="29" height="29"/>
-        <image name="history_chat_indicator.png" width="13" height="13"/>
+        <image name="history_chat_indicator.png" width="14" height="13"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
+    </simulatedMetricsContainer>
 </document>
