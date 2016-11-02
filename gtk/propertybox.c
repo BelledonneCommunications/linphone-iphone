@@ -1297,7 +1297,7 @@ static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 			gtk_widget_set_sensitive(mandatory_box,TRUE);
 		}else if (strcasecmp(selected,"ZRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionZRTP);
-			gtk_widget_set_sensitive(mandatory_box,FALSE);
+			gtk_widget_set_sensitive(mandatory_box,TRUE);
 		} else {
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionNone);
 			gtk_widget_set_sensitive(mandatory_box,FALSE);
@@ -1389,7 +1389,7 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 			case LinphoneMediaEncryptionZRTP:
 				if (zrtp_id!=-1) {
 					gtk_combo_box_set_active(GTK_COMBO_BOX(combo),zrtp_id);
-					linphone_gtk_set_media_encryption_mandatory_sensitive(pb,FALSE);
+					linphone_gtk_set_media_encryption_mandatory_sensitive(pb,TRUE);
 				}
 			break;
 		}
