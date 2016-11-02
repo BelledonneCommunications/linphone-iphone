@@ -19,6 +19,7 @@
 
 #import "PhoneMainView.h"
 #import "ContactsListView.h"
+#import "ContactDetailsView.h"
 #import "ShopView.h"
 #import "linphoneAppDelegate.h"
 #import "AddressBook/ABPerson.h"
@@ -91,7 +92,7 @@
 	
 	if (instance.fastAddressBook.needToUpdate) {
 		//Update address book for external changes
-		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription) {
+		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription) {
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
 		[instance.fastAddressBook reload];
