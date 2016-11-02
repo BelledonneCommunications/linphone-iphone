@@ -163,6 +163,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 			linphone_proxy_config_done(cfg);
 		}
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
 	} else {
 		[thiz showErrorPopup:resp];
 	}

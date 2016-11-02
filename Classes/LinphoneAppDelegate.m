@@ -211,7 +211,6 @@
         self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 	} else {
 		/* iOS7 and below */
-        self.voipRegistry.delegate = NULL;
 		if (!instance.isTesting) {
 			NSUInteger notifTypes =
 				UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;

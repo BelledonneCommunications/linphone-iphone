@@ -946,6 +946,7 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountActivated) {
 		[thiz configureProxyConfig];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
 	} else if (status == LinphoneAccountCreatorAccountAlreadyActivated) {
 		// in case we are actually trying to link account, let's try it now
 		linphone_account_creator_activate_phone_number_link(creator);
