@@ -41,7 +41,6 @@ static void linphone_nat_policy_destroy(LinphoneNatPolicy *policy) {
 	if (policy->stun_addrinfo) bctbx_freeaddrinfo(policy->stun_addrinfo);
 	if (policy->stun_resolver_context) {
 		sal_resolve_cancel(policy->stun_resolver_context);
-		sal_resolver_context_unref(policy->stun_resolver_context);
 	}
 }
 
