@@ -1325,39 +1325,41 @@ static void ice_added_by_reinvite(void){
 	LinphoneCallParams *params;
 	LinphoneCall *c;
 	bool_t call_ok;
-	
+
 	lp_config_set_int(linphone_core_get_config(marie->lc), "net", "allow_late_ice", 1);
 	lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "allow_late_ice", 1);
 	
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (!call_ok) goto end;
 	liblinphone_tester_check_rtcp(marie,pauline);
-	
+
 	/*enable ICE on both ends*/
 	pol = linphone_core_get_nat_policy(marie->lc);
 	linphone_nat_policy_enable_ice(pol, TRUE);
 	linphone_nat_policy_enable_stun(pol, TRUE);
 	linphone_core_set_nat_policy(marie->lc, pol);
-	
+
 	pol = linphone_core_get_nat_policy(pauline->lc);
 	linphone_nat_policy_enable_ice(pol, TRUE);
 	linphone_nat_policy_enable_stun(pol, TRUE);
 	linphone_core_set_nat_policy(pauline->lc, pol);
-	
+
+	linphone_core_manager_wait_for_stun_resolution(marie);
+	linphone_core_manager_wait_for_stun_resolution(pauline);
+
 	c = linphone_core_get_current_call(marie->lc);
 	params = linphone_core_create_call_params(marie->lc, c);
 	linphone_core_update_call(marie->lc, c, params);
 	linphone_call_params_destroy(params);
-	
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
 
 	/*wait for the ICE reINVITE*/
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
 	BC_ASSERT_TRUE(check_ice(marie, pauline, LinphoneIceStateHostConnection));
-	
+
 	end_call(pauline, marie);
-	
+
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -1799,6 +1801,9 @@ static void audio_call_with_ice_no_matching_audio_codecs(void) {
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+
+	linphone_core_manager_wait_for_stun_resolution(marie);
+	linphone_core_manager_wait_for_stun_resolution(pauline);
 
 	out_call = linphone_core_invite_address(marie->lc, pauline->identity);
 	linphone_call_ref(out_call);
