@@ -668,13 +668,16 @@ static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int 
 	const char *bind_ip = lp_config_get_string(call->core->config,"rtp","bind_address",
 				call->af == AF_INET6 ? "::0" : "0.0.0.0");
 	PortConfig *pc = &call->media_ports[stream_index];
-	if (stream_index<2 && pc->multicast_ip[0]!='\0'){
+	if (pc->multicast_ip[0]!='\0'){
 		if (call->dir==LinphoneCallOutgoing){
 			/*as multicast sender, we must decide a local interface to use to send multicast, and bind to it*/
 			linphone_core_get_local_ip_for(strchr(pc->multicast_ip,':') ? AF_INET6 : AF_INET,
 				NULL, pc->multicast_bind_ip);
 			bind_ip = pc->multicast_bind_ip;
-
+		}else{
+			/*otherwise we shall use an address family of the same family of the multicast address, because
+			 * dual stack socket and multicast don't work well on Mac OS (linux is OK, as usual).*/
+			bind_ip = strchr(pc->multicast_ip,':') ? "::0" : "0.0.0.0";
 		}
 	}
 	return bind_ip;
@@ -683,7 +686,7 @@ static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int 
 static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, int stream_index){
 	const char *public_ip=call->media_localip;
 
-	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0')
+	if (call->media_ports[stream_index].multicast_ip[0]!='\0')
 		public_ip=call->media_ports[stream_index].multicast_ip;
 	return public_ip;
 }
