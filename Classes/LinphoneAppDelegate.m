@@ -367,8 +367,24 @@
 
 					NSString *callId = [userInfo objectForKey:@"call-id"];
 					if (callId != nil) {
-						[LinphoneManager.instance addPushCallId:callId];
-					} else {
+						if ([callId isEqualToString:@""]){
+							
+							UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+							content.title = @"Push Notification";
+							content.body = @"Push notification received";
+							
+							UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+							[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+								// Enable or disable features based on authorization.
+								if (error) {
+									LOGD(@"Error while adding notification request :");
+									LOGD(error.description);
+								}
+							}];
+						} else {
+							[LinphoneManager.instance addPushCallId:callId];
+						}
+					} else  if ([callId  isEqual: @""]) {
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
 
@@ -483,7 +499,7 @@
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit Token invalidated");
-    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
+    //dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -527,7 +543,7 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit credentials updated");
     LOGI(@"voip token: %@", (credentials.token));
     LOGI(@"%@ : %@", NSStringFromSelector(_cmd), credentials.token);
-    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
+    //dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
 }
 
 #pragma mark - UserNotifications Framework
