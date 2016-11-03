@@ -51,7 +51,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-    if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max && (linphone_core_get_calls_nb(LC) == 0)) {
+    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && (linphone_core_get_calls_nb(LC) == 0)) {
         linphone_core_set_network_reachable(LC, FALSE);
         LinphoneManager.instance.connectivity = none;
     }
@@ -368,19 +368,27 @@
 					NSString *callId = [userInfo objectForKey:@"call-id"];
 					if (callId != nil) {
 						if ([callId isEqualToString:@""]){
+							//Present apn pusher notifications for info
+							if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+								UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+								content.title = @"APN Pusher";
+								content.body = @"Push notification received !";
 							
-							UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-							content.title = @"Push Notification";
-							content.body = @"Push notification received";
-							
-							UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-							[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-								// Enable or disable features based on authorization.
-								if (error) {
-									LOGD(@"Error while adding notification request :");
-									LOGD(error.description);
-								}
-							}];
+								UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+								[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+									// Enable or disable features based on authorization.
+									if (error) {
+										LOGD(@"Error while adding notification request :");
+										LOGD(error.description);
+									}
+								}];
+							} else {
+								UILocalNotification *notification = [[UILocalNotification alloc] init];
+								notification.repeatInterval = 0;
+								notification.alertBody = @"Push notification received !";
+								notification.alertTitle = @"APN Pusher";
+								[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+							}
 						} else {
 							[LinphoneManager.instance addPushCallId:callId];
 						}
