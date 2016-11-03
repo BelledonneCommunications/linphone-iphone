@@ -111,7 +111,7 @@ int main(int argc, char *argv[]){
 
 	/* main loop for sending message and doing background linphonecore work: */
 	while(running){
-		char character;
+		int character;
 		/*to disable terminal buffering*/
 		if (system ("/bin/stty raw") == -1){
 			ms_error("/bin/stty error");
