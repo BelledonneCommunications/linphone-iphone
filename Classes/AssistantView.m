@@ -859,7 +859,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
-			[self showErrorPopup:resp];
+			if (linphone_account_creator_get_username(account_creator) && strcmp(resp, "ERROR_ACCOUNT_DOESNT_EXIST")) {
+				[self showErrorPopup:"ERROR_BAD_CREDENTIALS"];
+			} else {
+				[self showErrorPopup:resp];
+			}
 		}
 	} else {
 		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
