@@ -749,7 +749,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				}
             } else {
                 UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-                content.title = @"Incoming call";
+                content.title = NSLocalizedString(@"Incoming call", nil);
                 content.body = address;
                 content.sound = [UNNotificationSound soundNamed:@"notes_of_the_optimistic.caf"];
                 content.categoryIdentifier = @"call_cat";
@@ -810,7 +810,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                 LinphoneCallLog *UNlog = linphone_call_get_call_log(call);
                 if (UNlog == NULL || linphone_call_log_get_status(UNlog) == LinphoneCallMissed) {
                     UNMutableNotificationContent* missed_content = [[UNMutableNotificationContent alloc] init];
-                    missed_content.title = @"Missed call";
+                    missed_content.title = NSLocalizedString(@"Missed call", nil);
                     missed_content.body = address;
                     UNNotificationRequest *missed_req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:missed_content trigger:NULL];
                     [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:missed_req withCompletionHandler:^(NSError * _Nullable error) {
@@ -1197,7 +1197,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
             }
         } else {
             UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-            content.title = @"Message received";
+            content.title = NSLocalizedString(@"Message received", nil);
             if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
                 content.subtitle = from;
                 content.body = [UIChatBubbleTextCell TextMessageForChat:msg];

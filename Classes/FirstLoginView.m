@@ -191,7 +191,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneConfiguringFailed: {
 			[_waitView setHidden:true];
 			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Configuration failed", nil)
-																			 message:NSLocalizedString(@"Cannot retrieve your configuration. Please check credentiels or try again later", nil)
+																			 message:NSLocalizedString(@"Cannot retrieve your configuration. Please check credentials or try again later", nil)
 																	  preferredStyle:UIAlertControllerStyleAlert];
 			
 			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
@@ -260,7 +260,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 																								   nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel"
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
 		

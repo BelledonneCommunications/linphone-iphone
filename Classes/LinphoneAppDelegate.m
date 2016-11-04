@@ -518,13 +518,13 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"incoming voip notfication: %@ ", payload.dictionaryPayload);
     if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
         //Call category
-        UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:@"Answer" options:UNNotificationActionOptionForeground];
-        UNNotificationAction* act_dec = [UNNotificationAction actionWithIdentifier:@"Decline" title:@"Decline" options:UNNotificationActionOptionNone];
+        UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:NSLocalizedString(@"Answer", nil) options:UNNotificationActionOptionForeground];
+        UNNotificationAction* act_dec = [UNNotificationAction actionWithIdentifier:@"Decline" title:NSLocalizedString(@"Decline", nil) options:UNNotificationActionOptionNone];
         UNNotificationCategory* cat_call = [UNNotificationCategory categoryWithIdentifier:@"call_cat" actions:[NSArray arrayWithObjects:act_ans, act_dec, nil] intentIdentifiers:[[NSMutableArray alloc] init] options:UNNotificationCategoryOptionCustomDismissAction];
         
         //Msg category
-        UNTextInputNotificationAction* act_reply = [UNTextInputNotificationAction actionWithIdentifier:@"Reply" title:@"Reply" options:UNNotificationActionOptionNone];
-        UNNotificationAction* act_seen = [UNNotificationAction actionWithIdentifier:@"Seen" title:@"Mark as seen" options:UNNotificationActionOptionNone];
+        UNTextInputNotificationAction* act_reply = [UNTextInputNotificationAction actionWithIdentifier:@"Reply" title:NSLocalizedString(@"Reply", nil) options:UNNotificationActionOptionNone];
+        UNNotificationAction* act_seen = [UNNotificationAction actionWithIdentifier:@"Seen" title:NSLocalizedString(@"Mark as seen", nil) options:UNNotificationActionOptionNone];
         UNNotificationCategory* cat_msg = [UNNotificationCategory categoryWithIdentifier:@"msg_cat" actions:[NSArray arrayWithObjects:act_reply, act_seen, nil] intentIdentifiers:[[NSMutableArray alloc] init] options:UNNotificationCategoryOptionCustomDismissAction];
         
         //UNUserNotificationCenter* notifCenter = [UNUserNotificationCenter currentNotificationCenter];

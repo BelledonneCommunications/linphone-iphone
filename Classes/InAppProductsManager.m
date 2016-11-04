@@ -411,16 +411,17 @@
 		}
 
 	}else{
-		UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Account expiring"
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account expiring", nil)
 																	   message:expireText
 																preferredStyle:UIAlertControllerStyleAlert];
 
-		UIAlertAction* buyAction = [UIAlertAction actionWithTitle:@"Buy" style:UIAlertActionStyleDefault
+		UIAlertAction* buyAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Buy", nil)
+															style:UIAlertActionStyleDefault
 														  handler:^(UIAlertAction * action) {
 															  [PhoneMainView.instance changeCurrentView:ShopView.compositeViewDescription];
 														  }];
 
-		UIAlertAction *laterAction = [UIAlertAction actionWithTitle:@"Later"
+		UIAlertAction *laterAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Later", nil)
 															  style:UIAlertActionStyleCancel
 															handler:^(UIAlertAction *action){
 																// [alert dismissViewControllerAnimated:FALSE];

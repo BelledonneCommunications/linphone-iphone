@@ -205,7 +205,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 																								   nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Continue"
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Continue", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
 		

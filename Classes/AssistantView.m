@@ -242,7 +242,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 																								   nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
 			
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel"
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
 			
@@ -285,7 +285,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 																								   nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel"
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
 		
@@ -826,10 +826,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 																		 message:[AssistantView StringForXMLRPCError:err]
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
 		
-		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Continue", nil)
+																 style:UIAlertActionStyleDefault
 															   handler:^(UIAlertAction * action) {
 																   [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 															   }];
@@ -859,7 +861,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
-			if (linphone_account_creator_get_username(account_creator) && strcmp(resp, "ERROR_ACCOUNT_DOESNT_EXIST")) {
+			if (linphone_account_creator_get_username(account_creator) && (strcmp(resp, "ERROR_ACCOUNT_DOESNT_EXIST") == 0)) {
 				[self showErrorPopup:"ERROR_BAD_CREDENTIALS"];
 			} else {
 				[self showErrorPopup:resp];
@@ -1210,12 +1212,12 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	[self findButton:ViewElement_PhoneButton].hidden = emailSwitch.isOn;
 	self.phoneLabel.hidden = emailSwitch.isOn;
 	self.phoneTitle.hidden = emailSwitch.isOn;
-	
+	self.phoneTitle.text = NSLocalizedString(@"Please confirm your country code and enter your phone number", nil);
 	self.infoLoginButton.hidden = !usernameView.hidden;
 	if (!usernameView.hidden) {
-		self.subtileLabel_useLinphoneAccount.text = @"Please enter your username and password";
+		self.subtileLabel_useLinphoneAccount.text = NSLocalizedString(@"Please enter your username and password", nil);
 	} else {
-		self.subtileLabel_useLinphoneAccount.text = @"Please confirm your country code and enter your phone number";
+		self.subtileLabel_useLinphoneAccount.text = NSLocalizedString(@"Please confirm your country code and enter your phone number", nil);
 	}
 	
 

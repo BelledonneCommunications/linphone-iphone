@@ -547,7 +547,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 																											   nil)
 																			  preferredStyle:UIAlertControllerStyleAlert];
 						
-					UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Continue"
+					UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Continue", nil)
 																			style:UIAlertActionStyleDefault
 																		  handler:^(UIAlertAction * action) {}];
 						
