@@ -744,8 +744,6 @@ void linphone_friend_edit(LinphoneFriend *fr) {
 void linphone_friend_done(LinphoneFriend *fr) {
 	ms_return_if_fail(fr);
 	if (!fr->lc) return;
-	linphone_friend_apply(fr, fr->lc);
-	linphone_friend_save(fr, fr->lc);
 
 	if (fr && linphone_core_vcard_supported() && fr->vcard) {
 		if (linphone_vcard_compare_md5_hash(fr->vcard) != 0) {
@@ -756,6 +754,8 @@ void linphone_friend_done(LinphoneFriend *fr) {
 			}
 		}
 	}
+	linphone_friend_apply(fr, fr->lc);
+	linphone_friend_save(fr, fr->lc);
 }
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
