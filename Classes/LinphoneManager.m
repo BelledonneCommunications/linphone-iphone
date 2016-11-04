@@ -1655,8 +1655,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_enable_video_display(theLinphoneCore, FALSE);
 		linphone_core_enable_video_capture(theLinphoneCore, FALSE);
 	}
-
-	[self enableProxyPublish:YES];
+	
+	[self enableProxyPublish:([UIApplication sharedApplication].applicationState == UIApplicationStateActive)];
 
 	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
 
