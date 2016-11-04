@@ -507,7 +507,7 @@
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit Token invalidated");
-    //dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
+    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -551,7 +551,7 @@ didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit credentials updated");
     LOGI(@"voip token: %@", (credentials.token));
     LOGI(@"%@ : %@", NSStringFromSelector(_cmd), credentials.token);
-    //dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
+    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
 }
 
 #pragma mark - UserNotifications Framework
