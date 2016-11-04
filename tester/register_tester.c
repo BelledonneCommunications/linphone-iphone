@@ -592,7 +592,7 @@ static void transport_dont_bind(void){
 	tr.tls_port = LC_SIP_TRANSPORT_DONTBIND;
 	
 	linphone_core_set_sip_transports(pauline->lc, &tr);
-	BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&counters->number_of_LinphoneRegistrationOk,2,9000));
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&counters->number_of_LinphoneRegistrationOk,2,15000));
 	memset(&tr, 0, sizeof(tr));
 	linphone_core_get_sip_transports_used(pauline->lc, &tr);
 	BC_ASSERT_EQUAL(tr.udp_port, 0, int, "%i");
