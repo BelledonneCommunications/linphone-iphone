@@ -43,7 +43,7 @@ LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
 
 static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	bctbx_list_t *it,*next_it;
-	
+
 	if (lc->vtable_notify_recursion > 0) return; /*don't cleanup vtable if we are iterating through a listener list.*/
 	for(it=lc->vtable_refs; it!=NULL; ){
 		VTableReference *ref=(VTableReference*)it->data;
@@ -327,7 +327,7 @@ void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable){
 
 void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *vtable) {
 	bctbx_list_t *it;
-	ms_message("Vtable [%p] unregistered on core [%p]",lc,vtable);
+	ms_message("Vtable [%p] unregistered on core [%p]",vtable,lc);
 	for(it=lc->vtable_refs; it!=NULL; it=it->next){
 		VTableReference *ref=(VTableReference*)it->data;
 		if (ref->vtable==vtable)
