@@ -40,6 +40,7 @@ linphone_include_HEADERS=\
 	linphonepresence.h \
 	linphone_proxy_config.h \
 	linphone_tunnel.h \
+	im_encryption_engine.h \
 	lpc2xml.h \
 	lpconfig.h \
 	nat_policy.h \
@@ -80,6 +81,7 @@ liblinphone_la_SOURCES=\
 	localplayer.c \
 	lpc2xml.c \
 	lime.c lime.h\
+	im_encryption_engine.c \
 	lpconfig.c \
 	lsd.c \
 	message_storage.c \

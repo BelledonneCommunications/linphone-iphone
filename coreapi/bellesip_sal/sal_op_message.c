@@ -70,13 +70,6 @@ static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
 			&&	strcmp("plain",belle_sip_header_content_type_get_subtype(content_type))==0;
 }
 
-static bool_t is_cipher_xml(belle_sip_header_content_type_t* content_type) {
-	return (strcmp("xml",belle_sip_header_content_type_get_type(content_type))==0
-			&&	strcmp("cipher",belle_sip_header_content_type_get_subtype(content_type))==0)
-
-		|| (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
-			&&	strcmp("cipher.vnd.gsma.rcs-ft-http+xml",belle_sip_header_content_type_get_subtype(content_type))==0);
-}
 static bool_t is_external_body(belle_sip_header_content_type_t* content_type) {
 	return strcmp("message",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("external-body",belle_sip_header_content_type_get_subtype(content_type))==0;
@@ -107,62 +100,28 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	bool_t cipher_xml=FALSE;
 	bool_t rcs_filetransfer=FALSE;
 	uint8_t *decryptedMessage = NULL;
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	int retval = -1;
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 	
-	if (content_type){
-	
-		/* check if we have a xml/cipher message to be decrypted */
-		if ((cipher_xml=is_cipher_xml(content_type))) {
-			/* access the zrtp cache to get keys needed to decipher the message */
-			LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-			FILE *CACHEFD = NULL;
-			if (lc->zrtp_secrets_cache != NULL) CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
-			if (CACHEFD == NULL) {
-				ms_warning("Unable to access ZRTP ZID cache to decrypt message");
-				goto error;
-			} else {
-				size_t cacheSize;
-				char *cacheString;
-				int retval;
-				xmlDocPtr cacheXml;
-				
-				cacheString=ms_load_file_content(CACHEFD, &cacheSize);
-				if (!cacheString){
-					ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
-					goto error;
-				}
-				cacheString[cacheSize] = '\0';
-				cacheSize += 1;
-				fclose(CACHEFD);
-				cacheXml = xmlParseDoc((xmlChar*)cacheString);
-				ms_free(cacheString);
-				retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), &decryptedMessage);
-				if (retval != 0) {
-					ms_warning("Unable to decrypt message, reason : %s - op [%p]", lime_error_code_to_string(retval), op);
-					free(decryptedMessage);
-					xmlFreeDoc(cacheXml);
-					errcode = 488;
-					goto error;
-				} else {
-					/* dump updated cache to a string */
-					xmlChar *xmlStringOutput;
-					int xmlStringLength;
-					xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-					/* write it to the cache file */
-					CACHEFD = fopen(lc->zrtp_secrets_cache, "wb+");
-					if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
-						ms_warning("Fail to write cache");
-					}
-					xmlFree(xmlStringOutput);
-					fclose(CACHEFD);
-				}
-
-				xmlFreeDoc(cacheXml);
+	if (content_type) {
+		LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
+		if (imee) {
+			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+			LinphoneImEncryptionEngineIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
+			if (cb_process_incoming_message) {
+				retval = cb_process_incoming_message(lc, belle_sip_header_content_type_get_type(content_type), belle_sip_header_content_type_get_subtype(content_type), 
+													 belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), (char **)&decryptedMessage);
 			}
-
 		}
+		cipher_xml = retval >= 0;
+		if (retval > 0) {
+			errcode = retval;
+			goto error;
+		}
+	
 		external_body=is_external_body(content_type);
 		plain_text=is_plain_text(content_type);
 		rcs_filetransfer = is_rcs_filetransfer(content_type);

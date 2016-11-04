@@ -1950,6 +1950,18 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 	if (linphone_core_ready(lc)){
 		lp_config_set_int(lc->config,"sip","lime",val);
 	}
+	
+	if (val != LinphoneLimeDisabled) {
+		LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new();
+		LinphoneImEncryptionEngineCbs *cbs = linphone_im_encryption_engine_get_callbacks(imee);
+		linphone_im_encryption_engine_cbs_set_process_incoming_message(cbs, lime_im_encryption_engine_process_incoming_message_cb);
+		lc->im_encryption_engine = imee;
+	} else {
+		if (lc->im_encryption_engine) {
+			linphone_im_encryption_engine_destory(lc->im_encryption_engine);
+			lc->im_encryption_engine = NULL;
+		}
+	}
 }
 
 bool_t linphone_core_lime_available(const LinphoneCore *lc){
@@ -7995,4 +8007,12 @@ const char *linphone_core_get_tls_cert_path(const LinphoneCore *lc) {
 const char *linphone_core_get_tls_key_path(const LinphoneCore *lc) {
 	const char *tls_key_path = lp_config_get_string(lc->config, "sip", "client_cert_key", NULL);
 	return tls_key_path;
+}
+
+void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncryptionEngine *imee) {
+	lc->im_encryption_engine = imee;
+}
+
+LinphoneImEncryptionEngine *linphone_core_get_im_encryption_engine(const LinphoneCore *lc) {
+	return lc->im_encryption_engine;
 }

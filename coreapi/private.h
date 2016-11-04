@@ -1071,6 +1071,8 @@ struct _LinphoneCore
 
 	/*default resource list server*/
 	LinphoneAddress *default_rls_addr;
+	
+	LinphoneImEncryptionEngine *im_encryption_engine;
 };
 
 

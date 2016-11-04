@@ -432,6 +432,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "nat_policy.h"
 #include "xmlrpc.h"
 #include "conference.h"
+#include "im_encryption_engine.h"
 #else
 #include "linphone/buffer.h"
 #include "linphone/call_log.h"
@@ -442,6 +443,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphone/nat_policy.h"
 #include "linphone/xmlrpc.h"
 #include "linphone/conference.h"
+#include "linphone/im_encryption_engine.h"
 #endif
 
 LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
@@ -4727,6 +4729,10 @@ LINPHONE_PUBLIC const char *linphone_core_get_tls_cert_path(const LinphoneCore *
  * @return the TLS key path or NULL if not set yet
  */
 LINPHONE_PUBLIC const char *linphone_core_get_tls_key_path(const LinphoneCore *lc);
+
+LINPHONE_PUBLIC void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncryptionEngine *imee);
+
+LINPHONE_PUBLIC LinphoneImEncryptionEngine * linphone_core_get_im_encryption_engine(const LinphoneCore *lc);
 
 #include "ringtoneplayer.h"
 

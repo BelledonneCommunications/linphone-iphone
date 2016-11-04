@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <libxml/parser.h>
 #include <libxml/xmlwriter.h>
 
+#include "linphonecore.h"
 #include <mediastreamer2/mscommon.h>
 
 #ifndef LINPHONE_PUBLIC
@@ -203,4 +204,7 @@ LINPHONE_PUBLIC char *lime_error_code_to_string(int errorCode);
  * @return TRUE if Lime is available, FALSE if not
  */
 LINPHONE_PUBLIC bool_t lime_is_available(void);
+
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body);
+
 #endif /* LIME_H */

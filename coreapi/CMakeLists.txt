@@ -46,6 +46,7 @@ set(LINPHONE_HEADER_FILES
 	linphonepresence.h
 	linphone_proxy_config.h
 	linphone_tunnel.h
+	im_encryption_engine.h
 	lpc2xml.h
 	lpconfig.h
 	nat_policy.h
@@ -95,6 +96,7 @@ set(LINPHONE_SOURCE_FILES_C
 	info.c
 	ldap/ldapprovider.c
 	lime.c
+	im_encryption_engine.c
 	linphonecall.c
 	linphonecore.c
 	linphone_tunnel_config.c

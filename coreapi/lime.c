@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 #ifdef HAVE_LIME
-#include "linphonecore.h"
 #include "bctoolbox/crypto.h"
 
 /**
@@ -812,6 +811,70 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	return 0;
 }
 
+static bool_t is_cipher_xml(const char* content_type, const char *content_subtype) {
+	return (strcmp("xml",content_type)==0
+			&&	strcmp("cipher",content_subtype)==0)
+		|| (strcmp("application",content_type)==0
+			&&	strcmp("cipher.vnd.gsma.rcs-ft-http+xml",content_subtype)==0);
+}
+
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body) {
+	int errcode = -1;
+	/* check if we have a xml/cipher message to be decrypted */
+	if (is_cipher_xml(content_type, content_subtype)) {
+		/* access the zrtp cache to get keys needed to decipher the message */
+		FILE *CACHEFD = NULL;
+		const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
+		errcode = 0;
+		if (zrtp_secrets_cache != NULL) CACHEFD = fopen(zrtp_secrets_cache, "rb+");
+		if (CACHEFD == NULL) {
+			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
+			errcode = 500;
+			return errcode;
+		} else {
+			size_t cacheSize;
+			char *cacheString;
+			int retval;
+			xmlDocPtr cacheXml;
+			
+			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+			if (!cacheString){
+				ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
+				errcode = 500;
+				return errcode;
+			}
+			cacheString[cacheSize] = '\0';
+			cacheSize += 1;
+			fclose(CACHEFD);
+			cacheXml = xmlParseDoc((xmlChar*)cacheString);
+			ms_free(cacheString);
+			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)body, (uint8_t **)decrypted_body);
+			if (retval != 0) {
+				ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
+				free(decrypted_body);
+				xmlFreeDoc(cacheXml);
+				errcode = 488;
+				return errcode;
+			} else {
+				/* dump updated cache to a string */
+				xmlChar *xmlStringOutput;
+				int xmlStringLength;
+				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+				/* write it to the cache file */
+				CACHEFD = fopen(zrtp_secrets_cache, "wb+");
+				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
+					ms_warning("Fail to write cache");
+				}
+				xmlFree(xmlStringOutput);
+				fclose(CACHEFD);
+			}
+
+			xmlFreeDoc(cacheXml);
+		}
+	}
+	return errcode;
+}
+
 
 #else /* HAVE_LIME */
 
@@ -836,6 +899,9 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 }
 int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {
 	return LIME_NOT_ENABLED;
+}
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body) {
+	return 500;
 }
 #endif /* HAVE_LIME */
 
