@@ -633,7 +633,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 
 		ccc = linphone_dial_plan_lookup_ccc_from_e164(flatten);
 		if (ccc>-1) { /*e164 like phone number*/
-			dialplan = *linphone_dial_plan_by_ccc_as_ushort(ccc);
+			dialplan = *linphone_dial_plan_by_ccc_as_int(ccc);
 			nationnal_significant_number = strstr(flatten, dialplan.ccc);
 			if (nationnal_significant_number) {
 				nationnal_significant_number +=strlen(dialplan.ccc);

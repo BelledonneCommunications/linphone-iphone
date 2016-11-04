@@ -296,10 +296,10 @@ int linphone_dial_plan_lookup_ccc_from_iso(const char* iso) {
 	return -1;
 }
 
-const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_ushort(unsigned short ccc) {
+const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc) {
 	int i;
-	char ccc_as_char[4] = {0};
-	snprintf(ccc_as_char,sizeof(ccc_as_char),"%i",ccc);
+	char ccc_as_char[16] = {0};
+	snprintf(ccc_as_char,sizeof(ccc_as_char)-1,"%i",ccc);
 	
 	for(i=0;dial_plans[i].country!=NULL;++i){
 		if (strcmp(ccc_as_char,dial_plans[i].ccc)==0){
@@ -316,7 +316,7 @@ const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc) {
 		return &most_common_dialplan;
 	}
 
-	return linphone_dial_plan_by_ccc_as_ushort(strtol(ccc,NULL,10));
+	return linphone_dial_plan_by_ccc_as_int((int)strtol(ccc,NULL,10));
 }
 
 const LinphoneDialPlan* linphone_dial_plan_get_all() {

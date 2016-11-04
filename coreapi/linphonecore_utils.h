@@ -137,7 +137,7 @@ LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *cc
  * Find best match for given CCC
  * @return Return matching dial plan, or a generic one if none found
  **/
-LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_ushort(unsigned short ccc);
+LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc);
 	
 	
 /**
