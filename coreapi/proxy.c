@@ -603,9 +603,9 @@ static char *flatten_number(const char *number){
 	return result;
 }
 
-static char* replace_plus_with_icp(char *phone, const char* icp){
+/*static char* replace_plus_with_icp(char *phone, const char* icp){
 	return (icp && phone[0]=='+') ? ms_strdup_printf("%s%s", icp, phone+1) : ms_strdup(phone);
-}
+}*/
 
 static char* replace_icp_with_plus(char *phone, const char *icp){
 	return (strstr(phone, icp) == phone) ?  ms_strdup_printf("+%s", phone+strlen(icp)) : ms_strdup(phone);
