@@ -818,7 +818,7 @@ static bool_t is_cipher_xml(const char* content_type, const char *content_subtyp
 			&&	strcmp("cipher.vnd.gsma.rcs-ft-http+xml",content_subtype)==0);
 }
 
-int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body) {
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body) {
 	int errcode = -1;
 	/* check if we have a xml/cipher message to be decrypted */
 	if (is_cipher_xml(content_type, content_subtype)) {
@@ -875,7 +875,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, cons
 	return errcode;
 }
 
-int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length) {
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length) {
 	int errcode = -1;
 	/* shall we try to encrypt the message?*/
 	if ((strcmp(content_type, "xml/cipher") == 0) || ((strcmp(content_type, "application/cipher.vnd.gsma.rcs-ft-http+xml") == 0))) {
@@ -952,10 +952,10 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {
 	return LIME_NOT_ENABLED;
 }
-int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body) {
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body) {
 	return 500;
 }
-int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length) {
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length) {
 	return 500;
 }
 #endif /* HAVE_LIME */

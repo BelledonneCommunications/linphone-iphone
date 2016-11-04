@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphonecore.h"
 #include "private.h"
-#include "lime.h"
 #include <libxml/xmlwriter.h>
 
 static void process_error( SalOp* op) {
@@ -90,7 +89,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_content_type_t* content_type;
 	belle_sip_response_t* resp;
-	int errcode=500;
+	int errcode = 500;
 	belle_sip_header_call_id_t* call_id = belle_sip_message_get_header_by_type(req,belle_sip_header_call_id_t);
 	belle_sip_header_cseq_t* cseq = belle_sip_message_get_header_by_type(req,belle_sip_header_cseq_t);
 	belle_sip_header_date_t *date=belle_sip_message_get_header_by_type(req,belle_sip_header_date_t);
@@ -112,7 +111,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 			LinphoneImEncryptionEngineIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
 			if (cb_process_incoming_message) {
-				retval = cb_process_incoming_message(lc, belle_sip_header_content_type_get_type(content_type), belle_sip_header_content_type_get_subtype(content_type), 
+				retval = cb_process_incoming_message(lc, req, belle_sip_header_content_type_get_type(content_type), belle_sip_header_content_type_get_subtype(content_type), 
 													 belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), (char **)&decryptedMessage);
 			}
 		}
@@ -234,7 +233,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
 		if (cb_process_outgoing_message) {
-			retval = cb_process_outgoing_message(lc, peer_uri, content_type, msg, (char **)&multipartEncryptedMessage, &content_length);
+			retval = cb_process_outgoing_message(lc, req, peer_uri, content_type, msg, (char **)&multipartEncryptedMessage, &content_length);
 		}
 	}
 	if (retval > 0) {

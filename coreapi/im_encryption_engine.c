@@ -59,6 +59,14 @@ void linphone_im_encryption_engine_destory(LinphoneImEncryptionEngine *imee) {
 	ms_free(imee);
 }
 
+void *linphone_im_encryption_engine_get_user_data(const LinphoneImEncryptionEngine *imee) {
+	return imee->user_data;
+}
+
+void linphone_im_encryption_engine_set_user_data(LinphoneImEncryptionEngine *imee, void *data) {
+	imee->user_data = data;
+}
+
 LinphoneImEncryptionEngineCbs* linphone_im_encryption_engine_get_callbacks(const LinphoneImEncryptionEngine *imee) {
 	return imee->callbacks;
 }

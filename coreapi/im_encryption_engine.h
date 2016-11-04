@@ -26,17 +26,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
-typedef int (*LinphoneImEncryptionEngineIncomingMessageCb)(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body);
+typedef int (*LinphoneImEncryptionEngineIncomingMessageCb)(LinphoneCore* lc, belle_sip_request_t* req, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body);
 
-typedef int (*LinphoneImEncryptionEngineOutgoingMessageCb)(LinphoneCore* lc, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
+typedef int (*LinphoneImEncryptionEngineOutgoingMessageCb)(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
 
 typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 
 typedef struct _LinphoneImEncryptionEngine LinphoneImEncryptionEngine;
 
-LINPHONE_PUBLIC LinphoneImEncryptionEngineCbs *linphone_im_encryption_engine_cbs_new(void);
+LinphoneImEncryptionEngineCbs *linphone_im_encryption_engine_cbs_new(void);
 
-LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_destory(LinphoneImEncryptionEngineCbs *cbs);
+void linphone_im_encryption_engine_cbs_destory(LinphoneImEncryptionEngineCbs *cbs);
 
 LINPHONE_PUBLIC void *linphone_im_encryption_engine_cbs_get_user_data(const LinphoneImEncryptionEngineCbs *cbs);
 
@@ -45,6 +45,10 @@ LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_user_data(LinphoneImE
 LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(void);
 
 LINPHONE_PUBLIC void linphone_im_encryption_engine_destory(LinphoneImEncryptionEngine *imee);
+
+LINPHONE_PUBLIC void *linphone_im_encryption_engine_get_user_data(const LinphoneImEncryptionEngine *imee);
+
+LINPHONE_PUBLIC void linphone_im_encryption_engine_set_user_data(LinphoneImEncryptionEngine *imee, void *data);
 
 LINPHONE_PUBLIC LinphoneImEncryptionEngineCbs* linphone_im_encryption_engine_get_callbacks(const LinphoneImEncryptionEngine *imee);
 
