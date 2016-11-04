@@ -657,10 +657,10 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 			}
 			nationnal_significant_number=flatten;
 		}
+		ms_debug("Using dial plan '%s'",dialplan.country);
 
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
 		if (dialplan.ccc[0]!='\0') {
-			ms_debug("Using dial plan '%s'",dialplan.country);
 			/* the number already starts with + or international prefix*/
 			/*0. keep at most national number significant digits */
 			char* nationnal_significant_number_start = nationnal_significant_number
