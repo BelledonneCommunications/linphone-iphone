@@ -4492,6 +4492,8 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	if (use_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
 		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+		linphone_core_manager_wait_for_stun_resolution(marie);
+		linphone_core_manager_wait_for_stun_resolution(pauline);
 	}
 	if (with_socket_refresh){
 		lp_config_set_int(linphone_core_get_config(marie->lc), "net", "recreate_sockets_when_network_is_up", 1);
