@@ -1955,6 +1955,7 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 		LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new();
 		LinphoneImEncryptionEngineCbs *cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		linphone_im_encryption_engine_cbs_set_process_incoming_message(cbs, lime_im_encryption_engine_process_incoming_message_cb);
+		linphone_im_encryption_engine_cbs_set_process_outgoing_message(cbs, lime_im_encryption_engine_process_outgoing_message_cb);
 		lc->im_encryption_engine = imee;
 	} else {
 		if (lc->im_encryption_engine) {

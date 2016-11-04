@@ -207,4 +207,6 @@ LINPHONE_PUBLIC bool_t lime_is_available(void);
 
 int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body);
 
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
+
 #endif /* LIME_H */

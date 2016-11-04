@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 typedef int (*LinphoneImEncryptionEngineIncomingMessageCb)(LinphoneCore* lc, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body);
 
+typedef int (*LinphoneImEncryptionEngineOutgoingMessageCb)(LinphoneCore* lc, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
+
 typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 
 typedef struct _LinphoneImEncryptionEngine LinphoneImEncryptionEngine;
@@ -49,5 +51,9 @@ LINPHONE_PUBLIC LinphoneImEncryptionEngineCbs* linphone_im_encryption_engine_get
 LINPHONE_PUBLIC LinphoneImEncryptionEngineIncomingMessageCb linphone_im_encryption_engine_cbs_get_process_incoming_message(LinphoneImEncryptionEngineCbs *cbs);
 
 LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_incoming_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineIncomingMessageCb cb);
+
+LINPHONE_PUBLIC LinphoneImEncryptionEngineOutgoingMessageCb linphone_im_encryption_engine_cbs_get_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs);
+
+LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineOutgoingMessageCb cb);
 
 #endif /* IM_ENCRYPTION_ENGINE_H */

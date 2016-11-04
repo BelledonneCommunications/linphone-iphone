@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 struct _LinphoneImEncryptionEngineCbs {
 	void *user_data;
 	LinphoneImEncryptionEngineIncomingMessageCb process_incoming_message;
+	LinphoneImEncryptionEngineOutgoingMessageCb process_outgoing_message;
 };
 
 struct _LinphoneImEncryptionEngine {
@@ -68,4 +69,12 @@ LinphoneImEncryptionEngineIncomingMessageCb linphone_im_encryption_engine_cbs_ge
 
 void linphone_im_encryption_engine_cbs_set_process_incoming_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineIncomingMessageCb cb) {
 	cbs->process_incoming_message = cb;
+}
+
+LinphoneImEncryptionEngineOutgoingMessageCb linphone_im_encryption_engine_cbs_get_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs) {
+	return cbs->process_outgoing_message;
+}
+
+void linphone_im_encryption_engine_cbs_set_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineOutgoingMessageCb cb) {
+	cbs->process_outgoing_message = cb;
 }

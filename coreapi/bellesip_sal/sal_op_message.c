@@ -100,7 +100,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	bool_t cipher_xml=FALSE;
 	bool_t rcs_filetransfer=FALSE;
 	uint8_t *decryptedMessage = NULL;
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	int retval = -1;
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
@@ -206,7 +206,9 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	time_t curtime = ms_time(NULL);
 	uint8_t *multipartEncryptedMessage = NULL;
 	const char *body;
-	int retval;
+	int retval = -1;
+	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
 	
 	if (op->dialog){
 		/*for SIP MESSAGE that are sent in call's dialog*/
@@ -228,58 +230,18 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		}
 	}
 
-	/* shall we try to encrypt the message?*/
-	if ((strcmp(content_type, "xml/cipher") == 0) || ((strcmp(content_type, "application/cipher.vnd.gsma.rcs-ft-http+xml") == 0))) {
-		/* access the zrtp cache to get keys needed to cipher the message */
-		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
-		if (CACHEFD == NULL) {
-			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
-			/*probably not a good idea to do this:*/
-			sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);
-			op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
-			return -1;
-		} else {
-			size_t cacheSize;
-			char *cacheString;
-			xmlDocPtr cacheXml;
-			int retval;
-
-			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
-			if (!cacheString){
-				ms_warning("Unable to load content of ZRTP ZID cache to encrypt message");
-				return -1;
-			}
-			cacheString[cacheSize] = '\0';
-			cacheSize += 1;
-			fclose(CACHEFD);
-			cacheXml = xmlParseDoc((xmlChar*)cacheString);
-			ms_free(cacheString);
-			retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg, (uint8_t *)peer_uri, &multipartEncryptedMessage);
-			if (retval != 0) {
-				ms_warning("Unable to encrypt message for %s : %s - op [%p]", peer_uri, lime_error_code_to_string(retval), op);
-				xmlFreeDoc(cacheXml);
-				free(multipartEncryptedMessage);
-				/*probably not a good idea to do this:*/
-				sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);
-				op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
-				return -1;
-			} else {
-				/* dump updated cache to a string */
-				xmlChar *xmlStringOutput;
-				int xmlStringLength;
-				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-				/* write it to the cache file */
-				CACHEFD = fopen(lc->zrtp_secrets_cache, "wb+");
-				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
-					ms_warning("Unable to write zid cache");
-				}
-				xmlFree(xmlStringOutput);
-				fclose(CACHEFD);
-				content_length = strlen((const char *)multipartEncryptedMessage);
-			}
-			xmlFreeDoc(cacheXml);
+	if (imee) {
+		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+		LinphoneImEncryptionEngineOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
+		if (cb_process_outgoing_message) {
+			retval = cb_process_outgoing_message(lc, peer_uri, content_type, msg, (char **)&multipartEncryptedMessage, &content_length);
 		}
+	}
+	if (retval > 0) {
+		/*probably not a good idea to do this:*/
+		sal_error_info_set(&op->error_info, SalReasonNotAcceptable, retval, "Unable to encrypt IM", NULL);
+		op->base.root->callbacks.text_delivery_update(op, SalTextDeliveryFailed);
+		return -1;
 	}
 
 	snprintf(content_type_raw,sizeof(content_type_raw),BELLE_SIP_CONTENT_TYPE ": %s",content_type);
