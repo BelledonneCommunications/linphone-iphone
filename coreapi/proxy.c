@@ -634,7 +634,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 		ccc = linphone_dial_plan_lookup_ccc_from_e164(flatten);
 		if (ccc>-1) { /*e164 like phone number*/
 			dialplan = *linphone_dial_plan_by_ccc_as_ushort(ccc);
-			nationnal_significant_number = strnstr(flatten, dialplan.ccc,4 /*+ +maximun 3 digits*/);
+			nationnal_significant_number = strstr(flatten, dialplan.ccc);
 			if (nationnal_significant_number) {
 				nationnal_significant_number +=strlen(dialplan.ccc);
 			}
@@ -649,7 +649,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 					strncpy(dialplan.ccc,tmpproxy->dial_prefix,sizeof(dialplan.ccc));
 				}
 			}
-			if (strnstr(flatten,dialplan.icp,strlen(dialplan.icp))==flatten) {
+			if (strstr(flatten,dialplan.icp)==flatten) {
 				char *e164 = replace_icp_with_plus(flatten,dialplan.icp);
 				result = linphone_proxy_config_normalize_phone_number(tmpproxy,e164);
 				ms_free(e164);
