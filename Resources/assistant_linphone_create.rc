@@ -8,7 +8,7 @@
 		<entry name="quality_reporting_collector" overwrite="true">sip:voip-metrics@sip.linphone.org;transport=tls</entry>
 		<entry name="quality_reporting_enabled" overwrite="true">1</entry>
 		<entry name="quality_reporting_interval" overwrite="true">180</entry>
-		<entry name="reg_expires" overwrite="true">1314000</entry>
+		<entry name="reg_expires" overwrite="true">31536000</entry>
 		<entry name="reg_identity" overwrite="true">sip:?@sip.linphone.org</entry>
 		<entry name="reg_sendregister" overwrite="true">1</entry>
 		<entry name="refkey" overwrite="true">push_notification</entry>
@@ -17,7 +17,6 @@
 
 	<section name="sip">
 		<entry name="rls_uri" overwrite="true">sip:rls@sip.linphone.org</entry>
-		<entry name="use_rls_presence" overwrite="true">1</entry>
 	</section>
 
 	<section name="assistant">
