@@ -3568,7 +3568,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 		subject="Conference";
 	}else if (call->params->internal_call_update){
 		subject="ICE processing concluded";
-	}else if (!no_user_consent){
+	}else if (no_user_consent){
 		subject="Refreshing";
 	}else{
 		subject="Media change";
