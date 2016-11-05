@@ -53,8 +53,8 @@ static void linphone_vcard_import_export_friends_test(void) {
 	linphone_friend_list_unref(lfl);
 
 	remove(export_filepath);
-	ms_free(import_filepath);
-	ms_free(export_filepath);
+	bc_free(import_filepath);
+	bc_free(export_filepath);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -106,7 +106,7 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 
 	linphone_friend_list_unref(lfl);
 
-	ms_free(import_filepath);
+	bc_free(import_filepath);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -244,7 +244,7 @@ static void friends_migration(void) {
 
 	friends_from_db = bctbx_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
 	unlink(friends_db);
-	ms_free(friends_db);
+	bc_free(friends_db);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -369,7 +369,7 @@ static void friends_sqlite_storage(void) {
 end:
 	ms_free(stats);
 	unlink(friends_db);
-	ms_free(friends_db);
+	bc_free(friends_db);
 	linphone_address_unref(addr);
 	linphone_core_destroy(lc);
 	linphone_core_v_table_destroy(v_table);
@@ -473,7 +473,7 @@ static void carddav_sync_2(void) {
 
 	ms_free(stats);
 	unlink(friends_db);
-	ms_free(friends_db);
+	bc_free(friends_db);
 	linphone_carddav_context_destroy(c);
 	linphone_core_manager_destroy(manager);
 }
@@ -513,7 +513,7 @@ static void carddav_sync_3(void) {
 
 	ms_free(stats);
 	unlink(friends_db);
-	ms_free(friends_db);
+	bc_free(friends_db);
 	linphone_carddav_context_destroy(c);
 	c = NULL;
 	linphone_core_manager_destroy(manager);
