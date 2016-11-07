@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 struct _LinphoneImEncryptionEngineCbs {
 	void *user_data;
 	LinphoneImEncryptionEngineIncomingMessageCb process_incoming_message;
+	LinphoneImEncryptionEngineDownloadingFileBufferCb process_downlading_file_buffer;
+	LinphoneImEncryptionEngineDownloadingFileCb process_downloading_file;
 	LinphoneImEncryptionEngineOutgoingMessageCb process_outgoing_message;
 };
 
@@ -85,4 +87,20 @@ LinphoneImEncryptionEngineOutgoingMessageCb linphone_im_encryption_engine_cbs_ge
 
 void linphone_im_encryption_engine_cbs_set_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineOutgoingMessageCb cb) {
 	cbs->process_outgoing_message = cb;
+}
+
+LinphoneImEncryptionEngineDownloadingFileBufferCb linphone_im_encryption_engine_cbs_get_process_downloading_file_buffer(LinphoneImEncryptionEngineCbs *cbs) {
+	return cbs->process_downlading_file_buffer;
+}
+
+void linphone_im_encryption_engine_cbs_set_process_downloading_file_buffer(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineDownloadingFileBufferCb cb) {
+	cbs->process_downlading_file_buffer = cb;
+}
+
+LinphoneImEncryptionEngineDownloadingFileCb linphone_im_encryption_engine_cbs_get_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs) {
+	return cbs->process_downloading_file;
+}
+
+void linphone_im_encryption_engine_cbs_set_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineDownloadingFileCb cb) {
+	cbs->process_downloading_file = cb;
 }

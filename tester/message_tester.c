@@ -864,6 +864,8 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	LinphoneChatMessageCbs *cbs;
 	char *pauline_id, *marie_id;
 	char *filepath;
+	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+	char *receive_filepath = bc_tester_file("receive_file.dump");
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -932,12 +934,15 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 			BC_ASSERT_PTR_NULL(linphone_content_get_key(content));
 		linphone_chat_message_download_file(recv_msg);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
+		compare_files(send_filepath, receive_filepath);
 	}
 
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); // file transfer
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
 end:
+	ms_free(send_filepath);
+	bc_free(receive_filepath);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 #ifdef HAVE_LIME
+#include "private.h"
 #include "bctoolbox/crypto.h"
 
 /**
@@ -928,6 +929,43 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, bell
 	return errcode;
 }
 
+int lime_im_encryption_engine_process_downloading_file_buffer_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer) {
+	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
+	
+	if (buffer == NULL || size == 0) {
+		return lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
+	}
+	
+	return lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+						 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), size, *decrypted_buffer,
+						 (char *)buffer);
+}
+
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *path) {
+	if (linphone_content_get_key(msg->file_transfer_information) == NULL) {
+		return -1;
+	} else {
+		bctbx_vfs_t *vfs = bctbx_vfs_get_default();
+		bctbx_vfs_file_t *decrypted_file;
+		bctbx_vfs_file_t *encrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "r");
+		size_t encrypted_file_size = (size_t)bctbx_file_size(encrypted_file);
+		char *encrypted_content = bctbx_malloc(encrypted_file_size);
+		char *decrypted_content = bctbx_malloc(encrypted_file_size);
+		bctbx_file_read(encrypted_file, encrypted_content, encrypted_file_size, 0);
+		bctbx_file_close(encrypted_file);
+		lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+			(unsigned char *)linphone_content_get_key(msg->file_transfer_information),
+			encrypted_file_size, decrypted_content, encrypted_content);
+		lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
+		decrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "w");
+		bctbx_file_write(decrypted_file, decrypted_content, encrypted_file_size, 0);
+		bctbx_file_close(decrypted_file);
+		bctbx_free(encrypted_content);
+		bctbx_free(decrypted_content);
+		return 0;
+	}
+}
+
 #else /* HAVE_LIME */
 
 bool_t lime_is_available() { return FALSE; }
@@ -956,6 +994,12 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, bell
 	return 500;
 }
 int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length) {
+	return 500;
+}
+int lime_im_encryption_engine_process_downloading_file_buffer_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer) {
+	return 500;
+}
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *path) {
 	return 500;
 }
 #endif /* HAVE_LIME */
