@@ -61,12 +61,12 @@ void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, 
 	cbs->user_data = ud;
 }
 
-void *linphone_account_creator_cbs_get_update_hash(const LinphoneAccountCreatorCbs *cbs) {
+LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_update_hash(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->update_hash;
 }
 
-void linphone_account_creator_cbs_set_update_hash(LinphoneAccountCreatorCbs *cbs, void *ud) {
-	cbs->update_hash = ud;
+void linphone_account_creator_cbs_set_update_hash(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb) {
+	cbs->update_hash = cb;
 }
 
 LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_is_account_used(const LinphoneAccountCreatorCbs *cbs) {
