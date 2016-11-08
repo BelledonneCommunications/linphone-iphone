@@ -419,7 +419,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 			break;
 	}
 	
-	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing password", nil)
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing your password", nil)
 																	 message:err
 															  preferredStyle:UIAlertControllerStyleAlert];
 	
@@ -842,7 +842,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																		   linphone_account_creator_update_password(account_creator, pwd.UTF8String);
 																	   } else {
 																		   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing your password", nil)
-																																			message:NSLocalizedString(@"Your confirmation password	doesn't match your password", nil)
+																																			message:NSLocalizedString(@"Your confirmation password doesn't match your password", nil)
 																																	 preferredStyle:UIAlertControllerStyleAlert];
 																	   
 																		   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
