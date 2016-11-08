@@ -445,7 +445,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 			linphone_core_add_auth_info(LC, newAuth);
 		}
 	}
+	[self recomputeAccountLabelsAndSync];
+	[settingsStore setObject:_tmpPwd forKey:@"account_mandatory_password_preference"];
 	_tmpPwd = NULL;
+	
 	
 	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Changing your password", nil)
 																	 message:NSLocalizedString(@"Your password has been successfully changed", nil)
