@@ -367,6 +367,45 @@ const char * linphone_account_creator_get_password(const LinphoneAccountCreator 
 	return creator->password;
 }
 
+LinphoneAccountCreator _password_updated_cb(LinphoneXmlRpcRequest *request) {
+	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
+	if (creator->callbacks->password_updated != NULL) {
+		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
+		const char* resp = linphone_xml_rpc_request_get_string_response(request);
+		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
+			if (strcmp(resp, "OK") == 0) {
+				status = LinphoneAccountCreatorOK;
+			} else if (strcmp(resp, "ERROR_PASSWORD_DOESNT_MATCH") == 0) {
+				status = LinphoneAccountCreatorAccountNotExist;
+			} else {
+				status = LinphoneAccountCreatorErrorServer;
+			}
+		}
+		creator->callbacks->password_updated(creator, status, resp);
+	}	
+}
+
+LinphoneAccountCreatorStatus linphone_account_creator_update_password(const LinphoneAccountCreator *creator, const char *new_pwd){
+	LinphoneXmlRpcRequest *request;
+	const char * username = creator->username ? creator->username : creator->phone_number;
+	const char * ha1 = ms_strdup(creator->password ? ha1_for_passwd(username, creator->domain, creator->password) : creator->ha1);
+	const char * new_ha1 = ms_strdup(ha1_for_passwd(username, creator->domain, new_pwd));
+
+	request = linphone_xml_rpc_request_new_with_args("update_hash", LinphoneXmlRpcArgString,
+		LinphoneXmlRpcArgString, username,
+		LinphoneXmlRpcArgString, ha1,
+		LinphoneXmlRpcArgString, new_ha1,
+		LinphoneXmlRpcArgString, creator->domain,
+		LinphoneXmlRpcArgNone);
+
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _password_updated_cb);
+	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
+	linphone_xml_rpc_request_unref(request);
+
+	return LinphoneAccountCreatorOK;
+}
+
 LinphoneAccountCreatorStatus linphone_account_creator_set_ha1(LinphoneAccountCreator *creator, const char *ha1){
 	set_string(&creator->ha1, ha1, FALSE);
 	return LinphoneAccountCreatorOK;
