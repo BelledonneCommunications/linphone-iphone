@@ -8224,6 +8224,34 @@ static void account_creator_phone_account_recovered(LinphoneAccountCreator *crea
 	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
 }
 
+static void account_creator_password_updated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+
+	ms_warning("test callback password updated");
+
+	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
+	jobject listener = (jobject) linphone_account_creator_cbs_get_user_data(cbs);
+	if (listener == NULL) {
+		ms_error("account_creator_response() notification without listener");
+		return ;
+	}
+
+	LinphoneCore *lc = (LinphoneCore *)creator->core;
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onAccountCreatorPasswordUpdated","(Lorg/linphone/core/LinphoneAccountCreator;Lorg/linphone/core/LinphoneAccountCreator$Status;)V");
+	env->DeleteLocalRef(clazz);
+
+	jobject statusObject = env->CallStaticObjectMethod(ljb->accountCreatorStatusClass, ljb->accountCreatorStatusFromIntId, (jint)status);
+	env->CallVoidMethod(listener, method, getAccountCreator(env, creator), statusObject);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneAccountCreatorImpl_newLinphoneAccountCreator(JNIEnv *env, jobject thiz, jlong core, jstring jurl) {
 	const char *url = GetStringUTFChars(env, jurl);
 	LinphoneAccountCreator *account_creator = linphone_account_creator_new((LinphoneCore *)core, url);
@@ -8253,6 +8281,7 @@ extern "C" void Java_org_linphone_core_LinphoneAccountCreatorImpl_setListener(JN
 	linphone_account_creator_cbs_set_recover_phone_account(cbs, account_creator_phone_account_recovered);
 	linphone_account_creator_cbs_set_is_phone_number_used(cbs, account_creator_is_phone_number_used);
 	linphone_account_creator_cbs_set_is_account_linked(cbs, account_creator_is_account_linked);
+	linphone_account_creator_cbs_set_update_hash(cbs, account_creator_password_updated);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setUsername(JNIEnv *env, jobject thiz, jlong ptr, jstring jusername) {
@@ -8449,6 +8478,15 @@ extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_activatePhoneN
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_recoverPhoneAccount(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
 	return (jint) linphone_account_creator_recover_phone_account(account_creator);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_updatePassword(JNIEnv *env, jobject thiz, jlong ptr, jstring jpasswd) {
+	jint status;
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	const char* passwd = GetStringUTFChars(env, jpasswd);
+	status = (jint) linphone_account_creator_update_password(account_creator, passwd);
+	ReleaseStringUTFChars(env, jpasswd, passwd);
+	return status;
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneAccountCreatorImpl_configure(JNIEnv *env, jobject thiz, jlong ptr) {

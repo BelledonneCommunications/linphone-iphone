@@ -151,7 +151,7 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_username(const Linphon
  * @param[in] new_pwd const char * : new password for the account creator
  * @return LinphoneAccountCreatorOk if everything is OK, or a specific error otherwise.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_update_password(const LinphoneAccountCreator *creator, const char *new_pwd);
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_update_password(LinphoneAccountCreator *creator, const char *new_pwd);
 
 /**
  * Set the phone number normalized.

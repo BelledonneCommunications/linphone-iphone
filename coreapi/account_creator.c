@@ -375,7 +375,7 @@ const char * linphone_account_creator_get_password(const LinphoneAccountCreator 
 	return creator->password;
 }
 
-LinphoneAccountCreator _password_updated_cb(LinphoneXmlRpcRequest *request) {
+static void _password_updated_cb(LinphoneXmlRpcRequest *request) {
 	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
 	if (creator->callbacks->update_hash != NULL) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
@@ -390,13 +390,22 @@ LinphoneAccountCreator _password_updated_cb(LinphoneXmlRpcRequest *request) {
 			}
 		}
 		creator->callbacks->update_hash(creator, status, resp);
-	}	
+	}
 }
 
-LinphoneAccountCreatorStatus linphone_account_creator_update_password(const LinphoneAccountCreator *creator, const char *new_pwd){
+LinphoneAccountCreatorStatus linphone_account_creator_update_password(LinphoneAccountCreator *creator, const char *new_pwd){
 	LinphoneXmlRpcRequest *request;
+	char *identity = _get_identity(creator);
+	if (!identity || (!creator->username && !creator->phone_number
+			&& !creator->domain && (!creator->password || !creator->ha1))) {
+		if (creator->callbacks->update_hash != NULL) {
+			creator->callbacks->update_hash(creator, LinphoneAccountCreatorReqFailed, "Missing required parameters");
+		}
+		return LinphoneAccountCreatorReqFailed;
+	}
+
 	const char * username = creator->username ? creator->username : creator->phone_number;
-	const char * ha1 = ms_strdup(creator->password ? ha1_for_passwd(username, creator->domain, creator->password) : creator->ha1);
+	const char * ha1 = ms_strdup(creator->ha1 ? creator->ha1 : ha1_for_passwd(username, creator->domain, creator->password) );
 	const char * new_ha1 = ms_strdup(ha1_for_passwd(username, creator->domain, new_pwd));
 
 	request = linphone_xml_rpc_request_new_with_args("update_hash", LinphoneXmlRpcArgString,
