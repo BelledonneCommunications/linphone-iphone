@@ -157,6 +157,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 													   assistant_recover_phone_account);
 	linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_is_account_linked);
+	
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];

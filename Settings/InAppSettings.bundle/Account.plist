@@ -51,6 +51,8 @@
 			<string>No</string>
 			<key>DefaultValue</key>
 			<string></string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -67,6 +69,8 @@
 			<string>None</string>
 			<key>AutocorrectionType</key>
 			<string>No</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>IsSecure</key>
@@ -87,6 +91,8 @@
 			<string>No</string>
 			<key>DefaultValue</key>
 			<string></string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -99,6 +105,8 @@
 			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
 			<key>AutocorrectionType</key>
@@ -119,6 +127,8 @@
 		<dict>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
@@ -137,6 +147,8 @@
 		<dict>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
@@ -239,6 +251,14 @@
 			<string>Substitute + in phone numbers</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>account_mandatory_change_password</string>
+			<key>Title</key>
+			<string>Change password</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
 		</dict>
 		<dict>
 			<key>Key</key>

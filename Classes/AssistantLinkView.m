@@ -176,7 +176,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 		[_countryButton setTitle:c ? [c objectForKey:@"name"] : NSLocalizedString(@"Unknown country code", nil)
 						forState:UIControlStateNormal];
 	}
-	if ([[_countryButton currentTitle] isEqualToString:@"Unknown country code"]) {
+	if ([[_countryButton currentTitle] isEqualToString:NSLocalizedString(@"Unknown country code", nil)]) {
 		_countryCodeField.layer.borderWidth = .8;
 		_countryCodeField.layer.cornerRadius = 4.f;
 		_countryCodeField.layer.borderColor = [[UIColor redColor] CGColor];

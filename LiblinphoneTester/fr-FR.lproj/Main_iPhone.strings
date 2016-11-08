@@ -1,0 +1,18 @@
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "2pz-XF-uhl"; */
+"2pz-XF-uhl.text" = "Title";
+
+/* Class = "UIViewController"; title = "Detail"; ObjectID = "Ah7-4n-0Wa"; */
+"Ah7-4n-0Wa.title" = "Detail";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "PRJ-ig-cCG"; */
+"PRJ-ig-cCG.text" = "Title";
+
+/* Class = "UINavigationItem"; title = "Tests"; ObjectID = "cra-N8-TIN"; */
+"cra-N8-TIN.title" = "Tests";
+
+/* Class = "UITableViewController"; title = "Master"; ObjectID = "pGg-6v-bdr"; */
+"pGg-6v-bdr.title" = "Master";
+
+/* Class = "UINavigationItem"; title = "List of Categories"; ObjectID = "tQt-TN-PWz"; */
+"tQt-TN-PWz.title" = "List of Categories";

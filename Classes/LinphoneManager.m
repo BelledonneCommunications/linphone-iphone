@@ -1076,7 +1076,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 															  handler:^(UIAlertAction * action) {}];
 		
 		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-			textField.placeholder = @"Password";
+			textField.placeholder = NSLocalizedString(@"Password", nil);
 			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
 			textField.borderStyle = UITextBorderStyleRoundedRect;
 			textField.secureTextEntry = YES;
