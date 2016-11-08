@@ -389,6 +389,75 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 object:nil];
 }
 
+#pragma mark - Account Creator callbacks
+
+void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
+	SettingsView *thiz = (__bridge SettingsView *)(linphone_account_creator_get_user_data(creator));
+	
+	switch (status) {
+		case LinphoneAccountCreatorOK:
+			[thiz updatePassword:creator];
+			break;
+		default:
+			[thiz showError:status];
+			break;
+	}
+}
+	
+- (void) showError:(LinphoneAccountCreatorStatus) status {
+	_tmpPwd = NULL;
+	NSString* err;
+	switch (status) {
+		case LinphoneAccountCreatorAccountNotExist:
+			err = NSLocalizedString(@"Bad credentials, check your account settings", nil);
+			break;
+		case LinphoneAccountCreatorErrorServer:
+			err = NSLocalizedString(@"Server error, please try again later.", nil);
+			break;
+		default:
+			err = NSLocalizedString(@"Unknown error, please try again later.", nil);
+			break;
+	}
+	
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing password", nil)
+																	 message:err
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
+}
+
+- (void) updatePassword:(LinphoneAccountCreator*) creator {
+	linphone_account_creator_set_password(creator, _tmpPwd.UTF8String);
+	[settingsStore setObject:_tmpPwd forKey:@"account_mandatory_password_preference"];
+	
+	LinphoneProxyConfig *config = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+													  [settingsStore integerForKey:@"current_proxy_config_preference"]);
+	if (config != NULL) {
+		const LinphoneAuthInfo *auth = linphone_proxy_config_find_auth_info(config);
+		if (auth) {
+			LinphoneAuthInfo * newAuth = linphone_auth_info_clone(auth);
+			linphone_auth_info_set_passwd(newAuth, _tmpPwd.UTF8String);
+			linphone_core_remove_auth_info(LC, auth);
+			linphone_core_add_auth_info(LC, newAuth);
+		}
+	}
+	_tmpPwd = NULL;
+	
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Changing your password", nil)
+																	 message:NSLocalizedString(@"Your password has been successfully changed", nil)
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
+}
+
 #pragma mark - Event Functions
 
 - (void)appSettingChanged:(NSNotification *)notif {
@@ -718,6 +787,85 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[errView addAction:defaultAction];
 		[errView addAction:continueAction];
 		[self presentViewController:errView animated:YES completion:nil];
+	} else if ([key isEqual:@"account_mandatory_change_password"]) {
+		UIAlertController *alertView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Change your password", nil)
+																		 message:NSLocalizedString(@"Please enter and confirm your new password", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+			textField.placeholder = NSLocalizedString(@"Password", nil);
+			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+			textField.borderStyle = UITextBorderStyleRoundedRect;
+			textField.secureTextEntry = YES;
+		}];
+		
+		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+			textField.placeholder = NSLocalizedString(@"Confirm password", nil);
+			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+			textField.borderStyle = UITextBorderStyleRoundedRect;
+			textField.secureTextEntry = YES;
+		}];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Save", nil)
+																 style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   NSString * pwd = alertView.textFields[0].text;
+																   NSString * conf_pwd = alertView.textFields[1].text;
+																   if (pwd && ![pwd isEqualToString:@""]) {
+																	   if ([pwd isEqualToString:conf_pwd]) {
+																		   _tmpPwd = pwd;
+																		   LinphoneProxyConfig *config = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+																													[settingsStore integerForKey:@"current_proxy_config_preference"]);
+																		   const LinphoneAuthInfo *ai = linphone_proxy_config_find_auth_info(config);
+																   
+																		   LinphoneAccountCreator *account_creator = linphone_account_creator_new(
+																												  LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
+																												  .UTF8String);
+																   
+																		   linphone_account_creator_set_username(account_creator, linphone_auth_info_get_username(ai));
+																		   if (linphone_auth_info_get_passwd(ai) && !(strcmp(linphone_auth_info_get_passwd(ai),"") == 0)) {
+																			   linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(ai));
+																		   } else {
+																			   linphone_account_creator_set_ha1(account_creator, linphone_auth_info_get_ha1(ai));
+																		   }
+																		   
+																		   linphone_account_creator_set_domain(account_creator, linphone_auth_info_get_domain(ai));
+																		   linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
+																		   linphone_account_creator_cbs_set_update_hash(linphone_account_creator_get_callbacks(account_creator), update_hash_cbs);
+																		   linphone_account_creator_update_password(account_creator, pwd.UTF8String);
+																	   } else {
+																		   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing your password", nil)
+																																			message:NSLocalizedString(@"Your confirmation password	doesn't match your password", nil)
+																																	 preferredStyle:UIAlertControllerStyleAlert];
+																	   
+																		   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+																															 handler:^(UIAlertAction * action) {}];
+																	   
+																		   [errView addAction:defaultAction];
+																		   [self presentViewController:errView animated:YES completion:nil];
+																	   }
+																   } else {
+																	   
+																	   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing your password", nil)
+																																		message:NSLocalizedString(@"Please enter and confirm your new password", nil)
+																																 preferredStyle:UIAlertControllerStyleAlert];
+																	   
+																	   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+																															 handler:^(UIAlertAction * action) {}];
+																	   
+																	   [errView addAction:defaultAction];
+																	   [self presentViewController:errView animated:YES completion:nil];
+																   }
+															   }];
+
+		
+		[alertView addAction:defaultAction];
+		[alertView addAction:continueAction];
+		[self presentViewController:alertView animated:YES completion:nil];
 	} else if ([key isEqual:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {
