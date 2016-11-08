@@ -388,6 +388,20 @@ LINPHONE_PUBLIC void *linphone_account_creator_cbs_get_user_data(const LinphoneA
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, void *ud);
 
 /**
+ * Retrieve the user pointer associated with a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The user pointer associated with the LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC void *linphone_account_creator_cbs_get_update_hash(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Assign a user pointer to a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_update_hash(LinphoneAccountCreatorCbs *cbs, void *ud);
+
+/**
  * Get the current linked tested callback.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
  * @return The current linked tested callback.

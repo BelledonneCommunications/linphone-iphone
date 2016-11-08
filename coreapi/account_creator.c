@@ -61,6 +61,14 @@ void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, 
 	cbs->user_data = ud;
 }
 
+void *linphone_account_creator_cbs_get_update_hash(const LinphoneAccountCreatorCbs *cbs) {
+	return cbs->update_hash;
+}
+
+void linphone_account_creator_cbs_set_update_hash(LinphoneAccountCreatorCbs *cbs, void *ud) {
+	cbs->update_hash = ud;
+}
+
 LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_is_account_used(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->is_account_used;
 }
@@ -369,7 +377,7 @@ const char * linphone_account_creator_get_password(const LinphoneAccountCreator 
 
 LinphoneAccountCreator _password_updated_cb(LinphoneXmlRpcRequest *request) {
 	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
-	if (creator->callbacks->password_updated != NULL) {
+	if (creator->callbacks->update_hash != NULL) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
 		const char* resp = linphone_xml_rpc_request_get_string_response(request);
 		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
@@ -381,7 +389,7 @@ LinphoneAccountCreator _password_updated_cb(LinphoneXmlRpcRequest *request) {
 				status = LinphoneAccountCreatorErrorServer;
 			}
 		}
-		creator->callbacks->password_updated(creator, status, resp);
+		creator->callbacks->update_hash(creator, status, resp);
 	}	
 }
 
