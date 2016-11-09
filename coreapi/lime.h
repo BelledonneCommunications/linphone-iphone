@@ -209,8 +209,6 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, bell
 
 int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
 
-int lime_im_encryption_engine_process_downloading_file_buffer_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer);
-
-int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *path);
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer);
 
 #endif /* LIME_H */

@@ -30,9 +30,7 @@ typedef int (*LinphoneImEncryptionEngineIncomingMessageCb)(LinphoneCore* lc, bel
 
 typedef int (*LinphoneImEncryptionEngineOutgoingMessageCb)(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
 
-typedef int (*LinphoneImEncryptionEngineDownloadingFileBufferCb)(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer);
-
-typedef int (*LinphoneImEncryptionEngineDownloadingFileCb)(LinphoneCore *lc, LinphoneChatMessage *msg, const char *path);
+typedef int (*LinphoneImEncryptionEngineDownloadingFileCb)(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer);
 
 typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 
@@ -63,10 +61,6 @@ LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_incoming_mess
 LINPHONE_PUBLIC LinphoneImEncryptionEngineOutgoingMessageCb linphone_im_encryption_engine_cbs_get_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs);
 
 LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineOutgoingMessageCb cb);
-
-LINPHONE_PUBLIC LinphoneImEncryptionEngineDownloadingFileBufferCb linphone_im_encryption_engine_cbs_get_process_downloading_file_buffer(LinphoneImEncryptionEngineCbs *cbs);
-
-LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_downloading_file_buffer(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineDownloadingFileBufferCb cb);
 
 LINPHONE_PUBLIC LinphoneImEncryptionEngineDownloadingFileCb linphone_im_encryption_engine_cbs_get_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs);
 

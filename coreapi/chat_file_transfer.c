@@ -352,9 +352,9 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 	imee = linphone_core_get_im_encryption_engine(lc);
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineDownloadingFileBufferCb cb_process_downloading_file_buffer = linphone_im_encryption_engine_cbs_get_process_downloading_file_buffer(imee_cbs);
-		if (cb_process_downloading_file_buffer) {
-			retval = cb_process_downloading_file_buffer(lc, msg, (const char *)buffer, size, &decrypted_buffer);
+		LinphoneImEncryptionEngineDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
+		if (cb_process_downloading_file) {
+			retval = cb_process_downloading_file(lc, msg, (const char *)buffer, size, &decrypted_buffer);
 		}
 	}
 	
@@ -453,30 +453,44 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
 			if (imee) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-				
-				if (msg->file_transfer_filepath == NULL) {
-					LinphoneImEncryptionEngineDownloadingFileBufferCb cb_process_downloading_file_buffer = linphone_im_encryption_engine_cbs_get_process_downloading_file_buffer(imee_cbs);
-					if (cb_process_downloading_file_buffer) {
-						retval = cb_process_downloading_file_buffer(lc, msg, NULL, 0, NULL);
-					}
-				} else {
-					LinphoneImEncryptionEngineDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
-					if (cb_process_downloading_file) {
-						retval = cb_process_downloading_file(lc, msg, msg->file_transfer_filepath);
+				LinphoneImEncryptionEngineDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
+				if (cb_process_downloading_file) {
+					if (msg->file_transfer_filepath == NULL) {
+						retval = cb_process_downloading_file(lc, msg, NULL, 0, NULL);
+					} else {
+						bctbx_vfs_t *vfs = bctbx_vfs_get_default();
+						bctbx_vfs_file_t *decrypted_file;
+						bctbx_vfs_file_t *encrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "r");
+						size_t encrypted_file_size = (size_t)bctbx_file_size(encrypted_file);
+						char *encrypted_content = bctbx_malloc(encrypted_file_size);
+						char *decrypted_content = bctbx_malloc(encrypted_file_size);
+						retval = (int)bctbx_file_read(encrypted_file, encrypted_content, encrypted_file_size, 0);
+						bctbx_file_close(encrypted_file);
+						if (retval != BCTBX_VFS_ERROR && retval == (int)encrypted_file_size) {
+							retval = cb_process_downloading_file(lc, msg, encrypted_content, encrypted_file_size, &decrypted_content);
+							cb_process_downloading_file(lc, msg, NULL, 0, NULL);
+							decrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "w");
+							bctbx_file_write(decrypted_file, decrypted_content, encrypted_file_size, 0);
+							bctbx_file_close(decrypted_file);
+						} else {
+							ms_error("file %s read failed: expected %d, got %d", msg->file_transfer_filepath, (int)encrypted_file_size, retval);
+							retval = 500;
+						}
+						bctbx_free(encrypted_content);
+						bctbx_free(decrypted_content);
 					}
 				}
 			}
 			
-			if (msg->file_transfer_filepath == NULL) {
+			if (retval <= 0) {
 				if (linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)) {
 					LinphoneBuffer *lb = linphone_buffer_new();
 					linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)(msg, msg->file_transfer_information, lb);
 					linphone_buffer_unref(lb);
 				} else {
+					/* Legacy: call back given by application level */
 					linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, NULL, 0);
 				}
-			} else {
-				linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, NULL, 0);
 			}
 			
 			if (retval <= 0) {
