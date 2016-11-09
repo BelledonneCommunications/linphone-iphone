@@ -776,7 +776,7 @@ AC_ARG_ENABLE(strict,
 )
 
 STRICT_OPTIONS="-Wall -Wuninitialized"
-STRICT_OPTIONS_CC="-Wdeclaration-after-statement -Wstrict-prototypes"
+STRICT_OPTIONS_CC="-Wstrict-prototypes"
 STRICT_OPTIONS_CXX=""
 
 #for clang

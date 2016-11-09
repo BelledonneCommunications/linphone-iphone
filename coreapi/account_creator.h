@@ -146,6 +146,14 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_userna
 LINPHONE_PUBLIC const char * linphone_account_creator_get_username(const LinphoneAccountCreator *creator);
 
 /**
+ * Update the password.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] new_pwd const char * : new password for the account creator
+ * @return LinphoneAccountCreatorOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_update_password(LinphoneAccountCreator *creator, const char *new_pwd);
+
+/**
  * Set the phone number normalized.
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] phone number The phone number to set
@@ -378,6 +386,20 @@ LINPHONE_PUBLIC void *linphone_account_creator_cbs_get_user_data(const LinphoneA
  * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorCbs object.
 **/
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, void *ud);
+
+/**
+ * Retrieve the user pointer associated with a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The user pointer associated with the LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_update_hash(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Assign a user pointer to a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_update_hash(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 /**
  * Get the current linked tested callback.

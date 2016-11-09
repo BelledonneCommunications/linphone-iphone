@@ -1989,7 +1989,7 @@ LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc){
 /**
  * Sets the list of audio codecs.
  * @param[in] lc The LinphoneCore object
- * @param[in] codecs \mslist{PayloadType}
+ * @param[in] codecs \bctbx_list{PayloadType}
  * @return 0
  *
  * @ingroup media_parameters
@@ -2007,7 +2007,7 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_t *codecs){
 /**
  * Sets the list of video codecs.
  * @param[in] lc The LinphoneCore object
- * @param[in] codecs \mslist{PayloadType}
+ * @param[in] codecs \bctbx_list{PayloadType}
  * @return 0
  *
  * @ingroup media_parameters
@@ -3582,7 +3582,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 		subject="Conference";
 	}else if (call->params->internal_call_update){
 		subject="ICE processing concluded";
-	}else if (!no_user_consent){
+	}else if (no_user_consent){
 		subject="Refreshing";
 	}else{
 		subject="Media change";
@@ -4144,7 +4144,7 @@ int linphone_core_terminate_all_calls(LinphoneCore *lc){
 /**
  * Returns the current list of calls.
  * @param[in] lc The LinphoneCore object
- * @return \mslist{LinphoneCall}
+ * @return \bctbx_list{LinphoneCall}
  *
  * Note that this list is read-only and might be changed by the core after a function call to linphone_core_iterate().
  * Similarly the LinphoneCall objects inside it might be destroyed without prior notice.

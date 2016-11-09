@@ -910,6 +910,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	char *filepath;
 	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
+	MSList * msg_list = NULL;
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -963,11 +964,10 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 		const LinphoneContent* content;
 		if (download_file_from_stored_msg) {
 			LinphoneChatRoom *marie_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
-			MSList * msgs = linphone_chat_room_get_history(marie_room,1);
-			BC_ASSERT_PTR_NOT_NULL(msgs);
-			if (!msgs)  goto end;
-			recv_msg = (LinphoneChatMessage *)msgs->data;
-			ms_list_free(msgs);
+			msg_list = linphone_chat_room_get_history(marie_room,1);
+			BC_ASSERT_PTR_NOT_NULL(msg_list);
+			if (!msg_list)  goto end;
+			recv_msg = (LinphoneChatMessage *)msg_list->data;
 		} else {
 			recv_msg = marie->stat.last_received_chat_message;
 		}
@@ -987,6 +987,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 		linphone_chat_message_download_file(recv_msg);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 		compare_files(send_filepath, receive_filepath);
+		bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
 	}
 
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); // file transfer

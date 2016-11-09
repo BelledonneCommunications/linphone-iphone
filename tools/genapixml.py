@@ -305,7 +305,7 @@ class Project:
 				para.remove(n)
 			for n in para.findall('.//ref'):
 				n.attrib = {}
-			for n in para.findall(".//mslist"):
+			for n in para.findall(".//bctbx_list"):
 				para.remove(n)
 		if descriptionNode.tag == 'parameterdescription':
 			descriptionNode.tag = 'description'
@@ -439,7 +439,7 @@ class Project:
 			returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
 			if returndesc is not None:
 				if returnarg.ctype == 'MSList' or returnarg.ctype == 'bctbx_list_t':
-					n = returndesc.find('.//mslist')
+					n = returndesc.find('.//bctbxlist')
 					if n is not None:
 						returnarg.containedType = n.text
 				returnarg.description = self.__cleanDescription(returndesc)
@@ -510,7 +510,7 @@ class Project:
 		returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
 		if returndesc is not None:
 			if returnarg.ctype == 'MSList' or returnarg.ctype == 'bctbx_list_t':
-				n = returndesc.find('.//mslist')
+				n = returndesc.find('.//bctbxlist')
 				if n is not None:
 					returnarg.containedType = n.text
 			returnarg.description = self.__cleanDescription(returndesc)
@@ -533,7 +533,7 @@ class Project:
 					for paramdesc in paramdescs:
 						if arg.name == paramdesc.find('./parameternamelist').find('./parametername').text:
 							if arg.ctype == 'MSList' or arg.ctype == 'bctbx_list_t':
-								n = paramdesc.find('.//mslist')
+								n = paramdesc.find('.//bctbxlist')
 								if n is not None:
 									arg.containedType = n.text
 							arg.description = self.__cleanDescription(paramdesc.find('./parameterdescription'))

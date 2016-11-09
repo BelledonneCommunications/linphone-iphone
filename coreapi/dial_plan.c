@@ -261,6 +261,10 @@ int linphone_dial_plan_lookup_ccc_from_e164(const char* e164) {
 	LinphoneDialPlan* elected_dial_plan=NULL;
 	unsigned int found;
 	unsigned int i=0;
+	
+	if (e164[0]!='+') {
+		return -1;/*not an e164 number*/
+	}
 	if (e164[1]=='1') {
 		/*USA case*/
 		return 1;
@@ -292,19 +296,27 @@ int linphone_dial_plan_lookup_ccc_from_iso(const char* iso) {
 	return -1;
 }
 
-const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc) {
+const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc) {
 	int i;
-	if (!ccc) {
-		return &most_common_dialplan;
-	}
-
+	char ccc_as_char[16] = {0};
+	snprintf(ccc_as_char,sizeof(ccc_as_char)-1,"%i",ccc);
+	
 	for(i=0;dial_plans[i].country!=NULL;++i){
-		if (strcmp(ccc,dial_plans[i].ccc)==0){
+		if (strcmp(ccc_as_char,dial_plans[i].ccc)==0){
 			return &dial_plans[i];
 		}
 	}
 	/*else return a generic "most common" dial plan*/
 	return &most_common_dialplan;
+}
+
+
+const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc) {
+	if (!ccc) {
+		return &most_common_dialplan;
+	}
+
+	return linphone_dial_plan_by_ccc_as_int((int)strtol(ccc,NULL,10));
 }
 
 const LinphoneDialPlan* linphone_dial_plan_get_all() {

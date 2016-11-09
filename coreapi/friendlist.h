@@ -87,7 +87,7 @@ LINPHONE_PUBLIC void linphone_core_remove_friend_list(LinphoneCore *lc, Linphone
 /**
  * Retrieves the list of LinphoneFriendList from the core.
  * @param[in] lc LinphoneCore object
- * @return \mslist{LinphoneFriendList} a list of LinphoneFriendList
+ * @return \bctbx_list{LinphoneFriendList} a list of LinphoneFriendList
  */
 LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_friends_lists(const LinphoneCore *lc);
 
@@ -196,7 +196,7 @@ LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(Linp
 /**
  * Retrieves the list of LinphoneFriend from this LinphoneFriendList.
  * @param[in] list LinphoneFriendList object
- * @return \mslist{LinphoneFriend} a list of LinphoneFriend
+ * @return \bctbx_list{LinphoneFriend} a list of LinphoneFriend
  */
 LINPHONE_PUBLIC const bctbx_list_t * linphone_friend_list_get_friends(const LinphoneFriendList *list);
 

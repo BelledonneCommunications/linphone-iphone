@@ -1344,6 +1344,7 @@ struct _LinphoneAccountCreatorCbs {
 	LinphoneAccountCreatorCbsStatusCb activate_phone_number_link;
 	LinphoneAccountCreatorCbsStatusCb recover_phone_account;
 	LinphoneAccountCreatorCbsStatusCb is_account_linked;
+	LinphoneAccountCreatorCbsStatusCb update_hash;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);

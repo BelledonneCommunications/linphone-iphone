@@ -545,7 +545,9 @@ static void simple_subscribe_with_friend_from_rc(void) {
 
 	if (bctbx_list_size(linphone_core_get_friend_list(marie->lc))>0) {
 		pauline_as_friend = (LinphoneFriend*)linphone_core_get_friend_list(marie->lc)->data;
+		linphone_friend_edit(pauline_as_friend);
 		linphone_friend_set_address(pauline_as_friend, pauline->identity); /*hack to update addr with port number*/
+		linphone_friend_done(pauline_as_friend);
 	}
 
 	BC_ASSERT_TRUE (wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,1));

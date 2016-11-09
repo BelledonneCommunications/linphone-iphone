@@ -1092,6 +1092,9 @@ static void call_with_ice_video_and_rtt(void) {
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
 
+	linphone_core_manager_wait_for_stun_resolution(marie);
+	linphone_core_manager_wait_for_stun_resolution(pauline);
+
 	linphone_core_set_audio_port(marie->lc, -1);
 	linphone_core_set_video_port(marie->lc, -1);
 	linphone_core_set_text_port(marie->lc, -1);

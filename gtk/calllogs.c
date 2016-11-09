@@ -314,7 +314,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			start_date[strlen(start_date) - 1] = '\0';
 		}
 #endif
-		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
+		lf=linphone_core_find_friend(linphone_gtk_get_core(),la);
 		if(lf != NULL){
 			/*update display name from friend*/
 			display = linphone_friend_get_name(lf);

@@ -226,6 +226,12 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return Status.fromInt(recoverPhoneAccount(nativePtr));
 	}
 
+	private native int updatePassword(long ptr, String newPassword);
+	@Override
+	public Status updatePassword(String newPassword) {
+		return Status.fromInt(updatePassword(nativePtr, newPassword));
+	}
+
 	private native LinphoneProxyConfig configure(long ptr);
 	@Override
 	public LinphoneProxyConfig configure() {

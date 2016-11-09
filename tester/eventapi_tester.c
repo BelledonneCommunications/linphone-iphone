@@ -307,6 +307,12 @@ static void subscribe_test_manually_refreshed(void){
 }
 
 static void subscribe_loosing_dialog(void) {
+#ifdef WIN32
+	/*Unfortunately this test doesn't work on windows due to the way closed TCP ports behave.
+	 * Unlike linux and macOS, released TCP port don't send an ICMP error (or maybe at least for a period of time.
+	 * This prevents this test from working, see comments below*/
+	ms_warning("subscribe_loosing_dialog() skipped on windows.");
+#else
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
@@ -345,12 +351,16 @@ static void subscribe_loosing_dialog(void) {
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	lcs = bctbx_list_append(lcs, pauline->lc);
 	
-	/*marie will retry the subscription*/
+	/* Marie will retry the subscription.
+	 * She will first receive a 503 Service unavailable from flexisip thanks the ICMP error returned by the no longer existing Pauline.
+	 * Then she will forge a new SUBSCRIBE in order to restart a new dialog, and this one will reach the new Pauline.*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,2,8000));
 	/*and get it accepted again*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
-	BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
+	BC_ASSERT_PTR_NOT_NULL(pauline->lev);
+	if (pauline->lev) BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
+	
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
 	linphone_event_terminate(lev);
 	
@@ -362,6 +372,7 @@ static void subscribe_loosing_dialog(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	bctbx_list_free(lcs);
+#endif
 }
 
 static void subscribe_with_io_error(void) {
@@ -409,6 +420,53 @@ static void subscribe_with_io_error(void) {
 	linphone_event_terminate(lev);
 	
 
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
+
+	linphone_content_unref(content);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	bctbx_list_free(lcs);
+}
+
+static void subscribe_not_timely_responded(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneContent* content;
+	LinphoneEvent *lev;
+	int expires= 4;
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+
+	lcs=bctbx_list_append(lcs,pauline->lc);
+
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+
+	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
+	linphone_event_add_custom_header(lev,"My-Header","pouet");
+	linphone_event_add_custom_header(lev,"My-Header2","pimpon");
+	linphone_event_send_subscribe(lev,content);
+
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
+
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
+
+	/*make sure marie receives first notification before terminating*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
+
+	/* now pauline is no longer scheduled (simulating a very big latency in the network) */
+	lcs = bctbx_list_remove(lcs, pauline->lc);
+	/*marie's dialog will expire while the SUBSCRIBE refresh is in progress*/
+	wait_for_list(lcs, NULL, 0, 8000);
+	
+	lcs = bctbx_list_append(lcs, pauline->lc);
+	wait_for_list(lcs, NULL, 0, 3000);
+	linphone_event_terminate(lev);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
 
@@ -513,6 +571,7 @@ test_t event_tests[] = {
 	TEST_ONE_TAG("Subscribe with io error", subscribe_with_io_error, "presence"),
 	TEST_ONE_TAG("Subscribe manually refreshed", subscribe_test_manually_refreshed, "presence"),
 	TEST_ONE_TAG("Subscribe terminated by notifier", subscribe_test_terminated_by_notifier, "presence"),
+	TEST_ONE_TAG("Subscribe not timely responded", subscribe_not_timely_responded, "presence"),
 	TEST_ONE_TAG("Publish", publish_test, "presence"),
 	TEST_ONE_TAG("Publish without expires", publish_without_expires, "presence"),
 	TEST_ONE_TAG("Publish without automatic refresh",publish_no_auto_test, "presence"),
