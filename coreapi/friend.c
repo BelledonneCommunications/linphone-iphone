@@ -1221,7 +1221,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	linphone_create_table(db);
 	if (linphone_update_table(db)) {
 		// After updating schema, database need to be closed/reopenned
-		sqlite3_close(lc->friends_db);
+		sqlite3_close(db);
 		_linphone_sqlite3_open(lc->friends_db_file, &db);
 	}
 

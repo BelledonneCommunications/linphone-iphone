@@ -243,9 +243,9 @@ static void friends_migration(void) {
 	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 1, int, "%i");
 
 	friends_from_db = bctbx_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
+	linphone_core_manager_destroy(manager);
 	unlink(friends_db);
 	bc_free(friends_db);
-	linphone_core_manager_destroy(manager);
 }
 
 typedef struct _LinphoneFriendListStats {
@@ -368,11 +368,11 @@ static void friends_sqlite_storage(void) {
 
 end:
 	ms_free(stats);
-	unlink(friends_db);
-	bc_free(friends_db);
 	linphone_address_unref(addr);
 	linphone_core_destroy(lc);
 	linphone_core_v_table_destroy(v_table);
+	unlink(friends_db);
+	bc_free(friends_db);
 }
 #endif
 
@@ -472,10 +472,10 @@ static void carddav_sync_2(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
-	unlink(friends_db);
-	bc_free(friends_db);
 	linphone_carddav_context_destroy(c);
 	linphone_core_manager_destroy(manager);
+	unlink(friends_db);
+	bc_free(friends_db);
 }
 
 static void carddav_sync_3(void) {
@@ -512,11 +512,10 @@ static void carddav_sync_3(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
+	linphone_carddav_context_destroy(c);
+	linphone_core_manager_destroy(manager);
 	unlink(friends_db);
 	bc_free(friends_db);
-	linphone_carddav_context_destroy(c);
-	c = NULL;
-	linphone_core_manager_destroy(manager);
 }
 
 static void carddav_sync_4(void) {
