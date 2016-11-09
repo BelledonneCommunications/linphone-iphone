@@ -443,7 +443,7 @@ static void text_message_with_external_body(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, bool_t upload_error, bool_t download_error) {
+void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, bool_t upload_error, bool_t download_error, bool_t use_file_body_handler) {
 	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	LinphoneChatRoom* chat_room;
@@ -456,7 +456,12 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 	/* create a chatroom on pauline's side */
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	/* create a file transfer msg */
-	msg = create_message_from_nowebcam(chat_room);
+	if (use_file_body_handler) {
+		msg = create_file_transfer_message_from_nowebcam(chat_room);
+	} else {
+		msg = create_message_from_nowebcam(chat_room);
+	}
+	
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	if (upload_error) {
@@ -480,6 +485,9 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 			linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+			if (use_file_body_handler) {
+				linphone_chat_message_set_file_transfer_filepath(marie->stat.last_received_chat_message, receive_filepath);
+			}
 			linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 
 			if (download_error) {
@@ -503,25 +511,29 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 	bc_free(receive_filepath);
 }
 
-void transfer_message_base(bool_t upload_error, bool_t download_error) {
+void transfer_message_base(bool_t upload_error, bool_t download_error, bool_t use_file_body_handler) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-		transfer_message_base2(marie,pauline,upload_error,download_error);
+		transfer_message_base2(marie,pauline,upload_error,download_error, use_file_body_handler);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
 }
 static void transfer_message(void) {
-	transfer_message_base(FALSE, FALSE);
+	transfer_message_base(FALSE, FALSE, FALSE);
+}
+
+static void transfer_message_2(void) {
+	transfer_message_base(FALSE, FALSE, TRUE);
 }
 
 static void transfer_message_with_upload_io_error(void) {
-	transfer_message_base(TRUE, FALSE);
+	transfer_message_base(TRUE, FALSE, FALSE);
 }
 
 static void transfer_message_with_download_io_error(void) {
-	transfer_message_base(FALSE, TRUE);
+	transfer_message_base(FALSE, TRUE, FALSE);
 }
 
 static void transfer_message_upload_cancelled(void) {
@@ -1001,6 +1013,10 @@ static  void lime_transfer_message_from_history(void) {
 
 static  void lime_transfer_message_without_encryption(void) {
 	lime_transfer_message_base(FALSE,FALSE,FALSE);
+}
+
+static  void lime_transfer_message_without_encryption_2(void) {
+	lime_transfer_message_base(FALSE,FALSE,TRUE);
 }
 
 static void printHex(char *title, uint8_t *data, size_t length) {
@@ -1870,7 +1886,7 @@ void file_transfer_with_http_proxy(void) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 		linphone_core_set_http_proxy_host(marie->lc, "sip.linphone.org");
-		transfer_message_base2(marie,pauline,FALSE,FALSE);
+		transfer_message_base2(marie,pauline,FALSE,FALSE,FALSE);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
@@ -1886,6 +1902,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Text message with send error", text_message_with_send_error),
 	TEST_NO_TAG("Text message with external body", text_message_with_external_body),
 	TEST_NO_TAG("Transfer message", transfer_message),
+	TEST_NO_TAG("Transfer message 2", transfer_message_2),
 	TEST_NO_TAG("Transfer message with http proxy", file_transfer_with_http_proxy),
 	TEST_NO_TAG("Transfer message with upload io error", transfer_message_with_upload_io_error),
 	TEST_NO_TAG("Transfer message with download io error", transfer_message_with_download_io_error),
@@ -1903,6 +1920,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Lime transfer message 2", lime_transfer_message_2),
 	TEST_NO_TAG("Lime transfer message from history", lime_transfer_message_from_history),
 	TEST_NO_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption),
+	TEST_NO_TAG("Lime transfer message without encryption 2", lime_transfer_message_without_encryption_2),
 	TEST_NO_TAG("Lime unitary", lime_unit),
 #ifdef SQLITE_STORAGE_ENABLED
 	TEST_NO_TAG("Database migration", database_migration),
