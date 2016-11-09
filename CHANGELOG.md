@@ -12,11 +12,11 @@ Group changes to describe their impact on the project, as follows:
 
 ## [Unreleased]
 
-## [3.14.11] - 2016-11-09
+## [3.14.12] - 2016-11-09
 
 ### Added
 - Support of iOS 10
-- Support of PushKit
+- Support of PushKit (VoIP push notifications)
 - Added long term presence for linphone.org accounts: any user can now see his/her friends with a linphone.org account
 - Added TURN support
 - Change your password in your account settings
@@ -26,6 +26,9 @@ Group changes to describe their impact on the project, as follows:
 - Updated assistant to allow creating and authenticating account with a phone number
 - Updated translations
 - Improve VideoToolbox H264 decoder
+
+### Removed
+- None VoIP push notifications
 
 ### Fixed
 - Correctly display name in Settings when using exotic characters
@@ -87,8 +90,8 @@ consider inputs to be phone numbers, otherwise SIP addresses.
 ### Added
 - Initial version
 
-[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.14.11...HEAD
-[3.14.11]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.14.11.zip
+[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.14.12...HEAD
+[3.14.12]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.14.12.zip
 [3.13.9]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.13.9.zip
 [plugins registration]: https://github.com/BelledonneCommunications/linphone-iphone/blob/3.12.1/Classes/LinphoneManager.m#L1461-L1472
 [openh264 issue 2434]: https://github.com/cisco/openh264/issues/2434
