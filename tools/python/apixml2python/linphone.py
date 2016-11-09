@@ -53,6 +53,10 @@ def compute_event_name(s, className):
 		first = False
 	return event_name
 
+def is_const_from_complete_type(complete_type):
+	splitted_type = complete_type.split(' ')
+	return 'const' in splitted_type
+
 
 class HandWrittenCode:
 	def __init__(self, _class, name, func_list, doc = ''):
@@ -95,6 +99,7 @@ class ArgumentType:
 		self.check_condition = None
 		self.convert_code = None
 		self.convert_from_func = None
+		self.free_convert_result_func = None
 		self.fmt_str = 'O'
 		self.cfmt_str = '%p'
 		self.cnativefmt_str = '%p'
@@ -102,7 +107,7 @@ class ArgumentType:
 		self.cast_convert_func_result = True
 		self.__compute()
 		if (self.basic_type == 'MSList' or self.basic_type == 'bctbx_list_t') and self.contained_type is not None and self.contained_type != 'const char *':
-			self.linphone_module.mslist_types.add(self.contained_type)
+			self.linphone_module.bctbxlist_types.add(self.contained_type)
 
 	def __compute(self):
 		splitted_type = self.complete_type.split(' ')
@@ -217,12 +222,14 @@ class ArgumentType:
 		elif self.basic_type == 'MSList' or self.basic_type == 'bctbx_list_t':
 			if self.contained_type == 'const char *':
 				self.type_str = 'list of string'
-				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsMSListOfString({arg_name});\n"
-				self.convert_from_func = 'PyList_FromMSListOfString'
+				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsBctbxListOfString({arg_name});\n"
+				self.convert_from_func = 'PyList_FromBctbxListOfString'
 			else:
 				self.type_str = 'list of linphone.' + self.contained_type
-				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsMSListOf" + self.contained_type + "({arg_name});\n"
-				self.convert_from_func = 'PyList_FromMSListOf' + self.contained_type
+				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsBctbxListOf" + self.contained_type + "({arg_name});\n"
+				self.convert_from_func = 'PyList_FromBctbxListOf' + self.contained_type
+			if not is_const_from_complete_type(self.complete_type):
+				self.free_convert_result_func = "bctbx_list_free"
 			self.check_condition = "!PyList_Check({arg_name})"
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
@@ -372,6 +379,7 @@ class MethodDefinition:
 	def format_c_function_call(self):
 		arg_names = []
 		c_function_call_code = ''
+		cfree_argument_code = ''
 		for xml_method_arg in self.xml_method_args:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
@@ -382,6 +390,10 @@ class MethodDefinition:
 				arg_names.append(arg_name + "_native_ptr")
 			elif argument_type.fmt_str == 'O' and argument_type.convert_code is not None:
 				arg_names.append(arg_name + "_native_obj")
+				if argument_type.free_convert_result_func is not None and not is_const_from_complete_type(arg_complete_type):
+					cfree_argument_code = \
+"""{free_func}({arg_name}_native_obj);
+""".format(free_func=argument_type.free_convert_result_func, arg_name=arg_name)
 			else:
 				arg_names.append(arg_name)
 		if is_callback(self.return_complete_type):
@@ -412,6 +424,10 @@ class MethodDefinition:
 						convert_from_code = \
 """pyresult = {convert_func}(cresult);
 """.format(convert_func=return_argument_type.convert_from_func)
+					if return_argument_type.free_convert_result_func is not None:
+						cfree_code = \
+"""{free_func}(cresult);
+""".format(free_func=return_argument_type.free_convert_result_func)
 				result_variable = 'pyresult'
 			else:
 				result_variable = 'cresult'
@@ -421,12 +437,14 @@ class MethodDefinition:
 			cfree_code = 'ms_free(cresult);';
 		body = \
 """	{c_function_call_code}
+	{cfree_argument_code}
 	pylinphone_dispatch_messages();
 	{from_native_pointer_code}
 	{convert_from_code}
 	{build_value_code}
 	{cfree_code}
 """.format(c_function_call_code=c_function_call_code,
+		cfree_argument_code=cfree_argument_code,
 		from_native_pointer_code=from_native_pointer_code,
 		convert_from_code=convert_from_code,
 		build_value_code=build_value_code,
@@ -534,12 +552,6 @@ class MethodDefinition:
 		if self.method_type != 'classmethod' and len(self.xml_method_args) > 0:
 			self.self_arg = self.xml_method_args[0]
 			self.xml_method_args = self.xml_method_args[1:]
-
-	def remove_const_from_complete_type(self, complete_type):
-		splitted_type = complete_type.split(' ')
-		while 'const' in splitted_type:
-			splitted_type.remove('const')
-		return ' '.join(splitted_type)
 
 	def find_class_definition(self, basic_type):
 		basic_type = strip_leading_linphone(basic_type)
@@ -799,15 +811,21 @@ class SetterMethodDefinition(MethodDefinition):
 """	{method_name}(native_ptr, pylinphone_{class_name}_callback_{callback_name});
 	pylinphone_dispatch_messages();
 """.format(method_name=self.method_node.get('name'), class_name=self.class_['class_name'], callback_name=compute_event_name(self.first_argument_type.complete_type, self.class_['class_name']))
+		cfree_argument_code = ''
 		suffix = ''
 		if self.first_argument_type.fmt_str == 'O' and self.first_argument_type.use_native_pointer:
 			suffix = '_native_ptr'
 		elif self.first_argument_type.fmt_str == 'O' and self.first_argument_type.convert_code is not None:
 			suffix = '_native_obj'
+			if self.first_argument_type.free_convert_result_func is not None and not is_const_from_complete_type(self.first_argument_type.complete_type):
+					cfree_argument_code = \
+"""{free_func}({arg_name}_native_obj);
+""".format(free_func=self.first_argument_type.free_convert_result_func, arg_name="_" + self.first_arg_name)
 		return \
 """	{method_name}(native_ptr, {arg_name}{suffix});
+	{cfree_argument_code}
 	pylinphone_dispatch_messages();
-""".format(arg_name="_" + self.first_arg_name, method_name=self.method_node.get('name'), suffix=suffix)
+""".format(arg_name="_" + self.first_arg_name, method_name=self.method_node.get('name'), suffix=suffix, cfree_argument_code=cfree_argument_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> 0\", __FUNCTION__);\n"
@@ -989,7 +1007,7 @@ class LinphoneModule(object):
 	def __init__(self, tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_codes):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
-		self.mslist_types = Set([])
+		self.bctbxlist_types = Set([])
 		self.enums = []
 		self.enum_names = []
 		self.cfunction2methodmap = {}
@@ -1225,14 +1243,14 @@ class LinphoneModule(object):
 				except Exception, e:
 					e.args += (c['class_name'], 'dealloc_body')
 					raise
-		# Convert mslist_types to a list of dictionaries for the template
+		# Convert bctbxlist_types to a list of dictionaries for the template
 		d = []
-		for mslist_type in self.mslist_types:
+		for bctbxlist_type in self.bctbxlist_types:
 			t = {}
-			t['c_contained_type'] = mslist_type
-			t['python_contained_type'] = strip_leading_linphone(mslist_type)
+			t['c_contained_type'] = bctbxlist_type
+			t['python_contained_type'] = strip_leading_linphone(bctbxlist_type)
 			d.append(t)
-		self.mslist_types = d
+		self.bctbxlist_types = d
 
 	def __format_doc_node(self, node):
 		desc = ''

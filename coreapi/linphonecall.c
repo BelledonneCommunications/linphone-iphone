@@ -668,13 +668,16 @@ static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int 
 	const char *bind_ip = lp_config_get_string(call->core->config,"rtp","bind_address",
 				call->af == AF_INET6 ? "::0" : "0.0.0.0");
 	PortConfig *pc = &call->media_ports[stream_index];
-	if (stream_index<2 && pc->multicast_ip[0]!='\0'){
+	if (pc->multicast_ip[0]!='\0'){
 		if (call->dir==LinphoneCallOutgoing){
 			/*as multicast sender, we must decide a local interface to use to send multicast, and bind to it*/
 			linphone_core_get_local_ip_for(strchr(pc->multicast_ip,':') ? AF_INET6 : AF_INET,
 				NULL, pc->multicast_bind_ip);
 			bind_ip = pc->multicast_bind_ip;
-
+		}else{
+			/*otherwise we shall use an address family of the same family of the multicast address, because
+			 * dual stack socket and multicast don't work well on Mac OS (linux is OK, as usual).*/
+			bind_ip = strchr(pc->multicast_ip,':') ? "::0" : "0.0.0.0";
 		}
 	}
 	return bind_ip;
@@ -683,7 +686,7 @@ static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int 
 static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, int stream_index){
 	const char *public_ip=call->media_localip;
 
-	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0')
+	if (call->media_ports[stream_index].multicast_ip[0]!='\0')
 		public_ip=call->media_ports[stream_index].multicast_ip;
 	return public_ip;
 }
@@ -5160,6 +5163,10 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 		case LinphoneCallOutgoingRinging:
 			linphone_call_repair_by_invite_with_replaces(call);
 			break;
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+			/* Keep the call broken until a forked INVITE is received from the server. */
+			break;
 		default:
 			ms_warning("linphone_call_repair_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
 			call->broken = FALSE;
@@ -5178,16 +5185,8 @@ void linphone_call_refresh_sockets(LinphoneCall *call){
 }
 
 void linphone_call_replace_op(LinphoneCall *call, SalOp *op) {
-	switch (linphone_call_get_state(call)) {
-		case LinphoneCallConnected:
-		case LinphoneCallStreamsRunning:
-			sal_call_terminate(call->op);
-			break;
-		default:
-			break;
-	}
-	sal_op_kill_dialog(call->op);
-	sal_op_release(call->op);
+	SalOp *oldop = call->op;
+	LinphoneCallState oldstate = linphone_call_get_state(call);
 	call->op = op;
 	sal_op_set_user_pointer(call->op, call);
 	sal_call_set_local_media_description(call->op, call->localdesc);
@@ -5204,4 +5203,24 @@ void linphone_call_replace_op(LinphoneCall *call, SalOp *op) {
 			ms_warning("linphone_call_replace_op(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
 			break;
 	}
+	switch (oldstate) {
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+			sal_op_set_user_pointer(oldop, NULL); /* To make the call does not get terminated by terminating this op. */
+			/* Do not terminate a forked INVITE */
+			if (sal_call_get_replaces(op)) {
+				sal_call_terminate(oldop);
+			} else {
+				sal_op_kill_dialog(oldop);
+			}
+			break;
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning:
+			sal_call_terminate(oldop);
+			sal_op_kill_dialog(oldop);
+			break;
+		default:
+			break;
+	}
+	sal_op_release(oldop);
 }

@@ -1325,39 +1325,41 @@ static void ice_added_by_reinvite(void){
 	LinphoneCallParams *params;
 	LinphoneCall *c;
 	bool_t call_ok;
-	
+
 	lp_config_set_int(linphone_core_get_config(marie->lc), "net", "allow_late_ice", 1);
 	lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "allow_late_ice", 1);
 	
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (!call_ok) goto end;
 	liblinphone_tester_check_rtcp(marie,pauline);
-	
+
 	/*enable ICE on both ends*/
 	pol = linphone_core_get_nat_policy(marie->lc);
 	linphone_nat_policy_enable_ice(pol, TRUE);
 	linphone_nat_policy_enable_stun(pol, TRUE);
 	linphone_core_set_nat_policy(marie->lc, pol);
-	
+
 	pol = linphone_core_get_nat_policy(pauline->lc);
 	linphone_nat_policy_enable_ice(pol, TRUE);
 	linphone_nat_policy_enable_stun(pol, TRUE);
 	linphone_core_set_nat_policy(pauline->lc, pol);
-	
+
+	linphone_core_manager_wait_for_stun_resolution(marie);
+	linphone_core_manager_wait_for_stun_resolution(pauline);
+
 	c = linphone_core_get_current_call(marie->lc);
 	params = linphone_core_create_call_params(marie->lc, c);
 	linphone_core_update_call(marie->lc, c, params);
 	linphone_call_params_destroy(params);
-	
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
 
 	/*wait for the ICE reINVITE*/
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
 	BC_ASSERT_TRUE(check_ice(marie, pauline, LinphoneIceStateHostConnection));
-	
+
 	end_call(pauline, marie);
-	
+
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -1799,6 +1801,9 @@ static void audio_call_with_ice_no_matching_audio_codecs(void) {
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+
+	linphone_core_manager_wait_for_stun_resolution(marie);
+	linphone_core_manager_wait_for_stun_resolution(pauline);
 
 	out_call = linphone_core_invite_address(marie->lc, pauline->identity);
 	linphone_call_ref(out_call);
@@ -4159,6 +4164,7 @@ static void call_record_with_custom_rtp_modifier(void) {
 }
 
 static void recovered_call_on_network_switch_in_early_state_1(void) {
+	const LinphoneCallParams *remote_params;
 	LinphoneCall *incoming_call;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4174,6 +4180,12 @@ static void recovered_call_on_network_switch_in_early_state_1(void) {
 
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 2));
 	incoming_call = linphone_core_get_current_call(pauline->lc);
+	remote_params = linphone_call_get_remote_params(incoming_call);
+	BC_ASSERT_PTR_NOT_NULL(remote_params);
+	if (remote_params != NULL) {
+		const char *replaces_header = linphone_call_params_get_custom_header(remote_params, "Replaces");
+		BC_ASSERT_PTR_NOT_NULL(replaces_header);
+	}
 	linphone_core_accept_call(pauline->lc, incoming_call);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
@@ -4198,7 +4210,6 @@ static void recovered_call_on_network_switch_in_early_state_2(void) {
 
 	incoming_call = linphone_core_get_current_call(pauline->lc);
 	linphone_core_accept_call(pauline->lc, incoming_call);
-	//linphone_core_iterate(pauline->lc);
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
 	linphone_core_set_network_reachable(marie->lc, TRUE);
@@ -4481,6 +4492,8 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	if (use_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
 		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+		linphone_core_manager_wait_for_stun_resolution(marie);
+		linphone_core_manager_wait_for_stun_resolution(pauline);
 	}
 	if (with_socket_refresh){
 		lp_config_set_int(linphone_core_get_config(marie->lc), "net", "recreate_sockets_when_network_is_up", 1);
@@ -5393,14 +5406,14 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier),
 	TEST_NO_TAG("Call with network switch", call_with_network_switch),
 	TEST_NO_TAG("Call with network switch and no recovery possible", call_with_network_switch_no_recovery),
-	TEST_NO_TAG("Recovered call on network switch in early state 1", recovered_call_on_network_switch_in_early_state_1),
-	TEST_NO_TAG("Recovered call on network switch in early state 2", recovered_call_on_network_switch_in_early_state_2),
-	TEST_NO_TAG("Recovered call on network switch in early state 3", recovered_call_on_network_switch_in_early_state_3),
-	TEST_NO_TAG("Recovered call on network switch in early state 4", recovered_call_on_network_switch_in_early_state_4),
-	TEST_NO_TAG("Recovered call on network switch during re-invite 1", recovered_call_on_network_switch_during_reinvite_1),
-	TEST_NO_TAG("Recovered call on network switch during re-invite 2", recovered_call_on_network_switch_during_reinvite_2),
-	TEST_NO_TAG("Recovered call on network switch during re-invite 3", recovered_call_on_network_switch_during_reinvite_3),
-	TEST_NO_TAG("Recovered call on network switch during re-invite 4", recovered_call_on_network_switch_during_reinvite_4),
+	TEST_ONE_TAG("Recovered call on network switch in early state 1", recovered_call_on_network_switch_in_early_state_1, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch in early state 2", recovered_call_on_network_switch_in_early_state_2, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch in early state 3", recovered_call_on_network_switch_in_early_state_3, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch in early state 4", recovered_call_on_network_switch_in_early_state_4, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch during re-invite 1", recovered_call_on_network_switch_during_reinvite_1, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch during re-invite 2", recovered_call_on_network_switch_during_reinvite_2, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch during re-invite 3", recovered_call_on_network_switch_during_reinvite_3, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch during re-invite 4", recovered_call_on_network_switch_during_reinvite_4, "CallRecovery"),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
 	TEST_ONE_TAG("Call with network switch, ICE and RTT", call_with_network_switch_ice_and_rtt, "ICE"),
 	TEST_NO_TAG("Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh),

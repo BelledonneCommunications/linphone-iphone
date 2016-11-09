@@ -41,6 +41,7 @@ static void linphone_nat_policy_destroy(LinphoneNatPolicy *policy) {
 	if (policy->stun_addrinfo) bctbx_freeaddrinfo(policy->stun_addrinfo);
 	if (policy->stun_resolver_context) {
 		sal_resolve_cancel(policy->stun_resolver_context);
+		sal_resolver_context_unref(policy->stun_resolver_context);
 	}
 }
 
@@ -185,7 +186,6 @@ void linphone_nat_policy_set_stun_server(LinphoneNatPolicy *policy, const char *
 	}
 	if (new_stun_server != NULL) {
 		policy->stun_server = new_stun_server;
-		linphone_nat_policy_resolve_stun_server(policy);
 	}
 }
 
@@ -250,7 +250,7 @@ const struct addrinfo * linphone_nat_policy_get_stun_server_addrinfo(LinphoneNat
 	 *  - if no cached value exists, block for a short time; this case must be unprobable because the resolution will be asked each
 	 *    time the stun server value is changed.
 	 */
-	if (linphone_nat_policy_stun_server_activated(policy)) {
+	if (linphone_nat_policy_stun_server_activated(policy) && (policy->stun_addrinfo == NULL)) {
 		int wait_ms = 0;
 		int wait_limit = 1000;
 		linphone_nat_policy_resolve_stun_server(policy);

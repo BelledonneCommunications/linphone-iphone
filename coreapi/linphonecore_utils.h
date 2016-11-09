@@ -133,7 +133,13 @@ LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_get_all(void);
  * @return Return matching dial plan, or a generic one if none found
 **/
 LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc);
-
+/**
+ * Find best match for given CCC
+ * @return Return matching dial plan, or a generic one if none found
+ **/
+LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc);
+	
+	
 /**
  * Return if given plan is generic
 **/

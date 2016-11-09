@@ -53,8 +53,8 @@ static void linphone_vcard_import_export_friends_test(void) {
 	linphone_friend_list_unref(lfl);
 
 	remove(export_filepath);
-	ms_free(import_filepath);
-	ms_free(export_filepath);
+	bc_free(import_filepath);
+	bc_free(export_filepath);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -106,7 +106,7 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 
 	linphone_friend_list_unref(lfl);
 
-	ms_free(import_filepath);
+	bc_free(import_filepath);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -243,9 +243,9 @@ static void friends_migration(void) {
 	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 1, int, "%i");
 
 	friends_from_db = bctbx_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
-	unlink(friends_db);
-	ms_free(friends_db);
 	linphone_core_manager_destroy(manager);
+	unlink(friends_db);
+	bc_free(friends_db);
 }
 
 typedef struct _LinphoneFriendListStats {
@@ -368,11 +368,11 @@ static void friends_sqlite_storage(void) {
 
 end:
 	ms_free(stats);
-	unlink(friends_db);
-	ms_free(friends_db);
 	linphone_address_unref(addr);
 	linphone_core_destroy(lc);
 	linphone_core_v_table_destroy(v_table);
+	unlink(friends_db);
+	bc_free(friends_db);
 }
 #endif
 
@@ -472,10 +472,10 @@ static void carddav_sync_2(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
-	unlink(friends_db);
-	ms_free(friends_db);
 	linphone_carddav_context_destroy(c);
 	linphone_core_manager_destroy(manager);
+	unlink(friends_db);
+	bc_free(friends_db);
 }
 
 static void carddav_sync_3(void) {
@@ -512,11 +512,10 @@ static void carddav_sync_3(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
-	unlink(friends_db);
-	ms_free(friends_db);
 	linphone_carddav_context_destroy(c);
-	c = NULL;
 	linphone_core_manager_destroy(manager);
+	unlink(friends_db);
+	bc_free(friends_db);
 }
 
 static void carddav_sync_4(void) {
@@ -798,8 +797,8 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("vCard creation for existing friends", linphone_vcard_update_existing_friends_test),
 	TEST_NO_TAG("vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses),
 #ifdef SQLITE_STORAGE_ENABLED
-	TEST_ONE_TAG("Friends working if no db set", friends_if_no_db_set, "LeaksMemory"),
-	TEST_ONE_TAG("Friends storage migration from rc to db", friends_migration, "LeaksMemory"),
+	TEST_NO_TAG("Friends working if no db set", friends_if_no_db_set),
+	TEST_NO_TAG("Friends storage migration from rc to db", friends_migration),
 	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 #endif
 	TEST_NO_TAG("CardDAV clean", carddav_clean), // This is to ensure the content of the test addressbook is in the correct state for the following tests

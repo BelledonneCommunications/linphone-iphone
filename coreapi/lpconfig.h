@@ -111,8 +111,8 @@ LINPHONE_PUBLIC const char *lp_config_get_string(const LpConfig *lpconfig, const
  * @param[in] lpconfig A LpConfig object
  * @param[in] section The section from which to retrieve a configuration item
  * @param[in] key The name of the configuration item to retrieve
- * @param[in] default_list \mslist{const char *}
- * @return \mslist{const char *}
+ * @param[in] default_list \bctbx_list{const char *}
+ * @return \bctbx_list{const char *}
  */
 LINPHONE_PUBLIC bctbx_list_t * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, bctbx_list_t *default_list);
 
@@ -162,7 +162,7 @@ LINPHONE_PUBLIC void lp_config_set_string(LpConfig *lpconfig,const char *section
  * @param[in] lpconfig A LpConfig object
  * @param[in] section The name of the section to put the configuration item into
  * @param[in] key The name of the configuration item to set
- * @param[in] value \mslist{const char *} The value to set
+ * @param[in] value \bctbx_list{const char *} The value to set
  */
 LINPHONE_PUBLIC void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value);
 

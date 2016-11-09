@@ -2070,7 +2070,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 				linphonec_out("hook=paused sip:%s\n",linphonec_get_callee());
 			break;
 			case LinphoneCallIdle:
-				linphonec_out("hook=offhook\n");
+				linphonec_out("hook=on-hook\n");
 			break;
 			case LinphoneCallStreamsRunning:
 			case LinphoneCallConnected:

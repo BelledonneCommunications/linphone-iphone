@@ -744,8 +744,6 @@ void linphone_friend_edit(LinphoneFriend *fr) {
 void linphone_friend_done(LinphoneFriend *fr) {
 	ms_return_if_fail(fr);
 	if (!fr->lc) return;
-	linphone_friend_apply(fr, fr->lc);
-	linphone_friend_save(fr, fr->lc);
 
 	if (fr && linphone_core_vcard_supported() && fr->vcard) {
 		if (linphone_vcard_compare_md5_hash(fr->vcard) != 0) {
@@ -756,6 +754,8 @@ void linphone_friend_done(LinphoneFriend *fr) {
 			}
 		}
 	}
+	linphone_friend_apply(fr, fr->lc);
+	linphone_friend_save(fr, fr->lc);
 }
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
@@ -1221,7 +1221,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	linphone_create_table(db);
 	if (linphone_update_table(db)) {
 		// After updating schema, database need to be closed/reopenned
-		sqlite3_close(lc->friends_db);
+		sqlite3_close(db);
 		_linphone_sqlite3_open(lc->friends_db_file, &db);
 	}
 

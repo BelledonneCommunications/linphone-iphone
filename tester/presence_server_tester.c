@@ -633,13 +633,14 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 		ms_message("Simulating in/out packets losses");
 		sal_set_send_error(laure->lc->sal,1500); /*make sure no refresh is sent, trash the message without generating error*/
 		sal_set_recv_error(laure->lc->sal, 1500); /*make sure server notify to close the dialog is also ignored*/
-		wait_for_list(lcs, &dummy, 1, 5000); /* Wait a little bit for the subscribe to happen */
+		wait_for_list(lcs, &dummy, 1, 32000); /* Wait a little bit for the subscribe transaction to timeout */
 	}
 	/*restart normal behavior*/
 	sal_set_send_error(laure->lc->sal,0);
 	sal_set_recv_error(laure->lc->sal, 1);
+	/*a new subscribe should be sent */
 
-	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityVacation, 3, 6000)); /* give time for subscription to recover to avoid to receive 491 Request pending*/
+	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityVacation, 3, 9000)); /* give time for subscription to recover to avoid to receive 491 Request pending*/
 
 	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityAway, NULL));
 

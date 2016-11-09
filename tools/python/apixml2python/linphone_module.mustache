@@ -71,8 +71,8 @@ static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyOb
 {{/class_instance_hand_written_methods}}
 {{/classes}}
 
-{{#mslist_types}}
-PyObject * PyList_FromMSListOf{{c_contained_type}}(const bctbx_list_t *msl) {
+{{#bctbxlist_types}}
+PyObject * PyList_FromBctbxListOf{{c_contained_type}}(const bctbx_list_t *msl) {
 	PyObject *pyl = PyList_New(0);
 	while (msl != NULL) {
 		{{c_contained_type}} *native_ptr = ({{c_contained_type}} *)msl->data;
@@ -83,7 +83,7 @@ PyObject * PyList_FromMSListOf{{c_contained_type}}(const bctbx_list_t *msl) {
 	return pyl;
 }
 
-bctbx_list_t * PyList_AsMSListOf{{c_contained_type}}(PyObject *pyl) {
+bctbx_list_t * PyList_AsBctbxListOf{{c_contained_type}}(PyObject *pyl) {
 	bctbx_list_t *msl = NULL;
 	Py_ssize_t idx;
 	Py_ssize_t size = PyList_Size(pyl);
@@ -95,7 +95,7 @@ bctbx_list_t * PyList_AsMSListOf{{c_contained_type}}(PyObject *pyl) {
 	return msl;
 }
 
-{{/mslist_types}}
+{{/bctbxlist_types}}
 
 {{#core_events}}
 {{{event_callback_definition}}}

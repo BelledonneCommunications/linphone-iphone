@@ -61,6 +61,14 @@ void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, 
 	cbs->user_data = ud;
 }
 
+LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_update_hash(const LinphoneAccountCreatorCbs *cbs) {
+	return cbs->update_hash;
+}
+
+void linphone_account_creator_cbs_set_update_hash(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb) {
+	cbs->update_hash = cb;
+}
+
 LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_is_account_used(const LinphoneAccountCreatorCbs *cbs) {
 	return cbs->is_account_used;
 }
@@ -365,6 +373,54 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_password(LinphoneAccou
 
 const char * linphone_account_creator_get_password(const LinphoneAccountCreator *creator) {
 	return creator->password;
+}
+
+static void _password_updated_cb(LinphoneXmlRpcRequest *request) {
+	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
+	if (creator->callbacks->update_hash != NULL) {
+		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorReqFailed;
+		const char* resp = linphone_xml_rpc_request_get_string_response(request);
+		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
+			if (strcmp(resp, "OK") == 0) {
+				status = LinphoneAccountCreatorOK;
+			} else if (strcmp(resp, "ERROR_PASSWORD_DOESNT_MATCH") == 0) {
+				status = LinphoneAccountCreatorAccountNotExist;
+			} else {
+				status = LinphoneAccountCreatorErrorServer;
+			}
+		}
+		creator->callbacks->update_hash(creator, status, resp);
+	}
+}
+
+LinphoneAccountCreatorStatus linphone_account_creator_update_password(LinphoneAccountCreator *creator, const char *new_pwd){
+	LinphoneXmlRpcRequest *request;
+	char *identity = _get_identity(creator);
+	if (!identity || (!creator->username && !creator->phone_number
+			&& !creator->domain && (!creator->password || !creator->ha1))) {
+		if (creator->callbacks->update_hash != NULL) {
+			creator->callbacks->update_hash(creator, LinphoneAccountCreatorReqFailed, "Missing required parameters");
+		}
+		return LinphoneAccountCreatorReqFailed;
+	}
+
+	const char * username = creator->username ? creator->username : creator->phone_number;
+	const char * ha1 = ms_strdup(creator->ha1 ? creator->ha1 : ha1_for_passwd(username, creator->domain, creator->password) );
+	const char * new_ha1 = ms_strdup(ha1_for_passwd(username, creator->domain, new_pwd));
+
+	request = linphone_xml_rpc_request_new_with_args("update_hash", LinphoneXmlRpcArgString,
+		LinphoneXmlRpcArgString, username,
+		LinphoneXmlRpcArgString, ha1,
+		LinphoneXmlRpcArgString, new_ha1,
+		LinphoneXmlRpcArgString, creator->domain,
+		LinphoneXmlRpcArgNone);
+
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _password_updated_cb);
+	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
+	linphone_xml_rpc_request_unref(request);
+
+	return LinphoneAccountCreatorOK;
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_ha1(LinphoneAccountCreator *creator, const char *ha1){

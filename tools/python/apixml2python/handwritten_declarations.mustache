@@ -24,8 +24,8 @@ typedef struct {
 	LCSipTransports lcst;
 } pylinphone_SipTransportsObject;
 
-PyObject * PyList_FromMSListOfString(const bctbx_list_t *msl);
-bctbx_list_t * PyList_AsMSListOfString(PyObject *pyl);
+PyObject * PyList_FromBctbxListOfString(const bctbx_list_t *msl);
+bctbx_list_t * PyList_AsBctbxListOfString(PyObject *pyl);
 
 int PyLinphoneVideoSize_Check(PyObject *p);
 MSVideoSize PyLinphoneVideoSize_AsMSVideoSize(PyObject *obj);
