@@ -4741,8 +4741,20 @@ LINPHONE_PUBLIC const char *linphone_core_get_tls_key_path(const LinphoneCore *l
 #include "linphone/im_encryption_engine.h"
 #endif
 
+/**
+ * @ingroup chatroom
+ * Sets an IM Encryption Engine in the core
+ * @param lc LinphoneCore object
+ * @param imee LinphoneImEncryptionEngine object
+ */
 LINPHONE_PUBLIC void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncryptionEngine *imee);
 
+/**
+ * @ingroup chatroom
+ * Gets the IM Encryption Engine in the core if possible
+ * @param lc LinphoneCore object
+ * @return the IM Encryption Engine in the core or NULL
+ */
 LINPHONE_PUBLIC LinphoneImEncryptionEngine * linphone_core_get_im_encryption_engine(const LinphoneCore *lc);
 
 #include "ringtoneplayer.h"
