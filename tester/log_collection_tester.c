@@ -84,7 +84,7 @@ static ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
 	*lineptr = bufptr;
 	*n = size;
 
-	return p - bufptr - 1;
+	return (ssize_t)(p - bufptr) - 1;
 }
 #endif
 
