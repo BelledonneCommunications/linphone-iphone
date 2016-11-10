@@ -235,6 +235,8 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 	return result;
 
 }
+
+/* BEWARE this test will fail if the machine it is run on is behind an active firewall not sending ICMP errors on incoming connections! */
 static void subscribe_failure_handle_by_app(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
