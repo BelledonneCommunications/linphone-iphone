@@ -1901,6 +1901,7 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 static void update_primary_contact(LinphoneCore *lc){
 	char *guessed=NULL;
 	char tmp[LINPHONE_IPADDR_SIZE];
+	int port;
 
 	LinphoneAddress *url;
 	if (lc->sip_conf.guessed_contact!=NULL){
@@ -1918,7 +1919,9 @@ static void update_primary_contact(LinphoneCore *lc){
 		lc->sip_conf.loopback_only=TRUE;
 	}else lc->sip_conf.loopback_only=FALSE;
 	linphone_address_set_domain(url,tmp);
-	linphone_address_set_port(url,linphone_core_get_sip_port(lc));
+	port = linphone_core_get_sip_port(lc);
+	if (port > 0) linphone_address_set_port(url, port); /*if there is no listening socket the primary contact is somewhat useless,
+		it won't work. But we prefer to return something in all cases. It at least shows username and ip address.*/
 	guessed=linphone_address_as_string(url);
 	lc->sip_conf.guessed_contact=guessed;
 	linphone_address_destroy(url);
