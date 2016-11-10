@@ -23,8 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 struct _LinphoneImEncryptionEngineCbs {
 	void *user_data;
 	LinphoneImEncryptionEngineIncomingMessageCb process_incoming_message;
-	LinphoneImEncryptionEngineDownloadingFileCb process_downlading_file;
 	LinphoneImEncryptionEngineOutgoingMessageCb process_outgoing_message;
+	LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer;
+	LinphoneImEncryptionEngineGenerateFileTransferKeyCb generate_file_transfer_key;
+	LinphoneImEncryptionEngineDownloadingFileCb process_downlading_file;
+	LinphoneImEncryptionEngineUploadingFileCb process_uploading_file;
 };
 
 struct _LinphoneImEncryptionEngine {
@@ -94,4 +97,28 @@ LinphoneImEncryptionEngineDownloadingFileCb linphone_im_encryption_engine_cbs_ge
 
 void linphone_im_encryption_engine_cbs_set_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineDownloadingFileCb cb) {
 	cbs->process_downlading_file = cb;
+}
+
+LinphoneImEncryptionEngineUploadingFileCb linphone_im_encryption_engine_cbs_get_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs) {
+	return cbs->process_uploading_file;
+}
+
+void linphone_im_encryption_engine_cbs_set_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineUploadingFileCb cb) {
+	cbs->process_uploading_file = cb;
+}
+
+LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb linphone_im_encryption_engine_cbs_get_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs) {
+	return cbs->is_encryption_enabled_for_file_transfer;
+}
+
+void linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb cb) {
+	cbs->is_encryption_enabled_for_file_transfer = cb;
+}
+
+LinphoneImEncryptionEngineGenerateFileTransferKeyCb linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs) {
+	return cbs->generate_file_transfer_key;
+}
+
+void linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineGenerateFileTransferKeyCb cb) {
+		cbs->generate_file_transfer_key = cb;
 }

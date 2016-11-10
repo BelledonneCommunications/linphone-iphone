@@ -30,7 +30,13 @@ typedef int (*LinphoneImEncryptionEngineIncomingMessageCb)(LinphoneCore* lc, Lin
 
 typedef int (*LinphoneImEncryptionEngineOutgoingMessageCb)(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 
-typedef int (*LinphoneImEncryptionEngineDownloadingFileCb)(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer);
+typedef bool_t (*LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb)(LinphoneCore *lc, LinphoneChatRoom *room);
+
+typedef void (*LinphoneImEncryptionEngineGenerateFileTransferKeyCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
+
+typedef int (*LinphoneImEncryptionEngineDownloadingFileCb)(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer);
+
+typedef int (*LinphoneImEncryptionEngineUploadingFileCb)(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer);
 
 typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 
@@ -65,5 +71,17 @@ LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_outgoing_mess
 LINPHONE_PUBLIC LinphoneImEncryptionEngineDownloadingFileCb linphone_im_encryption_engine_cbs_get_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs);
 
 LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineDownloadingFileCb cb);
+
+LINPHONE_PUBLIC LinphoneImEncryptionEngineUploadingFileCb linphone_im_encryption_engine_cbs_get_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs);
+
+LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineUploadingFileCb cb);
+
+LINPHONE_PUBLIC LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb linphone_im_encryption_engine_cbs_get_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs);
+
+LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb cb);
+
+LINPHONE_PUBLIC LinphoneImEncryptionEngineGenerateFileTransferKeyCb linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs);
+
+LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineGenerateFileTransferKeyCb cb);
 
 #endif /* IM_ENCRYPTION_ENGINE_H */

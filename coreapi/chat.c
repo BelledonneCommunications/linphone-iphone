@@ -578,18 +578,16 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 								file_url = xmlGetProp(cur, (const xmlChar *)"url");
 							}
 
-							if (!xmlStrcmp(cur->name,
-										   (const xmlChar *)"file-key")) { /* there is a key in the msg: file has
-																			  been encrypted */
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) { 
+								/* there is a key in the msg: file has been encrypted */
 								/* convert the key from base 64 */
 								xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 								size_t keyLength = b64_decode((char *)keyb64, strlen((char *)keyb64), NULL, 0);
 								uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
 								/* decode the key into local key buffer */
 								b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
-								linphone_content_set_key(
-									msg->file_transfer_information, (char *)keyBuffer,
-									strlen((char *)keyBuffer)); /* duplicate key value into the linphone content private structure */
+								linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, strlen((char *)keyBuffer)); 
+								/* duplicate key value into the linphone content private structure */
 								xmlFree(keyb64);
 								free(keyBuffer);
 							}

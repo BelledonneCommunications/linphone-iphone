@@ -1957,6 +1957,9 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 		linphone_im_encryption_engine_cbs_set_process_incoming_message(cbs, lime_im_encryption_engine_process_incoming_message_cb);
 		linphone_im_encryption_engine_cbs_set_process_outgoing_message(cbs, lime_im_encryption_engine_process_outgoing_message_cb);
 		linphone_im_encryption_engine_cbs_set_process_downloading_file(cbs, lime_im_encryption_engine_process_downloading_file_cb);
+		linphone_im_encryption_engine_cbs_set_process_uploading_file(cbs, lime_im_encryption_engine_process_uploading_file_cb);
+		linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(cbs, lime_im_encryption_engine_is_file_encryption_enabled_cb);
+		linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(cbs, lime_im_encryption_engine_generate_file_transfer_key_cb);
 		lc->im_encryption_engine = imee;
 	} else {
 		if (lc->im_encryption_engine) {

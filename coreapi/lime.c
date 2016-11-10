@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "private.h"
 #include "bctoolbox/crypto.h"
 
+#define FILE_TRANSFER_KEY_SIZE 32
+
 /**
  * @brief check at runtime if LIME is available
  *
@@ -996,7 +998,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, Linp
 	return errcode;
 }
 
-int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer) {
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
 	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
 	
 	if (buffer == NULL || size == 0) {
@@ -1004,8 +1006,36 @@ int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, Linp
 	}
 	
 	return lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
-						 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), size, *decrypted_buffer,
+						 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), size, decrypted_buffer,
 						 (char *)buffer);
+}
+
+int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
+	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
+	
+	if (buffer == NULL || *size == 0) {
+		return lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
+	}
+	
+	if (offset + *size < linphone_content_get_size(msg->file_transfer_information)) {
+		*size -= (*size % 16);
+	}
+	
+	return lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+					(unsigned char *)linphone_content_get_key(msg->file_transfer_information), *size,
+					(char *)buffer, encrypted_buffer);
+}
+
+bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneCore *lc, LinphoneChatRoom *room) {
+	return linphone_chat_room_lime_available(room) && linphone_core_lime_for_file_sharing_enabled(lc);
+}
+
+void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	char keyBuffer [FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of initial vector */
+	/* generate a random 192 bits key + 64 bits of initial vector and store it into the
+		* file_transfer_information->key field of the msg */
+	sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
+	linphone_content_set_key(msg->file_transfer_information, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
 }
 
 #else /* HAVE_LIME */
@@ -1041,8 +1071,17 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, Linp
 int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	return 500;
 }
-int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer) {
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
 	return 500;
+}
+int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
+	return 500;
+}
+bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneCore *lc, LinphoneChatRoom *room) {
+	return FALSE;
+}
+void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	
 }
 #endif /* HAVE_LIME */
 
