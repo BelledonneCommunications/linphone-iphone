@@ -11,6 +11,8 @@
  * All the rest is implemented to do nothing
  */
 
+@property(nonatomic, strong) NSMutableArray *personsArray;
+
 + (void)sendXMLRPCRequest:(NSString *)method;
 + (void)sendXMLRPCRequestWithParams:(NSString *)method withParams:(NSArray *)params;
 + (void)sendXMLRPCRequestWithParams:(NSString *)method
@@ -23,5 +25,6 @@
 
 - (void)dealWithXmlRpcResponse:(LinphoneXmlRpcRequest *)request;
 - (void)displayErrorPopup:(NSString *)error;
++ (void)initArray;
 
 @end

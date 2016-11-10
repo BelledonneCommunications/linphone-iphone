@@ -54,6 +54,7 @@
 		warnBeforeExpiryPeriod = [LinphoneManager.instance lpConfigIntForKey:@"warn_before_expiry_period" inSection:@"in_app_purchase"];
 		lastCheck = 0;
 
+		[XMLRPCHelper.self initArray];
 		//========// for test only
 		// int testExpiry = [LinphoneManager.instance lpConfigIntForKey:@"expiry_time_test"
 		// inSection:@"in_app_purchase"];
