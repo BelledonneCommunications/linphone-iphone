@@ -27,7 +27,6 @@
 #include "lpconfig.h"
 #include "belle-sip/belle-sip.h"
 #include "ortp/b64.h"
-#include "lime.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -265,50 +264,6 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
-bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
-	if (cr) {
-		switch (linphone_core_lime_enabled(cr->lc)) {
-			case LinphoneLimeDisabled: return FALSE;
-			case LinphoneLimeMandatory: return TRUE;
-			case LinphoneLimePreferred: {
-				FILE *CACHEFD = NULL;
-				if (cr->lc->zrtp_secrets_cache != NULL) {
-					CACHEFD = fopen(cr->lc->zrtp_secrets_cache, "rb+");
-					if (CACHEFD) {
-						size_t cacheSize;
-						xmlDocPtr cacheXml;
-						char *cacheString=ms_load_file_content(CACHEFD, &cacheSize);
-						if (!cacheString){
-							ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
-							return FALSE;
-						}
-						cacheString[cacheSize] = '\0';
-						cacheSize += 1;
-						fclose(CACHEFD);
-						cacheXml = xmlParseDoc((xmlChar*)cacheString);
-						ms_free(cacheString);
-						if (cacheXml) {
-							bool_t res;
-							limeURIKeys_t associatedKeys;
-							/* retrieve keys associated to the peer URI */
-							associatedKeys.peerURI = (uint8_t *)malloc(strlen(cr->peer)+1);
-							strcpy((char *)(associatedKeys.peerURI), cr->peer);
-							associatedKeys.associatedZIDNumber  = 0;
-							associatedKeys.peerKeys = NULL;
-
-							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0 && associatedKeys.associatedZIDNumber != 0);
-							lime_freeKeys(&associatedKeys);
-							xmlFreeDoc(cacheXml);
-							return res;
-						}
-					}
-				}
-			}
-		}
-	}
-	return FALSE;
-}
-
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_idle_timer) {
 		if (cr->lc && cr->lc->sal)
@@ -366,6 +321,10 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
 }
 
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	int retval = -1;
+	LinphoneCore *lc = cr->lc;
+	LinphoneImEncryptionEngine *imee = lc->im_encryption_engine;
+	
 	/*stubed rtt text*/
 	if (cr->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(cr->call))) {
 		uint32_t new_line = 0x2028;
@@ -406,6 +365,15 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 				}
 			}
 		}
+		
+		if (imee) {
+			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+			LinphoneImEncryptionEngineOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
+			if (cb_process_outgoing_message) {
+				retval = cb_process_outgoing_message(lc, cr, msg);
+			}
+		}
+		
 		if (op == NULL) {
 			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
 			if (proxy) {
@@ -418,6 +386,13 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 								  lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
 			sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 		}
+		
+		if (retval > 0) {
+			sal_error_info_set((SalErrorInfo *)sal_op_get_error_info(op), SalReasonNotAcceptable, retval, "Unable to encrypt IM", NULL);
+			linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
+			linphone_chat_message_unref(msg);
+			return;
+		}
 
 		if (msg->external_body_url) {
 			content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", msg->external_body_url);
@@ -425,21 +400,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			ms_free(content_type);
 		} else {
 			char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-			const char *content_type;
-
-			if (linphone_chat_room_lime_available(cr)) {
-				/* ref the msg or it may be destroyed by callback if the encryption failed */
-				if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
-					/* it's a file transfer, content type shall be set to
-					application/cipher.vnd.gsma.rcs-ft-http+xml*/
-					content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
-				} else {
-					content_type = "xml/cipher";
-				}
-			} else {
-				content_type = msg->content_type;
-			}
-
+			const char *content_type = msg->content_type;
 			if (content_type == NULL) {
 				sal_text_send(op, identity, cr->peer, msg->message);
 			} else {
@@ -509,30 +470,68 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 	linphone_core_notify_is_composing_received(cr->lc, cr);
 }
 
-void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
+LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
 	LinphoneChatRoom *cr = NULL;
 	LinphoneAddress *addr;
+	LinphoneAddress *to;
 	LinphoneChatMessage *msg;
+	LinphoneImEncryptionEngine *imee = lc->im_encryption_engine;
 	const SalCustomHeader *ch;
+	LinphoneReason reason = LinphoneReasonNone;
+	int retval = -1;
 
 	addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	cr = linphone_core_get_chat_room(lc, addr);
 
-	if (sal_msg->content_type !=
-		NULL) { /* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with
-				   "application/vnd.gsma.rcs-ft-http+xml" */
+	msg = linphone_chat_room_create_message(cr, sal_msg->text); /* create a msg with empty body */
+	msg->content_type = ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
+	linphone_chat_message_set_from(msg, cr->peer_url);
+
+	to = sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op)) : linphone_address_new(linphone_core_get_identity(lc));
+	msg->to = to;
+	
+	msg->time = sal_msg->time;
+	msg->state = LinphoneChatMessageStateDelivered;
+	msg->is_read = FALSE;
+	msg->dir = LinphoneChatMessageIncoming;
+	
+	ch = sal_op_get_recv_custom_header(op);
+	if (ch) {
+		msg->custom_headers = sal_custom_header_clone(ch);
+	}
+
+	if (sal_msg->url) {
+		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
+	}
+	
+	if (imee) {
+		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+		LinphoneImEncryptionEngineIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
+		if (cb_process_incoming_message) {
+			retval = cb_process_incoming_message(lc, cr, msg);
+		}
+	}
+	
+	if (retval < 0 && strcmp("text/plain", msg->content_type) != 0 && strcmp("message/external-body", msg->content_type) != 0
+			&& strcmp("application/vnd.gsma.rcs-ft-http+xml", msg->content_type) != 0) {
+		retval = 415;
+		ms_error("Unsupported MESSAGE (content-type %s not recognized)", msg->content_type);
+	}
+	
+	if (retval > 0) {
+		reason = linphone_error_code_to_reason(retval);
+		goto end;
+	}
+
+	if (strcmp("application/vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
 		xmlChar *file_url = NULL;
 		xmlDocPtr xmlMessageBody;
 		xmlNodePtr cur;
-
-		msg = linphone_chat_room_create_message(cr, NULL); /* create a msg with empty body */
-		msg->content_type =
-			ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
-		msg->file_transfer_information = linphone_content_new();
-
+		/* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
 		/* parse the msg body to get all informations from it */
-		xmlMessageBody = xmlParseDoc((const xmlChar *)sal_msg->text);
+		xmlMessageBody = xmlParseDoc((const xmlChar *)msg->message);
+		msg->file_transfer_information = linphone_content_new();
 
 		cur = xmlDocGetRootElement(xmlMessageBody);
 		if (cur != NULL) {
@@ -609,31 +608,8 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 
 		linphone_chat_message_set_external_body_url(msg, (const char *)file_url);
 		xmlFree(file_url);
-	} else { /* msg is not rcs file transfer, create it with provided sal_msg->text as ->msg */
-		msg = linphone_chat_room_create_message(cr, sal_msg->text);
-	}
-	linphone_chat_message_set_from(msg, cr->peer_url);
-
-	{
-		LinphoneAddress *to;
-		to = sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op))
-							   : linphone_address_new(linphone_core_get_identity(lc));
-		msg->to = to;
 	}
 
-	msg->time = sal_msg->time;
-	msg->state = LinphoneChatMessageStateDelivered;
-	msg->is_read = FALSE;
-	msg->dir = LinphoneChatMessageIncoming;
-	ch = sal_op_get_recv_custom_header(op);
-	if (ch)
-		msg->custom_headers = sal_custom_header_clone(ch);
-
-	if (sal_msg->url) {
-		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
-	}
-
-	linphone_address_destroy(addr);
 	msg->storage_id = linphone_chat_message_store(msg);
 
 	if (cr->unread_count < 0)
@@ -642,7 +618,11 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 		cr->unread_count++;
 
 	linphone_chat_room_message_received(cr, lc, msg);
+	
+end:
+	linphone_address_destroy(addr);
 	linphone_chat_message_unref(msg);
+	return reason;
 }
 
 static int linphone_chat_room_remote_refresh_composing_expired(void *data, unsigned int revents) {

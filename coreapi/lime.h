@@ -205,9 +205,9 @@ LINPHONE_PUBLIC char *lime_error_code_to_string(int errorCode);
  */
 LINPHONE_PUBLIC bool_t lime_is_available(void);
 
-int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body);
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 
-int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 
 int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer);
 

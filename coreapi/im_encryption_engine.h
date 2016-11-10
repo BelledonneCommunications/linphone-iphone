@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
-typedef int (*LinphoneImEncryptionEngineIncomingMessageCb)(LinphoneCore* lc, belle_sip_request_t* req, const char* content_type, const char* content_subtype, const char* body, char** decrypted_body);
+typedef int (*LinphoneImEncryptionEngineIncomingMessageCb)(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 
-typedef int (*LinphoneImEncryptionEngineOutgoingMessageCb)(LinphoneCore* lc, belle_sip_request_t* req, const char *peer_uri, const char* content_type, const char* body, char** crypted_body, size_t* content_length);
+typedef int (*LinphoneImEncryptionEngineOutgoingMessageCb)(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 
 typedef int (*LinphoneImEncryptionEngineDownloadingFileCb)(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char **decrypted_buffer);
 

@@ -7184,6 +7184,49 @@ const char *linphone_reason_to_string(LinphoneReason err){
 	return "unknown error";
 }
 
+LinphoneReason linphone_error_code_to_reason(int err) {
+	if (err == 200) {
+		return LinphoneReasonNone;
+	} else if (err == 503) {
+		return LinphoneReasonIOError;
+	} else if (err == 400) {
+		return LinphoneReasonUnknown;
+	} else if (err == 486) {
+		return LinphoneReasonBusy;
+	} else if (err == 603) {
+		return LinphoneReasonDeclined;
+	} else if (err == 600) {
+		return LinphoneReasonDoNotDisturb;
+	} else if (err == 403) {
+		return LinphoneReasonForbidden;
+	} else if (err == 415) {
+		return LinphoneReasonUnsupportedContent;
+	} else if (err == 404) {
+		return LinphoneReasonNotFound;
+	} else if (err == 480) {
+		return LinphoneReasonTemporarilyUnavailable;
+	} else if (err == 401) {
+		return LinphoneReasonUnauthorized;
+	} else if (err == 488) {
+		return LinphoneReasonNotAcceptable;
+	} else if (err == 481) {
+		return LinphoneReasonNoMatch;
+	} else if (err == 301) {
+		return LinphoneReasonMovedPermanently;
+	} else if (err == 410) {
+		return LinphoneReasonGone;
+	} else if (err == 484) {
+		return LinphoneReasonAddressIncomplete;
+	} else if (err == 501) {
+		return LinphoneReasonNotImplemented;
+	} else if (err == 504) {
+		return LinphoneReasonServerTimeout;
+	} else if (err == 502) {
+		return LinphoneReasonBadGateway;
+	}
+	return LinphoneReasonUnknown;
+}
+
 const char *linphone_error_to_string(LinphoneReason err){
 	return linphone_reason_to_string(err);
 }

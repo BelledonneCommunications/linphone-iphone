@@ -228,6 +228,12 @@ typedef enum _LinphoneReason LinphoneReason;
 LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
+ * Converts a error code to a LinphoneReason.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
+
+/**
  * Object representing full details about a signaling error or status.
  * All LinphoneErrorInfo object returned by the liblinphone API are readonly and transcients. For safety they must be used immediately
  * after obtaining them. Any other function call to the liblinphone may change their content or invalidate the pointer.
@@ -1639,7 +1645,7 @@ LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr)
  *
  * @return true if zrtp secrets have already been shared and ready to use
  */
- LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 
 /**
  * Returns an list of chat rooms
