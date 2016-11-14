@@ -113,6 +113,7 @@ static void linphone_core_run_hooks(LinphoneCore *lc);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
+
 #if defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL)
 #define SOUNDS_PREFIX "Assets/Sounds/"
 #else
@@ -5558,7 +5559,6 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
 			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
 			video_preview_start(lc->previewstream,lc->video_conf.device);
-			lc->previewstream->ms.factory = lc->factory;
 		}
 	}else{
 		if (lc->previewstream!=NULL){
@@ -5567,6 +5567,14 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 		}
 	}
 #endif
+}
+
+static void relaunch_video_preview(LinphoneCore *lc){
+	if (lc->previewstream){
+		toggle_video_preview(lc,FALSE);
+	}
+	/* And nothing else, because linphone_core_iterate() will restart the preview stream if necessary.
+	 * This code will need to be revisited when linphone_core_iterate() will no longer be required*/
 }
 
 bool_t linphone_core_video_supported(LinphoneCore *lc){
@@ -5738,7 +5746,7 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	if (lc->video_conf.device==NULL)
 		lc->video_conf.device=ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(lc->factory));
 	if (olddev!=NULL && olddev!=lc->video_conf.device){
-		toggle_video_preview(lc,FALSE);/*restart the video local preview*/
+		relaunch_video_preview(lc);
 	}
 	if ( linphone_core_ready(lc) && lc->video_conf.device){
 		vd=ms_web_cam_get_string_id(lc->video_conf.device);
@@ -6094,10 +6102,11 @@ static bool_t video_size_supported(MSVideoSize vsize){
 	return FALSE;
 }
 
+
+
 static void update_preview_size(LinphoneCore *lc, MSVideoSize oldvsize, MSVideoSize vsize){
 	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-		toggle_video_preview(lc,FALSE);
-		toggle_video_preview(lc,TRUE);
+		relaunch_video_preview(lc);
 	}
 }
 
@@ -6128,8 +6137,7 @@ void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	oldvsize=lc->video_conf.preview_vsize;
 	lc->video_conf.preview_vsize=vsize;
 	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-		toggle_video_preview(lc,FALSE);
-		toggle_video_preview(lc,TRUE);
+		relaunch_video_preview(lc);
 	}
 	if (linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
