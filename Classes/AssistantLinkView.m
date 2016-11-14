@@ -162,6 +162,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 			linphone_proxy_config_set_dial_prefix(cfg, prefix[0] == '+' ? &prefix[1] : prefix);
 			linphone_proxy_config_done(cfg);
 		}
+		[LinphoneManager.instance.fastAddressBook reload];
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
 	} else {
