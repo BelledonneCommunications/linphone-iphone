@@ -1129,6 +1129,10 @@ const char *linphone_chat_message_get_custom_header(LinphoneChatMessage *msg, co
 	return sal_custom_header_find(msg->custom_headers, header_name);
 }
 
+void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name) {
+	msg->custom_headers = sal_custom_header_remove(msg->custom_headers, header_name);
+}
+
 bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
 	return msg->is_read;
 }

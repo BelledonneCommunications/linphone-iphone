@@ -1901,6 +1901,35 @@ void file_transfer_with_http_proxy(void) {
 	}
 }
 
+void chat_message_custom_headers(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	LinphoneChatMessage* msg = linphone_chat_room_create_message(chat_room, "Lorem Ipsum");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+	
+	linphone_chat_message_add_custom_header(msg, "Test1", "Value1");
+	linphone_chat_message_add_custom_header(msg, "Test2", "Value2");
+	linphone_chat_message_remove_custom_header(msg, "Test1");
+
+	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_room_send_chat_message(chat_room,msg);
+
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
+	
+	if (marie->stat.last_received_chat_message) {
+		const char *header = linphone_chat_message_get_custom_header(marie->stat.last_received_chat_message, "Test2");
+		BC_ASSERT_STRING_EQUAL(header, "Value2");
+		header = linphone_chat_message_get_custom_header(marie->stat.last_received_chat_message, "Test1");
+		BC_ASSERT_PTR_NULL(header);
+		BC_ASSERT_STRING_EQUAL(marie->stat.last_received_chat_message->message, "Lorem Ipsum");
+	}
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
 	TEST_NO_TAG("Text message within call dialog", text_message_within_call_dialog),
@@ -1956,6 +1985,7 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side, "RTT"),
 	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side, "RTT"),
 	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
+	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers),
 };
 
 test_suite_t message_test_suite = {

@@ -993,6 +993,14 @@ const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
 	return NULL;
 }
 
+SalCustomHeader *sal_custom_header_remove(SalCustomHeader *ch, const char *name) {
+	belle_sip_message_t *msg=(belle_sip_message_t*)ch;
+	if (msg==NULL) return NULL;
+	
+	belle_sip_message_remove_header(msg, name);
+	return (SalCustomHeader*)msg;
+}
+
 void sal_custom_header_free(SalCustomHeader *ch){
 	if (ch==NULL) return;
 	belle_sip_object_unref((belle_sip_message_t*)ch);

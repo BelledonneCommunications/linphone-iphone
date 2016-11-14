@@ -851,6 +851,7 @@ void sal_resolve_cancel(SalResolverContext *ctx);
 
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);
+SalCustomHeader *sal_custom_header_remove(SalCustomHeader *ch, const char *name);
 void sal_custom_header_free(SalCustomHeader *ch);
 SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch);
 

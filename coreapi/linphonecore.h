@@ -1804,7 +1804,7 @@ LINPHONE_PUBLIC	LinphoneAddress *linphone_chat_message_get_local_address(const L
 /**
  * Add custom headers to the message.
  * @param message the message
- * @param header_name name of the header_name
+ * @param header_name name of the header
  * @param header_value header value
 **/
 LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value);
@@ -1814,6 +1814,12 @@ LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage
  * @param header_name header name searched
 **/
 LINPHONE_PUBLIC	const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
+/**
+ * Removes a custom header from the message.
+ * @param message the message
+ * @param header_name name of the header to remove
+**/
+LINPHONE_PUBLIC	void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name);
 /**
  * Returns TRUE if the message has been read, otherwise returns FALSE.
  * @param message the message
