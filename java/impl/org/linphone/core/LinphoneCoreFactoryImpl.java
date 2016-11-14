@@ -103,8 +103,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	private boolean loadOpenH264(Context context) {
 		File file = new File(context.getFilesDir()+"/../lib/libmsopenh264.so");
 
-		// Only enable for android > 5.0
-		if (!file.exists() && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
+		// Only enable for android <= 5.0
+		if (!file.exists() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
 			Log.i("LinphoneCoreFactoryImpl"," Openh264 disabled on the project");
 			return false;
 		}
