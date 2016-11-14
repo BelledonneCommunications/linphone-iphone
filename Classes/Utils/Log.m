@@ -87,29 +87,29 @@ void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const cha
 	// fixed-length aligned logs
 
 	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-		os_log_t log = os_log_create("", "Notice");
+		os_log_t log = os_log_create("subsystem", "Notice");
 		os_log_type_t type = OS_LOG_TYPE_INFO;
 		switch (lev) {
 			case ORTP_FATAL:
 				type = OS_LOG_TYPE_FAULT;
-				log = os_log_create("sip.linphone.org", "Fatal");
+				log = os_log_create("subsystem", "Fatal");
 				break;
 			case ORTP_ERROR:
 				type = OS_LOG_TYPE_ERROR;
-				log = os_log_create("sip.linphone.org", "Error");
+				log = os_log_create("subsystem", "Error");
 				break;
 			case ORTP_WARNING:
 				type = OS_LOG_TYPE_DEFAULT;
-				log = os_log_create("sip.linphone.org", "Warning");
+				log = os_log_create("subsystem", "Warning");
 				break;
 			case ORTP_MESSAGE:
 				type = OS_LOG_TYPE_INFO;
-				log = os_log_create("sip.linphone.org", "Notice");
+				log = os_log_create("subsystem", "Notice");
 				break;
 			case ORTP_DEBUG:
 			case ORTP_TRACE:
 				type = OS_LOG_TYPE_INFO;
-				log = os_log_create("sip.linphone.org", "Debug");
+				log = os_log_create("subsystem", "Debug");
 				break;
 			case ORTP_LOGLEV_END:
 				return;
