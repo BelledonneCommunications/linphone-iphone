@@ -614,6 +614,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	UILocalNotification *notif = [timer userInfo];
 	if (notif) {
 		LOGI(@"cancelling/presenting local notif");
+		[[UIApplication sharedApplication] cancelAllLocalNotifications];
 		[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 	}
 }
