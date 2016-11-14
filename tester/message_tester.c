@@ -450,6 +450,9 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 	LinphoneChatMessage* msg;
 	LinphoneChatMessageCbs *cbs;
 
+	/* Remove any previously downloaded file */
+	remove(receive_filepath);
+	
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
@@ -656,6 +659,9 @@ static void file_transfer_2_messages_simultaneously(void) {
 		char *receive_filepath = bc_tester_file("receive_file.dump");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
+		/* Remove any previously downloaded file */
+		remove(receive_filepath);
+	
 		/* Globally configure an http file transfer server. */
 		linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
@@ -919,6 +925,9 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	MSList * msg_list = NULL;
+	
+	/* Remove any previously downloaded file */
+	remove(receive_filepath);
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
