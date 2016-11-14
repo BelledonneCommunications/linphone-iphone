@@ -586,7 +586,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 								uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
 								/* decode the key into local key buffer */
 								b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
-								linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, strlen((char *)keyBuffer)); 
+								linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength); 
 								/* duplicate key value into the linphone content private structure */
 								xmlFree(keyb64);
 								free(keyBuffer);

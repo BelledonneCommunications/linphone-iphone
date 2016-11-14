@@ -199,11 +199,11 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			/* create a user body handler to take care of the file and add the content disposition and content-type
 			 * headers */
 			if (msg->file_transfer_filepath != NULL) {
-				first_part_bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(msg->file_transfer_filepath, NULL, msg);
+				first_part_bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(msg->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, msg);
 			} else if (linphone_content_get_buffer(msg->file_transfer_information) != NULL) {
 				first_part_bh = (belle_sip_body_handler_t *)belle_sip_memory_body_handler_new_from_buffer(
 					linphone_content_get_buffer(msg->file_transfer_information),
-					linphone_content_get_size(msg->file_transfer_information), NULL, msg);
+					linphone_content_get_size(msg->file_transfer_information), linphone_chat_message_file_transfer_on_progress, msg);
 			} else {
 				first_part_bh = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(
 					linphone_content_get_size(msg->file_transfer_information), NULL, NULL,
@@ -231,6 +231,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 				/* if we have an encryption key for the file, we must insert it into the msg and restore the correct
 				 * filename */
 				const char *content_key = linphone_content_get_key(msg->file_transfer_information);
+				size_t content_key_size = linphone_content_get_key_size(msg->file_transfer_information);
 				if (content_key != NULL) {
 					/* parse the msg body */
 					xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)body);
@@ -250,11 +251,11 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 											->xmlChildrenNode; /* need to parse the children node to update the file-name
 																  one */
 									/* convert key to base64 */
-									size_t b64Size = b64_encode(NULL, strlen(content_key), NULL, 0);
+									size_t b64Size = b64_encode(NULL, content_key_size, NULL, 0);
 									char *keyb64 = (char *)ms_malloc0(b64Size + 1);
 									int xmlStringLength;
 
-									b64Size = b64_encode(content_key, strlen(content_key), keyb64, b64Size);
+									b64Size = b64_encode(content_key, content_key_size, keyb64, b64Size);
 									keyb64[b64Size] = '\0'; /* libxml need a null terminated string */
 
 									/* add the node containing the key to the file-info node */
@@ -455,24 +456,27 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 					if (msg->file_transfer_filepath == NULL) {
 						retval = cb_process_downloading_file(lc, msg, NULL, 0, NULL);
 					} else {
+						ssize_t file_ret;
 						bctbx_vfs_t *vfs = bctbx_vfs_get_default();
-						bctbx_vfs_file_t *decrypted_file;
-						bctbx_vfs_file_t *encrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "r");
-						size_t encrypted_file_size = (size_t)bctbx_file_size(encrypted_file);
+						bctbx_vfs_file_t *file = bctbx_file_open(vfs, msg->file_transfer_filepath, "r+");
+						size_t encrypted_file_size = (size_t)bctbx_file_size(file);
 						char *encrypted_content = bctbx_malloc(encrypted_file_size);
 						char *decrypted_content = bctbx_malloc(encrypted_file_size);
-						retval = (int)bctbx_file_read(encrypted_file, encrypted_content, encrypted_file_size, 0);
-						bctbx_file_close(encrypted_file);
-						if (retval != BCTBX_VFS_ERROR && retval == (int)encrypted_file_size) {
+						
+						file_ret = (int)bctbx_file_read(file, encrypted_content, encrypted_file_size, 0);
+						if (file_ret != BCTBX_VFS_ERROR && encrypted_file_size == (size_t)file_ret) {
 							retval = cb_process_downloading_file(lc, msg, encrypted_content, encrypted_file_size, decrypted_content);
 							cb_process_downloading_file(lc, msg, NULL, 0, NULL);
-							decrypted_file = bctbx_file_open(vfs, msg->file_transfer_filepath, "w");
-							bctbx_file_write(decrypted_file, decrypted_content, encrypted_file_size, 0);
-							bctbx_file_close(decrypted_file);
+							file_ret = bctbx_file_write(file, decrypted_content, encrypted_file_size, 0);
+							if (file_ret == BCTBX_VFS_ERROR) {
+								ms_error("file %s write failed: expected %lu, got %lu", msg->file_transfer_filepath, encrypted_file_size, file_ret);
+								retval = 503;
+							}
 						} else {
-							ms_error("file %s read failed: expected %d, got %d", msg->file_transfer_filepath, (int)encrypted_file_size, retval);
-							retval = 500;
+							ms_error("file %s read failed: expected %lu, got %lu", msg->file_transfer_filepath, encrypted_file_size, file_ret);
+							retval = 503;
 						}
+						bctbx_file_close(file);
 						bctbx_free(encrypted_content);
 						bctbx_free(decrypted_content);
 					}
@@ -493,7 +497,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 			if (retval <= 0) {
 				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 			} else {
-				ms_warning("File transfer decrypt failed with code %d", code);
+				ms_warning("File transfer decrypt failed with code %d and http code %d", (int)retval, code);
 				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferError);
 			}
 		} else if (code >= 400 && code < 500) {

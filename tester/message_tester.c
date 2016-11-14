@@ -915,7 +915,7 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_stored_msg, bool_t use_file_body_handler) {
+void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_stored_msg, bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download) {
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
 	LinphoneChatMessage *msg;
@@ -968,7 +968,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
 	/* create a file transfer msg */
-	if (use_file_body_handler) {
+	if (use_file_body_handler_in_upload) {
 		msg = create_file_transfer_message_from_nowebcam(linphone_core_get_chat_room(pauline->lc, marie->identity));
 	} else {
 		msg = create_message_from_nowebcam(linphone_core_get_chat_room(pauline->lc, marie->identity));
@@ -998,7 +998,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 		else
 			BC_ASSERT_PTR_NULL(linphone_content_get_key(content));
 		
-		if (use_file_body_handler) {
+		if (use_file_body_handler_in_download) {
 			linphone_chat_message_set_file_transfer_filepath(recv_msg, receive_filepath);
 		}
 		linphone_chat_message_download_file(recv_msg);
@@ -1018,23 +1018,31 @@ end:
 }
 
 static  void lime_transfer_message(void) {
-	lime_transfer_message_base(TRUE,FALSE,FALSE);
+	lime_transfer_message_base(TRUE, FALSE, FALSE, FALSE);
 }
 
 static  void lime_transfer_message_2(void) {
-	lime_transfer_message_base(TRUE,FALSE,TRUE);
+	lime_transfer_message_base(TRUE, FALSE, TRUE, FALSE);
+}
+
+static  void lime_transfer_message_3(void) {
+	lime_transfer_message_base(TRUE, FALSE, FALSE, TRUE);
+}
+
+static  void lime_transfer_message_4(void) {
+	lime_transfer_message_base(TRUE, FALSE, TRUE, TRUE);
 }
 
 static  void lime_transfer_message_from_history(void) {
-	lime_transfer_message_base(TRUE,TRUE,FALSE);
+	lime_transfer_message_base(TRUE, TRUE, FALSE, FALSE);
 }
 
 static  void lime_transfer_message_without_encryption(void) {
-	lime_transfer_message_base(FALSE,FALSE,FALSE);
+	lime_transfer_message_base(FALSE, FALSE, FALSE, FALSE);
 }
 
 static  void lime_transfer_message_without_encryption_2(void) {
-	lime_transfer_message_base(FALSE,FALSE,TRUE);
+	lime_transfer_message_base(FALSE, FALSE, TRUE, FALSE);
 }
 
 static void printHex(char *title, uint8_t *data, size_t length) {
@@ -1967,6 +1975,8 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Lime text message to non lime", lime_text_message_to_non_lime),
 	TEST_NO_TAG("Lime transfer message", lime_transfer_message),
 	TEST_NO_TAG("Lime transfer message 2", lime_transfer_message_2),
+	TEST_NO_TAG("Lime transfer message 3", lime_transfer_message_3),
+	TEST_NO_TAG("Lime transfer message 4", lime_transfer_message_4),
 	TEST_NO_TAG("Lime transfer message from history", lime_transfer_message_from_history),
 	TEST_NO_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption),
 	TEST_NO_TAG("Lime transfer message without encryption 2", lime_transfer_message_without_encryption_2),
