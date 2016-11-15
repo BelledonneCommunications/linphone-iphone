@@ -4599,7 +4599,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_tls_cert_path(const LinphoneCore *
  */
 LINPHONE_PUBLIC const char *linphone_core_get_tls_key_path(const LinphoneCore *lc);
 
-#include "ringtoneplayer.h"
+#include "linphone/ringtoneplayer.h"
 
 #ifdef __cplusplus
 }

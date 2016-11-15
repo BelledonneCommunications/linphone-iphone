@@ -34,7 +34,7 @@
 #include "sal/sal.h"
 #include "linphone/sipsetup.h"
 #include "quality_reporting.h"
-#include "ringtoneplayer.h"
+#include "linphone/ringtoneplayer.h"
 #include "vcard_private.h"
 #include "carddav.h"
 

@@ -74,7 +74,7 @@ liblinphone_la_SOURCES=\
 	xmlrpc.c \
 	vtables.c \
 	carddav.c \
-	ringtoneplayer.c ringtoneplayer.h\
+	ringtoneplayer.c \
 	sqlite3_bctbx_vfs.c sqlite3_bctbx_vfs.h\
 	$(GITVERSION_FILE)
 

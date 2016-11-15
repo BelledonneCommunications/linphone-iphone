@@ -38,6 +38,7 @@ set(HEADER_FILES
 	nat_policy.h
 	presence.h
 	proxy_config.h
+	ringtoneplayer.h
 	sipsetup.h
 	tunnel.h
 	vcard.h

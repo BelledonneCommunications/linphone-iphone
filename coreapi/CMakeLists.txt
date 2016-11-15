@@ -43,7 +43,6 @@ set(LINPHONE_PRIVATE_HEADER_FILES
 	offeranswer.h
 	private.h
 	quality_reporting.h
-	ringtoneplayer.h
 	sqlite3_bctbx_vfs.h
 	vcard_private.h
 	xml2lpc.h
