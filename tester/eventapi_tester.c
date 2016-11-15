@@ -21,7 +21,7 @@
 #include "linphone/core.h"
 #include "private.h"
 #include "linphone/lpconfig.h"
-#include <event.h>
+#include <linphone/event.h>
 #include "liblinphone_tester.h"
 
 static const char *subscribe_content="<somexml>blabla</somexml>";
