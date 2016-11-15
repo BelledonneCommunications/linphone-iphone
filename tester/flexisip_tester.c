@@ -1170,6 +1170,31 @@ static void test_subscribe_on_wrong_dialog(void) {
 }
 #endif
 
+static void test_list_subscribe_wrong_body(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	
+	LinphoneEvent *lev;
+	LinphoneAddress *sub_addr = linphone_address_new("sip:rls@sip.example.com");
+	
+	lev=linphone_core_create_subscribe(marie->lc,sub_addr,"presence",60);
+	
+	linphone_event_add_custom_header(lev,"Supported","eventlist");
+	linphone_event_add_custom_header(lev,"Accept","application/pidf+xml, application/rlmi+xml");
+	linphone_event_add_custom_header(lev,"Content-Disposition", "recipient-list");
+	linphone_event_add_custom_header(lev,"Require", "recipient-list-subscribe");
+	linphone_event_add_custom_header(lev,"Content-type", "application/resource-lists+xml");
+	
+	linphone_event_send_subscribe(lev,NULL);
+	
+	BC_ASSERT_TRUE(wait_for_until(marie->lc,NULL,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,1,1000));
+	BC_ASSERT_FALSE(wait_for_until(marie->lc,NULL,&marie->stat.number_of_LinphoneSubscriptionActive,1,2000));
+
+	linphone_event_terminate(lev);
+	linphone_core_manager_destroy(marie);
+	linphone_address_unref(sub_addr);
+}
+
+
 static void publish_subscribe(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -1215,6 +1240,7 @@ test_t flexisip_tests[] = {
 #endif
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),
 	TEST_NO_TAG("List subscribe", test_list_subscribe),
+	TEST_NO_TAG("List subscribe without body", test_list_subscribe_wrong_body),
 	TEST_NO_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client),
 	TEST_ONE_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client, "LeaksMemory"),
 	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),

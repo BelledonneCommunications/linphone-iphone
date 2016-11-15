@@ -1669,8 +1669,18 @@ const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const c
 
 	while (iterator) {
 		lfpnsu = (LinphoneFriendPhoneNumberSipUri *)bctbx_list_get_data(iterator);
-		if (strcmp(lfpnsu->number, phone_number) == 0) return lfpnsu->uri;
-		iterator = bctbx_list_next(iterator);
+		if (strcmp(lfpnsu->number, phone_number) == 0) {
+			/*force sip uri computation because proxy config may have changed, specially, ccc could have been added since last computation*/
+			free_phone_number_sip_uri(lfpnsu);
+			if (lf->phone_number_sip_uri_map == iterator) {
+				/*change list head if head is removed*/
+				iterator = lf->phone_number_sip_uri_map = bctbx_list_erase_link(lf->phone_number_sip_uri_map, iterator);
+			} else {
+				iterator = bctbx_list_erase_link(lf->phone_number_sip_uri_map, iterator);
+			}
+		} else {
+			iterator = bctbx_list_next(iterator);
+		}
 	}
 
 	proxy_config = linphone_core_get_default_proxy_config(linphone_friend_get_core(lf));

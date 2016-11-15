@@ -771,7 +771,7 @@ static void long_term_presence_list(void) {
 	}else ms_warning("Test skipped, no vcard support");
 }
 
-static void long_term_presence_phone_without_sip(void) {
+static void long_term_presence_with_e164_phone_without_sip(void) {
 	if (linphone_core_vcard_supported()){
 		LinphoneCoreManager *marie = linphone_core_manager_new3("marie_rc", TRUE, random_phone_number());
 		char * identity = linphone_address_as_string_uri_only(marie->identity);
@@ -811,6 +811,74 @@ static void long_term_presence_phone_without_sip(void) {
 	}else ms_warning("Test skipped, no vcard support");
 }
 
+static void long_term_presence_with_phone_without_sip(void) {
+	if (linphone_core_vcard_supported()){
+		const LinphoneDialPlan *dialPlan;
+		char phone[20];
+		char* e164;
+		size_t i;
+		LinphoneProxyConfig * proxy_config;
+		LinphoneFriend* friend2;
+		char *presence_contact;
+		LinphoneCoreManager *marie = NULL;
+		char * identity=NULL;
+		
+		while ((dialPlan = linphone_dial_plan_by_ccc_as_int(bctbx_random()%900)) == linphone_dial_plan_by_ccc(NULL));
+		/*now with have a dialplan*/
+		for (i = 0; i < MIN((size_t)dialPlan->nnl,sizeof(phone)-1); i++) {
+			phone[i] = '0' + rand() % 10;
+		}
+		phone[i+1]='\0';
+		
+		e164=ms_strdup_printf("+%s%s",dialPlan->ccc,phone);
+		
+		marie = linphone_core_manager_new3("marie_rc", TRUE, e164);
+		identity = linphone_address_as_string_uri_only(marie->identity);
+		
+		LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+		linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
+		
+		friend2=linphone_core_create_friend(pauline->lc);
+		linphone_friend_add_phone_number(friend2, phone);
+		linphone_core_add_friend(pauline->lc,friend2);
+		
+		linphone_friend_list_set_rls_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:rls@sip.example.org");
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), TRUE);
+		linphone_core_refresh_registers(pauline->lc);
+		
+		/*because phone is not normalized*/
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOnline,1,2000));
+		
+		/*know adding ccc to proxy config*/
+		proxy_config = linphone_core_get_default_proxy_config(pauline->lc);
+		linphone_proxy_config_edit(proxy_config);
+		linphone_proxy_config_set_dial_prefix(proxy_config, dialPlan->ccc);
+		linphone_proxy_config_done(proxy_config);
+		/*re-create sub list*/
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), FALSE);
+		
+		wait_for_until(pauline->lc, NULL, NULL, 0,2000); /*wait for unsubscribe*/
+
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), TRUE);
+		
+		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
+		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOnline, 1, int, "%d");
+		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(friend2)), LinphonePresenceBasicStatusOpen, int, "%d");
+		if(BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_presence_model(friend2))) {
+			presence_contact = linphone_presence_model_get_contact(linphone_friend_get_presence_model(friend2));
+			if (BC_ASSERT_PTR_NOT_NULL(presence_contact)) {
+				BC_ASSERT_STRING_EQUAL(presence_contact, identity);
+				ms_free(presence_contact);
+			}
+		}
+		linphone_friend_unref(friend2);
+		linphone_core_manager_destroy(pauline);
+		ms_free(e164);
+		ms_free(identity);
+		linphone_core_manager_destroy(marie);
+	}else ms_warning("Test skipped, no vcard support");
+}
+
 
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
@@ -826,7 +894,8 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence phone alias",long_term_presence_phone_alias, "longterm"),
 	TEST_ONE_TAG("Long term presence phone alias 2",long_term_presence_phone_alias2, "longterm"),
 	TEST_ONE_TAG("Long term presence list",long_term_presence_list, "longterm"),
-	TEST_ONE_TAG("Long term presence phone without sip",long_term_presence_phone_without_sip, "longterm"),
+	TEST_ONE_TAG("Long term presence with +164 phone, without sip",long_term_presence_with_e164_phone_without_sip, "longterm"),
+	TEST_ONE_TAG("Long term presence with phone, without sip",long_term_presence_with_phone_without_sip, "longterm"),
 	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
 	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
 };
