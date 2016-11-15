@@ -868,6 +868,7 @@
 	} @catch (NSException *e) {
 		// may happen when application is terminated, since we are destroying the core
 		LOGI(@"Core probably already destroyed, cannot synchronize settings. Skipping.");
+		LOGI(e.debugDescription);
 	}
 	return NO;
 }
