@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  This file is a test program that plays several sound files and places a call simultatenously.
 */
 
-#include "linphonecore_utils.h"
+#include "linphone/core_utils.h"
 
 static void play_finished(LsdPlayer *p) {
 	const char *filename = (const char *)lsd_player_get_user_pointer(p);
