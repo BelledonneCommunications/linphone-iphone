@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone.h"
-#include "linphone_tunnel.h"
+#include "linphone/tunnel.h"
 #include "linphone/lpconfig.h"
 #include "config.h"
 

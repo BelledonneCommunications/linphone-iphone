@@ -23,6 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/vcard.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /**
  * The LinphoneVcardContext object.
  */
@@ -93,5 +98,9 @@ void linphone_vcard_compute_md5_hash(LinphoneVcard *vCard);
 bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard);
 
 void linphone_vcard_clean_cache(LinphoneVcard *vCard);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LINPHONE_VCARD_PRIVATE_H */
