@@ -361,7 +361,6 @@ static LinphoneFriendList * linphone_friend_list_new(void) {
 	LinphoneFriendList *list = belle_sip_object_new(LinphoneFriendList);
 	list->cbs = linphone_friend_list_cbs_new();
 	list->enable_subscriptions = TRUE;
-	belle_sip_object_ref(list);
 	return list;
 }
 
@@ -387,7 +386,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriendList, belle_sip_object_t,
 	(belle_sip_object_destroy_t)linphone_friend_list_destroy,
 	NULL, // clone
 	NULL, // marshal
-	TRUE
+	FALSE
 );
 
 
