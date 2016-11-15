@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef XML2LPC_H_
 #define XML2LPC_H_
 
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 typedef struct _xml2lpc_context xml2lpc_context;
 

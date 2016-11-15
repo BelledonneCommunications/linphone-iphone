@@ -22,9 +22,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "private.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 /**
  * @addtogroup authentication

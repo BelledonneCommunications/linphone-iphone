@@ -95,7 +95,6 @@ AM_CFLAGS=\
 	-I$(top_srcdir)/coreapi \
 	$(STRICT_OPTIONS) \
 	$(STRICT_OPTIONS_CC) \
-	-DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
 	-DENABLE_TRACE 	\

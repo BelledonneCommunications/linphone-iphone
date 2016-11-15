@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_CARDDAV_H
 #define LINPHONE_CARDDAV_H
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 
 #ifdef __cplusplus
 extern "C" {

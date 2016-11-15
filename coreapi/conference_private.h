@@ -25,8 +25,8 @@
 #ifndef CONFERENCE_PRIVATE_H
 #define CONFERENCE_PRIVATE_H
 
-#include "linphonecore.h"
-#include "conference.h"
+#include "linphone/core.h"
+#include "linphone/conference.h"
 
 #ifdef __cplusplus
 extern "C" {

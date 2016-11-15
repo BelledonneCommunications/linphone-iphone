@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef _WIN32
 #include <time.h>
 #endif
-#include "linphonecore.h"
-#include "sipsetup.h"
-#include "lpconfig.h"
+#include "linphone/core.h"
+#include "linphone/sipsetup.h"
+#include "linphone/lpconfig.h"
 #include "private.h"
 #include "conference_private.h"
 
@@ -4192,10 +4192,6 @@ bool_t linphone_call_media_in_progress(LinphoneCall *call){
 	return ret;
 }
 
-/**
- * Get the local loss rate since last report
- * @return The sender loss rate
-**/
 float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 	const report_block_t *srb = NULL;
 
@@ -4213,10 +4209,6 @@ float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 	return 100.0f * report_block_get_fraction_lost(srb) / 256.0f;
 }
 
-/**
- * Gets the remote reported loss rate since last report
- * @return The receiver loss rate
-**/
 float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats) {
 	const report_block_t *rrb = NULL;
 
@@ -4234,10 +4226,6 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 	return 100.0f * report_block_get_fraction_lost(rrb) / 256.0f;
 }
 
-/**
- * Gets the local interarrival jitter
- * @return The interarrival jitter at last emitted sender report
-**/
 float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
@@ -4266,10 +4254,6 @@ float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats
 	return (float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate;
 }
 
-/**
- * Gets the remote reported interarrival jitter
- * @return The interarrival jitter at last received receiver report
-**/
 float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
@@ -4309,46 +4293,22 @@ rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats) {
 	return rtp_stats;
 }
 
-/**
- * Gets the cumulative number of late packets
- * @return The cumulative number of late packets
-**/
 uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call) {
 	return linphone_call_stats_get_rtp_stats(stats).outoftime;
 }
 
-/**
- * Get the bandwidth measurement of the received stream, expressed in kbit/s, including IP/UDP/RTP headers.
- * @param[in] stats LinphoneCallStats object
- * @return The bandwidth measurement of the received stream in kbit/s.
- */
 float linphone_call_stats_get_download_bandwidth(const LinphoneCallStats *stats) {
 	return stats->download_bandwidth;
 }
 
-/**
- * Get the bandwidth measurement of the sent stream, expressed in kbit/s, including IP/UDP/RTP headers.
- * @param[in] stats LinphoneCallStats object
- * @return The bandwidth measurement of the sent stream in kbit/s.
- */
 float linphone_call_stats_get_upload_bandwidth(const LinphoneCallStats *stats) {
 	return stats->upload_bandwidth;
 }
 
-/**
- * Get the state of ICE processing.
- * @param[in] stats LinphoneCallStats object
- * @return The state of ICE processing.
- */
 LinphoneIceState linphone_call_stats_get_ice_state(const LinphoneCallStats *stats) {
 	return stats->ice_state;
 }
 
-/**
- * Get the state of uPnP processing.
- * @param[in] stats LinphoneCallStats object
- * @return The state of uPnP processing.
- */
 LinphoneUpnpState linphone_call_stats_get_upnp_state(const LinphoneCallStats *stats) {
 	return stats->upnp_state;
 }

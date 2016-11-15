@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SETUP_WIZARD_H
 #define SETUP_WIZARD_H
 
-#include "sipsetup.h"
+#include "linphone/sipsetup.h"
 
 LINPHONE_PUBLIC void linphone_gtk_show_assistant(void);
 LINPHONE_PUBLIC void linphone_gtk_assistant_prepare(GtkWidget *assistant);

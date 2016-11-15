@@ -18,7 +18,7 @@
 
 
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 #include "lime.h"

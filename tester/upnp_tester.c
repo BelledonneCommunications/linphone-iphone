@@ -17,8 +17,8 @@
 */
 
 
-#include "linphonecore.h"
-#include "lpconfig.h"
+#include "linphone/core.h"
+#include "linphone/lpconfig.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 

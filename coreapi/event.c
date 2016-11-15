@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "private.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 const char * linphone_subscription_dir_to_string(LinphoneSubscriptionDir dir){
 	switch(dir){

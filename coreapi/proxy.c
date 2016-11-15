@@ -18,10 +18,10 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "linphonecore.h"
-#include "linphonecore_utils.h"
-#include "sipsetup.h"
-#include "lpconfig.h"
+#include "linphone/core.h"
+#include "linphone/core_utils.h"
+#include "linphone/sipsetup.h"
+#include "linphone/lpconfig.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
 #include "enum.h"

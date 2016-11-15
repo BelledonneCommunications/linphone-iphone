@@ -1,10 +1,5 @@
-#ifdef IN_LINPHONE
-#include "linphonecore.h"
-#include "lpconfig.h"
-#else
-#include <linphone/linphonecore.h>
+#include <linphone/core.h>
 #include <linphone/lpconfig.h>
-#endif
 #include <libsoup/soup.h>
 
 #define SERIALIZE_HTTPS 0

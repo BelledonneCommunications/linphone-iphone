@@ -14,7 +14,7 @@
 #include <string>
 #include <tunnel/client.hh>
 #include <tunnel/udp_mirror.hh>
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "linphone_tunnel.h"
 
 #ifndef USE_BELLESIP

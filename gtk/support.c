@@ -1,6 +1,6 @@
 #include "linphone.h"
 
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 static GList *pixmaps_directories = NULL;
 

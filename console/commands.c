@@ -31,9 +31,9 @@
 #endif /*_WIN32_WCE*/
 #include <limits.h>
 #include <ctype.h>
-#include <linphonecore.h>
+#include <linphone/core.h>
 #include "linphonec.h"
-#include "lpconfig.h"
+#include <linphone/lpconfig.h>
 
 #ifndef _WIN32
 #include <sys/wait.h>

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "belcard/belcard_parser.hpp"
 #include "sal/sal.h"
 #include <bctoolbox/crypto.h>
-#include "linphonecore.h"
+#include "linphone/core.h"
 
 #define VCARD_MD5_HASH_SIZE 16
 

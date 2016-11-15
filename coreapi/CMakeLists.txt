@@ -30,31 +30,23 @@ if(NOT WIN32)
 endif()
 
 
-set(LINPHONE_HEADER_FILES
-	account_creator.h
-	buffer.h
-	call_log.h
-	call_params.h
+set(LINPHONE_PRIVATE_HEADER_FILES
+	bellesip_sal/sal_impl.h
 	carddav.h
-	conference.h
-	content.h
-	event.h
-	friendlist.h
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
-	linphonepresence.h
-	linphone_proxy_config.h
-	linphone_tunnel.h
+	conference_private.h
+	contactprovider.h
+	contact_providers_priv.h
+	enum.h
+	ldap/ldapprovider.h
+	lime.h
 	lpc2xml.h
-	lpconfig.h
-	nat_policy.h
+	offeranswer.h
+	private.h
+	quality_reporting.h
 	ringtoneplayer.h
-	sipsetup.h
 	sqlite3_bctbx_vfs.h
+	vcard_private.h
 	xml2lpc.h
-	xmlrpc.h
-	vcard.h
 )
 
 set(LINPHONE_SOURCE_FILES_C
@@ -63,7 +55,6 @@ set(LINPHONE_SOURCE_FILES_C
 	authentication.c
 	bellesip_sal/sal_address_impl.c
 	bellesip_sal/sal_impl.c
-	bellesip_sal/sal_impl.h
 	bellesip_sal/sal_op_call.c
 	bellesip_sal/sal_op_call_transfer.c
 	bellesip_sal/sal_op_events.c
@@ -88,7 +79,6 @@ set(LINPHONE_SOURCE_FILES_C
 	ec-calibrator.c
 	echo-tester.c
 	enum.c
-	enum.h
 	event.c
 	friend.c
 	friendlist.c
@@ -101,16 +91,13 @@ set(LINPHONE_SOURCE_FILES_C
 	localplayer.c
 	lpc2xml.c
 	lpconfig.c
-	lpconfig.h
 	lsd.c
 	message_storage.c
 	misc.c
 	nat_policy.c
 	offeranswer.c
-	offeranswer.h
 	player.c
 	presence.c
-	private.h
 	proxy.c
 	quality_reporting.c
 	remote_provisioning.c
@@ -202,7 +189,7 @@ apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
 apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC "CPP" "OBJC")
 
 if(ENABLE_STATIC)
-	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
+	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_PRIVATE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
 	set_target_properties(linphone-static PROPERTIES OUTPUT_NAME linphone)
 	add_dependencies(linphone-static liblinphone-git-version)
 	target_link_libraries(linphone-static ${LIBS})
@@ -218,7 +205,7 @@ if(ENABLE_STATIC)
 	)
 endif()
 if(ENABLE_SHARED)
-	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_PRIVATE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
 
 	if(BELCARD_FOUND)
 		if(APPLE)
@@ -272,10 +259,5 @@ if(ICONV_FOUND)
 		endif()
 	endif()
 endif()
-
-install(FILES ${LINPHONE_HEADER_FILES}
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/linphone
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
 
 add_subdirectory(help)

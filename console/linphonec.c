@@ -34,7 +34,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include <linphonecore.h>
+#include <linphone/core.h>
 
 #include "linphonec.h"
 #include <bctoolbox/vfs.h>

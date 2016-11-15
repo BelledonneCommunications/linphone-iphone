@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "config.h"
 #endif
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 
 extern SipSetup linphone_sip_login;
 static SipSetup *all_sip_setups[]={

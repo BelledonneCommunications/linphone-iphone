@@ -20,7 +20,7 @@
 	#define _XOPEN_SOURCE 700 // To have definition of strptime, snprintf and getline
 #endif
 #include <time.h>
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 

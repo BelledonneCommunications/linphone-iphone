@@ -25,9 +25,9 @@
 
 #include "TunnelManager.hh"
 #include "linphone_tunnel.h"
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "private.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;

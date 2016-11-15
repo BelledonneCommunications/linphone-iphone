@@ -18,7 +18,7 @@
 
 
 #include "liblinphone_tester.h"
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "belle-sip/belle-sip.h"
 
 

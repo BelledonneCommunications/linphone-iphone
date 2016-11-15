@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/mstonedetector.h"
 #include "mediastreamer2/dtmfgen.h"
 
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 
 

@@ -18,8 +18,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "linphonecore.h"
-#include "lpconfig.h"
+#include "linphone/core.h"
+#include "linphone/lpconfig.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 

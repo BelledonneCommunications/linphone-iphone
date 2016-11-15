@@ -6,7 +6,6 @@ AM_CPPFLAGS=\
 	-I$(top_srcdir)/include
 
 COMMON_CFLAGS=\
-	-DIN_LINPHONE \
 	-D_ORTP_SOURCE \
 	$(STRICT_OPTIONS) \
 	$(STRICT_OPTIONS_CC) \

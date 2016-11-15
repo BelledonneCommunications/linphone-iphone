@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "sal/sal.h"
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 // stat
 #ifndef _WIN32

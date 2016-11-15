@@ -14,8 +14,8 @@
 #include "TunnelManager.hh"
 
 #include "ortp/rtpsession.h"
-#include "linphonecore.h"
-#include "linphonecore_utils.h"
+#include "linphone/core.h"
+#include "linphone/core_utils.h"
 #include "private.h"
 
 #ifdef ANDROID

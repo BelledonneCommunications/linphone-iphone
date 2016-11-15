@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "sal_impl.h"
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "private.h"
 #include "lime.h"
 #include <libxml/xmlwriter.h>

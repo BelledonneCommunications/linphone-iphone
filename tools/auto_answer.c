@@ -19,11 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 
-#ifdef IN_LINPHONE
-#include "linphonecore.h"
-#else
-#include "linphone/linphonecore.h"
-#endif
+#include "linphone/core.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif

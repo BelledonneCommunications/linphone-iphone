@@ -18,7 +18,7 @@
 #define CONTACT_PROVIDERS_PRIV_H
 
 #include "private.h"
-#include "linphonecore.h"
+#include "linphone/core.h"
 
 /* Base for contact search and contact provider */
 

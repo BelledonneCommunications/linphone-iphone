@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <glib/gstdio.h>
 
 #include "linphone.h"
-#include "linphonecore_utils.h"
+#include "linphone/core_utils.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
 

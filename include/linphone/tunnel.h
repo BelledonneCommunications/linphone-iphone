@@ -26,7 +26,7 @@
 #ifndef LINPHONETUNNEL_H
 #define LINPHONETUNNEL_H
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 
 
 /**

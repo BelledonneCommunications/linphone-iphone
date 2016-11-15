@@ -24,7 +24,7 @@
 
 #define MAX_LEN 16384
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "bctoolbox/vfs.h"
 
 #include <stdio.h>
@@ -56,7 +56,7 @@
 
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
 
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 #include "lpc2xml.h"
 
 typedef struct _LpItem{

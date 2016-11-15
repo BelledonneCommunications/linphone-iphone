@@ -22,13 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_FRIENDLIST_H_
 
 
-#ifdef IN_LINPHONE
-#include "linphonefriend.h"
-#include "linphonepresence.h"
-#else
-#include "linphone/linphonefriend.h"
-#include "linphone/linphonepresence.h"
-#endif
+#include "linphone/friend.h"
+#include "linphone/presence.h"
 
 
 #ifdef __cplusplus

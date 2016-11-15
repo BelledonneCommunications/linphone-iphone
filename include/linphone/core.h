@@ -25,14 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msvideo.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/bitratecontrol.h"
-
-#ifdef IN_LINPHONE
-#include "sipsetup.h"
-#else
 #include "linphone/sipsetup.h"
-#endif
-
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
@@ -150,20 +144,6 @@ typedef enum _LinphoneStreamType LinphoneStreamType;
  **/
 
 LINPHONE_PUBLIC const char *linphone_stream_type_to_string(const LinphoneStreamType);
-/**
- * Object that represents a SIP address.
- *
- * The LinphoneAddress is an opaque object to represents SIP addresses, ie
- * the content of SIP's 'from' and 'to' headers.
- * A SIP address is made of display name, username, domain name, port, and various
- * uri headers (such as tags). It looks like 'Alice <sip:alice@example.net>'.
- * The LinphoneAddress has methods to extract and manipulate all parts of the address.
- * When some part of the address (for example the username) is empty, the accessor methods
- * return NULL.
- *
- * @ingroup linphone_address
- */
-typedef struct SalAddress LinphoneAddress;
 
 typedef struct belle_sip_dict LinphoneDictionary;
 
@@ -422,17 +402,7 @@ typedef unsigned int LinphonePrivacyMask;
 LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 
 
-#ifdef IN_LINPHONE
-#include "buffer.h"
-#include "call_log.h"
-#include "call_params.h"
-#include "content.h"
-#include "event.h"
-#include "linphonefriend.h"
-#include "nat_policy.h"
-#include "xmlrpc.h"
-#include "conference.h"
-#else
+#include "linphone/address.h"
 #include "linphone/buffer.h"
 #include "linphone/call_log.h"
 #include "linphone/call_params.h"
@@ -442,47 +412,6 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphone/nat_policy.h"
 #include "linphone/xmlrpc.h"
 #include "linphone/conference.h"
-#endif
-
-LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
-LINPHONE_PUBLIC LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr);
-LINPHONE_PUBLIC LinphoneAddress * linphone_address_ref(LinphoneAddress *addr);
-LINPHONE_PUBLIC void linphone_address_unref(LinphoneAddress *addr);
-LINPHONE_PUBLIC const char *linphone_address_get_scheme(const LinphoneAddress *u);
-LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddress* u);
-LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
-LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
-LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
-LINPHONE_PUBLIC	int linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
-LINPHONE_PUBLIC	int linphone_address_set_username(LinphoneAddress *uri, const char *username);
-LINPHONE_PUBLIC	int linphone_address_set_domain(LinphoneAddress *uri, const char *host);
-LINPHONE_PUBLIC	int linphone_address_set_port(LinphoneAddress *uri, int port);
-LINPHONE_PUBLIC int linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
-/*remove tags, params etc... so that it is displayable to the user*/
-LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
-LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *addr);
-LINPHONE_PUBLIC bool_t linphone_address_get_secure(const LinphoneAddress *addr);
-LINPHONE_PUBLIC void linphone_address_set_secure(LinphoneAddress *addr, bool_t enabled);
-LINPHONE_PUBLIC bool_t linphone_address_is_sip(const LinphoneAddress *uri);
-LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
-LINPHONE_PUBLIC const char *linphone_address_get_method_param(const LinphoneAddress *addr);
-LINPHONE_PUBLIC void linphone_address_set_method_param(LinphoneAddress *addr, const char *method);
-LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
-LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
-LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
-LINPHONE_PUBLIC bool_t linphone_address_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
-LINPHONE_PUBLIC void linphone_address_set_password(LinphoneAddress *addr, const char *passwd);
-LINPHONE_PUBLIC const char *linphone_address_get_password(const LinphoneAddress *addr);
-LINPHONE_PUBLIC void linphone_address_set_header(LinphoneAddress *addr, const char *header_name, const char *header_value);
-LINPHONE_PUBLIC bool_t linphone_address_has_param(const LinphoneAddress *addr, const char *name);
-LINPHONE_PUBLIC const char * linphone_address_get_param(const LinphoneAddress *addr, const char *name);
-LINPHONE_PUBLIC void linphone_address_set_param(LinphoneAddress *addr, const char *name, const char *value);
-LINPHONE_PUBLIC void linphone_address_set_params(LinphoneAddress *addr, const char *params);
-LINPHONE_PUBLIC void linphone_address_set_uri_param(LinphoneAddress *addr, const char *name, const char *value);
-LINPHONE_PUBLIC void linphone_address_set_uri_params(LinphoneAddress *addr, const char *params);
-LINPHONE_PUBLIC bool_t linphone_address_has_uri_param(const LinphoneAddress *addr, const char *name);
-LINPHONE_PUBLIC const char * linphone_address_get_uri_param(const LinphoneAddress *addr, const char *name);
-LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
 
 /**
  * Create a #LinphoneAddress object by parsing the user supplied address, given as a string.
@@ -580,10 +509,6 @@ enum _LinphoneUpnpState{
 typedef enum _LinphoneUpnpState LinphoneUpnpState;
 
 
-#define LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE (1 << 0) /**< received_rtcp field of LinphoneCallStats object has been updated */
-#define LINPHONE_CALL_STATS_SENT_RTCP_UPDATE (1 << 1) /**< sent_rtcp field of LinphoneCallStats object has been updated */
-#define LINPHONE_CALL_STATS_PERIODICAL_UPDATE (1 << 2) /**< Every seconds LinphoneCallStats object has been updated */
-
 /**
  * Enum describing Ip family.
  * @ingroup initializing
@@ -601,60 +526,14 @@ enum _LinphoneAddressFamily {
 typedef enum _LinphoneAddressFamily LinphoneAddressFamily;
 
 /**
- * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
- *
- * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
- * it passes for instanciating the LinphoneCore object (see linphone_core_new() ).
- *
- * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
-**/
-typedef struct _LinphoneCallStats LinphoneCallStats;
-
-/**
- * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
- *
- * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
- * it passes for instantiating the LinphoneCore object (see linphone_core_new() ).
- *
- * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
-**/
-struct _LinphoneCallStats {
-	int		type; /**< Can be either LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO*/
-	jitter_stats_t	jitter_stats; /**<jitter buffer statistics, see oRTP documentation for details */
-	mblk_t*		received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
-	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
-	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
-	LinphoneIceState	ice_state; /**< State of ICE processing. */
-	LinphoneUpnpState	upnp_state; /**< State of uPnP processing. */
-	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	float local_late_rate; /**<percentage of packet received too late over last second*/
-	float local_loss_rate; /**<percentage of lost packet over last second*/
-	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
-	float rtcp_download_bandwidth; /**<RTCP download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	rtp_stats_t rtp_stats; /**< RTP stats */
-	bool_t rtcp_received_via_mux; /*private flag, for non-regression test only*/
-	int rtp_remote_family; /* Ip adress family of the remote destination */
-};
-
-/**
  * @}
 **/
+
+#include "linphone/call_stats.h"
 
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call);
-LINPHONE_PUBLIC float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats);
-LINPHONE_PUBLIC float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats);
-LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
-LINPHONE_PUBLIC float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
-LINPHONE_PUBLIC rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *statss);
-LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call);
-LINPHONE_PUBLIC float linphone_call_stats_get_download_bandwidth(const LinphoneCallStats *stats);
-LINPHONE_PUBLIC float linphone_call_stats_get_upload_bandwidth(const LinphoneCallStats *stats);
-LINPHONE_PUBLIC LinphoneIceState linphone_call_stats_get_ice_state(const LinphoneCallStats *stats);
-LINPHONE_PUBLIC LinphoneUpnpState linphone_call_stats_get_upnp_state(const LinphoneCallStats *stats);
 
 /** Callback prototype */
 typedef void (*LinphoneCallCbFunc)(LinphoneCall *call,void * user_data);
@@ -1312,17 +1191,9 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpCon
  */
 
 
-#ifdef IN_LINPHONE
-#include "account_creator.h"
-#include "friendlist.h"
-#include "linphone_proxy_config.h"
-#include "carddav.h"
-#else
 #include "linphone/account_creator.h"
 #include "linphone/friendlist.h"
 #include "linphone/linphone_proxy_config.h"
-#include "linphone/carddav.h"
-#endif
 
 
 /**

@@ -25,17 +25,18 @@
 #ifndef _PRIVATE_H
 #define _PRIVATE_H
 
-#include "linphonecore.h"
-#include "linphonefriend.h"
-#include "friendlist.h"
-#include "linphone_tunnel.h"
-#include "linphonecore_utils.h"
-#include "conference.h"
+#include "linphone/core.h"
+#include "linphone/friend.h"
+#include "linphone/friendlist.h"
+#include "linphone/tunnel.h"
+#include "linphone/core_utils.h"
+#include "linphone/conference.h"
 #include "sal/sal.h"
-#include "sipsetup.h"
+#include "linphone/sipsetup.h"
 #include "quality_reporting.h"
 #include "ringtoneplayer.h"
-#include "vcard.h"
+#include "vcard_private.h"
+#include "carddav.h"
 
 #include "bctoolbox/port.h"
 #include "bctoolbox/vfs.h"

@@ -100,7 +100,7 @@ endif
 endif
 
 
-AM_CPPFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ -I$(top_builddir)/coreapi/ \
+AM_CPPFLAGS= -I$(top_srcdir)/coreapi/ -I$(top_builddir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) $(BELLESIP_CFLAGS) \
 		$(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \

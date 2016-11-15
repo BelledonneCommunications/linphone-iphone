@@ -18,7 +18,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "linphonecore_utils.h"
+#include "linphone/core_utils.h"
 
 /*
  * http://en.wikipedia.org/wiki/Telephone_numbering_plan

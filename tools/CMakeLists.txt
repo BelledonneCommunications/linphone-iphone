@@ -38,7 +38,6 @@ set(LP_GEN_WRAPPERS_SOURCE_FILES
 	software-desc.hh
 	)
 
-add_definitions(-DIN_LINPHONE)
 set(LP_GEN_WRAPPERS_LIBS
 	${LIBGCC}
 	${LIBMINGWEX}

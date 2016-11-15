@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone.h"
-#include "sipsetup.h"
+#include "linphone/sipsetup.h"
 
 static void linphone_gtk_display_lookup_results(GtkWidget *w, const bctbx_list_t *results);
 

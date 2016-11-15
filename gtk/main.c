@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VIDEOSELFVIEW_DEFAULT 0
 
 #include "linphone.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 #include "liblinphone_gitversion.h"
 #include <bctoolbox/vfs.h>
 
