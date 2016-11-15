@@ -1053,6 +1053,7 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	pixmaps/Makefile
 	include/Makefile
+	include/linphone/Makefile
 	coreapi/Makefile
 	coreapi/help/Makefile
 	coreapi/help/Doxyfile
