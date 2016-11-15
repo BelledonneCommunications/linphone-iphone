@@ -79,28 +79,30 @@ void file_transfer_received(LinphoneChatMessage *msg, const LinphoneContent* con
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	
 	if (linphone_chat_message_get_file_transfer_filepath(msg) != NULL) {
-		stats* counters = get_stats(lc);
-		counters->number_of_LinphoneFileTransferDownloadSuccessful++;
-		return;
-	}
-	
-	receive_file = bc_tester_file("receive_file.dump");
-	if (!linphone_chat_message_get_user_data(msg)) {
-		/*first chunk, creating file*/
-		file = fopen(receive_file,"wb");
-		linphone_chat_message_set_user_data(msg,(void*)file); /*store fd for next chunks*/
-	}
-	bc_free(receive_file);
-	file = (FILE*)linphone_chat_message_get_user_data(msg);
-	BC_ASSERT_PTR_NOT_NULL(file);
-	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
-		stats* counters = get_stats(lc);
-		counters->number_of_LinphoneFileTransferDownloadSuccessful++;
-		linphone_chat_message_set_user_data(msg, NULL);
-		fclose(file);
-	} else { /* store content on a file*/
-		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==0){
-			ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
+		if (linphone_buffer_is_empty(buffer)) {
+			stats* counters = get_stats(lc);
+			counters->number_of_LinphoneFileTransferDownloadSuccessful++;
+			return;
+		}
+	} else {
+		receive_file = bc_tester_file("receive_file.dump");
+		if (!linphone_chat_message_get_user_data(msg)) {
+			/*first chunk, creating file*/
+			file = fopen(receive_file,"wb");
+			linphone_chat_message_set_user_data(msg,(void*)file); /*store fd for next chunks*/
+		}
+		bc_free(receive_file);
+		file = (FILE*)linphone_chat_message_get_user_data(msg);
+		BC_ASSERT_PTR_NOT_NULL(file);
+		if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
+			stats* counters = get_stats(lc);
+			counters->number_of_LinphoneFileTransferDownloadSuccessful++;
+			linphone_chat_message_set_user_data(msg, NULL);
+			fclose(file);
+		} else { /* store content on a file*/
+			if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==0){
+				ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
+			}
 		}
 	}
 }
