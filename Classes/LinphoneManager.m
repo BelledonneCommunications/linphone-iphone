@@ -301,11 +301,12 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 #pragma mark - Migration
 
-- (void)migrationAll {
+- (void)migrationAllPost {
 	[self migrationLinphoneSettings];
-	[self migrationFromVersion2To3];
 	[self migratePushNotificationPerAccount];
+}
 
+- (void)migrationAllPre {
 	// migrate xmlrpc URL if needed
 	if ([self lpConfigBoolForKey:@"migration_xmlrpc"] == NO) {
 		[self lpConfigSetString:@"https://subscribe.linphone.org:444/wizard.php"
@@ -541,11 +542,6 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 	LinphoneManager *thiz = (__bridge LinphoneManager *)(user_data);
 	NSString *key = [NSString stringWithUTF8String:entry];
 	[thiz lpConfigSetString:[thiz lpConfigStringForKey:key inSection:@"wizard"] forKey:key inSection:@"assistant"];
-}
-
-- (void)migrationFromVersion2To3 {
-	// DONT DO THAT!
-	//	lp_config_for_each_entry(_configDb, "wizard", migrateWizardToAssistant, (__bridge void *)(self));
 }
 
 - (void)migratePushNotificationPerAccount {
@@ -1618,7 +1614,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 	linphone_core_set_call_logs_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 
-	[self migrationAll];
 	[self setupNetworkReachabilityCallback];
 
 	NSString *path = [LinphoneManager bundleFile:@"nowebcamCIF.jpg"];
@@ -1774,7 +1769,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 }
 
 - (void)createLinphoneCore {
-
+	[self migrationAllPre];
 	if (theLinphoneCore != nil) {
 		LOGI(@"linphonecore is already created");
 		return;
@@ -1811,6 +1806,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	libmsbcg729_init(f);
 	libmswebrtc_init(f);
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
+
+	[self migrationAllPost];
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
 	linphone_core_set_root_ca(theLinphoneCore, [LinphoneManager bundleFile:@"rootca.pem"].UTF8String);
