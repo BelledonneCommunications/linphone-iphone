@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "upnp.h"
 #include "private.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 #include <ctype.h>
 
 #define UPNP_STRINGIFY(x)     #x
