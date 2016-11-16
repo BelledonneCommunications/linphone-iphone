@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_UPNP_H
 
 #include "mediastreamer2/upnp_igd.h"
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "sal/sal.h"
 
 typedef struct _UpnpSession UpnpSession;
