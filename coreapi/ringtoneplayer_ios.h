@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 LinphoneRingtonePlayer* linphone_ringtoneplayer_ios_new();
 void linphone_ringtoneplayer_ios_destroy(LinphoneRingtonePlayer* rp);
