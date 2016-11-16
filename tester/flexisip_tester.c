@@ -1248,7 +1248,7 @@ test_t flexisip_tests[] = {
 #if HAVE_SIPP
 	TEST_NO_TAG("Subscribe on wrong dialog", test_subscribe_on_wrong_dialog),
 #endif
-	TEST_NO_TAG("Publish/subscribe", publish_subscribe)
+	TEST_ONE_TAG("Publish/subscribe", publish_subscribe, "Skip")
 };
 
 test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
