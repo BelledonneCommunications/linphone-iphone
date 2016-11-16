@@ -471,7 +471,7 @@
 	if (c && c.friend) {
 		LinphoneFriend *f = c.friend;
 		const LinphonePresenceModel *m =
-			f ? linphone_friend_get_presence_model_for_uri_or_tel(f, normvalue) : NULL;
+			f ? linphone_friend_get_presence_model_for_uri_or_tel(f, value.UTF8String) : NULL;
 		const char *contact = m ? linphone_presence_model_get_contact(m) : NULL;
 		if (contact) {
 			LinphoneAddress *contact_addr = linphone_address_new(contact);

@@ -39,6 +39,7 @@
 - (id)initWithIdentifier:(NSString *)identifier;
 - (void)setAddress:(NSString *)address;
 - (void)hideDeleteButton:(BOOL)hidden;
+- (void)shouldHideLinphoneImageOfAddress;
 
 - (IBAction)onCallClick:(id)sender;
 - (IBAction)onChatClick:(id)sender;

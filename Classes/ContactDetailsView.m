@@ -186,6 +186,14 @@
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
 	}
+
+	// Update presence for contact
+	for (NSInteger j = 0; j < [self.tableController.tableView numberOfSections]; ++j) {
+		for (NSInteger i = 0; i < [self.tableController.tableView numberOfRowsInSection:j]; ++i) {
+			[(UIContactDetailsCell *)[self.tableController.tableView
+				cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] shouldHideLinphoneImageOfAddress];
+		}
+	}
 }
 
 - (void)deviceOrientationDidChange:(NSNotification*)notif {

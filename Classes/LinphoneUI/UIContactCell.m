@@ -73,6 +73,7 @@
 
 - (void)setContact:(Contact *)acontact {
 	_contact = acontact;
+	_linphoneImage.hidden = TRUE;
 	if(_contact) {
 		[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 		_linphoneImage.hidden =

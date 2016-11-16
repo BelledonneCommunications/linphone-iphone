@@ -258,8 +258,8 @@
 	if (_person) {
 		ret = [self addInProperty:kABPersonPhoneProperty value:(__bridge CFTypeRef)(phone)];
 	} else {
-		char *cphone =
-			linphone_proxy_config_normalize_phone_number(NULL, phone.UTF8String) ?: ms_strdup(phone.UTF8String);
+		char *cphone = ms_strdup(phone.UTF8String);
+		// linphone_proxy_config_normalize_phone_number(NULL, phone.UTF8String) ?: ms_strdup(phone.UTF8String);
 		if (cphone) {
 			linphone_friend_add_phone_number(_friend, cphone);
 			phone = [NSString stringWithUTF8String:cphone];
@@ -354,12 +354,12 @@
 				NSInteger index = ABMultiValueGetIndexForIdentifier(map, identifier);
 				if (index != -1) {
 					NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(map, index));
-					char *normalizedPhone = linphone_proxy_config_normalize_phone_number(
-						linphone_core_get_default_proxy_config(LC), valueRef.UTF8String);
-					if (normalizedPhone) {
-						valueRef = [NSString stringWithUTF8String:normalizedPhone];
-						ms_free(normalizedPhone);
-					}
+					// char *normalizedPhone = linphone_proxy_config_normalize_phone_number(
+					//	linphone_core_get_default_proxy_config(LC), valueRef.UTF8String);
+					// if (normalizedPhone) {
+					//	valueRef = [NSString stringWithUTF8String:normalizedPhone];
+					//	ms_free(normalizedPhone);
+					//}
 
 					[_phoneNumbers addObject:valueRef];
 				}

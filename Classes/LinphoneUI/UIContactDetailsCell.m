@@ -44,11 +44,12 @@
 
 - (void)setAddress:(NSString *)address {
 	_addressLabel.text = _editTextfield.text = address;
+	char *normAddr = (char *)_addressLabel.text.UTF8String;
 	if(_addressLabel.text && linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC), _addressLabel.text.UTF8String)) {
-		char * normAddr = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), _addressLabel.text.UTF8String);
-		_addressLabel.text = [NSString stringWithUTF8String:normAddr];
+		normAddr = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC),
+																_addressLabel.text.UTF8String);
 	}
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, normAddr);
 	_chatButton.enabled = _callButton.enabled = (addr != NULL);
 
 	_chatButton.accessibilityLabel =
@@ -56,6 +57,39 @@
 	_callButton.accessibilityLabel = [NSString stringWithFormat:NSLocalizedString(@"Call %@", nil), _addressLabel.text];
 	// Test presence
 	Contact* contact = [FastAddressBook getContactWithAddress:(addr)];
+
+	_linphoneImage.hidden = TRUE;
+	if (contact) {
+		self.linphoneImage.hidden =
+			!((contact.friend &&
+			   linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(
+				   contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) ||
+			  (!linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC),
+													  _addressLabel.text.UTF8String) &&
+			   [FastAddressBook isSipURIValid:_addressLabel.text]));
+	}
+
+	if (addr) {
+		linphone_address_destroy(addr);
+	}
+}
+
+- (void)shouldHideLinphoneImageOfAddress {
+	if (!_addressLabel.text) {
+		return;
+	}
+
+	char *normAddr = (char *)_addressLabel.text.UTF8String;
+	if (linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC),
+											  _addressLabel.text.UTF8String)) {
+		normAddr = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC),
+																_addressLabel.text.UTF8String);
+	}
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, normAddr);
+
+	// Test presence
+	Contact *contact = [FastAddressBook getContactWithAddress:(addr)];
+
 	if (contact) {
 		self.linphoneImage.hidden = ! ((contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) || (!linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC), _addressLabel.text.UTF8String) && [FastAddressBook isSipURIValid:_addressLabel.text]));
 	}
