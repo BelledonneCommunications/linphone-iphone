@@ -97,9 +97,9 @@ liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 
 liblinphone_la_SOURCES+=linphone_tunnel_config.c
 if BUILD_TUNNEL
-liblinphone_la_SOURCES+=linphone_tunnel.cc TunnelManager.cc TunnelManager.hh linphone_tunnel.h
+liblinphone_la_SOURCES+=linphone_tunnel.cc TunnelManager.cc TunnelManager.hh
 else
-liblinphone_la_SOURCES+=linphone_tunnel_stubs.c linphone_tunnel.h
+liblinphone_la_SOURCES+=linphone_tunnel_stubs.c
 endif
 
 if BUILD_VCARD

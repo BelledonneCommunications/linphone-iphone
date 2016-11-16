@@ -24,7 +24,7 @@
  */
 
 #include "TunnelManager.hh"
-#include "linphone_tunnel.h"
+#include "linphone/tunnel.h"
 #include "linphone/core.h"
 #include "private.h"
 #include "linphone/lpconfig.h"

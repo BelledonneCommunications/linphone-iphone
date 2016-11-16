@@ -1,5 +1,5 @@
 /***************************************************************************
- *            linphone_tunnel.h
+ *            tunnel.h
  *
  *  Fri Dec 9, 2011
  *  Copyright  2011  Belledonne Communications
