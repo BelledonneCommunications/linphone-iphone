@@ -14,7 +14,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "contactprovider.h"
+#include "linphone/contactprovider.h"
 
 
 typedef struct _LinphoneLDAPContactProvider LinphoneLDAPContactProvider;

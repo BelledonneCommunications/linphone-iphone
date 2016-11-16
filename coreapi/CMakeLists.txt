@@ -34,10 +34,8 @@ set(LINPHONE_PRIVATE_HEADER_FILES
 	bellesip_sal/sal_impl.h
 	carddav.h
 	conference_private.h
-	contactprovider.h
 	contact_providers_priv.h
 	enum.h
-	ldap/ldapprovider.h
 	lime.h
 	lpc2xml.h
 	offeranswer.h
@@ -82,7 +80,7 @@ set(LINPHONE_SOURCE_FILES_C
 	friend.c
 	friendlist.c
 	info.c
-	ldap/ldapprovider.c
+	ldapprovider.c
 	lime.c
 	linphonecall.c
 	linphonecore.c

@@ -28,12 +28,14 @@ set(HEADER_FILES
 	call_params.h
 	call_stats.h
 	conference.h
+	contactprovider.h
 	content.h
 	core.h
 	core_utils.h
 	event.h
 	friend.h
 	friendlist.h
+	ldapprovider.h
 	lpconfig.h
 	nat_policy.h
 	presence.h

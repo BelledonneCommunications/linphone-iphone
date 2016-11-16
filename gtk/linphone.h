@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 #include "linphone/core.h"
 
-#include "ldap/ldapprovider.h"
+#include "linphone/ldapprovider.h"
 
 #ifdef ENABLE_NLS
 
