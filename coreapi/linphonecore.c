@@ -2906,7 +2906,16 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
 	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
-	return linphone_proxy_config_normalize_sip_uri(proxy, url);
+	LinphoneAddress *result=NULL;
+	
+	if (linphone_proxy_config_is_phone_number(proxy,url)) {
+		char *normalized_number = linphone_proxy_config_normalize_phone_number(proxy, url);
+		result = linphone_proxy_config_normalize_sip_uri(proxy, normalized_number);
+		ms_free(normalized_number);
+	} else {
+		result = linphone_proxy_config_normalize_sip_uri(proxy, url);
+	}
+	return result;
 }
 
 /**

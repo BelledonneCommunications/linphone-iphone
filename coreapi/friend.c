@@ -109,12 +109,23 @@ static int friend_compare(const void * a, const void * b) {
 
 static LinphoneFriendPresence * find_presence_model_for_uri_or_tel(const LinphoneFriend *lf, const char *uri_or_tel) {
 	bctbx_list_t *iterator = lf->presence_models;
-	while (iterator) {
+	LinphoneAddress *uri_or_tel_addr = linphone_core_interpret_url(lf->lc, uri_or_tel);
+	LinphoneFriendPresence *result=NULL;
+	
+	while (uri_or_tel_addr && iterator) {
 		LinphoneFriendPresence *lfp = (LinphoneFriendPresence *)bctbx_list_get_data(iterator);
-		if (strcmp(lfp->uri_or_tel, uri_or_tel) == 0) return lfp;
-		iterator = bctbx_list_next(iterator);
+		LinphoneAddress *lfp_addr = linphone_core_interpret_url(lf->lc, lfp->uri_or_tel);
+		if (lfp_addr && linphone_address_weak_equal(uri_or_tel_addr, lfp_addr)) {
+			result = lfp;
+		}
+		if (lfp_addr) linphone_address_unref(lfp_addr);
+		if (result == NULL)
+			iterator = bctbx_list_next(iterator);
+		else
+			break;
 	}
-	return NULL;
+	if (uri_or_tel_addr) linphone_address_unref(uri_or_tel_addr);
+	return result;
 }
 
 static void add_presence_model_for_uri_or_tel(LinphoneFriend *lf, const char *uri_or_tel, LinphonePresenceModel *presence) {

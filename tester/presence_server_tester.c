@@ -734,7 +734,10 @@ static void long_term_presence_list(void) {
 		LinphoneFriend *f1, *f2;
 		LinphoneFriendList* friends;
 		const LinphonePresenceModel *presence;
-		const char *phone_number = "+33123456789";
+		const char *e164_phone_number = "+33" "123456789";
+		const char *nationnal_phone_number = "0123456789";
+		LinphoneProxyConfig * pauline_proxy_config;
+		
 		LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 		enable_publish(pauline, FALSE);
 		enable_deflate_content_encoding(pauline, FALSE);
@@ -742,7 +745,7 @@ static void long_term_presence_list(void) {
 		friends = linphone_core_create_friend_list(pauline->lc);
 		linphone_friend_list_set_rls_uri(friends, "sip:rls@sip.example.org");
 		f1 = linphone_core_create_friend_with_address(pauline->lc, "sip:liblinphone_tester@sip.example.org");
-		linphone_friend_add_phone_number(f1, phone_number);
+		linphone_friend_add_phone_number(f1, e164_phone_number);
 		linphone_friend_list_add_friend(friends, f1);
 		linphone_friend_unref(f1);
 		f2 = linphone_core_create_friend_with_address(pauline->lc, "sip:random_unknown@sip.example.org");
@@ -757,12 +760,23 @@ static void long_term_presence_list(void) {
 
 		f1 = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:liblinphone_tester@sip.example.org");
 		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(f1)), LinphonePresenceBasicStatusOpen, int, "%d");
-		presence = linphone_friend_get_presence_model_for_uri_or_tel(f1, phone_number);
+		
+		presence = linphone_friend_get_presence_model_for_uri_or_tel(f1, e164_phone_number);
+		
 		if (BC_ASSERT_PTR_NOT_NULL(presence)) {
 			BC_ASSERT_STRING_EQUAL(linphone_presence_model_get_contact(presence), "sip:liblinphone_tester@sip.example.org");
 		}
 		BC_ASSERT_TRUE(f1->presence_received);
 
+		/*now try with nationnal version of phone numer*/
+		pauline_proxy_config = linphone_core_get_default_proxy_config(pauline->lc);
+		linphone_proxy_config_edit(pauline_proxy_config);
+		linphone_proxy_config_set_dial_prefix(pauline_proxy_config, "33");
+		linphone_proxy_config_done(pauline_proxy_config);
+		presence = linphone_friend_get_presence_model_for_uri_or_tel(f1, nationnal_phone_number);
+		
+		BC_ASSERT_PTR_NOT_NULL(presence);
+			
 		f2 = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:random_unknown@sip.example.org");
 		BC_ASSERT_EQUAL(linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(f2)), LinphonePresenceBasicStatusClosed, int, "%d");
 		BC_ASSERT_FALSE(f2->presence_received);
