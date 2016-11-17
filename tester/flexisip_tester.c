@@ -1195,7 +1195,7 @@ static void test_list_subscribe_wrong_body(void) {
 }
 
 
-static void publish_subscribe(void) {
+static void redis_publish_subscribe(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = NULL;
@@ -1214,6 +1214,87 @@ static void publish_subscribe(void) {
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie2);
 }
+
+
+static void tls_authentication_requested_good(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
+	if (method == LinphoneAuthTls){
+	
+		char *cert = bc_tester_res("certificates/client/cert2.pem");
+		char *key = bc_tester_res("certificates/client/key2.pem");
+		
+		linphone_auth_info_set_tls_cert_path(auth_info, cert);
+		linphone_auth_info_set_tls_key_path(auth_info, key);
+		linphone_core_add_auth_info(lc, auth_info);
+		bc_free(cert);
+		ms_free(key);
+	}
+}
+
+static void tls_authentication_requested_bad(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
+	if (method == LinphoneAuthTls){
+	
+		char *cert = bc_tester_res("certificates/client/cert2-signed-by-other-ca.pem");
+		char *key = bc_tester_res("certificates/client/key2.pem");
+		
+		linphone_auth_info_set_tls_cert_path(auth_info, cert);
+		linphone_auth_info_set_tls_key_path(auth_info, key);
+		linphone_core_add_auth_info(lc, auth_info);
+		bc_free(cert);
+		bc_free(key);
+	}
+}
+
+static void tls_client_auth_try_register(const char *identity, bool_t with_good_cert, bool_t must_work){
+	LinphoneCoreManager *lcm;
+	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
+	LinphoneProxyConfig *cfg;
+
+	lcm = linphone_core_manager_new(NULL);
+
+	vtable->authentication_requested= with_good_cert ? tls_authentication_requested_good : tls_authentication_requested_bad;
+	linphone_core_add_listener(lcm->lc,vtable);
+	cfg = linphone_core_create_proxy_config(lcm->lc);
+	
+	linphone_proxy_config_set_server_addr(cfg, "sip:sip2.linphone.org:5063;transport=tls");
+	linphone_proxy_config_enable_register(cfg, TRUE);
+	linphone_proxy_config_set_identity(cfg, identity);
+	linphone_core_add_proxy_config(lcm->lc, cfg);
+	if (must_work){
+		BC_ASSERT_TRUE(wait_for(lcm->lc, NULL, &lcm->stat.number_of_LinphoneRegistrationOk, 1));
+		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
+		BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,1, int, "%d");
+	}else{
+		BC_ASSERT_TRUE(wait_for(lcm->lc, NULL, &lcm->stat.number_of_LinphoneRegistrationFailed, 1));
+		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationOk,0, int, "%d");
+		/*we should expect 2 "auth_requested": one for the TLS certificate, another one because the server rejects the REGISTER with 401.*/
+		/*If the certificate isn't recognized at all, the connection will not happen and no SIP response will be received from server.*/
+		if (with_good_cert) BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,2, int, "%d");
+		else BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,1, int, "%d");
+	}
+	
+	linphone_proxy_config_unref(cfg);
+	linphone_core_manager_destroy(lcm);
+	linphone_core_v_table_destroy(vtable);
+}
+
+void tls_client_auth_bad_certificate_cn(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		/*first register to the proxy with galadrielle's identity, and authenticate by supplying galadrielle's certificate.
+		* It must work.*/
+		tls_client_auth_try_register("sip:galadrielle@sip.example.org", TRUE, TRUE);
+		/*now do the same thing, but trying to register as "Arwen". It must fail.*/
+		tls_client_auth_try_register("sip:arwen@sip.example.org", TRUE, FALSE);
+	}
+}
+
+void tls_client_auth_bad_certificate(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		/*first register to the proxy with galadrielle's identity, and authenticate by supplying galadrielle's certificate.
+		* It must work.*/
+		tls_client_auth_try_register("sip:galadrielle@sip.example.org", FALSE, FALSE);
+	}
+}
+
 
 test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
@@ -1248,8 +1329,11 @@ test_t flexisip_tests[] = {
 #if HAVE_SIPP
 	TEST_NO_TAG("Subscribe on wrong dialog", test_subscribe_on_wrong_dialog),
 #endif
-	TEST_ONE_TAG("Publish/subscribe", publish_subscribe, "Skip")
+	TEST_ONE_TAG("Redis Publish/subscribe", redis_publish_subscribe, "Skip"),
+	TEST_NO_TAG("TLS authentication - client rejected due to CN mismatch", tls_client_auth_bad_certificate_cn),
+	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate)
 };
+
 
 test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 									sizeof(flexisip_tests) / sizeof(flexisip_tests[0]), flexisip_tests};

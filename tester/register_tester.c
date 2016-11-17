@@ -138,7 +138,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 	} else
 		/*checking to be done outside this functions*/
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0, int, "%d");
-	linphone_proxy_config_destroy(proxy_cfg);
+	linphone_proxy_config_unref(proxy_cfg);
 }
 
 static void register_with_refresh_base_2(LinphoneCore* lc
@@ -860,14 +860,14 @@ static void tls_certificate_failure(void){
 		linphone_core_set_root_ca(lcm->lc,NULL); /*no root ca*/
 		linphone_core_refresh_registers(lcm->lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationFailed,2));
-		ms_free(rootcapath);
+		bc_free(rootcapath);
 		rootcapath = bc_tester_res("certificates/cn/cafile.pem"); /*good root ca*/
 		linphone_core_set_root_ca(lcm->lc,rootcapath);
 		linphone_core_refresh_registers(lcm->lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,2, int, "%d");
 		linphone_core_manager_destroy(lcm);
-		ms_free(rootcapath);
+		bc_free(rootcapath);
 	}
 }
 
@@ -905,7 +905,7 @@ static void tls_certificate_data(void) {
 		linphone_core_set_root_ca_data(lcm->lc, NULL); /*no root ca*/
 		linphone_core_refresh_registers(lcm->lc);
 		BC_ASSERT_TRUE(wait_for(lc, lc, &lcm->stat.number_of_LinphoneRegistrationFailed, 2));
-		ms_free(rootcapath);
+		bc_free(rootcapath);
 		ms_free(data);
 		rootcapath = bc_tester_res("certificates/cn/cafile.pem"); /*good root ca*/
 		data = read_file(rootcapath);
@@ -914,7 +914,7 @@ static void tls_certificate_data(void) {
 		BC_ASSERT_TRUE(wait_for(lc, lc, &lcm->stat.number_of_LinphoneRegistrationOk, 1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed, 2, int, "%d");
 		linphone_core_manager_destroy(lcm);
-		ms_free(rootcapath);
+		bc_free(rootcapath);
 		ms_free(data);
 	}
 }
@@ -957,7 +957,7 @@ static void tls_alt_name_register(void){
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
 		linphone_core_manager_destroy(lcm);
-		ms_free(rootcapath);
+		bc_free(rootcapath);
 	}
 }
 
@@ -974,7 +974,7 @@ static void tls_wildcard_register(void){
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,2));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
 		linphone_core_manager_destroy(lcm);
-		ms_free(rootcapath);
+		bc_free(rootcapath);
 	}
 }
 
@@ -1003,8 +1003,8 @@ static void tls_auth_global_client_cert(void) {
 		lp_config_set_string(lpc, "sip", "client_cert_key", key_path);
 		linphone_core_manager_start(manager, TRUE);
 		linphone_core_manager_destroy(manager);
-		ms_free(cert_path);
-		ms_free(key_path);
+		bc_free(cert_path);
+		bc_free(key_path);
 	}
 }
 
@@ -1022,8 +1022,8 @@ static void tls_auth_global_client_cert_api(void) {
 		linphone_core_manager_destroy(pauline);
 		ms_free(cert);
 		ms_free(key);
-		ms_free(cert_path);
-		ms_free(key_path);
+		bc_free(cert_path);
+		bc_free(key_path);
 	}
 }
 
@@ -1037,8 +1037,8 @@ static void tls_auth_global_client_cert_api_path(void) {
 		linphone_core_set_tls_key_path(lc, key);
 		BC_ASSERT_TRUE(wait_for(lc, lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
 		linphone_core_manager_destroy(pauline);
-		ms_free(cert);
-		ms_free(key);
+		bc_free(cert);
+		bc_free(key);
 	}
 }
 
@@ -1057,8 +1057,8 @@ static void tls_auth_info_client_cert_api(void) {
 		linphone_core_manager_destroy(pauline);
 		ms_free(cert);
 		ms_free(key);
-		ms_free(cert_path);
-		ms_free(key_path);
+		bc_free(cert_path);
+		bc_free(key_path);
 	}
 }
 
@@ -1073,8 +1073,8 @@ static void tls_auth_info_client_cert_api_path(void) {
 		linphone_auth_info_set_tls_key_path(authInfo, key);
 		BC_ASSERT_TRUE(wait_for(lc, lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
 		linphone_core_manager_destroy(pauline);
-		ms_free(cert);
-		ms_free(key);
+		bc_free(cert);
+		bc_free(key);
 	}
 }
 
@@ -1085,8 +1085,8 @@ static void authentication_requested_2(LinphoneCore *lc, LinphoneAuthInfo *auth_
 	linphone_auth_info_set_tls_cert_path(auth_info, cert);
 	linphone_auth_info_set_tls_key_path(auth_info, key);
 	linphone_core_add_auth_info(lc, auth_info);
-	ms_free(cert);
-	ms_free(key);
+	bc_free(cert);
+	bc_free(key);
 }
 
 static void tls_auth_info_client_cert_cb(void) {
@@ -1119,8 +1119,8 @@ static void authentication_requested_3(LinphoneCore *lc, LinphoneAuthInfo *auth_
 	linphone_core_add_auth_info(lc, auth_info);
 	ms_free(cert);
 	ms_free(key);
-	ms_free(cert_path);
-	ms_free(key_path);
+	bc_free(cert_path);
+	bc_free(key_path);
 }
 
 static void tls_auth_info_client_cert_cb_2(void) {
@@ -1141,6 +1141,7 @@ static void tls_auth_info_client_cert_cb_2(void) {
 		linphone_core_manager_destroy(lcm);
 	}
 }
+
 
 test_t register_tests[] = {
 	TEST_NO_TAG("Simple register", simple_register),

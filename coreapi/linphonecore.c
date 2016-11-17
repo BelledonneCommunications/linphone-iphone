@@ -2251,7 +2251,7 @@ void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_
 
 /**
  * Sets the UDP port used for audio streaming.
- * A value if -1 will request the system to allocate the local port randomly.
+ * A value of -1 will request the system to allocate the local port randomly.
  * This is recommended in order to avoid firewall warnings.
  *
  * @ingroup network_parameters
@@ -2273,7 +2273,7 @@ void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_
 
 /**
  * Sets the UDP port used for video streaming.
- * A value if -1 will request the system to allocate the local port randomly.
+ * A value of -1 will request the system to allocate the local port randomly.
  * This is recommended in order to avoid firewall warnings.
  *
  * @ingroup network_parameters

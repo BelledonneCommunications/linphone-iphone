@@ -1,0 +1,3 @@
+flexisip.conf : is the configuration of the flexisip running on sip2.linphone.org. It has lots of IP addresses hardcoded because this machine is running multiple instances on different IP addresses.
+flexisip-generic.conf : is the same configuration without any IP address hardcoded and relative paths. It can be run on any machine from the "tester" directory of linphone.
+
