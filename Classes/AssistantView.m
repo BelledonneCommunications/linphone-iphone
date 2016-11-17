@@ -852,8 +852,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 					handler:^(UIAlertAction *action) {
 					  NSString *tmp_phone =
 						  [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(account_creator)];
-					  [self changeView:_linphoneLoginView back:TRUE animation:TRUE];
-					  self.loginPhoneField.text = tmp_phone;
+					  [self changeView:_linphoneLoginView back:FALSE animation:TRUE];
+					  ((UITextField *)[self findView:ViewElement_Phone
+											  inView:_linphoneLoginView
+											  ofType:[UIAssistantTextField class]])
+						  .text = [tmp_phone substringFromIndex:3];
+					  // Reset phone number in account_creator to be sure to let the user retry
+					  linphone_account_creator_set_phone_number(account_creator,
+																[tmp_phone substringFromIndex:3].UTF8String,
+																[tmp_phone substringToIndex:3].UTF8String);
 					}];
 
 		[errView addAction:defaultAction];

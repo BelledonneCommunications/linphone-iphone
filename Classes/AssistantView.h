@@ -65,7 +65,6 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;
-@property(weak, nonatomic) IBOutlet UITextField *loginPhoneField;
 
 + (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status;
 + (NSString *)StringForXMLRPCError:(const char *)err;
