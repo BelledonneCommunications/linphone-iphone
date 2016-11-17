@@ -86,7 +86,10 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	linphone_account_creator_unref(account_creator);
+	if (account_creator) {
+		linphone_account_creator_unref(account_creator);
+	}
+	account_creator = NULL;
 	[super viewDidDisappear:animated];
 }
 
