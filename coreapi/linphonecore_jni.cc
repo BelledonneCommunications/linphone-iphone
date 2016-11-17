@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef USE_JAVAH
 #include "linphonecore_jni.h"
 #endif
-#include "linphonecore_utils.h"
+#include "linphone/core_utils.h"
 #include <mediastreamer2/zrtp.h>
 
 
@@ -33,10 +33,10 @@ extern "C" {
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"
-#include "account_creator.h"
+#include "linphone/account_creator.h"
 #include <cpu-features.h>
 
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 #ifdef ANDROID
 #include <android/log.h>
