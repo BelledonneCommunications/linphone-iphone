@@ -1409,6 +1409,7 @@ static void showNetworkFlags(SCNetworkReachabilityFlags flags) {
 	LOGI(@"%@", log);
 }
 
+//This callback keeps tracks of wifi SSID changes.
 static void networkReachabilityNotification(CFNotificationCenterRef center, void *observer, CFStringRef name,
 											const void *object, CFDictionaryRef userInfo) {
 	LinphoneManager *mgr = LinphoneManager.instance;
@@ -1420,11 +1421,17 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 	if ([newSSID compare:mgr.SSID] == NSOrderedSame)
 		return;
 
+	
+	if (newSSID != Nil && newSSID.length > 0 && mgr.SSID != Nil && newSSID.length > 0){
+		if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
+			LOGI(@"Wifi SSID changed, resesting transports.");
+			mgr.connectivity=none; //this will trigger a connectivity change in networkReachabilityCallback.
+			networkReachabilityCallBack([mgr getProxyReachability], flags, nil);
+		}
+	}
 	mgr.SSID = newSSID;
 
-	if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
-		networkReachabilityCallBack([mgr getProxyReachability], flags, nil);
-	}
+	
 }
 
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *nilCtx) {
@@ -1460,9 +1467,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				// else keep default value from linphonecore
 			}
 
-			// in case of wifi change (newconnectivity == lm.connectivity == wifi), we must
-			// reregister because we are using a different router anyway
-			if (lm.connectivity != newConnectivity || newConnectivity != wwan) {
+			if (lm.connectivity != newConnectivity) {
 				// connectivity has changed
 				linphone_core_set_network_reachable(theLinphoneCore, false);
 				if (newConnectivity == wwan && proxy && isWifiOnly) {
