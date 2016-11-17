@@ -119,16 +119,38 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - popup
 
 - (void)showErrorPopup:(const char *)err {
-	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
-																	 message:[AssistantView StringForXMLRPCError:err]
-															  preferredStyle:UIAlertControllerStyleAlert];
-	
-	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-															style:UIAlertActionStyleDefault
-														  handler:^(UIAlertAction * action) {}];
-		
-	[errView addAction:defaultAction];
-	[self presentViewController:errView animated:YES completion:nil];
+	if (strcmp(err, "ERROR_KEY_DOESNT_MATCH") == 0) {
+		UIAlertController *errView =
+			[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
+												message:[AssistantView StringForXMLRPCError:err]
+										 preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction *action) {
+																self.linkAccountView.hidden = NO;
+																self.linkAccountView.userInteractionEnabled = YES;
+																self.activateSMSView.userInteractionEnabled = NO;
+																self.activateSMSView.hidden = YES;
+																self.activationCodeField.text = @"";
+															  }];
+
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
+	} else {
+		UIAlertController *errView =
+			[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
+												message:[AssistantView StringForXMLRPCError:err]
+										 preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction *action){
+															  }];
+
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
+	}
 }
 
 #pragma mark - cbs

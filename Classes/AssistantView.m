@@ -840,6 +840,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[errView addAction:defaultAction];
 		[errView addAction:continueAction];
 		[self presentViewController:errView animated:YES completion:nil];
+	} else if (strcmp(err, "ERROR_KEY_DOESNT_MATCH") == 0) {
+		UIAlertController *errView =
+			[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
+												message:[AssistantView StringForXMLRPCError:err]
+										 preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction *defaultAction = [UIAlertAction
+			actionWithTitle:@"OK"
+					  style:UIAlertActionStyleDefault
+					handler:^(UIAlertAction *action) {
+					  NSString *tmp_phone =
+						  [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(account_creator)];
+					  [self changeView:_linphoneLoginView back:TRUE animation:TRUE];
+					  self.loginPhoneField.text = tmp_phone;
+					}];
+
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
 	} else {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
 																		 message:[AssistantView StringForXMLRPCError:err]
@@ -1111,7 +1129,11 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onCreateAccountActivationClick:(id)sender {
     ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
-        linphone_account_creator_set_activation_code(account_creator, ((UITextField*)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text.UTF8String);
+		((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text = @"";
+		linphone_account_creator_set_activation_code(
+			account_creator,
+			((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class])
+				.text.UTF8String);
 		if (linphone_account_creator_get_password(account_creator) == NULL &&
 				linphone_account_creator_get_ha1(account_creator) == NULL) {
 				linphone_account_creator_activate_account(account_creator);
@@ -1143,6 +1165,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onLinphoneLoginClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
+		((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text = @"";
 		_activationTitle.text = @"USE LINPHONE ACCOUNT";
 		if ((linphone_account_creator_get_phone_number(account_creator) != NULL) &&
 			linphone_account_creator_get_password(account_creator) == NULL &&
@@ -1293,9 +1316,13 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onBackClick:(id)sender {
 	if ([historyViews count] > 0) {
-		UIView *view = [historyViews lastObject];
-		[historyViews removeLastObject];
-		[self changeView:view back:TRUE animation:TRUE];
+		if (currentView == _createAccountActivateSMSView || currentView == _createAccountActivateEmailView) {
+			UIView *view = [historyViews lastObject];
+			[historyViews removeLastObject];
+			[self changeView:view back:TRUE animation:TRUE];
+		} else {
+			[self changeView:_welcomeView back:TRUE animation:TRUE];
+		}
 	}
 }
 
