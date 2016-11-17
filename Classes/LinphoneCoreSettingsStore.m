@@ -21,8 +21,10 @@
 #import "Utils.h"
 #import "PhoneMainView.h"
 
-#include "linphone/lpconfig.h"
 #include "linphone/linphone_tunnel.h"
+#include "linphone/lpconfig.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 @implementation LinphoneCoreSettingsStore
 
@@ -70,7 +72,7 @@
 }
 
 + (BOOL)parsePortRange:(NSString *)text minPort:(int *)minPort maxPort:(int *)maxPort {
-	NSError *error = nil;
+	/*NSError *error = nil;
 	*minPort = -1;
 	*maxPort = -1;
 	NSRegularExpression *regex =
@@ -96,8 +98,30 @@
 			}
 			return TRUE;
 		}
+	}*/
+	int err;
+
+	err = sscanf(text.UTF8String, "%i - %i", minPort, maxPort);
+	if (err == 0) {
+		*minPort = *maxPort = -1;
+	} else if (err == 1) {
+		*maxPort = -1;
 	}
-	return FALSE;
+
+	// Minimal port allowed
+	if (*minPort < 1024) {
+		*minPort = -1;
+	}
+	// Maximal port allowed
+	if (*maxPort > 65535) {
+		*maxPort = -1;
+	}
+	// minPort must be inferior or equal to maxPort
+	if (*minPort > *maxPort) {
+		*maxPort = *minPort;
+	}
+
+	return TRUE;
 }
 
 - (void)transformCodecsToKeys:(const MSList *)codecs {
@@ -607,31 +631,31 @@
 }
 
 - (BOOL)synchronize {
-	@try {
+	//@try {
 
-		LinphoneManager *lm = LinphoneManager.instance;
-		// root section
-		{
-			BOOL account_changed = NO;
-			for (NSString *key in self->changedDict) {
-				if ([key hasPrefix:@"account_"] && [self valueChangedForKey:key]) {
-					account_changed = YES;
-					break;
-				}
+	LinphoneManager *lm = LinphoneManager.instance;
+	// root section
+	{
+		BOOL account_changed = NO;
+		for (NSString *key in self->changedDict) {
+			if ([key hasPrefix:@"account_"] && [self valueChangedForKey:key]) {
+				account_changed = YES;
+				break;
 			}
-			account_changed |= [self valueChangedForKey:@"port_preference"];
-			account_changed |= [self valueChangedForKey:@"random_port_preference"];
-			account_changed |= [self valueChangedForKey:@"use_ipv6"];
+		}
+		account_changed |= [self valueChangedForKey:@"port_preference"];
+		account_changed |= [self valueChangedForKey:@"random_port_preference"];
+		account_changed |= [self valueChangedForKey:@"use_ipv6"];
 
-			if (account_changed)
-				[self synchronizeAccounts];
+		if (account_changed)
+			[self synchronizeAccounts];
 
-			bool enableVideo = [self boolForKey:@"enable_video_preference"];
-			linphone_core_enable_video_capture(LC, enableVideo);
-			linphone_core_enable_video_display(LC, enableVideo);
+		bool enableVideo = [self boolForKey:@"enable_video_preference"];
+		linphone_core_enable_video_capture(LC, enableVideo);
+		linphone_core_enable_video_display(LC, enableVideo);
 
-			bool enableAutoAnswer = [self boolForKey:@"enable_auto_answer_preference"];
-			[LinphoneManager.instance lpConfigSetBool:enableAutoAnswer forKey:@"auto_answer"];
+		bool enableAutoAnswer = [self boolForKey:@"enable_auto_answer_preference"];
+		[LinphoneManager.instance lpConfigSetBool:enableAutoAnswer forKey:@"auto_answer"];
 		}
 
 		// audio section
@@ -768,6 +792,7 @@
 				NSString *video_port_preference = [self stringForKey:@"video_port_preference"];
 				int minPort, maxPort;
 				[LinphoneCoreSettingsStore parsePortRange:video_port_preference minPort:&minPort maxPort:&maxPort];
+
 				linphone_core_set_video_port_range(LC, minPort, maxPort);
 			}
 
@@ -865,12 +890,11 @@
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneSettingsUpdate object:self userInfo:eventDic];
 
 		return YES;
-	} @catch (NSException *e) {
-		// may happen when application is terminated, since we are destroying the core
-		LOGI(@"Core probably already destroyed, cannot synchronize settings. Skipping.");
-		LOGI(e.debugDescription);
-	}
-	return NO;
+		//} @catch (NSException *e) {
+		//	// may happen when application is terminated, since we are destroying the core
+		//	LOGI(@"Core probably already destroyed, cannot synchronize settings. Skipping. %@", [e callStackSymbols]);
+		//}
+		// return NO;
 }
 
 - (void)removeAccount {
