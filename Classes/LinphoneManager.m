@@ -2010,8 +2010,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
 		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
-			// For registration register
-			[self refreshRegisters];
+			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+				// For registration register
+				[self refreshRegisters];
+			}
 		}
 
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"]) {
@@ -2025,9 +2027,11 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 									  LOGW(@"It seems that Linphone BG mode was deactivated, just skipping");
 									  return;
 								  }
-									[_iapManager check];
-								  // kick up network cnx, just in case
-								  [self refreshRegisters];
+								  [_iapManager check];
+								  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+									  // For registration register
+									  [self refreshRegisters];
+								  }
 								  linphone_core_iterate(theLinphoneCore);
 								}]) {
 
