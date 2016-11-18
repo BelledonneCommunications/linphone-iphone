@@ -146,6 +146,10 @@ int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
 int dumbMethodForAllowingUsageOfMsAudioDiffFromStaticLibMediastream() {
 	return ms_audio_diff(NULL, NULL, NULL, 0, NULL, NULL);
 }
+
+extern "C" void setAndroidLogHandler() {
+	linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
+}
 #endif /*ANDROID*/
 
 
