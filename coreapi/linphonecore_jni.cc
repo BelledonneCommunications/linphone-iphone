@@ -150,6 +150,12 @@ int dumbMethodForAllowingUsageOfMsAudioDiffFromStaticLibMediastream() {
 extern "C" void setAndroidLogHandler() {
 	linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
 }
+
+extern "C" void setMediastreamerAndroidContext(JNIEnv *env, void *context) {
+	jclass ms_class = env->FindClass("org/linphone/mediastream/MediastreamerAndroidContext");
+	jmethodID set_context = env->GetStaticMethodID(ms_class, "setContext", "(Ljava/lang/Object;)V");
+	env->CallStaticVoidMethod(ms_class, set_context, (jobject)context);
+}
 #endif /*ANDROID*/
 
 
