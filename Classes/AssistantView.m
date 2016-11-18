@@ -785,7 +785,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return NSLocalizedString(@"This email does not exist.", nil);
 	if
 		IS(ERROR_KEY_DOESNT_MATCH)
-	return NSLocalizedString(@"The confirmation code is invalid. \nPlease check your SMS and try again.", nil);
+	return NSLocalizedString(@"The confirmation code is invalid. \nPlease try again.", nil);
 	if
 		IS(ERROR_PASSWORD_DOESNT_MATCH)
 	return NSLocalizedString(@"Passwords do not match.", nil);
