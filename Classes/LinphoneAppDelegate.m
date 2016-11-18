@@ -768,6 +768,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
 	[LinphoneManager.instance destroyLinphoneCore];
 	[LinphoneManager.instance startLinphoneCore];
+	[LinphoneManager.instance.fastAddressBook reload];
 }
 
 #pragma mark - Prevent ImagePickerView from rotating

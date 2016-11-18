@@ -1879,6 +1879,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 - (void)resetLinphoneCore {
 	[self destroyLinphoneCore];
 	[self createLinphoneCore];
+	// reload friends
+	[self.fastAddressBook reload];
 
 	// reset network state to trigger a new network connectivity assessment
 	linphone_core_set_network_reachable(theLinphoneCore, FALSE);
