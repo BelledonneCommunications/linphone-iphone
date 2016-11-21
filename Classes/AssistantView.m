@@ -863,8 +863,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  nationnal_significant_number += strlen(dialplan.ccc);
 						  }
 					  }
-					  NSString *tmp = [NSString stringWithFormat:@"+%s", dialplan.ccc];
-					  const char *countryCode = tmp.UTF8String;
 					  [self changeView:_linphoneLoginView back:FALSE animation:TRUE];
 					  UISwitch *usernameSwitch = (UISwitch *)[self findView:ViewElement_UsernameFormView
 																	 inView:self.contentView
@@ -882,7 +880,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 					  [self didSelectCountry:country];
 					  // Reset phone number in account_creator to be sure to let the user retry
 					  linphone_account_creator_set_phone_number(account_creator, nationnal_significant_number,
-																countryCode);
+																dialplan.ccc);
 					}];
 
 		[errView addAction:defaultAction];
