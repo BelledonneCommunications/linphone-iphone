@@ -18,9 +18,10 @@
  */
 
 #import "UIContactCell.h"
-#import "Utils.h"
+#import "ContactsListTableView.h"
 #import "FastAddressBook.h"
 #import "UILabel+Boldify.h"
+#import "Utils.h"
 
 @implementation UIContactCell
 
@@ -67,7 +68,14 @@
 			return;
 		}
 	}
-	[self setContact:_contact];
+	id view = [self superview];
+
+	while (view && [view isKindOfClass:[UITableView class]] == NO) {
+		view = [view superview];
+	}
+
+	UITableView *tableView = (UITableView *)view;
+	[(ContactsListTableView *)tableView.dataSource loadData];
 }
 
 #pragma mark - Property Functions
