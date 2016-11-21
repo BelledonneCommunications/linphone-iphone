@@ -15,7 +15,7 @@
 
 
 	<section name="sip">
-		<entry name="rls_uri" overwrite="true"></entry>
+		<entry name="use_rls_presence" overwrite="true"></entry>
 	</section>
 
 	<section name="assistant">
