@@ -53,6 +53,7 @@
 }
 
 - (void)dealloc {
+	self.contact = NULL;
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 

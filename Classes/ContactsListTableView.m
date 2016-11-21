@@ -67,6 +67,15 @@
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[self removeAllContacts];
+}
+
+- (void)removeAllContacts {
+	for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j) {
+		for (NSInteger i = 0; i < [self.tableView numberOfRowsInSection:j]; ++i) {
+			[[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] setContact:nil];
+		}
+	}
 }
 
 #pragma mark -
