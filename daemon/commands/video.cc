@@ -65,7 +65,7 @@ void Video::exec(Daemon* app, const char* args)
 	}
 
 	if (linphone_call_get_state(call)==LinphoneCallStreamsRunning){
-		LinphoneCallParams *new_params = linphone_call_params_copy(linphone_call_get_current_params(call));
+		LinphoneCallParams *new_params = linphone_core_create_call_params(lc, call);
 		activate = !linphone_call_params_video_enabled(new_params);
 
 		linphone_call_params_enable_video(new_params,activate);
