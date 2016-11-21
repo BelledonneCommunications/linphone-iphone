@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#import "linphone/linphonecore_utils.h"
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
@@ -852,15 +852,37 @@ static UICompositeViewDescription *compositeDescription = nil;
 					handler:^(UIAlertAction *action) {
 					  NSString *tmp_phone =
 						  [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(account_creator)];
+					  int ccc = -1;
+					  LinphoneDialPlan dialplan = {0};
+					  char *nationnal_significant_number = NULL;
+					  ccc = linphone_dial_plan_lookup_ccc_from_e164(tmp_phone.UTF8String);
+					  if (ccc > -1) { /*e164 like phone number*/
+						  dialplan = *linphone_dial_plan_by_ccc_as_int(ccc);
+						  nationnal_significant_number = strstr(tmp_phone.UTF8String, dialplan.ccc);
+						  if (nationnal_significant_number) {
+							  nationnal_significant_number += strlen(dialplan.ccc);
+						  }
+					  }
+					  NSString *tmp = [NSString stringWithFormat:@"+%s", dialplan.ccc];
+					  const char *countryCode = tmp.UTF8String;
 					  [self changeView:_linphoneLoginView back:FALSE animation:TRUE];
+					  UISwitch *usernameSwitch = (UISwitch *)[self findView:ViewElement_UsernameFormView
+																	 inView:self.contentView
+																	 ofType:UISwitch.class];
+					  [usernameSwitch setOn:FALSE];
+					  UIView *usernameView =
+						  [self findView:ViewElement_UsernameFormView inView:self.contentView ofType:UIView.class];
+					  usernameView.hidden = !usernameSwitch.isOn;
 					  ((UITextField *)[self findView:ViewElement_Phone
 											  inView:_linphoneLoginView
 											  ofType:[UIAssistantTextField class]])
-						  .text = [tmp_phone substringFromIndex:3];
+						  .text = [NSString stringWithUTF8String:nationnal_significant_number];
+					  NSDictionary *country =
+						  [CountryListView countryWithIso:[NSString stringWithUTF8String:dialplan.iso_country_code]];
+					  [self didSelectCountry:country];
 					  // Reset phone number in account_creator to be sure to let the user retry
-					  linphone_account_creator_set_phone_number(account_creator,
-																[tmp_phone substringFromIndex:3].UTF8String,
-																[tmp_phone substringToIndex:3].UTF8String);
+					  linphone_account_creator_set_phone_number(account_creator, nationnal_significant_number,
+																countryCode);
 					}];
 
 		[errView addAction:defaultAction];
