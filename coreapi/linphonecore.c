@@ -1187,6 +1187,8 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate, int 
 static bool_t linphone_core_codec_supported(LinphoneCore *lc, SalStreamType type, const char *mime){
 	if (type == SalVideo && lp_config_get_int(lc->config, "video", "rtp_io", FALSE)){
 		return TRUE; /*in rtp io mode, we don't transcode video, thus we can support a format for which we have no encoder nor decoder.*/
+	if (type == SalAudio && lp_config_get_int(lc->config, "sound", "rtp_io", FALSE)){
+		return TRUE; /*in rtp io mode, we don't transcode video, thus we can support a format for which we have no encoder nor decoder.*/
 	} else if (type == SalText) {
 		return TRUE;
 	}
