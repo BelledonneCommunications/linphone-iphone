@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "linphonecore.h"
+#include "linphone/core.h"
 #include "liblinphone_tester.h"
 
 namespace BelledonneCommunications
