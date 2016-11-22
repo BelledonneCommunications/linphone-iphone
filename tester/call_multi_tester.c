@@ -652,12 +652,83 @@ end:
 	linphone_core_manager_destroy(pauline);
 	bctbx_list_free(lcs);
 }
+
 static void call_transfer_existing_call_outgoing_call(void) {
 	call_transfer_existing_call(TRUE);
 }
+
 static void call_transfer_existing_call_incoming_call(void) {
 	call_transfer_existing_call(FALSE);
 }
+
+static void call_transfer_existing_ringing_call(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager *laure = linphone_core_manager_new("laure_rc_udp");
+	LinphoneCall *marie_call_pauline;
+	LinphoneCall *pauline_called_by_marie;
+	LinphoneCall *marie_call_laure;
+	LinphoneCall *lcall;
+	bool_t call_ok = TRUE;
+	const bctbx_list_t *calls;
+	bctbx_list_t *lcs = bctbx_list_append(NULL, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
+
+	/* marie calls pauline */
+	BC_ASSERT_TRUE((call_ok = call(marie, pauline)));
+	if (call_ok) {
+		marie_call_pauline = linphone_core_get_current_call(marie->lc);
+		pauline_called_by_marie = linphone_core_get_current_call(pauline->lc);
+		/* marie pauses pauline */
+		if (!BC_ASSERT_TRUE(pause_call_1(marie, marie_call_pauline, pauline, pauline_called_by_marie))) goto end;
+
+		stats initial_marie_stats = marie->stat;
+		BC_ASSERT_PTR_NOT_NULL((marie_call_laure = linphone_core_invite_address(marie->lc, laure->identity)));
+		if (!marie_call_laure) goto end;
+		BC_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, initial_marie_stats.number_of_LinphoneCallOutgoingRinging + 1));
+		linphone_core_transfer_call_to_another(marie->lc, marie_call_pauline, marie_call_laure);
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallRefered, 1, 2000));
+
+		/* pauline pausing marie */
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallPausing, 1, 4000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallPaused, 1, 4000));
+		/* pauline calling laure */
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingProgress, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneTransferCallOutgoingInit, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingRinging, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneTransferCallOutgoingProgress, 1, 2000));
+
+		/* laure accepts call */
+		for (calls = linphone_core_get_calls(laure->lc); calls != NULL; calls = calls->next) {
+			lcall = (LinphoneCall*)calls->data;
+			if (linphone_call_get_state(lcall) == LinphoneCallIncomingReceived) {
+				linphone_core_accept_call(laure->lc, lcall);
+				break;
+			}
+		}
+		BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallConnected, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallStreamsRunning, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneTransferCallConnected, 1, 2000));
+
+		/* terminate marie to pauline/laure call */
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, 1, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEnd, 2, 2000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallEnd, 1, 2000));
+
+		end_call(pauline, laure);
+	}
+
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(laure);
+	linphone_core_manager_destroy(pauline);
+	bctbx_list_free(lcs);
+}
+
 static void eject_from_3_participants_conference(LinphoneCoreManager *marie, LinphoneCoreManager *pauline, LinphoneCoreManager *laure, LinphoneCoreManager *focus) {
 	stats initial_marie_stat;
 	stats initial_pauline_stat;
@@ -955,6 +1026,7 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Unattended call transfer with error", unattended_call_transfer_with_error),
 	TEST_NO_TAG("Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call),
 	TEST_NO_TAG("Call transfer existing call incoming call", call_transfer_existing_call_incoming_call),
+	TEST_NO_TAG("Call transfer existing ringing call", call_transfer_existing_ringing_call),
 	TEST_NO_TAG("Simple remote conference", simple_remote_conference),
 	TEST_NO_TAG("Simple remote conference with shut down focus", simple_remote_conference_shut_down_focus),
 	TEST_NO_TAG("Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference),

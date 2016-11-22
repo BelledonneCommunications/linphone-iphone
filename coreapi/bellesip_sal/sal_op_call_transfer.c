@@ -68,14 +68,16 @@ int sal_call_refer_with_replaces(SalOp *op, SalOp *other_call_op){
 	const char* to_tag;
 	char* escaped_replaces;
 	/*first, build refer to*/
-	if (other_call_dialog_state!=BELLE_SIP_DIALOG_CONFIRMED) {
-		ms_error(" wrong dialog state [%s] for op [%p], should be BELLE_SIP_DIALOG_CONFIRMED",belle_sip_dialog_state_to_string(other_call_dialog_state)
-																							,other_call_op);
+	if ((other_call_dialog_state!=BELLE_SIP_DIALOG_CONFIRMED) && (other_call_dialog_state!=BELLE_SIP_DIALOG_EARLY)) {
+		ms_error("wrong dialog state [%s] for op [%p], should be BELLE_SIP_DIALOG_CONFIRMED or BELE_SIP_DIALOG_EARLY",
+			belle_sip_dialog_state_to_string(other_call_dialog_state),
+			other_call_op);
 		return -1;
 	}
 	if (op_dialog_state!=BELLE_SIP_DIALOG_CONFIRMED) {
-		ms_error(" wrong dialog state [%s] for op [%p], should be BELLE_SIP_DIALOG_CONFIRMED",belle_sip_dialog_state_to_string(op_dialog_state)
-																							,op);
+		ms_error("wrong dialog state [%s] for op [%p], should be BELLE_SIP_DIALOG_CONFIRMED",
+			belle_sip_dialog_state_to_string(op_dialog_state),
+			op);
 		return -1;
 	}
 
