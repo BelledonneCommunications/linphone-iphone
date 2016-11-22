@@ -22,14 +22,12 @@
                 <outlet property="createAccountActivateEmailView" destination="Zd9-Ms-s7X" id="6Qs-np-oqS"/>
                 <outlet property="createAccountActivateSMSView" destination="101" id="SAS-8i-4Ao"/>
                 <outlet property="createAccountView" destination="44" id="70"/>
-                <outlet property="createPhoneField" destination="74" id="hlG-Wk-6V5"/>
                 <outlet property="gotoCreateAccountButton" destination="36" id="bZf-lI-yJp"/>
                 <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
                 <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
                 <outlet property="gotoRemoteProvisioningButton" destination="Kbn-dL-C5h" id="zLh-uO-x8P"/>
                 <outlet property="infoLoginButton" destination="ZDs-1W-ZXo" id="aoP-Mb-gPi"/>
                 <outlet property="linphoneLoginView" destination="52" id="9NX-6W-50g"/>
-                <outlet property="loginPhoneField" destination="Pcj-jL-x9P" id="VMi-OU-RUW"/>
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="phoneLabel" destination="ZSJ-Lv-n60" id="5Qi-xR-wyK"/>
                 <outlet property="phoneTitle" destination="rAy-0V-sqv" id="MZq-EF-6HF"/>

@@ -150,6 +150,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void) viewWillDisappear:(BOOL)animated {
 	self.view = NULL;
+	[self.tableController removeAllContacts];
 }
 
 #pragma mark -

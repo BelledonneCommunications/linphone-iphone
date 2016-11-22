@@ -16,7 +16,7 @@
 	</section>
 
 	<section name="sip">
-		<entry name="rls_uri" overwrite="true">sip:rls@sip.linphone.org</entry>
+		<entry name="rls_uri" overwrite="true">sips:rls@sip.linphone.org</entry>
 	</section>
 
 	<section name="assistant">
