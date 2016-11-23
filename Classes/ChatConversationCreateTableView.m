@@ -91,9 +91,9 @@
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																style:UIAlertActionStyleDefault
 																handler:^(UIAlertAction * action) {}];
-			
+		defaultAction.accessibilityLabel = @"OK";
 		[errView addAction:defaultAction];
-		[self presentViewController:errView animated:YES completion:nil];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:room];
