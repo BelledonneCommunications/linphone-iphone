@@ -68,14 +68,6 @@
 			return;
 		}
 	}
-	id view = [self superview];
-
-	while (view && [view isKindOfClass:[UITableView class]] == NO) {
-		view = [view superview];
-	}
-
-	UITableView *tableView = (UITableView *)view;
-	[(ContactsListTableView *)tableView.dataSource loadData];
 }
 
 #pragma mark - Property Functions
