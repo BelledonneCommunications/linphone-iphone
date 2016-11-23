@@ -1188,31 +1188,34 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
                 notif.alertAction = NSLocalizedString(@"Show", nil);
                 notif.soundName = @"msg.caf";
                 notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
-
-                [[UIApplication sharedApplication] presentLocalNotificationNow:notif];
-            }
-        } else {
-            UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-            content.title = NSLocalizedString(@"Message received", nil);
-            if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-                content.subtitle = from;
-                content.body = [UIChatBubbleTextCell TextMessageForChat:msg];
-            } else {
-                content.body = from;
-            }
-            content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
-            content.categoryIdentifier = @"msg_cat";
-            content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
-            
-            UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-                                // Enable or disable features based on authorization.
-                                if (error) {
-                                    LOGD(@"Error while adding notification request :");
-                                    LOGD(error.description);
-                                }
-                            }];
-        }
+				notif.accessibilityLabel = @"Message notif";
+				[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+			}
+		} else {
+			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+			content.title = NSLocalizedString(@"Message received", nil);
+			if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
+				content.subtitle = from;
+				content.body = [UIChatBubbleTextCell TextMessageForChat:msg];
+			} else {
+				content.body = from;
+			}
+			content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
+			content.categoryIdentifier = @"msg_cat";
+			content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
+			content.accessibilityLabel = @"Message notif";
+			UNNotificationRequest *req =
+				[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+			[[UNUserNotificationCenter currentNotificationCenter]
+				addNotificationRequest:req
+				 withCompletionHandler:^(NSError *_Nullable error) {
+				   // Enable or disable features based on authorization.
+				   if (error) {
+					   LOGD(@"Error while adding notification request :");
+					   LOGD(error.description);
+				   }
+				 }];
+		}
 	}
 	// Post event
 	NSDictionary *dict = @{
@@ -1736,7 +1739,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 																   handler:^(UIAlertAction * action) {
 																	   [PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
 																   }];
-			
+			defaultAction.accessibilityLabel = @"Later";
 			[errView addAction:defaultAction];
 			[errView addAction:continueAction];
 			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
