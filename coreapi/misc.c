@@ -905,7 +905,6 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 	bool_t result;
 
 	if (session_state == IS_Completed) {
-		if (use_nortpproxy) desc->set_nortpproxy = TRUE;
 		result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_candidate, NULL);
 		if (result == TRUE) {
 			strncpy(desc->addr, rtp_candidate->taddr.ip, sizeof(desc->addr));
@@ -913,9 +912,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 			ms_warning("If ICE has completed successfully, rtp_candidate should be set!");
 		}
 	}
-	else {
-		desc->set_nortpproxy = FALSE;
-	}
+	
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
 	for (i = 0; i < desc->nb_streams; i++) {
