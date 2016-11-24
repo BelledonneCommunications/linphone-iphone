@@ -671,6 +671,7 @@ static void call_transfer_existing_ringing_call(void) {
 	LinphoneCall *lcall;
 	bool_t call_ok = TRUE;
 	const bctbx_list_t *calls;
+	stats initial_marie_stats;
 	bctbx_list_t *lcs = bctbx_list_append(NULL, marie->lc);
 	lcs = bctbx_list_append(lcs, pauline->lc);
 	lcs = bctbx_list_append(lcs, laure->lc);
@@ -683,7 +684,7 @@ static void call_transfer_existing_ringing_call(void) {
 		/* marie pauses pauline */
 		if (!BC_ASSERT_TRUE(pause_call_1(marie, marie_call_pauline, pauline, pauline_called_by_marie))) goto end;
 
-		stats initial_marie_stats = marie->stat;
+		initial_marie_stats = marie->stat;
 		BC_ASSERT_PTR_NOT_NULL((marie_call_laure = linphone_core_invite_address(marie->lc, laure->identity)));
 		if (!marie_call_laure) goto end;
 		BC_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, initial_marie_stats.number_of_LinphoneCallOutgoingRinging + 1));
