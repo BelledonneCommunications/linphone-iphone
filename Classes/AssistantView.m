@@ -836,7 +836,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   handler:^(UIAlertAction * action) {
 																   [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 															   }];
-		
+
+		defaultAction.accessibilityLabel = @"PopUpResp";
 		[errView addAction:defaultAction];
 		[errView addAction:continueAction];
 		[self presentViewController:errView animated:YES completion:nil];
@@ -875,6 +876,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  inView:_linphoneLoginView
 											  ofType:[UIAssistantTextField class]])
 						  .text = [NSString stringWithUTF8String:nationnal_significant_number];
+					  ((UITextField *)[self findView:ViewElement_SMSCode
+											  inView:_createAccountActivateSMSView
+											  ofType:[UITextField class]])
+						  .text = @"";
+					  linphone_account_creator_set_activation_code(account_creator, "");
 					  NSDictionary *country =
 						  [CountryListView countryWithIso:[NSString stringWithUTF8String:dialplan.iso_country_code]];
 					  [self didSelectCountry:country];
@@ -883,6 +889,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 																dialplan.ccc);
 					}];
 
+		defaultAction.accessibilityLabel = @"PopUpResp";
 		[errView addAction:defaultAction];
 		[self presentViewController:errView animated:YES completion:nil];
 	} else {
@@ -894,6 +901,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 															  handler:^(UIAlertAction * action) {}];
 	
 		[errView addAction:defaultAction];
+		defaultAction.accessibilityLabel = @"PopUpResp";
 		[self presentViewController:errView animated:YES completion:nil];
 	}
 }
@@ -907,10 +915,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
-			if (linphone_account_creator_get_username(account_creator) && (strcmp(resp, "ERROR_ACCOUNT_DOESNT_EXIST") == 0)) {
-				[self showErrorPopup:"ERROR_BAD_CREDENTIALS"];
+			if (resp) {
+				if (linphone_account_creator_get_username(account_creator) &&
+					(strcmp(resp, "ERROR_ACCOUNT_DOESNT_EXIST") == 0)) {
+					[self showErrorPopup:"ERROR_BAD_CREDENTIALS"];
+				} else {
+					[self showErrorPopup:resp];
+				}
 			} else {
-				[self showErrorPopup:resp];
+				[self showErrorPopup:""];
 			}
 		}
 	} else {
@@ -1156,7 +1169,6 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onCreateAccountActivationClick:(id)sender {
     ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
-		((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text = @"";
 		linphone_account_creator_set_activation_code(
 			account_creator,
 			((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class])
