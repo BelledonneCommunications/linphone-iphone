@@ -659,7 +659,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 #pragma mark - UserNotifications Framework
 
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
-	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionSound);
+	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
 }
 
 
