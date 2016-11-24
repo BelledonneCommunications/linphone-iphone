@@ -69,6 +69,9 @@ set(CERTIFICATE_CN_FILES
 set(CERTIFICATE_CLIENT_FILES
 	certificates/client/cert.pem
 	certificates/client/key.pem
+	certificates/client/cert2.pem
+	certificates/client/key2.pem
+	certificates/client/cert2-signed-by-other-ca.pem
 )
 
 set(CERTIFICATE_FILES ${CERTIFICATE_ALT_FILES} ${CERTIFICATE_CN_FILES} ${CERTIFICATE_CLIENT_FILES})

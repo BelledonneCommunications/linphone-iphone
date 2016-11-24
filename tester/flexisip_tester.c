@@ -1226,7 +1226,7 @@ static void tls_authentication_requested_good(LinphoneCore *lc, LinphoneAuthInfo
 		linphone_auth_info_set_tls_key_path(auth_info, key);
 		linphone_core_add_auth_info(lc, auth_info);
 		bc_free(cert);
-		ms_free(key);
+		bc_free(key);
 	}
 }
 
