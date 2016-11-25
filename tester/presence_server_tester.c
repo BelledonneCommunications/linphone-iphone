@@ -842,9 +842,11 @@ static void long_term_presence_with_phone_without_sip(void) {
 		for (i = 0; i < MIN((size_t)dialPlan->nnl,sizeof(phone)-1); i++) {
 			phone[i] = '0' + rand() % 10;
 		}
-		phone[i+1]='\0';
+		phone[i]='\0';
 		
 		e164=ms_strdup_printf("+%s%s",dialPlan->ccc,phone);
+		
+		ms_message("Phone number is %s, e164 is %s", phone, e164);
 		
 		marie = linphone_core_manager_new3("marie_rc", TRUE, e164);
 		identity = linphone_address_as_string_uri_only(marie->identity);
