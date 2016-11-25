@@ -68,6 +68,7 @@
 			return;
 		}
 	}
+	[self setContact:_contact];
 }
 
 #pragma mark - Property Functions
