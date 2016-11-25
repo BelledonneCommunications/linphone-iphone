@@ -111,7 +111,10 @@ static LinphoneFriendPresence * find_presence_model_for_uri_or_tel(const Linphon
 	bctbx_list_t *iterator = lf->presence_models;
 	LinphoneAddress *uri_or_tel_addr = linphone_core_interpret_url(lf->lc, uri_or_tel);
 	LinphoneFriendPresence *result=NULL;
-	
+	if (!lf->lc) {
+		ms_warning("Cannot find uri of tel [%s] from friend [%p] because not associated to any Linphone core object",uri_or_tel,lf);
+		return NULL;
+	}
 	while (uri_or_tel_addr && iterator) {
 		LinphoneFriendPresence *lfp = (LinphoneFriendPresence *)bctbx_list_get_data(iterator);
 		LinphoneAddress *lfp_addr = linphone_core_interpret_url(lf->lc, lfp->uri_or_tel);
@@ -738,7 +741,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 		}
 		fr->inc_subscribe_pending = FALSE;
 	}
-	
+
 	linphone_friend_update_subscribes(fr, linphone_core_should_subscribe_friends_only_when_registered(lc));
 
 	ms_debug("linphone_friend_apply() done.");
@@ -827,7 +830,7 @@ void linphone_core_send_initial_subscribes(LinphoneCore *lc) {
 
 	if (lc->initial_subscribes_sent) return;
 	lc->initial_subscribes_sent=TRUE;
-	
+
 	linphone_core_update_friends_subscriptions(lc);
 }
 
@@ -1423,7 +1426,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 			);
 		}
 		if (addr_str != NULL) ms_free(addr_str);
-	
+
 		linphone_sql_request_generic(lc->friends_db, buf);
 		sqlite3_free(buf);
 

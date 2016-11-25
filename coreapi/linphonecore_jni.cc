@@ -4118,6 +4118,8 @@ extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getPresenceModelFor
 	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model);
 }
 
+extern
+
 /*
  * Class:     org_linphone_core_LinphoneFriendImpl
  * Method:    getPresenceModel
@@ -4152,6 +4154,28 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getFriendByAddress(JN
 																		,jstring jaddress) {
 	const char* address = GetStringUTFChars(env, jaddress);
 	LinphoneFriend *lf = linphone_core_get_friend_by_address((LinphoneCore*)ptr, address);
+	ReleaseStringUTFChars(env, jaddress, address);
+	if(lf != NULL) {
+		jobject jfriend = getFriend(env,lf);
+		return jfriend;
+	} else {
+		return NULL;
+	}
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_createFriend( JNIEnv* env, jobject thiz, jlong ptr) {
+	LinphoneFriend *lf = linphone_core_create_friend((LinphoneCore*)ptr);
+	if(lf != NULL) {
+		jobject jfriend = getFriend(env,lf);
+		return jfriend;
+	} else {
+		return NULL;
+	}
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_createFriendWithAddress( JNIEnv* env, jobject thiz, jlong ptr, jstring jaddress) {
+	const char* address = GetStringUTFChars(env, jaddress);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address((LinphoneCore*)ptr, address);
 	ReleaseStringUTFChars(env, jaddress, address);
 	if(lf != NULL) {
 		jobject jfriend = getFriend(env,lf);
