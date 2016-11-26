@@ -170,6 +170,8 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 
 	if (video_enabled) {
 #ifdef VIDEO_ENABLED
+		linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
+		linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 		video_call_base_2(marie, pauline, FALSE, LinphoneMediaEncryptionNone, TRUE, TRUE);
 		expected_video_dir = LinphoneMediaDirectionSendRecv;
 #endif
