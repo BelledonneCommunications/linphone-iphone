@@ -30,23 +30,23 @@ typedef struct _LinphoneSoundDaemon LinphoneSoundDaemon;
 
 typedef void (*LsdEndOfPlayCallback)(LsdPlayer *p);
 
-void lsd_player_set_callback(LsdPlayer *p, LsdEndOfPlayCallback cb);
-void lsd_player_set_user_pointer(LsdPlayer *p, void *up);
-void *lsd_player_get_user_pointer(const LsdPlayer *p);
-int lsd_player_play(LsdPlayer *p, const char *filename);
-int lsd_player_stop(LsdPlayer *p);
-void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode);
-bool_t lsd_player_loop_enabled(const LsdPlayer *p);
-void lsd_player_set_gain(LsdPlayer *p, float gain);
-LinphoneSoundDaemon *lsd_player_get_daemon(const LsdPlayer *p);
+LINPHONE_PUBLIC void lsd_player_set_callback(LsdPlayer *p, LsdEndOfPlayCallback cb);
+LINPHONE_PUBLIC void lsd_player_set_user_pointer(LsdPlayer *p, void *up);
+LINPHONE_PUBLIC void *lsd_player_get_user_pointer(const LsdPlayer *p);
+LINPHONE_PUBLIC int lsd_player_play(LsdPlayer *p, const char *filename);
+LINPHONE_PUBLIC int lsd_player_stop(LsdPlayer *p);
+LINPHONE_PUBLIC void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode);
+LINPHONE_PUBLIC bool_t lsd_player_loop_enabled(const LsdPlayer *p);
+LINPHONE_PUBLIC void lsd_player_set_gain(LsdPlayer *p, float gain);
+LINPHONE_PUBLIC LinphoneSoundDaemon *lsd_player_get_daemon(const LsdPlayer *p);
 
-LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *cardname, int rate, int nchannels);
-LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
-void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
-void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon *obj);
-void linphone_sound_daemon_release_all_players(LinphoneSoundDaemon *obj);
-void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd);
-void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
+LINPHONE_PUBLIC LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *cardname, int rate, int nchannels);
+LINPHONE_PUBLIC LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
+LINPHONE_PUBLIC void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
+LINPHONE_PUBLIC void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon *obj);
+LINPHONE_PUBLIC void linphone_sound_daemon_release_all_players(LinphoneSoundDaemon *obj);
+LINPHONE_PUBLIC void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd);
+LINPHONE_PUBLIC void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
 /**
  * Enum describing the result of the echo canceller calibration process.

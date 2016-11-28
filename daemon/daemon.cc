@@ -18,18 +18,23 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 #include <cstdio>
+#ifndef _WIN32
 #include <sys/ioctl.h>
+#endif
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <functional>
 
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
 #include <readline/history.h>
 #endif
 
+#ifndef _WIN32
 #include <poll.h>
+#endif
 
 #include "daemon.h"
 #include "commands/adaptive-jitter-compensation.h"
@@ -315,8 +320,8 @@ bool DaemonCommand::matches(const char *name) const {
 Daemon::Daemon(const char *config_path, const char *factory_config_path, const char *log_file, const char *pipe_name, bool display_video, bool capture_video) :
 		mLSD(0), mLogFile(NULL), mAutoVideo(0), mCallIds(0), mProxyIds(0), mAudioStreamIds(0) {
 	ms_mutex_init(&mMutex, NULL);
-	mServerFd = -1;
-	mChildFd = -1;
+	mServerFd = (ortp_pipe_t)-1;
+	mChildFd = (ortp_pipe_t)-1;
 	if (pipe_name == NULL) {
 #ifdef HAVE_READLINE
 		const char *homedir = getenv("HOME");
@@ -329,8 +334,12 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 #endif
 	} else {
 		mServerFd = ortp_server_pipe_create(pipe_name);
+#ifndef _WIN32
 		listen(mServerFd, 2);
-		fprintf(stdout, "Server unix socket created, name=%s fd=%i\n", pipe_name, mServerFd);
+		fprintf(stdout, "Server unix socket created, name=%s fd=%i\n", pipe_name, (int)mServerFd);
+#else
+		fprintf(stdout, "Named pipe  created, name=%s fd=%i\n", pipe_name, (int)mServerFd);
+#endif
 	}
 
 	if (log_file != NULL) {
@@ -566,7 +575,7 @@ void Daemon::iterateStreamStats() {
 void Daemon::iterate() {
 	linphone_core_iterate(mLc);
 	iterateStreamStats();
-	if (mChildFd == -1) {
+	if (mChildFd == (ortp_pipe_t)-1) {
 		if (!mEventQueue.empty()) {
 			Response *r = mEventQueue.front();
 			mEventQueue.pop();
@@ -595,8 +604,8 @@ void Daemon::sendResponse(const Response &resp) {
 	char buf[4096] = { 0 };
 	int size;
 	size = resp.toBuf(buf, sizeof(buf));
-	if (mChildFd != -1) {
-		if (write(mChildFd, buf, size) == -1) {
+	if (mChildFd != (ortp_pipe_t)-1) {
+		if (ortp_pipe_write(mChildFd, (uint8_t *)buf, size) == -1) {
 			ms_error("Fail to write to pipe: %s", strerror(errno));
 		}
 	} else {
@@ -606,43 +615,64 @@ void Daemon::sendResponse(const Response &resp) {
 }
 
 char *Daemon::readPipe(char *buffer, int buflen) {
+#ifdef _WIN32
+	if (mChildFd == (ortp_pipe_t)-1) {
+		mChildFd = ortp_server_pipe_accept_client(mServerFd);
+		ms_message("Client accepted");
+	}
+	if (mChildFd != (ortp_pipe_t)-1) {
+		int ret = ortp_pipe_read(mChildFd, (uint8_t *)buffer, buflen);
+		if (ret == -1) {
+			ms_error("Fail to read from pipe: %s", strerror(errno));
+			mChildFd = (ortp_pipe_t)-1;
+		} else {
+			if (ret == 0) {
+				ms_message("Client disconnected");
+				mChildFd = (ortp_pipe_t)-1;
+				return NULL;
+			}
+			buffer[ret] = 0;
+			return buffer;
+		}
+	}
+#else
 	struct pollfd pfd[2];
 	int nfds = 1;
 	memset(&pfd[0], 0, sizeof(pfd));
-	if (mServerFd != -1) {
+	if (mServerFd != (ortp_pipe_t)-1) {
 		pfd[0].events = POLLIN;
 		pfd[0].fd = mServerFd;
 	}
-	if (mChildFd != -1) {
+	if (mChildFd != (ortp_pipe_t)-1) {
 		pfd[1].events = POLLIN;
 		pfd[1].fd = mChildFd;
 		nfds++;
 	}
 	int err = poll(pfd, nfds, 50);
 	if (err > 0) {
-		if (mServerFd != -1 && (pfd[0].revents & POLLIN)) {
+		if (mServerFd != (ortp_pipe_t)-1 && (pfd[0].revents & POLLIN)) {
 			struct sockaddr_storage addr;
 			socklen_t addrlen = sizeof(addr);
 			int childfd = accept(mServerFd, (struct sockaddr*) &addr, &addrlen);
 			if (childfd != -1) {
-				if (mChildFd != -1) {
+				if (mChildFd != (ortp_pipe_t)-1) {
 					ms_error("Cannot accept two client at the same time");
 					close(childfd);
 				} else {
-					mChildFd = childfd;
+					mChildFd = (ortp_pipe_t)childfd;
 					return NULL;
 				}
 			}
 		}
-		if (mChildFd != -1 && (pfd[1].revents & POLLIN)) {
+		if (mChildFd != (ortp_pipe_t)-1 && (pfd[1].revents & POLLIN)) {
 			int ret;
-			if ((ret = read(mChildFd, buffer, buflen)) == -1) {
+			if ((ret = ortp_pipe_read(mChildFd, (uint8_t *)buffer, buflen)) == -1) {
 				ms_error("Fail to read from pipe: %s", strerror(errno));
 			} else {
 				if (ret == 0) {
 					ms_message("Client disconnected");
-					close(mChildFd);
-					mChildFd = -1;
+					ortp_server_pipe_close_client(mChildFd);
+					mChildFd = (ortp_pipe_t)-1;
 					return NULL;
 				}
 				buffer[ret] = 0;
@@ -650,6 +680,7 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 			}
 		}
 	}
+#endif
 	return NULL;
 }
 
@@ -780,7 +811,7 @@ int Daemon::run() {
 	startThread();
 	while (mRunning) {
 		bool eof=false;
-		if (mServerFd == -1) {
+		if (mServerFd == (ortp_pipe_t)-1) {
 			ret = readLine(line,&eof);
 			if (ret && ret[0] != '\0') {
 #ifdef HAVE_READLINE
@@ -793,7 +824,7 @@ int Daemon::run() {
 		if (ret && ret[0] != '\0') {
 			execCommand(ret);
 		}
-		if (mServerFd == -1 && ret != NULL) {
+		if (mServerFd == (ortp_pipe_t)-1 && ret != NULL) {
 			free(ret);
 		}
 		if (eof && mRunning) {
@@ -836,10 +867,10 @@ Daemon::~Daemon() {
 
 	enableLSD(false);
 	linphone_core_destroy(mLc);
-	if (mChildFd != -1) {
-		close(mChildFd);
+	if (mChildFd != (ortp_pipe_t)-1) {
+		ortp_server_pipe_close_client(mChildFd);
 	}
-	if (mServerFd != -1) {
+	if (mServerFd != (ortp_pipe_t)-1) {
 		ortp_server_pipe_close(mServerFd);
 	}
 	if (mLogFile != NULL) {
@@ -884,6 +915,7 @@ int main(int argc, char *argv[]) {
 				return -1;
 			}
 			pipe_name = argv[++i];
+			stats_enabled = false;
 		} else if (strcmp(argv[i], "--factory-config") == 0) {
 			if (i + 1 >= argc) {
 				fprintf(stderr, "no file specify after --factory-config\n");

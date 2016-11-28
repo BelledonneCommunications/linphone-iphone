@@ -264,8 +264,8 @@ private:
 	LinphoneSoundDaemon *mLSD;
 	std::list<DaemonCommand*> mCommands;
 	std::queue<Response*> mEventQueue;
-	int mServerFd;
-	int mChildFd;
+	ortp_pipe_t mServerFd;
+	ortp_pipe_t mChildFd;
 	std::string mHistfile;
 	bool mRunning;
 	bool mUseStatsEvents;

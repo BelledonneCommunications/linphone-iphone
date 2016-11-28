@@ -528,7 +528,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable);
 LINPHONE_PUBLIC void linphone_core_enable_short_turn_refresh(LinphoneCore *lc, bool_t enable);
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
-void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev);
+LINPHONE_PUBLIC void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev);
 void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *result);
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session, bool_t use_nortpproxy);
 void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call);
@@ -587,7 +587,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
 LINPHONE_PUBLIC bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
-bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
+LINPHONE_PUBLIC bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
@@ -1165,7 +1165,7 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
 bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
 void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall);
-unsigned int linphone_core_get_audio_features(LinphoneCore *lc);
+LINPHONE_PUBLIC unsigned int linphone_core_get_audio_features(LinphoneCore *lc);
 
 void _linphone_core_codec_config_write(LinphoneCore *lc);
 

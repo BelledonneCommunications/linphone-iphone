@@ -40,17 +40,17 @@ AdaptiveBufferCompensationResponse::AdaptiveBufferCompensationResponse(LinphoneC
 	ostringstream ost;
 	switch (type) {
 		case AudioStream:
-			enabled = linphone_core_audio_adaptive_jittcomp_enabled(core);
+			enabled = linphone_core_audio_adaptive_jittcomp_enabled(core) ? true : false;
 			outputAdaptiveBufferCompensation(core, ost, "Audio", enabled);
 			break;
 		case VideoStream:
-			enabled = linphone_core_video_adaptive_jittcomp_enabled(core);
+			enabled = linphone_core_video_adaptive_jittcomp_enabled(core) ? true : false;
 			outputAdaptiveBufferCompensation(core, ost, "Video", enabled);
 			break;
 		case AllStreams:
-			enabled = linphone_core_audio_adaptive_jittcomp_enabled(core);
+			enabled = linphone_core_audio_adaptive_jittcomp_enabled(core) ? true : false;
 			outputAdaptiveBufferCompensation(core, ost, "Audio", enabled);
-			enabled = linphone_core_video_adaptive_jittcomp_enabled(core);
+			enabled = linphone_core_video_adaptive_jittcomp_enabled(core) ? true : false;
 			outputAdaptiveBufferCompensation(core, ost, "Video", enabled);
 			break;
 	}

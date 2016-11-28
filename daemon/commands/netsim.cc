@@ -87,25 +87,25 @@ void NetsimCommand::exec(Daemon* app, const char* args){
 		char value[128]={0};
 		ist >> parameters;
 		if (fmtp_get_value(parameters.c_str(),"max_bandwidth",value, sizeof(value))){
-			params.max_bandwidth=atoi(value);
+			params.max_bandwidth=(float)atoi(value);
 		}
 		if (fmtp_get_value(parameters.c_str(),"max_buffer_size",value, sizeof(value))){
 			params.max_buffer_size=atoi(value);
 		}
 		if (fmtp_get_value(parameters.c_str(),"loss_rate",value, sizeof(value))){
-			params.loss_rate=atoi(value);
+			params.loss_rate=(float)atoi(value);
 		}
 		if (fmtp_get_value(parameters.c_str(),"latency",value, sizeof(value))){
 			params.latency=atoi(value);
 		}
 		if (fmtp_get_value(parameters.c_str(),"consecutive_loss_probability",value, sizeof(value))){
-			params.consecutive_loss_probability=atof(value);
+			params.consecutive_loss_probability=(float)atof(value);
 		}
 		if (fmtp_get_value(parameters.c_str(),"jitter_burst_density",value, sizeof(value))){
-			params.jitter_burst_density=atof(value);
+			params.jitter_burst_density=(float)atof(value);
 		}
 		if (fmtp_get_value(parameters.c_str(),"jitter_strength",value, sizeof(value))){
-			params.jitter_strength=atof(value);
+			params.jitter_strength=(float)atof(value);
 		}
 		if (fmtp_get_value(parameters.c_str(),"mode",value, sizeof(value))){
 			OrtpNetworkSimulatorMode mode=ortp_network_simulator_mode_from_string(value);
