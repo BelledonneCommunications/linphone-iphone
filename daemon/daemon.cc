@@ -519,20 +519,7 @@ bool Daemon::pullEvent() {
 }
 
 void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg) {
-	switch (state) {
-	case LinphoneCallIncomingReceived:
-		linphone_call_enable_camera (call,mAutoVideo);
-	case LinphoneCallOutgoingProgress:
-	case LinphoneCallIncomingEarlyMedia:
-	case LinphoneCallConnected:
-	case LinphoneCallStreamsRunning:
-	case LinphoneCallError:
-	case LinphoneCallEnd:
-		mEventQueue.push(new EventResponse(this, call, state));
-		break;
-	default:
-		break;
-	}
+	mEventQueue.push(new EventResponse(this, call, state));
 }
 
 void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats) {
