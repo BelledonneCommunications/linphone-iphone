@@ -25,6 +25,10 @@ HelpCommand::HelpCommand() :
 		DaemonCommand("help", "help <command>", "Show <command> help notice, if command is unspecified or inexistent show all commands.") {
 }
 
+static bool compareCommand(const DaemonCommand *command1, const DaemonCommand *command2) {
+	return (command1->getProto() < command2->getProto());
+}
+
 void HelpCommand::exec(Daemon *app, const char *args) {
 	ostringstream ost;
 	list<DaemonCommand*>::const_iterator it;
@@ -40,7 +44,9 @@ void HelpCommand::exec(Daemon *app, const char *args) {
 	}
 	
 	if (args==NULL){
-		for (it = l.begin(); it != l.end(); ++it) {
+		list<DaemonCommand*> lcopy = l;
+		lcopy.sort(compareCommand);
+		for (it = lcopy.begin(); it != lcopy.end(); ++it) {
 			ost << (*it)->getProto() << endl;
 		}
 	}
