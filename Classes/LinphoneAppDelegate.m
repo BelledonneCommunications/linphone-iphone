@@ -611,37 +611,54 @@ didInvalidatePushTokenForType:(NSString *)type {
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
-    didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
-             forType:(NSString *)type {
-    LOGI(@"PushKit received with payload : %@", payload.description);
+	didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
+							  forType:(NSString *)type {
 
-    LOGI(@"incoming voip notfication: %@ ", payload.dictionaryPayload);
-    if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-        //Call category
-        UNNotificationAction* act_ans = [UNNotificationAction actionWithIdentifier:@"Answer" title:NSLocalizedString(@"Answer", nil) options:UNNotificationActionOptionForeground];
-        UNNotificationAction* act_dec = [UNNotificationAction actionWithIdentifier:@"Decline" title:NSLocalizedString(@"Decline", nil) options:UNNotificationActionOptionNone];
-        UNNotificationCategory* cat_call = [UNNotificationCategory categoryWithIdentifier:@"call_cat" actions:[NSArray arrayWithObjects:act_ans, act_dec, nil] intentIdentifiers:[[NSMutableArray alloc] init] options:UNNotificationCategoryOptionCustomDismissAction];
-        
-        //Msg category
-        UNTextInputNotificationAction* act_reply = [UNTextInputNotificationAction actionWithIdentifier:@"Reply" title:NSLocalizedString(@"Reply", nil) options:UNNotificationActionOptionNone];
-        UNNotificationAction* act_seen = [UNNotificationAction actionWithIdentifier:@"Seen" title:NSLocalizedString(@"Mark as seen", nil) options:UNNotificationActionOptionNone];
-        UNNotificationCategory* cat_msg = [UNNotificationCategory categoryWithIdentifier:@"msg_cat" actions:[NSArray arrayWithObjects:act_reply, act_seen, nil] intentIdentifiers:[[NSMutableArray alloc] init] options:UNNotificationCategoryOptionCustomDismissAction];
-        
-        //UNUserNotificationCenter* notifCenter = [UNUserNotificationCenter currentNotificationCenter];
-        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
-                                                                            completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                                                                                // Enable or disable features based on authorization.
-                                                                                if (error) {
-                                                                                    LOGD(error.description);
-                                                                                }
-                                                                            }];
-        NSSet* categories = [NSSet setWithObjects:cat_call, cat_msg, nil];
-        [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
-        
-        
-    }
-	linphone_core_set_network_reachable(LC, TRUE);
+	LOGI(@"PushKit : incoming voip notfication: %@", payload.dictionaryPayload);
+	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+		// Call category
+		UNNotificationAction *act_ans =
+			[UNNotificationAction actionWithIdentifier:@"Answer"
+												 title:NSLocalizedString(@"Answer", nil)
+											   options:UNNotificationActionOptionForeground];
+		UNNotificationAction *act_dec = [UNNotificationAction actionWithIdentifier:@"Decline"
+																			 title:NSLocalizedString(@"Decline", nil)
+																		   options:UNNotificationActionOptionNone];
+		UNNotificationCategory *cat_call =
+			[UNNotificationCategory categoryWithIdentifier:@"call_cat"
+												   actions:[NSArray arrayWithObjects:act_ans, act_dec, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
+		// Msg category
+		UNTextInputNotificationAction *act_reply =
+			[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
+														  title:NSLocalizedString(@"Reply", nil)
+														options:UNNotificationActionOptionNone];
+		UNNotificationAction *act_seen =
+			[UNNotificationAction actionWithIdentifier:@"Seen"
+												 title:NSLocalizedString(@"Mark as seen", nil)
+											   options:UNNotificationActionOptionNone];
+		UNNotificationCategory *cat_msg =
+			[UNNotificationCategory categoryWithIdentifier:@"msg_cat"
+												   actions:[NSArray arrayWithObjects:act_reply, act_seen, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
+		[UNUserNotificationCenter currentNotificationCenter].delegate = self;
+		[[UNUserNotificationCenter currentNotificationCenter]
+			requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
+											 UNAuthorizationOptionBadge)
+						  completionHandler:^(BOOL granted, NSError *_Nullable error) {
+							// Enable or disable features based on authorization.
+							if (error) {
+								LOGD(error.description);
+							}
+						  }];
+		NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, nil];
+		[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
+	}
+	[LinphoneManager.instance setupNetworkReachabilityCallback];
 	dispatch_async(dispatch_get_main_queue(), ^{
 	  [self processRemoteNotification:payload.dictionaryPayload];
 	});
