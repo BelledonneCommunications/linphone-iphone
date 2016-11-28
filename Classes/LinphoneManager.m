@@ -1679,7 +1679,9 @@ static BOOL libStarted = FALSE;
 
 	_iapManager = [[InAppProductsManager alloc] init];
 
-	linphone_core_migrate_to_multi_transport(theLinphoneCore);
+	// - Security fix - remove multi transport migration, because it enables tcp or udp, if by factoring settings only
+	// tls is enabled. 	This is a problem for new installations.
+	// linphone_core_migrate_to_multi_transport(theLinphoneCore);
 
 	// init audio session (just getting the instance will init)
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
