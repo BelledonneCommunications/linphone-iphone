@@ -819,17 +819,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                 }
                 linphone_core_set_network_reachable(LC, FALSE);
                 LinphoneManager.instance.connectivity = none;
-                
-                LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
-                // handle proxy config if any
-                if (proxyCfg) {
-                    const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
-                    BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
-                    if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
-                        // For registration register
-                        [self refreshRegisters];
-                    }
-                }
             }
 		}
 		if (incallBgTask) {
@@ -2065,7 +2054,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	LOGI(@"Entering [%s] bg mode", shouldEnterBgMode ? "normal" : "lite");
 
-	if (!shouldEnterBgMode) {
+	if (!shouldEnterBgMode && floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 		const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
 		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
 		if (pushNotifEnabled) {
@@ -2083,8 +2072,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)becomeActive {
 	// enable presence
-
-	[self refreshRegisters];
+	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max || self.connectivity == none) {
+		[self refreshRegisters];
+	}
 	if (pausedCallBgTask) {
 		[[UIApplication sharedApplication] endBackgroundTask:pausedCallBgTask];
 		pausedCallBgTask = 0;
@@ -2134,7 +2124,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
     LOGI(@"Network reachability callback setup");
     linphone_core_refresh_registers(theLinphoneCore); // just to make sure REGISTRATION is up to date
-    LOGI(@"Out of refreshRegisters");
 }
 
 - (void)renameDefaultSettings {
