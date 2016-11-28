@@ -706,6 +706,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendLis
 LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
 	const bctbx_list_t *elem;
 	if (ref_key == NULL) return NULL;
+	if (list == NULL) return NULL;
 	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
 		if ((lf->refkey != NULL) && (strcmp(lf->refkey, ref_key) == 0)) return lf;

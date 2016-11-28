@@ -108,13 +108,16 @@ static int friend_compare(const void * a, const void * b) {
 }
 
 static LinphoneFriendPresence * find_presence_model_for_uri_or_tel(const LinphoneFriend *lf, const char *uri_or_tel) {
-	bctbx_list_t *iterator = lf->presence_models;
-	LinphoneAddress *uri_or_tel_addr = linphone_core_interpret_url(lf->lc, uri_or_tel);
+	bctbx_list_t *iterator = NULL;
+	LinphoneAddress *uri_or_tel_addr = NULL;
 	LinphoneFriendPresence *result=NULL;
 	if (!lf->lc) {
 		ms_warning("Cannot find uri of tel [%s] from friend [%p] because not associated to any Linphone core object",uri_or_tel,lf);
 		return NULL;
 	}
+	iterator = lf->presence_models;
+	uri_or_tel_addr = linphone_core_interpret_url(lf->lc, uri_or_tel);
+
 	while (uri_or_tel_addr && iterator) {
 		LinphoneFriendPresence *lfp = (LinphoneFriendPresence *)bctbx_list_get_data(iterator);
 		LinphoneAddress *lfp_addr = linphone_core_interpret_url(lf->lc, lfp->uri_or_tel);
