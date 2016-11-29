@@ -19,7 +19,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 #include "conference.h"
 
-Conference::Conference() :
+using namespace std;
+
+ConferenceCommand::ConferenceCommand() :
 	DaemonCommand("conference", "conference <subcommand> <call id>",
 				  "Create and manage an audio conference.\n"
 				  "Subcommands:\n"
@@ -44,45 +46,45 @@ Conference::Conference() :
 										"Reason: No call with such id."));
 }
 
-void Conference::exec(Daemon* app, const char* args)
-{
+void ConferenceCommand::exec(Daemon* app, const string& args) {
 	LinphoneCore* lc = app->getCore();
-	long id;
-	char subcommand[32]={0};
-	int n;
-	n=sscanf(args, "%31s %li", subcommand,&id);
-	if (n == 2){
-		LinphoneCall *call=app->findCall(id);
-		if (call==NULL){
-			app->sendResponse(Response("No call with such id."));
-			return;
-		}
-
-		if (strcmp(subcommand,"add")==0){
-			n = linphone_core_add_to_conference(lc,call);
-
-		}else if (strcmp(subcommand,"rm")==0){
-			n = linphone_core_remove_from_conference(lc,call);
-
-		}else if (strcmp(subcommand,"enter")==0){
-			n = linphone_core_enter_conference(lc);
-
-		}else if (strcmp(subcommand,"leave")==0){
-			n = linphone_core_leave_conference(lc);
-		} else {
-			app->sendResponse("Invalid command format.");
-		}
-
-		if ( n == 0 ){
-			std::ostringstream ostr;
-			ostr << "Call ID: " << id << "\n";
-			ostr << "Conference: " << subcommand << " OK" << "\n";
-			app->sendResponse(Response(ostr.str(), Response::Ok));
-		} else {
-			app->sendResponse("Conference: command failed");
-		}
-
-	} else {
-		app->sendResponse("Invalid command format.");
+	int id;
+	string subcommand;
+	int ret;
+	istringstream ist(args);
+	ist >> subcommand;
+	ist >> id;
+	if (ist.fail()) {
+		app->sendResponse(Response("Invalid command format.", Response::Error));
+		return;
 	}
+
+	LinphoneCall *call=app->findCall(id);
+	if (call == NULL) {
+		app->sendResponse(Response("No call with such id.", Response::Error));
+		return;
+	}
+
+	if (subcommand.compare("add") == 0) {
+		ret = linphone_core_add_to_conference(lc, call);
+	} else if (subcommand.compare("rm") == 0) {
+		ret = linphone_core_remove_from_conference(lc, call);
+	} else if (subcommand.compare("enter") == 0) {
+		ret = linphone_core_enter_conference(lc);
+	} else if (subcommand.compare("leave") == 0) {
+		ret = linphone_core_leave_conference(lc);
+	} else {
+		app->sendResponse(Response("Invalid command format.", Response::Error));
+		return;
+	}
+
+	if (ret == 0) {
+		std::ostringstream ostr;
+		ostr << "Call ID: " << id << "\n";
+		ostr << "Conference: " << subcommand << " OK" << "\n";
+		app->sendResponse(Response(ostr.str(), Response::Ok));
+		return;
+	}
+
+	app->sendResponse(Response("Command failed", Response::Error));
 }

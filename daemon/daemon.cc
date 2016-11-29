@@ -287,10 +287,10 @@ PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type
 	}
 }
 
-DaemonCommandExample::DaemonCommandExample(const char *command, const char *output)
+DaemonCommandExample::DaemonCommandExample(const string& command, const string& output)
 	: mCommand(command), mOutput(output) {}
 
-DaemonCommand::DaemonCommand(const char *name, const char *proto, const char *description) :
+DaemonCommand::DaemonCommand(const string& name, const string& proto, const string& description) :
 		mName(name), mProto(proto), mDescription(description) {
 }
 
@@ -313,8 +313,8 @@ const string DaemonCommand::getHelp() const {
 	return ost.str();
 }
 
-bool DaemonCommand::matches(const char *name) const {
-	return strcmp(name, mName.c_str()) == 0;
+bool DaemonCommand::matches(const string& name) const {
+	return mName.compare(name) == 0;
 }
 
 Daemon::Daemon(const char *config_path, const char *factory_config_path, const char *log_file, const char *pipe_name, bool display_video, bool capture_video) :
@@ -475,14 +475,14 @@ void Daemon::initCommands() {
 	mCommands.push_back(new AnswerCommand());
 	mCommands.push_back(new CallStatusCommand());
 	mCommands.push_back(new CallStatsCommand());
-	mCommands.push_back(new CallPause());
-	mCommands.push_back(new CallMute());
-	mCommands.push_back(new CallResume());
-	mCommands.push_back(new CallTransfer());
+	mCommands.push_back(new CallPauseCommand());
+	mCommands.push_back(new CallMuteCommand());
+	mCommands.push_back(new CallResumeCommand());
+	mCommands.push_back(new CallTransferCommand());
 	mCommands.push_back(new Video());
 	mCommands.push_back(new VideoSource());
 	mCommands.push_back(new AutoVideo());
-	mCommands.push_back(new Conference());
+	mCommands.push_back(new ConferenceCommand());
 	mCommands.push_back(new AudioCodecGetCommand());
 	mCommands.push_back(new AudioCodecEnableCommand());
 	mCommands.push_back(new AudioCodecDisableCommand());
@@ -591,10 +591,14 @@ void Daemon::iterate() {
 	}
 }
 
-void Daemon::execCommand(const char *cl) {
-	char args[sLineSize] = { 0 };
-	char name[sLineSize] = { 0 };
-	sscanf(cl, "%511s %511[^\n]", name, args); //Read the rest of line in args
+void Daemon::execCommand(const string &command) {
+	istringstream ist(command);
+	string name;
+	ist >> name;
+	stringbuf argsbuf;
+	ist.get(argsbuf);
+	string args = argsbuf.str();
+	if (!args.empty() && (args[0] == ' ')) args.erase(0, 1);
 	list<DaemonCommand*>::iterator it = find_if(mCommands.begin(), mCommands.end(), bind2nd(mem_fun(&DaemonCommand::matches), name));
 	if (it != mCommands.end()) {
 		ms_mutex_lock(&mMutex);
@@ -606,27 +610,26 @@ void Daemon::execCommand(const char *cl) {
 }
 
 void Daemon::sendResponse(const Response &resp) {
-	char buf[4096] = { 0 };
-	int size;
-	size = resp.toBuf(buf, sizeof(buf));
+	string buf = resp.toBuf();
 	if (mChildFd != (ortp_pipe_t)-1) {
-		if (ortp_pipe_write(mChildFd, (uint8_t *)buf, size) == -1) {
+		if (ortp_pipe_write(mChildFd, (uint8_t *)buf.c_str(), buf.size()) == -1) {
 			ms_error("Fail to write to pipe: %s", strerror(errno));
 		}
 	} else {
-		fprintf(stdout, "%s", buf);
-		fflush(stdout);
+		cout << buf << flush;
 	}
 }
 
-char *Daemon::readPipe(char *buffer, int buflen) {
+string Daemon::readPipe() {
+	char buffer[32768];
+	memset(buffer, '\0', sizeof(buffer));
 #ifdef _WIN32
 	if (mChildFd == (ortp_pipe_t)-1) {
 		mChildFd = ortp_server_pipe_accept_client(mServerFd);
 		ms_message("Client accepted");
 	}
 	if (mChildFd != (ortp_pipe_t)-1) {
-		int ret = ortp_pipe_read(mChildFd, (uint8_t *)buffer, buflen);
+		int ret = ortp_pipe_read(mChildFd, (uint8_t *)buffer, sizeof(buffer));
 		if (ret == -1) {
 			ms_error("Fail to read from pipe: %s", strerror(errno));
 			mChildFd = (ortp_pipe_t)-1;
@@ -634,9 +637,9 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 			if (ret == 0) {
 				ms_message("Client disconnected");
 				mChildFd = (ortp_pipe_t)-1;
-				return NULL;
+				return "";
 			}
-			buffer[ret] = 0;
+			buffer[ret] = '\0';
 			return buffer;
 		}
 	}
@@ -671,7 +674,7 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 		}
 		if (mChildFd != (ortp_pipe_t)-1 && (pfd[1].revents & POLLIN)) {
 			int ret;
-			if ((ret = ortp_pipe_read(mChildFd, (uint8_t *)buffer, buflen)) == -1) {
+			if ((ret = ortp_pipe_read(mChildFd, (uint8_t *)buffer, sizeof(buffer))) == -1) {
 				ms_error("Fail to read from pipe: %s", strerror(errno));
 			} else {
 				if (ret == 0) {
@@ -680,7 +683,7 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 					mChildFd = (ortp_pipe_t)-1;
 					return NULL;
 				}
-				buffer[ret] = 0;
+				buffer[ret] = '\0;
 				return buffer;
 			}
 		}
@@ -763,74 +766,77 @@ void Daemon::dumpCommandsHelpHtml(){
 
 
 static void printHelp() {
-	fprintf(stdout, "daemon-linphone [<options>]\n"
+	cout << "daemon-linphone [<options>]" << endl <<
 #if defined(LICENCE_GPL) || defined(LICENCE_COMMERCIAL)
-			"Licence: "
+		"Licence: "
 #ifdef LICENCE_GPL
-			"GPL"
+		"GPL"
 #endif
 #ifdef LICENCE_COMMERCIAL
-			"Commercial"
+		"Commercial"
 #endif
-			"\n"
+		<< endl <<
 #endif
 
-			"where options are :\n"
-			"\t--help\t\t\tPrint this notice.\n"
-			"\t--dump-commands-help\tDump the help of every available commands.\n"
-			"\t--dump-commands-html-help\tDump the help of every available commands.\n"
-			"\t--pipe <pipename>\tCreate an unix server socket to receive commands.\n"
-			"\t--log <path>\t\tSupply a file where the log will be saved.\n"
-			"\t--factory-config <path>\tSupply a readonly linphonerc style config file to start with.\n"
-			"\t--config <path>\t\tSupply a linphonerc style config file to start with.\n"
-			"\t--disable-stats-events\t\tDo not automatically raise RTP statistics events.\n"
-			"\t--enable-lsd\t\tUse the linphone sound daemon.\n"
-			"\t-C\t\t\tenable video capture.\n"
-			"\t-D\t\t\tenable video display.\n");
+		"where options are :" << endl <<
+		"\t--help                     Print this notice." << endl <<
+		"\t--dump-commands-help       Dump the help of every available commands." << endl <<
+		"\t--dump-commands-html-help  Dump the help of every available commands." << endl <<
+		"\t--pipe <pipename>          Create an unix server socket to receive commands." << endl <<
+		"\t--log <path>               Supply a file where the log will be saved." << endl <<
+		"\t--factory-config <path>    Supply a readonly linphonerc style config file to start with." << endl <<
+		"\t--config <path>            Supply a linphonerc style config file to start with." << endl <<
+		"\t--disable-stats-events     Do not automatically raise RTP statistics events." << endl <<
+		"\t--enable-lsd               Use the linphone sound daemon." << endl <<
+		"\t-C                         Enable video capture." << endl <<
+		"\t-D                         Enable video display." << endl;
 }
 
 void Daemon::startThread() {
 	ms_thread_create(&this->mThread, NULL, Daemon::iterateThread, this);
 }
 
-char *Daemon::readLine(const char *prompt, bool *eof) {
+#ifdef max
+#undef max
+#endif
+
+string Daemon::readLine(const string& prompt, bool *eof) {
 	*eof=false;
 #ifdef HAVE_READLINE
-	return readline(prompt);
+	return readline(prompt.c_str());
 #else
 	if (cin.eof()) {
 		*eof=true;
-		return NULL;
+		return "";
 	}
 	cout << prompt;
-	char *buff = (char *) malloc(sLineSize);
-	cin.getline(buff, sLineSize);
-	return buff;
+	stringbuf outbuf;
+	cin.get(outbuf);
+	cin.clear();
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	return outbuf.str();
 #endif
 }
 
 int Daemon::run() {
-	char line[sLineSize] = "daemon-linphone>";
-	char *ret;
+	const string prompt("daemon-linphone>");
 	mRunning = true;
 	startThread();
 	while (mRunning) {
+		string line;
 		bool eof=false;
 		if (mServerFd == (ortp_pipe_t)-1) {
-			ret = readLine(line,&eof);
-			if (ret && ret[0] != '\0') {
+			line = readLine(prompt, &eof);
+			if (!line.empty()) {
 #ifdef HAVE_READLINE
-				add_history(ret);
+				add_history(line.c_str());
 #endif
 			}
 		} else {
-			ret = readPipe(line, sLineSize);
+			line = readPipe();
 		}
-		if (ret && ret[0] != '\0') {
-			execCommand(ret);
-		}
-		if (mServerFd == (ortp_pipe_t)-1 && ret != NULL) {
-			free(ret);
+		if (!line.empty()) {
+			execCommand(line);
 		}
 		if (eof && mRunning) {
 			mRunning = false; // ctrl+d

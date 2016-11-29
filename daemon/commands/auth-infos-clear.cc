@@ -34,7 +34,7 @@ AuthInfosClearCommand::AuthInfosClearCommand() :
 						"Reason: No auth info with such id."));
 }
 
-void AuthInfosClearCommand::exec(Daemon *app, const char *args) {
+void AuthInfosClearCommand::exec(Daemon *app, const string& args) {
 	string param;
 	int pid;
 	ostringstream ostr;
@@ -49,7 +49,7 @@ void AuthInfosClearCommand::exec(Daemon *app, const char *args) {
 		int previous_size = app->maxAuthInfoId();
 		linphone_core_clear_all_auth_info(app->getCore());
 		ostr << "Successfully cleared " << previous_size - app->maxAuthInfoId() << " auth infos." << endl;
-		app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+		app->sendResponse(Response(ostr.str(), Response::Ok));
 	} else {
 		LinphoneAuthInfo *auth_info = NULL;
 		ist.clear();
@@ -66,6 +66,6 @@ void AuthInfosClearCommand::exec(Daemon *app, const char *args) {
 		}
 		linphone_core_remove_auth_info(app->getCore(), auth_info);
 		ostr << "Successfully cleared auth info " << pid << "." << endl;
-		app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+		app->sendResponse(Response(ostr.str(), Response::Ok));
 	}
 }

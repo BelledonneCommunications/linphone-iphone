@@ -50,7 +50,7 @@ FirewallPolicyResponse::FirewallPolicyResponse(LinphoneCore *core) : Response() 
 			ost << "upnp\n";
 			break;
 	}
-	setBody(ost.str().c_str());
+	setBody(ost.str());
 }
 
 FirewallPolicyCommand::FirewallPolicyCommand() :
@@ -71,50 +71,53 @@ FirewallPolicyCommand::FirewallPolicyCommand() :
 						"Type: none"));
 }
 
-void FirewallPolicyCommand::exec(Daemon *app, const char *args) {
+void FirewallPolicyCommand::exec(Daemon *app, const string& args) {
 	string type;
 	string address;
 	istringstream ist(args);
 	ist >> type;
 	if (ist.eof() && (type.length() == 0)) {
 		app->sendResponse(FirewallPolicyResponse(app->getCore()));
-	} else if (ist.fail()) {
+		return;
+	}
+	if (ist.fail()) {
 		app->sendResponse(Response("Incorrect type parameter.", Response::Error));
+		return;
+	}
+
+	bool get_address;
+	LinphoneFirewallPolicy policy;
+	if (type.compare("none") == 0) {
+		policy = LinphonePolicyNoFirewall;
+		get_address = false;
+	} else if (type.compare("nat") == 0) {
+		policy = LinphonePolicyUseNatAddress;
+		get_address = true;
+	} else if (type.compare("stun") == 0) {
+		policy = LinphonePolicyUseStun;
+		get_address = true;
+	} else if (type.compare("ice") == 0) {
+		policy = LinphonePolicyUseIce;
+		get_address = true;
+	} else if (type.compare("upnp") == 0) {
+		policy = LinphonePolicyUseUpnp;
+		get_address = false;
 	} else {
-		bool get_address;
-		LinphoneFirewallPolicy policy;
-		if (type.compare("none") == 0) {
-			policy = LinphonePolicyNoFirewall;
-			get_address = false;
-		} else if (type.compare("nat") == 0) {
-			policy = LinphonePolicyUseNatAddress;
-			get_address = true;
-		} else if (type.compare("stun") == 0) {
-			policy = LinphonePolicyUseStun;
-			get_address = true;
-		} else if (type.compare("ice") == 0) {
-			policy = LinphonePolicyUseIce;
-			get_address = true;
-		} else if (type.compare("upnp") == 0) {
-			policy = LinphonePolicyUseUpnp;
-			get_address = false;
-		} else {
-			app->sendResponse(Response("Incorrect type parameter.", Response::Error));
+		app->sendResponse(Response("Incorrect type parameter.", Response::Error));
+		return;
+	}
+	if (get_address) {
+		ist >> address;
+		if (ist.fail()) {
+			app->sendResponse(Response("Missing/Incorrect address parameter.", Response::Error));
 			return;
 		}
-		if (get_address) {
-			ist >> address;
-			if (ist.fail()) {
-				app->sendResponse(Response("Missing/Incorrect address parameter.", Response::Error));
-				return;
-			}
-		}
-		linphone_core_set_firewall_policy(app->getCore(), policy);
-		if (policy == LinphonePolicyUseNatAddress) {
-			linphone_core_set_nat_address(app->getCore(), address.c_str());
-		} else if ((policy == LinphonePolicyUseStun) || (policy == LinphonePolicyUseIce)) {
-			linphone_core_set_stun_server(app->getCore(), address.c_str());
-		}
-		app->sendResponse(FirewallPolicyResponse(app->getCore()));
 	}
+	linphone_core_set_firewall_policy(app->getCore(), policy);
+	if (policy == LinphonePolicyUseNatAddress) {
+		linphone_core_set_nat_address(app->getCore(), address.c_str());
+	} else if ((policy == LinphonePolicyUseStun) || (policy == LinphonePolicyUseIce)) {
+		linphone_core_set_stun_server(app->getCore(), address.c_str());
+	}
+	app->sendResponse(FirewallPolicyResponse(app->getCore()));
 }

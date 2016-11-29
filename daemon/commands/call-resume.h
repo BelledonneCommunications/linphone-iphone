@@ -17,16 +17,16 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef CALLRESUME_H
-#define CALLRESUME_H
+#ifndef LINPHONE_DAEMON_COMMAND_CALL_RESUME_H
+#define LINPHONE_DAEMON_COMMAND_CALL_RESUME_H
 
 #include "daemon.h"
 
-class CallResume : public DaemonCommand
+class CallResumeCommand : public DaemonCommand
 {
 public:
-	CallResume();
-	virtual void exec(Daemon *app, const char *args);
+	CallResumeCommand();
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif // CALLRESUME_H
+#endif // LINPHONE_DAEMON_COMMAND_CALL_RESUME_H

@@ -58,7 +58,7 @@ class Daemon;
 
 class DaemonCommandExample {
 public:
-	DaemonCommandExample(const char *command, const char *output);
+	DaemonCommandExample(const std::string& command, const std::string& output);
 	~DaemonCommandExample() {}
 	const std::string &getCommand() const {
 		return mCommand;
@@ -74,8 +74,8 @@ private:
 class DaemonCommand {
 public:
 	virtual ~DaemonCommand() {}
-	virtual void exec(Daemon *app, const char *args)=0;
-	bool matches(const char *name) const;
+	virtual void exec(Daemon *app, const std::string& args)=0;
+	bool matches(const std::string& name) const;
 	const std::string getHelp() const;
 	const std::string &getProto() const {
 		return mProto;
@@ -88,7 +88,7 @@ public:
 	}
 	void addExample(const DaemonCommandExample *example);
 protected:
-	DaemonCommand(const char *name, const char *proto, const char *description);
+	DaemonCommand(const std::string& name, const std::string& proto, const std::string& description);
 	const std::string mName;
 	const std::string mProto;
 	const std::string mDescription;
@@ -105,14 +105,6 @@ public:
 	Response() :
 			mStatus(Ok) {
 	}
-	Response(const char *msg, Status status = Error) :
-			mStatus(status) {
-		if (status == Ok) {
-			mBody = msg;
-		} else {
-			mReason = msg;
-		}
-	}
 	Response(const std::string& msg, Status status = Error):
 		mStatus(status) {
 		if( status == Ok) {
@@ -125,25 +117,26 @@ public:
 	void setStatus(Status st) {
 		mStatus = st;
 	}
-	void setReason(const char *reason) {
+	void setReason(const std::string& reason) {
 		mReason = reason;
 	}
-	void setBody(const char *body) {
+	void setBody(const std::string& body) {
 		mBody = body;
 	}
 	const std::string &getBody() const {
 		return mBody;
 	}
-	virtual int toBuf(char *dst, int dstlen) const {
-		int i = 0;
-		i += snprintf(dst + i, dstlen - i, "Status: %s\n", mStatus == Ok ? "Ok" : "Error");
-		if (mReason.size() > 0) {
-			i += snprintf(dst + i, dstlen - i, "Reason: %s\n", mReason.c_str());
+	virtual std::string toBuf() const {
+		std::ostringstream buf;
+		std::string status = (mStatus == Ok) ? "Ok" : "Error";
+		buf << "Status: " << status << "\n";
+		if (!mReason.empty()) {
+			buf << "Reason: " << mReason << "\n";
 		}
-		if (mBody.size() > 0) {
-			i += snprintf(dst + i, dstlen - i, "\n%s\n", mBody.c_str());
+		if (!mBody.empty()) {
+			buf << "\n" << mBody << "\n";
 		}
-		return i;
+		return buf.str();
 	}
 private:
 	Status mStatus;
@@ -250,16 +243,15 @@ private:
 	void callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg);
 	void callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats);
 	void dtmfReceived(LinphoneCall *call, int dtmf);
-	void execCommand(const char *cl);
-	char *readLine(const char *, bool*);
-	char *readPipe(char *buffer, int buflen);
+	void execCommand(const std::string &command);
+	std::string readLine(const std::string&, bool*);
+	std::string readPipe();
 	void iterate();
 	void iterateStreamStats();
 	void startThread();
 	void stopThread();
 	void initCommands();
 	void uninitCommands();
-	void iterateStreamStats(LinphoneCore *lc);
 	LinphoneCore *mLc;
 	LinphoneSoundDaemon *mLSD;
 	std::list<DaemonCommand*> mCommands;
@@ -276,7 +268,6 @@ private:
 	int mAudioStreamIds;
 	ms_thread_t mThread;
 	ms_mutex_t mMutex;
-	static const int sLineSize = 512;
 	std::map<int, AudioStreamAndOther*> mAudioStreams;
 };
 

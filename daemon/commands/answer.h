@@ -17,15 +17,15 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef COMMAND_ANSWER_H_
-#define COMMAND_ANSWER_H_
+#ifndef LINPHONE_DAEMON_COMMAND_ANSWER_H_
+#define LINPHONE_DAEMON_COMMAND_ANSWER_H_
 
-#include "../daemon.h"
+#include "daemon.h"
 
 class AnswerCommand: public DaemonCommand {
 public:
 	AnswerCommand();
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif //COMMAND_ANSWER_H_
+#endif // LINPHONE_DAEMON_COMMAND_ANSWER_H_

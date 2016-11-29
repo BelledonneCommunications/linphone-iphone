@@ -17,16 +17,16 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef CALLTRANSFER_H
-#define CALLTRANSFER_H
+#ifndef LINPHONE_DAEMON_COMMAND_CALL_TRANSFER_H
+#define LINPHONE_DAEMON_COMMAND_CALL_TRANSFER_H
 
 #include "daemon.h"
 
-class CallTransfer : public DaemonCommand
+class CallTransferCommand : public DaemonCommand
 {
 public:
-	CallTransfer();
-	virtual void exec(Daemon *app, const char *args);
+	CallTransferCommand();
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif // CALLTRANSFER_H
+#endif // LINPHONE_DAEMON_COMMAND_CALL_TRANSFER_H

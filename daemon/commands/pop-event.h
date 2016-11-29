@@ -17,15 +17,15 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef COMMAND_POP_EVENT_H_
-#define COMMAND_POP_EVENT_H_
+#ifndef LINPHONE_DAEMON_COMMAND_POP_EVENT_H_
+#define LINPHONE_DAEMON_COMMAND_POP_EVENT_H_
 
-#include "../daemon.h"
+#include "daemon.h"
 
 class PopEventCommand: public DaemonCommand {
 public:
 	PopEventCommand();
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif //COMMAND_POP_EVENT_H_
+#endif // LINPHONE_DAEMON_COMMAND_POP_EVENT_H_

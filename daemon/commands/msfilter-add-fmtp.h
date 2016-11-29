@@ -17,15 +17,15 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef COMMAND_MSFILTER_ADD_FMTP
-#define COMMAND_MSFILTER_ADD_FMTP
+#ifndef LINPHONE_DAEMON_COMMAND_MSFILTER_ADD_FMTP
+#define LINPHONE_DAEMON_COMMAND_MSFILTER_ADD_FMTP
 
-#include "../daemon.h"
+#include "daemon.h"
 
 class MSFilterAddFmtpCommand : public DaemonCommand {
 public:
 	MSFilterAddFmtpCommand();
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif /* COMMAND_MSFILTER_ADD_FMTP */
+#endif // LINPHONE_DAEMON_COMMAND_MSFILTER_ADD_FMTP

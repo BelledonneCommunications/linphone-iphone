@@ -19,7 +19,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 #include "call-mute.h"
 
-CallMute::CallMute() :
+using namespace std;
+
+CallMuteCommand::CallMuteCommand() :
 	DaemonCommand("call-mute", "call-mute 0|1", "mute/unmute the microphone (1 to mute, 0 to unmute). No argument means MUTE.")
 {
 	addExample(new DaemonCommandExample("call-mute 1",
@@ -36,24 +38,25 @@ CallMute::CallMute() :
 										"Reason: No call in progress. Can't mute."));
 }
 
-void CallMute::exec(Daemon* app, const char* args)
+void CallMuteCommand::exec(Daemon* app, const string& args)
 {
 	LinphoneCore *lc = app->getCore();
-	int muted = TRUE; // no arg means MUTE
+	int muted;
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
-	if( call == NULL ){
+	if (call == NULL) {
 		app->sendResponse(Response("No call in progress. Can't mute."));
 		return;
 	}
 
-	if (sscanf(args, "%i", &muted) == 1) {
-		linphone_core_enable_mic(lc, !muted);
+	istringstream ist(args);
+	ist >> muted;
+	if (ist.fail() || (muted != 0)) {
+		muted = TRUE;
 	} else {
-		linphone_core_enable_mic(lc, !muted);
+		muted = FALSE;
 	}
+	linphone_core_enable_mic(lc, !muted);
 
-	app->sendResponse(Response(muted?"Microphone Muted"
-									:"Microphone Unmuted",
-							   Response::Ok));
+	app->sendResponse(Response(muted ? "Microphone Muted" : "Microphone Unmuted", Response::Ok));
 }

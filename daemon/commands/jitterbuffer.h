@@ -17,23 +17,23 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef COMMAND_JITTER_SIZE_H_
-#define COMMAND_JITTER_SIZE_H_
+#ifndef LINPHONE_DAEMON_COMMAND_JITTER_BUFFER_H_
+#define LINPHONE_DAEMON_COMMAND_JITTER_BUFFER_H_
 
-#include "../daemon.h"
+#include "daemon.h"
 
 
 class JitterBufferCommand : public DaemonCommand{
 public:
     JitterBufferCommand();
-    virtual void exec(Daemon *app, const char *args);
+    virtual void exec(Daemon *app, const std::string& args);
 };
 
 
 class JitterBufferResetCommand : public DaemonCommand{
 public:
     JitterBufferResetCommand();
-    virtual void exec(Daemon *app, const char *args);
+    virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif
+#endif // LINPHONE_DAEMON_COMMAND_JITTER_BUFFER_H

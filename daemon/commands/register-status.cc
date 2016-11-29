@@ -43,7 +43,7 @@ void RegisterStatusResponse::append(int id, const LinphoneProxyConfig* cfg) {
 	}
 	ost << "Id: " << id << "\n";
 	ost << "State: " << linphone_registration_state_to_string(linphone_proxy_config_get_state(cfg)) << "\n";
-	setBody(ost.str().c_str());
+	setBody(ost.str());
 }
 
 RegisterStatusCommand::RegisterStatusCommand() :
@@ -63,7 +63,7 @@ RegisterStatusCommand::RegisterStatusCommand() :
 						"Reason: No register with such id."));
 }
 
-void RegisterStatusCommand::exec(Daemon *app, const char *args) {
+void RegisterStatusCommand::exec(Daemon *app, const string& args) {
 	LinphoneProxyConfig *cfg = NULL;
 	string param;
 	int pid;

@@ -35,7 +35,7 @@ CNResponse::CNResponse(LinphoneCore *core) : Response() {
 	} else {
 		ost << "disabled\n";
 	}
-	setBody(ost.str().c_str());
+	setBody(ost.str());
 }
 
 
@@ -53,21 +53,22 @@ CNCommand::CNCommand() :
 						"State: disabled"));
 }
 
-void CNCommand::exec(Daemon *app, const char *args) {
+void CNCommand::exec(Daemon *app, const string& args) {
 	string status;
 	istringstream ist(args);
 	ist >> status;
 	if (ist.fail()) {
 		app->sendResponse(CNResponse(app->getCore()));
-	} else {
-		if (status.compare("enable") == 0) {
-			linphone_core_enable_generic_confort_noise(app->getCore(), TRUE);
-		} else if (status.compare("disable") == 0) {
-			linphone_core_enable_generic_confort_noise(app->getCore(), FALSE);
-		} else {
-			app->sendResponse(Response("Incorrect parameter.", Response::Error));
-			return;
-		}
-		app->sendResponse(CNResponse(app->getCore()));
+		return;
 	}
+
+	if (status.compare("enable") == 0) {
+		linphone_core_enable_generic_confort_noise(app->getCore(), TRUE);
+	} else if (status.compare("disable") == 0) {
+		linphone_core_enable_generic_confort_noise(app->getCore(), FALSE);
+	} else {
+		app->sendResponse(Response("Incorrect parameter.", Response::Error));
+		return;
+	}
+	app->sendResponse(CNResponse(app->getCore()));
 }

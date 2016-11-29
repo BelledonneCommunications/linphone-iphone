@@ -35,30 +35,37 @@ CallCommand::CallCommand() :
 						"Reason: Call creation failed."));
 }
 
-void CallCommand::exec(Daemon *app, const char *args) {
+void CallCommand::exec(Daemon *app, const string& args) {
+	string address;
+	string early_media;
 	LinphoneCall *call;
 	Response resp;
 	ostringstream ostr;
-	char address[256] = { 0 }, early_media[256] = { 0 };
-	if (sscanf(args, "%s %s", address, early_media) == 2) {
-		char *opt;
-		LinphoneCallParams *cp;
-		opt = strstr(early_media,"--early-media");
-		cp = linphone_core_create_call_params(app->getCore(), NULL);
-		if (opt) {
+
+	istringstream ist(args);
+	ist >> address;
+	if (ist.fail()) {
+		app->sendResponse(Response("Missing address parameter.", Response::Error));
+		return;
+	}
+	ist >> early_media;
+	if (!ist.fail()) {
+		LinphoneCallParams *cp = linphone_core_create_call_params(app->getCore(), NULL);
+		if (early_media.compare("--early-media") == 0) {
 			linphone_call_params_enable_early_media_sending(cp, TRUE);
 			ostr << "Early media: Ok\n";
 		}
-		call = linphone_core_invite_with_params(app->getCore(), address, cp);
+		call = linphone_core_invite_with_params(app->getCore(), address.c_str(), cp);
 	} else {
-		call = linphone_core_invite(app->getCore(), args);
+		call = linphone_core_invite(app->getCore(), address.c_str());
 	}
 	
 	if (call == NULL) {
 		app->sendResponse(Response("Call creation failed."));
-	} else {
-		ostr << "Id: " << app->updateCallId(call) << "\n";
-		resp.setBody(ostr.str().c_str());
-		app->sendResponse(resp);
+		return;
 	}
+
+	ostr << "Id: " << app->updateCallId(call) << "\n";
+	resp.setBody(ostr.str());
+	app->sendResponse(resp);
 }

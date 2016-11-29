@@ -17,8 +17,8 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef CALLCAMERA_H
-#define CALLCAMERA_H
+#ifndef LINPHONE_DAEMON_COMMAND_VIDEO_H
+#define LINPHONE_DAEMON_COMMAND_VIDEO_H
 
 #include "daemon.h"
 
@@ -26,7 +26,7 @@ class Video : public DaemonCommand
 {
 public:
 	Video();
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
 
@@ -34,14 +34,14 @@ class VideoSource : public DaemonCommand
 {
 public:
 	VideoSource();
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
 class AutoVideo : public DaemonCommand
 {
 public:
 	AutoVideo();
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif // CALLCAMERA_H
+#endif // LINPHONE_DAEMON_COMMAND_VIDEO_H

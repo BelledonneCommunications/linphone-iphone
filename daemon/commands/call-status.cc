@@ -36,20 +36,22 @@ CallStatusCommand::CallStatusCommand() :
 						"Status: Error\n"
 						"Reason: No current call available."));
 }
-void CallStatusCommand::exec(Daemon *app, const char *args) {
+void CallStatusCommand::exec(Daemon *app, const string& args) {
 	LinphoneCore *lc = app->getCore();
 	int cid;
 	LinphoneCall *call = NULL;
-	if (sscanf(args, "%i", &cid) == 1) {
-		call = app->findCall(cid);
-		if (call == NULL) {
-			app->sendResponse(Response("No call with such id."));
-			return;
-		}
-	} else {
+	istringstream ist(args);
+	ist >> cid;
+	if (ist.fail()) {
 		call = linphone_core_get_current_call(lc);
 		if (call == NULL) {
 			app->sendResponse(Response("No current call available."));
+			return;
+		}
+	} else {
+		call = app->findCall(cid);
+		if (call == NULL) {
+			app->sendResponse(Response("No call with such id."));
 			return;
 		}
 	}
@@ -82,5 +84,5 @@ void CallStatusCommand::exec(Daemon *app, const char *args) {
 	default:
 		break;
 	}
-	app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+	app->sendResponse(Response(ostr.str(), Response::Ok));
 }

@@ -78,7 +78,7 @@ static PayloadType *findPayload(LinphoneCore *lc, int payload_type, int *index){
 	return NULL;
 }
 
-void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
+void AudioCodecSetCommand::exec(Daemon *app, const string& args) {
 	istringstream ist(args);
 
 	if (ist.peek() == EOF) {

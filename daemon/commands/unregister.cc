@@ -32,7 +32,7 @@ UnregisterCommand::UnregisterCommand() :
 						"Status: Ok"));
 }
 
-void UnregisterCommand::exec(Daemon *app, const char *args) {
+void UnregisterCommand::exec(Daemon *app, const string& args) {
 	LinphoneProxyConfig *cfg = NULL;
 	string param;
 	int pid;

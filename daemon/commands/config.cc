@@ -28,8 +28,8 @@ public:
 
 ConfigResponse::ConfigResponse(const char *value) : Response() {
 	ostringstream ost;
-	ost << "Value: "<<(value ? value : "<unset>");
-	setBody(ost.str().c_str());
+	ost << "Value: " << value ? value : "<unset>";
+	setBody(ost.str());
 }
 
 ConfigGetCommand::ConfigGetCommand() :
@@ -40,16 +40,16 @@ ConfigGetCommand::ConfigGetCommand() :
 						"Value: <unset>"));
 }
 
-void ConfigGetCommand::exec(Daemon *app, const char *args) {
+void ConfigGetCommand::exec(Daemon *app, const string& args) {
 	string section,key;
 	istringstream ist(args);
 	ist >> section >> key;
 	if (ist.fail()) {
 		app->sendResponse(Response("Missing section and/or key names."));
-	} else {
-		const char *read_value=lp_config_get_string(linphone_core_get_config(app->getCore()),section.c_str(),key.c_str(),NULL);
-		app->sendResponse(ConfigResponse(read_value));
+		return;
 	}
+	const char *read_value=lp_config_get_string(linphone_core_get_config(app->getCore()),section.c_str(),key.c_str(),NULL);
+	app->sendResponse(ConfigResponse(read_value));
 }
 
 
@@ -64,16 +64,16 @@ ConfigSetCommand::ConfigSetCommand() :
 						"Value: <unset>"));
 }
 
-void ConfigSetCommand::exec(Daemon *app, const char *args) {
+void ConfigSetCommand::exec(Daemon *app, const string& args) {
 	string section,key,value;
 	istringstream ist(args);
 	ist >> section >> key;
 	if (ist.fail()) {
 		app->sendResponse(Response("Missing section and/or key names."));
-	} else {
-		ist>>value;
-		lp_config_set_string(linphone_core_get_config(app->getCore()), section.c_str(), key.c_str(), value.size()>0 ? value.c_str() : NULL);
-		app->sendResponse(ConfigResponse(value.c_str()));
+		return;
 	}
+	ist>>value;
+	lp_config_set_string(linphone_core_get_config(app->getCore()), section.c_str(), key.c_str(), value.size()>0 ? value.c_str() : NULL);
+	app->sendResponse(ConfigResponse(value.c_str()));
 }
 

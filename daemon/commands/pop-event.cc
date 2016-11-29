@@ -27,6 +27,6 @@ PopEventCommand::PopEventCommand() :
 						"Status: Ok\n\n"
 						"Size: 0"));
 }
-void PopEventCommand::exec(Daemon *app, const char *args) {
+void PopEventCommand::exec(Daemon *app, const string& args) {
 	app->pullEvent();
 }

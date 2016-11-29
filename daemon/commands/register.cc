@@ -32,42 +32,54 @@ RegisterCommand::RegisterCommand() :
 						"Status: Ok\n\n"
 						"Id: 1"));
 }
-void RegisterCommand::exec(Daemon *app, const char *args) {
+void RegisterCommand::exec(Daemon *app, const string& args) {
 	LinphoneCore *lc = app->getCore();
 	ostringstream ostr;
-	char proxy[256] = { 0 }, identity[128] = { 0 }, password[64] = { 0 }, userid[128] = { 0 }, realm[128] = { 0 }, parameter[256] = { 0 };
-	if (sscanf(args, "%255s %127s %63s %127s %127s %255s", identity, proxy, password, userid, realm, parameter) >= 2) {
-		if (strcmp(password, "NULL") == 0) {
-			password[0] = 0;
-		}
-		if (strcmp(userid, "NULL") == 0) {
-			userid[0] = 0;
-		}
-		if (strcmp(realm, "NULL") == 0) {
-			realm[0] = 0;
-		}
-		if (strcmp(parameter, "NULL") == 0) {
-			parameter[0] = 0;
-		}
-		LinphoneProxyConfig *cfg = linphone_proxy_config_new();
-		if (password[0] != '\0') {
-			LinphoneAddress *from = linphone_address_new(identity);
-			if (from != NULL) {
-				LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(from),
-																userid, password, NULL, realm, NULL);
-				linphone_core_add_auth_info(lc, info); /*add authentication info to LinphoneCore*/
-				linphone_address_destroy(from);
-				linphone_auth_info_destroy(info);
-			}
-		}
-		linphone_proxy_config_set_identity(cfg, identity);
-		linphone_proxy_config_set_server_addr(cfg, proxy);
-		linphone_proxy_config_enable_register(cfg, TRUE);
-		linphone_proxy_config_set_contact_parameters(cfg, parameter);
-		ostr << "Id: " << app->updateProxyId(cfg) << "\n";
-		linphone_core_add_proxy_config(lc, cfg);
-		app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
-	} else {
+	string identity;
+	string proxy;
+	string password;
+	string userid;
+	string realm;
+	string parameter;
+	istringstream ist(args);
+	const char *cidentity;
+	const char *cproxy;
+	const char *cpassword = NULL;
+	const char *cuserid = NULL;
+	const char *crealm = NULL;
+	const char *cparameter = NULL;
+
+	ist >> identity;
+	ist >> proxy;
+	ist >> password;
+	ist >> userid;
+	ist >> realm;
+	ist >> parameter;
+	if (proxy.empty()) {
 		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		return;
 	}
+	cidentity = identity.c_str();
+	cproxy = proxy.c_str();
+	if (!password.empty()) cpassword = password.c_str();
+	if (!userid.empty()) cuserid = userid.c_str();
+	if (!realm.empty()) crealm = realm.c_str();
+	if (!parameter.empty()) cparameter = parameter.c_str();
+	LinphoneProxyConfig *cfg = linphone_proxy_config_new();
+	if (cpassword != NULL) {
+		LinphoneAddress *from = linphone_address_new(cidentity);
+		if (from != NULL) {
+			LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(from), cuserid, cpassword, NULL, crealm, NULL);
+			linphone_core_add_auth_info(lc, info); /* Add authentication info to LinphoneCore */
+			linphone_address_destroy(from);
+			linphone_auth_info_destroy(info);
+		}
+	}
+	linphone_proxy_config_set_identity(cfg, cidentity);
+	linphone_proxy_config_set_server_addr(cfg, cproxy);
+	linphone_proxy_config_enable_register(cfg, TRUE);
+	linphone_proxy_config_set_contact_parameters(cfg, cparameter);
+	ostr << "Id: " << app->updateProxyId(cfg) << "\n";
+	linphone_core_add_proxy_config(lc, cfg);
+	app->sendResponse(Response(ostr.str(), Response::Ok));
 }

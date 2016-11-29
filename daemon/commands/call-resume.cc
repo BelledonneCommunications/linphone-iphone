@@ -19,7 +19,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 #include "call-resume.h"
 
-CallResume::CallResume():
+using namespace std;
+
+CallResumeCommand::CallResumeCommand():
 	DaemonCommand("call-resume", "call-resume <call id>", "Pause a call (pause current if no id is specified).")
 {
 	addExample(new DaemonCommandExample("call-resume 1",
@@ -35,30 +37,31 @@ CallResume::CallResume():
 										"Reason: No current call available."));
 }
 
-void CallResume::exec(Daemon* app, const char* args)
+void CallResumeCommand::exec(Daemon* app, const string& args)
 {
 	LinphoneCore *lc = app->getCore();
 	int cid;
 	LinphoneCall *call = NULL;
 	bool current = false;
-	if (sscanf(args, "%i", &cid) == 1) {
-		call = app->findCall(cid);
-		if (call == NULL) {
-			app->sendResponse(Response("No call with such id."));
-			return;
-		}
-	} else {
+	istringstream ist(args);
+	ist >> cid;
+	if (ist.fail()) {
 		call = linphone_core_get_current_call(lc);
 		current = true;
 		if (call == NULL) {
 			app->sendResponse(Response("No current call available."));
 			return;
 		}
+	} else {
+		call = app->findCall(cid);
+		if (call == NULL) {
+			app->sendResponse(Response("No call with such id."));
+			return;
+		}
 	}
 
-	if( linphone_core_resume_call(lc, call) == 0 ) {
-		app->sendResponse(Response(current?"Current call was resumed":
-										   "Call was resumed", Response::Ok));
+	if (linphone_core_resume_call(lc, call) == 0) {
+		app->sendResponse(Response(current ? "Current call was resumed" : "Call was resumed", Response::Ok));
 	} else {
 		app->sendResponse(Response("Error pausing call"));
 	}

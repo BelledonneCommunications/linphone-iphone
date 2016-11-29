@@ -34,20 +34,22 @@ TerminateCommand::TerminateCommand() :
 						"Status: Error\n"
 						"Reason: No active call."));
 }
-void TerminateCommand::exec(Daemon *app, const char *args) {
+void TerminateCommand::exec(Daemon *app, const string& args) {
 	LinphoneCall *call = NULL;
 	int cid;
 	const MSList *elem;
-	if (sscanf(args, "%i", &cid) == 1) {
+	istringstream ist(args);
+	ist >> cid;
+	if (ist.fail()) {
+		elem = linphone_core_get_calls(app->getCore());
+		if (elem != NULL && elem->next == NULL) {
+			call = (LinphoneCall*)elem->data;
+		}
+	} else {
 		call = app->findCall(cid);
 		if (call == NULL) {
 			app->sendResponse(Response("No call with such id."));
 			return;
-		}
-	} else {
-		elem = linphone_core_get_calls(app->getCore());
-		if (elem != NULL && elem->next == NULL) {
-			call = (LinphoneCall*) elem->data;
 		}
 	}
 	if (call == NULL) {

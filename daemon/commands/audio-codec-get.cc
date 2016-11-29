@@ -52,12 +52,12 @@ AudioCodecGetCommand::AudioCodecGetCommand() :
 						"Reason: Audio codec not found."));
 }
 
-void AudioCodecGetCommand::exec(Daemon *app, const char *args) {
+void AudioCodecGetCommand::exec(Daemon *app, const string& args) {
 	bool list = false;
 	bool found = false;
 	istringstream ist(args);
 	ostringstream ost;
-	PayloadType *pt=NULL;
+	PayloadType *pt = NULL;
 
 	if (ist.peek() == EOF) {
 		found = list = true;
@@ -88,6 +88,6 @@ void AudioCodecGetCommand::exec(Daemon *app, const char *args) {
 	if (!found) {
 		app->sendResponse(Response("Audio codec not found.", Response::Error));
 	} else {
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(Response(ost.str(), Response::Ok));
 	}
 }

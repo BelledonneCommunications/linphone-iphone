@@ -17,15 +17,15 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef COMMAND_AUDIO_CODEC_TOGGLE_H_
-#define COMMAND_AUDIO_CODEC_TOGGLE_H_
+#ifndef LINPHONE_DAEMON_COMMAND_AUDIO_CODEC_TOGGLE_H_
+#define LINPHONE_DAEMON_COMMAND_AUDIO_CODEC_TOGGLE_H_
 
-#include "../daemon.h"
+#include "daemon.h"
 
 class AudioCodecToggleCommand: public DaemonCommand {
 public:
 	AudioCodecToggleCommand(const char *name, const char *proto, const char *help, bool enable);
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 protected:
 	bool mEnable;
 };
@@ -40,4 +40,4 @@ public:
 	AudioCodecDisableCommand();
 };
 
-#endif //COMMAND_AUDIO_CODEC_TOGGLE_H_
+#endif // LINPHONE_DAEMON_COMMAND_AUDIO_CODEC_TOGGLE_H_

@@ -49,7 +49,7 @@ AudioCodecMoveCommand::AudioCodecMoveCommand() :
 						"Enabled: false"));
 }
 
-void AudioCodecMoveCommand::exec(Daemon *app, const char *args) {
+void AudioCodecMoveCommand::exec(Daemon *app, const string& args) {
 	istringstream ist(args);
 
 	if (ist.peek() == EOF) {

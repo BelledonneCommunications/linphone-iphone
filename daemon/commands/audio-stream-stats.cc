@@ -45,21 +45,21 @@ AudioStreamStatsCommand::AudioStreamStatsCommand() :
 						"Reason: No audio stream with such id."));
 }
 
-void AudioStreamStatsCommand::exec(Daemon *app, const char *args) {
+void AudioStreamStatsCommand::exec(Daemon *app, const string& args) {
 	int sid;
 	AudioStreamAndOther *stream = NULL;
-	if (sscanf(args, "%i", &sid) == 1) {
-		stream = app->findAudioStreamAndOther(sid);
-		if (!stream) {
-			app->sendResponse(Response("No audio stream with such id."));
-			return;
-		}
-	} else {
+	istringstream ist(args);
+	ist >> sid;
+	if (ist.fail()) {
 		app->sendResponse(Response("No stream specified."));
 		return;
 	}
 
-	ostringstream ostr;
-	ostr << AudioStreamStatsResponse(app, stream->stream, &stream->stats, false).getBody();
-	app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+	stream = app->findAudioStreamAndOther(sid);
+	if (!stream) {
+		app->sendResponse(Response("No audio stream with such id."));
+		return;
+	}
+
+	app->sendResponse(Response(AudioStreamStatsResponse(app, stream->stream, &stream->stats, false).getBody(), Response::Ok));
 }

@@ -26,23 +26,26 @@ ContactCommand::ContactCommand() :
 	addExample(new DaemonCommandExample("contact sip:root@unknown-host",
 						"Status: Ok\n\n"));
 }
-void ContactCommand::exec(Daemon *app, const char *args) {
+
+void ContactCommand::exec(Daemon *app, const string& args) {
 	LinphoneCore *lc = app->getCore();
-	int result;
 	char *contact;
-	char username[256] = { 0 };
-	char hostname[256] = { 0 };
-	result = sscanf(args, "%255s %255s", username, hostname);
-	if (result == 1) {
-		linphone_core_set_primary_contact(lc,username);
-		app->sendResponse(Response("", Response::Ok));
+	string username;
+	string hostname;
+	istringstream ist(args);
+	ist >> username;
+	if (ist.fail()) {
+		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		return;
 	}
-	else if (result > 1) {
-		contact=ortp_strdup_printf("sip:%s@%s",username,hostname);
-		linphone_core_set_primary_contact(lc,contact);
-		ms_free(contact);
+	ist >> hostname;
+	if (ist.fail()) {
+		linphone_core_set_primary_contact(lc, username.c_str());
 		app->sendResponse(Response("", Response::Ok));
 	} else {
-		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		contact = ortp_strdup_printf("sip:%s@%s", username.c_str(), hostname.c_str());
+		linphone_core_set_primary_contact(lc, contact);
+		ms_free(contact);
+		app->sendResponse(Response("", Response::Ok));
 	}
 }

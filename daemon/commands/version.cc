@@ -29,7 +29,7 @@ public:
 VersionResponse::VersionResponse(LinphoneCore *core) : Response() {
 	ostringstream ost;
 	ost << "Version: " << linphone_core_get_version();
-	setBody(ost.str().c_str());
+	setBody(ost.str());
 }
 
 VersionCommand::VersionCommand() :
@@ -39,6 +39,6 @@ VersionCommand::VersionCommand() :
 						"Version: 3.5.99.0_6c2f4b9312fd4717b2f8ae0a7d7c97b752768c7c"));
 }
 
-void VersionCommand::exec(Daemon *app, const char *args) {
+void VersionCommand::exec(Daemon *app, const string& args) {
 	app->sendResponse(VersionResponse(app->getCore()));
 }

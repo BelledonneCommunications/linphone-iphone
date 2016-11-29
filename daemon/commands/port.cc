@@ -62,7 +62,7 @@ PortResponse::PortResponse(LinphoneCore *core, PortResponse::PortType type) : Re
 			outputVideoRTPPort(core, ost);
 			break;
 	}
-	setBody(ost.str().c_str());
+	setBody(ost.str());
 }
 
 void PortResponse::outputSIPPort(LinphoneCore *core, ostringstream &ost) {
@@ -116,7 +116,7 @@ PortCommand::PortCommand() :
 						"Video RTP: 9078"));
 }
 
-void PortCommand::exec(Daemon *app, const char *args) {
+void PortCommand::exec(Daemon *app, const string& args) {
 	string type;
 	int port;
 	istringstream ist(args);
@@ -124,61 +124,63 @@ void PortCommand::exec(Daemon *app, const char *args) {
 	ist >> type;
 	if (ist.eof() && (type.length() == 0)) {
 		app->sendResponse(PortResponse(app->getCore(), PortResponse::AllPorts));
-	} else if (ist.fail()) {
+		return;
+	}
+	if (ist.fail()) {
 		app->sendResponse(Response("Incorrect type parameter.", Response::Error));
-	} else {
-		ist >> port;
-		if (ist.fail()) {
-			if (type.compare("sip") == 0) {
-				app->sendResponse(PortResponse(app->getCore(), PortResponse::SIPPort));
-			} else if (type.compare("audio") == 0) {
-				app->sendResponse(PortResponse(app->getCore(), PortResponse::AudioRTPPort));
-			} else if (type.compare("video") == 0) {
-				app->sendResponse(PortResponse(app->getCore(), PortResponse::VideoRTPPort));
-			} else {
-				app->sendResponse(Response("Incorrect type parameter.", Response::Error));
-			}
+		return;
+	}
+	ist >> port;
+	if (ist.fail()) {
+		if (type.compare("sip") == 0) {
+			app->sendResponse(PortResponse(app->getCore(), PortResponse::SIPPort));
+		} else if (type.compare("audio") == 0) {
+			app->sendResponse(PortResponse(app->getCore(), PortResponse::AudioRTPPort));
+		} else if (type.compare("video") == 0) {
+			app->sendResponse(PortResponse(app->getCore(), PortResponse::VideoRTPPort));
 		} else {
-			if (type.compare("sip") == 0) {
-				Protocol protocol = UDPProtocol;
-				string protocol_str;
-				ist >> protocol_str;
-				if (!ist.fail()) {
-					if (protocol_str.compare("udp") == 0) {
-						protocol = UDPProtocol;
-					} else if (protocol_str.compare("tcp") == 0) {
-						protocol = TCPProtocol;
-					} else if (protocol_str.compare("tls") == 0) {
-						protocol = TLSProtocol;
-					} else {
-						app->sendResponse(Response("Incorrect protocol parameter.", Response::Error));
-						return;
-					}
-				}
-				LCSipTransports transports;
-				memset(&transports, 0, sizeof(transports));
-				switch (protocol) {
-					case UDPProtocol:
-						transports.udp_port = port;
-						break;
-					case TCPProtocol:
-						transports.tcp_port = port;
-						break;
-					case TLSProtocol:
-						transports.tls_port = port;
-						break;
-				}
-				linphone_core_set_sip_transports(app->getCore(), &transports);
-				app->sendResponse(PortResponse(app->getCore(), PortResponse::SIPPort));
-			} else if (type.compare("audio") == 0) {
-				linphone_core_set_audio_port(app->getCore(), port);
-				app->sendResponse(PortResponse(app->getCore(), PortResponse::AudioRTPPort));
-			} else if (type.compare("video") == 0) {
-				linphone_core_set_video_port(app->getCore(), port);
-				app->sendResponse(PortResponse(app->getCore(), PortResponse::VideoRTPPort));
+			app->sendResponse(Response("Incorrect type parameter.", Response::Error));
+		}
+		return;
+	}
+	if (type.compare("sip") == 0) {
+		Protocol protocol = UDPProtocol;
+		string protocol_str;
+		ist >> protocol_str;
+		if (!ist.fail()) {
+			if (protocol_str.compare("udp") == 0) {
+				protocol = UDPProtocol;
+			} else if (protocol_str.compare("tcp") == 0) {
+				protocol = TCPProtocol;
+			} else if (protocol_str.compare("tls") == 0) {
+				protocol = TLSProtocol;
 			} else {
-				app->sendResponse(Response("Incorrect type parameter.", Response::Error));
+				app->sendResponse(Response("Incorrect protocol parameter.", Response::Error));
+				return;
 			}
 		}
+		LCSipTransports transports;
+		memset(&transports, 0, sizeof(transports));
+		switch (protocol) {
+			case UDPProtocol:
+				transports.udp_port = port;
+				break;
+			case TCPProtocol:
+				transports.tcp_port = port;
+				break;
+			case TLSProtocol:
+				transports.tls_port = port;
+				break;
+		}
+		linphone_core_set_sip_transports(app->getCore(), &transports);
+		app->sendResponse(PortResponse(app->getCore(), PortResponse::SIPPort));
+	} else if (type.compare("audio") == 0) {
+		linphone_core_set_audio_port(app->getCore(), port);
+		app->sendResponse(PortResponse(app->getCore(), PortResponse::AudioRTPPort));
+	} else if (type.compare("video") == 0) {
+		linphone_core_set_video_port(app->getCore(), port);
+		app->sendResponse(PortResponse(app->getCore(), PortResponse::VideoRTPPort));
+	} else {
+		app->sendResponse(Response("Incorrect type parameter.", Response::Error));
 	}
 }

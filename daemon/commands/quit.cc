@@ -25,7 +25,7 @@ QuitCommand::QuitCommand() :
 		DaemonCommand("quit", "quit", "Quit the application.") {
 }
 
-void QuitCommand::exec(Daemon *app, const char *args) {
+void QuitCommand::exec(Daemon *app, const string& args) {
 	app->quit();
 	app->sendResponse(Response());
 }

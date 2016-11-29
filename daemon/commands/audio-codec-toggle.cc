@@ -26,7 +26,7 @@ AudioCodecToggleCommand::AudioCodecToggleCommand(const char *name, const char *p
 		DaemonCommand(name, proto, help), mEnable(enable) {
 }
 
-void AudioCodecToggleCommand::exec(Daemon *app, const char *args) {
+void AudioCodecToggleCommand::exec(Daemon *app, const string& args) {
 	istringstream ist(args);
 
 	if (ist.peek() == EOF) {

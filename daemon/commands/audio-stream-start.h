@@ -17,15 +17,15 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef COMMAND_AUDIO_STREAM_START_H_
-#define COMMAND_AUDIO_STREAM_START_H_
+#ifndef LINPHONE_DAEMON_COMMAND_AUDIO_STREAM_START_H_
+#define LINPHONE_DAEMON_COMMAND_AUDIO_STREAM_START_H_
 
-#include "../daemon.h"
+#include "daemon.h"
 
 class AudioStreamStartCommand: public DaemonCommand {
 public:
 	AudioStreamStartCommand();
-	virtual void exec(Daemon *app, const char *args);
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif //COMMAND_AUDIO_STREAM_START_H_
+#endif // LINPHONE_DAEMON_COMMAND_AUDIO_STREAM_START_H_

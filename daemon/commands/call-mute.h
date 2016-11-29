@@ -17,16 +17,16 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef CALLMUTE_H
-#define CALLMUTE_H
+#ifndef LINPHONE_DAEMON_COMMAND_CALL_MUTE_H
+#define LINPHONE_DAEMON_COMMAND_CALL_MUTE_H
 
 #include "daemon.h"
 
-class CallMute : public DaemonCommand
+class CallMuteCommand : public DaemonCommand
 {
 public:
-	CallMute();
-	virtual void exec(Daemon *app, const char *args);
+	CallMuteCommand();
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif // CALLMUTE_H
+#endif // LINPHONE_DAEMON_COMMAND_CALL_MUTE_H

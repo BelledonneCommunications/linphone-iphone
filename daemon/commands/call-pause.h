@@ -17,17 +17,16 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef CALLPAUSE_H
-#define CALLPAUSE_H
+#ifndef LINPHONE_DAEMON_COMMAND_CALL_PAUSE_H
+#define LINPHONE_DAEMON_COMMAND_CALL_PAUSE_H
 
 #include "daemon.h"
 
-class CallPause : public DaemonCommand
+class CallPauseCommand : public DaemonCommand
 {
 public:
-	CallPause();
-
-	virtual void exec(Daemon *app, const char *args);
+	CallPauseCommand();
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif // CALLPAUSE_H
+#endif // LINPHONE_DAEMON_COMMAND_CALL_PAUSE_H

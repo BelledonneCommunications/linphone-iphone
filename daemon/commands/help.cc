@@ -25,21 +25,22 @@ HelpCommand::HelpCommand() :
 		DaemonCommand("help", "help <command>", "Show <command> help notice, if command is unspecified or inexistent show all commands.") {
 }
 
-void HelpCommand::exec(Daemon *app, const char *args) {
+void HelpCommand::exec(Daemon *app, const string& args) {
 	ostringstream ost;
 	list<DaemonCommand*>::const_iterator it;
 	const list<DaemonCommand*> &l = app->getCommandList();
-	if (args){
+	bool found = false;
+	if (!args.empty()){
 		for (it = l.begin(); it != l.end(); ++it) {
 			if ((*it)->matches(args)){
 				ost << (*it)->getHelp();
+				found = true;
 				break;
 			}
 		}
-		if (it==l.end()) args=NULL;
 	}
 	
-	if (args==NULL){
+	if (!found){
 		for (it = l.begin(); it != l.end(); ++it) {
 			ost << (*it)->getProto() << endl;
 		}

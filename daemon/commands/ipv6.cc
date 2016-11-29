@@ -35,7 +35,7 @@ IPv6Response::IPv6Response(LinphoneCore *core) : Response() {
 	} else {
 		ost << "disabled\n";
 	}
-	setBody(ost.str().c_str());
+	setBody(ost.str());
 }
 
 IPv6Command::IPv6Command() :
@@ -52,21 +52,22 @@ IPv6Command::IPv6Command() :
 						"State: disabled"));
 }
 
-void IPv6Command::exec(Daemon *app, const char *args) {
+void IPv6Command::exec(Daemon *app, const string& args) {
 	string status;
 	istringstream ist(args);
 	ist >> status;
 	if (ist.fail()) {
 		app->sendResponse(IPv6Response(app->getCore()));
-	} else {
-		if (status.compare("enable") == 0) {
-			linphone_core_enable_ipv6(app->getCore(), TRUE);
-		} else if (status.compare("disable") == 0) {
-			linphone_core_enable_ipv6(app->getCore(), FALSE);
-		} else {
-			app->sendResponse(Response("Incorrect parameter.", Response::Error));
-			return;
-		}
-		app->sendResponse(IPv6Response(app->getCore()));
+		return;
 	}
+
+	if (status.compare("enable") == 0) {
+		linphone_core_enable_ipv6(app->getCore(), TRUE);
+	} else if (status.compare("disable") == 0) {
+		linphone_core_enable_ipv6(app->getCore(), FALSE);
+	} else {
+		app->sendResponse(Response("Incorrect parameter.", Response::Error));
+		return;
+	}
+	app->sendResponse(IPv6Response(app->getCore()));
 }

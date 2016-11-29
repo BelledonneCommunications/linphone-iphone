@@ -45,7 +45,7 @@ PtimeResponse::PtimeResponse(LinphoneCore *core, Direction dir) : Response() {
 			ost << "Download: " << linphone_core_get_download_ptime(core) << "\n";
 			break;
 	}
-	setBody(ost.str().c_str());
+	setBody(ost.str());
 }
 
 PtimeCommand::PtimeCommand() :
@@ -65,34 +65,34 @@ PtimeCommand::PtimeCommand() :
 						"Download: 30"));
 }
 
-void PtimeCommand::exec(Daemon *app, const char *args) {
+void PtimeCommand::exec(Daemon *app, const string& args) {
 	string direction;
 	int ms;
 	istringstream ist(args);
 	ist >> direction;
 	if (ist.fail()) {
 		app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::BothDirections));
-	} else {
-		if (direction.compare("up") == 0) {
-			if (!ist.eof()) {
-				ist >> ms;
-				if (ist.fail()) {
-					app->sendResponse(Response("Incorrect ms parameter.", Response::Error));
-				}
-				linphone_core_set_upload_ptime(app->getCore(), ms);
+		return;
+	}
+	if (direction.compare("up") == 0) {
+		if (!ist.eof()) {
+			ist >> ms;
+			if (ist.fail()) {
+				app->sendResponse(Response("Incorrect ms parameter.", Response::Error));
 			}
-			app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::Upload));
-		} else if (direction.compare("down") == 0) {
-			if (!ist.eof()) {
-				ist >> ms;
-				if (ist.fail()) {
-					app->sendResponse(Response("Incorrect ms parameter.", Response::Error));
-				}
-				linphone_core_set_download_ptime(app->getCore(), ms);
-			}
-			app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::Download));
-		} else {
-			app->sendResponse(Response("Missing/Incorrect parameter(s).", Response::Error));
+			linphone_core_set_upload_ptime(app->getCore(), ms);
 		}
+		app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::Upload));
+	} else if (direction.compare("down") == 0) {
+		if (!ist.eof()) {
+			ist >> ms;
+			if (ist.fail()) {
+				app->sendResponse(Response("Incorrect ms parameter.", Response::Error));
+			}
+			linphone_core_set_download_ptime(app->getCore(), ms);
+		}
+		app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::Download));
+	} else {
+		app->sendResponse(Response("Missing/Incorrect parameter(s).", Response::Error));
 	}
 }

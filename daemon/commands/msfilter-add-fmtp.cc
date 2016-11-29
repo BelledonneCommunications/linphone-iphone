@@ -35,34 +35,40 @@ MSFilterAddFmtpCommand::MSFilterAddFmtpCommand() :
 						"Reason: No Audio Stream with such id."));
 }
 
-void MSFilterAddFmtpCommand::exec(Daemon *app, const char *args) {
-	char type[16]={0}, fmtp[512]={0};
+void MSFilterAddFmtpCommand::exec(Daemon *app, const string& args) {
+	string type;
 	int id;
+	string fmtp;
 
-	if (sscanf(args, "%15s %d %511s", type, &id, fmtp) == 3) {
-		if(strcmp(type, "call") == 0) {
-			LinphoneCall *call = app->findCall(id);
-			if (call == NULL) {
-				app->sendResponse(Response("No Call with such id."));
-				return;
-			}
-			if (call->audiostream==NULL || call->audiostream->ms.encoder==NULL){
-				app->sendResponse(Response("This call doesn't have an active audio stream."));
-				return;
-			}
-			ms_filter_call_method(call->audiostream->ms.encoder, MS_FILTER_ADD_FMTP, fmtp);
-		} else if(strcmp(type, "stream") == 0) {
-			AudioStream *stream = app->findAudioStream(id);
-			if (stream == NULL) {
-				app->sendResponse(Response("No Audio Stream with such id."));
-				return;
-			}
-			ms_filter_call_method(stream->ms.encoder, MS_FILTER_ADD_FMTP, fmtp);
-		} else {
-			app->sendResponse(Response("Incorrect parameter(s)."));
-		}
-		app->sendResponse(Response());
-	} else {
+	istringstream ist(args);
+	ist >> type;
+	ist >> id;
+	ist >> fmtp;
+	if (ist.fail()) {
 		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		return;
 	}
+	if (type.compare("call") == 0) {
+		LinphoneCall *call = app->findCall(id);
+		if (call == NULL) {
+			app->sendResponse(Response("No Call with such id."));
+			return;
+		}
+		if (call->audiostream == NULL || call->audiostream->ms.encoder == NULL) {
+			app->sendResponse(Response("This call doesn't have an active audio stream."));
+			return;
+		}
+		ms_filter_call_method(call->audiostream->ms.encoder, MS_FILTER_ADD_FMTP, (void *)fmtp.c_str());
+	} else if (type.compare("stream") == 0) {
+		AudioStream *stream = app->findAudioStream(id);
+		if (stream == NULL) {
+			app->sendResponse(Response("No Audio Stream with such id."));
+			return;
+		}
+		ms_filter_call_method(stream->ms.encoder, MS_FILTER_ADD_FMTP, (void *)fmtp.c_str());
+	} else {
+		app->sendResponse(Response("Incorrect parameter(s)."));
+		return;
+	}
+	app->sendResponse(Response());
 }

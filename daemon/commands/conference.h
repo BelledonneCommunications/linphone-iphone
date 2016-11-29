@@ -17,16 +17,16 @@ along with this library; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef COMMANDS_CONFERENCE_H
-#define COMMANDS_CONFERENCE_H
+#ifndef LINPHONE_DAEMON_COMMAND_CONFERENCE_H
+#define LINPHONE_DAEMON_COMMAND_CONFERENCE_H
 
 #include "daemon.h"
 
-class Conference : public DaemonCommand
+class ConferenceCommand : public DaemonCommand
 {
 public:
-	Conference();
-	virtual void exec(Daemon *app, const char *args);
+	ConferenceCommand();
+	virtual void exec(Daemon *app, const std::string& args);
 };
 
-#endif // CONFERENCE_H
+#endif // LINPHONE_DAEMON_COMMAND_CONFERENCE_H
