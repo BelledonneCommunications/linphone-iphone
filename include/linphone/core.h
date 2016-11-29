@@ -3012,10 +3012,29 @@ LINPHONE_PUBLIC void linphone_core_set_default_proxy_config(LinphoneCore *lc, Li
  */
 LINPHONE_PUBLIC LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain);
 
+/**
+ * Adds authentication information to the #LinphoneCore.
+ * That piece of information will be used during all SIP transactions that require authentication.
+ * @param[in] lc The #LinphoneCore.
+ * @param[in] info The #LinphoneAuthInfo to add.
+ * @ingroup authentication
+ */
 LINPHONE_PUBLIC	void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
+/**
+ * Removes an authentication information object.
+ * @param[in] lc The #LinphoneCore from which the #LinphoneAuthInfo will be removed.
+ * @param[in] info The #LinphoneAuthInfo to remove.
+ * @ingroup authentication
+ */
 LINPHONE_PUBLIC void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
+/**
+ * Returns an unmodifiable list of currently entered #LinphoneAuthInfo.
+ * @param[in] lc The LinphoneCore object.
+ * @return \bctbx_list{LinphoneAuthInfo}
+ * @ingroup authentication
+ */
 LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_auth_info_list(const LinphoneCore *lc);
 
 /**

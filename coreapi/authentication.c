@@ -389,11 +389,6 @@ LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *
 	return linphone_auth_info_new(username, userid, passwd, ha1, realm, domain);
 }
 
-/**
- * Adds authentication information to the LinphoneCore.
- *
- * This information will be used during all SIP transactions that require authentication.
-**/
 void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	LinphoneAuthInfo *ai;
 	bctbx_list_t *elem;
@@ -468,9 +463,6 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info){
 }
 
-/**
- * Removes an authentication information object.
-**/
 void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	LinphoneAuthInfo *r;
 	r=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
@@ -481,11 +473,6 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *in
 	}
 }
 
-/**
- * Returns an unmodifiable list of currently entered LinphoneAuthInfo.
- * @param[in] lc The LinphoneCore object
- * @return \bctbx_list{LinphoneAuthInfo}
-**/
 const bctbx_list_t *linphone_core_get_auth_info_list(const LinphoneCore *lc){
 	return lc->auth_info;
 }
