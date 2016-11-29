@@ -457,6 +457,10 @@ void Daemon::removeAudioStream(int id) {
 	}
 }
 
+static bool compareCommands(const DaemonCommand *command1, const DaemonCommand *command2) {
+	return (command1->getProto() < command2->getProto());
+}
+
 void Daemon::initCommands() {
 	mCommands.push_back(new RegisterCommand());
 	mCommands.push_back(new ContactCommand());
@@ -503,6 +507,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new ConfigSetCommand());
 	mCommands.push_back(new NetsimCommand());
 	mCommands.push_back(new CNCommand());
+	mCommands.sort(compareCommands);
 }
 
 void Daemon::uninitCommands() {
