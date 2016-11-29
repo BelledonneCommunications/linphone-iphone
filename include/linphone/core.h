@@ -2440,8 +2440,12 @@ LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable
 **/
 LINPHONE_PUBLIC LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, LpConfig *config, void *userdata);
 
-/* function to be periodically called in a main loop */
-/* For ICE to work properly it should be called every 20ms */
+/** 
+ * Function to be periodically called in a main loop.
+ * For ICE to work properly it should be called every 20ms.
+ * @param[in] lc The #LinphoneCore.
+ * @ingroup initializing
+ */
 LINPHONE_PUBLIC	void linphone_core_iterate(LinphoneCore *lc);
 
 /**
