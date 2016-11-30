@@ -683,7 +683,7 @@ string Daemon::readPipe() {
 					mChildFd = (ortp_pipe_t)-1;
 					return NULL;
 				}
-				buffer[ret] = '\0;
+				buffer[ret] = '\0';
 				return buffer;
 			}
 		}

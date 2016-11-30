@@ -23,10 +23,10 @@ using namespace std;
 
 class ConfigResponse : public Response {
 public:
-	ConfigResponse(const char *value);
+	ConfigResponse(const string &value);
 };
 
-ConfigResponse::ConfigResponse(const char *value) : Response() {
+ConfigResponse::ConfigResponse(const string& value) : Response() {
 	ostringstream ost;
 	ost << "Value: " << value ? value : "<unset>";
 	setBody(ost.str());

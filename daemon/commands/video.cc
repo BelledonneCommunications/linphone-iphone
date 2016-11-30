@@ -112,7 +112,6 @@ void VideoSource::exec(Daemon* app, const string& args)
 	LinphoneCall *call = NULL;
 	string subcommand;
 	int cid;
-	int argc = 0;
 	bool activate = false;
 
 	istringstream ist(args);
