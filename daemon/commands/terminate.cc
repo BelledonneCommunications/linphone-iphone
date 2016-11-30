@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 TerminateCommand::TerminateCommand() :
-		DaemonCommand("terminate", "terminate <call id>", "Terminate a call.") {
+		DaemonCommand("terminate", "terminate [<call_id>]", "Terminate a call.") {
 	addExample(new DaemonCommandExample("terminate 2",
 						"Status: Error\n"
 						"Reason: No call with such id."));

@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 UnregisterCommand::UnregisterCommand() :
-		DaemonCommand("unregister", "unregister <register_id|ALL>", "Unregister the daemon from the specified proxy or from all proxies.") {
+		DaemonCommand("unregister", "unregister <register_id>|ALL", "Unregister the daemon from the specified proxy or from all proxies.") {
 	addExample(new DaemonCommandExample("unregister 3",
 						"Status: Error\n"
 						"Reason: No register with such id."));

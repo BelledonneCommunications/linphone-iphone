@@ -67,10 +67,9 @@ void AdaptiveBufferCompensationResponse::outputAdaptiveBufferCompensation(Linpho
 }
 
 AdaptiveBufferCompensationCommand::AdaptiveBufferCompensationCommand() :
-		DaemonCommand("adaptive-jitter-compensation", "adaptive-jitter-compensation [<stream>] [enable|disable]",
-				"Enable or disable adaptive buffer compensation respectively with the 'enable' and 'disable' parameters for the specified stream, "
-				"return the status of the use of adaptive buffer compensation without parameter.\n"
-				"<stream> must be one of these values: audio, video.") {
+		DaemonCommand("adaptive-jitter-compensation", "adaptive-jitter-compensation [audio|video] [enable|disable]",
+			"Enable or disable adaptive buffer compensation respectively with the 'enable' and 'disable' parameters for the specified stream, "
+			"return the status of the use of adaptive buffer compensation without parameter.") {
 	addExample(new DaemonCommandExample("adaptive-jitter-compensation audio",
 						"Status: Ok\n\n"
 						"Audio: enabled"));

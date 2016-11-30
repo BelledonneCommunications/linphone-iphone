@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 CallCommand::CallCommand() :
-		DaemonCommand("call", "call <sip address>", "Place a call.") {
+		DaemonCommand("call", "call <sip_address> [--early-media]", "Place a call.") {
 	addExample(new DaemonCommandExample("call daemon-test@sip.linphone.org",
 						"Status: Ok\n\n"
 						"Id: 1"));

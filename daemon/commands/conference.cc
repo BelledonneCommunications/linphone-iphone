@@ -22,13 +22,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 ConferenceCommand::ConferenceCommand() :
-	DaemonCommand("conference", "conference <subcommand> <call id>",
+	DaemonCommand("conference", "conference add|rm|leave|enter <call_id>",
 				  "Create and manage an audio conference.\n"
-				  "Subcommands:\n"
+				  "You can:\n"
 				  "- add   : join the call with id 'call id' into the audio conference. Creates new one if none exists.\n"
-				  "- rm    : remove the call with id 'call id' from the audio conference\n"
+				  "- rm    : remove the call with id 'call id' from the audio conference.\n"
 				  "- leave : temporarily leave the current conference.\n"
-				  "- enter : re-join the conference after leaving it")
+				  "- enter : re-join the conference after leaving it.")
 {
 	addExample(new DaemonCommandExample("conference add 1",
 										"Status: Ok\n\n"

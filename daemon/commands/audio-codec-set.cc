@@ -28,7 +28,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 AudioCodecSetCommand::AudioCodecSetCommand() :
-		DaemonCommand("audio-codec-set", "audio-codec-set <payload_type_number|mime_type> <property> <value>",
+		DaemonCommand("audio-codec-set", "audio-codec-set <payload_type_number>|<mime_type> <property> <value>",
 				"Set a property (number, clock_rate, recv_fmtp, send_fmtp, bitrate (in kbps/s)) of a codec. Numbering of payload type is automatically performed at startup, any change will be lost after restart.\n"
 				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
 	addExample(new DaemonCommandExample("audio-codec-set 9 number 18",

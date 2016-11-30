@@ -24,7 +24,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 MSFilterAddFmtpCommand::MSFilterAddFmtpCommand() :
-	DaemonCommand("msfilter-add-fmtp", "msfilter-add-fmtp <call/stream> <id> <fmtp>", "Add fmtp to the encoder of a call or a stream") {
+	DaemonCommand("msfilter-add-fmtp", "msfilter-add-fmtp call|stream <id> <fmtp>", "Add fmtp to the encoder of a call or a stream") {
 	addExample(new DaemonCommandExample("msfilter-add-fmtp call 1 vbr=on",
 						"Status: Ok"));
 	addExample(new DaemonCommandExample("msfilter-add-fmtp call 2 vbr=on",

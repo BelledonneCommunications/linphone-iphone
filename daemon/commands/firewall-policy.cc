@@ -54,9 +54,8 @@ FirewallPolicyResponse::FirewallPolicyResponse(LinphoneCore *core) : Response() 
 }
 
 FirewallPolicyCommand::FirewallPolicyCommand() :
-		DaemonCommand("firewall-policy", "firewall-policy <type> [<address>]",
+		DaemonCommand("firewall-policy", "firewall-policy [none|nat|stun|ice|upnp] [<address>]",
 				"Set the firewall policy if type is set, otherwise return the used firewall policy.\n"
-				"<type> must be one of these values: none, nat, stun, ice, upnp.\n"
 				"<address> must be specified for the 'nat' and 'stun' types. "
 				"It represents the public address of the gateway for the 'nat' type and the STUN server address for the 'stun' and 'ice' types.") {
 	addExample(new DaemonCommandExample("firewall-policy stun stun.linphone.org",

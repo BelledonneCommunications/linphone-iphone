@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 CallStatsCommand::CallStatsCommand() :
-		DaemonCommand("call-stats", "call-stats <call id>", "Return all stats of a call.") {
+		DaemonCommand("call-stats", "call-stats [<call_id>]", "Return all stats of a call.") {
 	addExample(new DaemonCommandExample("call-stats 1",
 						"Status: Ok\n\n"
 						"Audio-ICE state: Not activated\n"

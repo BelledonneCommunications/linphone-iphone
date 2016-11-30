@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 AudioStreamStatsCommand::AudioStreamStatsCommand() :
-		DaemonCommand("audio-stream-stats", "audio-stream-stats <stream id>", "Return stats of a given audio stream.") {
+		DaemonCommand("audio-stream-stats", "audio-stream-stats <stream_id>", "Return stats of a given audio stream.") {
 	addExample(new DaemonCommandExample("audio-stream-stats 1",
 						"Status: Ok\n\n"
 						"Audio-ICE state: Not activated\n"

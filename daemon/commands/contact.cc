@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 ContactCommand::ContactCommand() :
-		DaemonCommand("contact", "contact sip:<username>@<hostname> or contact username hostname", "Set a contact name.") {
+		DaemonCommand("contact", "contact <sip_address> or contact <username> <hostname>", "Set a contact name.") {
 	addExample(new DaemonCommandExample("contact sip:root@unknown-host",
 						"Status: Ok\n\n"));
 }

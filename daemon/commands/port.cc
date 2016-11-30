@@ -87,10 +87,9 @@ void PortResponse::outputVideoRTPPort(LinphoneCore *core, ostringstream &ost) {
 }
 
 PortCommand::PortCommand() :
-		DaemonCommand("port", "port [<type>] [<port>] [<protocol>]",
+		DaemonCommand("port", "port [sip|audio|video] [<port>] [udp|tcp|tls]",
 				"Set the port to use for type if port is set, otherwise return the port used for type if specified or all the used ports if no type is specified.\n"
-				"<type> must be one of these values: sip, audio, video.\n"
-				"<protocol> should be defined only for sip port and have one of these values: udp, tcp, tls.") {
+				"The protocol should be defined only for sip port and have one of these values: udp, tcp, tls.") {
 	addExample(new DaemonCommandExample("port sip 5060 tls",
 						"Status: Ok\n\n"
 						"SIP: 5060 TLS"));

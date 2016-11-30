@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 AudioCodecMoveCommand::AudioCodecMoveCommand() :
-		DaemonCommand("audio-codec-move", "audio-codec-move <payload_type_number|mime_type> <index>",
+		DaemonCommand("audio-codec-move", "audio-codec-move <payload_type_number>|<mime_type> <index>",
 				"Move a codec to the specified index.\n"
 				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
 	addExample(new DaemonCommandExample("audio-codec-move 9 1",

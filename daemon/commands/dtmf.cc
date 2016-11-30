@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 DtmfCommand::DtmfCommand() :
-		DaemonCommand("dtmf", "dtmf <digit>", "Generate a DTMF (one of: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, *, #.") {
+		DaemonCommand("dtmf", "dtmf <digit>", "Generate a DTMF (one of 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, *, #).") {
 	addExample(new DaemonCommandExample("dtmf 4",
 						"Status: Ok"));
 	addExample(new DaemonCommandExample("dtmf B",

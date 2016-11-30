@@ -47,7 +47,7 @@ void RegisterStatusResponse::append(int id, const LinphoneProxyConfig* cfg) {
 }
 
 RegisterStatusCommand::RegisterStatusCommand() :
-		DaemonCommand("register-status", "register-status <register_id|ALL>", "Return status of a registration or of all registrations.") {
+		DaemonCommand("register-status", "register-status <register_id>|ALL", "Return status of a registration or of all registrations.") {
 	addExample(new DaemonCommandExample("register-status 1",
 						"Status: Ok\n\n"
 						"Id: 1\n"

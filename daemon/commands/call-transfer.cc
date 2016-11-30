@@ -23,7 +23,7 @@ using namespace std;
 
 CallTransferCommand::CallTransferCommand() :
 	DaemonCommand("call-transfer",
-				  "call-transfer <call_to_transfer_id> <call_to_transfer_to_id|sip_url_to_transfer_to>",
+				  "call-transfer <call_to_transfer_id> <call_to_transfer_to_id>|<sip_url_to_transfer_to>",
 				  "Transfer a call that you aswered to another party")
 {
 	addExample(new DaemonCommandExample("call-transfer 1 sip:john",

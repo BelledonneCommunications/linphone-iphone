@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 CallStatusCommand::CallStatusCommand() :
-		DaemonCommand("call-status", "call-status <call id>", "Return status of a call.") {
+		DaemonCommand("call-status", "call-status [<call_id>]", "Return status of a call.") {
 	addExample(new DaemonCommandExample("call-status 1",
 						"Status: Ok\n\n"
 						"State: LinphoneCallStreamsRunning\n"

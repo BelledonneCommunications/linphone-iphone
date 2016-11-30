@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 AudioStreamStopCommand::AudioStreamStopCommand() :
-		DaemonCommand("audio-stream-stop", "audio-stream-stop <audio stream id>", "Stop an audio stream.") {
+		DaemonCommand("audio-stream-stop", "audio-stream-stop <stream_id>", "Stop an audio stream.") {
 	addExample(new DaemonCommandExample("audio-stream-stop 1",
 						"Status: Ok"));
 	addExample(new DaemonCommandExample("audio-stream-stop 2",

@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 CallResumeCommand::CallResumeCommand():
-	DaemonCommand("call-resume", "call-resume <call id>", "Pause a call (pause current if no id is specified).")
+	DaemonCommand("call-resume", "call-resume [<call_id>]", "Pause a call (pause current if no id is specified).")
 {
 	addExample(new DaemonCommandExample("call-resume 1",
 										"Status: Ok\n\n"

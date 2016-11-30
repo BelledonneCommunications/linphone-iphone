@@ -38,10 +38,10 @@ public:
 };
 
 JitterBufferCommand::JitterBufferCommand() : DaemonCommand("jitter-buffer",
-	"jitter-buffer <stream-type> [size <milliseconds>]" ,
+	"jitter-buffer [audio|video] [size <milliseconds>]",
 	"Control jitter buffer parameters.\n"
-	"jitter-buffer <stream-type> size <milliseconds> : sets the nominal jitter buffer size in milliseconds. Has no effect in a running call.\n"
-	"jitter-buffer <stream-type> : gets the nominal jitter buffer size."
+	"jitter-buffer [audio|video] size <milliseconds>: sets the nominal jitter buffer size in milliseconds. Has no effect in a running call.\n"
+	"jitter-buffer [audio|video]: gets the nominal jitter buffer size."
 	){
 	addExample(new DaemonCommandExample("jitter-buffer","Status: Ok\n\n"
 				"audio-jitter-buffer-size: 60\nvideo-jitter-buffer-size: 60\n"));
@@ -86,7 +86,7 @@ void JitterBufferCommand::exec(Daemon *app, const string& args) {
 }
 
 JitterBufferResetCommand::JitterBufferResetCommand() : DaemonCommand("jitter-buffer-reset",
-	"jitter-buffer-reset [call|stream] id [audio|video]" ,
+	"jitter-buffer-reset call|stream <id> [audio|video]" ,
 	"Reset the RTP jitter buffer for a given call or stream id and stream type."
 	){
 	addExample(new DaemonCommandExample("jitter-buffer-reset call 3 audio",

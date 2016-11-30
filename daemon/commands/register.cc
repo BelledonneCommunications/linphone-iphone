@@ -27,7 +27,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 RegisterCommand::RegisterCommand() :
-		DaemonCommand("register", "register <identity> <proxy-address> <password> <userid> <realm>", "Register the daemon to a SIP proxy. If one of the parameters <password>, <userid> and <realm> is not needed, send the string \"NULL\"") {
+		DaemonCommand("register", "register <identity> <proxy_address> [<password>] [<userid>] [<realm>] [<parameter>]", "Register the daemon to a SIP proxy. If one of the parameters <password>, <userid> and <realm> is not needed, send the string \"NULL\"") {
 	addExample(new DaemonCommandExample("register sip:daemon-test@sip.linphone.org sip.linphone.org password bob linphone.org",
 						"Status: Ok\n\n"
 						"Id: 1"));
@@ -61,9 +61,9 @@ void RegisterCommand::exec(Daemon *app, const string& args) {
 	}
 	cidentity = identity.c_str();
 	cproxy = proxy.c_str();
-	if (!password.empty()) cpassword = password.c_str();
-	if (!userid.empty()) cuserid = userid.c_str();
-	if (!realm.empty()) crealm = realm.c_str();
+	if (!password.empty() && (password.compare("NULL") != 0)) cpassword = password.c_str();
+	if (!userid.empty() && (userid.compare("NULL") != 0)) cuserid = userid.c_str();
+	if (!realm.empty() && (realm.compare("NULL") != 0)) crealm = realm.c_str();
 	if (!parameter.empty()) cparameter = parameter.c_str();
 	LinphoneProxyConfig *cfg = linphone_proxy_config_new();
 	if (cpassword != NULL) {

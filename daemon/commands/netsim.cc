@@ -46,7 +46,7 @@ NetsimResponse::NetsimResponse(LinphoneCore *lc) : Response() {
 	setBody(ost.str());
 }
 
-NetsimCommand::NetsimCommand(): DaemonCommand("netsim","netsim [enabled|disabled|parameters <parameters]",
+NetsimCommand::NetsimCommand(): DaemonCommand("netsim","netsim [enable|disable|parameters] [<parameters>]",
 	"Configure the network simulator. Parameters are to be provided in the form param-name=param-value, separated with ';' only. Supported parameters are:\n"
 	"\tmax_bandwidth (kbit/s)\n"
 	"\tmax_buffer_size (bits)\n"

@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 CallMuteCommand::CallMuteCommand() :
-	DaemonCommand("call-mute", "call-mute 0|1", "mute/unmute the microphone (1 to mute, 0 to unmute). No argument means MUTE.")
+	DaemonCommand("call-mute", "call-mute 0|1", "Mute/unmute the microphone (1 to mute, 0 to unmute). No argument means MUTE.")
 {
 	addExample(new DaemonCommandExample("call-mute 1",
 										"Status: Ok\n\n"

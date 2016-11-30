@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 AuthInfosClearCommand::AuthInfosClearCommand() :
-		DaemonCommand("auth-infos-clear", "auth-infos-clear <auth_infos_id|ALL> ", "Remove auth infos context for the given id, or all.") {
+		DaemonCommand("auth-infos-clear", "auth-infos-clear <auth_infos_id>|ALL", "Remove auth infos context for the given id, or all.") {
 	addExample(new DaemonCommandExample("auth-infos-clear 1",
 						"Status: Ok\n"
 						"Reason: Successfully cleared auth info 1."));

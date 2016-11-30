@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 HelpCommand::HelpCommand() :
-		DaemonCommand("help", "help <command>", "Show <command> help notice, if command is unspecified or inexistent show all commands.") {
+		DaemonCommand("help", "help [<command>]", "Show <command> help notice, if command is unspecified or inexistent show all commands.") {
 }
 
 void HelpCommand::exec(Daemon *app, const string& args) {

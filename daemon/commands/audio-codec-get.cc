@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 AudioCodecGetCommand::AudioCodecGetCommand() :
-		DaemonCommand("audio-codec-get", "audio-codec-get <payload_type_number|mime_type>",
+		DaemonCommand("audio-codec-get", "audio-codec-get <payload_type_number>|<mime_type>",
 				"Get an audio codec if a parameter is given, otherwise return the audio codec list.\n"
 				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
 	addExample(new DaemonCommandExample("audio-codec-get 9",

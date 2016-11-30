@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 using namespace std;
 
 AnswerCommand::AnswerCommand() :
-		DaemonCommand("answer", "answer <call id>", "Answer an incoming call.") {
+		DaemonCommand("answer", "answer <call_id>", "Answer an incoming call.") {
 	addExample(new DaemonCommandExample("answer 3",
 						"Status: Error\n"
 						"Reason: No call with such id."));

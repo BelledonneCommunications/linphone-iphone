@@ -23,9 +23,9 @@ using namespace std;
 
 Video::Video() :
 	DaemonCommand("video",
-				  "video <call id>",
-				  "Toggles camera on current call."
-				  "If no call is specified, the current call is taken.")
+		"video [call_id]",
+		"Toggles camera on current call."
+		"If no call is specified, the current call is taken.")
 {
 	addExample(new DaemonCommandExample("video 1",
 										"Status: Ok\n\n"
@@ -85,7 +85,7 @@ void Video::exec(Daemon* app, const string& args)
 
 VideoSource::VideoSource():
 	DaemonCommand("videosource",
-				  "videosource <cam|dummy> <call-id>",
+				  "videosource cam|dummy [<call_id>]",
 				  "Toggles camera source for specified call."
 				  "If no call is specified, the current call is taken.")
 {
@@ -150,8 +150,8 @@ void VideoSource::exec(Daemon* app, const string& args)
 
 AutoVideo::AutoVideo():
 	DaemonCommand("autovideo",
-				  "autovideo <on|off>",
-				  "Enables/disables automatic video setup when a call is issued")
+				  "autovideo on|off",
+				  "Enables/disables automatic video setup when a call is issued.")
 {
 	addExample(new DaemonCommandExample("autovideo on",
 										"Status: Ok\n\n"

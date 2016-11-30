@@ -23,7 +23,7 @@ using namespace std;
 
 CallPauseCommand::CallPauseCommand() :
 	DaemonCommand("call-pause",
-				  "call-pause <call id>",
+				  "call-pause [<call_id>]",
 				  "Pause a call (pause current if no id is specified).")
 {
 	addExample(new DaemonCommandExample("call-pause 1",
