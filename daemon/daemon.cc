@@ -430,9 +430,9 @@ int Daemon::updateAudioStreamId(AudioStream *audio_stream) {
 			return it->first;
 	}
 
-	++mProxyIds;
-	mAudioStreams.insert(make_pair(mProxyIds, new AudioStreamAndOther(audio_stream)));
-	return mProxyIds;
+	++mAudioStreamIds;
+	mAudioStreams.insert(make_pair(mAudioStreamIds, new AudioStreamAndOther(audio_stream)));
+	return mAudioStreamIds;
 }
 
 AudioStreamAndOther *Daemon::findAudioStreamAndOther(int id) {
