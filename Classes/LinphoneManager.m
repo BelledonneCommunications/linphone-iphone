@@ -616,17 +616,19 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 - (void)userNotifContinue:(NSTimer *)timer {
     UNNotificationContent *content = [timer userInfo];
-    if (content) {
-        LOGI(@"cancelling/presenting user notif");
-        UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-            // Enable or disable features based on authorization.
-            if (error) {
-                LOGD(@"Error while adding notification request :");
-                LOGD(error.description);
-            }
-        }];
-    }
+	if (content && [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+		LOGI(@"cancelling/presenting user notif");
+		UNNotificationRequest *req =
+			[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+		[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req
+															   withCompletionHandler:^(NSError *_Nullable error) {
+																 // Enable or disable features based on authorization.
+																 if (error) {
+																	 LOGD(@"Error while adding notification request :");
+																	 LOGD(error.description);
+																 }
+															   }];
+	}
 }
 
 
