@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
-#include "im_encryption_engine.h"
+#include "linphone/im_encryption_engine.h"
 
 struct _LinphoneImEncryptionEngineCbs {
 	void *user_data;

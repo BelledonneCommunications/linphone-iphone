@@ -45,6 +45,7 @@ set(HEADER_FILES
 	tunnel.h
 	vcard.h
 	xmlrpc.h
+	im_encryption_engine.h
 
 	# Deprecated header files
 	linphonecore.h

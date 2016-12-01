@@ -37,7 +37,6 @@ set(LINPHONE_PRIVATE_HEADER_FILES
 	contact_providers_priv.h
 	enum.h
 	lime.h
-	im_encryption_engine.h
 	lpc2xml.h
 	offeranswer.h
 	private.h
