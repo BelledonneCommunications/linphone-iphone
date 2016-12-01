@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONECORE_H
 #define LINPHONECORE_H
 
+#include "belle-sip/belle-sip.h"
 #include "ortp/ortp.h"
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
@@ -205,6 +206,12 @@ typedef enum _LinphoneReason LinphoneReason;
  * @ingroup misc
 **/
 LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
+
+/**
+ * Converts a error code to a LinphoneReason.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
 
 /**
  * Object representing full details about a signaling error or status.
@@ -1509,7 +1516,7 @@ LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr)
  *
  * @return true if zrtp secrets have already been shared and ready to use
  */
- LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 
 /**
  * Returns an list of chat rooms
@@ -1668,7 +1675,7 @@ LINPHONE_PUBLIC	LinphoneAddress *linphone_chat_message_get_local_address(const L
 /**
  * Add custom headers to the message.
  * @param message the message
- * @param header_name name of the header_name
+ * @param header_name name of the header
  * @param header_value header value
 **/
 LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value);
@@ -1678,6 +1685,12 @@ LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage
  * @param header_name header name searched
 **/
 LINPHONE_PUBLIC	const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
+/**
+ * Removes a custom header from the message.
+ * @param message the message
+ * @param header_name name of the header to remove
+**/
+LINPHONE_PUBLIC	void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name);
 /**
  * Returns TRUE if the message has been read, otherwise returns FALSE.
  * @param message the message
@@ -4598,6 +4611,24 @@ LINPHONE_PUBLIC const char *linphone_core_get_tls_cert_path(const LinphoneCore *
  * @return the TLS key path or NULL if not set yet
  */
 LINPHONE_PUBLIC const char *linphone_core_get_tls_key_path(const LinphoneCore *lc);
+
+#include "linphone/im_encryption_engine.h"
+
+/**
+ * @ingroup chatroom
+ * Sets an IM Encryption Engine in the core
+ * @param lc LinphoneCore object
+ * @param imee LinphoneImEncryptionEngine object
+ */
+LINPHONE_PUBLIC void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncryptionEngine *imee);
+
+/**
+ * @ingroup chatroom
+ * Gets the IM Encryption Engine in the core if possible
+ * @param lc LinphoneCore object
+ * @return the IM Encryption Engine in the core or NULL
+ */
+LINPHONE_PUBLIC LinphoneImEncryptionEngine * linphone_core_get_im_encryption_engine(const LinphoneCore *lc);
 
 #include "linphone/ringtoneplayer.h"
 

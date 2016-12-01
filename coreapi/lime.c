@@ -23,8 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 #ifdef HAVE_LIME
-#include "linphone/core.h"
+#include "private.h"
 #include "bctoolbox/crypto.h"
+
+#define FILE_TRANSFER_KEY_SIZE 32
 
 /**
  * @brief check at runtime if LIME is available
@@ -812,6 +814,229 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	return 0;
 }
 
+bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
+	if (cr) {
+		switch (linphone_core_lime_enabled(cr->lc)) {
+			case LinphoneLimeDisabled: return FALSE;
+			case LinphoneLimeMandatory: return TRUE;
+			case LinphoneLimePreferred: {
+				FILE *CACHEFD = NULL;
+				if (cr->lc->zrtp_secrets_cache != NULL) {
+					CACHEFD = fopen(cr->lc->zrtp_secrets_cache, "rb+");
+					if (CACHEFD) {
+						size_t cacheSize;
+						xmlDocPtr cacheXml;
+						char *cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+						if (!cacheString){
+							ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
+							return FALSE;
+						}
+						cacheString[cacheSize] = '\0';
+						cacheSize += 1;
+						fclose(CACHEFD);
+						cacheXml = xmlParseDoc((xmlChar*)cacheString);
+						ms_free(cacheString);
+						if (cacheXml) {
+							bool_t res;
+							limeURIKeys_t associatedKeys;
+							/* retrieve keys associated to the peer URI */
+							associatedKeys.peerURI = (uint8_t *)malloc(strlen(cr->peer)+1);
+							strcpy((char *)(associatedKeys.peerURI), cr->peer);
+							associatedKeys.associatedZIDNumber  = 0;
+							associatedKeys.peerKeys = NULL;
+
+							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0 && associatedKeys.associatedZIDNumber != 0);
+							lime_freeKeys(&associatedKeys);
+							xmlFreeDoc(cacheXml);
+							return res;
+						}
+					}
+				}
+			}
+		}
+	}
+	return FALSE;
+}
+
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	int errcode = -1;
+	/* check if we have a xml/cipher message to be decrypted */
+	if (msg->content_type && (strcmp("xml/cipher", msg->content_type) == 0 || strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0)) {
+		/* access the zrtp cache to get keys needed to decipher the message */
+		FILE *CACHEFD = NULL;
+		const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
+		errcode = 0;
+		if (zrtp_secrets_cache != NULL) CACHEFD = fopen(zrtp_secrets_cache, "rb+");
+		if (CACHEFD == NULL) {
+			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
+			errcode = 500;
+			return errcode;
+		} else {
+			size_t cacheSize;
+			char *cacheString;
+			int retval;
+			xmlDocPtr cacheXml;
+			uint8_t *decrypted_body = NULL;
+			
+			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+			if (!cacheString){
+				ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
+				errcode = 500;
+				return errcode;
+			}
+			cacheString[cacheSize] = '\0';
+			cacheSize += 1;
+			fclose(CACHEFD);
+			cacheXml = xmlParseDoc((xmlChar*)cacheString);
+			ms_free(cacheString);
+			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body);
+			if (retval != 0) {
+				ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
+				if (decrypted_body) free(decrypted_body);
+				xmlFreeDoc(cacheXml);
+				errcode = 488;
+				return errcode;
+			} else {
+				/* dump updated cache to a string */
+				xmlChar *xmlStringOutput;
+				int xmlStringLength;
+				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+				/* write it to the cache file */
+				CACHEFD = fopen(zrtp_secrets_cache, "wb+");
+				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
+					ms_warning("Fail to write cache");
+				}
+				xmlFree(xmlStringOutput);
+				fclose(CACHEFD);
+				if (msg->message) {
+					ms_free(msg->message);
+				}
+				msg->message = (char *)decrypted_body;
+				
+				if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
+					ms_free(msg->content_type);
+					msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+				} else {
+					ms_free(msg->content_type);
+					msg->content_type = ms_strdup("text/plain");
+				}
+			}
+
+			xmlFreeDoc(cacheXml);
+		}
+	}
+	return errcode;
+}
+
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	int errcode = -1;
+	char *content_type = NULL;
+	
+	if (linphone_chat_room_lime_available(room)) {
+		if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
+			/* it's a file transfer, content type shall be set to
+			application/cipher.vnd.gsma.rcs-ft-http+xml*/
+			content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
+		} else {
+			content_type = "xml/cipher";
+		}
+		msg->content_type = ms_strdup(content_type);
+	
+	
+		/* access the zrtp cache to get keys needed to cipher the message */
+		const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
+		FILE *CACHEFD = fopen(zrtp_secrets_cache, "rb+");
+		errcode = 0;
+		if (CACHEFD == NULL) {
+			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
+			errcode = 488;
+		} else {
+			size_t cacheSize;
+			char *cacheString;
+			xmlDocPtr cacheXml;
+			int retval;
+			uint8_t *crypted_body = NULL;
+			char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
+
+			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+			if (!cacheString){
+				ms_warning("Unable to load content of ZRTP ZID cache to encrypt message");
+				errcode = 500;
+				return errcode;
+			}
+			cacheString[cacheSize] = '\0';
+			cacheSize += 1;
+			fclose(CACHEFD);
+			cacheXml = xmlParseDoc((xmlChar*)cacheString);
+			ms_free(cacheString);
+			retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg->message, (uint8_t *)peer, &crypted_body);
+			if (retval != 0) {
+				ms_warning("Unable to encrypt message for %s : %s", peer, lime_error_code_to_string(retval));
+				if (crypted_body) free(crypted_body);
+				errcode = 488;
+			} else {
+				/* dump updated cache to a string */
+				xmlChar *xmlStringOutput;
+				int xmlStringLength;
+				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+				/* write it to the cache file */
+				CACHEFD = fopen(zrtp_secrets_cache, "wb+");
+				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
+					ms_warning("Unable to write zid cache");
+				}
+				xmlFree(xmlStringOutput);
+				fclose(CACHEFD);
+				if (msg->message) {
+					ms_free(msg->message);
+				}
+				msg->message = (char *)crypted_body;
+			}
+			ms_free(peer);
+			xmlFreeDoc(cacheXml);
+		}
+	}
+	return errcode;
+}
+
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
+	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
+	
+	if (buffer == NULL || size == 0) {
+		return lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
+	}
+	
+	return lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+						 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), size, decrypted_buffer,
+						 (char *)buffer);
+}
+
+int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
+	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
+	
+	if (buffer == NULL || *size == 0) {
+		return lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
+	}
+	
+	if (offset + *size < linphone_content_get_size(msg->file_transfer_information)) {
+		*size -= (*size % 16);
+	}
+	
+	return lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+					(unsigned char *)linphone_content_get_key(msg->file_transfer_information), *size,
+					(char *)buffer, encrypted_buffer);
+}
+
+bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneCore *lc, LinphoneChatRoom *room) {
+	return linphone_chat_room_lime_available(room) && linphone_core_lime_for_file_sharing_enabled(lc);
+}
+
+void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	char keyBuffer [FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of initial vector */
+	/* generate a random 192 bits key + 64 bits of initial vector and store it into the
+		* file_transfer_information->key field of the msg */
+	sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
+	linphone_content_set_key(msg->file_transfer_information, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
+}
 
 #else /* HAVE_LIME */
 
@@ -836,6 +1061,27 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 }
 int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {
 	return LIME_NOT_ENABLED;
+}
+bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
+	return FALSE;
+}
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	return 500;
+}
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	return 500;
+}
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
+	return 500;
+}
+int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
+	return 500;
+}
+bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneCore *lc, LinphoneChatRoom *room) {
+	return FALSE;
+}
+void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	
 }
 #endif /* HAVE_LIME */
 

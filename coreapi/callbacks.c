@@ -1159,10 +1159,11 @@ static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
 static void text_received(SalOp *op, const SalMessage *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	if (lc->chat_deny_code==LinphoneReasonNone && is_duplicate_msg(lc,msg->message_id)==FALSE){
-		linphone_core_message_received(lc,op,msg);
+	LinphoneReason reason = lc->chat_deny_code;
+	if (reason == LinphoneReasonNone && is_duplicate_msg(lc, msg->message_id) == FALSE) {
+		reason = linphone_core_message_received(lc, op, msg);
 	}
-	sal_message_reply(op,linphone_reason_to_sal(lc->chat_deny_code));
+	sal_message_reply(op,linphone_reason_to_sal(reason));
 	if (!call) sal_op_release(op);
 }
 

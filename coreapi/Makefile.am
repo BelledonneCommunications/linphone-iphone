@@ -53,6 +53,7 @@ liblinphone_la_SOURCES=\
 	localplayer.c \
 	lpc2xml.c lpc2xml.h \
 	lime.c lime.h\
+	im_encryption_engine.c \
 	lpconfig.c \
 	lsd.c \
 	message_storage.c \

@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <libxml/parser.h>
 #include <libxml/xmlwriter.h>
 
+#include "linphone/core.h"
 #include <mediastreamer2/mscommon.h>
 
 #ifndef LINPHONE_PUBLIC
@@ -203,4 +204,17 @@ LINPHONE_PUBLIC char *lime_error_code_to_string(int errorCode);
  * @return TRUE if Lime is available, FALSE if not
  */
 LINPHONE_PUBLIC bool_t lime_is_available(void);
+
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
+
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
+
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer);
+
+int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer);
+
+bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneCore *lc, LinphoneChatRoom *room);
+
+void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
+
 #endif /* LIME_H */
