@@ -923,7 +923,7 @@ fi
 AM_CONDITIONAL(BUILD_VCARD, test x$enable_vcard = xtrue)
 
 AC_ARG_ENABLE(sqlite-storage,
-	[AS_HELP_STRING([--sqlite-msg-storage=[yes/no]], [Turn on compilation of sqlite storage for call history, messages, friends (default=auto)])],
+	[AS_HELP_STRING([--sqlite-storage=[yes/no]], [Turn on compilation of sqlite storage for call history, messages, friends (default=auto)])],
 	[case "${enableval}" in
 		yes)	enable_sqlite_storage=true ;;
 		no)	enable_sqlite_storage=false ;;
