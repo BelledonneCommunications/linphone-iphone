@@ -284,7 +284,7 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	return bctbx_strdup(db_file_locale);
 #endif
 }
-#endif 
+
 /**
  * Opens the file fName and populates the structure pointed by p
  * with the necessary io_methods
@@ -452,3 +452,4 @@ void sqlite3_bctbx_vfs_unregister(void)
 	sqlite3_vfs_unregister(pVfs);
 }
 
+#endif /*SQLITE_STORAGE_ENABLED*/

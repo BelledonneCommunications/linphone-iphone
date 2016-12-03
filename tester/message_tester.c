@@ -1505,9 +1505,12 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 
 	if (sql_storage) {
 		linphone_core_set_chat_database_path(marie->lc, marie_db);
-		BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
 		linphone_core_set_chat_database_path(pauline->lc, pauline_db);
+#ifdef SQLITE_STORAGE_ENABLED
+		BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
 		BC_ASSERT_PTR_NOT_NULL(pauline->lc->db);
+#endif
+			
 		if (do_not_store_rtt_messages_in_sql_storage) {
 			lp_config_set_int(marie->lc->config, "misc", "store_rtt_messages", 0);
 			lp_config_set_int(pauline->lc->config, "misc", "store_rtt_messages", 0);
