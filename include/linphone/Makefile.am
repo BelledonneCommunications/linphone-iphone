@@ -25,7 +25,7 @@ linphone_include_HEADERS=\
 	tunnel.h \
 	vcard.h \
 	xmlrpc.h \
-	\
+	im_encryption_engine.h\
 	linphonecore.h \
 	linphonecore_utils.h \
 	linphonefriend.h \
