@@ -705,8 +705,23 @@ static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const c
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
 	LinphoneAddress *addr = linphone_address_new(is_composing->from);
 	LinphoneChatRoom *cr = _linphone_core_get_chat_room(lc, addr);
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
+
 	if (cr != NULL) {
-		linphone_chat_room_notify_is_composing(cr, is_composing->text);
+		int retval = -1;
+		LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, is_composing->text);
+		linphone_chat_message_set_from_address(msg, addr);
+		if (imee) {
+			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+			LinphoneImEncryptionEngineIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
+			if (cb_process_incoming_message) {
+				retval = cb_process_incoming_message(lc, cr, msg);
+			}
+		}
+		if (retval <= 0) {
+			linphone_chat_room_notify_is_composing(cr, msg->message);
+		}
+		linphone_chat_message_unref(msg);
 	}
 	linphone_address_destroy(addr);
 }
@@ -836,6 +851,9 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 	const char *identity = NULL;
 	char *content = NULL;
 	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(cr->lc);
+	LinphoneChatMessage *msg = NULL;
+	
 	if (proxy)
 		identity = linphone_proxy_config_get_identity(proxy);
 	else
@@ -847,7 +865,29 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 
 	content = linphone_chat_room_create_is_composing_xml(cr);
 	if (content != NULL) {
-		sal_message_send(op, identity, cr->peer, "application/im-iscomposing+xml", content, NULL);
+		int retval = -1;
+		LinphoneAddress *from_addr = linphone_address_new(identity);
+		LinphoneAddress *to_addr = linphone_address_new(cr->peer);
+		msg = linphone_chat_room_create_message(cr, content);
+		linphone_chat_message_set_from_address(msg, from_addr);
+		linphone_chat_message_set_to_address(msg, to_addr);
+		msg->content_type = ms_strdup("application/im-iscomposing+xml");
+		
+		if (imee) {
+			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+			LinphoneImEncryptionEngineOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
+			if (cb_process_outgoing_message) {
+				retval = cb_process_outgoing_message(cr->lc, cr, msg);
+			}
+		}
+
+		if (retval <= 0) {
+			sal_message_send(op, identity, cr->peer, msg->content_type, msg->message, NULL);
+		}
+		
+		linphone_chat_message_unref(msg);
+		linphone_address_destroy(from_addr);
+		linphone_address_destroy(to_addr);
 		ms_free(content);
 		sal_op_unref(op);
 	}

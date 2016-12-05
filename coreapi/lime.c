@@ -930,15 +930,18 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, Linp
 
 int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	int errcode = -1;
-	char *content_type = NULL;
+	char *content_type = "xml/cipher";
 	
 	if (linphone_chat_room_lime_available(room)) {
-		if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
-			/* it's a file transfer, content type shall be set to
-			application/cipher.vnd.gsma.rcs-ft-http+xml*/
-			content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
-		} else {
-			content_type = "xml/cipher";
+		if (msg->content_type) {
+			if (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
+				/* it's a file transfer, content type shall be set to
+				application/cipher.vnd.gsma.rcs-ft-http+xml*/
+				content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
+			} else if (strcmp(msg->content_type, "application/im-iscomposing+xml") == 0) {
+				/* We don't encrypt composing messages */
+				return errcode;
+			}
 		}
 		msg->content_type = ms_strdup(content_type);
 	

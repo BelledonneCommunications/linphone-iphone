@@ -809,12 +809,48 @@ static void info_message_with_body(void){
 	info_message_base(TRUE);
 }
 
-static void is_composing_notification(void) {
+static FILE* fopen_from_write_dir(const char * name, const char * mode) {
+	char *filepath = bc_tester_file(name);
+	FILE * file = fopen(filepath,mode);
+	bc_free(filepath);
+	return file;
+}
+
+static void _is_composing_notification(bool_t lime_enabled) {
 	LinphoneChatRoom* chat_room;
 	int dummy = 0;
+	char* filepath = NULL;
+	FILE *ZIDCacheMarieFD = NULL, *ZIDCachePaulineFD = NULL;
 
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	
+	if (lime_enabled) {
+		if (!linphone_core_lime_available(marie->lc)) {
+			ms_warning("Lime not available, skiping");
+			goto end;
+		}
+		/* make sure lime is enabled */
+		linphone_core_enable_lime(marie->lc, 1);
+		linphone_core_enable_lime(pauline->lc, 1);
+		
+		/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
+		ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
+		ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
+		fprintf(ZIDCacheMarieFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000078</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex></peer></cache>", linphone_address_as_string_uri_only(pauline->identity), linphone_address_as_string_uri_only(pauline->identity));
+		fprintf(ZIDCachePaulineFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><rcvKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000078</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>", linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
+		fclose(ZIDCacheMarieFD);
+		fclose(ZIDCachePaulineFD);
+
+		filepath = bc_tester_file("tmpZIDCacheMarie.xml");
+		linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
+		bc_free(filepath);
+
+		filepath = bc_tester_file("tmpZIDCachePauline.xml");
+		linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
+		bc_free(filepath);
+	}
+	
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	linphone_core_get_chat_room(marie->lc, pauline->identity); /*make marie create the chatroom with pauline, which is necessary for receiving the is-composing*/
 	linphone_chat_room_compose(chat_room);
@@ -822,15 +858,18 @@ static void is_composing_notification(void) {
 	linphone_chat_room_send_message(chat_room, "Composing a msg");
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
+	
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
-static FILE* fopen_from_write_dir(const char * name, const char * mode) {
-	char *filepath = bc_tester_file(name);
-	FILE * file = fopen(filepath,mode);
-	bc_free(filepath);
-	return file;
+static void is_composing_notification() {
+	_is_composing_notification(FALSE);
+}
+
+static void is_composing_notification_with_lime() {
+	_is_composing_notification(TRUE);
 }
 
 static void lime_text_message(void) {
@@ -1976,6 +2015,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Info message", info_message),
 	TEST_NO_TAG("Info message with body", info_message_with_body),
 	TEST_NO_TAG("IsComposing notification", is_composing_notification),
+	TEST_NO_TAG("IsComposing notification lime", is_composing_notification_with_lime),
 	TEST_NO_TAG("Lime text message", lime_text_message),
 	TEST_NO_TAG("Lime text message to non lime", lime_text_message_to_non_lime),
 	TEST_NO_TAG("Lime transfer message", lime_transfer_message),
