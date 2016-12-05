@@ -142,21 +142,12 @@ static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription
 	return err;
 
 }
-static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
-	SalOp* op=(SalOp*)user_ctx;
 
-	if (op->state==SalOpStateTerminated) return;
-
-	if (!op->dialog)  {
-		/*call terminated very early*/
-		sal_error_info_set(&op->error_info,SalReasonIOError,503,"IO error",NULL);
-		op->base.root->callbacks.call_failure(op);
-		op->state = SalOpStateTerminating;
-		call_set_released(op);
-	} else {
-		/*dialog will terminated shortly, nothing to do*/
-	}
+static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event) {
+	/* Nothing to be done. If the error comes from a connectivity loss,
+	 * the call will be marked as broken, and an attempt to repair it will be done. */
 }
+
 static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalOp* op=(SalOp*)ctx;
 
@@ -297,11 +288,13 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 					call_set_error(op, response, TRUE);
 					if (op->dialog==NULL) call_set_released(op);
 				}
-			} else if (code >=200
-						&& code<300
-						&& strcmp("UPDATE",method)==0) {
+			} else if (code >=200 && code<300) {
+				if (strcmp("UPDATE",method)==0) {
 					handle_sdp_from_response(op,response);
 					op->base.root->callbacks.call_accepted(op);
+				} else if (strcmp("CANCEL", method) == 0) {
+					op->base.root->callbacks.call_cancel_done(op);
+				}
 			}
 		}
 		break;
@@ -949,7 +942,17 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 
 int sal_call_update(SalOp *op, const char *subject, bool_t no_user_consent){
 	belle_sip_request_t *update;
-	belle_sip_dialog_state_t state=belle_sip_dialog_get_state(op->dialog);
+	belle_sip_dialog_state_t state;
+
+	if (op->dialog == NULL) {
+		/* If the dialog does not exist, this is that we are trying to recover from a connection loss
+			during a very early state of outgoing call initiation (the dialog has not been created yet). */
+		const char *from = sal_op_get_from(op);
+		const char *to = sal_op_get_to(op);
+		return sal_call(op, from, to);
+	}
+
+	state = belle_sip_dialog_get_state(op->dialog);
 	belle_sip_dialog_enable_pending_trans_checking(op->dialog,op->base.root->pending_trans_checking);
 
 	/*check for dialog state*/
@@ -978,7 +981,7 @@ int sal_call_update(SalOp *op, const char *subject, bool_t no_user_consent){
 }
 
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h){
-	return h->base.remote_media;;
+	return h->base.remote_media;
 }
 
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h){

@@ -3666,6 +3666,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		case LinphoneCallUpdatedByRemote:
 			nextstate=LinphoneCallUpdating;
 			break;
+		case LinphoneCallOutgoingProgress:
 		case LinphoneCallPausing:
 		case LinphoneCallResuming:
 		case LinphoneCallUpdating:

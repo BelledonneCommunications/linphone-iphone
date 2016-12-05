@@ -5036,6 +5036,7 @@ void linphone_call_set_broken(LinphoneCall *call){
 	switch(call->state){
 		/*for all the early states, we prefer to drop the call*/
 		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingProgress:
 		case LinphoneCallOutgoingRinging:
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallIncomingReceived:
@@ -5117,9 +5118,12 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 			}
 			linphone_call_reinvite_to_recover_from_connection_loss(call);
 			break;
-		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallOutgoingProgress:
+			sal_call_cancel_invite(call->op);
+			call->reinvite_on_cancel_response_requested = TRUE;
+			break;
+		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingRinging:
 			linphone_call_repair_by_invite_with_replaces(call);
 			break;
