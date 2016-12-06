@@ -506,24 +506,25 @@
 						  categories:categories];
 				[[UIApplication sharedApplication] registerUserNotificationSettings:set];
 
-				UILocalNotification *notif = [[UILocalNotification alloc] init];
-				if (notif) {
-					notif.repeatInterval = 0;
+				// UILocalNotification *notif = [[UILocalNotification alloc] init];
+				if (notification) {
+					notification.repeatInterval = 0;
 					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 #pragma deploymate push "ignored-api-availability"
-						notif.category = @"incoming_msg";
+						notification.category = @"incoming_msg";
 #pragma deploymate pop
 					}
 					if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-						notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
+						notification.alertBody =
+							[NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
 					} else {
-						notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
+						notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
 					}
-					notif.alertAction = NSLocalizedString(@"Show", nil);
-					notif.soundName = @"msg.caf";
-					notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
-					notif.accessibilityLabel = @"Message notif";
-					[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+					notification.alertAction = NSLocalizedString(@"Show", nil);
+					notification.soundName = @"msg.caf";
+					notification.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
+					notification.accessibilityLabel = @"Message notif";
+					[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 				}
 			} else {
 				UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
