@@ -98,8 +98,6 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			saliscomposing.from=from;
 			saliscomposing.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
 			op->base.root->callbacks.is_composing_received(op,&saliscomposing);
-			resp = belle_sip_response_create_from_request(req,200);
-			belle_sip_server_transaction_send_response(server_transaction,resp);
 			belle_sip_object_unref(address);
 			belle_sip_free(from);
 		} else {

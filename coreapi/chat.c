@@ -702,10 +702,11 @@ static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const c
 	linphone_xmlparsing_context_destroy(xml_ctx);
 }
 
-void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
+LinphoneReason linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
 	LinphoneAddress *addr = linphone_address_new(is_composing->from);
 	LinphoneChatRoom *cr = _linphone_core_get_chat_room(lc, addr);
 	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
+	LinphoneReason reason = LinphoneReasonNone;
 
 	if (cr != NULL) {
 		int retval = -1;
@@ -720,10 +721,14 @@ void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalI
 		}
 		if (retval <= 0) {
 			linphone_chat_room_notify_is_composing(cr, msg->message);
+		} else {
+			reason = linphone_error_code_to_reason(retval);
 		}
 		linphone_chat_message_unref(msg);
 	}
 	linphone_address_destroy(addr);
+	
+	return reason;
 }
 
 bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {

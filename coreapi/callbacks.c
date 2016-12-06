@@ -1163,13 +1163,14 @@ static void text_received(SalOp *op, const SalMessage *msg){
 	if (reason == LinphoneReasonNone && is_duplicate_msg(lc, msg->message_id) == FALSE) {
 		reason = linphone_core_message_received(lc, op, msg);
 	}
-	sal_message_reply(op,linphone_reason_to_sal(reason));
+	sal_message_reply(op, linphone_reason_to_sal(reason));
 	if (!call) sal_op_release(op);
 }
 
 static void is_composing_received(SalOp *op, const SalIsComposing *is_composing) {
 	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	linphone_core_is_composing_received(lc, op, is_composing);
+	LinphoneReason reason = linphone_core_is_composing_received(lc, op, is_composing);
+	sal_message_reply(op, linphone_reason_to_sal(reason));
 	sal_op_release(op);
 }
 
