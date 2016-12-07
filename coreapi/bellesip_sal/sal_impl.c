@@ -397,7 +397,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		belle_sip_header_contact_t* remote_contact = belle_sip_message_get_header_by_type(response, belle_sip_header_contact_t);
 
 		if (op->state == SalOpStateTerminated) {
-			belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
+			belle_sip_message("Op [%p] is terminated, nothing to do with this [%i]", op, response_code);
 			return;
 		}
 		/*do it all the time, since we can receive provisional responses from a different instance than the final one*/
@@ -482,7 +482,10 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	} else {
 		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
-	if (op) sal_op_unref(op); /*because every transaction ref op*/
+	if (op) {
+		sal_op_unref(op); /*because every transaction ref op*/
+		belle_sip_transaction_set_application_data(trans,NULL); /*no longuer reference something we do not ref to avoid futur access of a released op*/
+	}
 }
 
 
