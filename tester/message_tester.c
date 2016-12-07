@@ -512,6 +512,8 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	}
+	
+	remove(receive_filepath);
 	ms_free(send_filepath);
 	bc_free(receive_filepath);
 }
@@ -715,6 +717,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 			}
 		}
 		linphone_core_manager_destroy(pauline);
+		remove(receive_filepath);
 		ms_free(send_filepath);
 		bc_free(receive_filepath);
 		linphone_core_manager_destroy(marie);
@@ -860,6 +863,8 @@ static void _is_composing_notification(bool_t lime_enabled) {
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
 	
 end:
+	remove("tmpZIDCacheMarie.xml");
+	remove("tmpZIDCachePauline.xml");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -916,6 +921,8 @@ static void lime_text_message(void) {
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 	/* TODO : check the msg arrived correctly deciphered */
 end:
+	remove("tmpZIDCacheMarie.xml");
+	remove("tmpZIDCachePauline.xml");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -953,6 +960,7 @@ static void lime_text_message_to_non_lime(void) {
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 end:
+	remove("tmpZIDCachePauline.xml");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1052,6 +1060,9 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
 end:
+	remove("tmpZIDCacheMarie.xml");
+	remove("tmpZIDCachePauline.xml");
+	remove(receive_filepath);
 	ms_free(send_filepath);
 	bc_free(receive_filepath);
 	linphone_core_manager_destroy(marie);
@@ -1266,6 +1277,9 @@ static void lime_unit(void) {
 
 		xmlFreeDoc(cacheBufferAlice);
 		xmlFreeDoc(cacheBufferBob);
+		remove("ZIDCache.xml");
+		remove("ZIDCacheAlice.xml");
+		remove("ZIDCacheBob.xml");
 	} else {
 		ms_warning("Lime not available, skiping");
 	}

@@ -176,6 +176,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	ms_free(nowebcampath);
 	ms_free(rootcapath);
 	ms_free(dnsuserhostspath);
+	remove(chatdb);
 	ms_free(chatdb);
 
 	if( filepath ) ms_free(filepath);
