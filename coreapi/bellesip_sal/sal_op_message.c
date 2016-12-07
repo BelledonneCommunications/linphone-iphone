@@ -68,8 +68,13 @@ static bool_t is_im_iscomposing(belle_sip_header_content_type_t* content_type) {
 			&&	strcmp("im-iscomposing+xml",belle_sip_header_content_type_get_subtype(content_type))==0;
 }
 
+static bool_t is_imdn_xml(belle_sip_header_content_type_t *content_type) {
+	return (strcmp("message", belle_sip_header_content_type_get_type(content_type)) == 0)
+		&& (strcmp("imdn+xml", belle_sip_header_content_type_get_subtype(content_type)) == 0);
+}
+
 static void add_message_accept(belle_sip_message_t *msg){
-	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml, xml/cipher, application/vnd.gsma.rcs-ft-http+xml, application/cipher.vnd.gsma.rcs-ft-http+xml"));
+	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml, xml/cipher, application/vnd.gsma.rcs-ft-http+xml, application/cipher.vnd.gsma.rcs-ft-http+xml, message/imdn+xml"));
 }
 
 void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *event){
@@ -103,6 +108,16 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			saliscomposing.from=from;
 			saliscomposing.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
 			op->base.root->callbacks.is_composing_received(op,&saliscomposing);
+			belle_sip_object_unref(address);
+			belle_sip_free(from);
+		} else if (is_imdn_xml(content_type)) {
+			SalImdn salimdn;
+			address = belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header)),
+				belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+			from = belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
+			salimdn.from = from;
+			salimdn.content = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
+			op->base.root->callbacks.imdn_received(op, &salimdn);
 			belle_sip_object_unref(address);
 			belle_sip_free(from);
 		} else {

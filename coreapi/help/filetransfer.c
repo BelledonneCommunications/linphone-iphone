@@ -44,7 +44,7 @@ static void stop(int signum){
 /**
  * function invoked to report file transfer progress.
  * */
-static void file_transfer_progress_indication(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
+static void file_transfer_progress_indication(LinphoneChatRoom *room,LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
 	const LinphoneAddress* from_address = linphone_chat_message_get_from(message);
 	const LinphoneAddress* to_address = linphone_chat_message_get_to(message);
 	char *address = linphone_chat_message_is_outgoing(message)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
@@ -59,7 +59,7 @@ static void file_transfer_progress_indication(LinphoneChatMessage *message, cons
 /**
  * function invoked when a file transfer is received.
  **/
-static void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer){
+static void file_transfer_received(LinphoneChatRoom *room, LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer){
 	FILE* file=NULL;
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
@@ -85,7 +85,7 @@ char big_file [128000];
 /*
  * function called when the file transfer is initiated. file content should be feed into object LinphoneContent
  * */
-static LinphoneBuffer * file_transfer_send(LinphoneChatMessage *message,  const LinphoneContent* content, size_t offset, size_t size){
+static LinphoneBuffer * file_transfer_send(LinphoneChatRoom *room, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t size){
 	size_t size_to_send = MIN(size, sizeof(big_file) - offset);
 	if (size == 0) return linphone_buffer_new(); /*end of file*/
 	return linphone_buffer_new_from_data((uint8_t *)big_file + offset, size_to_send);
@@ -94,7 +94,7 @@ static LinphoneBuffer * file_transfer_send(LinphoneChatMessage *message,  const 
 /*
  * Call back to get delivery status of a message
  * */
-static void linphone_file_transfer_state_changed(LinphoneChatMessage* msg,LinphoneChatMessageState state) {
+static void linphone_file_transfer_state_changed(LinphoneChatRoom *room,LinphoneChatMessage* msg,LinphoneChatMessageState state) {
 	const LinphoneAddress* to_address = linphone_chat_message_get_to(msg);
 	char *to = linphone_address_as_string(to_address);
 	printf("File transfer sent to [%s] delivery status is [%s] \n"	, to
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]){
 	LinphoneChatRoom* chat_room;
 	LinphoneContent* content;
 	LinphoneChatMessage* chat_message;
-	LinphoneChatMessageCbs *cbs;
+	LinphoneChatRoomCbs *cbs;
 
 	/*seting dummy file content to something*/
 	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
@@ -157,6 +157,17 @@ int main(int argc, char *argv[]){
 	/*Next step is to create a chat room*/
 	chat_room = linphone_core_get_chat_room_from_uri(lc,dest_friend);
 
+	/**
+	 * Fill the application callbacks. The file_transfer_received callback is used in order to get notifications
+	 * about incoming file reception, file_transfer_send to feed file to be transfered and
+	 * file_transfer_progress_indication to print progress.
+	 */
+	cbs = linphone_chat_room_get_callbacks(chat_room);
+	linphone_chat_room_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+	linphone_chat_room_cbs_set_file_transfer_send(cbs, file_transfer_send);
+	linphone_chat_room_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+	linphone_chat_room_cbs_set_msg_state_changed(cbs, linphone_file_transfer_state_changed);
+
 	content = linphone_core_create_content(lc);
 	linphone_content_set_type(content,"text");
 	linphone_content_set_subtype(content,"plain");
@@ -168,17 +179,6 @@ int main(int argc, char *argv[]){
 	if (chat_message == NULL) {
 		printf("returned message is null\n");
 	}
-
-	/**
-	 * Fill the application callbacks. The file_transfer_received callback is used in order to get notifications
-	 * about incoming file reception, file_transfer_send to feed file to be transfered and
-	 * file_transfer_progress_indication to print progress.
-	 */
-	cbs = linphone_chat_message_get_callbacks(chat_message);
-	linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
-	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
-	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
-	linphone_chat_message_cbs_set_msg_state_changed(cbs, linphone_file_transfer_state_changed);
 
 	/*initiating file transfer*/
 	linphone_chat_room_send_chat_message(chat_room, chat_message);

@@ -29,6 +29,7 @@ set(HEADER_FILES
 	call_log.h
 	call_params.h
 	call_stats.h
+	chat.h
 	conference.h
 	contactprovider.h
 	content.h

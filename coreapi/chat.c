@@ -110,6 +110,69 @@ void linphone_chat_message_cbs_set_file_transfer_progress_indication(
 }
 
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatRoomCbs);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoomCbs, belle_sip_object_t,
+						   NULL, // destroy
+						   NULL, // clone
+						   NULL, // marshal
+						   FALSE);
+
+LinphoneChatRoomCbs *linphone_chat_room_cbs_new(void) {
+	return belle_sip_object_new(LinphoneChatRoomCbs);
+}
+
+LinphoneChatRoomCbs *linphone_chat_room_cbs_ref(LinphoneChatRoomCbs *cbs) {
+	belle_sip_object_ref(cbs);
+	return cbs;
+}
+
+void linphone_chat_room_cbs_unref(LinphoneChatRoomCbs *cbs) {
+	belle_sip_object_unref(cbs);
+}
+
+void *linphone_chat_room_cbs_get_user_data(const LinphoneChatRoomCbs *cbs) {
+	return cbs->user_data;
+}
+
+void linphone_chat_room_cbs_set_user_data(LinphoneChatRoomCbs *cbs, void *ud) {
+	cbs->user_data = ud;
+}
+
+LinphoneChatRoomCbsMsgStateChangedCb linphone_chat_room_cbs_get_msg_state_changed(const LinphoneChatRoomCbs *cbs) {
+	return cbs->msg_state_changed;
+}
+
+void linphone_chat_room_cbs_set_msg_state_changed(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMsgStateChangedCb cb) {
+	cbs->msg_state_changed = cb;
+}
+
+LinphoneChatRoomCbsFileTransferRecvCb linphone_chat_room_cbs_get_file_transfer_recv(const LinphoneChatRoomCbs *cbs) {
+	return cbs->file_transfer_recv;
+}
+
+void linphone_chat_room_cbs_set_file_transfer_recv(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferRecvCb cb) {
+	cbs->file_transfer_recv = cb;
+}
+
+LinphoneChatRoomCbsFileTransferSendCb linphone_chat_room_cbs_get_file_transfer_send(const LinphoneChatRoomCbs *cbs) {
+	return cbs->file_transfer_send;
+}
+
+void linphone_chat_room_cbs_set_file_transfer_send(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferSendCb cb) {
+	cbs->file_transfer_send = cb;
+}
+
+LinphoneChatRoomCbsFileTransferProgressIndicationCb linphone_chat_room_cbs_get_file_transfer_progress_indication(const LinphoneChatRoomCbs *cbs) {
+	return cbs->file_transfer_progress_indication;
+}
+
+void linphone_chat_room_cbs_set_file_transfer_progress_indication(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferProgressIndicationCb cb) {
+	cbs->file_transfer_progress_indication = cb;
+}
+
+
+
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
@@ -134,11 +197,18 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	if (cr->pending_message)
 		linphone_chat_message_destroy(cr->pending_message);
 	ms_free(cr->peer);
+	if (cr->callbacks) {
+		linphone_chat_room_cbs_unref(cr->callbacks);
+	}
 }
 
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	/* do not invoke callbacks on orphan messages */
 	if (state != msg->state && msg->chat_room != NULL) {
+		if ((msg->state == LinphoneChatMessageStateDisplayed) && (state == LinphoneChatMessageStateDeliveredToUser)) {
+			/* If the message has been displayed we must not go back to the delivered to user state. */
+			return;
+		}
 		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state),
 				   linphone_chat_message_state_to_string(state));
 		msg->state = state;
@@ -147,6 +217,9 @@ void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessa
 		}
 		if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
 			linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
+		}
+		if (linphone_chat_room_cbs_get_msg_state_changed(msg->chat_room->callbacks)) {
+			linphone_chat_room_cbs_get_msg_state_changed(msg->chat_room->callbacks)(msg->chat_room, msg, msg->state);
 		}
 	}
 }
@@ -188,6 +261,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
 static LinphoneChatRoom *_linphone_core_create_chat_room_base(LinphoneCore *lc, LinphoneAddress *addr){
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
 	cr->lc = lc;
+	cr->callbacks = linphone_chat_room_cbs_new();
 	cr->peer = linphone_address_as_string(addr);
 	cr->peer_url = addr;
 	cr->unread_count = -1;
@@ -428,6 +502,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			msg->message = ms_strdup(message_not_encrypted);
 		}
 		msg->from = linphone_address_new(identity);
+		msg->message_id = ms_strdup(sal_op_get_call_id(op)); /* must be known at that time */
 		msg->storage_id = linphone_chat_message_store(msg);
 
 		if (cr->unread_count >= 0 && !msg->is_read)
@@ -481,6 +556,7 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 	linphone_core_notify_message_received(lc, cr, msg);
 	cr->remote_is_composing = LinphoneIsComposingIdle;
 	linphone_core_notify_is_composing_received(cr->lc, cr);
+	linphone_chat_message_send_delivery_notification(msg);
 }
 
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
@@ -508,6 +584,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	msg->state = LinphoneChatMessageStateDelivered;
 	msg->is_read = FALSE;
 	msg->dir = LinphoneChatMessageIncoming;
+	msg->message_id = ms_strdup(sal_op_get_call_id(op));
 	
 	ch = sal_op_get_recv_custom_header(op);
 	if (ch) {
@@ -749,6 +826,88 @@ bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 	return (cr->remote_is_composing == LinphoneIsComposingActive) ? TRUE : FALSE;
 }
 
+static const char *imdn_prefix = "/imdn:imdn";
+
+static void process_imdn(LinphoneChatRoom *cr, xmlparsing_context_t *xml_ctx) {
+	char xpath_str[MAX_XPATH_LENGTH];
+	xmlXPathObjectPtr imdn_object;
+	xmlXPathObjectPtr delivery_status_object;
+	xmlXPathObjectPtr display_status_object;
+	const char *message_id_str = NULL;
+	const char *datetime_str = NULL;
+
+	if (linphone_create_xml_xpath_context(xml_ctx) < 0)
+		return;
+
+	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"imdn",
+					   (const xmlChar *)"urn:ietf:params:xml:ns:imdn");
+	imdn_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, imdn_prefix);
+	if (imdn_object != NULL) {
+		if ((imdn_object->nodesetval != NULL) && (imdn_object->nodesetval->nodeNr >= 1)) {
+			snprintf(xpath_str, sizeof(xpath_str), "%s[1]/imdn:message-id", imdn_prefix);
+			message_id_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
+			snprintf(xpath_str, sizeof(xpath_str), "%s[1]/imdn:datetime", imdn_prefix);
+			datetime_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
+		}
+		xmlXPathFreeObject(imdn_object);
+	}
+
+	if ((message_id_str != NULL) && (datetime_str != NULL)) {
+		LinphoneChatMessage *cm = linphone_chat_room_find_message(cr, message_id_str);
+		if (cm == NULL) {
+			ms_warning("Received IMDN for unknown message %s", message_id_str);
+		} else {
+			snprintf(xpath_str, sizeof(xpath_str), "%s[1]/imdn:delivery-notification/imdn:status", imdn_prefix);
+			delivery_status_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
+			snprintf(xpath_str, sizeof(xpath_str), "%s[1]/imdn:display-notification/imdn:status", imdn_prefix);
+			display_status_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
+			if (delivery_status_object != NULL) {
+				if ((delivery_status_object->nodesetval != NULL) && (delivery_status_object->nodesetval->nodeNr >= 1)) {
+					xmlNodePtr node = delivery_status_object->nodesetval->nodeTab[0];
+					if ((node->children != NULL) && (node->children->name != NULL) && (strcmp((const char *)node->children->name, "delivered") == 0)) {
+						linphone_chat_message_update_state(cm, LinphoneChatMessageStateDeliveredToUser);
+					}
+				}
+				xmlXPathFreeObject(delivery_status_object);
+			}
+			if (display_status_object != NULL) {
+				if ((display_status_object->nodesetval != NULL) && (display_status_object->nodesetval->nodeNr >= 1)) {
+					xmlNodePtr node = display_status_object->nodesetval->nodeTab[0];
+					if ((node->children != NULL) && (node->children->name != NULL) && (strcmp((const char *)node->children->name, "displayed") == 0)) {
+						linphone_chat_message_update_state(cm, LinphoneChatMessageStateDisplayed);
+					}
+				}
+				xmlXPathFreeObject(display_status_object);
+			}
+			linphone_chat_message_unref(cm);
+		}
+	}
+	if (message_id_str != NULL) linphone_free_xml_text_content(message_id_str);
+	if (datetime_str != NULL) linphone_free_xml_text_content(datetime_str);
+}
+
+static void linphone_chat_room_notify_imdn(LinphoneChatRoom *cr, const char *text) {
+	xmlparsing_context_t *xml_ctx = linphone_xmlparsing_context_new();
+	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
+	xml_ctx->doc = xmlReadDoc((const unsigned char *)text, 0, NULL, 0);
+	if (xml_ctx->doc != NULL) {
+		process_imdn(cr, xml_ctx);
+	} else {
+		ms_warning("Wrongly formatted IMDN XML: %s", xml_ctx->errorBuffer);
+	}
+	linphone_xmlparsing_context_destroy(xml_ctx);
+}
+
+LinphoneReason linphone_core_imdn_received(LinphoneCore *lc, SalOp *op, const SalImdn *imdn) {
+	LinphoneAddress *addr = linphone_address_new(imdn->from);
+	LinphoneChatRoom *cr = _linphone_core_get_chat_room(lc, addr);
+	if (cr != NULL) {
+		linphone_chat_room_notify_imdn(cr, imdn->content);
+	}
+	linphone_address_destroy(addr);
+	return LinphoneReasonNone;
+}
+
 LinphoneCore *linphone_chat_room_get_lc(LinphoneChatRoom *cr) {
 	return linphone_chat_room_get_core(cr);
 }
@@ -912,6 +1071,143 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 	}
 }
 
+enum ImdnType {
+	ImdnTypeDelivery,
+	ImdnTypeDisplay
+};
+
+static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum ImdnType imdn_type) {
+	xmlBufferPtr buf;
+	xmlTextWriterPtr writer;
+	int err;
+	char *content = NULL;
+	char *datetime = NULL;
+
+	buf = xmlBufferCreate();
+	if (buf == NULL) {
+		ms_error("Error creating the XML buffer");
+		return content;
+	}
+	writer = xmlNewTextWriterMemory(buf, 0);
+	if (writer == NULL) {
+		ms_error("Error creating the XML writer");
+		return content;
+	}
+
+	datetime = linphone_timestamp_to_rfc3339_string(linphone_chat_message_get_time(cm));
+	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
+	if (err >= 0) {
+		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"imdn",
+										  (const xmlChar *)"urn:ietf:params:xml:ns:imdn");
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"message-id", (const xmlChar *)linphone_chat_message_get_message_id(cm));
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"datetime", (const xmlChar *)datetime);
+	}
+	if (err >= 0) {
+		if (imdn_type == ImdnTypeDelivery) {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivery-notification");
+		} else {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"display-notification");
+		}
+	}
+	if (err >= 0) {
+		err = xmlTextWriterStartElement(writer, (const xmlChar *)"status");
+	}
+	if (err >= 0) {
+		if (imdn_type == ImdnTypeDelivery) {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivered");
+		} else {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"displayed");
+		}
+	}
+	if (err >= 0) {
+		/* Close the "delivered" or "displayed" element. */
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		/* Close the "status" element. */
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		/* Close the "delivery-notification" or "display-notification" element. */
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		/* Close the "imdn" element. */
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		err = xmlTextWriterEndDocument(writer);
+	}
+	if (err > 0) {
+		/* xmlTextWriterEndDocument returns the size of the content. */
+		content = ms_strdup((char *)buf->content);
+	}
+	xmlFreeTextWriter(writer);
+	xmlBufferFree(buf);
+	ms_free(datetime);
+	return content;
+}
+
+static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnType imdn_type) {
+	SalOp *op = NULL;
+	const char *identity = NULL;
+	char *content = NULL;
+	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(cm);
+	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(cr->lc);
+	LinphoneChatMessage *msg;
+
+	if (proxy)
+		identity = linphone_proxy_config_get_identity(proxy);
+	else
+		identity = linphone_core_get_primary_contact(cr->lc);
+	/* Sending out of calls */
+	op = sal_op_new(cr->lc->sal);
+	linphone_configure_op(cr->lc, op, cr->peer_url, NULL,
+		lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
+
+	content = linphone_chat_message_create_imdn_xml(cm, imdn_type);
+	if (content != NULL) {
+		int retval = -1;
+		LinphoneAddress *from_addr = linphone_address_new(identity);
+		LinphoneAddress *to_addr = linphone_address_new(cr->peer);
+		msg = linphone_chat_room_create_message(cr, content);
+		linphone_chat_message_set_from_address(msg, from_addr);
+		linphone_chat_message_set_to_address(msg, to_addr);
+		msg->content_type = ms_strdup("message/imdn+xml");
+
+		if (imee) {
+			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+			LinphoneImEncryptionEngineOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
+			if (cb_process_outgoing_message) {
+				retval = cb_process_outgoing_message(cr->lc, cr, msg);
+			}
+		}
+
+		if (retval <= 0) {
+			sal_message_send(op, identity, cr->peer, msg->content_type, msg->message, NULL);
+		}
+		
+		linphone_chat_message_unref(msg);
+		linphone_address_destroy(from_addr);
+		linphone_address_destroy(to_addr);
+		ms_free(content);
+	}
+	sal_op_unref(op);
+}
+
+void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm) {
+	linphone_chat_message_send_imdn(cm, ImdnTypeDelivery);
+}
+
+void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm) {
+	linphone_chat_message_send_imdn(cm, ImdnTypeDisplay);
+}
+
 static char* utf8_to_char(uint32_t ic) {
 	char *result = ms_malloc(sizeof(char) * 5);
 	int size = 0;
@@ -1043,6 +1339,10 @@ int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character)
 	return 0;
 }
 
+const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *cm) {
+	return cm->message_id;
+}
+
 static int linphone_chat_room_stop_composing(void *data, unsigned int revents) {
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	cr->is_composing = LinphoneIsComposingIdle;
@@ -1095,6 +1395,10 @@ const char *linphone_chat_message_state_to_string(const LinphoneChatMessageState
 		return "LinphoneChatMessageStateFileTransferError";
 	case LinphoneChatMessageStateFileTransferDone:
 		return "LinphoneChatMessageStateFileTransferDone ";
+	case LinphoneChatMessageStateDeliveredToUser:
+		return "LinphoneChatMessageStateDeliveredToUser";
+	case LinphoneChatMessageStateDisplayed:
+		return "LinphoneChatMessageStateDisplayed";
 	}
 	return NULL;
 }
@@ -1254,6 +1558,8 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 		linphone_address_destroy(msg->from);
 	if (msg->to)
 		linphone_address_destroy(msg->to);
+	if (msg->message_id)
+		ms_free(msg->message_id);
 	if (msg->custom_headers)
 		sal_custom_header_free(msg->custom_headers);
 	if (msg->content_type)
@@ -1297,6 +1603,10 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
 
 LinphoneChatMessageCbs *linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg) {
 	return msg->callbacks;
+}
+
+LinphoneChatRoomCbs *linphone_chat_room_get_callbacks(const LinphoneChatRoom *room) {
+	return room->callbacks;
 }
 
 LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room) {

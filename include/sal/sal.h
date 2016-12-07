@@ -312,6 +312,11 @@ typedef struct SalIsComposing {
 	const char *text;
 } SalIsComposing;
 
+typedef struct SalImdn {
+	const char *from;
+	const char *content;
+} SalImdn;
+
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
 SalMediaDescription *sal_media_description_new(void);
@@ -503,6 +508,7 @@ typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
 typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus);
 typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
+typedef void (*SalOnImdnReceived)(SalOp *op, const SalImdn *imdn);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, int will_retry);
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, SalBodyHandler *body);
@@ -541,6 +547,7 @@ typedef struct SalCallbacks{
 	SalOnTextReceived text_received;
 	SalOnTextDeliveryUpdate text_delivery_update;
 	SalOnIsComposingReceived is_composing_received;
+	SalOnImdnReceived imdn_received;
 	SalOnNotifyRefer notify_refer;
 	SalOnSubscribeReceived subscribe_received;
 	SalOnIncomingSubscribeClosed incoming_subscribe_closed;

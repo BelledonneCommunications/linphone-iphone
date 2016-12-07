@@ -1187,6 +1187,13 @@ static void is_composing_received(SalOp *op, const SalIsComposing *is_composing)
 	sal_op_release(op);
 }
 
+static void imdn_received(SalOp *op, const SalImdn *imdn) {
+	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneReason reason = linphone_core_imdn_received(lc, op, imdn);
+	sal_message_reply(op, linphone_reason_to_sal(reason));
+	sal_op_release(op);
+}
+
 static void parse_presence_requested(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
 	linphone_notify_parse_presence(content_type, content_subtype, body, result);
 }
@@ -1503,6 +1510,7 @@ SalCallbacks linphone_sal_callbacks={
 	text_received,
 	text_delivery_update,
 	is_composing_received,
+	imdn_received,
 	notify_refer,
 	subscribe_received,
 	incoming_subscribe_closed,

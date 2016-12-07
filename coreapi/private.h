@@ -249,6 +249,7 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageState state;
 	bool_t is_read;
 	unsigned int storage_id;
+	char *message_id;
 	SalOp *op;
 	LinphoneContent *file_transfer_information; /**< used to store file transfer information when the message is of file transfer type */
 	char *content_type; /**< is used to specified the type of message to be sent, used only for file transfer message */
@@ -553,6 +554,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 LinphoneReason linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
+LinphoneReason linphone_core_imdn_received(LinphoneCore *lc, SalOp *op, const SalImdn *imdn);
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call);
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type);
@@ -608,12 +610,15 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
+LinphoneChatRoomCbs *linphone_chat_room_cbs_new(void);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
+void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm);
+void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
-LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
+LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void); /* deprecated */
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
 /**/
 
@@ -689,10 +694,22 @@ typedef enum _LinphoneIsComposingState {
 	LinphoneIsComposingActive
 } LinphoneIsComposingState;
 
+struct _LinphoneChatRoomCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneChatRoomCbsMsgStateChangedCb msg_state_changed;
+	LinphoneChatRoomCbsFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatRoom */
+	LinphoneChatRoomCbsFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatRoom */
+	LinphoneChatRoomCbsFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneChatRoomCbs);
+
 struct _LinphoneChatRoom{
 	belle_sip_object_t base;
 	void *user_data;
 	struct _LinphoneCore *lc;
+	LinphoneChatRoomCbs *callbacks;
 	char  *peer;
 	LinphoneAddress *peer_url;
 	MSList *messages_hist;
@@ -1533,6 +1550,7 @@ BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
 BELLE_SIP_TYPE_ID(LinphoneChatMessageCbs),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
+BELLE_SIP_TYPE_ID(LinphoneChatRoomCbs),
 BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngine),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngineCbs),

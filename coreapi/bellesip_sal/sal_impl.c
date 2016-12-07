@@ -595,6 +595,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
 	if (ctx->callbacks.is_composing_received==NULL)
 		ctx->callbacks.is_composing_received=(SalOnIsComposingReceived)unimplemented_stub;
+	if (ctx->callbacks.imdn_received == NULL)
+		ctx->callbacks.imdn_received = (SalOnImdnReceived)unimplemented_stub;
 	if (ctx->callbacks.ping_reply==NULL)
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL)
