@@ -671,6 +671,9 @@
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
+		9EC6C1E11DF96991006C2FD2 /* armv7-apple-darwin.ios in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */; };
+		9EC6C1E31DF969AA006C2FD2 /* libturbojpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */; };
+		9EC6C1E41DF969D1006C2FD2 /* libturbojpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
@@ -1632,6 +1635,8 @@
 		8CA5F8C41DD0940F00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPad.strings; sourceTree = "<group>"; };
 		8CA5F8C51DD0941000E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
 		8CA5F8CC1DD21DCB00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "armv7-apple-darwin.ios"; path = "liblinphone-sdk/armv7-apple-darwin.ios"; sourceTree = "<group>"; };
+		9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libturbojpeg.a; path = "liblinphone-sdk/apple-darwin/lib/libturbojpeg.a"; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsView.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsView.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
@@ -1823,6 +1828,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EC6C1E31DF969AA006C2FD2 /* libturbojpeg.a in Frameworks */,
+				9EC6C1E11DF96991006C2FD2 /* armv7-apple-darwin.ios in Frameworks */,
 				8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */,
 				8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */,
 				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
@@ -1908,6 +1915,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EC6C1E41DF969D1006C2FD2 /* libturbojpeg.a in Frameworks */,
 				636920671D253DF700D44CAC /* libbcunit.a in Frameworks */,
 				63BB26A31D006F4B00DA1F83 /* libbv16.a in Frameworks */,
 				63FD3F101CA17FA400E9AECC /* libmbedcrypto.a in Frameworks */,
@@ -2228,6 +2236,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */,
+				9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */,
 				8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */,
 				8CA2004B1D8158440095F859 /* PushKit.framework */,
 				570742661D5A63DB004B9C84 /* StoreKit.framework */,
@@ -3153,7 +3163,6 @@
 				LastUpgradeCheck = 0800;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = Z2V957B3D6;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
 								enabled = 1;
@@ -4502,7 +4511,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = Z2V957B3D6;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4591,7 +4600,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = Z2V957B3D6;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4679,7 +4688,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = Z2V957B3D6;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4767,7 +4776,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = Z2V957B3D6;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
