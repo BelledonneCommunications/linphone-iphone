@@ -90,6 +90,11 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 	
 	if (content_type) {
+		
+		if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
+		op->pending_server_trans=server_transaction;
+		belle_sip_object_ref(op->pending_server_trans);
+			
 		if (is_im_iscomposing(content_type)) {
 			SalIsComposing saliscomposing;
 			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
@@ -105,10 +110,6 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			char message_id[256]={0};
 			
 			external_body=is_external_body(content_type);
-		
-			if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
-			op->pending_server_trans=server_transaction;
-			belle_sip_object_ref(op->pending_server_trans);
 		
 			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
 					,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
