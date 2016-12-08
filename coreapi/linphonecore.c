@@ -7020,13 +7020,12 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	/* check if the remaining calls are paused */
 	while( the_calls ){
 		call = the_calls->data;
-		if( call->state != LinphoneCallPausing && call->state != LinphoneCallPaused ){
+		if( call->state != LinphoneCallPausing && call->state != LinphoneCallPaused && call->state != LinphoneCallEnd && call->state != LinphoneCallError){
 			dont_need_sound = FALSE;
 			break;
 		}
 		the_calls = the_calls->next;
 	}
-
 	/* if no more calls or all calls are paused, we can free the soundcard */
 	if ( (lc->calls==NULL || dont_need_sound) && !lc->use_files && !use_rtp_io){
 		ms_message("Notifying soundcard that we don't need it anymore for calls.");
