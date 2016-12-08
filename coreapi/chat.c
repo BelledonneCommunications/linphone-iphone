@@ -712,6 +712,7 @@ LinphoneReason linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, 
 		int retval = -1;
 		LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, is_composing->text);
 		linphone_chat_message_set_from_address(msg, addr);
+		msg->content_type = ms_strdup("application/im-iscomposing+xml");
 		if (imee) {
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 			LinphoneImEncryptionEngineIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
