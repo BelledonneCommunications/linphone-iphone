@@ -202,7 +202,7 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 	linphone_core_set_log_level_mask(mask);
 }
 
-void linphone_core_set_log_level_mask(OrtpLogLevel loglevel) {
+void linphone_core_set_log_level_mask(unsigned int loglevel) {
 	ortp_set_log_level_mask(NULL, loglevel);
 	bctbx_set_log_level_mask(NULL, loglevel);
 	if (loglevel == 0) {

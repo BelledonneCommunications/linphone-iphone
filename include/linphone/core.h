@@ -2346,7 +2346,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
  *
  * @param loglevel A bitmask of the log levels to set.
  */
-LINPHONE_PUBLIC void linphone_core_set_log_level_mask(OrtpLogLevel loglevel);
+LINPHONE_PUBLIC void linphone_core_set_log_level_mask(unsigned int loglevel);
 
 /**
  * Enable logs in supplied FILE*.
