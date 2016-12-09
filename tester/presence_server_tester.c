@@ -140,7 +140,7 @@ static void subscriber_no_longer_reachable(void){
 	lcs = bctbx_list_append(lcs, marie->lc);
 	lcs = bctbx_list_append(lcs, pauline1->lc);
 
-	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 40);
+	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 60);
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(pauline1->lc, "full-presence-support", NULL);
 
