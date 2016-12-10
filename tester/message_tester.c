@@ -32,9 +32,6 @@
 #endif
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
-#else
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
 
@@ -869,11 +866,11 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void is_composing_notification() {
+static void is_composing_notification(void) {
 	_is_composing_notification(FALSE);
 }
 
-static void is_composing_notification_with_lime() {
+static void is_composing_notification_with_lime(void) {
 	_is_composing_notification(TRUE);
 }
 
@@ -2063,7 +2060,7 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side, "RTT"),
 	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side, "RTT"),
 	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
-	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers),
+	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers)
 };
 
 test_suite_t message_test_suite = {

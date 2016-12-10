@@ -802,7 +802,7 @@ case "$target_os" in
 	;;
 esac
 if test "$strictness" = "yes" ; then
-	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Wextra -Wno-unused-parameter -Wno-error=deprecated-declarations -Wno-error=strict-prototypes -Wno-missing-field-initializers"
+	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Wextra -Wno-unused-parameter -Wno-error=deprecated-declarations -Wno-missing-field-initializers"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 
