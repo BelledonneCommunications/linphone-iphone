@@ -217,6 +217,19 @@
 			[app registerForRemoteNotificationTypes:notifTypes];
 		}
 	}
+
+	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+		[UNUserNotificationCenter currentNotificationCenter].delegate = self;
+		[[UNUserNotificationCenter currentNotificationCenter]
+			requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
+											 UNAuthorizationOptionBadge)
+						  completionHandler:^(BOOL granted, NSError *_Nullable error) {
+							// Enable or disable features based on authorization.
+							if (error) {
+								LOGD(error.description);
+							}
+						  }];
+	}
 }
 #pragma deploymate pop
 
@@ -425,9 +438,10 @@
 	return NULL;
 }
 
+/*
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
 	LOGI(@"%@ - state = %ld", NSStringFromSelector(_cmd), (long)application.applicationState);
-	
+
 	if ([notification.category isEqual:LinphoneManager.instance.iapManager.notificationCategory]){
 		[PhoneMainView.instance changeCurrentView:ShopView.compositeViewDescription];
 		return;
@@ -494,35 +508,7 @@
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}
 }
-
-// this method is implemented for iOS7. It is invoked when receiving a push notification for a call and it has
-// "content-available" in the aps section.
-- (void)application:(UIApplication *)application
-	didReceiveRemoteNotification:(NSDictionary *)userInfo
-		  fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
-	LinphoneManager *lm = LinphoneManager.instance;
-
-	// save the completion handler for later execution.
-	// 2 outcomes:
-	// - if a new call/message is received, the completion handler will be called with "NEWDATA"
-	// - if nothing happens for 15 seconds, the completion handler will be called with "NODATA"
-	lm.silentPushCompletion = completionHandler;
-	[NSTimer scheduledTimerWithTimeInterval:15.0
-									 target:lm
-								   selector:@selector(silentPushFailed:)
-								   userInfo:nil
-									repeats:FALSE];
-
-	// If no call is yet received at this time, then force Linphone to drop the current socket and make new one to
-	// register, so that we get
-	// a better chance to receive the INVITE.
-	if (linphone_core_get_calls(LC) == NULL) {
-		linphone_core_set_network_reachable(LC, FALSE);
-		lm.connectivity = none; /*force connectivity to be discovered again*/
-		[lm refreshRegisters];
-	}
-}
+*/
 
 #pragma mark - PushNotification Functions
 
@@ -642,29 +628,32 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         if (room) {
             LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
             linphone_chat_room_send_chat_message(room, msg);
-            linphone_chat_room_mark_as_read(room);
-            [PhoneMainView.instance updateApplicationBadgeNumber];
-        }
-    } else if ([response.actionIdentifier isEqual:@"Seen"]) {
-        NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
-        LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
-        if (room) {
-            linphone_chat_room_mark_as_read(room);
-            TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-                                             getCachedController:NSStringFromClass(TabBarView.class)];
-            [tab update:YES];
-            [PhoneMainView.instance updateApplicationBadgeNumber];
-        }
-        
-    } else { //in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
-        if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
-            
-        } else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
-            [PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
-        } else { //Missed call
-            [PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
-        }
-    }
+			linphone_chat_room_mark_as_read(room);
+			TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+				getCachedController:NSStringFromClass(TabBarView.class)];
+			[tab update:YES];
+			[PhoneMainView.instance updateApplicationBadgeNumber];
+		}
+	} else if ([response.actionIdentifier isEqual:@"Seen"]) {
+		NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
+		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
+		if (room) {
+			linphone_chat_room_mark_as_read(room);
+			TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+				getCachedController:NSStringFromClass(TabBarView.class)];
+			[tab update:YES];
+			[PhoneMainView.instance updateApplicationBadgeNumber];
+		}
+
+	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
+		if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
+
+		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
+			[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+		} else { // Missed call
+			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
+		}
+	}
 }
 
 #pragma mark - User notifications
@@ -688,7 +677,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if ([notification.category isEqualToString:@"incoming_call"]) {
 			if ([identifier isEqualToString:@"answer"]) {
 				// use the standard handler
-				[self application:application didReceiveLocalNotification:notification];
+				[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+				linphone_core_accept_call(LC, call);
 			} else if ([identifier isEqualToString:@"decline"]) {
 				LinphoneCall *call = linphone_core_get_current_call(LC);
 				if (call)
@@ -731,7 +721,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	if ([notification.category isEqualToString:@"incoming_call"]) {
 		if ([identifier isEqualToString:@"answer"]) {
 			// use the standard handler
-			[self application:application didReceiveLocalNotification:notification];
+			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+			linphone_core_accept_call(LC, call);
 		} else if ([identifier isEqualToString:@"decline"]) {
 			LinphoneCall *call = linphone_core_get_current_call(LC);
 			if (call)
@@ -753,13 +744,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	completionHandler();
 }
 
-- (void)application:(UIApplication *)application
-	handleActionWithIdentifier:(NSString *)identifier
-		 forRemoteNotification:(NSDictionary *)userInfo
-			 completionHandler:(void (^)())completionHandler {
-	LOGI(@"%@", NSStringFromSelector(_cmd));
-	completionHandler();
-}
 #pragma deploymate pop
 
 #pragma mark - Remote configuration Functions (URL Handler)
