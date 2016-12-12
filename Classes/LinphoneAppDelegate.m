@@ -459,73 +459,7 @@
 			// Create a new notification
 
 			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-				NSArray *actions;
-
-				if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
-					[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
-
-					UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
-					reply.identifier = @"reply";
-					reply.title = NSLocalizedString(@"Reply", nil);
-					reply.activationMode = UIUserNotificationActivationModeForeground;
-					reply.destructive = NO;
-					reply.authenticationRequired = YES;
-
-					UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
-					mark_read.identifier = @"mark_read";
-					mark_read.title = NSLocalizedString(@"Mark Read", nil);
-					mark_read.activationMode = UIUserNotificationActivationModeBackground;
-					mark_read.destructive = NO;
-					mark_read.authenticationRequired = NO;
-
-					actions = @[ mark_read, reply ];
-				} else {
-					// iOS 9 allows for inline reply. We don't propose mark_read in this case
-					UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
-
-					reply_inline.identifier = @"reply_inline";
-					reply_inline.title = NSLocalizedString(@"Reply", nil);
-					reply_inline.activationMode = UIUserNotificationActivationModeBackground;
-					reply_inline.destructive = NO;
-					reply_inline.authenticationRequired = NO;
-					reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
-
-					actions = @[ reply_inline ];
-				}
-
-				UIMutableUserNotificationCategory *msgcat = [[UIMutableUserNotificationCategory alloc] init];
-				msgcat.identifier = @"incoming_msg";
-				[msgcat setActions:actions forContext:UIUserNotificationActionContextDefault];
-				[msgcat setActions:actions forContext:UIUserNotificationActionContextMinimal];
-
-				NSSet *categories = [NSSet setWithObjects:msgcat, nil];
-
-				UIUserNotificationSettings *set = [UIUserNotificationSettings
-					settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge |
-									  UIUserNotificationTypeSound)
-						  categories:categories];
-				[[UIApplication sharedApplication] registerUserNotificationSettings:set];
-
-				// UILocalNotification *notif = [[UILocalNotification alloc] init];
-				if (notification) {
-					notification.repeatInterval = 0;
-					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
-#pragma deploymate push "ignored-api-availability"
-						notification.category = @"incoming_msg";
-#pragma deploymate pop
-					}
-					if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-						notification.alertBody =
-							[NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
-					} else {
-						notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
-					}
-					notification.alertAction = NSLocalizedString(@"Show", nil);
-					notification.soundName = @"msg.caf";
-					notification.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
-					notification.accessibilityLabel = @"Message notif";
-					[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
-				}
+				// Do nothing
 			} else {
 				UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 				content.title = NSLocalizedString(@"Message received", nil);
@@ -739,17 +673,17 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	handleActionWithIdentifier:(NSString *)identifier
 		  forLocalNotification:(UILocalNotification *)notification
 			 completionHandler:(void (^)())completionHandler {
-    
-    LinphoneCall* call = linphone_core_get_current_call(LC);
-    if (call) {
-        LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-        if (data->timer) {
-            [data->timer invalidate];
-            data->timer = nil;
-        }
-    }
-    LOGI(@"%@", NSStringFromSelector(_cmd));
-	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+
+	LinphoneCall *call = linphone_core_get_current_call(LC);
+	if (call) {
+		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+		if (data->timer) {
+			[data->timer invalidate];
+			data->timer = nil;
+		}
+	}
+	LOGI(@"%@", NSStringFromSelector(_cmd));
+	if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_9_0) {
 		LOGI(@"%@", NSStringFromSelector(_cmd));
 		if ([notification.category isEqualToString:@"incoming_call"]) {
 			if ([identifier isEqualToString:@"answer"]) {
@@ -763,7 +697,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		} else if ([notification.category isEqualToString:@"incoming_msg"]) {
 			if ([identifier isEqualToString:@"reply"]) {
 				// use the standard handler
-				[self application:application didReceiveLocalNotification:notification];
+				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			} else if ([identifier isEqualToString:@"mark_read"]) {
 				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
 				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
@@ -785,15 +719,15 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		  forLocalNotification:(UILocalNotification *)notification
 			  withResponseInfo:(NSDictionary *)responseInfo
 			 completionHandler:(void (^)())completionHandler {
-    
-    LinphoneCall* call = linphone_core_get_current_call(LC);
-    if (call) {
-        LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-        if (data->timer) {
-            [data->timer invalidate];
-            data->timer = nil;
-        }
-    }
+
+	LinphoneCall *call = linphone_core_get_current_call(LC);
+	if (call) {
+		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+		if (data->timer) {
+			[data->timer invalidate];
+			data->timer = nil;
+		}
+	}
 	if ([notification.category isEqualToString:@"incoming_call"]) {
 		if ([identifier isEqualToString:@"answer"]) {
 			// use the standard handler
