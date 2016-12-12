@@ -144,8 +144,20 @@ static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription
 }
 
 static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event) {
-	/* Nothing to be done. If the error comes from a connectivity loss,
-	 * the call will be marked as broken, and an attempt to repair it will be done. */
+	SalOp *op = (SalOp *)user_ctx;
+
+	if (op->state == SalOpStateTerminated) return;
+
+	if (op->pending_client_trans && (belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_INIT)) {
+		/* Call terminated very very early, before INVITE is even sent, probably DNS resolution timeout. */
+		sal_error_info_set(&op->error_info, SalReasonIOError, 503, "IO error", NULL);
+		op->base.root->callbacks.call_failure(op);
+		op->state = SalOpStateTerminating;
+		call_set_released(op);
+	} else {
+		/* Nothing to be done. If the error comes from a connectivity loss,
+		 * the call will be marked as broken, and an attempt to repair it will be done. */
+	}
 }
 
 static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
