@@ -110,69 +110,6 @@ void linphone_chat_message_cbs_set_file_transfer_progress_indication(
 }
 
 
-BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatRoomCbs);
-
-BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoomCbs, belle_sip_object_t,
-						   NULL, // destroy
-						   NULL, // clone
-						   NULL, // marshal
-						   FALSE);
-
-LinphoneChatRoomCbs *linphone_chat_room_cbs_new(void) {
-	return belle_sip_object_new(LinphoneChatRoomCbs);
-}
-
-LinphoneChatRoomCbs *linphone_chat_room_cbs_ref(LinphoneChatRoomCbs *cbs) {
-	belle_sip_object_ref(cbs);
-	return cbs;
-}
-
-void linphone_chat_room_cbs_unref(LinphoneChatRoomCbs *cbs) {
-	belle_sip_object_unref(cbs);
-}
-
-void *linphone_chat_room_cbs_get_user_data(const LinphoneChatRoomCbs *cbs) {
-	return cbs->user_data;
-}
-
-void linphone_chat_room_cbs_set_user_data(LinphoneChatRoomCbs *cbs, void *ud) {
-	cbs->user_data = ud;
-}
-
-LinphoneChatRoomCbsMsgStateChangedCb linphone_chat_room_cbs_get_msg_state_changed(const LinphoneChatRoomCbs *cbs) {
-	return cbs->msg_state_changed;
-}
-
-void linphone_chat_room_cbs_set_msg_state_changed(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMsgStateChangedCb cb) {
-	cbs->msg_state_changed = cb;
-}
-
-LinphoneChatRoomCbsFileTransferRecvCb linphone_chat_room_cbs_get_file_transfer_recv(const LinphoneChatRoomCbs *cbs) {
-	return cbs->file_transfer_recv;
-}
-
-void linphone_chat_room_cbs_set_file_transfer_recv(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferRecvCb cb) {
-	cbs->file_transfer_recv = cb;
-}
-
-LinphoneChatRoomCbsFileTransferSendCb linphone_chat_room_cbs_get_file_transfer_send(const LinphoneChatRoomCbs *cbs) {
-	return cbs->file_transfer_send;
-}
-
-void linphone_chat_room_cbs_set_file_transfer_send(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferSendCb cb) {
-	cbs->file_transfer_send = cb;
-}
-
-LinphoneChatRoomCbsFileTransferProgressIndicationCb linphone_chat_room_cbs_get_file_transfer_progress_indication(const LinphoneChatRoomCbs *cbs) {
-	return cbs->file_transfer_progress_indication;
-}
-
-void linphone_chat_room_cbs_set_file_transfer_progress_indication(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferProgressIndicationCb cb) {
-	cbs->file_transfer_progress_indication = cb;
-}
-
-
-
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
@@ -197,9 +134,6 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	if (cr->pending_message)
 		linphone_chat_message_destroy(cr->pending_message);
 	ms_free(cr->peer);
-	if (cr->callbacks) {
-		linphone_chat_room_cbs_unref(cr->callbacks);
-	}
 }
 
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
@@ -217,9 +151,6 @@ void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessa
 		}
 		if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
 			linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
-		}
-		if (linphone_chat_room_cbs_get_msg_state_changed(msg->chat_room->callbacks)) {
-			linphone_chat_room_cbs_get_msg_state_changed(msg->chat_room->callbacks)(msg->chat_room, msg, msg->state);
 		}
 	}
 }
@@ -261,7 +192,6 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
 static LinphoneChatRoom *_linphone_core_create_chat_room_base(LinphoneCore *lc, LinphoneAddress *addr){
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
 	cr->lc = lc;
-	cr->callbacks = linphone_chat_room_cbs_new();
 	cr->peer = linphone_address_as_string(addr);
 	cr->peer_url = addr;
 	cr->unread_count = -1;
@@ -1603,10 +1533,6 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
 
 LinphoneChatMessageCbs *linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg) {
 	return msg->callbacks;
-}
-
-LinphoneChatRoomCbs *linphone_chat_room_get_callbacks(const LinphoneChatRoom *room) {
-	return room->callbacks;
 }
 
 LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room) {

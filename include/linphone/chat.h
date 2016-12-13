@@ -32,7 +32,6 @@ extern "C" {
 
 /**
  * An object to handle the callbacks for the handling a LinphoneChatMessage objects.
- * @deprecated Use LinphoneChatRoomCbs instead.
  */
 typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
 
@@ -41,11 +40,6 @@ typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
  * <br> Can be created by linphone_chat_room_create_message().
  */
 typedef struct _LinphoneChatMessage LinphoneChatMessage;
-
-/**
- * An object to handle the callbacks for the handling of LinphoneChatMessage objects related to a LinphoneChatRoom.
- */
-typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
 
 /**
  * A chat room is the place where text messages are exchanged.
@@ -78,7 +72,7 @@ typedef enum _LinphoneLimeState {
  * @param msg #LinphoneChatMessage object
  * @param status LinphoneChatMessageState
  * @param ud application user data
- * @deprecated Use LinphoneChatRoomCbsMsgStateChangedCb instead.
+ * @deprecated Use LinphoneChatMessageCbsMsgStateChangedCb instead.
  */
 typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 
@@ -86,7 +80,6 @@ typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,Linph
  * Call back used to notify message delivery status
  * @param msg #LinphoneChatMessage object
  * @param status LinphoneChatMessageState
- * @deprecated Use LinphoneChatRoomCbsMsgStateChangedCb instead.
  */
 typedef void (*LinphoneChatMessageCbsMsgStateChangedCb)(LinphoneChatMessage* msg, LinphoneChatMessageState state);
 
@@ -95,7 +88,6 @@ typedef void (*LinphoneChatMessageCbsMsgStateChangedCb)(LinphoneChatMessage* msg
  * @param message #LinphoneChatMessage message from which the body is received.
  * @param content #LinphoneContent incoming content information
  * @param buffer #LinphoneBuffer holding the received data. Empty buffer means end of file.
- * @deprecated Use LinphoneChatRoomCbsFileTransferRecvCb instead.
  */
 typedef void (*LinphoneChatMessageCbsFileTransferRecvCb)(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer);
 
@@ -106,7 +98,6 @@ typedef void (*LinphoneChatMessageCbsFileTransferRecvCb)(LinphoneChatMessage *me
  * @param offset the offset in the file from where to get the data to be sent
  * @param size the number of bytes expected by the framework
  * @return A LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
- * @deprecated Use LinphoneChatRoomCbsFileTransferSendCb instead.
  */
 typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneChatMessage *message,  const LinphoneContent* content, size_t offset, size_t size);
 
@@ -116,48 +107,8 @@ typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneCha
  * @param content #LinphoneContent incoming content information
  * @param offset The number of bytes sent/received since the beginning of the transfer.
  * @param total The total number of bytes to be sent/received.
- * @deprecated Use LinphoneChatRoomCbsFileTransferProgressIndicationCb instead.
  */
 typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
-
-
-/**
- * Call back used to notify message delivery status
- * @param room #LinphoneChatRoom object
- * @param msg #LinphoneChatMessage object
- * @param status LinphoneChatMessageState
- */
-typedef void (*LinphoneChatRoomCbsMsgStateChangedCb)(LinphoneChatRoom *room, LinphoneChatMessage* msg, LinphoneChatMessageState state);
-
-/**
- * File transfer receive callback prototype. This function is called by the core upon an incoming File transfer is started. This function may be call several time for the same file in case of large file.
- * @param room #LinphoneChatRoom object
- * @param message #LinphoneChatMessage message from which the body is received.
- * @param content #LinphoneContent incoming content information
- * @param buffer #LinphoneBuffer holding the received data. Empty buffer means end of file.
- */
-typedef void (*LinphoneChatRoomCbsFileTransferRecvCb)(LinphoneChatRoom *room, LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer);
-
-/**
- * File transfer send callback prototype. This function is called by the core when an outgoing file transfer is started. This function is called until size is set to 0.
- * @param room #LinphoneChatRoom object
- * @param message #LinphoneChatMessage message from which the body is received.
- * @param content #LinphoneContent outgoing content
- * @param offset the offset in the file from where to get the data to be sent
- * @param size the number of bytes expected by the framework
- * @return A LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
- */
-typedef LinphoneBuffer * (*LinphoneChatRoomCbsFileTransferSendCb)(LinphoneChatRoom *room, LinphoneChatMessage *message,  const LinphoneContent* content, size_t offset, size_t size);
-
-/**
- * File transfer progress indication callback prototype.
- * @param room #LinphoneChatRoom object
- * @param message #LinphoneChatMessage message from which the body is received.
- * @param content #LinphoneContent incoming content information
- * @param offset The number of bytes sent/received since the beginning of the transfer.
- * @param total The total number of bytes to be sent/received.
- */
-typedef void (*LinphoneChatRoomCbsFileTransferProgressIndicationCb)(LinphoneChatRoom *room, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 
 
 LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
@@ -402,97 +353,6 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC const bctbx_list_t* linphone_core_get_chat_rooms(LinphoneCore *lc);
 
 
-/**
- * Get the LinphoneChatRoomCbs object associated with the LinphoneChatRoom.
- * @param[in] room LinphoneChatRoom object
- * @return The LinphoneChatRoomCbs object associated with the LinphoneChatRoom.
- */
-LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_chat_room_get_callbacks(const LinphoneChatRoom *room);
-
-/**
- * Acquire a reference to the LinphoneChatRoomCbs object.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @return The same LinphoneChatRoomCbs object.
- */
-LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_chat_room_cbs_ref(LinphoneChatRoomCbs *cbs);
-
-/**
- * Release reference to the LinphoneChatRoomCbs object.
- * @param[in] cbs LinphoneChatRoomCbs object.
- */
-LINPHONE_PUBLIC void linphone_chat_room_cbs_unref(LinphoneChatRoomCbs *cbs);
-
-/**
- * Retrieve the user pointer associated with the LinphoneChatRoomCbs object.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @return The user pointer associated with the LinphoneChatRoomCbs object.
- */
-LINPHONE_PUBLIC void *linphone_chat_room_cbs_get_user_data(const LinphoneChatRoomCbs *cbs);
-
-/**
- * Assign a user pointer to the LinphoneChatRoomCbs object.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @param[in] ud The user pointer to associate with the LinphoneChatRoomCbs object.
- */
-LINPHONE_PUBLIC void linphone_chat_room_cbs_set_user_data(LinphoneChatRoomCbs *cbs, void *ud);
-
-/**
- * Get the message state changed callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @return The current message state changed callback.
- */
-LINPHONE_PUBLIC LinphoneChatRoomCbsMsgStateChangedCb linphone_chat_room_cbs_get_msg_state_changed(const LinphoneChatRoomCbs *cbs);
-
-/**
- * Set the message state changed callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @param[in] cb The message state changed callback to be used.
- */
-LINPHONE_PUBLIC void linphone_chat_room_cbs_set_msg_state_changed(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMsgStateChangedCb cb);
-
-/**
- * Get the file transfer receive callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @return The current file transfer receive callback.
- */
-LINPHONE_PUBLIC LinphoneChatRoomCbsFileTransferRecvCb linphone_chat_room_cbs_get_file_transfer_recv(const LinphoneChatRoomCbs *cbs);
-
-/**
- * Set the file transfer receive callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @param[in] cb The file transfer receive callback to be used.
- */
-LINPHONE_PUBLIC void linphone_chat_room_cbs_set_file_transfer_recv(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferRecvCb cb);
-
-/**
- * Get the file transfer send callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @return The current file transfer send callback.
- */
-LINPHONE_PUBLIC LinphoneChatRoomCbsFileTransferSendCb linphone_chat_room_cbs_get_file_transfer_send(const LinphoneChatRoomCbs *cbs);
-
-/**
- * Set the file transfer send callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @param[in] cb The file transfer send callback to be used.
- */
-LINPHONE_PUBLIC void linphone_chat_room_cbs_set_file_transfer_send(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferSendCb cb);
-
-/**
- * Get the file transfer progress indication callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @return The current file transfer progress indication callback.
- */
-LINPHONE_PUBLIC LinphoneChatRoomCbsFileTransferProgressIndicationCb linphone_chat_room_cbs_get_file_transfer_progress_indication(const LinphoneChatRoomCbs *cbs);
-
-/**
- * Set the file transfer progress indication callback.
- * @param[in] cbs LinphoneChatRoomCbs object.
- * @param[in] cb The file transfer progress indication callback to be used.
- */
- LINPHONE_PUBLIC void linphone_chat_room_cbs_set_file_transfer_progress_indication(LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsFileTransferProgressIndicationCb cb);
-
-
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
 
 /**
@@ -734,14 +594,12 @@ LINPHONE_PUBLIC LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(con
  * Acquire a reference to the LinphoneChatMessageCbs object.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The same LinphoneChatMessageCbs object.
- * @deprecated Use linphone_chat_room_cbs_ref() instead.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbs * linphone_chat_message_cbs_ref(LinphoneChatMessageCbs *cbs);
 
 /**
  * Release reference to the LinphoneChatMessageCbs object.
  * @param[in] cbs LinphoneChatMessageCbs object.
- * @deprecated Use linphone_chat_room_cbs_unref() instead.
  */
 LINPHONE_PUBLIC void linphone_chat_message_cbs_unref(LinphoneChatMessageCbs *cbs);
 
@@ -749,7 +607,6 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_unref(LinphoneChatMessageCbs *cbs
  * Retrieve the user pointer associated with the LinphoneChatMessageCbs object.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The user pointer associated with the LinphoneChatMessageCbs object.
- * @deprecated Use linphone_chat_room_cbs_get_user_data() instead.
  */
 LINPHONE_PUBLIC void *linphone_chat_message_cbs_get_user_data(const LinphoneChatMessageCbs *cbs);
 
@@ -757,7 +614,6 @@ LINPHONE_PUBLIC void *linphone_chat_message_cbs_get_user_data(const LinphoneChat
  * Assign a user pointer to the LinphoneChatMessageCbs object.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] ud The user pointer to associate with the LinphoneChatMessageCbs object.
- * @deprecated Use linphone_chat_room_cbs_set_user_data() instead.
  */
 LINPHONE_PUBLIC void linphone_chat_message_cbs_set_user_data(LinphoneChatMessageCbs *cbs, void *ud);
 
@@ -765,7 +621,6 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_user_data(LinphoneChatMessage
  * Get the message state changed callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current message state changed callback.
- * @deprecated Use linphone_chat_room_cbs_get_msg_state_changed() instead.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs);
 
@@ -773,7 +628,6 @@ LINPHONE_PUBLIC LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cb
  * Set the message state changed callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The message state changed callback to be used.
- * @deprecated Use linphone_chat_room_cbs_set_msg_state_changed() instead.
  */
 LINPHONE_PUBLIC void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsMsgStateChangedCb cb);
 
@@ -781,7 +635,6 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_msg_state_changed(LinphoneCha
  * Get the file transfer receive callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer receive callback.
- * @deprecated Use linphone_chat_room_cbs_get_file_transfer_recv() instead.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs);
 
@@ -789,7 +642,6 @@ LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_c
  * Set the file transfer receive callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer receive callback to be used.
- * @deprecated Use linphone_chat_room_cbs_set_file_transfer_recv() instead.
  */
 LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferRecvCb cb);
 
@@ -797,7 +649,6 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneCh
  * Get the file transfer send callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer send callback.
- * @deprecated Use linphone_chat_room_cbs_get_file_transfer_send() instead.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs);
 
@@ -805,7 +656,6 @@ LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_c
  * Set the file transfer send callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer send callback to be used.
- * @deprecated Use linphone_chat_room_cbs_set_file_transfer_send() instead.
  */
 LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferSendCb cb);
 
@@ -813,7 +663,6 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_send(LinphoneCh
  * Get the file transfer progress indication callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer progress indication callback.
- * @deprecated Use linphone_chat_room_cbs_get_file_transfer_progress_indication() instead.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs);
 
@@ -821,7 +670,6 @@ LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_
  * Set the file transfer progress indication callback.
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer progress indication callback to be used.
- * @deprecated Use linphone_chat_room_cbs_set_file_transfer_progress_indication() instead.
  */
 LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb);
 

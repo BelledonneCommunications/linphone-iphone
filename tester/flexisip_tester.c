@@ -64,13 +64,13 @@ static void message_forking(void) {
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chat_room);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
 	lcs=bctbx_list_append(lcs,pauline->lc);
 	lcs=bctbx_list_append(lcs,marie2->lc);
 
-	linphone_chat_room_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(chat_room, message);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
@@ -94,8 +94,8 @@ static void message_forking_with_unreachable_recipients(void) {
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
 	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chat_room);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
 	lcs=bctbx_list_append(lcs,pauline->lc);
 	lcs=bctbx_list_append(lcs,marie2->lc);
@@ -112,7 +112,7 @@ static void message_forking_with_unreachable_recipients(void) {
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
 	linphone_core_set_network_reachable(marie3->lc,FALSE);
 
-	linphone_chat_room_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(chat_room, message);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
@@ -144,8 +144,8 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
 	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chat_room);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
 	lcs=bctbx_list_append(lcs,pauline->lc);
 	lcs=bctbx_list_append(lcs,marie2->lc);
@@ -164,7 +164,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
 	linphone_core_set_network_reachable(marie3->lc,FALSE);
 
-	linphone_chat_room_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(chat_room, message);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageInProgress,1,5000));
@@ -772,8 +772,8 @@ static void call_ipv6_to_ipv4(void){
 static void file_transfer_message_rcs_to_external_body_client(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneChatRoom* chat_room;
-		LinphoneChatRoomCbs *cbs;
 		LinphoneChatMessage* message;
+		LinphoneChatMessageCbs *cbs;
 		LinphoneContent* content;
 		FILE *file_to_send = NULL;
 		size_t file_size;
@@ -807,9 +807,6 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 
 		/* create a chatroom on pauline's side */
 		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-		cbs = linphone_chat_room_get_callbacks(chat_room);
-		linphone_chat_room_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-		linphone_chat_room_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 
 		/* create a file transfer message */
 		content = linphone_core_create_content(pauline->lc);
@@ -819,19 +816,22 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_content_set_name(content,"nowebcamCIF.jpg");
 		message = linphone_chat_room_create_file_transfer_message(chat_room, content);
 		linphone_chat_message_set_user_data(message, file_to_send);
+		cbs = linphone_chat_message_get_callbacks(message);
 		{
 			int dummy=0;
 			wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
 			reset_counters(&marie->stat);
 			reset_counters(&pauline->stat);
 		}
+		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+		linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 		linphone_chat_room_send_chat_message(chat_room,message);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
 
 		if (marie->stat.last_received_chat_message ) {
-			cbs = linphone_chat_room_get_callbacks(marie->stat.last_received_chat_message->chat_room);
-			linphone_chat_room_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-			linphone_chat_room_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+			cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
+			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 			linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 		}
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageFileTransferDone,1));
@@ -850,16 +850,17 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 }
 
 void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
+	LinphoneChatMessageCbs *cbs;
 	LinphoneChatRoom *chat_room;
-	LinphoneChatRoomCbs *cbs;
 	LinphoneChatMessage *message;
 
 	/* create a chatroom on pauline's side */
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-	cbs = linphone_chat_room_get_callbacks(chat_room);
-	linphone_chat_room_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 
 	message = linphone_chat_room_create_message(chat_room, NULL);
+
+	cbs = linphone_chat_message_get_callbacks(message);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 
 	linphone_chat_message_set_external_body_url(message, "https://www.linphone.org:444//tmp/54ec58280ace9_c30709218df8eaba61d1.jpg");
 	linphone_chat_room_send_chat_message(chat_room, message);

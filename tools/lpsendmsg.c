@@ -44,7 +44,7 @@ static void helper(const char *progname) {
 	exit(0);
 }
 
-static void on_msg_state_changed(LinphoneChatRoom *room, LinphoneChatMessage *msg, LinphoneChatMessageState state){
+static void on_msg_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state){
 	switch(state){
 		case LinphoneChatMessageStateInProgress:
 			printf("Sending message...\n");
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){
 	LinphoneProxyConfig *cfg;
 	LinphoneChatMessage *msg;
 	LinphoneChatRoom *room;
-	LinphoneChatRoomCbs *cbs;
+	LinphoneChatMessageCbs *cbs;
 	char * text = NULL;
 	char *tmp;
 	
@@ -177,9 +177,9 @@ int main(int argc, char *argv[]){
 	linphone_proxy_config_unref(cfg);
 	
 	room = linphone_core_get_chat_room(lc, to);
-	cbs = linphone_chat_room_get_callbacks(room);
-	linphone_chat_room_cbs_set_msg_state_changed(cbs, on_msg_state_changed);
 	msg = linphone_chat_room_create_message(room, text);
+	cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, on_msg_state_changed);
 	linphone_chat_room_send_chat_message(room, msg);
 	/* main loop for receiving notifications and doing background linphonecore work: */
 	while(running){

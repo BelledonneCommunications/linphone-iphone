@@ -610,7 +610,6 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
-LinphoneChatRoomCbs *linphone_chat_room_cbs_new(void);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
@@ -618,7 +617,7 @@ void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm);
 void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
-LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void); /* deprecated */
+LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
 /**/
 
@@ -694,22 +693,10 @@ typedef enum _LinphoneIsComposingState {
 	LinphoneIsComposingActive
 } LinphoneIsComposingState;
 
-struct _LinphoneChatRoomCbs {
-	belle_sip_object_t base;
-	void *user_data;
-	LinphoneChatRoomCbsMsgStateChangedCb msg_state_changed;
-	LinphoneChatRoomCbsFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatRoom */
-	LinphoneChatRoomCbsFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatRoom */
-	LinphoneChatRoomCbsFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
-};
-
-BELLE_SIP_DECLARE_VPTR(LinphoneChatRoomCbs);
-
 struct _LinphoneChatRoom{
 	belle_sip_object_t base;
 	void *user_data;
 	struct _LinphoneCore *lc;
-	LinphoneChatRoomCbs *callbacks;
 	char  *peer;
 	LinphoneAddress *peer_url;
 	MSList *messages_hist;
@@ -1550,7 +1537,6 @@ BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
 BELLE_SIP_TYPE_ID(LinphoneChatMessageCbs),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
-BELLE_SIP_TYPE_ID(LinphoneChatRoomCbs),
 BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngine),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngineCbs),
