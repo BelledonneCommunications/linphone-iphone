@@ -438,7 +438,7 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 			}
 		}
 		linphone_core_destroy(mgr->lc);
-		if (chatdb) {
+		if (chatdb && ortp_file_exist(chatdb)==0) {
 			if (unlink(chatdb) != 0){
 				ms_error("Could not delete %s: %s", chatdb, strerror(errno));
 			}
