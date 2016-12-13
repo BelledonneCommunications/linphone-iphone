@@ -888,28 +888,31 @@ static void imdn_notifications(void) {
 	LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneChatRoom *pauline_chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatRoom *marie_chat_room;
-	LinphoneChatMessage *cm;
+	LinphoneChatMessage *sent_cm;
+	LinphoneChatMessage *received_cm;
 	LinphoneChatMessageCbs *cbs;
 	bctbx_list_t *history;
 
-	cm = linphone_chat_room_create_message(pauline_chat_room, "Tell me if you get my message");
-	cbs = linphone_chat_message_get_callbacks(cm);
+	sent_cm = linphone_chat_room_create_message(pauline_chat_room, "Tell me if you get my message");
+	linphone_chat_message_ref(sent_cm);
+	cbs = linphone_chat_message_get_callbacks(sent_cm);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_room_send_chat_message(pauline_chat_room, cm);
+	linphone_chat_room_send_chat_message(pauline_chat_room, sent_cm);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 	marie_chat_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
 	history = linphone_chat_room_get_history(marie_chat_room, 1);
 	BC_ASSERT_EQUAL((int)bctbx_list_size(history), 1, int, "%d");
-	cm = (LinphoneChatMessage *)bctbx_list_nth_data(history, 0);
-	BC_ASSERT_PTR_NOT_NULL(cm);
-	if (cm != NULL) {
-		linphone_chat_message_notify_delivery(cm);
+	received_cm = (LinphoneChatMessage *)bctbx_list_nth_data(history, 0);
+	BC_ASSERT_PTR_NOT_NULL(received_cm);
+	if (received_cm != NULL) {
+		linphone_chat_message_notify_delivery(received_cm);
 		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));
-		linphone_chat_message_notify_display(cm);
+		linphone_chat_message_notify_display(received_cm);
 		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDisplayed, 1));
 		bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
 	}
 
+	linphone_chat_message_unref(sent_cm);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

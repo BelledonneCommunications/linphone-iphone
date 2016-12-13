@@ -610,6 +610,7 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
+void linphone_chat_room_add_weak_message(LinphoneChatRoom *cr, LinphoneChatMessage *cm);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
@@ -701,6 +702,7 @@ struct _LinphoneChatRoom{
 	LinphoneAddress *peer_url;
 	MSList *messages_hist;
 	MSList *transient_messages;
+	bctbx_list_t *weak_messages;
 	int unread_count;
 	LinphoneIsComposingState remote_is_composing;
 	LinphoneIsComposingState is_composing;

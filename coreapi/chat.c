@@ -134,6 +134,7 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	if (cr->pending_message)
 		linphone_chat_message_destroy(cr->pending_message);
 	ms_free(cr->peer);
+	if (cr->weak_messages != NULL) bctbx_list_free(cr->weak_messages);
 }
 
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
@@ -307,6 +308,18 @@ void linphone_chat_room_release(LinphoneChatRoom *cr) {
 	linphone_chat_room_unref(cr);
 }
 
+static void on_weak_message_destroy(void *obj, belle_sip_object_t *message_being_destroyed) {
+	LinphoneChatRoom *cr = (LinphoneChatRoom *)obj;
+	cr->weak_messages = bctbx_list_remove(cr->weak_messages, message_being_destroyed);
+}
+
+void linphone_chat_room_add_weak_message(LinphoneChatRoom *cr, LinphoneChatMessage *cm) {
+	bctbx_list_t *item = bctbx_list_find(cr->weak_messages, cm);
+	if (item == NULL) {
+		cr->weak_messages = bctbx_list_append(cr->weak_messages, belle_sip_object_weak_ref(cm, on_weak_message_destroy, cr));
+	}
+}
+
 LinphoneChatRoom *linphone_chat_room_ref(LinphoneChatRoom *cr) {
 	belle_sip_object_ref(cr);
 	return cr;
@@ -470,6 +483,7 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
 		// msg is not transient anymore, we can remove it from our transient list and unref it
 		msg->chat_room->transient_messages = bctbx_list_remove(msg->chat_room->transient_messages, msg);
+		linphone_chat_room_add_weak_message(msg->chat_room, msg);
 		linphone_chat_message_unref(msg);
 	}
 }

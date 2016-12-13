@@ -117,6 +117,17 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 #ifdef SQLITE_STORAGE_ENABLED
 
 
+static LinphoneChatMessage * get_weak_message(LinphoneChatRoom *cr, unsigned int storage_id) {
+	LinphoneChatMessage *cm;
+	bctbx_list_t *item;
+	for (item = cr->weak_messages; item != NULL; item = bctbx_list_next(item)) {
+		cm = (LinphoneChatMessage *)bctbx_list_get_data(item);
+		if (linphone_chat_message_get_storage_id(cm) == storage_id)
+			return linphone_chat_message_ref(cm);
+	}
+	return NULL;
+}
+
 static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
 	bctbx_list_t* transients = cr->transient_messages;
 	LinphoneChatMessage* chat;
@@ -206,10 +217,15 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
 static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	unsigned int storage_id = (unsigned int)atoi(argv[0]);
+	LinphoneChatMessage* new_message;
 
-	// check if the message exists in the transient list, in which case we should return that one.
-	LinphoneChatMessage* new_message = get_transient_message(cr, storage_id);
-	if( new_message == NULL ){
+	/* Check if the message exists in the weak messages list, in which case we should return that one. */
+	new_message = get_weak_message(cr, storage_id);
+	if (new_message == NULL) {
+		/* Check if the message exists in the transient list, in which case we should return that one. */
+		new_message = get_transient_message(cr, storage_id);
+	}
+	if (new_message == NULL) {
 		new_message = linphone_chat_room_create_message(cr, argv[4]);
 
 		if(atoi(argv[3])==LinphoneChatMessageIncoming){
@@ -236,6 +252,9 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 				fetch_content_from_database(cr->lc->db, new_message, id);
 			}
 		}
+
+		/* Add the new message to the weak messages list. */
+		linphone_chat_room_add_weak_message(cr, new_message);
 	}
 	cr->messages_hist=bctbx_list_prepend(cr->messages_hist,new_message);
 
