@@ -55,7 +55,7 @@ public class OpenH264DownloadHelper {
     public OpenH264DownloadHelper(Context context) {
         userData = new ArrayList<Object>();
         licenseMessage = "OpenH264 Video Codec provided by Cisco Systems, Inc.";
-        nameLib = "libopenh264-1.5.so";
+        nameLib = "libopenh264.so";
         urlDownload = "http://ciscobinary.openh264.org/libopenh264-1.5.0-android19.so.bz2";
         nameFileDownload = "libopenh264-1.5.0-android19.so.bz2";
         if(context.getFilesDir() != null) {

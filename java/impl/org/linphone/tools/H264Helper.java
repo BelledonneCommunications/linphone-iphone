@@ -25,7 +25,6 @@ public class H264Helper {
      * H264Helper
      */
     public H264Helper() {
-
     }
 
 
@@ -39,22 +38,22 @@ public class H264Helper {
      */
     public static void setH264Mode(String mode, LinphoneCore linphoneCore){
         if(mode.equals(MODE_OPENH264)){
-            Log.e("H264Helper"," setH264Mode  MODE_OPENH264 - Mode = "+mode);
+            Log.i("H264Helper"," setH264Mode  MODE_OPENH264 - Mode = "+mode);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_MEDIA_CODEC_DEC , false);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_MEDIA_CODEC_ENC , false);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_OPENH264_DEC , true);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_OPENH264_ENC , true);
         }else if(mode.equals(MODE_MEDIA_CODEC)){
-            Log.e("H264Helper"," setH264Mode  MODE_MEDIA_CODEC - Mode = "+mode);
+            Log.i("H264Helper"," setH264Mode  MODE_MEDIA_CODEC - Mode = "+mode);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_OPENH264_DEC , false);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_OPENH264_ENC , false);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_MEDIA_CODEC_DEC , true);
             linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_MEDIA_CODEC_ENC , true);
         }else if(mode.equals(MODE_AUTO)){
-            Log.e("H264Helper"," setH264Mode  MODE_AUTO - Mode = "+mode);
+            Log.i("H264Helper"," setH264Mode  MODE_AUTO - Mode = "+mode);
            // if  android >= 5.0 use MediaCodec
            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-               Log.e("H264Helper"," setH264Mode  MODE_AUTO 1 - Mode = "+mode);
+               Log.i("H264Helper"," setH264Mode  MODE_AUTO 1 - Mode = "+mode);
                Log.i("LinphoneCoreFactoryImpl"," Openh264 disabled on the project, now using MediaCodec");
                linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_OPENH264_DEC , false);
                linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_OPENH264_ENC , false);
@@ -63,7 +62,7 @@ public class H264Helper {
            }
            //otherwise use OpenH264
            else{
-               Log.e("H264Helper"," setH264Mode  MODE_AUTO 2 - Mode = "+mode);
+               Log.i("H264Helper"," setH264Mode  MODE_AUTO 2 - Mode = "+mode);
                Log.i("LinphoneCoreFactoryImpl"," Openh264 enabled on the project");
                linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_MEDIA_CODEC_DEC , false);
                linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_MEDIA_CODEC_ENC , false);
@@ -71,10 +70,9 @@ public class H264Helper {
                linphoneCore.getMSFactory().enableFilterFromName(FILTER_NAME_OPENH264_ENC , true);
            }
         }else {
-            Log.e("LinphoneCoreFactoryImpl"," Error: Openh264 mode not reconized !");
-
+            Log.i("LinphoneCoreFactoryImpl"," Error: Openh264 mode not reconized !");
         }
-        Log.e("H264Helper"," setH264Mode - Mode = "+mode);
+        Log.i("H264Helper"," setH264Mode - Mode = "+mode);
     }
 
 }
