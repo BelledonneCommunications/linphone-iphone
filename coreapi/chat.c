@@ -448,7 +448,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		msg->message_id = ms_strdup(sal_op_get_call_id(op)); /* must be known at that time */
 		msg->storage_id = linphone_chat_message_store(msg);
 
-		if (cr->unread_count >= 0 && !msg->is_read)
+		if (cr->unread_count >= 0 && !linphone_chat_message_is_read(msg))
 			cr->unread_count++;
 
 		if (cr->is_composing == LinphoneIsComposingActive) {
@@ -526,7 +526,6 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	
 	msg->time = sal_msg->time;
 	msg->state = LinphoneChatMessageStateDelivered;
-	msg->is_read = FALSE;
 	msg->dir = LinphoneChatMessageIncoming;
 	msg->message_id = ms_strdup(sal_op_get_call_id(op));
 	
@@ -870,7 +869,6 @@ LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->callbacks = linphone_chat_message_cbs_new();
 	msg->chat_room = (LinphoneChatRoom *)cr;
 	msg->message = message ? ms_strdup(message) : NULL;
-	msg->is_read = TRUE;
 	msg->content_type = NULL;			   /* this property is used only when transfering file */
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	msg->http_request = NULL;
@@ -885,7 +883,6 @@ LinphoneChatMessage *linphone_chat_room_create_message_2(LinphoneChatRoom *cr, c
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	msg->external_body_url = external_body_url ? ms_strdup(external_body_url) : NULL;
 	msg->time = time;
-	msg->is_read = is_read;
 	linphone_chat_message_set_state(msg, state);
 	if (is_incoming) {
 		msg->dir = LinphoneChatMessageIncoming;
@@ -1209,7 +1206,6 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 					linphone_address_new(linphone_core_get_identity(lc));
 			msg->time = ms_time(0);
 			msg->state = LinphoneChatMessageStateDelivered;
-			msg->is_read = FALSE;
 			msg->dir = LinphoneChatMessageIncoming;
 
 			if (lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
@@ -1263,8 +1259,7 @@ int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character)
 		if (lc && lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
 			ms_debug("New line sent, forge a message with content %s", msg->message);
 			msg->time = ms_time(0);
-			msg->state = LinphoneChatMessageStateDelivered;
-			msg->is_read = TRUE;
+			msg->state = LinphoneChatMessageStateDisplayed;
 			msg->dir = LinphoneChatMessageOutgoing;
 			if (msg->from) linphone_address_destroy(msg->from);
 			msg->from = linphone_address_new(linphone_core_get_identity(lc));
@@ -1441,7 +1436,7 @@ void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const 
 }
 
 bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
-	return msg->is_read;
+	return (msg->state == LinphoneChatMessageStateDisplayed) ? TRUE : FALSE;
 }
 
 bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage *msg) {

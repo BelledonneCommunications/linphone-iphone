@@ -905,9 +905,8 @@ static void imdn_notifications(void) {
 	received_cm = (LinphoneChatMessage *)bctbx_list_nth_data(history, 0);
 	BC_ASSERT_PTR_NOT_NULL(received_cm);
 	if (received_cm != NULL) {
-		linphone_chat_message_notify_delivery(received_cm);
 		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));
-		linphone_chat_message_notify_display(received_cm);
+		linphone_chat_room_mark_as_read(marie_chat_room); /* This sends the display notification */
 		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDisplayed, 1));
 		bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
 	}
@@ -1393,6 +1392,7 @@ static void database_migration(void) {
 	char *src_db = bc_tester_res("messages.db");
 	char *tmp_db  = bc_tester_file("tmp.db");
 	const bctbx_list_t* chatrooms;
+	LinphoneChatRoom *cr;
 
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
@@ -1409,7 +1409,11 @@ static void database_migration(void) {
 	BC_ASSERT(bctbx_list_size(chatrooms) > 0);
 
 	// check that all messages have been migrated to the UTC time storage
-	BC_ASSERT(sqlite3_exec(marie->lc->db, "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
+	BC_ASSERT(sqlite3_exec(marie->lc->db, "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK);
+
+	// check that the read messages (field read=1) has been migrated to the LinphoneChatMessageStateDisplayed state
+	cr = linphone_core_get_chat_room_from_uri(marie->lc, "sip:Marielle@sip.linphone.org");
+	BC_ASSERT_EQUAL(linphone_chat_room_get_unread_messages_count(cr), 8, int, "%i");
 
 end:
 	linphone_core_manager_destroy(marie);

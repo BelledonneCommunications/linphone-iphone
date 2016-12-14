@@ -336,7 +336,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						msg->dir,
 						msg->message,
 						"-1", /* use UTC field now */
-						msg->is_read,
+						FALSE, /* use state == LinphoneChatMessageStateDisplayed now */
 						msg->state,
 						msg->external_body_url,
 						(int64_t)msg->time,
@@ -375,7 +375,7 @@ void linphone_chat_message_store_appdata(LinphoneChatMessage* msg){
 
 void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	LinphoneCore *lc=linphone_chat_room_get_core(cr);
-	int read=1;
+	bctbx_list_t *item;
 	char *peer;
 	char *buf;
 
@@ -385,8 +385,17 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	if(linphone_chat_room_get_unread_messages_count(cr) == 0) return;
 
 	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-	buf=sqlite3_mprintf("UPDATE history SET read=%i WHERE remoteContact = %Q;",
-				   read,peer);
+	buf = sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q AND direction=%i", peer, LinphoneChatMessageIncoming);
+	linphone_sql_request_message(lc->db, buf, cr);
+	sqlite3_free(buf);
+	for (item = cr->messages_hist; item != NULL; item = bctbx_list_next(item)) {
+		LinphoneChatMessage *cm = (LinphoneChatMessage *)bctbx_list_get_data(item);
+		linphone_chat_message_send_display_notification(cm);
+	}
+	bctbx_list_free_with_data(cr->messages_hist, (bctbx_list_free_func)linphone_chat_message_unref);
+	cr->messages_hist = NULL;
+	buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE remoteContact=%Q AND direction=%i;",
+		LinphoneChatMessageStateDisplayed, peer, LinphoneChatMessageIncoming);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 	ms_free(peer);
@@ -410,6 +419,7 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	int numrows=0;
 	char *peer;
 	char *buf;
+	char *option;
 	sqlite3_stmt *selectStatement;
 	int returnValue;
 
@@ -419,7 +429,10 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	if(unread_only && cr->unread_count >= 0) return cr->unread_count;
 
 	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-	buf=sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q %s;",peer,unread_only?"AND read = 0":"");
+	if (unread_only) {
+		option = bctbx_strdup_printf("AND status!=%i AND direction=%i", LinphoneChatMessageStateDisplayed, LinphoneChatMessageIncoming);
+	}
+	buf=sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q %s;",peer,unread_only?option:"");
 	returnValue = sqlite3_prepare_v2(lc->db,buf,-1,&selectStatement,NULL);
 	if (returnValue == SQLITE_OK){
 		if(sqlite3_step(selectStatement) == SQLITE_ROW){
@@ -432,7 +445,10 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 
 	/* no need to test the sign of cr->unread_count here
 	 * because it has been tested above */
-	if(unread_only) cr->unread_count = numrows;
+	if(unread_only) {
+		cr->unread_count = numrows;
+		bctbx_free(option);
+	}
 
 	return numrows;
 }
@@ -655,6 +671,7 @@ static void linphone_migrate_timestamps(sqlite3* db){
 
 void linphone_update_table(sqlite3* db) {
 	char* errmsg=NULL;
+	char *buf;
 	int ret;
 
 	// for image url storage
@@ -733,6 +750,11 @@ void linphone_update_table(sqlite3* db) {
 	} else {
 		ms_message("Table history updated successfully for message_id data.");
 	}
+
+	// Convert is_read to LinphoneChatMessageStateDisplayed
+	buf = sqlite3_mprintf("UPDATE history SET status=%i WHERE read=1 AND direction=%i;", LinphoneChatMessageStateDisplayed, LinphoneChatMessageIncoming);
+	linphone_sql_request(db, buf);
+	sqlite3_free(buf);
 }
 
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
