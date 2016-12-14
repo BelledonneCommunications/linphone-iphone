@@ -669,6 +669,9 @@
 		63FD3F121CA17FA400E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F081CA17F9100E9AECC /* libmbedx509.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */; };
+		8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2595DE1DEDCC8E007A6424 /* CallKit.framework */; };
+		8C2595E11DEDDC67007A6424 /* callkit_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2595E01DEDDC67007A6424 /* callkit_logo.png */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
 		9EC6C1E11DF96991006C2FD2 /* armv7-apple-darwin.ios in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */; };
@@ -1588,6 +1591,10 @@
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8C23BCB71D82AAC3005F19BB /* linphone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = linphone.entitlements; sourceTree = "<group>"; };
+		8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProviderDelegate.h; sourceTree = "<group>"; };
+		8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProviderDelegate.m; sourceTree = "<group>"; };
+		8C2595DE1DEDCC8E007A6424 /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
+		8C2595E01DEDDC67007A6424 /* callkit_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = callkit_logo.png; sourceTree = "<group>"; };
 		8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
 		8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
@@ -1830,6 +1837,7 @@
 			files = (
 				9EC6C1E31DF969AA006C2FD2 /* libturbojpeg.a in Frameworks */,
 				9EC6C1E11DF96991006C2FD2 /* armv7-apple-darwin.ios in Frameworks */,
+				8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */,
 				8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */,
 				8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */,
 				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
@@ -2065,6 +2073,8 @@
 				63E27A311C4FECD000D332AE /* LaunchScreen.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
+				8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */,
+				8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */,
 				D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */,
 				D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */,
 				D3EA53FB159850E80037DC6B /* LinphoneManager.h */,
@@ -2238,6 +2248,7 @@
 			children = (
 				9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */,
 				9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */,
+				8C2595DE1DEDCC8E007A6424 /* CallKit.framework */,
 				8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */,
 				8CA2004B1D8158440095F859 /* PushKit.framework */,
 				570742661D5A63DB004B9C84 /* StoreKit.framework */,
@@ -2429,6 +2440,7 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				8C2595E01DEDDC67007A6424 /* callkit_logo.png */,
 				633FEBE21D3CD5570014B822 /* add_field_default.png */,
 				633FEBE31D3CD5570014B822 /* add_field_default@2x.png */,
 				633FEBE41D3CD5570014B822 /* add_field_over.png */,
@@ -3163,6 +3175,7 @@
 				LastUpgradeCheck = 0800;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = Z2V957B3D6;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
 								enabled = 1;
@@ -3328,6 +3341,7 @@
 				634610121B6140A500548952 /* CallOutgoingView.xib in Resources */,
 				633FEDC21D3CD5590014B822 /* call_hangup_default.png in Resources */,
 				633FEEB41D3CD55A0014B822 /* numpad_3_default@2x.png in Resources */,
+				8C2595E11DEDDC67007A6424 /* callkit_logo.png in Resources */,
 				633FEE471D3CD5590014B822 /* contacts_sip_selected@2x.png in Resources */,
 				633FEEE51D3CD55A0014B822 /* numpad_9_over.png in Resources */,
 				633FEECA1D3CD55A0014B822 /* numpad_5~ipad@2x.png in Resources */,
@@ -3894,6 +3908,7 @@
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D3F83EEC1582021700336684 /* CallView.m in Sources */,
+				8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */,
 				63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */,
 				D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */,
 				6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */,
@@ -4511,7 +4526,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4600,7 +4615,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4688,7 +4703,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -4776,7 +4791,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;

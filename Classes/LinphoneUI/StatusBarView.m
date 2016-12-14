@@ -20,6 +20,7 @@
 #import "StatusBarView.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import <UserNotifications/UserNotifications.h>
 
 @implementation StatusBarView {
 
@@ -320,23 +321,43 @@
 				NSString *message =
 					[NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n%s", nil),
 											   linphone_call_get_authentication_token(call)];
-				if (securityDialog == nil) {
-					__block __strong StatusBarView *weakSelf = self;
-					securityDialog = [UIConfirmationDialog ShowWithMessage:message
-						cancelMessage:NSLocalizedString(@"DENY", nil)
-						confirmMessage:NSLocalizedString(@"ACCEPT", nil)
-						onCancelClick:^() {
-						  if (linphone_core_get_current_call(LC) == call) {
-							  linphone_call_set_authentication_token_verified(call, NO);
-						  }
-						  weakSelf->securityDialog = nil;
-						}
-						onConfirmationClick:^() {
-						  if (linphone_core_get_current_call(LC) == call) {
-							  linphone_call_set_authentication_token_verified(call, YES);
-						  }
-						  weakSelf->securityDialog = nil;
-						}];
+				if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground &&
+					floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+					UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+					content.title = NSLocalizedString(@"ZRTP verification", nil);
+					content.body = message;
+					content.categoryIdentifier = @"zrtp_request";
+
+					UNNotificationRequest *req =
+						[UNNotificationRequest requestWithIdentifier:@"zrtp_request" content:content trigger:NULL];
+					[[UNUserNotificationCenter currentNotificationCenter]
+						addNotificationRequest:req
+						 withCompletionHandler:^(NSError *_Nullable error) {
+						   // Enable or disable features based on authorization.
+						   if (error) {
+							   LOGD(@"Error while adding notification request :");
+							   LOGD(error.description);
+						   }
+						 }];
+				} else {
+					if (securityDialog == nil) {
+						__block __strong StatusBarView *weakSelf = self;
+						securityDialog = [UIConfirmationDialog ShowWithMessage:message
+							cancelMessage:NSLocalizedString(@"DENY", nil)
+							confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+							onCancelClick:^() {
+							  if (linphone_core_get_current_call(LC) == call) {
+								  linphone_call_set_authentication_token_verified(call, NO);
+							  }
+							  weakSelf->securityDialog = nil;
+							}
+							onConfirmationClick:^() {
+							  if (linphone_core_get_current_call(LC) == call) {
+								  linphone_call_set_authentication_token_verified(call, YES);
+							  }
+							  weakSelf->securityDialog = nil;
+							}];
+					}
 				}
 			}
 		}

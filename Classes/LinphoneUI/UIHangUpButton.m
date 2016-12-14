@@ -94,8 +94,9 @@
 	if (linphone_core_is_in_conference(LC) ||										   // In conference
 		(linphone_core_get_conference_size(LC) > 0 && [UIHangUpButton callCount] == 0) // Only one conf
 		) {
+		LinphoneManager.instance.conf = TRUE;
 		linphone_core_terminate_conference(LC);
-	} else if (currentcall != NULL) { // In a call
+	} else if (currentcall != NULL) {
 		linphone_core_terminate_call(LC, currentcall);
 	} else {
 		const MSList *calls = linphone_core_get_calls(LC);

@@ -22,6 +22,7 @@
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
 #import "LinphoneCoreSettingsStore.h"
+#import "ProviderDelegate.h"
 #import <UserNotifications/UserNotifications.h>
 #import <UserNotificationsUI/UserNotificationsUI.h>
 
@@ -31,14 +32,13 @@
     BOOL startedInBackground;
 }
 
-- (void)processRemoteNotification:(NSDictionary*)userInfo;
 - (void)registerForNotifications:(UIApplication *)app;
 
 @property (nonatomic, retain) UIAlertController *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
 @property PKPushRegistry* voipRegistry;
-
+@property ProviderDelegate *del;
 
 @end
 

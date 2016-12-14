@@ -34,6 +34,8 @@
 #include "linphone/linphonecore.h"
 #include "bctoolbox/list.h"
 
+#import "ProviderDelegate.h"
+
 extern NSString *const LINPHONERC_APPLICATION_KEY;
 
 extern NSString *const kLinphoneCoreUpdate;
@@ -136,6 +138,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)configurePushTokenForProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)popPushCallID:(NSString*) callId;
 - (void)acceptCallForCallId:(NSString*)callid;
+- (LinphoneCall *)callByCallId:(NSString *)call_id;
 - (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
 
 + (BOOL)langageDirectionIsRTL;
@@ -188,6 +191,9 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)shouldPresentLinkPopup;
 
+- (void)setProviderDelegate:(ProviderDelegate *)del;
+@property ProviderDelegate *providerDelegate;
+
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;
 @property Connectivity connectivity;
@@ -211,5 +217,6 @@ typedef struct _LinphoneManagerSounds {
 @property(readonly) InAppProductsManager *iapManager;
 @property(strong, nonatomic) NSMutableArray *fileTransferDelegates;
 @property BOOL nextCallIsTransfer;
+@property BOOL conf;
 
 @end

@@ -821,7 +821,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return NSLocalizedString(@"Unknown error, please try again later.", nil);
 }
 
-- (void)showErrorPopup:(const char *)err {
+- (void)showErrorPopup:(const char *)error {
+	const char *err = error ? error : "";
 	if (strcmp(err, "ERROR_BAD_CREDENTIALS") == 0) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
 																		 message:[AssistantView StringForXMLRPCError:err]

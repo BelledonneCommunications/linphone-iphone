@@ -45,6 +45,7 @@
 		startedInBackground = FALSE;
 	}
 	return self;
+	[[UIApplication sharedApplication] setDelegate:self];
 }
 
 #pragma mark -
@@ -113,7 +114,9 @@
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
-			[PhoneMainView.instance displayIncomingCall:call];
+			if (linphone_core_get_calls_nb(LC) > 1) {
+				[PhoneMainView.instance displayIncomingCall:call];
+			}
 			// in this case, the ringing sound comes from the notification.
 			// To stop it we have to do the iOS7 ring fix...
 			[self fixRing];
@@ -200,25 +203,71 @@
 
 
 - (void)registerForNotifications:(UIApplication *)app {
-	LinphoneManager *instance = [LinphoneManager instance];
-	if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
-        //[app unregisterForRemoteNotifications];
-		// iOS8 and more : PushKit
-        self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-        self.voipRegistry.delegate = self;
-        
-        // Initiate registration.
-        self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-	} else {
-		/* iOS7 and below */
-		if (!instance.isTesting) {
-			NSUInteger notifTypes =
-				UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
-			[app registerForRemoteNotificationTypes:notifTypes];
-		}
-	}
+	self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+	self.voipRegistry.delegate = self;
+
+	// Initiate registration.
+	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
 	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+		// Call category
+		UNNotificationAction *act_ans =
+			[UNNotificationAction actionWithIdentifier:@"Answer"
+												 title:NSLocalizedString(@"Answer", nil)
+											   options:UNNotificationActionOptionForeground];
+		UNNotificationAction *act_dec = [UNNotificationAction actionWithIdentifier:@"Decline"
+																			 title:NSLocalizedString(@"Decline", nil)
+																		   options:UNNotificationActionOptionNone];
+		UNNotificationCategory *cat_call =
+			[UNNotificationCategory categoryWithIdentifier:@"call_cat"
+												   actions:[NSArray arrayWithObjects:act_ans, act_dec, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
+		// Msg category
+		UNTextInputNotificationAction *act_reply =
+			[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
+														  title:NSLocalizedString(@"Reply", nil)
+														options:UNNotificationActionOptionNone];
+		UNNotificationAction *act_seen =
+			[UNNotificationAction actionWithIdentifier:@"Seen"
+												 title:NSLocalizedString(@"Mark as seen", nil)
+											   options:UNNotificationActionOptionNone];
+		UNNotificationCategory *cat_msg =
+			[UNNotificationCategory categoryWithIdentifier:@"msg_cat"
+												   actions:[NSArray arrayWithObjects:act_reply, act_seen, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
+		// Video Request Category
+		UNNotificationAction *act_accept =
+			[UNNotificationAction actionWithIdentifier:@"Accept"
+												 title:NSLocalizedString(@"Accept", nil)
+											   options:UNNotificationActionOptionForeground];
+
+		UNNotificationAction *act_refuse = [UNNotificationAction actionWithIdentifier:@"Cancel"
+																				title:NSLocalizedString(@"Cancel", nil)
+																			  options:UNNotificationActionOptionNone];
+		UNNotificationCategory *video_call =
+			[UNNotificationCategory categoryWithIdentifier:@"video_request"
+												   actions:[NSArray arrayWithObjects:act_accept, act_refuse, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
+		// ZRTP verification category
+		UNNotificationAction *act_confirm = [UNNotificationAction actionWithIdentifier:@"Confirm"
+																				 title:NSLocalizedString(@"Accept", nil)
+																			   options:UNNotificationActionOptionNone];
+
+		UNNotificationAction *act_deny = [UNNotificationAction actionWithIdentifier:@"Deny"
+																			  title:NSLocalizedString(@"Deny", nil)
+																			options:UNNotificationActionOptionNone];
+		UNNotificationCategory *cat_zrtp =
+			[UNNotificationCategory categoryWithIdentifier:@"zrtp_request"
+												   actions:[NSArray arrayWithObjects:act_confirm, act_deny, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
 		[UNUserNotificationCenter currentNotificationCenter].delegate = self;
 		[[UNUserNotificationCenter currentNotificationCenter]
 			requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
@@ -229,6 +278,8 @@
 								LOGD(error.description);
 							}
 						  }];
+		NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
+		[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
 	}
 }
 #pragma deploymate pop
@@ -241,6 +292,11 @@
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 	[self registerForNotifications:app];
+
+	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+		self.del = [[ProviderDelegate alloc] init];
+		[LinphoneManager.instance setProviderDelegate:self.del];
+	}
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
@@ -264,14 +320,6 @@
 	[PhoneMainView.instance startUp];
 	[PhoneMainView.instance updateStatusBar:nil];
     
-    if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_8_0) {
-        NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        if (remoteNotif) {
-            LOGI(@"PushNotification from launch received.");
-            [self processRemoteNotification:remoteNotif];
-        }
-    }
-    
 	if (bgStartId != UIBackgroundTaskInvalid)
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
     
@@ -290,7 +338,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-
+	LinphoneManager.instance.conf = TRUE;
 	linphone_core_terminate_all_calls(LC);
 
 	// destroyLinphoneCore automatically unregister proxies but if we are using
@@ -536,8 +584,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 							  forType:(NSString *)type {
 
 	LOGI(@"PushKit : incoming voip notfication: %@", payload.dictionaryPayload);
-	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-		// Call category
+	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) { // Call category
 		UNNotificationAction *act_ans =
 			[UNNotificationAction actionWithIdentifier:@"Answer"
 												 title:NSLocalizedString(@"Answer", nil)
@@ -550,7 +597,6 @@ didInvalidatePushTokenForType:(NSString *)type {
 												   actions:[NSArray arrayWithObjects:act_ans, act_dec, nil]
 										 intentIdentifiers:[[NSMutableArray alloc] init]
 												   options:UNNotificationCategoryOptionCustomDismissAction];
-
 		// Msg category
 		UNTextInputNotificationAction *act_reply =
 			[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
@@ -566,6 +612,35 @@ didInvalidatePushTokenForType:(NSString *)type {
 										 intentIdentifiers:[[NSMutableArray alloc] init]
 												   options:UNNotificationCategoryOptionCustomDismissAction];
 
+		// Video Request Category
+		UNNotificationAction *act_accept =
+			[UNNotificationAction actionWithIdentifier:@"Accept"
+												 title:NSLocalizedString(@"Accept", nil)
+											   options:UNNotificationActionOptionForeground];
+
+		UNNotificationAction *act_refuse = [UNNotificationAction actionWithIdentifier:@"Cancel"
+																				title:NSLocalizedString(@"Cancel", nil)
+																			  options:UNNotificationActionOptionNone];
+		UNNotificationCategory *video_call =
+			[UNNotificationCategory categoryWithIdentifier:@"video_request"
+												   actions:[NSArray arrayWithObjects:act_accept, act_refuse, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
+		// ZRTP verification category
+		UNNotificationAction *act_confirm = [UNNotificationAction actionWithIdentifier:@"Confirm"
+																				 title:NSLocalizedString(@"Accept", nil)
+																			   options:UNNotificationActionOptionNone];
+
+		UNNotificationAction *act_deny = [UNNotificationAction actionWithIdentifier:@"Deny"
+																			  title:NSLocalizedString(@"Deny", nil)
+																			options:UNNotificationActionOptionNone];
+		UNNotificationCategory *cat_zrtp =
+			[UNNotificationCategory categoryWithIdentifier:@"zrtp_request"
+												   actions:[NSArray arrayWithObjects:act_confirm, act_deny, nil]
+										 intentIdentifiers:[[NSMutableArray alloc] init]
+												   options:UNNotificationCategoryOptionCustomDismissAction];
+
 		[UNUserNotificationCenter currentNotificationCenter].delegate = self;
 		[[UNUserNotificationCenter currentNotificationCenter]
 			requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
@@ -576,7 +651,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 								LOGD(error.description);
 							}
 						  }];
-		NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, nil];
+		NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
 		[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
 	}
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
@@ -590,44 +665,45 @@ didInvalidatePushTokenForType:(NSString *)type {
              forType:(NSString *)type {
     LOGI(@"PushKit credentials updated");
     LOGI(@"voip token: %@", (credentials.token));
-    LOGI(@"%@ : %@", NSStringFromSelector(_cmd), credentials.token);
     dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
 }
 
-#pragma mark - UserNotifications Framework
+#pragma mark - UNUserNotifications Framework
 
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
 	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
 }
-
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)())completionHandler {
     LOGD(@"UN : response recieved");
     LOGD(response.description);
-    
-    LinphoneCall* call = linphone_core_get_current_call(LC);
-    if (call) {
-        LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-        if (data->timer) {
-            [data->timer invalidate];
-            data->timer = nil;
-        }
-    }
-    if ([response.actionIdentifier isEqual:@"Answer"]) {
-        [PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-        [LinphoneManager.instance acceptCallForCallId:[response.notification.request.content.userInfo objectForKey:@"callId"]];
-    } else if ([response.actionIdentifier isEqual:@"Decline"]) {
-        linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
-    } else if ([response.actionIdentifier isEqual:@"Reply"]) {
-        LinphoneCore *lc = [LinphoneManager getLc];
-        NSString *replyText = [(UNTextInputNotificationResponse*)response userText];
-        NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
-        LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
-        if (room) {
-            LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
-            linphone_chat_room_send_chat_message(room, msg);
+
+	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
+	LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
+	if (call) {
+		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+		if (data->timer) {
+			[data->timer invalidate];
+			data->timer = nil;
+		}
+	}
+
+	if ([response.actionIdentifier isEqual:@"Answer"]) {
+		// use the standard handler
+		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+		linphone_core_accept_call(LC, call);
+	} else if ([response.actionIdentifier isEqual:@"Decline"]) {
+		linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+	} else if ([response.actionIdentifier isEqual:@"Reply"]) {
+		LinphoneCore *lc = [LinphoneManager getLc];
+		NSString *replyText = [(UNTextInputNotificationResponse *)response userText];
+		NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
+		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
+		if (room) {
+			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
+			linphone_chat_room_send_chat_message(room, msg);
 			linphone_chat_room_mark_as_read(room);
 			TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 				getCachedController:NSStringFromClass(TabBarView.class)];
@@ -645,18 +721,99 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			[PhoneMainView.instance updateApplicationBadgeNumber];
 		}
 
+	} else if ([response.actionIdentifier isEqual:@"Cancel"]) {
+		LOGI(@"User declined video proposal");
+		if (call == linphone_core_get_current_call(LC)) {
+			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
+			linphone_core_accept_call_update(LC, call, params);
+			linphone_call_params_destroy(params);
+		}
+	} else if ([response.actionIdentifier isEqual:@"Accept"]) {
+		LOGI(@"User accept video proposal");
+		if (call == linphone_core_get_current_call(LC)) {
+			[[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
+			linphone_call_params_enable_video(params, TRUE);
+			linphone_core_accept_call_update(LC, call, params);
+			linphone_call_params_destroy(params);
+		}
+	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
+		if (linphone_core_get_current_call(LC) == call) {
+			linphone_call_set_authentication_token_verified(call, YES);
+		}
+	} else if ([response.actionIdentifier isEqual:@"Deny"]) {
+		if (linphone_core_get_current_call(LC) == call) {
+			linphone_call_set_authentication_token_verified(call, NO);
+		}
 	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
 		if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
-
+			[PhoneMainView.instance displayIncomingCall:call];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
 			[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
+			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+			NSTimer *videoDismissTimer = nil;
+
+			UIConfirmationDialog *sheet =
+				[UIConfirmationDialog ShowWithMessage:response.notification.request.content.body
+					cancelMessage:nil
+					confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+					onCancelClick:^() {
+					  LOGI(@"User declined video proposal");
+					  if (call == linphone_core_get_current_call(LC)) {
+						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
+						  linphone_core_accept_call_update(LC, call, params);
+						  linphone_call_params_destroy(params);
+						  [videoDismissTimer invalidate];
+					  }
+					}
+					onConfirmationClick:^() {
+					  LOGI(@"User accept video proposal");
+					  if (call == linphone_core_get_current_call(LC)) {
+						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
+						  linphone_call_params_enable_video(params, TRUE);
+						  linphone_core_accept_call_update(LC, call, params);
+						  linphone_call_params_destroy(params);
+						  [videoDismissTimer invalidate];
+					  }
+					}
+					inController:PhoneMainView.instance];
+
+			videoDismissTimer = [NSTimer scheduledTimerWithTimeInterval:30
+																 target:self
+															   selector:@selector(dismissVideoActionSheet:)
+															   userInfo:sheet
+																repeats:NO];
+		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"zrtp_request"]) {
+			[UIConfirmationDialog
+				ShowWithMessage:[NSString stringWithFormat:NSLocalizedString(
+															   @"Confirm the following SAS with peer:\n%s", nil),
+														   linphone_call_get_authentication_token(call)]
+				cancelMessage:NSLocalizedString(@"DENY", nil)
+				confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+				onCancelClick:^() {
+				  if (linphone_core_get_current_call(LC) == call) {
+					  linphone_call_set_authentication_token_verified(call, NO);
+				  }
+				}
+				onConfirmationClick:^() {
+				  if (linphone_core_get_current_call(LC) == call) {
+					  linphone_call_set_authentication_token_verified(call, YES);
+				  }
+				}];
 		} else { // Missed call
 			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
 		}
 	}
 }
 
-#pragma mark - User notifications
+- (void)dismissVideoActionSheet:(NSTimer *)timer {
+	UIConfirmationDialog *sheet = (UIConfirmationDialog *)timer.userInfo;
+	[sheet dismiss];
+}
+
+#pragma mark - NSUser notifications
 
 - (void)application:(UIApplication *)application
 	handleActionWithIdentifier:(NSString *)identifier
