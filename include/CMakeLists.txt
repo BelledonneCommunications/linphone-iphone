@@ -40,6 +40,7 @@ set(HEADER_FILES
 	event.h
 	friend.h
 	friendlist.h
+	im_notif_policy.h
 	ldapprovider.h
 	lpconfig.h
 	nat_policy.h

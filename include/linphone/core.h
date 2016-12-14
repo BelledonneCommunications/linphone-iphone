@@ -351,6 +351,7 @@ LINPHONE_PUBLIC bool_t linphone_local_player_matroska_supported(void);
 #include "linphone/call_params.h"
 #include "linphone/content.h"
 #include "linphone/event.h"
+#include "linphone/im_notif_policy.h"
 #include "linphone/linphonefriend.h"
 #include "linphone/nat_policy.h"
 #include "linphone/xmlrpc.h"

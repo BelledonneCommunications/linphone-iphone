@@ -1009,6 +1009,7 @@ struct _LinphoneCore
 	LinphoneVideoPolicy video_policy;
 	time_t network_last_check;
 	LinphoneNatPolicy *nat_policy;
+	LinphoneImNotifPolicy *im_notif_policy;
 
 	bool_t use_files;
 	bool_t apply_nat_settings;
@@ -1291,6 +1292,22 @@ BELLE_SIP_DECLARE_VPTR(LinphoneNatPolicy);
 
 void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy);
 
+struct _LinphoneImNotifPolicy {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneCore *lc;
+	bool_t send_is_composing;
+	bool_t display_is_composing;
+	bool_t send_imdn_delivered;
+	bool_t display_imdn_delivered;
+	bool_t send_imdn_displayed;
+	bool_t display_imdn_displayed;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneImNotifPolicy);
+
+void linphone_core_create_im_notif_policy(LinphoneCore *lc);
+
 
 /*****************************************************************************
  * XML-RPC interface                                                         *
@@ -1542,6 +1559,7 @@ BELLE_SIP_TYPE_ID(LinphoneChatRoom),
 BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngine),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngineCbs),
+BELLE_SIP_TYPE_ID(LinphoneImNotifPolicy),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig),

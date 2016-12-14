@@ -1044,6 +1044,8 @@ static void sip_config_read(LinphoneCore *lc) {
 	lc->sip_conf.save_auth_info = lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
 	if (lp_config_get_string(lc->config, "sip", "rls_uri", NULL))
 		lc->default_rls_addr = linphone_address_new(lp_config_get_string(lc->config, "sip", "rls_uri", NULL));
+
+	linphone_core_create_im_notif_policy(lc);
 }
 
 static void rtp_config_read(LinphoneCore *lc) {
@@ -5729,6 +5731,8 @@ void sip_config_uninit(LinphoneCore *lc)
 		ms_free(config->contact);
 	if (lc->default_rls_addr)
 		linphone_address_destroy(lc->default_rls_addr);
+
+	linphone_im_notif_policy_unref(lc->im_notif_policy);
 }
 
 void rtp_config_uninit(LinphoneCore *lc)

@@ -80,6 +80,7 @@ set(LINPHONE_SOURCE_FILES_C
 	event.c
 	friend.c
 	friendlist.c
+	im_notif_policy.c
 	info.c
 	ldapprovider.c
 	lime.c
