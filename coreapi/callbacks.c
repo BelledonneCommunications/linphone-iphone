@@ -855,13 +855,15 @@ static void call_failure(SalOp *op){
 	char *msg600=_("User does not want to be disturbed.");
 	char *msg603=_("Call declined.");
 	const char *msg=ei->full_string;
+	LinphoneCall *referer;
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	LinphoneCall *referer=call->referer;
-
+	
 	if (call==NULL){
 		ms_warning("Call faillure reported on already terminated call.");
 		return ;
 	}
+	
+	referer=call->referer;
 
 	linphone_core_notify_show_interface(lc);
 	switch(ei->reason){
