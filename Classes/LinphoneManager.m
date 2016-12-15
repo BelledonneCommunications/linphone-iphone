@@ -138,6 +138,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 												   {"mpeg4-generic", 44100, "aaceld_44k_preference"},
 												   {"mpeg4-generic", 48000, "aaceld_48k_preference"},
 												   {"opus", 48000, "opus_preference"},
+												   {"BV16", 8000, "bv16_preference"},
 												   {NULL, 0, Nil}};
 
 + (NSString *)getPreferenceForCodec:(const char *)name withRate:(int)rate {
@@ -1876,7 +1877,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	libmsbcg729_init(f);
 	libmswebrtc_init(f);
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
-
 	[self migrationAllPost];
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
@@ -1962,6 +1962,9 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 - (LinphoneCall *)callByCallId:(NSString *)call_id {
 	const bctbx_list_t *calls = linphone_core_get_calls(LC);
 	bctbx_list_t *call_tmp = bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [call_id UTF8String]);
+	if (!call_tmp) {
+		return NULL;
+	}
 	LinphoneCall *call = (LinphoneCall *)call_tmp->data;
 	return call;
 }
