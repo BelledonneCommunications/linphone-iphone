@@ -1593,6 +1593,10 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	}
 
 	if (srtp_enabled) {
+		if (!ms_srtp_supported()) {
+			ms_warning("test skipped, missing srtp support");
+			goto srtp_end;
+		}
 		BC_ASSERT_TRUE(linphone_core_media_encryption_supported(marie->lc, LinphoneMediaEncryptionSRTP));
 		linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionSRTP);
 		linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionSRTP);
@@ -1672,6 +1676,7 @@ end:
 		end_call(marie, pauline);
 	}
 	linphone_call_params_destroy(marie_params);
+srtp_end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	remove(marie_db);

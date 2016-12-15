@@ -114,6 +114,9 @@ BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	bctbx_list_free_with_data(cr->transient_messages, (void (*)(void *))linphone_chat_message_release);
+	if (cr->received_rtt_characters) {
+		cr->received_rtt_characters = bctbx_list_free_with_data(cr->received_rtt_characters, (void (*)(void *))ms_free);
+	}
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
@@ -292,9 +295,6 @@ static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneCha
 }
 
 void linphone_chat_room_destroy(LinphoneChatRoom *cr) {
-	if (cr->received_rtt_characters) {
-		cr->received_rtt_characters = bctbx_list_free(cr->received_rtt_characters);
-	}
 	linphone_chat_room_unref(cr);
 }
 
@@ -969,7 +969,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 			linphone_chat_room_message_received(cr, lc, msg);
 			linphone_chat_message_unref(msg);
 			cr->pending_message = NULL;
-			cr->received_rtt_characters = bctbx_list_free(cr->received_rtt_characters);
+			cr->received_rtt_characters = bctbx_list_free_with_data(cr->received_rtt_characters, (void (*)(void *))ms_free);
 		} else {
 			char *value = utf8_to_char(character);
 			cr->pending_message->message = ms_strcat_printf(cr->pending_message->message, value);
