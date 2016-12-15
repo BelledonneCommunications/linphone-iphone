@@ -652,10 +652,10 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	NSString *address = [FastAddressBook displayNameForAddress:addr];
-	LinphoneCallLog *callLog = linphone_call_get_call_log(call);
-	NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
 	if (state == LinphoneCallIncomingReceived) {
+		LinphoneCallLog *callLog = linphone_call_get_call_log(call);
+		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 		/*first step is to re-enable ctcall center*/
 		CTCallCenter *lCTCallCenter = [[CTCallCenter alloc] init];
 
