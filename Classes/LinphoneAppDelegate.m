@@ -114,7 +114,8 @@
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
-			if (linphone_core_get_calls_nb(LC) > 1) {
+			if (linphone_core_get_calls_nb(LC) > 1 ||
+				(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				[PhoneMainView.instance displayIncomingCall:call];
 			}
 			// in this case, the ringing sound comes from the notification.

@@ -323,7 +323,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	switch (state) {
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia: {
-			if (linphone_core_get_calls_nb(LC) > 1) {
+			if (linphone_core_get_calls_nb(LC) > 1 ||
+				(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				[self displayIncomingCall:call];
 			}
 			break;
