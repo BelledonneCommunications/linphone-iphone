@@ -351,6 +351,12 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		LinphoneCall *call=NULL;
 		char *content_type;
 		const char *identity = NULL;
+		char *message_not_encrypted = NULL;
+		
+		if (msg->message) {
+			message_not_encrypted = ms_strdup(msg->message);
+		}
+		
 		// add to transient list
 		cr->transient_messages = bctbx_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
 		msg->time = ms_time(0);
@@ -416,6 +422,11 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			 */
 			linphone_address_destroy(msg->from);
 		}
+		if (msg->message && message_not_encrypted && strcmp(msg->message, message_not_encrypted) != 0) {
+			// We replace the encrypted message by the original one so it can be correctly stored and displayed by the application
+			ms_free(msg->message);
+			msg->message = ms_strdup(message_not_encrypted);
+		}
 		msg->from = linphone_address_new(identity);
 		msg->storage_id = linphone_chat_message_store(msg);
 
@@ -437,7 +448,9 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			return;
 		}
 
-
+		if (message_not_encrypted) {
+			ms_free(message_not_encrypted);
+		}
 	}
 	// if operation failed, we should not change message state
 	if (msg->dir == LinphoneChatMessageOutgoing) {
