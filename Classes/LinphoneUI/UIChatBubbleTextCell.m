@@ -83,10 +83,13 @@
 }
 
 + (NSString *)ContactDateForChat:(LinphoneChatMessage *)message {
-	return [NSString
-		stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(message)
-													  withFormat:LinphoneDateChatBubble],
-						 [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(message)]];
+	const LinphoneAddress *address =
+		linphone_chat_message_get_from_address(message)
+			? linphone_chat_message_get_from_address(message)
+			: linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(message));
+	return [NSString stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(message)
+																   withFormat:LinphoneDateChatBubble],
+									  [FastAddressBook displayNameForAddress:address]];
 }
 
 - (NSString *)textMessage {
