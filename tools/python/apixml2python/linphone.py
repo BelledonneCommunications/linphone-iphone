@@ -105,6 +105,7 @@ class ArgumentType:
 		self.cnativefmt_str = '%p'
 		self.use_native_pointer = False
 		self.cast_convert_func_result = True
+		self.is_linphone_object = False
 		self.__compute()
 		if (self.basic_type == 'MSList' or self.basic_type == 'bctbx_list_t') and self.contained_type is not None and self.contained_type != 'const char *':
 			self.linphone_module.bctbxlist_types.add(self.contained_type)
@@ -263,8 +264,10 @@ class ArgumentType:
 			elif '*' in splitted_type:
 				self.type_str = 'linphone.' + strip_leading_linphone(self.basic_type)
 				self.use_native_pointer = True
+				self.is_linphone_object = True
 			else:
 				self.type_str = 'linphone.' + strip_leading_linphone(self.basic_type)
+				self.is_linphone_object = True
 
 
 class MethodDefinition:
@@ -878,7 +881,11 @@ class EventCallbackMethodDefinition(MethodDefinition):
 
 	def format_arguments_parsing(self):
 		return_str = ''
-		if self.return_complete_type != 'void':
+		if self.return_complete_type == 'int':
+			return_str = '-1'
+		elif self.return_complete_type == 'bool_t':
+			return_str = 'FALSE'
+		elif self.return_complete_type != 'void':
 			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
 				return_str = 'NULL'
@@ -938,7 +945,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		args=', '.join(args)
 		if self.return_complete_type != 'void':
 			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
-			if argument_type.fmt_str == 'O':
+			if argument_type.is_linphone_object:
 				convert_python_result_code = \
 """		if ((pyresult != Py_None) && !PyObject_IsInstance(pyresult, (PyObject *)&pylinphone_{class_name}Type)) {{
 			PyErr_SetString(PyExc_TypeError, "The return value must be a linphone.{class_name} instance.");

@@ -1491,6 +1491,32 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_hash_suites(LinphoneCore *lc, MSZr
 MsZrtpCryptoTypesCount linphone_core_get_zrtp_auth_suites(LinphoneCore *lc, MSZrtpAuthTag authTags[MS_MAX_ZRTP_CRYPTO_TYPES]);
 MsZrtpCryptoTypesCount linphone_core_get_zrtp_sas_suites(LinphoneCore *lc, MSZrtpSasType sasTypes[MS_MAX_ZRTP_CRYPTO_TYPES]);
 
+struct _LinphoneImEncryptionEngineCbs {
+	belle_sip_object_t *base;
+	void *user_data;
+	LinphoneImEncryptionEngineCbsIncomingMessageCb process_incoming_message;
+	LinphoneImEncryptionEngineCbsOutgoingMessageCb process_outgoing_message;
+	LinphoneImEncryptionEngineCbsIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer;
+	LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb generate_file_transfer_key;
+	LinphoneImEncryptionEngineCbsDownloadingFileCb process_downlading_file;
+	LinphoneImEncryptionEngineCbsUploadingFileCb process_uploading_file;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneImEncryptionEngineCbs);
+
+LinphoneImEncryptionEngineCbs * linphone_im_encryption_engine_cbs_new(void);
+
+struct _LinphoneImEncryptionEngine {
+	belle_sip_object_t *base;
+	void *user_data;
+	LinphoneCore *lc;
+	LinphoneImEncryptionEngineCbs *callbacks;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneImEncryptionEngine);
+
+LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc);
+
 /** Belle Sip-based objects need unique ids
   */
 
@@ -1507,6 +1533,8 @@ BELLE_SIP_TYPE_ID(LinphoneChatMessage),
 BELLE_SIP_TYPE_ID(LinphoneChatMessageCbs),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
 BELLE_SIP_TYPE_ID(LinphoneContent),
+BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngine),
+BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngineCbs),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig),

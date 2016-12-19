@@ -1965,7 +1965,7 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 	}
 	
 	if (val != LinphoneLimeDisabled) {
-		LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new();
+		LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new(lc);
 		LinphoneImEncryptionEngineCbs *cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		linphone_im_encryption_engine_cbs_set_process_incoming_message(cbs, lime_im_encryption_engine_process_incoming_message_cb);
 		linphone_im_encryption_engine_cbs_set_process_outgoing_message(cbs, lime_im_encryption_engine_process_outgoing_message_cb);
@@ -1976,7 +1976,7 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 		lc->im_encryption_engine = imee;
 	} else {
 		if (lc->im_encryption_engine) {
-			linphone_im_encryption_engine_destory(lc->im_encryption_engine);
+			linphone_im_encryption_engine_unref(lc->im_encryption_engine);
 			lc->im_encryption_engine = NULL;
 		}
 	}

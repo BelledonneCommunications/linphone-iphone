@@ -19,29 +19,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/core.h"
 #include "linphone/im_encryption_engine.h"
+#include "private.h"
 
-struct _LinphoneImEncryptionEngineCbs {
-	void *user_data;
-	LinphoneImEncryptionEngineIncomingMessageCb process_incoming_message;
-	LinphoneImEncryptionEngineOutgoingMessageCb process_outgoing_message;
-	LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer;
-	LinphoneImEncryptionEngineGenerateFileTransferKeyCb generate_file_transfer_key;
-	LinphoneImEncryptionEngineDownloadingFileCb process_downlading_file;
-	LinphoneImEncryptionEngineUploadingFileCb process_uploading_file;
-};
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneImEncryptionEngineCbs);
 
-struct _LinphoneImEncryptionEngine {
-	void *user_data;
-	LinphoneImEncryptionEngineCbs *callbacks;
-};
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneImEncryptionEngineCbs, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	TRUE
+);
+
+static void linphone_im_encryption_engine_destroy(LinphoneImEncryptionEngine *imee) {
+	if (imee->callbacks) linphone_im_encryption_engine_cbs_unref(imee->callbacks);
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneImEncryptionEngine);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneImEncryptionEngine, belle_sip_object_t,
+	(belle_sip_object_destroy_t)linphone_im_encryption_engine_destroy,
+	NULL, // clone
+	NULL, // marshal
+	TRUE
+);
 
 LinphoneImEncryptionEngineCbs *linphone_im_encryption_engine_cbs_new(void) {
-	LinphoneImEncryptionEngineCbs *cbs = ms_new0(LinphoneImEncryptionEngineCbs, 1);
+	LinphoneImEncryptionEngineCbs *cbs = belle_sip_object_new(LinphoneImEncryptionEngineCbs);
+	belle_sip_object_ref(cbs);
 	return cbs;
 }
 
-void linphone_im_encryption_engine_cbs_destory(LinphoneImEncryptionEngineCbs *cbs) {
-	ms_free(cbs);
+LinphoneImEncryptionEngineCbs * linphone_im_encryption_engine_cbs_ref(LinphoneImEncryptionEngineCbs *cbs) {
+	belle_sip_object_ref(cbs);
+	return cbs;
+}
+
+void linphone_im_encryption_engine_cbs_unref(LinphoneImEncryptionEngineCbs *cbs) {
+	belle_sip_object_unref(cbs);
 }
 
 void *linphone_im_encryption_engine_cbs_get_user_data(const LinphoneImEncryptionEngineCbs *cbs) {
@@ -52,15 +66,20 @@ void linphone_im_encryption_engine_cbs_set_user_data(LinphoneImEncryptionEngineC
 	cbs->user_data = data;
 }
 
-LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(void) {
+LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc) {
 	LinphoneImEncryptionEngine *imee = ms_new0(LinphoneImEncryptionEngine, 1);
+	imee->lc = lc;
 	imee->callbacks = linphone_im_encryption_engine_cbs_new();
 	return imee;
 }
 
-void linphone_im_encryption_engine_destory(LinphoneImEncryptionEngine *imee) {
-	if (imee->callbacks) linphone_im_encryption_engine_cbs_destory(imee->callbacks);
-	ms_free(imee);
+LinphoneImEncryptionEngine * linphone_im_encryption_engine_ref(LinphoneImEncryptionEngine *imee) {
+	belle_sip_object_ref(imee);
+	return imee;
+}
+
+void linphone_im_encryption_engine_unref(LinphoneImEncryptionEngine *imee) {
+	belle_sip_object_unref(imee);
 }
 
 void *linphone_im_encryption_engine_get_user_data(const LinphoneImEncryptionEngine *imee) {
@@ -75,50 +94,50 @@ LinphoneImEncryptionEngineCbs* linphone_im_encryption_engine_get_callbacks(const
 	return imee->callbacks;
 }
 
-LinphoneImEncryptionEngineIncomingMessageCb linphone_im_encryption_engine_cbs_get_process_incoming_message(LinphoneImEncryptionEngineCbs *cbs) {
+LinphoneImEncryptionEngineCbsIncomingMessageCb linphone_im_encryption_engine_cbs_get_process_incoming_message(LinphoneImEncryptionEngineCbs *cbs) {
 	return cbs->process_incoming_message;
 }
 
-void linphone_im_encryption_engine_cbs_set_process_incoming_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineIncomingMessageCb cb) {
+void linphone_im_encryption_engine_cbs_set_process_incoming_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineCbsIncomingMessageCb cb) {
 	cbs->process_incoming_message = cb;
 }
 
-LinphoneImEncryptionEngineOutgoingMessageCb linphone_im_encryption_engine_cbs_get_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs) {
+LinphoneImEncryptionEngineCbsOutgoingMessageCb linphone_im_encryption_engine_cbs_get_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs) {
 	return cbs->process_outgoing_message;
 }
 
-void linphone_im_encryption_engine_cbs_set_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineOutgoingMessageCb cb) {
+void linphone_im_encryption_engine_cbs_set_process_outgoing_message(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineCbsOutgoingMessageCb cb) {
 	cbs->process_outgoing_message = cb;
 }
 
-LinphoneImEncryptionEngineDownloadingFileCb linphone_im_encryption_engine_cbs_get_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs) {
+LinphoneImEncryptionEngineCbsDownloadingFileCb linphone_im_encryption_engine_cbs_get_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs) {
 	return cbs->process_downlading_file;
 }
 
-void linphone_im_encryption_engine_cbs_set_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineDownloadingFileCb cb) {
+void linphone_im_encryption_engine_cbs_set_process_downloading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineCbsDownloadingFileCb cb) {
 	cbs->process_downlading_file = cb;
 }
 
-LinphoneImEncryptionEngineUploadingFileCb linphone_im_encryption_engine_cbs_get_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs) {
+LinphoneImEncryptionEngineCbsUploadingFileCb linphone_im_encryption_engine_cbs_get_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs) {
 	return cbs->process_uploading_file;
 }
 
-void linphone_im_encryption_engine_cbs_set_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineUploadingFileCb cb) {
+void linphone_im_encryption_engine_cbs_set_process_uploading_file(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineCbsUploadingFileCb cb) {
 	cbs->process_uploading_file = cb;
 }
 
-LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb linphone_im_encryption_engine_cbs_get_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs) {
+LinphoneImEncryptionEngineCbsIsEncryptionEnabledForFileTransferCb linphone_im_encryption_engine_cbs_get_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs) {
 	return cbs->is_encryption_enabled_for_file_transfer;
 }
 
-void linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb cb) {
+void linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineCbsIsEncryptionEnabledForFileTransferCb cb) {
 	cbs->is_encryption_enabled_for_file_transfer = cb;
 }
 
-LinphoneImEncryptionEngineGenerateFileTransferKeyCb linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs) {
+LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs) {
 	return cbs->generate_file_transfer_key;
 }
 
-void linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineGenerateFileTransferKeyCb cb) {
+void linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb cb) {
 		cbs->generate_file_transfer_key = cb;
 }

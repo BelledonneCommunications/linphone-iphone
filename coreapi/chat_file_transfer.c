@@ -130,10 +130,10 @@ static int on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *
 	imee = linphone_core_get_im_encryption_engine(lc);
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineUploadingFileCb cb_process_uploading_file = linphone_im_encryption_engine_cbs_get_process_uploading_file(imee_cbs);
+		LinphoneImEncryptionEngineCbsUploadingFileCb cb_process_uploading_file = linphone_im_encryption_engine_cbs_get_process_uploading_file(imee_cbs);
 		if (cb_process_uploading_file) {
 			char *encrypted_buffer = (char *)ms_malloc0(*size);
-			retval = cb_process_uploading_file(lc, msg, offset, (char *)buffer, size, encrypted_buffer);
+			retval = cb_process_uploading_file(imee, msg, offset, (char *)buffer, size, encrypted_buffer);
 			if (retval == 0) {
 				memcpy(buffer, encrypted_buffer, *size);
 			}
@@ -151,9 +151,9 @@ static void on_send_end(belle_sip_user_body_handler_t *bh, void *data) {
 	
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineUploadingFileCb cb_process_uploading_file = linphone_im_encryption_engine_cbs_get_process_uploading_file(imee_cbs);
+		LinphoneImEncryptionEngineCbsUploadingFileCb cb_process_uploading_file = linphone_im_encryption_engine_cbs_get_process_uploading_file(imee_cbs);
 		if (cb_process_uploading_file) {
-			cb_process_uploading_file(lc, msg, 0, NULL, NULL, NULL);
+			cb_process_uploading_file(imee, msg, 0, NULL, NULL, NULL);
 		}
 	}
 }
@@ -181,19 +181,19 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(msg->chat_room->lc);
 			if (imee) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-				LinphoneImEncryptionEngineIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer_cb = 
+				LinphoneImEncryptionEngineCbsIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer_cb = 
 					linphone_im_encryption_engine_cbs_get_is_encryption_enabled_for_file_transfer(imee_cbs);
 				if (is_encryption_enabled_for_file_transfer_cb) {
-					is_file_encryption_enabled = is_encryption_enabled_for_file_transfer_cb(msg->chat_room->lc, msg->chat_room);
+					is_file_encryption_enabled = is_encryption_enabled_for_file_transfer_cb(imee, msg->chat_room);
 				}
 			}
 			/* shall we encrypt the file */
 			if (is_file_encryption_enabled) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-				LinphoneImEncryptionEngineGenerateFileTransferKeyCb generate_file_transfer_key_cb = 
+				LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb generate_file_transfer_key_cb = 
 					linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(imee_cbs);
 				if (generate_file_transfer_key_cb) {
-					generate_file_transfer_key_cb(msg->chat_room->lc, msg->chat_room, msg);
+					generate_file_transfer_key_cb(imee, msg->chat_room, msg);
 				}
 				/* temporary storage for the Content-disposition header value : use a generic filename to not leak it
 				* Actual filename stored in msg->file_transfer_information->name will be set in encrypted msg
@@ -362,9 +362,9 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 	imee = linphone_core_get_im_encryption_engine(lc);
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
+		LinphoneImEncryptionEngineCbsDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
 		if (cb_process_downloading_file) {
-			retval = cb_process_downloading_file(lc, msg, (const char *)buffer, size, decrypted_buffer);
+			retval = cb_process_downloading_file(imee, msg, (const char *)buffer, size, decrypted_buffer);
 			if (retval == 0) {
 				memcpy(buffer, decrypted_buffer, size);
 			}
@@ -397,9 +397,9 @@ static void on_recv_end(belle_sip_user_body_handler_t *bh, void *data) {
 	
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
+		LinphoneImEncryptionEngineCbsDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
 		if (cb_process_downloading_file) {
-			retval = cb_process_downloading_file(lc, msg, NULL, 0, NULL);
+			retval = cb_process_downloading_file(imee, msg, NULL, 0, NULL);
 		}
 	}
 	

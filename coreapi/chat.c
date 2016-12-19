@@ -374,9 +374,9 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		
 		if (imee) {
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-			LinphoneImEncryptionEngineOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
+			LinphoneImEncryptionEngineCbsOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
 			if (cb_process_outgoing_message) {
-				retval = cb_process_outgoing_message(lc, cr, msg);
+				retval = cb_process_outgoing_message(imee, cr, msg);
 			}
 		}
 		
@@ -520,9 +520,9 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
+		LinphoneImEncryptionEngineCbsIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
 		if (cb_process_incoming_message) {
-			retval = cb_process_incoming_message(lc, cr, msg);
+			retval = cb_process_incoming_message(imee, cr, msg);
 		}
 	}
 	
@@ -728,9 +728,9 @@ LinphoneReason linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, 
 		msg->content_type = ms_strdup("application/im-iscomposing+xml");
 		if (imee) {
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-			LinphoneImEncryptionEngineIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
+			LinphoneImEncryptionEngineCbsIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
 			if (cb_process_incoming_message) {
-				retval = cb_process_incoming_message(lc, cr, msg);
+				retval = cb_process_incoming_message(imee, cr, msg);
 			}
 		}
 		if (retval <= 0) {
@@ -894,9 +894,9 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 		
 		if (imee) {
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-			LinphoneImEncryptionEngineOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
+			LinphoneImEncryptionEngineCbsOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
 			if (cb_process_outgoing_message) {
-				retval = cb_process_outgoing_message(cr->lc, cr, msg);
+				retval = cb_process_outgoing_message(imee, cr, msg);
 			}
 		}
 

@@ -858,7 +858,8 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 	return FALSE;
 }
 
-int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	/* check if we have a xml/cipher message to be decrypted */
 	if (msg->content_type && (strcmp("xml/cipher", msg->content_type) == 0 || strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0)) {
@@ -928,7 +929,8 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, Linp
 	return errcode;
 }
 
-int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	char *content_type = "xml/cipher";
 	
@@ -1001,7 +1003,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, Linp
 	return errcode;
 }
 
-int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
 	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
 	
 	if (buffer == NULL || size == 0) {
@@ -1013,7 +1015,7 @@ int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, Linp
 						 (char *)buffer);
 }
 
-int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
+int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
 	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
 	
 	if (buffer == NULL || *size == 0) {
@@ -1029,11 +1031,12 @@ int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, Linpho
 					(char *)buffer, encrypted_buffer);
 }
 
-bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneCore *lc, LinphoneChatRoom *room) {
+bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room) {
+	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	return linphone_chat_room_lime_available(room) && linphone_core_lime_for_file_sharing_enabled(lc);
 }
 
-void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	char keyBuffer [FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of initial vector */
 	/* generate a random 192 bits key + 64 bits of initial vector and store it into the
 		* file_transfer_information->key field of the msg */
@@ -1068,22 +1071,22 @@ int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t mess
 bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 	return FALSE;
 }
-int lime_im_encryption_engine_process_incoming_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	return 500;
 }
-int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneCore* lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	return 500;
 }
-int lime_im_encryption_engine_process_downloading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
+int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer) {
 	return 500;
 }
-int lime_im_encryption_engine_process_uploading_file_cb(LinphoneCore *lc, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
+int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
 	return 500;
 }
-bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneCore *lc, LinphoneChatRoom *room) {
+bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room) {
 	return FALSE;
 }
-void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	
 }
 #endif /* HAVE_LIME */
