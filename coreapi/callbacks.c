@@ -603,8 +603,16 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 				break;
 			/*otherwise we are able to resume previous state*/
 			default:
-				ms_message("Incompatible SDP answer received, restoring previous state [%s]",linphone_call_state_to_string(call->prevstate));
-				linphone_call_set_state(call,call->prevstate,_("Incompatible media parameters."));
+				ms_error("Incompatible SDP answer received");
+				switch(call->state) {
+					case LinphoneCallPausedByRemote:
+					case LinphoneCallPaused:
+					case LinphoneCallStreamsRunning:
+					default:
+						ms_message("Incompatible SDP answer received, restoring previous state [%s]",linphone_call_state_to_string(call->prevstate));
+						linphone_call_set_state(call,call->prevstate,_("Incompatible media parameters."));
+						break;
+				}
 				break;
 		}
 	}
