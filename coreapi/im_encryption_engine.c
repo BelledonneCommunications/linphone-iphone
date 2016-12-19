@@ -90,6 +90,10 @@ void linphone_im_encryption_engine_set_user_data(LinphoneImEncryptionEngine *ime
 	imee->user_data = data;
 }
 
+LinphoneCore * linphone_im_encryption_engine_get_core(LinphoneImEncryptionEngine *imee) {
+	return imee->lc;
+}
+
 LinphoneImEncryptionEngineCbs* linphone_im_encryption_engine_get_callbacks(const LinphoneImEncryptionEngine *imee) {
 	return imee->callbacks;
 }
