@@ -1492,7 +1492,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_auth_suites(LinphoneCore *lc, MSZr
 MsZrtpCryptoTypesCount linphone_core_get_zrtp_sas_suites(LinphoneCore *lc, MSZrtpSasType sasTypes[MS_MAX_ZRTP_CRYPTO_TYPES]);
 
 struct _LinphoneImEncryptionEngineCbs {
-	belle_sip_object_t *base;
+	belle_sip_object_t base;
 	void *user_data;
 	LinphoneImEncryptionEngineCbsIncomingMessageCb process_incoming_message;
 	LinphoneImEncryptionEngineCbsOutgoingMessageCb process_outgoing_message;
@@ -1507,7 +1507,7 @@ BELLE_SIP_DECLARE_VPTR(LinphoneImEncryptionEngineCbs);
 LinphoneImEncryptionEngineCbs * linphone_im_encryption_engine_cbs_new(void);
 
 struct _LinphoneImEncryptionEngine {
-	belle_sip_object_t *base;
+	belle_sip_object_t base;
 	void *user_data;
 	LinphoneCore *lc;
 	LinphoneImEncryptionEngineCbs *callbacks;

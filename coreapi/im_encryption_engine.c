@@ -67,7 +67,8 @@ void linphone_im_encryption_engine_cbs_set_user_data(LinphoneImEncryptionEngineC
 }
 
 LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc) {
-	LinphoneImEncryptionEngine *imee = ms_new0(LinphoneImEncryptionEngine, 1);
+	LinphoneImEncryptionEngine *imee = belle_sip_object_new(LinphoneImEncryptionEngine);
+	belle_sip_object_ref(imee);
 	imee->lc = lc;
 	imee->callbacks = linphone_im_encryption_engine_cbs_new();
 	return imee;

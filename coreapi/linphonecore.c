@@ -1953,12 +1953,10 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 		linphone_im_encryption_engine_cbs_set_process_uploading_file(cbs, lime_im_encryption_engine_process_uploading_file_cb);
 		linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(cbs, lime_im_encryption_engine_is_file_encryption_enabled_cb);
 		linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(cbs, lime_im_encryption_engine_generate_file_transfer_key_cb);
-		lc->im_encryption_engine = imee;
+		linphone_core_set_im_encryption_engine(lc, imee);
+		linphone_im_encryption_engine_unref(imee);
 	} else {
-		if (lc->im_encryption_engine) {
-			linphone_im_encryption_engine_unref(lc->im_encryption_engine);
-			lc->im_encryption_engine = NULL;
-		}
+		linphone_core_set_im_encryption_engine(lc, NULL);
 	}
 }
 
@@ -5939,6 +5937,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->ringtoneplayer) {
 		linphone_ringtoneplayer_destroy(lc->ringtoneplayer);
 	}
+	if (lc->im_encryption_engine) {
+		linphone_im_encryption_engine_unref(lc->im_encryption_engine);
+	}
 
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free((void *)lc->supported_formats);
@@ -7064,7 +7065,13 @@ const char *linphone_core_get_tls_key_path(const LinphoneCore *lc) {
 }
 
 void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncryptionEngine *imee) {
-	lc->im_encryption_engine = imee;
+	if (lc->im_encryption_engine) {
+		linphone_im_encryption_engine_unref(lc->im_encryption_engine);
+		lc->im_encryption_engine = NULL;
+	}
+	if (imee) {
+		lc->im_encryption_engine = linphone_im_encryption_engine_ref(imee);
+	}
 }
 
 LinphoneImEncryptionEngine *linphone_core_get_im_encryption_engine(const LinphoneCore *lc) {
