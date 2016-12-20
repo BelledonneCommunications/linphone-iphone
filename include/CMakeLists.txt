@@ -32,6 +32,7 @@ set(HEADER_FILES
 	content.h
 	core.h
 	core_utils.h
+	error_info.h
 	event.h
 	friend.h
 	friendlist.h

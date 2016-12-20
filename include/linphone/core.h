@@ -158,67 +158,7 @@ struct _LinphoneCall;
 **/
 typedef struct _LinphoneCall LinphoneCall;
 
-/**
- * Enum describing various failure reasons or contextual information for some events.
- * @see linphone_call_get_reason()
- * @see linphone_proxy_config_get_error()
- * @see linphone_error_info_get_reason()
- * @ingroup misc
-**/
-enum _LinphoneReason{
-	LinphoneReasonNone,
-	LinphoneReasonNoResponse, /**<No response received from remote*/
-	LinphoneReasonForbidden, /**<Authentication failed due to bad credentials or resource forbidden*/
-	LinphoneReasonDeclined, /**<The call has been declined*/
-	LinphoneReasonNotFound, /**<Destination of the call was not found.*/
-	LinphoneReasonNotAnswered, /**<The call was not answered in time (request timeout)*/
-	LinphoneReasonBusy, /**<Phone line was busy */
-	LinphoneReasonUnsupportedContent, /**<Unsupported content */
-	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
-	LinphoneReasonDoNotDisturb, /**<Do not disturb reason*/
-	LinphoneReasonUnauthorized, /**<Operation is unauthorized because missing credential*/
-	LinphoneReasonNotAcceptable, /**<Operation is rejected due to incompatible or unsupported media parameters*/
-	LinphoneReasonNoMatch, /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
-	LinphoneReasonMovedPermanently, /**<Resource moved permanently*/
-	LinphoneReasonGone, /**<Resource no longer exists*/
-	LinphoneReasonTemporarilyUnavailable, /**<Temporarily unavailable*/
-	LinphoneReasonAddressIncomplete, /**<Address incomplete*/
-	LinphoneReasonNotImplemented, /**<Not implemented*/
-	LinphoneReasonBadGateway, /**<Bad gateway*/
-	LinphoneReasonServerTimeout, /**<Server timeout*/
-	LinphoneReasonUnknown /**Unknown reason*/
-};
-
-#define LinphoneReasonBadCredentials LinphoneReasonForbidden
-
-/*for compatibility*/
-#define LinphoneReasonMedia LinphoneReasonUnsupportedContent
-
-/**
- * Enum describing failure reasons.
- * @ingroup misc
-**/
-typedef enum _LinphoneReason LinphoneReason;
-
-/**
- * Converts a LinphoneReason enum to a string.
- * @ingroup misc
-**/
-LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
-
-/**
- * Converts a error code to a LinphoneReason.
- * @ingroup misc
-**/
-LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
-
-/**
- * Object representing full details about a signaling error or status.
- * All LinphoneErrorInfo object returned by the liblinphone API are readonly and transcients. For safety they must be used immediately
- * after obtaining them. Any other function call to the liblinphone may change their content or invalidate the pointer.
- * @ingroup misc
-**/
-typedef struct _LinphoneErrorInfo LinphoneErrorInfo;
+#include "linphone/error_info.h"
 
 /**
  * Enum describing the authentication methods
@@ -234,11 +174,6 @@ enum _LinphoneAuthMethod {
  * @ingroup network_parameters
 **/
 typedef enum _LinphoneAuthMethod LinphoneAuthMethod;
-
-LINPHONE_PUBLIC LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei);
-LINPHONE_PUBLIC const char *linphone_error_info_get_phrase(const LinphoneErrorInfo *ei);
-LINPHONE_PUBLIC const char *linphone_error_info_get_details(const LinphoneErrorInfo *ei);
-LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei);
 
 /* linphone dictionary */
 LINPHONE_PUBLIC LinphoneDictionary* linphone_dictionary_new(void);
@@ -3381,6 +3316,7 @@ LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_auth_info_list(const Linph
  * @param username the SIP username to be authenticated (mandatory)
  * @param sip_domain the SIP domain name (optional)
  * @return a #LinphoneAuthInfo
+ * @ingroup authentication
 **/
 LINPHONE_PUBLIC const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *sip_domain);
 

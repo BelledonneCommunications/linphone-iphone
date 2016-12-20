@@ -76,6 +76,7 @@ set(LINPHONE_SOURCE_FILES_C
 	ec-calibrator.c
 	echo-tester.c
 	enum.c
+	error_info.c
 	event.c
 	friend.c
 	friendlist.c

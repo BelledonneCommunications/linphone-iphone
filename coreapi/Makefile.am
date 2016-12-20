@@ -43,6 +43,7 @@ liblinphone_la_SOURCES=\
 	ec-calibrator.c \
 	echo-tester.c \
 	enum.c enum.h \
+	error_info.c \
 	event.c \
 	friend.c \
 	friendlist.c \

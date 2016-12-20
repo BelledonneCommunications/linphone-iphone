@@ -1,5 +1,5 @@
 /*
-ImEncryptionEgine.c
+im_encryption_engine.c
 Copyright (C) 2016  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or

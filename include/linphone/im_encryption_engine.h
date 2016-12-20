@@ -1,5 +1,5 @@
 /*
-ImEncryptionEgine.h
+im_encryption_engine.h
 Copyright (C) 2016  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef IM_ENCRYPTION_ENGINE_H
-#define IM_ENCRYPTION_ENGINE_H
+#ifndef LINPHONE_IM_ENCRYPTION_ENGINE_H
+#define LINPHONE_IM_ENCRYPTION_ENGINE_H
 
 #include <mediastreamer2/mscommon.h>
 
@@ -254,4 +254,4 @@ LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_generate_file_transfe
  * @}
  */
 
-#endif /* IM_ENCRYPTION_ENGINE_H */
+#endif /* LINPHONE_IM_ENCRYPTION_ENGINE_H */
