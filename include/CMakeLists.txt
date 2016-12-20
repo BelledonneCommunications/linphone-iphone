@@ -24,6 +24,7 @@ set(HEADER_FILES
 	account_creator.h
 	address.h
 	buffer.h
+	call.h
 	call_log.h
 	call_params.h
 	call_stats.h
