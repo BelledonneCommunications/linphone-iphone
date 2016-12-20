@@ -1297,11 +1297,11 @@ struct _LinphoneImNotifPolicy {
 	void *user_data;
 	LinphoneCore *lc;
 	bool_t send_is_composing;
-	bool_t display_is_composing;
+	bool_t recv_is_composing;
 	bool_t send_imdn_delivered;
-	bool_t display_imdn_delivered;
+	bool_t recv_imdn_delivered;
 	bool_t send_imdn_displayed;
-	bool_t display_imdn_displayed;
+	bool_t recv_imdn_displayed;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneImNotifPolicy);

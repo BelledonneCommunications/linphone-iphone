@@ -40,30 +40,30 @@ static void load_im_notif_policy_from_config(LinphoneImNotifPolicy *policy) {
 		const char *value = (const char *)bctbx_list_get_data(elem);
 		if (strcasecmp(value, "all") == 0) {
 			policy->send_is_composing = TRUE;
-			policy->display_is_composing = TRUE;
+			policy->recv_is_composing = TRUE;
 			policy->send_imdn_delivered = TRUE;
-			policy->display_imdn_delivered = TRUE;
+			policy->recv_imdn_delivered = TRUE;
 			policy->send_imdn_displayed = TRUE;
-			policy->display_imdn_displayed = TRUE;
+			policy->recv_imdn_displayed = TRUE;
 		} else if (strcasecmp(value, "none") == 0) {
 			policy->send_is_composing = FALSE;
-			policy->display_is_composing = FALSE;
+			policy->recv_is_composing = FALSE;
 			policy->send_imdn_delivered = FALSE;
-			policy->display_imdn_delivered = FALSE;
+			policy->recv_imdn_delivered = FALSE;
 			policy->send_imdn_displayed = FALSE;
-			policy->display_imdn_displayed = FALSE;
+			policy->recv_imdn_displayed = FALSE;
 		} else if (strcasecmp(value, "send_is_comp") == 0) {
 			policy->send_is_composing = TRUE;
-		} else if (strcasecmp(value, "disp_is_comp") == 0) {
-			policy->display_is_composing = TRUE;
+		} else if (strcasecmp(value, "recv_is_comp") == 0) {
+			policy->recv_is_composing = TRUE;
 		} else if (strcasecmp(value, "send_imdn_delivered") == 0) {
 			policy->send_imdn_delivered = TRUE;
-		} else if (strcasecmp(value, "disp_imdn_delivered") == 0) {
-			policy->display_imdn_delivered = TRUE;
+		} else if (strcasecmp(value, "recv_imdn_delivered") == 0) {
+			policy->recv_imdn_delivered = TRUE;
 		} else if (strcasecmp(value, "send_imdn_displayed") == 0) {
 			policy->send_imdn_displayed = TRUE;
-		} else if (strcasecmp(value, "disp_imdn_displayed") == 0) {
-			policy->display_imdn_displayed = TRUE;
+		} else if (strcasecmp(value, "recv_imdn_displayed") == 0) {
+			policy->recv_imdn_displayed = TRUE;
 		}
 	}
 	if (values != default_list) {
@@ -75,32 +75,32 @@ static void load_im_notif_policy_from_config(LinphoneImNotifPolicy *policy) {
 static void save_im_notif_policy_to_config(LinphoneImNotifPolicy *policy) {
 	bctbx_list_t *values = NULL;
 	if ((policy->send_is_composing == TRUE)
-		&& (policy->display_is_composing == TRUE)
+		&& (policy->recv_is_composing == TRUE)
 		&& (policy->send_imdn_delivered == TRUE)
-		&& (policy->display_imdn_delivered == TRUE)
+		&& (policy->recv_imdn_delivered == TRUE)
 		&& (policy->send_imdn_displayed == TRUE)
-		&& (policy->display_imdn_displayed == TRUE)) {
+		&& (policy->recv_imdn_displayed == TRUE)) {
 		/* Do not save anything, the default is everything enabled */
 	} else if ((policy->send_is_composing == FALSE)
-		&& (policy->display_is_composing == FALSE)
+		&& (policy->recv_is_composing == FALSE)
 		&& (policy->send_imdn_delivered == FALSE)
-		&& (policy->display_imdn_delivered == FALSE)
+		&& (policy->recv_imdn_delivered == FALSE)
 		&& (policy->send_imdn_displayed == FALSE)
-		&& (policy->display_imdn_displayed == FALSE)) {
+		&& (policy->recv_imdn_displayed == FALSE)) {
 		values = bctbx_list_append(values, "none");
 	} else {
 		if (policy->send_is_composing == TRUE)
 			values = bctbx_list_append(values, "send_is_comp");
-		if (policy->display_is_composing == TRUE)
-			values = bctbx_list_append(values, "disp_is_comp");
+		if (policy->recv_is_composing == TRUE)
+			values = bctbx_list_append(values, "recv_is_comp");
 		if (policy->send_imdn_delivered == TRUE)
 			values = bctbx_list_append(values, "send_imdn_delivered");
-		if (policy->display_imdn_delivered == TRUE)
-			values = bctbx_list_append(values, "disp_imdn_delivered");
+		if (policy->recv_imdn_delivered == TRUE)
+			values = bctbx_list_append(values, "recv_imdn_delivered");
 		if (policy->send_imdn_displayed == TRUE)
 			values = bctbx_list_append(values, "send_imdn_displayed");
-		if (policy->display_imdn_displayed == TRUE)
-			values = bctbx_list_append(values, "disp_imdn_displayed");
+		if (policy->recv_imdn_displayed == TRUE)
+			values = bctbx_list_append(values, "recv_imdn_displayed");
 	}
 	lp_config_set_string_list(policy->lc->config, "sip", "im_notif_policy", values);
 	if (values != NULL) bctbx_list_free(values);
@@ -126,11 +126,21 @@ void linphone_im_notif_policy_set_user_data(LinphoneImNotifPolicy *policy, void 
 
 void linphone_im_notif_policy_clear(LinphoneImNotifPolicy *policy) {
 	policy->send_is_composing = FALSE;
-	policy->display_is_composing = FALSE;
+	policy->recv_is_composing = FALSE;
 	policy->send_imdn_delivered = FALSE;
-	policy->display_imdn_delivered = FALSE;
+	policy->recv_imdn_delivered = FALSE;
 	policy->send_imdn_displayed = FALSE;
-	policy->display_imdn_displayed = FALSE;
+	policy->recv_imdn_displayed = FALSE;
+	save_im_notif_policy_to_config(policy);
+}
+
+void linphone_im_notif_policy_enable_all(LinphoneImNotifPolicy *policy) {
+	policy->send_is_composing = TRUE;
+	policy->recv_is_composing = TRUE;
+	policy->send_imdn_delivered = TRUE;
+	policy->recv_imdn_delivered = TRUE;
+	policy->send_imdn_displayed = TRUE;
+	policy->recv_imdn_displayed = TRUE;
 	save_im_notif_policy_to_config(policy);
 }
 
@@ -143,12 +153,12 @@ void linphone_im_notif_policy_set_send_is_composing(LinphoneImNotifPolicy *polic
 	save_im_notif_policy_to_config(policy);
 }
 
-bool_t linphone_im_notif_policy_get_display_is_composing(const LinphoneImNotifPolicy *policy) {
-	return policy->display_is_composing;
+bool_t linphone_im_notif_policy_get_recv_is_composing(const LinphoneImNotifPolicy *policy) {
+	return policy->recv_is_composing;
 }
 
-void linphone_im_notif_policy_set_display_is_composing(LinphoneImNotifPolicy *policy, bool_t enable) {
-	policy->display_is_composing = enable;
+void linphone_im_notif_policy_set_recv_is_composing(LinphoneImNotifPolicy *policy, bool_t enable) {
+	policy->recv_is_composing = enable;
 	save_im_notif_policy_to_config(policy);
 }
 
@@ -161,12 +171,12 @@ void linphone_im_notif_policy_set_send_imdn_delivered(LinphoneImNotifPolicy *pol
 	save_im_notif_policy_to_config(policy);
 }
 
-bool_t linphone_im_notif_policy_get_display_imdn_delivered(const LinphoneImNotifPolicy *policy) {
-	return policy->display_imdn_delivered;
+bool_t linphone_im_notif_policy_get_recv_imdn_delivered(const LinphoneImNotifPolicy *policy) {
+	return policy->recv_imdn_delivered;
 }
 
-void linphone_im_notif_policy_set_display_imdn_delivered(LinphoneImNotifPolicy *policy, bool_t enable) {
-	policy->display_imdn_delivered = enable;
+void linphone_im_notif_policy_set_recv_imdn_delivered(LinphoneImNotifPolicy *policy, bool_t enable) {
+	policy->recv_imdn_delivered = enable;
 	save_im_notif_policy_to_config(policy);
 }
 
@@ -179,12 +189,12 @@ void linphone_im_notif_policy_set_send_imdn_displayed(LinphoneImNotifPolicy *pol
 	save_im_notif_policy_to_config(policy);
 }
 
-bool_t linphone_im_notif_policy_get_display_imdn_displayed(const LinphoneImNotifPolicy *policy) {
-	return policy->display_imdn_displayed;
+bool_t linphone_im_notif_policy_get_recv_imdn_displayed(const LinphoneImNotifPolicy *policy) {
+	return policy->recv_imdn_displayed;
 }
 
-void linphone_im_notif_policy_set_display_imdn_displayed(LinphoneImNotifPolicy *policy, bool_t enable) {
-	policy->display_imdn_displayed = enable;
+void linphone_im_notif_policy_set_recv_imdn_displayed(LinphoneImNotifPolicy *policy, bool_t enable) {
+	policy->recv_imdn_displayed = enable;
 	save_im_notif_policy_to_config(policy);
 }
 

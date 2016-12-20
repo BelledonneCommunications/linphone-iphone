@@ -213,8 +213,11 @@ void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, Li
 #pragma GCC diagnostic pop
 #endif
 void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
-	NOTIFY_IF_EXIST(is_composing_received, lc,room);
-	cleanup_dead_vtable_refs(lc);
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
+	if (linphone_im_notif_policy_get_recv_is_composing(policy) == TRUE) {
+		NOTIFY_IF_EXIST(is_composing_received, lc,room);
+		cleanup_dead_vtable_refs(lc);
+	}
 }
 
 void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, int dtmf) {
