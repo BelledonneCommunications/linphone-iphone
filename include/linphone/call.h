@@ -20,6 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_CALL_H
 #define LINPHONE_CALL_H
 
+#include <mediastreamer2/mscommon.h>
+#ifndef LINPHONE_PUBLIC
+#define LINPHONE_PUBLIC MS2_PUBLIC
+#endif
+
 #include "linphone/address.h"
 #include "linphone/call_log.h"
 #include "linphone/call_params.h"
@@ -86,6 +91,10 @@ typedef struct _LinphoneCall LinphoneCall;
 /** Callback prototype */
 typedef void (*LinphoneCallCbFunc)(LinphoneCall *call, void *user_data);
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 LINPHONE_PUBLIC const char *linphone_call_state_to_string(LinphoneCallState cs);
 
@@ -571,5 +580,8 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
  * @}
  */
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LINPHONE_CALL_H */

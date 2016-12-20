@@ -3,6 +3,7 @@ linphone_includedir=$(includedir)/linphone
 linphone_include_HEADERS=\
 	account_creator.h \
 	address.h \
+	auth_info.h \
 	buffer.h \
 	call.h \
 	call_log.h \
@@ -13,6 +14,7 @@ linphone_include_HEADERS=\
 	content.h \
 	core.h \
 	core_utils.h \
+	dictionary.h \
 	error_info.h \
 	event.h \
 	friend.h \

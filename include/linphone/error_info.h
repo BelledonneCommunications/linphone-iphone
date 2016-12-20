@@ -20,6 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_ERROR_INFO_H
 #define LINPHONE_ERROR_INFO_H
 
+#include <mediastreamer2/mscommon.h>
+#ifndef LINPHONE_PUBLIC
+#define LINPHONE_PUBLIC MS2_PUBLIC
+#endif
+
 /**
  * @addtogroup misc
  * @{
@@ -66,6 +71,18 @@ enum _LinphoneReason{
 typedef enum _LinphoneReason LinphoneReason;
 
 /**
+ * Object representing full details about a signaling error or status.
+ * All LinphoneErrorInfo object returned by the liblinphone API are readonly and transcients. For safety they must be used immediately
+ * after obtaining them. Any other function call to the liblinphone may change their content or invalidate the pointer.
+**/
+typedef struct _LinphoneErrorInfo LinphoneErrorInfo;
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
  * Converts a LinphoneReason enum to a string.
  * @param[in] err A #LinphoneReason
  * @return The string representation of the specified LinphoneReason
@@ -78,13 +95,6 @@ LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
  * @return The LinphoneReason corresponding to the specified error code
 **/
 LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
-
-/**
- * Object representing full details about a signaling error or status.
- * All LinphoneErrorInfo object returned by the liblinphone API are readonly and transcients. For safety they must be used immediately
- * after obtaining them. Any other function call to the liblinphone may change their content or invalidate the pointer.
-**/
-typedef struct _LinphoneErrorInfo LinphoneErrorInfo;
 
 /**
  * Get reason code from the error info.
@@ -119,5 +129,9 @@ LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInf
 /**
  * @}
  */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LINPHONE_ERROR_INFO_H */
