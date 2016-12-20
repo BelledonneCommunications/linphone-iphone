@@ -3406,8 +3406,8 @@ static void call_with_generic_cn(void) {
 	linphone_core_set_play_file(marie->lc, audio_file_with_silence);
 	/*linphone_core_set_play_file(pauline->lc, NULL);*/
 	linphone_core_set_record_file(pauline->lc, recorded_file);
-	linphone_core_enable_generic_confort_noise(marie->lc, TRUE);
-	linphone_core_enable_generic_confort_noise(pauline->lc, TRUE);
+	linphone_core_enable_generic_comfort_noise(marie->lc, TRUE);
+	linphone_core_enable_generic_comfort_noise(pauline->lc, TRUE);
 	BC_ASSERT_TRUE(call(marie,pauline));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	BC_ASSERT_PTR_NOT_NULL(pauline_call);

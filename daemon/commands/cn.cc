@@ -28,7 +28,7 @@ public:
 
 CNResponse::CNResponse(LinphoneCore *core) : Response() {
 	ostringstream ost;
-	bool cn_enabled = linphone_core_generic_confort_noise_enabled(core) == TRUE ? true : false;
+	bool cn_enabled = linphone_core_generic_comfort_noise_enabled(core) == TRUE ? true : false;
 	ost << "State: ";
 	if (cn_enabled) {
 		ost << "enabled\n";
@@ -41,7 +41,7 @@ CNResponse::CNResponse(LinphoneCore *core) : Response() {
 
 CNCommand::CNCommand() :
 		DaemonCommand("cn", "cn [enable|disable]",
-				"Enable or disable generic confort noice (CN payload type) with the 'enable' and 'disable' parameters, return the status of the use of confort noise without parameter.") {
+				"Enable or disable generic comfort noice (CN payload type) with the 'enable' and 'disable' parameters, return the status of the use of comfort noise without parameter.") {
 	addExample(new DaemonCommandExample("cn enable",
 						"Status: Ok\n\n"
 						"State: enabled"));
@@ -63,9 +63,9 @@ void CNCommand::exec(Daemon *app, const string& args) {
 	}
 
 	if (status.compare("enable") == 0) {
-		linphone_core_enable_generic_confort_noise(app->getCore(), TRUE);
+		linphone_core_enable_generic_comfort_noise(app->getCore(), TRUE);
 	} else if (status.compare("disable") == 0) {
-		linphone_core_enable_generic_confort_noise(app->getCore(), FALSE);
+		linphone_core_enable_generic_comfort_noise(app->getCore(), FALSE);
 	} else {
 		app->sendResponse(Response("Incorrect parameter.", Response::Error));
 		return;

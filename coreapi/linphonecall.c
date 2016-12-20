@@ -419,7 +419,7 @@ static bctbx_list_t * create_telephone_events(LinphoneCore *lc, const bctbx_list
 
 static bctbx_list_t *create_special_payload_types(LinphoneCore *lc, const bctbx_list_t *codecs){
 	bctbx_list_t *ret=create_telephone_events(lc, codecs);
-	if (linphone_core_generic_confort_noise_enabled(lc)){
+	if (linphone_core_generic_comfort_noise_enabled(lc)){
 		PayloadType *cn=payload_type_clone(&payload_type_cn);
 		payload_type_set_number(cn, 13);
 		ret=bctbx_list_append(ret, cn);
