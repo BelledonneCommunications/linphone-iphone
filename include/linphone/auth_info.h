@@ -131,21 +131,21 @@ LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const ch
 /**
  * Sets the TLS certificate.
  * @param[in] info The #LinphoneAuthInfo object
- * @param[in] ha1 The TLS certificate.
+ * @param[in] tls_cert The TLS certificate.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_tls_cert(LinphoneAuthInfo *info, const char *tls_cert);
 
 /**
  * Sets the TLS key.
  * @param[in] info The #LinphoneAuthInfo object
- * @param[in] ha1 The TLS key.
+ * @param[in] tls_key The TLS key.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_tls_key(LinphoneAuthInfo *info, const char *tls_key);
 
 /**
  * Sets the TLS certificate path.
  * @param[in] info The #LinphoneAuthInfo object
- * @param[in] ha1 The TLS certificate path.
+ * @param[in] tls_cert_path The TLS certificate path.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_tls_cert_path(LinphoneAuthInfo *info, const char *tls_cert_path);
 

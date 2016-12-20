@@ -156,8 +156,8 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_update_pas
 /**
  * Set the phone number normalized.
  * @param[in] creator LinphoneAccountCreator object
- * @param[in] phone number The phone number to set
- * @param[in] country code Country code to associate phone number with
+ * @param[in] phone_number The phone number to set
+ * @param[in] country_code Country code to associate phone number with
  * @return LinphoneAccountCreatorOk if everything is OK, or a specific error otherwise.
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_phone_number(LinphoneAccountCreator *creator, const char *phone_number, const char *country_code);
@@ -187,7 +187,7 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_password(const Linphon
 /**
  * Set the ha1.
  * @param[in] creator LinphoneAccountCreator object
- * @param[in] password The ha1 to set
+ * @param[in] ha1 The ha1 to set
  * @return LinphoneAccountCreatorOk if everything is OK, or a specific error otherwise.
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_ha1(LinphoneAccountCreator *creator, const char *ha1);
@@ -209,7 +209,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_activa
 /**
  * Set the language to use in email or SMS if supported.
  * @param[in] creator LinphoneAccountCreator object
- * @param[in] activation_code The language code to use
+ * @param[in] lang The language to use
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_language(LinphoneAccountCreator *creator, const char *lang);
 
@@ -397,7 +397,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_g
 /**
  * Assign a user pointer to a LinphoneAccountCreatorCbs object.
  * @param[in] cbs LinphoneAccountCreatorCbs object.
- * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorCbs object.
+ * @param[in] cb The update hash callback to be used.
 **/
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_update_hash(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 

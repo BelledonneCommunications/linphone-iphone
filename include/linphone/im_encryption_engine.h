@@ -86,6 +86,7 @@ typedef int (*LinphoneImEncryptionEngineCbsDownloadingFileCb)(LinphoneImEncrypti
  * Callback to encrypt uploading file
  * @param engine LinphoneImEncryptionEngine object
  * @param msg LinphoneChatMessage object
+ * @param offset The current offset of the upload
  * @param buffer Encrypted data buffer
  * @param size Size of the plain data buffer and the size of the encrypted data buffer once encryption is done
  * @param encrypted_buffer Buffer in which to write the encrypted data
@@ -134,7 +135,7 @@ LINPHONE_PUBLIC LinphoneImEncryptionEngine * linphone_im_encryption_engine_ref(L
 
 /**
  * Release reference to the LinphoneImEncryptionEngine.
- * @param[in] cbs LinphoneImEncryptionEngine object.
+ * @param[in] imee LinphoneImEncryptionEngine object.
 **/
 LINPHONE_PUBLIC void linphone_im_encryption_engine_unref(LinphoneImEncryptionEngine *imee);
 
