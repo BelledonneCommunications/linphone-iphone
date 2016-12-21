@@ -348,7 +348,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		|| linphone_core_get_media_encryption(callee_mgr->lc) != LinphoneMediaEncryptionNone) {
 		/*wait for encryption to be on, in case of zrtp or dtls, it can take a few seconds*/
 		if (	(linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionZRTP)
-				|| (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP) /* is callee is ZRTP, wait for it */
+				|| (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP) /* if callee is ZRTP, wait for it */
 				|| (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS))
 			wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_caller.number_of_LinphoneCallEncryptedOn+1);
 		if ((linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP)
@@ -2196,7 +2196,8 @@ end:
 	ms_free(hellowav);
 }
 
-void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel, const char *marie_rc, const char *pauline_rc) {
+
+static void _call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel, const char *marie_rc, const char *pauline_rc, bool_t plays_nothing) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(marie_rc);
 	LinphoneCoreManager* pauline = linphone_core_manager_new(pauline_rc);
 	bool_t call_ok;
@@ -2209,6 +2210,20 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 	}
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
+	
+	if (plays_nothing){
+		/*This case was for trying to replicate an issue because 
+		 * zrtp_iterate() was only called when packets are received, which
+		 * creates a big problem because no retransmission of HELLO packet will occur
+		 * if the remote sends nothing.
+		 * However it is not possible to forcibly loose the hello packet, even with network simulator.
+		 * If retransmissions fail, this test will fail from time to time*/
+		linphone_core_use_files(marie->lc, TRUE);
+		linphone_core_set_play_file(marie->lc, NULL);
+		linphone_core_set_play_file(pauline->lc, NULL);
+		linphone_core_set_media_encryption_mandatory(pauline->lc, TRUE);
+		linphone_core_set_media_encryption_mandatory(marie->lc, TRUE);
+	}
 
 	if (enable_relay) {
 		linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
@@ -2257,9 +2272,13 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 			|| ((linphone_core_get_media_encryption(marie->lc) == LinphoneMediaEncryptionZRTP) && (linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionNone))) {
 			/*wait for SAS*/
 			int i;
+			LinphoneCall *pauline_call;
+			LinphoneCall *marie_call;
+			const char *pauline_token = NULL;
+			const char *marie_token = NULL;
 			for (i=0;i<100;i++) {
-				LinphoneCall *pauline_call = linphone_core_get_current_call(pauline->lc);
-				LinphoneCall *marie_call = linphone_core_get_current_call(marie->lc);
+				pauline_call = linphone_core_get_current_call(pauline->lc);
+				marie_call = linphone_core_get_current_call(marie->lc);
 
 				if (!pauline_call || !marie_call){
 					/*if one of the two calls was disapeering, don't crash, but report it*/
@@ -2267,20 +2286,19 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 					BC_ASSERT_PTR_NOT_NULL(marie_call);
 					break;
 				}
-
-				if (linphone_call_get_authentication_token(pauline_call)
-					&&
-					linphone_call_get_authentication_token(marie_call)) {
-					/*check SAS*/
-					BC_ASSERT_STRING_EQUAL(linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
-								,linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc)));
-					liblinphone_tester_check_rtcp(pauline,marie);
-					break;
-				}
+				pauline_token = linphone_call_get_authentication_token(pauline_call);
+				marie_token = linphone_call_get_authentication_token(marie_call);
+				if (pauline_token && marie_token) break;
 				linphone_core_iterate(marie->lc);
 				linphone_core_iterate(pauline->lc);
 				ms_usleep(20000);
 			}
+			BC_ASSERT_PTR_NOT_NULL(pauline_token);
+			BC_ASSERT_PTR_NOT_NULL(marie_token);
+			if (marie_token && pauline_token){
+				BC_ASSERT_STRING_EQUAL(pauline_token, marie_token);
+			}
+			if (!plays_nothing) liblinphone_tester_check_rtcp(pauline,marie);
 		}
 
 		if (policy == LinphonePolicyUseIce){
@@ -2311,6 +2329,11 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel, const char *marie_rc, const char *pauline_rc){
+	_call_base_with_configfile(mode, enable_video, enable_relay, policy, enable_tunnel, marie_rc, pauline_rc, FALSE);
+}
+
+
 void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel) {
 	call_base_with_configfile(mode, enable_video, enable_relay, policy, enable_tunnel, "marie_rc", "pauline_tcp_rc");
 }
@@ -2322,6 +2345,11 @@ static void srtp_ice_call(void) {
 static void zrtp_ice_call(void) {
 	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyUseIce,FALSE);
 }
+
+static void zrtp_silent_call(void) {
+	_call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,TRUE,LinphonePolicyNoFirewall,FALSE,  "marie_rc", "pauline_tcp_rc", TRUE);
+}
+
 static void zrtp_ice_call_with_relay(void) {
 	call_base(LinphoneMediaEncryptionZRTP,FALSE,TRUE,LinphonePolicyUseIce,FALSE);
 }
@@ -5336,6 +5364,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call paused resumed from callee", call_paused_resumed_from_callee),
 	TEST_NO_TAG("SRTP call", srtp_call),
 	TEST_NO_TAG("ZRTP call", zrtp_call),
+	TEST_NO_TAG("ZRTP silent call", zrtp_silent_call),
 	TEST_NO_TAG("ZRTP SAS call", zrtp_sas_call),
 	TEST_NO_TAG("ZRTP Cipher call", zrtp_cipher_call),
 	TEST_NO_TAG("DTLS SRTP call", dtls_srtp_call),
