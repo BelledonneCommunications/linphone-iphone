@@ -396,8 +396,10 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	int restarted_op_count=0;
 	bool_t updating=FALSE;
 
-	if (info->ha1==NULL && info->passwd==NULL){
-		ms_warning("linphone_core_add_auth_info(): info supplied with empty password or ha1.");
+	if (info->tls_key == NULL && info->tls_key_path == NULL
+		&& info->ha1==NULL && info->passwd==NULL){
+		ms_error("linphone_core_add_auth_info(): info supplied with empty password, ha1 or TLS client/key");
+		return;
 	}
 	/* find if we are attempting to modify an existing auth info */
 	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
