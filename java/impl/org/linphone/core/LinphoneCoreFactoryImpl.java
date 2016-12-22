@@ -111,10 +111,10 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 		OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper(context);
 		if (downloadHelper.isCodecFound()) {
-			org.linphone.mediastream.Log.i("LinphoneCoreFactoryImpl"," Loading OpenH264 plugin:" + downloadHelper.getFullPathLib());
+			Log.i("LinphoneCoreFactoryImpl"," Loading OpenH264 plugin:" + downloadHelper.getFullPathLib());
 			System.load(downloadHelper.getFullPathLib());
 		} else {
-			org.linphone.mediastream.Log.i("LinphoneCoreFactoryImpl"," Cannot load OpenH264 plugin");
+			Log.i("LinphoneCoreFactoryImpl"," Cannot load OpenH264 plugin");
 		}
 
 		return true;
@@ -126,13 +126,14 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			throws LinphoneCoreException {
 		try {
 			fcontext = (Context)context;
-			boolean openh264Enabled = loadOpenH264(fcontext);
+			boolean openh264Enabled = false;
+			if (context != null) openh264Enabled = loadOpenH264(fcontext);
 			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
 			LinphoneCore lc = new LinphoneCoreImpl(listener, user, factory, userdata);
 			lc.enableOpenH264(openh264Enabled);
-			if(context!=null) lc.setContext(context);
+			if (context != null) lc.setContext(context);
 			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
@@ -143,11 +144,12 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException {
 		try {
 			fcontext = (Context)context;
-			boolean openh264Enabled = loadOpenH264(fcontext);
+			boolean openh264Enabled = false;
+			if (context != null) openh264Enabled = loadOpenH264(fcontext);
 			MediastreamerAndroidContext.setContext(context);
 			LinphoneCore lc = new LinphoneCoreImpl(listener);
 			lc.enableOpenH264(openh264Enabled);
-			if(context!=null) lc.setContext(context);
+			if (context != null) lc.setContext(context);
 			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
