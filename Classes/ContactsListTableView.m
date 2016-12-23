@@ -36,7 +36,9 @@
 }
 
 - (void)onAddressBookUpdate:(NSNotification *)k {
-	[self loadData];
+	if (!_ongoing && (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription)) {
+		[self loadData];
+	}
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -54,6 +56,7 @@
 	if (self) {
 		[self initContactsTableViewController];
 	}
+	_ongoing = FALSE;
 	return self;
 }
 
@@ -119,6 +122,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 }
 
 - (void)loadData {
+	_ongoing = TRUE;
 	LOGI(@"Load contact list");
 	@synchronized(addressBookMap) {
 		//Set all contacts from ContactCell to nil
@@ -192,6 +196,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		  }
 		});
 	}
+	_ongoing = FALSE;
 }
 
 - (void)loadSearchedData {

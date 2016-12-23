@@ -28,6 +28,7 @@
   @private
 	OrderedDictionary *addressBookMap;
 }
+@property(nonatomic) BOOL ongoing;
 - (void)loadData;
 - (void)loadSearchedData;
 - (void)removeAllContacts;
