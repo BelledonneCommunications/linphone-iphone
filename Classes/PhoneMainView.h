@@ -78,6 +78,7 @@
 @property(nonatomic, strong) IBOutlet UIView *statusBarBG;
 @property(nonatomic, strong) IBOutlet UICompositeView *mainViewController;
 
+@property(nonatomic, strong) NSString *currentName;
 @property(nonatomic, strong) NSString *name;
 @property(weak, readonly) UICompositeViewDescription *currentView;
 @property LinphoneChatRoom* currentRoom;

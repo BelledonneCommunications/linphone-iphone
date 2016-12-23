@@ -186,7 +186,7 @@
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
 	}
-
+	PhoneMainView.instance.currentName = _nameLabel.text;
 	// Update presence for contact
 	for (NSInteger j = 0; j < [self.tableController.tableView numberOfSections]; ++j) {
 		for (NSInteger i = 0; i < [self.tableController.tableView numberOfRowsInSection:j]; ++i) {
@@ -222,6 +222,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
 	[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
 	[super viewWillDisappear:animated];
+	PhoneMainView.instance.currentName = NULL;
 	if (self.tmpContact) {
 		_contact.firstName = _tmpContact.firstName.copy;
 		_contact.lastName = _tmpContact.lastName.copy;

@@ -20,6 +20,7 @@
 #import "UIContactCell.h"
 #import "ContactsListTableView.h"
 #import "FastAddressBook.h"
+#import "PhoneMainView.h"
 #import "UILabel+Boldify.h"
 #import "Utils.h"
 
@@ -37,7 +38,7 @@
 		UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:0]);
 		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 		[self addSubview:sub];
-
+		_contact = NULL;
 		// Sections are wider on iPad and overlap linphone image - let's move it a bit
 		if (IPAD) {
 			CGRect frame = _linphoneImage.frame;
@@ -63,12 +64,12 @@
 - (void)onPresenceChanged:(NSNotification *)k {
 	LinphoneFriend *f = [[k.userInfo valueForKey:@"friend"] pointerValue];
 	// only consider event if it's about us
-	if (_contact) {
+	if (_contact && (_nameLabel.text == PhoneMainView.instance.currentName || !PhoneMainView.instance.currentName)) {
 		if (!_contact.friend || f != _contact.friend) {
 			return;
 		}
+		[self setContact:_contact];
 	}
-	[self setContact:_contact];
 }
 
 #pragma mark - Property Functions
