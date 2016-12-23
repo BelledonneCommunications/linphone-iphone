@@ -193,6 +193,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAddContactClick:(id)event {
 	ContactDetailsView *view = VIEW(ContactDetailsView);
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	view.isAdding = TRUE;
 	if ([ContactSelection getAddAddress] == nil) {
 		[view newContact];
 	} else {

@@ -401,7 +401,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	
 	self.tmpContact = NULL;
-	_isAdding = FALSE;
+	if (_isAdding) {
+		[PhoneMainView.instance popToView:ContactsListView.compositeViewDescription];
+		_isAdding = FALSE;
+	}
 }
 
 - (IBAction)onBackClick:(id)event {
