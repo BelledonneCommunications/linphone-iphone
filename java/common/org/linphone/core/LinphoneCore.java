@@ -2492,6 +2492,18 @@ public interface LinphoneCore {
 	public void setTlsKeyPath(String path);
 
 	/**
+	 * Specify whether the tls server certificate must be verified when connecting to a SIP/TLS server.
+	 * @param enable A boolean value telling whether the tls server certificate must be verified
+	 */
+	public void setVerifyServerCertificates(boolean enable);
+
+	/**
+	 * Specify whether the tls server certificate common name must be verified when connecting to a SIP/TLS server.
+	 * @param enable A boolean value telling whether the tls server certificate common name must be verified
+	 */
+	public void setVerifyServerCN(boolean enable);
+
+	/**
 	 * Enable or not openh264
 	 * @param enable
      */

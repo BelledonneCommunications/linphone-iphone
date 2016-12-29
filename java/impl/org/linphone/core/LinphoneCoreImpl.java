@@ -1785,6 +1785,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setTlsKeyPath(nativePtr, path);
 	}
 
+	private native void setVerifyServerCertificates(long ptr, boolean enable);
+	@Override
+	public void setVerifyServerCertificates(boolean enable) {
+		setVerifyServerCertificates(nativePtr, enable);
+	}
+
+	private native void setVerifyServerCN(long ptr, boolean enable);
+	@Override
+	public void setVerifyServerCN(boolean enable) {
+		setVerifyServerCN(nativePtr, enable);
+	}
+
 	public void enableOpenH264(boolean enable) {
 		openh264Enabled = enable;
 	}

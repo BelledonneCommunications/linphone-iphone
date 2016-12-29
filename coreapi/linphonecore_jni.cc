@@ -8556,6 +8556,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setTlsKeyPath(JNIEnv *en
 	ReleaseStringUTFChars(env, jpath, path);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVerifyServerCertificates(JNIEnv *env, jobject, jlong lc, jboolean enabled) {
+	linphone_core_verify_server_certificates((LinphoneCore*)lc, enabled);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVerifyServerCN(JNIEnv *env, jobject, jlong lc, jboolean enabled) {
+	linphone_core_verify_server_cn((LinphoneCore*)lc, enabled);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getTlsCertificate(JNIEnv *env , jobject, jlong lc) {
 	const char* cert = linphone_core_get_tls_cert((LinphoneCore*)lc);
 	if (cert) {
