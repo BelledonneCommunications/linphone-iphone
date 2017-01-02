@@ -1560,7 +1560,7 @@ static void linphone_core_register_payload_type(LinphoneCore *lc, const PayloadT
 	payload_type_set_number(pt,
 		(number=rtp_profile_find_payload_number(&av_profile, pt->mime_type, pt->clock_rate, pt->channels))
 	);
-	ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to the list of possible codecs.", pt->mime_type, pt->clock_rate,
+	ms_message("Codec %s/%i fmtp=[%s] number=%i, default enablement: %i) added to the list of possible codecs.", pt->mime_type, pt->clock_rate,
 			pt->recv_fmtp ? pt->recv_fmtp : "", number, (int)payload_type_enabled(pt));
 	*codec_list=bctbx_list_append(*codec_list,pt);
 }
