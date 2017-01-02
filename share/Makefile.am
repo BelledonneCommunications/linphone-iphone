@@ -58,5 +58,6 @@ EXTRA_DIST =					$(LINPHONE_SOUNDS) \
 						archived-rootca.pem \
 						$(appdata_DATA)
 
-CLEANFILES=rootca.pem
+CLEANFILES=rootca.pem certdata.txt fresh-rootca.pem
+
 
