@@ -255,6 +255,7 @@ struct _LinphoneChatMessage {
 	belle_http_request_t *http_request; /**< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer */
 	belle_http_request_listener_t *http_listener; /* our listener, only owned by us*/
 	char *file_transfer_filepath;
+	unsigned long bg_task_id;
 
 #if defined(__clang__) || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push

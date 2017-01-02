@@ -158,6 +158,26 @@ static void on_send_end(belle_sip_user_body_handler_t *bh, void *data) {
 	}
 }
 
+static void file_upload_end_background_task(LinphoneChatMessage *obj){
+	if (obj->bg_task_id){
+		ms_message("channel [%p]: ending file upload background task with id=[%lx].",obj,obj->bg_task_id);
+		sal_end_background_task(obj->bg_task_id);
+		obj->bg_task_id=0;
+	}
+}
+
+static void file_upload_background_task_ended(LinphoneChatMessage *obj){
+	ms_warning("channel [%p]: file upload background task has to be ended now, but work isn't finished.",obj);
+	file_upload_end_background_task(obj);
+}
+
+static void file_upload_begin_background_task(LinphoneChatMessage *obj){
+	if (obj->bg_task_id==0){
+		obj->bg_task_id=sal_begin_background_task("file transfer upload",(void (*)(void*))file_upload_background_task_ended, obj);
+		if (obj->bg_task_id) ms_message("channel [%p]: starting file upload background task with id=[%lx].",obj,obj->bg_task_id);
+	}
+}
+
 static void linphone_chat_message_process_response_from_post_file(void *data,
 																  const belle_http_response_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
@@ -235,6 +255,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 
 			linphone_chat_message_ref(msg);
 			_release_http_request(msg);
+			file_upload_begin_background_task(msg);
 			linphone_chat_room_upload_file(msg);
 			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(msg->http_request), BELLE_SIP_BODY_HANDLER(bh));
 			linphone_chat_message_unref(msg);
@@ -311,17 +332,20 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 				_release_http_request(msg);
 				_linphone_chat_room_send_message(msg->chat_room, msg);
+				file_upload_end_background_task(msg);
 				linphone_chat_message_unref(msg);
 			} else {
 				ms_warning("Received empty response from server, file transfer failed");
 				linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 				_release_http_request(msg);
+				file_upload_end_background_task(msg);
 				linphone_chat_message_unref(msg);
 			}
 		} else {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
 			linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 			_release_http_request(msg);
+			file_upload_end_background_task(msg);
 			linphone_chat_message_unref(msg);
 		}
 	}
