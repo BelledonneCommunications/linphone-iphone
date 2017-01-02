@@ -607,6 +607,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		content.title = NSLocalizedString(@"Video request", nil);
 		content.body = title;
 		content.categoryIdentifier = @"video_request";
+		content.userInfo = @{
+			@"CallId" : [NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))]
+		};
 
 		UNNotificationRequest *req =
 			[UNNotificationRequest requestWithIdentifier:@"video_request" content:content trigger:NULL];

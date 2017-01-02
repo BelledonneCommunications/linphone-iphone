@@ -327,6 +327,10 @@
 					content.title = NSLocalizedString(@"ZRTP verification", nil);
 					content.body = message;
 					content.categoryIdentifier = @"zrtp_request";
+					content.userInfo = @{
+						@"CallId" : [NSString
+							stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))]
+					};
 
 					UNNotificationRequest *req =
 						[UNNotificationRequest requestWithIdentifier:@"zrtp_request" content:content trigger:NULL];
