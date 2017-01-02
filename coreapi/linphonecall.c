@@ -3116,6 +3116,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 	int crypto_idx;
 	MSMediaStreamIO io = MS_MEDIA_STREAM_IO_INITIALIZER;
 	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_io", FALSE);
+	bool_t use_rtp_io_enable_local_output = lp_config_get_int(lc->config, "sound", "rtp_io_enable_local_output", FALSE);
 
 	stream = sal_media_description_find_best_stream(call->resultdesc, SalAudio);
 	if (stream && stream->dir!=SalStreamInactive && stream->rtp_port!=0){
@@ -3164,7 +3165,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				}
 			}
 			/*if playfile are supplied don't use soundcards*/
-			if (lc->use_files || use_rtp_io) {
+			if (lc->use_files || (use_rtp_io && !use_rtp_io_enable_local_output)) {	
 				captcard=NULL;
 				playcard=NULL;
 			}
@@ -3208,12 +3209,27 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				rtp_session_set_multicast_ttl(call->audiostream->ms.sessions.rtp_session,stream->ttl);
 
 			if (use_rtp_io) {
-				io.input.type = io.output.type = MSResourceRtp;
-				io.input.session = io.output.session = create_audio_rtp_io_session(call);
+				if(use_rtp_io_enable_local_output){
+					io.input.type = MSResourceRtp;
+					io.input.session = create_audio_rtp_io_session(call);
+					
+					if (playcard){
+						io.output.type = MSResourceSoundcard;
+						io.output.soundcard = playcard;
+					}else{
+						io.output.type = MSResourceFile;
+						io.output.file = recfile;
+					}
+				}
+				else {
+					io.input.type = io.output.type = MSResourceRtp;
+					io.input.session = io.output.session = create_audio_rtp_io_session(call);
+				}
+			
 				if (io.input.session == NULL) {
 					ok = FALSE;
 				}
-			}else {
+			}else  {
 				if (playcard){
 					io.output.type = MSResourceSoundcard;
 					io.output.soundcard = playcard;

@@ -1163,6 +1163,8 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate, int 
 static bool_t linphone_core_codec_supported(LinphoneCore *lc, SalStreamType type, const char *mime){
 	if (type == SalVideo && lp_config_get_int(lc->config, "video", "rtp_io", FALSE)){
 		return TRUE; /*in rtp io mode, we don't transcode video, thus we can support a format for which we have no encoder nor decoder.*/
+	} else if (type == SalAudio && lp_config_get_int(lc->config, "sound", "rtp_io", FALSE)){
+		return TRUE; /*in rtp io mode, we don't transcode video, thus we can support a format for which we have no encoder nor decoder.*/
 	} else if (type == SalText) {
 		return TRUE;
 	}
@@ -6112,6 +6114,7 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	LinphoneCall* call = NULL;
 	bool_t dont_need_sound = TRUE;
 	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_io", FALSE);
+	bool_t use_rtp_io_enable_local_output = lp_config_get_int(lc->config, "sound", "rtp_io_enable_local_output", FALSE);
 
 	/* check if the remaining calls are paused */
 	while( the_calls ){
@@ -6123,7 +6126,7 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 		the_calls = the_calls->next;
 	}
 	/* if no more calls or all calls are paused, we can free the soundcard */
-	if ( (lc->calls==NULL || dont_need_sound) && !lc->use_files && !use_rtp_io){
+	if ( (lc->calls==NULL || dont_need_sound) && !lc->use_files && (!use_rtp_io || (use_rtp_io && use_rtp_io_enable_local_output))){
 		ms_message("Notifying soundcard that we don't need it anymore for calls.");
 		notify_soundcard_usage(lc,FALSE);
 	}

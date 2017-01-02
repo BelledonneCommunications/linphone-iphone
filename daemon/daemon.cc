@@ -958,6 +958,9 @@ int main(int argc, char *argv[]) {
 		} else if (strcmp(argv[i], "--enable-lsd") == 0) {
 			lsd_enabled = true;
 		}
+		else{
+			fprintf(stderr, "Unrecognized option : %s", argv[i]);
+		}
 	}
 	Daemon app(config_path, factory_config_path, log_file, pipe_name, display_video, capture_video);
 	app.enableStatsEvents(stats_enabled);
