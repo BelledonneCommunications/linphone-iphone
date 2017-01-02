@@ -52,10 +52,6 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && (linphone_core_get_calls_nb(LC) == 0)) {
-        linphone_core_set_network_reachable(LC, FALSE);
-        LinphoneManager.instance.connectivity = none;
-    }
 	[LinphoneManager.instance enterBackgroundMode];
 }
 
