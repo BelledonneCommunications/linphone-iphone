@@ -28,6 +28,7 @@
 #include <time.h>
 
 #define CARDDAV_SERVER "http://dav.linphone.org/card.php/addressbooks/tester/default"
+#define CARDDAV_SYNC_TIMEOUT 15000
 
 static void linphone_vcard_import_export_friends_test(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
@@ -427,9 +428,9 @@ static void carddav_sync(void) {
 	linphone_carddav_set_updated_contact_callback(c, carddav_updated_contact);
 	linphone_carddav_synchronize(c);
 
-	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
@@ -464,11 +465,11 @@ static void carddav_sync_2(void) {
 
 	linphone_carddav_synchronize(c);
 
-	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
@@ -506,9 +507,9 @@ static void carddav_sync_3(void) {
 
 	linphone_carddav_synchronize(c);
 
-	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->updated_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
@@ -541,11 +542,11 @@ static void carddav_sync_4(void) {
 	BC_ASSERT_PTR_NULL(linphone_vcard_get_uid(lvc));
 	linphone_carddav_put_vcard(c, lf);
 	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	linphone_carddav_delete_vcard(c, lf);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 
 	linphone_friend_unref(lf);
@@ -605,13 +606,13 @@ static void carddav_integration(void) {
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->dirty_friends_to_update), 0, unsigned int, "%u");
 	BC_ASSERT_EQUAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->dirty_friends_to_update), 1, unsigned int, "%u");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->dirty_friends_to_update), 0, unsigned int, "%u");
 	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
 	linphone_friend_list_remove_friend(lfl, lf);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->friends), 0, unsigned int, "%u");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 	linphone_friend_unref(lf);
 	lf = NULL;
@@ -629,14 +630,14 @@ static void carddav_integration(void) {
 
 	BC_ASSERT_EQUAL(lfl->revision, 0, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 0, 5000);
+	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 0, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->new_contact_count, 0, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->removed_contact_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->updated_contact_count, 1, int, "%i");
 	BC_ASSERT_NOT_EQUAL(lfl->revision, 0, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->friends), 1, unsigned int, "%u");
@@ -645,6 +646,7 @@ static void carddav_integration(void) {
 	BC_ASSERT_EQUAL(lf->storage_id, lf2->storage_id, unsigned int, "%u");
 	linphone_friend_unref(lf2);
 	addr = linphone_friend_get_address(lf);
+	BC_ASSERT_PTR_NOT_NULL(addr);
 	address = linphone_address_as_string_uri_only(addr);
 	BC_ASSERT_STRING_EQUAL(address, "sip:sylvain@sip.linphone.org");
 	ms_free(address);
@@ -684,7 +686,7 @@ static void carddav_clean(void) {  // This is to ensure the content of the test 
 	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
 
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	stats->sync_done_count = 0;
 
@@ -693,7 +695,7 @@ static void carddav_clean(void) {  // This is to ensure the content of the test 
 	while (friends_iterator) {
 		LinphoneFriend *lf = (LinphoneFriend *)friends_iterator->data;
 		linphone_friend_list_remove_friend(lfl, lf);
-		wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+		wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 		BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 		stats->sync_done_count = 0;
 		stats->removed_contact_count = 0;
@@ -705,7 +707,7 @@ static void carddav_clean(void) {  // This is to ensure the content of the test 
 	linphone_vcard_set_url(lvc, "http://dav.linphone.org/card.php/addressbooks/tester/default/me.vcf");
 	lf = linphone_friend_new_from_vcard(lvc);
 	linphone_friend_list_add_friend(lfl, lf);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 
 	ms_free(stats);
@@ -729,13 +731,13 @@ static void carddav_multiple_sync(void) {
 	linphone_friend_list_set_uri(lfl, CARDDAV_SERVER);
 
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 5000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 0, int, "%i");
 
@@ -768,7 +770,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	linphone_friend_list_synchronize_friends_from_server(lfl);
 	linphone_friend_list_add_friend(lfl, lf2);
 	linphone_friend_unref(lf2);
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, 15000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 
 	stats->sync_done_count = 0;
@@ -778,7 +780,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 		LinphoneFriend *lf = (LinphoneFriend *)friends_iterator->data;
 		if (lf && strcmp(linphone_friend_get_name(lf), "Sylvain Berfini") != 0) {
 			linphone_friend_list_remove_friend(lfl, lf);
-			wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 5000);
+			wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 			BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 			stats->sync_done_count = 0;
 		}
@@ -801,14 +803,14 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("Friends storage migration from rc to db", friends_migration),
 	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 #endif
-	TEST_NO_TAG("CardDAV clean", carddav_clean), // This is to ensure the content of the test addressbook is in the correct state for the following tests
-	TEST_NO_TAG("CardDAV synchronization", carddav_sync),
-	TEST_NO_TAG("CardDAV synchronization 2", carddav_sync_2),
-	TEST_NO_TAG("CardDAV synchronization 3", carddav_sync_3),
-	TEST_NO_TAG("CardDAV synchronization 4", carddav_sync_4),
-	TEST_NO_TAG("CardDAV integration", carddav_integration),
-	TEST_NO_TAG("CardDAV multiple synchronizations", carddav_multiple_sync),
-	TEST_NO_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync)
+	TEST_ONE_TAG("CardDAV clean", carddav_clean, "CardDAV"), // This is to ensure the content of the test addressbook is in the correct state for the following tests
+	TEST_ONE_TAG("CardDAV synchronization", carddav_sync, "CardDAV"),
+	TEST_ONE_TAG("CardDAV synchronization 2", carddav_sync_2, "CardDAV"),
+	TEST_ONE_TAG("CardDAV synchronization 3", carddav_sync_3, "CardDAV"),
+	TEST_ONE_TAG("CardDAV synchronization 4", carddav_sync_4, "CardDAV"),
+	TEST_ONE_TAG("CardDAV integration", carddav_integration, "CardDAV"),
+	TEST_ONE_TAG("CardDAV multiple synchronizations", carddav_multiple_sync, "CardDAV"),
+	TEST_ONE_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync, "CardDAV")
 };
 
 test_suite_t vcard_test_suite = {
