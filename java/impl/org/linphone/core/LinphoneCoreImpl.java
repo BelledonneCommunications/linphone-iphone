@@ -45,7 +45,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	protected long nativePtr = 0;
 	private Context mContext = null;
 	private AudioManager mAudioManager = null;
-	private boolean openh264Enabled = false;
+	private boolean openh264DownloadEnabled = false;
 	private boolean mSpeakerEnabled = false;
 	private native long newLinphoneCore(LinphoneCoreListener listener,String userConfig,String factoryConfig,Object  userdata);
 	private native void iterate(long nativePtr);
@@ -1797,12 +1797,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setVerifyServerCN(nativePtr, enable);
 	}
 
-	public void enableOpenH264(boolean enable) {
-		openh264Enabled = enable;
+	public void enableDownloadOpenH264(boolean enable) {
+		openh264DownloadEnabled = enable;
 	}
 
-	public boolean openH264Enabled() {
-		return openh264Enabled;
+	public boolean downloadOpenH264Enabled() {
+		return openh264DownloadEnabled;
 	}
 
 	public LinphoneFriend createFriend() {

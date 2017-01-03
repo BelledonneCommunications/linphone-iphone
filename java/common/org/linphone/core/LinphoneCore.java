@@ -2504,16 +2504,16 @@ public interface LinphoneCore {
 	public void setVerifyServerCN(boolean enable);
 
 	/**
-	 * Enable or not openh264
+	 * Enable or not openh264 download
 	 * @param enable
      */
-	public void enableOpenH264(boolean enable);
+	public void enableDownloadOpenH264(boolean enable);
 
 	/**
-	 * Return if we enable openh264
+	 * Return if we enable openh264 download
 	 * @return
      */
-	public boolean openH264Enabled();
+	public boolean downloadOpenH264Enabled();
 
 	/**
 	 * @return a new LinphoneFriend link with this LinphoneCore
