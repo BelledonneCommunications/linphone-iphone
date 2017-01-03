@@ -703,7 +703,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	audio_cl = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
 	video_cl = ice_session_check_list(call->ice_session, call->main_video_stream_index);
 	text_cl = ice_session_check_list(call->ice_session, call->main_text_stream_index);
-	if (audio_cl == NULL) return -1;
+	if ((audio_cl == NULL) && (video_cl == NULL) && (text_cl == NULL)) return -1;
 
 	if ((nat_policy != NULL) && (server != NULL) && (server[0] != '\0')) {
 		ai=linphone_nat_policy_get_stun_server_addrinfo(nat_policy);
@@ -784,7 +784,7 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 	audio_check_list = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
 	video_check_list = ice_session_check_list(call->ice_session, call->main_video_stream_index);
 	text_check_list = ice_session_check_list(call->ice_session, call->main_text_stream_index);
-	if (audio_check_list == NULL) return;
+	if ((audio_check_list == NULL) && (video_check_list == NULL) && (text_check_list == NULL)) return;
 
 	session_state = ice_session_state(call->ice_session);
 	if ((session_state == IS_Completed) || ((session_state == IS_Failed) && (ice_session_has_completed_check_list(call->ice_session) == TRUE))) {
@@ -902,10 +902,20 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 	int nb_candidates;
 	int i;
 	int j;
-	bool_t result;
+	bool_t result = FALSE;
 
 	if (session_state == IS_Completed) {
-		result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_candidate, NULL);
+		IceCheckList *first_cl = NULL;
+		for (i = 0; i < desc->nb_streams; i++) {
+			IceCheckList *cl = ice_session_check_list(session, i);
+			if (cl != NULL) {
+				first_cl = cl;
+				break;
+			}
+		}
+		if (first_cl != NULL) {
+			result = ice_check_list_selected_valid_local_candidate(first_cl, &rtp_candidate, NULL);
+		}
 		if (result == TRUE) {
 			strncpy(desc->addr, rtp_candidate->taddr.ip, sizeof(desc->addr));
 		} else {

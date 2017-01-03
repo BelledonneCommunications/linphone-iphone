@@ -908,7 +908,7 @@ static void call_with_ice_video_to_novideo(void) {
  * It doesn't use linphone_core_accept_call_with_params() to accept video despite of default policies.
  */
 static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVideoPolicy callee_policy,
-	bool_t video_added_by_caller, bool_t video_added_by_callee, bool_t video_removed_by_caller, bool_t video_removed_by_callee) {
+	bool_t video_added_by_caller, bool_t video_added_by_callee, bool_t video_removed_by_caller, bool_t video_removed_by_callee, bool_t video_only) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	unsigned int nb_media_starts = 1;
@@ -928,7 +928,11 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	linphone_core_set_video_policy(marie->lc, &callee_policy);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
-	
+	if (video_only) {
+		linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMU", 8000, 1), FALSE); /* Disable PCMU */
+		linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
+	}
+
 	linphone_core_manager_wait_for_stun_resolution(marie);
 	linphone_core_manager_wait_for_stun_resolution(pauline);
 
@@ -1015,7 +1019,7 @@ static void call_with_ice_video_added(void) {
 	 * Scenario: video is not active at the beginning of the call, caller requests it but callee declines it
 	 */
 	LinphoneVideoPolicy vpol = { FALSE, FALSE };
-	_call_with_ice_video(vpol, vpol, TRUE, FALSE, FALSE, FALSE);
+	_call_with_ice_video(vpol, vpol, TRUE, FALSE, FALSE, FALSE, FALSE);
 }
 
 static void call_with_ice_video_added_2(void) {
@@ -1023,7 +1027,7 @@ static void call_with_ice_video_added_2(void) {
 	/*
 	 * Scenario: video is not active at the beginning of the call, callee requests it but caller declines it
 	 */
-	_call_with_ice_video(vpol, vpol, FALSE, TRUE, FALSE, FALSE);
+	_call_with_ice_video(vpol, vpol, FALSE, TRUE, FALSE, FALSE, FALSE);
 }
 
 static void call_with_ice_video_added_3(void) {
@@ -1033,7 +1037,7 @@ static void call_with_ice_video_added_3(void) {
 	 * Scenario: video is not active at the beginning of the call, caller requests it and callee accepts.
 	 * Finally caller removes it.
 	 */
-	_call_with_ice_video(caller_policy, callee_policy, TRUE, FALSE, TRUE, FALSE);
+	_call_with_ice_video(caller_policy, callee_policy, TRUE, FALSE, TRUE, FALSE, FALSE);
 }
 
 static void call_with_ice_video_added_4(void) {
@@ -1043,7 +1047,7 @@ static void call_with_ice_video_added_4(void) {
 	 * Scenario: video is not active at the beginning of the call, callee requests it and caller accepts.
 	 * Finally caller removes it.
 	 */
-	_call_with_ice_video(caller_policy, callee_policy, FALSE, TRUE, TRUE, FALSE);
+	_call_with_ice_video(caller_policy, callee_policy, FALSE, TRUE, TRUE, FALSE, FALSE);
 }
 
 static void call_with_ice_video_added_5(void) {
@@ -1053,7 +1057,7 @@ static void call_with_ice_video_added_5(void) {
 	 * Scenario: video is not active at the beginning of the call, callee requests it and caller accepts.
 	 * Finally callee removes it.
 	 */
-	_call_with_ice_video(caller_policy, callee_policy, FALSE, TRUE, FALSE, TRUE);
+	_call_with_ice_video(caller_policy, callee_policy, FALSE, TRUE, FALSE, TRUE, FALSE);
 }
 
 static void call_with_ice_video_added_6(void) {
@@ -1062,7 +1066,7 @@ static void call_with_ice_video_added_6(void) {
 	/*
 	 * Scenario: video is active at the beginning of the call, caller removes it.
 	 */
-	_call_with_ice_video(caller_policy, callee_policy, FALSE, FALSE, TRUE, FALSE);
+	_call_with_ice_video(caller_policy, callee_policy, FALSE, FALSE, TRUE, FALSE, FALSE);
 }
 
 static void call_with_ice_video_added_7(void) {
@@ -1071,7 +1075,7 @@ static void call_with_ice_video_added_7(void) {
 	/*
 	 * Scenario: video is active at the beginning of the call, callee removes it.
 	 */
-	_call_with_ice_video(caller_policy, callee_policy, FALSE, FALSE, FALSE, TRUE);
+	_call_with_ice_video(caller_policy, callee_policy, FALSE, FALSE, FALSE, TRUE, FALSE);
 }
 
 static void call_with_ice_video_and_rtt(void) {
@@ -1120,6 +1124,14 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_ice_video_only(void) {
+	LinphoneVideoPolicy caller_policy = { TRUE, TRUE };
+	LinphoneVideoPolicy callee_policy = { TRUE, TRUE };
+	/*
+	 * Scenario: video is active at the beginning of the call, but no audio codecs match.
+	 */
+	_call_with_ice_video(caller_policy, callee_policy, FALSE, FALSE, FALSE, FALSE, TRUE);
+}
 
 static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -1875,6 +1887,7 @@ test_t call_video_tests[] = {
 	TEST_ONE_TAG("Call with ICE and video added 6", call_with_ice_video_added_6, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added 7", call_with_ice_video_added_7, "ICE"),
 	TEST_ONE_TAG("Call with ICE, video and realtime text", call_with_ice_video_and_rtt, "ICE"),
+	TEST_ONE_TAG("Call with ICE, video only", call_with_ice_video_only, "ICE"),
 	TEST_ONE_TAG("Video call with ICE accepted using call params", video_call_ice_params, "ICE"),
 	TEST_ONE_TAG("Audio call with ICE paused with caller video policy enabled", audio_call_with_ice_with_video_policy_enabled, "ICE"),
 	TEST_NO_TAG("Video call recording (H264)", video_call_recording_h264_test),

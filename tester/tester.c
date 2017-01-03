@@ -718,10 +718,11 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state) {
 	LinphoneCall *c1,*c2;
+	bool_t global_success = TRUE;
 	bool_t audio_success=FALSE;
 	bool_t video_success=FALSE;
 	bool_t text_success=FALSE;
-	bool_t video_enabled, realtime_text_enabled;
+	bool_t audio_enabled, video_enabled, realtime_text_enabled;
 	MSTimeSpec ts;
 
 	c1=linphone_core_get_current_call(caller->lc);
@@ -735,23 +736,26 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 
 	BC_ASSERT_EQUAL(linphone_call_params_video_enabled(linphone_call_get_current_params(c1)),linphone_call_params_video_enabled(linphone_call_get_current_params(c2)), int, "%d");
 	BC_ASSERT_EQUAL(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c1)),linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c2)), int, "%d");
+	audio_enabled=linphone_call_params_audio_enabled(linphone_call_get_current_params(c1));
 	video_enabled=linphone_call_params_video_enabled(linphone_call_get_current_params(c1));
 	realtime_text_enabled=linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c1));
-	liblinphone_tester_clock_start(&ts);
-	do{
-		if ((c1 != NULL) && (c2 != NULL)) {
-			if (linphone_call_get_audio_stats(c1)->ice_state==state &&
-				linphone_call_get_audio_stats(c2)->ice_state==state ){
-				audio_success=TRUE;
-				check_ice_from_rtp(c1,c2,LinphoneStreamTypeAudio);
-				check_ice_from_rtp(c2,c1,LinphoneStreamTypeAudio);
-				break;
+	if (audio_enabled) {
+		liblinphone_tester_clock_start(&ts);
+		do{
+			if ((c1 != NULL) && (c2 != NULL)) {
+				if (linphone_call_get_audio_stats(c1)->ice_state==state &&
+					linphone_call_get_audio_stats(c2)->ice_state==state ){
+					audio_success=TRUE;
+					check_ice_from_rtp(c1,c2,LinphoneStreamTypeAudio);
+					check_ice_from_rtp(c2,c1,LinphoneStreamTypeAudio);
+					break;
+				}
+				linphone_core_iterate(caller->lc);
+				linphone_core_iterate(callee->lc);
 			}
-			linphone_core_iterate(caller->lc);
-			linphone_core_iterate(callee->lc);
-		}
-		ms_usleep(20000);
-	}while(!liblinphone_tester_clock_elapsed(&ts,10000));
+			ms_usleep(20000);
+		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
+	}
 
 	if (video_enabled){
 		liblinphone_tester_clock_start(&ts);
@@ -800,7 +804,10 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 	}
 	linphone_call_unref(c1);
 	linphone_call_unref(c2);
-	return video_enabled ? (realtime_text_enabled ? text_success && audio_success && video_success : audio_success && video_success) : realtime_text_enabled ? text_success && audio_success : audio_success;
+	if (audio_enabled) global_success = global_success && audio_success;
+	if (video_enabled) global_success = global_success && video_success;
+	if (realtime_text_enabled) global_success = global_success && text_success;
+	return global_success;
 }
 
 static void linphone_conference_server_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {

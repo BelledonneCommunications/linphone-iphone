@@ -3136,6 +3136,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 		if (used_pt!=-1){
 			bool_t ok = TRUE;
 			call->current_params->audio_codec = rtp_profile_get_payload(call->audio_profile, used_pt);
+			call->current_params->has_audio = TRUE;
 			if (playcard==NULL) {
 				ms_warning("No card defined for playback !");
 			}
@@ -3596,6 +3597,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 	ms_message("linphone_call_start_media_streams() call=[%p] local upload_bandwidth=[%i] kbit/s; local download_bandwidth=[%i] kbit/s",
 		   call, linphone_core_get_upload_bandwidth(lc),linphone_core_get_download_bandwidth(lc));
 
+	call->current_params->has_audio = FALSE;
 	if (call->audiostream!=NULL) {
 		linphone_call_start_audio_stream(call, next_state, use_arc);
 	} else {
