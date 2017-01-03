@@ -3860,7 +3860,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f \"$SRCROOT/liblinphone-sdk/apple-darwin/share/linphone/rootca.pem\" ]; then\necho '********************************************************************'\necho 'warning: Liblinphone SDK missing! Downloading it (latest release)...'\n$SRCROOT/Tools/sdk_download.sh \"latest\"\necho '********************************************************************'\nfi";
+			shellScript = "if [ ! -f \"$SRCROOT/liblinphone-sdk/apple-darwin/share/linphone/rootca.pem\" ]; then\necho '********************************************************************'\necho 'warning: Liblinphone SDK missing! Downloading it (latest release)...'\n#$SRCROOT/Tools/sdk_download.sh \"latest\"\necho 'Deactivated'\necho '********************************************************************'\nfi";
 		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;

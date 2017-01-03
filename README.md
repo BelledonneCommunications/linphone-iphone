@@ -4,14 +4,6 @@ Linphone is a free VoIP and video softphone based on the SIP protocol.
 
 ![Dialer screenshot](http://www.linphone.org/img/slideshow-phone.png)
 
-# Getting started
-
-Here's how to launch Linphone for iPhone (more details below) in the most straightforward way:
-
-1. Install [Xcode from AppStore](https://itunes.apple.com/us/app/Xcode/id497799835?mt=12#).
-2. Open linphone.xcodeproj in Xcode: `open linphone.xcodeproj`
-3. Press `⌘R` and voilà!
-
 # How can I contribute?
 
 Thanks for asking! We love pull requests from everyone. Depending on what you want to do, you can help us improve Linphone in
