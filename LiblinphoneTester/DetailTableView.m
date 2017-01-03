@@ -66,9 +66,11 @@ static NSString *const kAllTestsName = @"Run All tests";
 
 	for (int i = 0; i < count; i++) {
 		const char *test_name = bc_tester_test_name([suite UTF8String], i);
-		NSString *testName = [NSString stringWithUTF8String:test_name];
-		TestItem *item = [[TestItem alloc] initWithName:testName fromSuite:suite];
-		[_tests addObject:item];
+		if (test_name) {
+			NSString *testName = [NSString stringWithUTF8String:test_name];
+			TestItem *item = [[TestItem alloc] initWithName:testName fromSuite:suite];
+			[_tests addObject:item];
+		}
 	}
 }
 
@@ -81,7 +83,8 @@ static NSString *const kAllTestsName = @"Run All tests";
 	if ([self.detailItem isEqualToString:@"All"]) {
 		// dont sort tests if we use all suites at once
 		for (int i = 0; i < bc_tester_nb_suites(); i++) {
-			[self addTestsFromSuite:[NSString stringWithUTF8String:bc_tester_suite_name(i)]];
+			const char *tmp = bc_tester_suite_name(i);
+			[self addTestsFromSuite:[NSString stringWithUTF8String:tmp]];
 		}
 	} else {
 		[self addTestsFromSuite:self.detailItem];
