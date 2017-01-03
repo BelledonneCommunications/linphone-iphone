@@ -582,6 +582,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	xmlNodePtr rootNode;
 	int i;
 	int xmlStringLength;
+	xmlChar *local_output = NULL;
 
 	/* retrieve selfZIDHex from cache(return a 24 char hexa string + null termination) */
 	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
@@ -627,7 +628,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 		/* encrypt message with current key */
 		limeKey_t *currentKey = associatedKeys.peerKeys[i];
 		/* encrypted message include a 16 bytes tag */
-		uint8_t *encryptedMessage = (uint8_t *)malloc(encryptedMessageLength);
+		uint8_t *encryptedMessage = (uint8_t *)ms_malloc(encryptedMessageLength);
 		lime_encryptMessage(currentKey, message, (uint32_t)strlen((char *)message), selfZid, encryptedMessage);
 		/* add a "msg" node the the output message, doc node is :
 		 * <msg>
@@ -653,12 +654,12 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 
 		/* convert the cipherText to base 64 */
 		bctbx_base64_encode(NULL, &b64Size, encryptedMessage, encryptedMessageLength); /* b64Size is 0, so it is set to the requested output buffer size */
-		encryptedMessageb64 = malloc(b64Size+1); /* allocate a buffer of requested size +1 for NULL termination */
+		encryptedMessageb64 = ms_malloc(b64Size+1); /* allocate a buffer of requested size +1 for NULL termination */
 		bctbx_base64_encode(encryptedMessageb64, &b64Size, encryptedMessage, encryptedMessageLength); /* b64Size is 0, so it is set to the requested output buffer size */
 		encryptedMessageb64[b64Size] = '\0'; /* libxml need a null terminated string */
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"text", (const xmlChar *)encryptedMessageb64);
-		free(encryptedMessage);
-		free(encryptedMessageb64);
+		ms_free(encryptedMessage);
+		ms_free(encryptedMessageb64);
 
 		/* add the message Node into the doc */
 		xmlAddChild(rootNode, msgNode);
@@ -669,9 +670,14 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	}
 
 	/* dump the whole message doc into the output */
-	xmlDocDumpFormatMemoryEnc(xmlOutputMessage, output, &xmlStringLength, "UTF-8", 0);
-	xmlFreeDoc(xmlOutputMessage);
+	xmlDocDumpFormatMemoryEnc(xmlOutputMessage, &local_output, &xmlStringLength, "UTF-8", 0);
 
+	*output = (uint8_t *)ms_malloc(xmlStringLength + 1);
+	memcpy(*output, local_output, xmlStringLength);
+	(*output)[xmlStringLength] = '\0';
+
+	xmlFree(local_output);
+	xmlFreeDoc(xmlOutputMessage);
 	lime_freeKeys(&associatedKeys);
 
 	return 0;
@@ -700,7 +706,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 
 	/* parse the message into an xml doc */
 	/* make sure we have a valid xml message before trying to parse it */
-	if (memcmp(message, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38) != 0 ) {
+	if (memcmp(message, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38) != 0) {
 		return LIME_INVALID_ENCRYPTED_MESSAGE;
 	}
 	xmlEncryptedMessage = xmlParseDoc((const xmlChar *)message);
@@ -757,7 +763,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 				/* convert the cipherText from base 64 */
 				encryptedMessageb64 = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
 				bctbx_base64_decode(NULL, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64)); /* encryptedMessageLength is 0, so it will be set to the requested buffer length */
-				encryptedMessage = (uint8_t *)malloc(encryptedMessageLength);
+				encryptedMessage = (uint8_t *)ms_malloc(encryptedMessageLength);
 				bctbx_base64_decode(encryptedMessage, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64));
 
 				xmlFree(encryptedMessageb64);
@@ -781,13 +787,13 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	/* shall we derive our key before going for decryption */
 	if (usedSessionIndex < associatedKey.sessionIndex) {
 		/* something wen't wrong with the cache, this shall never happend */
-		free(encryptedMessage);
+		ms_free(encryptedMessage);
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 
 	if ((usedSessionIndex - associatedKey.sessionIndex > MAX_DERIVATION_NUMBER) ) {
 		/* we missed to many messages, ask for a cache reset via a ZRTP call */
-		free(encryptedMessage);
+		ms_free(encryptedMessage);
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 
@@ -796,13 +802,13 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	}
 
 	/* decrypt the message */
-	*output = (uint8_t *)malloc(encryptedMessageLength - 16 +1); /* plain message is same length than encrypted one with 16 bytes less for the tag + 1 to add the null termination char */
+	*output = (uint8_t *)ms_malloc(encryptedMessageLength - 16 +1); /* plain message is same length than encrypted one with 16 bytes less for the tag + 1 to add the null termination char */
 	retval = lime_decryptMessage(&associatedKey, encryptedMessage, (uint32_t)encryptedMessageLength, selfZid, *output);
 
-	free(encryptedMessage);
+	ms_free(encryptedMessage);
 
-	if (retval!=0 ) {
-		free(*output);
+	if (retval != 0) {
+		ms_free(*output);
 		*output = NULL;
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
@@ -893,7 +899,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body);
 			if (retval != 0) {
 				ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
-				if (decrypted_body) free(decrypted_body);
+				if (decrypted_body) ms_free(decrypted_body);
 				xmlFreeDoc(cacheXml);
 				errcode = 488;
 				return errcode;
@@ -977,7 +983,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 			retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg->message, (uint8_t *)peer, &crypted_body);
 			if (retval != 0) {
 				ms_warning("Unable to encrypt message for %s : %s", peer, lime_error_code_to_string(retval));
-				if (crypted_body) free(crypted_body);
+				if (crypted_body) ms_free(crypted_body);
 				errcode = 488;
 			} else {
 				/* dump updated cache to a string */
