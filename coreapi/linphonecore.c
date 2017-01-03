@@ -3986,48 +3986,55 @@ LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc){
 	const char *description = NULL;
 
 	activity = linphone_presence_model_get_activity(lc->presence_model);
-	description = linphone_presence_activity_get_description(activity);
-	switch (linphone_presence_activity_get_type(activity)) {
-		case LinphonePresenceActivityOffline:
-			return LinphoneStatusOffline;
-		case LinphonePresenceActivityOnline:
+	if (activity) {
+		description = linphone_presence_activity_get_description(activity);
+		switch (linphone_presence_activity_get_type(activity)) {
+			case LinphonePresenceActivityOffline:
+				return LinphoneStatusOffline;
+			case LinphonePresenceActivityOnline:
+				return LinphoneStatusOnline;
+			case LinphonePresenceActivityBusy:
+				if (description != NULL) {
+					if (strcmp(description, "Do not disturb") == 0)
+						return LinphoneStatusDoNotDisturb;
+					else if (strcmp(description, "Using another messaging service") == 0)
+						return LinphoneStatusAltService;
+				}
+				return LinphoneStatusBusy;
+			case LinphonePresenceActivityInTransit:
+			case LinphonePresenceActivitySteering:
+				return LinphoneStatusBeRightBack;
+			case LinphonePresenceActivityAway:
+				return LinphoneStatusAway;
+			case LinphonePresenceActivityOnThePhone:
+				return LinphoneStatusOnThePhone;
+			case LinphonePresenceActivityBreakfast:
+			case LinphonePresenceActivityDinner:
+			case LinphonePresenceActivityLunch:
+			case LinphonePresenceActivityMeal:
+				return LinphoneStatusOutToLunch;
+			case LinphonePresenceActivityPermanentAbsence:
+				return LinphoneStatusMoved;
+			case LinphonePresenceActivityOther:
+				if (description != NULL) {
+					if (strcmp(description, "Waiting for user acceptance") == 0)
+						return LinphoneStatusPending;
+				}
+				return LinphoneStatusBusy;
+			case LinphonePresenceActivityVacation:
+				return LinphoneStatusVacation;
+			case LinphonePresenceActivityAppointment:
+			case LinphonePresenceActivityMeeting:
+			case LinphonePresenceActivityWorship:
+				return LinphoneStatusDoNotDisturb;
+			default:
+				return LinphoneStatusBusy;
+		}
+	} else {
+		if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusOpen)
 			return LinphoneStatusOnline;
-		case LinphonePresenceActivityBusy:
-			if (description != NULL) {
-				if (strcmp(description, "Do not disturb") == 0)
-					return LinphoneStatusDoNotDisturb;
-				else if (strcmp(description, "Using another messaging service") == 0)
-					return LinphoneStatusAltService;
-			}
-			return LinphoneStatusBusy;
-		case LinphonePresenceActivityInTransit:
-		case LinphonePresenceActivitySteering:
-			return LinphoneStatusBeRightBack;
-		case LinphonePresenceActivityAway:
-			return LinphoneStatusAway;
-		case LinphonePresenceActivityOnThePhone:
-			return LinphoneStatusOnThePhone;
-		case LinphonePresenceActivityBreakfast:
-		case LinphonePresenceActivityDinner:
-		case LinphonePresenceActivityLunch:
-		case LinphonePresenceActivityMeal:
-			return LinphoneStatusOutToLunch;
-		case LinphonePresenceActivityPermanentAbsence:
-			return LinphoneStatusMoved;
-		case LinphonePresenceActivityOther:
-			if (description != NULL) {
-				if (strcmp(description, "Waiting for user acceptance") == 0)
-					return LinphoneStatusPending;
-			}
-			return LinphoneStatusBusy;
-		case LinphonePresenceActivityVacation:
-			return LinphoneStatusVacation;
-		case LinphonePresenceActivityAppointment:
-		case LinphonePresenceActivityMeeting:
-		case LinphonePresenceActivityWorship:
-			return LinphoneStatusDoNotDisturb;
-		default:
-			return LinphoneStatusBusy;
+		else
+			return LinphoneStatusOffline;
 	}
 }
 

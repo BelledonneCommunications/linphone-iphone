@@ -1574,28 +1574,6 @@ void linphone_notify_parse_presence(const char *content_type, const char *conten
 		ms_error("Unknown content type '%s/%s' for presence", content_type, content_subtype);
 	}
 
-	/* If no activities are present in the model, add a dummy activity so that linphone_presence_activity_get_type() returns
-	 * the expected result. */
-	if (model != NULL) {
-		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(model);
-		if (activity == NULL) {
-			LinphonePresenceBasicStatus basic_status = linphone_presence_model_get_basic_status(model);
-			LinphonePresenceActivityType acttype;
-			switch (basic_status) {
-				case LinphonePresenceBasicStatusOpen:
-					acttype = LinphonePresenceActivityOnline;
-					break;
-				case LinphonePresenceBasicStatusClosed:
-				default:
-					acttype = LinphonePresenceActivityOffline;
-					break;
-			}
-			activity = linphone_presence_activity_new(acttype, NULL);
-			linphone_presence_model_add_activity(model, activity);
-			linphone_presence_activity_unref(activity);
-		}
-	}
-
 	*result = (SalPresenceModel *)model;
 }
 
