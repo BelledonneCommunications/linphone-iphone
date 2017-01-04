@@ -36,18 +36,22 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
 		for (int k = 0; k < test_count; k++) {
 			const char *test = bc_tester_test_name(suite, k);
 			LOGE(@"\ttest = %s", test);
-			NSString *sSuite = [NSString stringWithUTF8String:suite];
-			NSString *sTest = [NSString stringWithUTF8String:test];
+			if (suite) {
+				NSString *sSuite = [NSString stringWithUTF8String:suite];
+				if (test) {
+					NSString *sTest = [NSString stringWithUTF8String:test];
 
-			// prepend "test_" so that it gets found by introspection
-			NSString *safesTest = [self safetyTestString:sTest];
-			NSString *safesSuite = [self safetyTestString:sSuite];
-			NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
+					// prepend "test_" so that it gets found by introspection
+					NSString *safesTest = [self safetyTestString:sTest];
+					NSString *safesSuite = [self safetyTestString:sSuite];
+					NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
 
-			[LinphoneTester_Tests addInstanceMethodWithSelectorName:selectorName
-															  block:^(LinphoneTester_Tests *myself) {
-																[myself testForSuite:sSuite andTest:sTest];
-															  }];
+					[LinphoneTester_Tests addInstanceMethodWithSelectorName:selectorName
+																	  block:^(LinphoneTester_Tests *myself) {
+																		[myself testForSuite:sSuite andTest:sTest];
+																	  }];
+				}
+			}
 		}
 	}
 }
