@@ -66,6 +66,14 @@ public interface LinphoneChatMessage {
 		 * File transfer has been completed successfully.
 		 */
 		public final static State FileTransferDone = new State(5,"FileTransferDone");
+		/**
+		 * Message successfully delivered and acknowledged to destination
+		 */
+		public final static State DeliveredToUser = new State(6,"DeliveredToUser");
+		/**
+		 * Message displayed to the remote user
+		 */
+		public final static State Displayed = new State(7,"Displayed");
 		
 		private State(int value,String stringValue) {
 			mValue = value;
