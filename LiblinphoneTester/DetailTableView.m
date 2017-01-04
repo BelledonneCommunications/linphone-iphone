@@ -83,8 +83,7 @@ static NSString *const kAllTestsName = @"Run All tests";
 	if ([self.detailItem isEqualToString:@"All"]) {
 		// dont sort tests if we use all suites at once
 		for (int i = 0; i < bc_tester_nb_suites(); i++) {
-			const char *tmp = bc_tester_suite_name(i);
-			[self addTestsFromSuite:[NSString stringWithUTF8String:tmp]];
+			[self addTestsFromSuite:[NSString stringWithUTF8String:bc_tester_suite_name(i)]];
 		}
 	} else {
 		[self addTestsFromSuite:self.detailItem];
