@@ -322,9 +322,12 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 	mgr->lc=configure_lc_from(&mgr->v_table, bc_tester_get_resource_dir_prefix(), rc_path, mgr);
 	linphone_core_manager_check_accounts(mgr);
 	im_notif_policy = linphone_core_get_im_notif_policy(mgr->lc);
-	linphone_im_notif_policy_clear(im_notif_policy);
-	linphone_im_notif_policy_set_send_is_composing(im_notif_policy, TRUE);
-	linphone_im_notif_policy_set_recv_is_composing(im_notif_policy, TRUE);
+	if (im_notif_policy != NULL) {
+		/* The IM notification policy can be NULL at this point in case of remote provisioning. */
+		linphone_im_notif_policy_clear(im_notif_policy);
+		linphone_im_notif_policy_set_send_is_composing(im_notif_policy, TRUE);
+		linphone_im_notif_policy_set_recv_is_composing(im_notif_policy, TRUE);
+	}
 
 	manager_count++;
 
