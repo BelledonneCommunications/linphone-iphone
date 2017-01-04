@@ -451,9 +451,6 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		msg->message_id = ms_strdup(sal_op_get_call_id(op)); /* must be known at that time */
 		msg->storage_id = linphone_chat_message_store(msg);
 
-		if (cr->unread_count >= 0 && !linphone_chat_message_is_read(msg))
-			cr->unread_count++;
-
 		if (cr->is_composing == LinphoneIsComposingActive) {
 			cr->is_composing = LinphoneIsComposingIdle;
 		}
