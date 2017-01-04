@@ -570,6 +570,11 @@ class CoreManager:
                 manager.stats.number_of_LinphonePresenceActivityWorking += 1
             elif acttype == linphone.PresenceActivityType.Worship:
                 manager.stats.number_of_LinphonePresenceActivityWorship += 1
+        if manager.stats.last_received_presence.nb_activities == 0:
+            if manager.stats.last_received_presence.basic_status == linphone.PresenceBasicStatus.Open:
+                manager.stats.number_of_LinphonePresenceActivityOnline += 1
+            else:
+                manager.stats.number_of_LinphonePresenceActivityOffline += 1
 
     def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}):
         if not vtable.has_key('registration_state_changed'):
