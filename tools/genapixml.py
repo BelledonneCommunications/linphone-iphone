@@ -88,6 +88,8 @@ class CArgument(CObject):
 				fullySplittedType.append(s)
 		if 'MS2_DEPRECATED' in fullySplittedType:
 			fullySplittedType.remove('MS2_DEPRECATED')
+		elif 'LINPHONE_DEPRECATED' in fullySplittedType:
+			fullySplittedType.remove('LINPHONE_DEPRECATED')
 		isStruct = False
 		isEnum = False
 		self.ctype = 'int' # Default to int so that the result is correct eg. for 'unsigned short'
