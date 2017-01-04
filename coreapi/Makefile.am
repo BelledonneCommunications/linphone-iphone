@@ -47,7 +47,7 @@ liblinphone_la_SOURCES=\
 	event.c \
 	friend.c \
 	friendlist.c \
-	im_notify_policy.c \
+	im_notif_policy.c \
 	info.c \
 	ldapprovider.c \
 	linphonecall.c \

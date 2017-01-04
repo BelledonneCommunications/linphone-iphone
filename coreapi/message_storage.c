@@ -419,7 +419,7 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	int numrows=0;
 	char *peer;
 	char *buf;
-	char *option;
+	char *option = NULL;
 	sqlite3_stmt *selectStatement;
 	int returnValue;
 
@@ -447,7 +447,7 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	 * because it has been tested above */
 	if(unread_only) {
 		cr->unread_count = numrows;
-		bctbx_free(option);
+		if (option) bctbx_free(option);
 	}
 
 	return numrows;
