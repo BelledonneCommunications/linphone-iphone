@@ -2239,6 +2239,7 @@ static void _call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enab
 		linphone_tunnel_set_mode(linphone_core_get_tunnel(marie->lc),LinphoneTunnelModeEnable);
 		for (i=0;i<100;i++) {
 			if (linphone_tunnel_connected(linphone_core_get_tunnel(marie->lc))) {
+				linphone_core_iterate(marie->lc);
 				break;
 			}
 			linphone_core_iterate(marie->lc);
