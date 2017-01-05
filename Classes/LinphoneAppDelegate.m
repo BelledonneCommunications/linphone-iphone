@@ -110,10 +110,17 @@
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
-			if (linphone_core_get_calls_nb(LC) > 1 ||
-				(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
+			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
+				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
+					linphone_core_accept_call(LC, call);
+					[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+				} else {
+					[PhoneMainView.instance displayIncomingCall:call];
+				}
+			} else if (linphone_core_get_calls_nb(LC) > 1) {
 				[PhoneMainView.instance displayIncomingCall:call];
 			}
+
 			// in this case, the ringing sound comes from the notification.
 			// To stop it we have to do the iOS7 ring fix...
 			[self fixRing];
