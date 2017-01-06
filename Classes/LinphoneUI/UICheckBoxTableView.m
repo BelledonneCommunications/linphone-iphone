@@ -73,6 +73,13 @@
 	[self toggleRowSelectionForRowAtIndexPath:indexPath];
 }
 
+/* Empty methods allow to not freeze UI...*/
+- (void)tableView:(UITableView *)tableView willBeginEditingRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+}
+
+- (void)tableView:(UITableView *)tableView didEndEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+}
+
 - (void)selectToggleButton:(BOOL)select {
 	_toggleSelectionButton.selected = select;
 	if (select) {
