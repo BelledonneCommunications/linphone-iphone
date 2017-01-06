@@ -481,10 +481,14 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 	linphone_chat_message_store_state(msg);
 
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
-		// msg is not transient anymore, we can remove it from our transient list and unref it
-		msg->chat_room->transient_messages = bctbx_list_remove(msg->chat_room->transient_messages, msg);
-		linphone_chat_room_add_weak_message(msg->chat_room, msg);
-		linphone_chat_message_unref(msg);
+		if (bctbx_list_find(msg->chat_room->transient_messages, msg) != NULL) {
+			// msg is not transient anymore, we can remove it from our transient list and unref it
+			msg->chat_room->transient_messages = bctbx_list_remove(msg->chat_room->transient_messages, msg);
+			linphone_chat_room_add_weak_message(msg->chat_room, msg);
+			linphone_chat_message_unref(msg);
+		} else {
+			// msg has already been removed from the transient messages, do nothing. */
+		}
 	}
 }
 
@@ -500,7 +504,7 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 	linphone_core_notify_message_received(lc, cr, msg);
 	cr->remote_is_composing = LinphoneIsComposingIdle;
 	linphone_core_notify_is_composing_received(cr->lc, cr);
-	linphone_chat_message_send_delivery_notification(msg);
+	linphone_chat_message_send_delivery_notification(msg, LinphoneReasonNone);
 }
 
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
@@ -554,6 +558,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	
 	if (retval > 0) {
 		reason = linphone_error_code_to_reason(retval);
+		linphone_chat_message_send_delivery_notification(msg, reason);
 		goto end;
 	}
 
@@ -806,22 +811,24 @@ static void process_imdn(LinphoneChatRoom *cr, xmlparsing_context_t *xml_ctx) {
 			delivery_status_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 			snprintf(xpath_str, sizeof(xpath_str), "%s[1]/imdn:display-notification/imdn:status", imdn_prefix);
 			display_status_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
-			if (delivery_status_object != NULL) {
+			if ((delivery_status_object != NULL) && (linphone_im_notif_policy_get_recv_imdn_delivered(policy) == TRUE)) {
 				if ((delivery_status_object->nodesetval != NULL) && (delivery_status_object->nodesetval->nodeNr >= 1)) {
 					xmlNodePtr node = delivery_status_object->nodesetval->nodeTab[0];
-					if ((node->children != NULL) && (node->children->name != NULL) && (strcmp((const char *)node->children->name, "delivered") == 0)) {
-						if (linphone_im_notif_policy_get_recv_imdn_delivered(policy) == TRUE) {
+					if ((node->children != NULL) && (node->children->name != NULL)) {
+						if (strcmp((const char *)node->children->name, "delivered") == 0) {
 							linphone_chat_message_update_state(cm, LinphoneChatMessageStateDeliveredToUser);
+						} else if (strcmp((const char *)node->children->name, "error") == 0) {
+							linphone_chat_message_update_state(cm, LinphoneChatMessageStateNotDelivered);
 						}
 					}
 				}
 				xmlXPathFreeObject(delivery_status_object);
 			}
-			if (display_status_object != NULL) {
+			if ((display_status_object != NULL) && (linphone_im_notif_policy_get_recv_imdn_displayed(policy) == TRUE)) {
 				if ((display_status_object->nodesetval != NULL) && (display_status_object->nodesetval->nodeNr >= 1)) {
 					xmlNodePtr node = display_status_object->nodesetval->nodeTab[0];
-					if ((node->children != NULL) && (node->children->name != NULL) && (strcmp((const char *)node->children->name, "displayed") == 0)) {
-						if (linphone_im_notif_policy_get_recv_imdn_displayed(policy) == TRUE) {
+					if ((node->children != NULL) && (node->children->name != NULL)) {
+						if (strcmp((const char *)node->children->name, "displayed") == 0) {
 							linphone_chat_message_update_state(cm, LinphoneChatMessageStateDisplayed);
 						}
 					}
@@ -1027,7 +1034,7 @@ enum ImdnType {
 	ImdnTypeDisplay
 };
 
-static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum ImdnType imdn_type) {
+static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum ImdnType imdn_type, LinphoneReason reason) {
 	xmlBufferPtr buf;
 	xmlTextWriterPtr writer;
 	int err;
@@ -1051,6 +1058,9 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum
 		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"imdn",
 										  (const xmlChar *)"urn:ietf:params:xml:ns:imdn");
 	}
+	if ((err >= 0) && (reason != LinphoneReasonNone)) {
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"linphoneimdn", NULL, (const xmlChar *)"http://www.linphone.org/xsds/imdn.xsd");
+	}
 	if (err >= 0) {
 		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"message-id", (const xmlChar *)linphone_chat_message_get_message_id(cm));
 	}
@@ -1068,15 +1078,33 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum
 		err = xmlTextWriterStartElement(writer, (const xmlChar *)"status");
 	}
 	if (err >= 0) {
-		if (imdn_type == ImdnTypeDelivery) {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivered");
+		if (reason == LinphoneReasonNone) {
+			if (imdn_type == ImdnTypeDelivery) {
+				err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivered");
+			} else {
+				err = xmlTextWriterStartElement(writer, (const xmlChar *)"displayed");
+			}
 		} else {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"displayed");
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"error");
 		}
 	}
 	if (err >= 0) {
-		/* Close the "delivered" or "displayed" element. */
+		/* Close the "delivered", "displayed" or "error" element. */
 		err = xmlTextWriterEndElement(writer);
+	}
+	if ((err >= 0) && (reason != LinphoneReasonNone)) {
+		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"linphoneimdn", (const xmlChar *)"reason", NULL);
+		if (err >= 0) {
+			char codestr[16];
+			snprintf(codestr, 16, "%d", linphone_reason_to_error_code(reason));
+			err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"code", (const xmlChar *)codestr);
+		}
+		if (err >= 0) {
+			err = xmlTextWriterWriteString(writer, (const xmlChar *)linphone_reason_to_string(reason));
+		}
+		if (err >= 0) {
+			err = xmlTextWriterEndElement(writer);
+		}
 	}
 	if (err >= 0) {
 		/* Close the "status" element. */
@@ -1103,7 +1131,7 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum
 	return content;
 }
 
-static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnType imdn_type) {
+static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnType imdn_type, LinphoneReason reason) {
 	SalOp *op = NULL;
 	const char *identity = NULL;
 	char *content = NULL;
@@ -1121,7 +1149,7 @@ static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnTy
 	linphone_configure_op(cr->lc, op, cr->peer_url, NULL,
 		lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
 
-	content = linphone_chat_message_create_imdn_xml(cm, imdn_type);
+	content = linphone_chat_message_create_imdn_xml(cm, imdn_type, reason);
 	if (content != NULL) {
 		int retval = -1;
 		LinphoneAddress *from_addr = linphone_address_new(identity);
@@ -1131,7 +1159,8 @@ static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnTy
 		linphone_chat_message_set_to_address(msg, to_addr);
 		msg->content_type = ms_strdup("message/imdn+xml");
 
-		if (imee) {
+		/* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
+		if (imee && (reason == LinphoneReasonNone)) {
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 			LinphoneImEncryptionEngineCbsOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
 			if (cb_process_outgoing_message) {
@@ -1151,12 +1180,12 @@ static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnTy
 	sal_op_unref(op);
 }
 
-void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm) {
+void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, LinphoneReason reason) {
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(cm);
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
 	if (linphone_im_notif_policy_get_send_imdn_delivered(policy) == TRUE) {
-		linphone_chat_message_send_imdn(cm, ImdnTypeDelivery);
+		linphone_chat_message_send_imdn(cm, ImdnTypeDelivery, reason);
 	}
 }
 
@@ -1165,7 +1194,7 @@ void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm) {
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
 	if (linphone_im_notif_policy_get_send_imdn_displayed(policy) == TRUE) {
-		linphone_chat_message_send_imdn(cm, ImdnTypeDisplay);
+		linphone_chat_message_send_imdn(cm, ImdnTypeDisplay, LinphoneReasonNone);
 	}
 }
 

@@ -90,11 +90,18 @@ extern "C" {
 LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
- * Converts a error code to a LinphoneReason.
+ * Converts an error code to a LinphoneReason.
  * @param[in] err An error code
  * @return The LinphoneReason corresponding to the specified error code
 **/
 LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
+
+/**
+ * Converts a LinphoneReason to an error code.
+ * @param[in] reason A LinphoneReason
+ * @return The error code corresponding to the specified LinphoneReason
+ */
+LINPHONE_PUBLIC int linphone_reason_to_error_code(LinphoneReason reason);
 
 /**
  * Get reason code from the error info.

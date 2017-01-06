@@ -1,1 +1,1 @@
-EXTRA_DIST=lpconfig.xsd
+EXTRA_DIST=lpconfig.xsd imdn.xsd

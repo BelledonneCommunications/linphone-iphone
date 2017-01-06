@@ -614,7 +614,7 @@ void linphone_chat_room_add_weak_message(LinphoneChatRoom *cr, LinphoneChatMessa
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
-void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm);
+void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, LinphoneReason reason);
 void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);

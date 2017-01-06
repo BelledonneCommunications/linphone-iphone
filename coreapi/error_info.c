@@ -69,48 +69,47 @@ const char *linphone_reason_to_string(LinphoneReason err){
 	return "unknown error";
 }
 
+typedef struct _error_code_reason_map {
+	int error_code;
+	LinphoneReason reason;
+} error_code_reason_map_t;
+
+static const error_code_reason_map_t error_code_reason_map[] = {
+	{ 200, LinphoneReasonNone },
+	{ 301, LinphoneReasonMovedPermanently },
+	{ 400, LinphoneReasonUnknown },
+	{ 401, LinphoneReasonUnauthorized },
+	{ 403, LinphoneReasonForbidden },
+	{ 404, LinphoneReasonNotFound },
+	{ 410, LinphoneReasonGone },
+	{ 415, LinphoneReasonUnsupportedContent },
+	{ 480, LinphoneReasonTemporarilyUnavailable },
+	{ 481, LinphoneReasonNoMatch },
+	{ 484, LinphoneReasonAddressIncomplete },
+	{ 486, LinphoneReasonBusy },
+	{ 488, LinphoneReasonNotAcceptable },
+	{ 501, LinphoneReasonNotImplemented },
+	{ 502, LinphoneReasonBadGateway },
+	{ 503, LinphoneReasonIOError },
+	{ 504, LinphoneReasonServerTimeout },
+	{ 600, LinphoneReasonDoNotDisturb },
+	{ 603, LinphoneReasonDeclined }
+};
+
 LinphoneReason linphone_error_code_to_reason(int err) {
-	switch (err) {
-		case 200:
-			return LinphoneReasonNone;
-		case 301:
-			return LinphoneReasonMovedPermanently;
-		case 400:
-			return LinphoneReasonUnknown;
-		case 401:
-			return LinphoneReasonUnauthorized;
-		case 403:
-			return LinphoneReasonForbidden;
-		case 404:
-			return LinphoneReasonNotFound;
-		case 410:
-			return LinphoneReasonGone;
-		case 415:
-			return LinphoneReasonUnsupportedContent;
-		case 480:
-			return LinphoneReasonTemporarilyUnavailable;
-		case 481:
-			return LinphoneReasonNoMatch;
-		case 484:
-			return LinphoneReasonAddressIncomplete;
-		case 486:
-			return LinphoneReasonBusy;
-		case 488:
-			return LinphoneReasonNotAcceptable;
-		case 501:
-			return LinphoneReasonNotImplemented;
-		case 502:
-			return LinphoneReasonBadGateway;
-		case 503:
-			return LinphoneReasonIOError;
-		case 504:
-			return LinphoneReasonServerTimeout;
-		case 600:
-			return LinphoneReasonDoNotDisturb;
-		case 603:
-			return LinphoneReasonDeclined;
+	size_t i;
+	for (i = 0; i < (sizeof(error_code_reason_map) / sizeof(error_code_reason_map[0])); i++) {
+		if (error_code_reason_map[i].error_code == err) return error_code_reason_map[i].reason;
 	}
 	return LinphoneReasonUnknown;
+}
+
+int linphone_reason_to_error_code(LinphoneReason reason) {
+	size_t i;
+	for (i = 0; i < (sizeof(error_code_reason_map) / sizeof(error_code_reason_map[0])); i++) {
+		if (error_code_reason_map[i].reason == reason) return error_code_reason_map[i].error_code;
+	}
+	return 400;
 }
 
 
