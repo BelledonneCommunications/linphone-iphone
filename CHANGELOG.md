@@ -12,6 +12,15 @@ Group changes to describe their impact on the project, as follows:
 
 ## [Unreleased]
 
+## [3.16] - 2017-09-01
+
+### Added
+- Support of CallKit
+- Support of background task to finish sending messages and files when app is in background
+
+### Fixed
+- Freeze of UI when cancelling a swipe to delete too quickly
+
 ## [3.15] - 2016-11-09
 
 ### Added
