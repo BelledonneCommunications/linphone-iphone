@@ -323,7 +323,7 @@
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
 	}
-	
+
 	// chat section
 	{
 		[self setInteger:linphone_core_lime_enabled(LC) forKey:@"use_lime_preference"];
@@ -747,28 +747,32 @@
 			[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"]
 						 forKey:@"repeat_call_notification"];
 		}
-	
+
 		// chat section
 		{
 			int val = [self integerForKey:@"use_lime_preference"];
 			linphone_core_enable_lime(LC, val);
-			if(val == LinphoneLimeMandatory && (linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP)) {
+			if (val == LinphoneLimeMandatory &&
+				(linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP)) {
 				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
 				[self setCString:"ZRTP" forKey:@"media_encryption_preference"];
-				UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)
-									  									 message:NSLocalizedString(@"LIME requires ZRTP encryption.\n"
-																								   @"By activating LIME you automatically ZRTP media encryption.",
-																								   nil)
-																		  preferredStyle:UIAlertControllerStyleAlert];
-				
-				UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+				UIAlertController *errView = [UIAlertController
+					alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)
+									 message:NSLocalizedString(
+												 @"LIME requires ZRTP encryption.\n"
+												 @"By activating LIME you automatically ZRTP media encryption.",
+												 nil)
+							  preferredStyle:UIAlertControllerStyleAlert];
+
+				UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																		style:UIAlertActionStyleDefault
-																	  handler:^(UIAlertAction * action) {}];
+																	  handler:^(UIAlertAction *action){
+																	  }];
 				[errView addAction:defaultAction];
 				[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 			}
 			linphone_core_set_file_transfer_server(
-												   LC, [[self stringForKey:@"file_transfer_server_url_preference"] UTF8String]);
+				LC, [[self stringForKey:@"file_transfer_server_url_preference"] UTF8String]);
 		}
 
 		// network section

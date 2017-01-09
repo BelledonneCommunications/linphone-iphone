@@ -707,8 +707,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if (room) {
 			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 			linphone_chat_room_send_chat_message(room, msg);
-			
-			if(linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
+
+			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
 				[LinphoneManager.instance alertLIME:room];
 			}
 			linphone_chat_room_mark_as_read(room);
@@ -754,7 +754,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			linphone_call_set_authentication_token_verified(call, NO);
 		}
 	} else if ([response.actionIdentifier isEqual:@"Call"]) {
-		
+
 	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
 		if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
 			[PhoneMainView.instance displayIncomingCall:call];
@@ -903,11 +903,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if (room) {
 			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 			linphone_chat_room_send_chat_message(room, msg);
-			
-			if(linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
+
+			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
 				[LinphoneManager.instance alertLIME:room];
 			}
-				
+
 			linphone_chat_room_mark_as_read(room);
 			[PhoneMainView.instance updateApplicationBadgeNumber];
 		}
