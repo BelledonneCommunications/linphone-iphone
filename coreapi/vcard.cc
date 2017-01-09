@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 struct _LinphoneVcardContext {
-	belcard::BelCardParser *parser;
+	shared_ptr<belcard::BelCardParser> parser;
 	void *user_data;
 };
 
@@ -46,14 +46,14 @@ extern "C" {
 
 LinphoneVcardContext* linphone_vcard_context_new(void) {
 	LinphoneVcardContext* context = ms_new0(LinphoneVcardContext, 1);
-	context->parser = new belcard::BelCardParser();
+	context->parser = belcard::BelCardParser::getInstance();
 	context->user_data = NULL;
 	return context;
 }
 
 void linphone_vcard_context_destroy(LinphoneVcardContext *context) {
 	if (context) {
-		if (context->parser) delete context->parser;
+		context->parser = nullptr;
 		ms_free(context);
 	}
 }
@@ -92,7 +92,7 @@ bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardConte
 	bctbx_list_t *result = NULL;
 	if (context && filename) {
 		if (!context->parser) {
-			context->parser = new belcard::BelCardParser();
+			context->parser = belcard::BelCardParser::getInstance();
 		}
 		shared_ptr<belcard::BelCardList> belCards = context->parser->parseFile(filename);
 		if (belCards) {
@@ -110,7 +110,7 @@ bctbx_list_t* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardCon
 	bctbx_list_t *result = NULL;
 	if (context && buffer) {
 		if (!context->parser) {
-			context->parser = new belcard::BelCardParser();
+			context->parser = belcard::BelCardParser::getInstance();
 		}
 		shared_ptr<belcard::BelCardList> belCards = context->parser->parse(buffer);
 		if (belCards) {
@@ -128,7 +128,7 @@ LinphoneVcard* linphone_vcard_context_get_vcard_from_buffer(LinphoneVcardContext
 	LinphoneVcard *vCard = NULL;
 	if (context && buffer) {
 		if (!context->parser) {
-			context->parser = new belcard::BelCardParser();
+			context->parser = belcard::BelCardParser::getInstance();
 		}
 		shared_ptr<belcard::BelCard> belCard = context->parser->parseOne(buffer);
 		if (belCard) {
