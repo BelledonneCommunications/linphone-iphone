@@ -824,7 +824,7 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 	if (cr) {
 		switch (linphone_core_lime_enabled(cr->lc)) {
 			case LinphoneLimeDisabled: return FALSE;
-			case LinphoneLimeMandatory: return TRUE;
+			case LinphoneLimeMandatory:
 			case LinphoneLimePreferred: {
 				FILE *CACHEFD = NULL;
 				if (cr->lc->zrtp_secrets_cache != NULL) {
@@ -939,71 +939,75 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	char *content_type = "xml/cipher";
-	
-	if (linphone_chat_room_lime_available(room)) {
-		if (msg->content_type) {
-			if (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
-				/* it's a file transfer, content type shall be set to
-				application/cipher.vnd.gsma.rcs-ft-http+xml*/
-				content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
-			} else if (strcmp(msg->content_type, "application/im-iscomposing+xml") == 0) {
-				/* We don't encrypt composing messages */
-				return errcode;
+	if(linphone_core_lime_enabled(room->lc)) {
+		if (linphone_chat_room_lime_available(room)) {
+			if (msg->content_type) {
+				if (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
+					/* it's a file transfer, content type shall be set to
+					application/cipher.vnd.gsma.rcs-ft-http+xml*/
+					content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
+				} else if (strcmp(msg->content_type, "application/im-iscomposing+xml") == 0) {
+					/* We don't encrypt composing messages */
+					return errcode;
+				}
 			}
-		}
-		msg->content_type = ms_strdup(content_type);
+			msg->content_type = ms_strdup(content_type);
 	
 	
-		/* access the zrtp cache to get keys needed to cipher the message */
-		const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
-		FILE *CACHEFD = fopen(zrtp_secrets_cache, "rb+");
-		errcode = 0;
-		if (CACHEFD == NULL) {
-			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
-			errcode = 488;
-		} else {
-			size_t cacheSize;
-			char *cacheString;
-			xmlDocPtr cacheXml;
-			int retval;
-			uint8_t *crypted_body = NULL;
-			char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
-
-			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
-			if (!cacheString){
-				ms_warning("Unable to load content of ZRTP ZID cache to encrypt message");
-				errcode = 500;
-				return errcode;
-			}
-			cacheString[cacheSize] = '\0';
-			cacheSize += 1;
-			fclose(CACHEFD);
-			cacheXml = xmlParseDoc((xmlChar*)cacheString);
-			ms_free(cacheString);
-			retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg->message, (uint8_t *)peer, &crypted_body);
-			if (retval != 0) {
-				ms_warning("Unable to encrypt message for %s : %s", peer, lime_error_code_to_string(retval));
-				if (crypted_body) ms_free(crypted_body);
+			/* access the zrtp cache to get keys needed to cipher the message */
+			const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
+			FILE *CACHEFD = fopen(zrtp_secrets_cache, "rb+");
+			errcode = 0;
+			if (CACHEFD == NULL) {
+				ms_warning("Unable to access ZRTP ZID cache to encrypt message");
 				errcode = 488;
 			} else {
-				/* dump updated cache to a string */
-				xmlChar *xmlStringOutput;
-				int xmlStringLength;
-				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-				/* write it to the cache file */
-				CACHEFD = fopen(zrtp_secrets_cache, "wb+");
-				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
-					ms_warning("Unable to write zid cache");
+				size_t cacheSize;
+				char *cacheString;
+				xmlDocPtr cacheXml;
+				int retval;
+				uint8_t *crypted_body = NULL;
+				char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
+
+				cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+				if (!cacheString){
+					ms_warning("Unable to load content of ZRTP ZID cache to encrypt message");
+					errcode = 500;
+					return errcode;
 				}
-				xmlFree(xmlStringOutput);
+				cacheString[cacheSize] = '\0';
+				cacheSize += 1;
 				fclose(CACHEFD);
-				if (msg->message) {
-					ms_free(msg->message);
+				cacheXml = xmlParseDoc((xmlChar*)cacheString);
+				ms_free(cacheString);
+				retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg->message, (uint8_t *)peer, &crypted_body);
+				if (retval != 0) {
+					ms_warning("Unable to encrypt message for %s : %s", peer, lime_error_code_to_string(retval));
+					if (crypted_body) ms_free(crypted_body);
+					errcode = 488;
+				} else {
+					/* dump updated cache to a string */
+					xmlChar *xmlStringOutput;
+					int xmlStringLength;
+					xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+					/* write it to the cache file */
+					CACHEFD = fopen(zrtp_secrets_cache, "wb+");
+					if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
+						ms_warning("Unable to write zid cache");
+					}
+					xmlFree(xmlStringOutput);
+					fclose(CACHEFD);
+					if (msg->message) {
+						ms_free(msg->message);
+					}
+					msg->message = (char *)crypted_body;
 				}
-				msg->message = (char *)crypted_body;
+				ms_free(peer);
+				xmlFreeDoc(cacheXml);
 			}
-			ms_free(peer);
-			xmlFreeDoc(cacheXml);
+		} else {
+			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
+			errcode = 488;
 		}
 	}
 	return errcode;
