@@ -10,6 +10,7 @@
 "AAC-ELD 44kHz" = "AAC-ELD 44kHz";
 "AAC-ELD 48kHz" = "AAC-ELD 48kHz";
 "AMR" = "AMR";
+"BV16" = "BV16";
 "G.722" = "G.722";
 "G.729" = "G.729";
 "GSM" = "GSM";
