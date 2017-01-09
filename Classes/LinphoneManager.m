@@ -1360,6 +1360,27 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 }
 
 #pragma mark - Message composition start
+- (void) alertLIME:(LinphoneChatRoom *)room {
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"LIME Error", nil)
+								  									 message:NSLocalizedString(@"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
+																										   @"Please call this contact and verify his ZRTP key before sending your messages.",
+																										   nil)
+															  preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	[errView addAction:defaultAction];
+	
+	UIAlertAction* callAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Call", nil)
+														 style:UIAlertActionStyleDefault
+													   handler:^(UIAlertAction * action) {
+															[self call:linphone_chat_room_get_peer_address(room)];
+														}];
+	[errView addAction:callAction];
+	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+}
+
 
 - (void)onMessageComposeReceived:(LinphoneCore *)core forRoom:(LinphoneChatRoom *)room {
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneTextComposeEvent

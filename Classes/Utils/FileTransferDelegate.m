@@ -9,6 +9,7 @@
 #import "FileTransferDelegate.h"
 #import "Utils.h"
 #import "PhoneMainView.h"
+#import "LinphoneManager.h"
 
 @interface FileTransferDelegate ()
 @property(strong) NSMutableData *data;
@@ -171,8 +172,12 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	}
 
 	LOGI(@"%p Uploading content from message %p", self, _message);
-
 	linphone_chat_room_send_chat_message(chatRoom, _message);
+	
+	if(linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(chatRoom)) {
+		[LinphoneManager.instance alertLIME:chatRoom];
+	}
+	
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {

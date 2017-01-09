@@ -240,6 +240,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_chat_message_unref(msg);
 
 	[_tableController scrollToBottom:true];
+	
+	if(linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(_chatRoom)) {
+		[LinphoneManager.instance alertLIME:_chatRoom];
+	}
 
 	return TRUE;
 }

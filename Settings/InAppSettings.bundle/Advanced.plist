@@ -160,28 +160,6 @@
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentRight</string>
 		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>File sharing</string>
-		</dict>
-		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Server URL</string>
-			<key>Key</key>
-			<string>file_transfer_server_url_preference</string>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentRight</string>
-		</dict>
 	</array>
 </dict>
 </plist>

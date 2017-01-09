@@ -593,6 +593,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if (!linphone_core_sip_transport_supported(LC, LinphoneTransportTls)) {
 		[hiddenKeys addObject:@"media_encryption_preference"];
 	}
+	
+	if(!linphone_core_lime_available(LC)) {
+		[hiddenKeys addObject:@"use_lime_preference"];
+	}
 
 #ifndef DEBUG
 	[hiddenKeys addObject:@"debug_actions_group"];

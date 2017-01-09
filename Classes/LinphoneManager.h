@@ -140,6 +140,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)acceptCallForCallId:(NSString*)callid;
 - (LinphoneCall *)callByCallId:(NSString *)call_id;
 - (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
+- (void) alertLIME:(LinphoneChatRoom *)room;
 
 + (BOOL)langageDirectionIsRTL;
 + (void)kickOffNetworkConnection;
