@@ -4532,7 +4532,7 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc) {
 		return lc->net_conf.nat_address;
 	}
 
-	error = getnameinfo((struct sockaddr *)&ss, ss_len,
+	error = bctbx_getnameinfo((struct sockaddr *)&ss, ss_len,
 		ipstring, sizeof(ipstring), NULL, 0, NI_NUMERICHOST);
 	if (error) {
 		return lc->net_conf.nat_address;

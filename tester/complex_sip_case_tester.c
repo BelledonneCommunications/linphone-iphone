@@ -102,7 +102,7 @@ LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const 
 	 dest=linphone_address_new(NULL);
 	 
 	 wait_for(mgr->lc, mgr->lc, (int*)&addrinfo, 1);
-	 err=getnameinfo((struct sockaddr*)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
+	 err=bctbx_getnameinfo((struct sockaddr*)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
 	 if (err !=0 ){
 		 ms_error("linphone_core_manager_resolve(): getnameinfo error %s", gai_strerror(err));
 	 }

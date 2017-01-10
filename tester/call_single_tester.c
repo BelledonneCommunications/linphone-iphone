@@ -4920,7 +4920,7 @@ static void call_with_http_proxy(void) {
 	BC_ASSERT_PTR_NOT_NULL(res);
 	if (!res) goto end;
 
-	BC_ASSERT_EQUAL(err=getnameinfo(res->ai_addr, (socklen_t)res->ai_addrlen, ip, sizeof(ip)-1, NULL, 0, NI_NUMERICHOST), 0, int, "%i");
+	BC_ASSERT_EQUAL(err=bctbx_getnameinfo(res->ai_addr, (socklen_t)res->ai_addrlen, ip, sizeof(ip)-1, NULL, 0, NI_NUMERICHOST), 0, int, "%i");
 	if (err != 0){
 		ms_error("call_with_http_proxy(): getnameinfo() error: %s", gai_strerror(err));
 		goto end;
