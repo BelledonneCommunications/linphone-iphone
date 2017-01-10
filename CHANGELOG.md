@@ -12,7 +12,7 @@ Group changes to describe their impact on the project, as follows:
 
 ## [Unreleased]
 
-## [3.16] - 2017-09-01
+## [3.16.1] - 2017-09-01
 
 ### Added
 - Support of CallKit

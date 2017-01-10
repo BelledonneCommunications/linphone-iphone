@@ -1355,7 +1355,9 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 	[dict setObject:[NSValue valueWithPointer:call] forKey:@"call"];
 	[dict setObject:[NSNumber numberWithBool:on] forKey:@"on"];
-	[dict setObject:[NSString stringWithUTF8String:authentication_token] forKey:@"token"];
+	if (authentication_token) {
+		[dict setObject:[NSString stringWithUTF8String:authentication_token] forKey:@"token"];
+	}
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallEncryptionChanged object:self userInfo:dict];
 }
 
