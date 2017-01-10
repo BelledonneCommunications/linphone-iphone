@@ -1850,7 +1850,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	marie_call = linphone_core_get_current_call(marie->lc);
 	if (pauline_call) {
 		BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(pauline_call)));
-		if (!audio_stream_enabled) {
+		if (audio_stream_enabled) {
 			BC_ASSERT_TRUE(linphone_call_params_audio_enabled(linphone_call_get_current_params(pauline_call)));
 		}
 
