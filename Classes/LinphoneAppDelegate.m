@@ -110,6 +110,11 @@
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
+			LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+			if (data && data->timer) {
+				[data->timer invalidate];
+				data->timer = nil;
+			}
 			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
 					linphone_core_accept_call(LC, call);
