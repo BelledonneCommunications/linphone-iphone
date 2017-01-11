@@ -845,7 +845,7 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 						if (cacheXml) {
 							bool_t res;
 							limeURIKeys_t associatedKeys;
-							char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
+							char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 							
 							/* retrieve keys associated to the peer URI */
 							associatedKeys.peerURI = (uint8_t *)malloc(strlen(peer)+1);
