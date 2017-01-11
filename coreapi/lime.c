@@ -832,9 +832,9 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 					if (CACHEFD) {
 						size_t cacheSize;
 						xmlDocPtr cacheXml;
-						char *cacheString=ms_load_file_content(CACHEFD, &cacheSize);
-						if (!cacheString){
-							ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
+						char *cacheString = ms_load_file_content(CACHEFD, &cacheSize);
+						if (!cacheString) {
+							ms_warning("Unable to load content of ZRTP ZID cache");
 							return FALSE;
 						}
 						cacheString[cacheSize] = '\0';
@@ -845,15 +845,18 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 						if (cacheXml) {
 							bool_t res;
 							limeURIKeys_t associatedKeys;
+							char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
+							
 							/* retrieve keys associated to the peer URI */
-							associatedKeys.peerURI = (uint8_t *)malloc(strlen(cr->peer)+1);
-							strcpy((char *)(associatedKeys.peerURI), cr->peer);
+							associatedKeys.peerURI = (uint8_t *)malloc(strlen(peer)+1);
+							strcpy((char *)(associatedKeys.peerURI), peer);
 							associatedKeys.associatedZIDNumber  = 0;
 							associatedKeys.peerKeys = NULL;
 
 							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0 && associatedKeys.associatedZIDNumber != 0);
 							lime_freeKeys(&associatedKeys);
 							xmlFreeDoc(cacheXml);
+							ms_free(peer);
 							return res;
 						}
 					}
