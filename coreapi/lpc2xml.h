@@ -33,14 +33,14 @@ typedef enum _lpc2xml_log_level {
 
 typedef void(*lpc2xml_function)(void *ctx, lpc2xml_log_level level, const char *fmt, va_list list);
 
-lpc2xml_context* lpc2xml_context_new(lpc2xml_function cbf, void *ctx);
-void lpc2xml_context_destroy(lpc2xml_context*);
+LINPHONE_PUBLIC lpc2xml_context* lpc2xml_context_new(lpc2xml_function cbf, void *ctx);
+LINPHONE_PUBLIC void lpc2xml_context_destroy(lpc2xml_context*);
 
-int lpc2xml_set_lpc(lpc2xml_context* context, const LpConfig *lpc);
+LINPHONE_PUBLIC int lpc2xml_set_lpc(lpc2xml_context* context, const LpConfig *lpc);
 
-int lpc2xml_convert_file(lpc2xml_context* context, const char *filename);
-int lpc2xml_convert_fd(lpc2xml_context* context, int fd);
-int lpc2xml_convert_string(lpc2xml_context* context, char **content);
+LINPHONE_PUBLIC int lpc2xml_convert_file(lpc2xml_context* context, const char *filename);
+LINPHONE_PUBLIC int lpc2xml_convert_fd(lpc2xml_context* context, int fd);
+LINPHONE_PUBLIC int lpc2xml_convert_string(lpc2xml_context* context, char **content);
 
 
 #endif //LPC2XML_H_

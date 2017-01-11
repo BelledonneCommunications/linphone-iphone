@@ -33,19 +33,19 @@ typedef enum _xml2lpc_log_level {
 
 typedef void(*xml2lpc_function)(void *ctx, xml2lpc_log_level level, const char *fmt, va_list list);
 
-xml2lpc_context* xml2lpc_context_new(xml2lpc_function cbf, void *ctx);
-void xml2lpc_context_destroy(xml2lpc_context*);
+LINPHONE_PUBLIC xml2lpc_context* xml2lpc_context_new(xml2lpc_function cbf, void *ctx);
+LINPHONE_PUBLIC void xml2lpc_context_destroy(xml2lpc_context*);
 
-int xml2lpc_set_xml_file(xml2lpc_context* context, const char *filename);
-int xml2lpc_set_xml_fd(xml2lpc_context* context, int fd);
-int xml2lpc_set_xml_string(xml2lpc_context* context, const char *content);
+LINPHONE_PUBLIC int xml2lpc_set_xml_file(xml2lpc_context* context, const char *filename);
+LINPHONE_PUBLIC int xml2lpc_set_xml_fd(xml2lpc_context* context, int fd);
+LINPHONE_PUBLIC int xml2lpc_set_xml_string(xml2lpc_context* context, const char *content);
 
-int xml2lpc_set_xsd_file(xml2lpc_context* context, const char *filename);
-int xml2lpc_set_xsd_fd(xml2lpc_context* context, int fd);
-int xml2lpc_set_xsd_string(xml2lpc_context* context, const char *content);
+LINPHONE_PUBLIC int xml2lpc_set_xsd_file(xml2lpc_context* context, const char *filename);
+LINPHONE_PUBLIC int xml2lpc_set_xsd_fd(xml2lpc_context* context, int fd);
+LINPHONE_PUBLIC int xml2lpc_set_xsd_string(xml2lpc_context* context, const char *content);
 
-int xml2lpc_validate(xml2lpc_context *context);
-int xml2lpc_convert(xml2lpc_context *context, LpConfig *lpc);
+LINPHONE_PUBLIC int xml2lpc_validate(xml2lpc_context *context);
+LINPHONE_PUBLIC int xml2lpc_convert(xml2lpc_context *context, LpConfig *lpc);
 
 
 
