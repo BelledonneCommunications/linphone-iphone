@@ -4192,22 +4192,22 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
-static void recovered_call_on_network_switch_in_early_state_1(void) {
+static void recovered_call_on_network_switch_in_early_state(LinphoneCoreManager* callerMgr) {
 	const LinphoneCallParams *remote_params;
 	LinphoneCall *incoming_call;
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
-	linphone_core_invite_address(marie->lc, pauline->identity);
-	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
-	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+	linphone_core_invite_address(callerMgr->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
 
-	linphone_core_set_network_reachable(marie->lc, FALSE);
-	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
-	linphone_core_set_network_reachable(marie->lc, TRUE);
-	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+	linphone_core_set_network_reachable(callerMgr->lc, FALSE);
+	wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(callerMgr->lc, TRUE);
+	wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_NetworkReachableTrue, 2);
 
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 2));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallOutgoingRinging, 2));
 	incoming_call = linphone_core_get_current_call(pauline->lc);
 	remote_params = linphone_call_get_remote_params(incoming_call);
 	BC_ASSERT_PTR_NOT_NULL(remote_params);
@@ -4216,18 +4216,27 @@ static void recovered_call_on_network_switch_in_early_state_1(void) {
 		BC_ASSERT_PTR_NOT_NULL(replaces_header);
 	}
 	linphone_core_accept_call(pauline->lc, incoming_call);
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 
 	linphone_core_terminate_call(pauline->lc, incoming_call);
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
 end:
-	linphone_core_manager_destroy(marie);
+	
 	linphone_core_manager_destroy(pauline);
 }
-
+static void recovered_call_on_network_switch_in_early_state_1(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	recovered_call_on_network_switch_in_early_state(marie);
+	linphone_core_manager_destroy(marie);
+}
+static void recovered_call_on_network_switch_in_early_state_1_udp(void) {
+	LinphoneCoreManager* laure = linphone_core_manager_new("laure_rc_udp");
+	recovered_call_on_network_switch_in_early_state(laure);
+	linphone_core_manager_destroy(laure);
+}
 static void recovered_call_on_network_switch_in_early_state_2(void) {
 	LinphoneCall *incoming_call;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -5437,6 +5446,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with network switch", call_with_network_switch),
 	TEST_NO_TAG("Call with network switch and no recovery possible", call_with_network_switch_no_recovery),
 	TEST_ONE_TAG("Recovered call on network switch in early state 1", recovered_call_on_network_switch_in_early_state_1, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch in early state 1 (udp caller)", recovered_call_on_network_switch_in_early_state_1_udp, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch in early state 2", recovered_call_on_network_switch_in_early_state_2, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch in early state 3", recovered_call_on_network_switch_in_early_state_3, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch in early state 4", recovered_call_on_network_switch_in_early_state_4, "CallRecovery"),

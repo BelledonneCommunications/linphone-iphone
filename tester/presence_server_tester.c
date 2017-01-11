@@ -901,6 +901,99 @@ static void long_term_presence_with_phone_without_sip(void) {
 	}else ms_warning("Test skipped, no vcard support");
 }
 
+static char * generate_random_e164_phone_from_dial_plan(const LinphoneDialPlan *dialPlan) {
+	char phone[64];
+	size_t i;
+	/*now with have a dialplan*/
+	for (i = 0; i < MIN((size_t)dialPlan->nnl,sizeof(phone)-1); i++) {
+		phone[i] = '0' + rand() % 10;
+	}
+	phone[i]='\0';
+	
+	return ms_strdup_printf("+%s%s",dialPlan->ccc,phone);
+}
+/* use case:
+  I have a friend, I invite him to use Linphone for the first time.
+  This friend is already in my addressbook, with his phone number.
+  My friend installs Linphone, creates an account, validate number etc...
+  He can immediately see me in his Linphone users list.
+  However, it takes hours before I can see him in my Linphone users list.
+  */
+static void long_term_presence_with_crossed_refferences(void) {
+	if (linphone_core_vcard_supported()){
+		const LinphoneDialPlan *dialPlan;
+		char *e164_marie, *e164_pauline, *e164_laure;
+		LinphoneFriend* friend2;
+		
+		
+		while ((dialPlan = linphone_dial_plan_by_ccc_as_int(bctbx_random()%900)) == linphone_dial_plan_by_ccc(NULL));
+		
+		ms_message("Marie's phone number is %s", e164_marie=generate_random_e164_phone_from_dial_plan(dialPlan));
+		ms_message("Pauline's phone number is %s", e164_pauline=generate_random_e164_phone_from_dial_plan(dialPlan));
+		ms_message("Laure's phone number is %s", e164_laure=generate_random_e164_phone_from_dial_plan(dialPlan));
+		
+		
+		/*pauline has marie as friend*/
+		LinphoneCoreManager *pauline = linphone_core_manager_new3("pauline_rc",TRUE,e164_pauline);
+		linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
+		friend2=linphone_core_create_friend(pauline->lc);
+		linphone_friend_add_phone_number(friend2, e164_marie);
+		linphone_core_add_friend(pauline->lc,friend2);
+		linphone_friend_unref(friend2);
+		linphone_friend_list_set_rls_uri(linphone_core_get_default_friend_list(pauline->lc), "sip:rls@sip.example.org");
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), TRUE);
+		linphone_core_refresh_registers(pauline->lc);
+		
+		
+		//Laure has marie as friend
+		LinphoneCoreManager *laure = linphone_core_manager_new3("laure_tcp_rc",TRUE,e164_laure);
+		linphone_core_set_user_agent(laure->lc, "full-presence-support", NULL);
+		friend2=linphone_core_create_friend(laure->lc);
+		linphone_friend_add_phone_number(friend2, e164_marie);
+		linphone_core_add_friend(laure->lc,friend2);
+		linphone_friend_unref(friend2);
+		linphone_friend_list_set_rls_uri(linphone_core_get_default_friend_list(laure->lc), "sip:rls@sip.example.org");
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(laure->lc), TRUE);
+		linphone_core_refresh_registers(laure->lc);
+		
+		
+		/*because marie is not registered yet*/
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,laure->lc,&pauline->stat.number_of_LinphonePresenceActivityOnline,1,2000));
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,laure->lc,&laure->stat.number_of_LinphonePresenceActivityOnline,1,2000));
+		
+		//Now, marie register to the service
+		LinphoneCoreManager *marie = linphone_core_manager_new3("marie_rc", TRUE, e164_marie);
+		friend2=linphone_core_create_friend(marie->lc);
+		linphone_friend_add_phone_number(friend2, e164_pauline);
+		linphone_core_add_friend(marie->lc,friend2);
+		linphone_friend_unref(friend2);
+		linphone_friend_list_set_rls_uri(linphone_core_get_default_friend_list(marie->lc), "sip:rls@sip.example.org");
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(marie->lc), TRUE);
+		linphone_core_refresh_registers(marie->lc);
+		
+		//Pauline is already registered so I must be notified very rapidely
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,marie->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,1,4000));
+		
+		
+		//For Pauline and Laure long term presence check was already performed so they will not be notified until new subscription
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,laure->lc,&laure->stat.number_of_LinphonePresenceActivityOnline,1,4000));
+		BC_ASSERT_FALSE(wait_for_until(pauline->lc,laure->lc,&pauline->stat.number_of_LinphonePresenceActivityOnline,1,4000));
+		
+		//re-subscribe to get notification.
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), FALSE);
+		wait_for_until(pauline->lc, NULL, NULL, 0,2000); /*wait for unsubscribe*/
+		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), TRUE);
+		
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_LinphonePresenceActivityOnline,1,4000));
+		
+		linphone_core_manager_destroy(pauline);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(laure);
+		ms_free(e164_marie);
+		ms_free(e164_pauline);
+		ms_free(e164_laure);
+	}else ms_warning("Test skipped, no vcard support");
+}
 
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
@@ -918,6 +1011,7 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence list",long_term_presence_list, "longterm"),
 	TEST_ONE_TAG("Long term presence with +164 phone, without sip",long_term_presence_with_e164_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with phone, without sip",long_term_presence_with_phone_without_sip, "longterm"),
+	TEST_ONE_TAG("Long term presence with cross refference", long_term_presence_with_crossed_refferences,"longtern"),
 	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
 	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
 };
