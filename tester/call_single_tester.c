@@ -3793,8 +3793,8 @@ static void call_with_rtp_io_mode(void) {
 		/* The callee uses the RTP IO mode with the PCMU codec to send back audio to the caller. */
 		disable_all_audio_codecs_except_one(pauline->lc, "pcmu", -1);
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_io", 1);
-		lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", "127.0.0.1");
-		lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", "127.0.0.1");
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", linphone_core_ipv6_enabled(pauline->lc) ? "::1" : "127.0.0.1");
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", linphone_core_ipv6_enabled(pauline->lc) ? "::1" : "127.0.0.1");
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_local_port", 17076);
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_remote_port", 17076);
 		lp_config_set_string(pauline->lc->config, "sound", "rtp_map", "pcmu/8000/1");
