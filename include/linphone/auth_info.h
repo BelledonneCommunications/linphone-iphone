@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_AUTH_INFO_H
 
 #include <mediastreamer2/mscommon.h>
+
 #ifndef LINPHONE_PUBLIC
 #define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
@@ -55,6 +56,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
+/**
+ * Safely cast a belle_sip_object_t into LinphoneAuthInfo
+ */
+#define LINPHONE_AUTH_INFO(obj) BELLE_SIP_CAST(obj, LinphoneAuthInfo)
 
 #ifdef __cplusplus
 extern "C" {
