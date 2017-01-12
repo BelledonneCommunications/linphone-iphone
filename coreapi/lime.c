@@ -1009,8 +1009,10 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 				xmlFreeDoc(cacheXml);
 			}
 		} else {
-			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
-			errcode = 488;
+			if (linphone_core_lime_enabled(lc) == LinphoneLimeMandatory) {
+				ms_warning("Unable to access ZRTP ZID cache to encrypt message");
+				errcode = 488;
+			}
 		}
 	}
 	return errcode;

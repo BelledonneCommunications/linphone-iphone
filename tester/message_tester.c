@@ -647,8 +647,8 @@ static void file_transfer_using_external_body_url(void) {
 		LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 
 		/* make sure lime is disabled */
-		linphone_core_enable_lime(marie->lc, FALSE);
-		linphone_core_enable_lime(pauline->lc, FALSE);
+		linphone_core_enable_lime(marie->lc, LinphoneLimeDisabled);
+		linphone_core_enable_lime(pauline->lc, LinphoneLimeDisabled);
 
 		/* create a chatroom on pauline's side */
 		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
@@ -854,8 +854,8 @@ static void _is_composing_notification(bool_t lime_enabled) {
 			goto end;
 		}
 		/* make sure lime is enabled */
-		linphone_core_enable_lime(marie->lc, 1);
-		linphone_core_enable_lime(pauline->lc, 1);
+		linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
+		linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 		
 		/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
 		ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
@@ -1032,8 +1032,8 @@ static void _im_error_delivery_notification(bool_t online) {
 	}
 
 	/* Make sure lime is enabled */
-	linphone_core_enable_lime(marie->lc, 1);
-	linphone_core_enable_lime(pauline->lc, 1);
+	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
+	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 
 	/* Set the zid cache files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri. */
 	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
@@ -1112,8 +1112,8 @@ static void lime_text_message(void) {
 		goto end;
 	}
 	/* make sure lime is enabled */
-	linphone_core_enable_lime(marie->lc, 1);
-	linphone_core_enable_lime(pauline->lc, 1);
+	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
+	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 
 	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
 	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
@@ -1150,7 +1150,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void lime_text_message_to_non_lime(void) {
+static void lime_text_message_to_non_lime(bool_t sender_policy_mandatory, bool_t lime_key_available) {
 	FILE *ZIDCachePaulineFD;
 	LinphoneChatRoom* chat_room;
 	char* filepath;
@@ -1162,24 +1162,32 @@ static void lime_text_message_to_non_lime(void) {
 		goto end;
 	}
 	/* make sure lime is enabled */
-	linphone_core_enable_lime(marie->lc, 0);
-	linphone_core_enable_lime(pauline->lc, 1);
+	linphone_core_enable_lime(marie->lc, LinphoneLimeDisabled);
+	linphone_core_enable_lime(pauline->lc, sender_policy_mandatory ? LinphoneLimeMandatory : LinphoneLimePreferred);
 
-	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
-	ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
-	fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
-	fclose(ZIDCachePaulineFD);
+	if (lime_key_available) {
+		/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
+		ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
+		fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
+		fclose(ZIDCachePaulineFD);
 
-	filepath = bc_tester_file("tmpZIDCachePauline.xml");
-	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	bc_free(filepath);
+		filepath = bc_tester_file("tmpZIDCachePauline.xml");
+		linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
+		bc_free(filepath);
+	}
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	//since we cannot decrypt message, we should not receive any message
-	BC_ASSERT_FALSE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,0, int, "%d");
+	if (sender_policy_mandatory || lime_key_available) {
+		BC_ASSERT_FALSE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+		BC_ASSERT_FALSE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy, 0, int, "%d");
+	} else {
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy, 1, int, "%d");
+	}
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 end:
@@ -1187,6 +1195,19 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void lime_text_message_to_non_lime_mandatory_policy(void) {
+	lime_text_message_to_non_lime(TRUE, TRUE);
+}
+
+static void lime_text_message_to_non_lime_preferred_policy(void) {
+	lime_text_message_to_non_lime(FALSE, TRUE);
+}
+
+static void lime_text_message_to_non_lime_preferred_policy_2(void) {
+	lime_text_message_to_non_lime(FALSE, FALSE);
+}
+
 void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_stored_msg, bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download) {
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
@@ -1209,8 +1230,8 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 		goto end;
 	}
 	/* make sure lime is enabled */
-	linphone_core_enable_lime(marie->lc, 1);
-	linphone_core_enable_lime(pauline->lc, 1);
+	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
+	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 	if (!encrypt_file) {
 		LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
 		lp_config_set_int(pauline_lp,"sip","lime_for_file_sharing",0);
@@ -2271,7 +2292,9 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("IM error delivery notification online", im_error_delivery_notification_online, "LIME"),
 	TEST_ONE_TAG("IM error delivery notification offline", im_error_delivery_notification_offline, "LIME"),
 	TEST_ONE_TAG("Lime text message", lime_text_message, "LIME"),
-	TEST_ONE_TAG("Lime text message to non lime", lime_text_message_to_non_lime, "LIME"),
+	TEST_ONE_TAG("Lime text message to non lime", lime_text_message_to_non_lime_mandatory_policy, "LIME"),
+	TEST_ONE_TAG("Lime text message to non lime with preferred policy", lime_text_message_to_non_lime_preferred_policy, "LIME"),
+	TEST_ONE_TAG("Lime text message to non lime with preferred policy 2", lime_text_message_to_non_lime_preferred_policy_2, "LIME"),
 	TEST_ONE_TAG("Lime transfer message", lime_transfer_message, "LIME"),
 	TEST_ONE_TAG("Lime transfer message 2", lime_transfer_message_2, "LIME"),
 	TEST_ONE_TAG("Lime transfer message 3", lime_transfer_message_3, "LIME"),

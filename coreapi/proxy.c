@@ -537,7 +537,7 @@ bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg)
 	return cfg->quality_reporting_enabled;
 }
 
-void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
+void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, int interval) {
 	cfg->quality_reporting_interval = interval;
 }
 
