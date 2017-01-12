@@ -20,87 +20,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "private.h"
 
-/**
- * Open a new source on this player.
- * @param obj the player
- * @param filename file to open.
- * @param cb a callback used to notify end of play.
- * @param user_data a user-data provided in the callback to help the application to retrieve its context.
- * @return 0 if successful, -1 otherwise
-**/
 int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
 	obj->user_data=user_data;
 	obj->cb=cb;
 	return obj->open(obj,filename);
 }
 
-/**
- * Start a play operation. The player must have been open previously with linphone_player_open().
- * @param obj the player.
- * @return 0 if successful, -1 otherwise
-**/
 int linphone_player_start(LinphonePlayer *obj){
 	return obj->start(obj);
 }
 
-/**
- * Suspend a play operation. The player must have been started previously with linphone_player_start().
- * @param obj the player.
- * @return 0 if successful, -1 otherwise
-**/
 int linphone_player_pause(LinphonePlayer *obj){
 	return obj->pause(obj);
 }
 
-/**
- * Seek at a given position given in milliseconds. The player must be in the paused state.
- * @param obj the player.
- * @param time_ms the position to seek to.
- * @return 0 if successful, -1 otherwise
-**/
 int linphone_player_seek(LinphonePlayer *obj, int time_ms){
 	return obj->seek(obj,time_ms);
 }
 
-/**
- * Get the state of play operation.
- * @param obj the player.
- * @return the state of the player within MSPlayerClosed, MSPlayerStarted, MSPlayerPaused.
-**/
 MSPlayerState linphone_player_get_state(LinphonePlayer *obj){
 	return obj->get_state(obj);
 }
 
-/**
- * Get the duration of the media
- * @param obj the player
- * @return  The duration in milliseconds
- */
 int linphone_player_get_duration(LinphonePlayer *obj) {
 	return obj->get_duration(obj);
 }
 
-/**
- * Get the position of the playback
- * @param obj the player
- * @return Position of the playback in milliseconds
- */
 int linphone_player_get_current_position(LinphonePlayer *obj) {
 	return obj->get_position(obj);
 }
 
-/**
- * Close the player.
- * @param obj the player.
-**/
 void linphone_player_close(LinphonePlayer *obj){
 	obj->close(obj);
 }
 
-/**
- * @brief Destroy a player
- * @param obj The player
- */
 void linphone_player_destroy(LinphonePlayer *obj) {
 	if(obj->destroy) obj->destroy(obj);
 }

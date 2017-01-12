@@ -2139,7 +2139,6 @@ void linphone_call_send_vfu_request(LinphoneCall *call) {
 #endif
 }
 
-
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->jpegwriter!=NULL){
@@ -3991,9 +3990,6 @@ static void update_local_stats(LinphoneCallStats *stats, MediaStream *stream) {
 	media_stream_get_local_rtp_stats(stream, &stats->rtp_stats);
 }
 
-/**
- * Access last known statistics for audio stream, for a given call.
-**/
 const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
 	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_AUDIO];
 	if (call->audiostream){
@@ -4002,9 +3998,6 @@ const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
 	return stats;
 }
 
-/**
- * Access last known statistics for video stream, for a given call.
-**/
 const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_VIDEO];
 	if (call->videostream){
@@ -4013,9 +4006,6 @@ const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	return stats;
 }
 
-/**
- * Access last known statistics for video stream, for a given call.
-**/
 const LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call) {
 	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_TEXT];
 	if (call->textstream){

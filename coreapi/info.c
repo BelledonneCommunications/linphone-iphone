@@ -34,9 +34,6 @@ struct _LinphoneInfoMessage{
 };
 
 
-/**
- * Destroy a LinphoneInfoMessage
-**/
 void linphone_info_message_destroy(LinphoneInfoMessage *im){
 	if (im->content) linphone_content_unref(im->content);
 	if (im->headers) sal_custom_header_free(im->headers);
@@ -51,63 +48,29 @@ LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig)
 	return im;
 }
 
-/**
- * Creates an empty info message.
- * @param lc the LinphoneCore
- * @return a new LinphoneInfoMessage.
- * 
- * The info message can later be filled with information using linphone_info_message_add_header() or linphone_info_message_set_content(),
- * and finally sent with linphone_core_send_info_message().
-**/
 LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
 	LinphoneInfoMessage *im=ms_new0(LinphoneInfoMessage,1);
 	return im;
 }
 
-/**
- * Send a LinphoneInfoMessage through an established call
- * @param call the call
- * @param info the info message
-**/
 int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(info->content);
 	sal_op_set_sent_custom_header(call->op, info->headers);
 	return sal_send_info(call->op,NULL, NULL, body_handler);
 }
 
-/**
- * Add a header to an info message to be sent.
- * @param im the info message
- * @param name the header'name
- * @param value the header's value
-**/
 void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name, const char *value){
 	im->headers=sal_custom_header_append(im->headers, name, value);
 }
 
-/**
- * Obtain a header value from a received info message.
- * @param im the info message
- * @param name the header'name
- * @return the corresponding header's value, or NULL if not exists.
-**/
 const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, const char *name){
 	return sal_custom_header_find(im->headers,name);
 }
 
-/**
- * Assign a content to the info message.
- * @param im the linphone info message
- * @param content the content described as a #LinphoneContent structure.
- * All fields of the LinphoneContent are copied, thus the application can destroy/modify/recycloe the content object freely ater the function returns.
-**/
 void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content){
 	im->content=linphone_content_copy(content);
 }
 
-/**
- * Returns the info message's content as a #LinphoneContent structure.
-**/
 const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMessage *im){
 	return (im->content && linphone_content_get_type(im->content)) ? im->content : NULL;
 }
