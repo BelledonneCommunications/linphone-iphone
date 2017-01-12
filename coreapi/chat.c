@@ -392,6 +392,23 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			}
 		}
 		
+		if (!identity) {
+			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
+			if (proxy) {
+				identity = linphone_proxy_config_get_identity(proxy);
+			} else {
+				identity = linphone_core_get_primary_contact(cr->lc);
+			}
+		}
+		if (msg->from){
+			/*
+			 * BUG
+			 * the file transfer message constructor sets the from, but doesn't do it as well as here.
+			 */
+			linphone_address_destroy(msg->from);
+		}
+		msg->from = linphone_address_new(identity);
+		
 		if (imee) {
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 			LinphoneImEncryptionEngineCbsOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
@@ -401,11 +418,6 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		}
 		
 		if (op == NULL) {
-			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
-			if (proxy) {
-				identity = linphone_proxy_config_get_identity(proxy);
-			} else
-				identity = linphone_core_get_primary_contact(cr->lc);
 			/*sending out of calls*/
 			msg->op = op = sal_op_new(cr->lc->sal);
 			linphone_configure_op(cr->lc, op, cr->peer_url, msg->custom_headers,
@@ -435,19 +447,11 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			ms_free(peer_uri);
 		}
 
-		if (msg->from){
-			/*
-			 * BUG
-			 * the file transfer message constructor sets the from, but doesn't do it as well as here.
-			 */
-			linphone_address_destroy(msg->from);
-		}
 		if (msg->message && message_not_encrypted && strcmp(msg->message, message_not_encrypted) != 0) {
 			// We replace the encrypted message by the original one so it can be correctly stored and displayed by the application
 			ms_free(msg->message);
 			msg->message = ms_strdup(message_not_encrypted);
 		}
-		msg->from = linphone_address_new(identity);
 		msg->message_id = ms_strdup(sal_op_get_call_id(op)); /* must be known at that time */
 		msg->storage_id = linphone_chat_message_store(msg);
 
