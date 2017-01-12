@@ -402,7 +402,7 @@ LINPHONE_PUBLIC bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig
  * @return TRUE if a phone number was recognized, FALSE otherwise.
  * @deprecated use linphone_proxy_config_normalize_phone_number()
  */
-LINPHONE_PUBLIC bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
 
 /**
  * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
@@ -447,6 +447,7 @@ LINPHONE_PUBLIC LinphonePrivacyMask linphone_proxy_config_get_privacy(const Linp
  * Set the http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml
  * @param[in] cfg #LinphoneProxyConfig object.
  * @param server_url URL of the file server like https://file.linphone.org/upload.php
+ * @warning That function isn't implemented yet.
  * */
 LINPHONE_PUBLIC void linphone_proxy_config_set_file_transfer_server(LinphoneProxyConfig *cfg, const char * server_url);
 
@@ -454,6 +455,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_file_transfer_server(LinphoneProx
  * Get the http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml
  * @param[in] cfg #LinphoneProxyConfig object.
  * @return URL of the file server like https://file.linphone.org/upload.php
+ * @warning That function isn't implemented yet.
  * */
 LINPHONE_PUBLIC const char* linphone_proxy_config_get_file_transfer_server(const LinphoneProxyConfig *cfg);
 
