@@ -408,7 +408,7 @@ class CParser(object):
 		self.cBaseType = ['void', 'bool_t', 'char', 'short', 'int', 'long', 'size_t', 'time_t', 'float', 'double']
 		self.cListType = 'bctbx_list_t'
 		self.regexFixedSizeInteger = '^(u?)int(\d?\d)_t$'
-		self.methodBl = ['ref', 'unref', 'new', 'destroy', 'getCurrentCallbacks']
+		self.methodBl = ['ref', 'unref', 'new', 'destroy', 'getCurrentCallbacks', 'setUserData', 'getUserData']
 		self.functionBl = ['linphone_tunnel_get_http_proxy',
 					   'linphone_core_can_we_add_call',
 					   'linphone_core_get_default_proxy',

@@ -99,7 +99,7 @@ std::shared_ptr<Core> Factory::createCoreWithConfig(const std::shared_ptr<CoreLi
 	LinphoneCoreCbs *cbs = linphone_core_get_current_callbacks(lc);
 	CoreListener *listener = (CoreListener *)linphone_core_cbs_get_user_data(cbs);
 	{{/ismultilistenable}}
-	{{#hasReturnValue}}return {{/hasReturnValue}}{{{cppMethodCallingLine}}}
+	{{#hasReturnValue}}return {{/hasReturnValue}}{{{cppMethodCallingLine}}};
 }
 {{/wrapperCbs}}
 

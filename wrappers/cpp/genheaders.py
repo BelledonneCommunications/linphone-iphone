@@ -130,7 +130,7 @@ class CppTranslator(object):
 		wrapperCbDict['hasReturnValue'] = (params['returnType'] != 'void')
 		wrapperCbDict['hasNotReturnValue'] = not wrapperCbDict['hasReturnValue']
 		wrapperCbDict['callbackSetter'] = listenedClass.name.to_snake_case(fullName=True) + '_cbs_set_' + method.name.to_snake_case()[3:]
-		wrapperCbDict['cppMethodCallingLine'] = 'listener->{methodName}({wrappedArgs});'.format(
+		wrapperCbDict['cppMethodCallingLine'] = 'listener->{methodName}({wrappedArgs})'.format(
 			methodName=method.name.to_camel_case(lower=True),
 			wrappedArgs=', '.join(wrappedArgs))
 		wrapperCbDict['cppMethodCallingLine'] = CppTranslator._wrap_cpp_expression_to_c(self,
