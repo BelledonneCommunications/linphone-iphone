@@ -166,15 +166,15 @@ void lp_section_add_item(LpSection *sec,LpItem *item){
 	sec->items=bctbx_list_append(sec->items,(void *)item);
 }
 
-void lp_config_add_section(LpConfig *lpconfig, LpSection *section){
+void linphone_config_add_section(LpConfig *lpconfig, LpSection *section){
 	lpconfig->sections=bctbx_list_append(lpconfig->sections,(void *)section);
 }
 
-void lp_config_add_section_param(LpSection *section, LpSectionParam *param){
+void linphone_config_add_section_param(LpSection *section, LpSectionParam *param){
 	section->params = bctbx_list_append(section->params, (void *)param);
 }
 
-void lp_config_remove_section(LpConfig *lpconfig, LpSection *section){
+void linphone_config_remove_section(LpConfig *lpconfig, LpSection *section){
 	lpconfig->sections=bctbx_list_remove(lpconfig->sections,(void *)section);
 	lp_section_destroy(section);
 }
@@ -200,7 +200,7 @@ static int is_a_comment(const char *str){
 	return 0;
 }
 
-LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
+LpSection *linphone_config_find_section(const LpConfig *lpconfig, const char *name){
 	LpSection *sec;
 	bctbx_list_t *elem;
 	/*printf("Looking for section %s\n",name);*/
@@ -254,7 +254,7 @@ LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 	return NULL;
 }
 
-static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpSection* cur) {
+static LpSection* linphone_config_parse_line(LpConfig* lpconfig, const char* line, LpSection* cur) {
 	LpSectionParam *params = NULL;
 	char *pos1,*pos2;
 	int nbs;
@@ -274,10 +274,10 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 			nbs = sscanf(pos1+1, "%s", secname);
 			if (nbs >= 1) {
 				if (strlen(secname) > 0) {
-					cur = lp_config_find_section (lpconfig,secname);
+					cur = linphone_config_find_section (lpconfig,secname);
 					if (cur == NULL) {
 						cur = lp_section_new(secname);
-						lp_config_add_section(lpconfig, cur);
+						linphone_config_add_section(lpconfig, cur);
 					}
 
 					if (pos2 > pos1 + 1 + strlen(secname)) {
@@ -291,7 +291,7 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 							*pos1 = ' ';
 							if (sscanf(pos2, "%s %s", key, value) == 2) {
 								params = lp_section_param_new(key, value);
-								lp_config_add_section_param(cur, params);
+								linphone_config_add_section_param(cur, params);
 
 								pos2 += strlen(key) + strlen(value) + 2; // Remove the = sign + the white space after each param
 								pos1 = strchr(pos2, '=');
@@ -361,22 +361,22 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 	return cur;
 }
 
-void lp_config_parse(LpConfig *lpconfig, bctbx_vfs_file_t* pFile){
+void linphone_config_parse(LpConfig *lpconfig, bctbx_vfs_file_t* pFile){
 	char tmp[MAX_LEN]= {'\0'};
 	LpSection* current_section = NULL;
 	int size  =0;
 	if (pFile==NULL) return;
 	while(( size = bctbx_file_get_nxtline(pFile, tmp, MAX_LEN)) > 0){
 		//tmp[size] = '\0';
-		current_section = lp_config_parse_line(lpconfig, tmp, current_section);
+		current_section = linphone_config_parse_line(lpconfig, tmp, current_section);
 	}
 }
 
-LpConfig * lp_config_new(const char *filename){
-	return lp_config_new_with_factory(filename, NULL);
+LpConfig * linphone_config_new(const char *filename){
+	return linphone_config_new_with_factory(filename, NULL);
 }
 
-LpConfig * lp_config_new_from_buffer(const char *buffer){
+LpConfig * linphone_config_new_from_buffer(const char *buffer){
 	LpConfig* conf = lp_new0(LpConfig,1);
 	LpSection* current_section = NULL;
 
@@ -387,7 +387,7 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 	conf->refcnt=1;
 
 	while( line != NULL ){
-		current_section = lp_config_parse_line(conf,line,current_section);
+		current_section = linphone_config_parse_line(conf,line,current_section);
 		line = strtok_r(NULL, "\n", &strtok_storage);
 	}
 
@@ -396,7 +396,7 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 	return conf;
 }
 
-LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
+LpConfig *linphone_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	lpconfig->g_bctbx_vfs = bctbx_vfs_get_default();
 	
@@ -438,14 +438,14 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		}
 #endif
 		if (lpconfig->pFile != NULL){
-		    lp_config_parse(lpconfig, lpconfig->pFile);
+		    linphone_config_parse(lpconfig, lpconfig->pFile);
 			bctbx_file_close(lpconfig->pFile);
 			lpconfig->pFile = NULL;
 			lpconfig->modified=0;
 		}
 	}
 	if (factory_config_filename != NULL) {
-		lp_config_read_file(lpconfig, factory_config_filename);
+		linphone_config_read_file(lpconfig, factory_config_filename);
 	}
 	return lpconfig;
 
@@ -454,12 +454,12 @@ fail:
 	return NULL;
 }
 
-int lp_config_read_file(LpConfig *lpconfig, const char *filename){
+int linphone_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	bctbx_vfs_file_t* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
 	if (pFile != NULL){
 		ms_message("Reading config information from %s", path);
-		lp_config_parse(lpconfig, pFile);
+		linphone_config_parse(lpconfig, pFile);
 		bctbx_file_close(pFile);
 		ms_free(path);
 		return 0;
@@ -476,7 +476,7 @@ void lp_item_set_value(LpItem *item, const char *value){
 }
 
 
-static void _lp_config_destroy(LpConfig *lpconfig){
+static void _linphone_config_destroy(LpConfig *lpconfig){
 	if (lpconfig->filename!=NULL) ortp_free(lpconfig->filename);
 	if (lpconfig->tmpfilename) ortp_free(lpconfig->tmpfilename);
 	bctbx_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
@@ -484,25 +484,25 @@ static void _lp_config_destroy(LpConfig *lpconfig){
 	free(lpconfig);
 }
 
-LpConfig *lp_config_ref(LpConfig *lpconfig){
+LpConfig *linphone_config_ref(LpConfig *lpconfig){
 	lpconfig->refcnt++;
 	return lpconfig;
 }
 
-void lp_config_unref(LpConfig *lpconfig){
+void linphone_config_unref(LpConfig *lpconfig){
 	lpconfig->refcnt--;
 	if (lpconfig->refcnt==0)
-		_lp_config_destroy(lpconfig);
+		_linphone_config_destroy(lpconfig);
 }
 
-void lp_config_destroy(LpConfig *lpconfig){
-	lp_config_unref(lpconfig);
+void linphone_config_destroy(LpConfig *lpconfig){
+	linphone_config_unref(lpconfig);
 }
 
-const char *lp_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value){
+const char *linphone_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value){
 	LpSection *sec;
 	LpSectionParam *param;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL) {
 		param = lp_section_find_param(sec, key);
 		if (param != NULL) return param->value;
@@ -510,10 +510,10 @@ const char *lp_config_get_section_param_string(const LpConfig *lpconfig, const c
 	return default_value;
 }
 
-const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string){
+const char *linphone_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string){
 	LpSection *sec;
 	LpItem *item;
-	sec=lp_config_find_section(lpconfig,section);
+	sec=linphone_config_find_section(lpconfig,section);
 	if (sec!=NULL){
 		item=lp_section_find_item(sec,key);
 		if (item!=NULL) return item->value;
@@ -521,9 +521,9 @@ const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, 
 	return default_string;
 }
 
-bctbx_list_t * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, bctbx_list_t *default_list) {
+bctbx_list_t * linphone_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, bctbx_list_t *default_list) {
 	LpItem *item;
-	LpSection *sec = lp_config_find_section(lpconfig, section);
+	LpSection *sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL) {
 		item = lp_section_find_item(sec, key);
 		if (item != NULL) {
@@ -546,8 +546,8 @@ bctbx_list_t * lp_config_get_string_list(const LpConfig *lpconfig, const char *s
 	return default_list;
 }
 
-bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
-	const char *str = lp_config_get_string(lpconfig, section, key, NULL);
+bool_t linphone_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
+	const char *str = linphone_config_get_string(lpconfig, section, key, NULL);
 	if (str != NULL) {
 		char *minusptr = strchr(str, '-');
 		if ((minusptr == NULL) || (minusptr == str)) {
@@ -566,8 +566,8 @@ bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const 
 }
 
 
-int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *key, int default_value){
-	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
+int linphone_config_get_int(const LpConfig *lpconfig,const char *section, const char *key, int default_value){
+	const char *str=linphone_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
 		int ret=0;
 
@@ -580,8 +580,8 @@ int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *
 	else return default_value;
 }
 
-int64_t lp_config_get_int64(const LpConfig *lpconfig,const char *section, const char *key, int64_t default_value){
-	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
+int64_t linphone_config_get_int64(const LpConfig *lpconfig,const char *section, const char *key, int64_t default_value){
+	const char *str=linphone_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
 #ifdef _WIN32
 		return (int64_t)_atoi64(str);
@@ -592,18 +592,18 @@ int64_t lp_config_get_int64(const LpConfig *lpconfig,const char *section, const 
 	else return default_value;
 }
 
-float lp_config_get_float(const LpConfig *lpconfig,const char *section, const char *key, float default_value){
-	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
+float linphone_config_get_float(const LpConfig *lpconfig,const char *section, const char *key, float default_value){
+	const char *str=linphone_config_get_string(lpconfig,section,key,NULL);
 	float ret=default_value;
 	if (str==NULL) return default_value;
 	sscanf(str,"%f",&ret);
 	return ret;
 }
 
-bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+bool_t linphone_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
 	LpSection *sec;
 	LpItem *item;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL){
 		item = lp_section_find_item(sec, key);
 		if (item != NULL) return item->overwrite;
@@ -611,19 +611,19 @@ bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const ch
 	return FALSE;
 }
 
-bool_t lp_config_get_overwrite_flag_for_section(const LpConfig *lpconfig, const char *section) {
+bool_t linphone_config_get_overwrite_flag_for_section(const LpConfig *lpconfig, const char *section) {
 	LpSection *sec;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL){
 		return sec->overwrite;
 	}
 	return FALSE;
 }
 
-bool_t lp_config_get_skip_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+bool_t linphone_config_get_skip_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
 	LpSection *sec;
 	LpItem *item;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL){
 		item = lp_section_find_item(sec, key);
 		if (item != NULL) return item->skip;
@@ -631,18 +631,18 @@ bool_t lp_config_get_skip_flag_for_entry(const LpConfig *lpconfig, const char *s
 	return FALSE;
 }
 
-bool_t lp_config_get_skip_flag_for_section(const LpConfig *lpconfig, const char *section) {
+bool_t linphone_config_get_skip_flag_for_section(const LpConfig *lpconfig, const char *section) {
 	LpSection *sec;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL){
 		return sec->skip;
 	}
 	return FALSE;
 }
 
-void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value){
+void linphone_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value){
 	LpItem *item;
-	LpSection *sec=lp_config_find_section(lpconfig,section);
+	LpSection *sec=linphone_config_find_section(lpconfig,section);
 	if (sec!=NULL){
 		item=lp_section_find_item(sec,key);
 		if (item!=NULL){
@@ -655,13 +655,13 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 		}
 	}else if (value!=NULL && value[0] != '\0'){
 		sec=lp_section_new(section);
-		lp_config_add_section(lpconfig,sec);
+		linphone_config_add_section(lpconfig,sec);
 		lp_section_add_item(sec,lp_item_new(key,value));
 	}
 	lpconfig->modified++;
 }
 
-void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value) {
+void linphone_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value) {
 	char *strvalue = NULL;
 	char *tmp = NULL;
 	const bctbx_list_t *elem;
@@ -673,72 +673,72 @@ void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const ch
 		}
 		else strvalue = ms_strdup((const char *)elem->data);
 	}
-	lp_config_set_string(lpconfig, section, key, strvalue);
+	linphone_config_set_string(lpconfig, section, key, strvalue);
 	if (strvalue) ms_free(strvalue);
 }
 
-void lp_config_set_range(LpConfig *lpconfig, const char *section, const char *key, int min_value, int max_value) {
+void linphone_config_set_range(LpConfig *lpconfig, const char *section, const char *key, int min_value, int max_value) {
 	char tmp[30];
 	snprintf(tmp, sizeof(tmp), "%i-%i", min_value, max_value);
-	lp_config_set_string(lpconfig, section, key, tmp);
+	linphone_config_set_string(lpconfig, section, key, tmp);
 }
 
-void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, int value){
+void linphone_config_set_int(LpConfig *lpconfig,const char *section, const char *key, int value){
 	char tmp[30];
 	snprintf(tmp,sizeof(tmp),"%i",value);
-	lp_config_set_string(lpconfig,section,key,tmp);
+	linphone_config_set_string(lpconfig,section,key,tmp);
 }
 
-void lp_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value){
+void linphone_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value){
 	char tmp[30];
 	snprintf(tmp,sizeof(tmp),"0x%x",value);
-	lp_config_set_string(lpconfig,section,key,tmp);
+	linphone_config_set_string(lpconfig,section,key,tmp);
 }
 
-void lp_config_set_int64(LpConfig *lpconfig,const char *section, const char *key, int64_t value){
+void linphone_config_set_int64(LpConfig *lpconfig,const char *section, const char *key, int64_t value){
 	char tmp[30];
 	snprintf(tmp,sizeof(tmp),"%lli",(long long)value);
-	lp_config_set_string(lpconfig,section,key,tmp);
+	linphone_config_set_string(lpconfig,section,key,tmp);
 }
 
 
-void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key, float value){
+void linphone_config_set_float(LpConfig *lpconfig,const char *section, const char *key, float value){
 	char tmp[30];
 	snprintf(tmp,sizeof(tmp),"%f",value);
-	lp_config_set_string(lpconfig,section,key,tmp);
+	linphone_config_set_string(lpconfig,section,key,tmp);
 }
 
-void lp_config_set_overwrite_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
+void linphone_config_set_overwrite_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
 	LpSection *sec;
 	LpItem *item;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL) {
 		item = lp_section_find_item(sec, key);
 		if (item != NULL) item->overwrite = value;
 	}
 }
 
-void lp_config_set_overwrite_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
+void linphone_config_set_overwrite_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
 	LpSection *sec;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL) {
 		sec->overwrite = value;
 	}
 }
 
-void lp_config_set_skip_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
+void linphone_config_set_skip_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
 	LpSection *sec;
 	LpItem *item;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL) {
 		item = lp_section_find_item(sec, key);
 		if (item != NULL) item->skip = value;
 	}
 }
 
-void lp_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
+void linphone_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
 	LpSection *sec;
-	sec = lp_config_find_section(lpconfig, section);
+	sec = linphone_config_find_section(lpconfig, section);
 	if (sec != NULL) {
 		sec->skip = value;
 	}
@@ -783,7 +783,7 @@ void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 	
 }
 
-int lp_config_sync(LpConfig *lpconfig){
+int linphone_config_sync(LpConfig *lpconfig){
 	bctbx_vfs_file_t *pFile = NULL;
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
@@ -817,12 +817,12 @@ int lp_config_sync(LpConfig *lpconfig){
 	return 0;
 }
 
-int lp_config_has_section(const LpConfig *lpconfig, const char *section){
-	if (lp_config_find_section(lpconfig,section)!=NULL) return 1;
+int linphone_config_has_section(const LpConfig *lpconfig, const char *section){
+	if (linphone_config_find_section(lpconfig,section)!=NULL) return 1;
 	return 0;
 }
 
-void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const char *section, void *ctx), void *ctx) {
+void linphone_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const char *section, void *ctx), void *ctx) {
 	LpSection *sec;
 	bctbx_list_t *elem;
 	for (elem=lpconfig->sections;elem!=NULL;elem=bctbx_list_next(elem)){
@@ -831,10 +831,10 @@ void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const
 	}
 }
 
-void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx) {
+void linphone_config_for_each_entry(const LpConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx) {
 	LpItem *item;
 	bctbx_list_t *elem;
-	LpSection *sec=lp_config_find_section(lpconfig,section);
+	LpSection *sec=linphone_config_find_section(lpconfig,section);
 	if (sec!=NULL){
 		for (elem=sec->items;elem!=NULL;elem=bctbx_list_next(elem)){
 			item=(LpItem*)elem->data;
@@ -844,50 +844,50 @@ void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, voi
 	}
 }
 
-void lp_config_clean_section(LpConfig *lpconfig, const char *section){
-	LpSection *sec=lp_config_find_section(lpconfig,section);
+void linphone_config_clean_section(LpConfig *lpconfig, const char *section){
+	LpSection *sec=linphone_config_find_section(lpconfig,section);
 	if (sec!=NULL){
-		lp_config_remove_section(lpconfig,sec);
+		linphone_config_remove_section(lpconfig,sec);
 	}
 	lpconfig->modified++;
 }
 
-int lp_config_needs_commit(const LpConfig *lpconfig){
+int linphone_config_needs_commit(const LpConfig *lpconfig){
 	return lpconfig->modified>0;
 }
 
 static const char *DEFAULT_VALUES_SUFFIX = "_default_values";
 
-int lp_config_get_default_int(const LpConfig *lpconfig, const char *section, const char *key, int default_value) {
+int linphone_config_get_default_int(const LpConfig *lpconfig, const char *section, const char *key, int default_value) {
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
 
-	return lp_config_get_int(lpconfig, default_section, key, default_value);
+	return linphone_config_get_int(lpconfig, default_section, key, default_value);
 }
 
-int64_t lp_config_get_default_int64(const LpConfig *lpconfig, const char *section, const char *key, int64_t default_value) {
+int64_t linphone_config_get_default_int64(const LpConfig *lpconfig, const char *section, const char *key, int64_t default_value) {
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
 
-	return lp_config_get_int64(lpconfig, default_section, key, default_value);
+	return linphone_config_get_int64(lpconfig, default_section, key, default_value);
 }
 
-float lp_config_get_default_float(const LpConfig *lpconfig, const char *section, const char *key, float default_value) {
+float linphone_config_get_default_float(const LpConfig *lpconfig, const char *section, const char *key, float default_value) {
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
 
-	return lp_config_get_float(lpconfig, default_section, key, default_value);
+	return linphone_config_get_float(lpconfig, default_section, key, default_value);
 }
 
-const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value) {
+const char* linphone_config_get_default_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value) {
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
 
-	return lp_config_get_string(lpconfig, default_section, key, default_value);
+	return linphone_config_get_string(lpconfig, default_section, key, default_value);
 }
 
 /*
@@ -902,7 +902,7 @@ const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *s
  *    the returned pointer.
  * 3. Do not feed it after midnight
  */
-static const char *_lp_config_dirname(char *path) {
+static const char *_linphone_config_dirname(char *path) {
 #ifdef _MSC_VER
 	char drive[_MAX_DRIVE];
 	char dir[_MAX_DIR];
@@ -917,13 +917,13 @@ static const char *_lp_config_dirname(char *path) {
 #endif
 }
 
-bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
+bool_t linphone_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
 	bctbx_vfs_file_t *pFile;
 	if (lpconfig->filename == NULL) {
 		return FALSE;
 	} else {
 		char *conf_path = ms_strdup(lpconfig->filename);
-		const char *dir = _lp_config_dirname(conf_path);
+		const char *dir = _linphone_config_dirname(conf_path);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
 		char *realfilepath = lp_realpath(filepath, NULL);
 
@@ -941,7 +941,7 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 	}
 }
 
-void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data) {
+void linphone_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data) {
 	char *dup_config_file = NULL;
 	const char *dir = NULL;
 	char *filepath = NULL;
@@ -956,7 +956,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	}
 
 	dup_config_file = ms_strdup(lpconfig->filename);
-	dir = _lp_config_dirname(dup_config_file);
+	dir = _linphone_config_dirname(dup_config_file);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
 	realfilepath = lp_realpath(filepath, NULL);
 	if(realfilepath == NULL) {
@@ -978,7 +978,7 @@ end:
 	if(realfilepath) ms_free(realfilepath);
 }
 
-int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length) {
+int linphone_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length) {
 	char *dup_config_file = NULL;
 	const char *dir = NULL;
 	char *filepath = NULL;
@@ -989,7 +989,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	if (lpconfig->filename == NULL) return -1;
 
 	dup_config_file = ms_strdup(lpconfig->filename);
-	dir = _lp_config_dirname(dup_config_file);
+	dir = _linphone_config_dirname(dup_config_file);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
 	realfilepath = lp_realpath(filepath, NULL);
 	if(realfilepath == NULL) {
@@ -1023,7 +1023,7 @@ err:
 	return -1;
 }
 
-const char** lp_config_get_sections_names(LpConfig *lpconfig) {
+const char** linphone_config_get_sections_names(LpConfig *lpconfig) {
 	const char **sections_names;
 	const bctbx_list_t *sections = lpconfig->sections;
 	size_t ndev;
@@ -1041,7 +1041,7 @@ const char** lp_config_get_sections_names(LpConfig *lpconfig) {
 	return sections_names;
 }
 
-char* lp_config_dump_as_xml(const LpConfig *lpconfig) {
+char* linphone_config_dump_as_xml(const LpConfig *lpconfig) {
 	char *buffer;
 
 	lpc2xml_context *ctx = lpc2xml_context_new(NULL, NULL);
@@ -1060,7 +1060,7 @@ struct _entry_data {
 
 static void dump_entry(const char *entry, void *data) {
 	struct _entry_data *d = (struct _entry_data *) data;
-	const char *value = lp_config_get_string(d->conf, d->section, entry, "");
+	const char *value = linphone_config_get_string(d->conf, d->section, entry, "");
 	*d->buffer = ms_strcat_printf(*d->buffer, "\t%s=%s\n", entry, value);
 }
 
@@ -1068,21 +1068,21 @@ static void dump_section(const char *section, void *data) {
 	struct _entry_data *d = (struct _entry_data *) data;
 	d->section = section;
 	*d->buffer = ms_strcat_printf(*d->buffer, "[%s]\n", section);
-	lp_config_for_each_entry(d->conf, section, dump_entry, d);
+	linphone_config_for_each_entry(d->conf, section, dump_entry, d);
 }
 
-char* lp_config_dump(const LpConfig *lpconfig) {
+char* linphone_config_dump(const LpConfig *lpconfig) {
 	char* buffer = NULL;
 	struct _entry_data d = { lpconfig, NULL, &buffer };
-	lp_config_for_each_section(lpconfig, dump_section, &d);
+	linphone_config_for_each_section(lpconfig, dump_section, &d);
 
 	return buffer;
 }
 
-void lp_config_clean_entry(LpConfig *lpconfig, const char *section, const char *key) {
+void linphone_config_clean_entry(LpConfig *lpconfig, const char *section, const char *key) {
 	LpSection *sec;
 	LpItem *item;
-	sec=lp_config_find_section(lpconfig,section);
+	sec=linphone_config_find_section(lpconfig,section);
 	if (sec!=NULL){
 		item=lp_section_find_item(sec,key);
 		if (item!=NULL)
@@ -1090,9 +1090,9 @@ void lp_config_clean_entry(LpConfig *lpconfig, const char *section, const char *
 	}
 	return ;
 }
-int lp_config_has_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+int linphone_config_has_entry(const LpConfig *lpconfig, const char *section, const char *key) {
 	LpSection *sec;
-	sec=lp_config_find_section(lpconfig,section);
+	sec=linphone_config_find_section(lpconfig,section);
 	if (sec!=NULL){
 		return lp_section_find_item(sec,key) != NULL;
 	} else
