@@ -47,6 +47,24 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 
 		// we're finished, save the image and update the message
 		UIImage *image = [UIImage imageWithData:thiz.data];
+		if (!image) {
+			UIAlertController *errView = [UIAlertController
+				alertControllerWithTitle:NSLocalizedString(@"File download error", nil)
+								 message:NSLocalizedString(@"Error while downloading the file.\n"
+														   @"The file is probably emcrypted.\n"
+														   @"Please retry to download this file after activating LIME.",
+														   nil)
+						  preferredStyle:UIAlertControllerStyleAlert];
+
+			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction *action){
+																  }];
+
+			[errView addAction:defaultAction];
+			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+			return;
+		}
 
 		CFBridgingRetain(thiz);
 		[[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
