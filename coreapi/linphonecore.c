@@ -3290,10 +3290,12 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			nextstate=LinphoneCallEarlyUpdating;
 			break;
 		case LinphoneCallStreamsRunning:
-		case LinphoneCallPaused:
 		case LinphoneCallPausedByRemote:
 		case LinphoneCallUpdatedByRemote:
 			nextstate=LinphoneCallUpdating;
+			break;
+		case LinphoneCallPaused:
+			nextstate=LinphoneCallPausing;
 			break;
 		case LinphoneCallOutgoingProgress:
 		case LinphoneCallPausing:

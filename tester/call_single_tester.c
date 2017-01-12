@@ -4517,10 +4517,12 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt) {
+static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt, bool_t caller_pause, bool_t callee_pause) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCallParams *pauline_params = NULL;
+	LinphoneCall *marie_call = NULL;
+	LinphoneCall *pauline_call = NULL;
 	bctbx_list_t *lcs = NULL;
 	bool_t call_ok;
 
@@ -4553,6 +4555,18 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 	}
 
+	if (caller_pause) {
+		pauline_call = linphone_core_get_current_call(pauline->lc);
+		linphone_core_pause_call(pauline->lc, pauline_call);
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPausedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPaused, 1));
+	} else if (callee_pause) {
+		marie_call = linphone_core_get_current_call(marie->lc);
+		linphone_core_pause_call(marie->lc, marie_call);
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
+	}
+
 	/*marie looses the network and reconnects*/
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
@@ -4572,10 +4586,25 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
 	}else{
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		if (caller_pause) {
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPausedByRemote, 2));
+			linphone_core_resume_call(pauline->lc, pauline_call);
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+		} else if (callee_pause) {
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 2));
+			linphone_core_resume_call(marie->lc, marie_call);
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		} else {
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		}
 	}
 
 	/*check that media is back*/
@@ -4595,19 +4624,27 @@ end:
 }
 
 static void call_with_network_switch(void){
-	_call_with_network_switch(FALSE, FALSE, FALSE);
+	_call_with_network_switch(FALSE, FALSE, FALSE, FALSE, FALSE);
+}
+
+static void call_with_network_switch_in_paused_state(void) {
+	_call_with_network_switch(FALSE, FALSE, FALSE, FALSE, TRUE);
+}
+
+static void call_with_network_switch_in_paused_by_remote_state(void) {
+	_call_with_network_switch(FALSE, FALSE, FALSE, TRUE, FALSE);
 }
 
 static void call_with_network_switch_and_ice(void){
-	_call_with_network_switch(TRUE, FALSE, FALSE);
+	_call_with_network_switch(TRUE, FALSE, FALSE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_ice_and_rtt(void) {
-	_call_with_network_switch(TRUE, FALSE, TRUE);
+	_call_with_network_switch(TRUE, FALSE, TRUE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_and_socket_refresh(void){
-	_call_with_network_switch(TRUE, TRUE, FALSE);
+	_call_with_network_switch(TRUE, TRUE, FALSE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_no_recovery(void){
@@ -5454,6 +5491,8 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 2", recovered_call_on_network_switch_during_reinvite_2, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 3", recovered_call_on_network_switch_during_reinvite_3, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 4", recovered_call_on_network_switch_during_reinvite_4, "CallRecovery"),
+	TEST_ONE_TAG("Call with network switch in paused state", call_with_network_switch_in_paused_state, "CallRecovery"),
+	TEST_ONE_TAG("Call with network switch in paused by remote state", call_with_network_switch_in_paused_by_remote_state, "CallRecovery"),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
 	TEST_ONE_TAG("Call with network switch, ICE and RTT", call_with_network_switch_ice_and_rtt, "ICE"),
 	TEST_NO_TAG("Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh),
