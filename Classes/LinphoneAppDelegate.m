@@ -685,8 +685,8 @@ didInvalidatePushTokenForType:(NSString *)type {
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)())completionHandler {
-    LOGD(@"UN : response recieved");
-    LOGD(response.description);
+	LOGD(@"UN : response received");
+	LOGD(response.description);
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
@@ -816,6 +816,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 					  linphone_call_set_authentication_token_verified(call, YES);
 				  }
 				}];
+		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"lime"]) {
+			return;
 		} else { // Missed call
 			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
 		}

@@ -1363,27 +1363,63 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 
 #pragma mark - Message composition start
 - (void)alertLIME:(LinphoneChatRoom *)room {
-	UIAlertController *errView = [UIAlertController
-		alertControllerWithTitle:NSLocalizedString(@"LIME Error", nil)
-						 message:NSLocalizedString(
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+		UIAlertController *errView = [UIAlertController
+			alertControllerWithTitle:NSLocalizedString(@"LIME Error", nil)
+							 message:
+								 NSLocalizedString(
 									 @"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
 									 @"Please call this contact and verify his ZRTP key before sending your messages.",
 									 nil)
-				  preferredStyle:UIAlertControllerStyleAlert];
+					  preferredStyle:UIAlertControllerStyleAlert];
 
-	UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-															style:UIAlertActionStyleDefault
-														  handler:^(UIAlertAction *action){
-														  }];
-	[errView addAction:defaultAction];
+		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction *action){
+															  }];
+		[errView addAction:defaultAction];
 
-	UIAlertAction *callAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Call", nil)
-														 style:UIAlertActionStyleDefault
-													   handler:^(UIAlertAction *action) {
-														 [self call:linphone_chat_room_get_peer_address(room)];
-													   }];
-	[errView addAction:callAction];
-	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+		UIAlertAction *callAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Call", nil)
+															 style:UIAlertActionStyleDefault
+														   handler:^(UIAlertAction *action) {
+															 [self call:linphone_chat_room_get_peer_address(room)];
+														   }];
+		[errView addAction:callAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+	} else {
+		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+			content.title = NSLocalizedString(@"LIME error", nil);
+			content.body =
+				NSLocalizedString(@"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
+								  @"Please call this contact and verify his ZRTP key before sending your messages.",
+								  nil);
+			content.categoryIdentifier = @"lime";
+
+			UNNotificationRequest *req = [UNNotificationRequest
+				requestWithIdentifier:@"lime_request"
+							  content:content
+							  trigger:[UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO]];
+			[[UNUserNotificationCenter currentNotificationCenter]
+				addNotificationRequest:req
+				 withCompletionHandler:^(NSError *_Nullable error) {
+				   // Enable or disable features based on authorization.
+				   if (error) {
+					   LOGD(@"Error while adding notification request :");
+					   LOGD(error.description);
+				   }
+				 }];
+		} else {
+			UILocalNotification *notification = [[UILocalNotification alloc] init];
+			notification.repeatInterval = 0;
+			notification.alertTitle = NSLocalizedString(@"LIME error", nil);
+			notification.alertBody =
+				NSLocalizedString(@"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
+								  @"Please call this contact and verify his ZRTP key before sending your messages.",
+								  nil);
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+		}
+	}
 }
 
 - (void)onMessageComposeReceived:(LinphoneCore *)core forRoom:(LinphoneChatRoom *)room {
@@ -1800,6 +1836,16 @@ static BOOL libStarted = FALSE;
 		
 		[errView addAction:defaultAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+	}
+
+	// Disable notify policy
+	LinphoneImNotifPolicy *im_notif_policy;
+	im_notif_policy = linphone_core_get_im_notif_policy(theLinphoneCore);
+	if (im_notif_policy != NULL) {
+		/* The IM notification policy can be NULL at this point in case of remote provisioning. */
+		linphone_im_notif_policy_clear(im_notif_policy);
+		linphone_im_notif_policy_set_send_is_composing(im_notif_policy, TRUE);
+		linphone_im_notif_policy_set_recv_is_composing(im_notif_policy, TRUE);
 	}
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
