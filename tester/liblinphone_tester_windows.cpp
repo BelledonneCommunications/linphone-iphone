@@ -147,6 +147,7 @@ Platform::String^ NativeTester::testName(Platform::String^ suiteName, int testIn
 	char csuitename[MAX_SUITE_NAME_SIZE] = { 0 };
 	wcstombs(csuitename, suitename.c_str(), sizeof(csuitename));
 	const char *cname = bc_tester_test_name(csuitename, testIndex);
+	if (cname == NULL) return ref new String();
 	wchar_t wcname[MAX_SUITE_NAME_SIZE];
 	mbstowcs(wcname, cname, sizeof(wcname));
 	return ref new String(wcname);
