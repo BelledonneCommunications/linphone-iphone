@@ -1,0 +1,16 @@
+#ifndef _ENUMS_HH
+#define _ENUMS_HH
+
+namespace linphone {
+	
+	{{#enums}}
+	enum {{name}} {
+		{{#values}}
+		{{name}}{{#notLast}},{{/notLast}}
+		{{/values}}
+	};
+
+	{{/enums}}
+};
+
+#endif //_ENUMS_HH

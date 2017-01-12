@@ -105,3 +105,5 @@ git-clang-format.diff
 .bc_tester_utils.tmp
 tools/lp-test-ecc
 tools/lp-sendmsg
+
+*.pyc

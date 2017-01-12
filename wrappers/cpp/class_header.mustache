@@ -1,0 +1,78 @@
+#ifndef {{define}}
+#define {{define}}
+
+{{#includes}}
+{{#external}}
+#include <{{name}}>
+{{/external}}
+{{#internal}}
+#include "{{name}}.hh"
+{{/internal}}
+{{/includes}}
+
+{{#_class}}{{#isfactory}}
+#include "config.hh"
+{{/isfactory}}{{/_class}}
+
+#include "linphone/linphonecore.h"
+#include "linphone/linphone_tunnel.h"
+#include "linphone/linphonecore_utils.h"
+
+namespace linphone {
+
+	{{#priorDeclarations}}
+	class {{{name}}};
+	{{/priorDeclarations}}
+
+	{{#_class}}
+	class {{className}}: public {{{parentClassName}}} {
+		{{#friendClasses}}
+		friend class {{name}};
+		{{/friendClasses}}
+	
+		public:
+			{{#isNotListener}}
+			{{{className}}}(::belle_sip_object_t *ptr, bool takeRef=true);
+			{{/isNotListener}}
+			
+			{{#ismonolistenable}}
+			void setListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
+			{{/ismonolistenable}}
+
+			{{#ismultilistenable}}
+			void addListener(std::shared_ptr<{{{listenerClassName}}}> &listener);
+			void removeListener(std::shared_ptr<{{{listenerClassName}}}> &listener);
+			{{/ismultilistenable}}
+	
+		public:
+			{{#isfactory}}
+			std::shared_ptr<Core> createCore(const std::shared_ptr<CoreListener> & cbs, const std::string & configPath, const std::string & factoryConfigPath) const;
+			std::shared_ptr<Core> createCoreWithConfig(const std::shared_ptr<CoreListener> & cbs, const std::shared_ptr<Config> & config) const;
+			{{/isfactory}}
+		
+			{{#methods}}
+			{{{prototype}}}
+			
+			{{/methods}}
+			{{#staticMethods}}
+			{{{prototype}}}
+			
+			{{/staticMethods}}
+		
+		{{#ismultilistenable}}
+		private:
+			static {{{cListenerName}}} *createCallbacks(const std::shared_ptr<{{{listenerClassName}}}> &listener);
+		{{/ismultilistenable}}
+		
+		{{#islistenable}}
+		private:
+			{{#wrapperCbs}}
+			{{decl}}
+			{{/wrapperCbs}}
+		{{/islistenable}}
+	};
+	{{/_class}}
+
+};
+
+#endif // {{define}}

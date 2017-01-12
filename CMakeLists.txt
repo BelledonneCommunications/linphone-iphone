@@ -60,6 +60,7 @@ cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENAB
 option(ENABLE_DEBUG_LOGS "Turn on or off debug level logs." NO)
 option(ENABLE_NLS "Build with internationalisation support" YES)
 option(ENABLE_VCARD "Turn on compilation of vcard4 support." YES)
+option(CXX_WRAPPER "Build the C++ wrapper for Liblinphone." OFF)
 
 
 macro(apply_compile_flags SOURCE_FILES)
@@ -179,6 +180,10 @@ if(ENABLE_NLS)
 endif()
 if(ENABLE_LIME)
 	set(HAVE_LIME 1)
+endif()
+if (CXX_WRAPPER)
+	set(Python_ADDITIONAL_VERSIONS 2)
+	find_package(PythonInterp REQUIRED)
 endif()
 
 if(UNIX AND NOT APPLE)
@@ -325,6 +330,9 @@ if(ENABLE_TOOLS)
 endif()
 if(ENABLE_UNIT_TESTS AND BCTOOLBOX_TESTER_FOUND)
 	add_subdirectory(tester)
+endif()
+if(CXX_WRAPPER)
+	add_subdirectory(wrappers/cpp)
 endif()
 
 
