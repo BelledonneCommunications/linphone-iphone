@@ -29,8 +29,7 @@ if (ENABLE_DOC)
 			file(GLOB DOC_INPUT_FILES
 				[^.]*.c
 				[^.]*.dox
-				../[^.]*.h
-				../[^.]*.c
+				../../include/linphone/[^.]*.h
 			)
 			add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html"
 				COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
