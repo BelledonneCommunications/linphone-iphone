@@ -38,6 +38,7 @@ set(HEADER_FILES
 	dictionary.h
 	error_info.h
 	event.h
+	factory.h
 	friend.h
 	friendlist.h
 	im_notif_policy.h

@@ -122,7 +122,7 @@ LINPHONE_PUBLIC void linphone_address_clean(LinphoneAddress *uri);
  * Returns true if address refers to a secure location (sips)
  * @deprecated use linphone_address_get_secure()
 **/
-LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *addr);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *addr);
 
 /**
  * Returns true if address refers to a secure location (sips)
@@ -231,7 +231,7 @@ LINPHONE_PUBLIC const char * linphone_address_get_uri_param(const LinphoneAddres
  * Destroys a LinphoneAddress object (actually calls linphone_address_unref()).
  * @deprecated Use linphone_address_unref() instead
 **/
-LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
 
 /**
  * @}

@@ -38,7 +38,8 @@ void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
 }
 
 LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
-	return lc->current_vtable;
+	if (lc->current_cbs != NULL) return lc->current_cbs->vtable;
+	else return NULL;
 }
 
 static void cleanup_dead_vtable_refs(LinphoneCore *lc){
@@ -63,8 +64,8 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	bool_t has_cb = FALSE; \
 	lc->vtable_notify_recursion++;\
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next){\
-		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name) {\
-			lc->current_vtable->function_name(__VA_ARGS__);\
+		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_cbs=ref->cbs)->vtable->function_name) {\
+			lc->current_cbs->vtable->function_name(__VA_ARGS__);\
 			has_cb = TRUE;\
 		}\
 	}\
@@ -76,8 +77,8 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	VTableReference *ref; \
 	lc->vtable_notify_recursion++;\
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next){\
-		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name && (ref->internal == internal_val)) {\
-			lc->current_vtable->function_name(__VA_ARGS__);\
+		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_cbs=ref->cbs)->vtable->function_name && (ref->internal == internal_val)) {\
+			lc->current_cbs->vtable->function_name(__VA_ARGS__);\
 		}\
 	}\
 	lc->vtable_notify_recursion--;
@@ -229,7 +230,7 @@ bool_t linphone_core_dtmf_received_has_listener(const LinphoneCore* lc) {
 	bctbx_list_t* iterator;
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next){
 		VTableReference *ref=(VTableReference*)iterator->data;
-		if (ref->valid && ref->vtable->dtmf_received)
+		if (ref->valid && ref->cbs->vtable->dtmf_received)
 			return TRUE;
 	}
 	return FALSE;
@@ -305,27 +306,33 @@ void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendLi
 	cleanup_dead_vtable_refs(lc);
 }
 
-static VTableReference * v_table_reference_new(LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal){
+static VTableReference * v_table_reference_new(LinphoneCoreCbs *cbs, bool_t internal){
 	VTableReference *ref=ms_new0(VTableReference,1);
-	ref->valid=1;
-	ref->autorelease=autorelease;
+	ref->valid=TRUE;
 	ref->internal = internal;
-	ref->vtable=vtable;
+	ref->cbs=(LinphoneCoreCbs *)belle_sip_object_ref(cbs);
 	return ref;
 }
 
 void v_table_reference_destroy(VTableReference *ref){
-	if (ref->autorelease) linphone_core_v_table_destroy(ref->vtable);
+	belle_sip_object_unref(ref->cbs);
 	ms_free(ref);
 }
 
-void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal) {
-	ms_message("Vtable [%p] registered on core [%p]",vtable, lc);
-	lc->vtable_refs=bctbx_list_append(lc->vtable_refs,v_table_reference_new(vtable, autorelease, internal));
+void _linphone_core_add_callbacks(LinphoneCore *lc, LinphoneCoreCbs *vtable, bool_t internal) {
+	ms_message("Core callbacks [%p] registered on core [%p]", vtable, lc);
+	lc->vtable_refs=bctbx_list_append(lc->vtable_refs,v_table_reference_new(vtable, internal));
 }
 
 void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable){
-	_linphone_core_add_listener(lc, vtable, FALSE, FALSE);
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	_linphone_core_cbs_set_v_table(cbs, vtable, FALSE);
+	_linphone_core_add_callbacks(lc, cbs, FALSE);
+	belle_sip_object_unref(cbs);
+}
+
+void linphone_core_add_callbacks(LinphoneCore *lc, LinphoneCoreCbs *cbs) {
+	_linphone_core_add_callbacks(lc, cbs, FALSE);
 }
 
 void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *vtable) {
@@ -333,7 +340,19 @@ void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *v
 	ms_message("Vtable [%p] unregistered on core [%p]",vtable,lc);
 	for(it=lc->vtable_refs; it!=NULL; it=it->next){
 		VTableReference *ref=(VTableReference*)it->data;
-		if (ref->vtable==vtable)
-			ref->valid=0;
+		if (ref->cbs->vtable==vtable) {
+			ref->valid=FALSE;
+		}
+	}
+}
+
+void linphone_core_remove_callbacks(LinphoneCore *lc, const LinphoneCoreCbs *cbs) {
+	bctbx_list_t *it;
+	ms_message("Callbacks [%p] unregistered on core [%p]",cbs,lc);
+	for(it=lc->vtable_refs; it!=NULL; it=it->next){
+		VTableReference *ref=(VTableReference*)it->data;
+		if (ref->cbs==cbs) {
+			ref->valid=FALSE;
+		}
 	}
 }

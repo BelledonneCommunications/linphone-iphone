@@ -48,11 +48,12 @@ static void simple(void) {
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
 	LinphonePresenceActivity *activity = NULL;
-	LinphoneCoreVTable *vtable = linphone_core_v_table_new();
-	vtable->publish_state_changed = linphone_publish_state_changed;
-	_linphone_core_add_listener(pauline->lc, vtable, TRUE, TRUE );
-
+	LinphoneCoreCbs *callbacks = linphone_factory_create_core_cbs(linphone_factory_get());
 	
+	linphone_core_cbs_set_publish_state_changed(callbacks, linphone_publish_state_changed);
+	_linphone_core_add_callbacks(pauline->lc, callbacks, TRUE);
+	linphone_core_cbs_unref(callbacks);
+
 	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 40);
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);

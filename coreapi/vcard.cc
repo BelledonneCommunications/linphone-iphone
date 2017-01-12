@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "sal/sal.h"
 #include <bctoolbox/crypto.h>
 #include "linphone/core.h"
+#include "private.h"
 
 #define VCARD_MD5_HASH_SIZE 16
 
@@ -32,17 +33,7 @@ struct _LinphoneVcardContext {
 	void *user_data;
 };
 
-struct _LinphoneVcard {
-	shared_ptr<belcard::BelCard> belCard;
-	char *etag;
-	char *url;
-	unsigned char md5[VCARD_MD5_HASH_SIZE];
-	bctbx_list_t *sip_addresses_cache;
-};
-
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 LinphoneVcardContext* linphone_vcard_context_new(void) {
 	LinphoneVcardContext* context = ms_new0(LinphoneVcardContext, 1);
@@ -67,25 +58,66 @@ void linphone_vcard_context_set_user_data(LinphoneVcardContext *context, void *d
 	if (context) context->user_data = data;
 }
 
-LinphoneVcard* linphone_vcard_new(void) {
-	LinphoneVcard* vCard = (LinphoneVcard*) ms_new0(LinphoneVcard, 1);
+} // extern "C"
+
+
+struct _LinphoneVcard {
+	belle_sip_object_t base;
+	shared_ptr<belcard::BelCard> belCard;
+	char *etag;
+	char *url;
+	unsigned char md5[VCARD_MD5_HASH_SIZE];
+	bctbx_list_t *sip_addresses_cache;
+};
+
+extern "C" {
+
+static void _linphone_vcard_uninit(LinphoneVcard *vCard) {
+	if (vCard->etag) ms_free(vCard->etag);
+	if (vCard->url) ms_free(vCard->url);
+	linphone_vcard_clean_cache(vCard);
+	vCard->belCard.reset();
+}
+
+BELLE_SIP_DECLARE_VPTR(LinphoneVcard);
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneVcard);
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneVcard, belle_sip_object_t,
+	_linphone_vcard_uninit, // destroy
+	NULL, // clone
+	NULL, // Marshall
+	FALSE
+);
+
+static LinphoneVcard* _linphone_vcard_new(void) {
+	LinphoneVcard* vCard = belle_sip_object_new(LinphoneVcard);
 	vCard->belCard = belcard::BelCardGeneric::create<belcard::BelCard>();
 	return vCard;
 }
 
+LinphoneVcard *linphone_vcard_new(void) {
+	return _linphone_vcard_new();
+}
+
+LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
+	return _linphone_vcard_new();
+}
+
 static LinphoneVcard* linphone_vcard_new_from_belcard(shared_ptr<belcard::BelCard> belcard) {
-	LinphoneVcard* vCard = (LinphoneVcard*) ms_new0(LinphoneVcard, 1);
+	LinphoneVcard* vCard = belle_sip_object_new(LinphoneVcard);
 	vCard->belCard = belcard;
 	return vCard;
 }
 
 void linphone_vcard_free(LinphoneVcard *vCard) {
-	if (!vCard) return;
-	if (vCard->etag) ms_free(vCard->etag);
-	if (vCard->url) ms_free(vCard->url);
-	linphone_vcard_clean_cache(vCard);
-	vCard->belCard.reset();
-	ms_free(vCard);
+	belle_sip_object_unref((belle_sip_object_t *)vCard);
+}
+
+LinphoneVcard *linphone_vcard_ref(LinphoneVcard *vCard) {
+	return (LinphoneVcard *)belle_sip_object_ref((belle_sip_object_t *)vCard);
+}
+
+void linphone_vcard_unref(LinphoneVcard *vCard) {
+	belle_sip_object_unref((belle_sip_object_t *)vCard);
 }
 
 bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {
@@ -397,6 +429,4 @@ void linphone_vcard_clean_cache(LinphoneVcard *vCard) {
 	vCard->sip_addresses_cache = NULL;
 }
 
-#ifdef __cplusplus
-}
-#endif
+} // extern "C"

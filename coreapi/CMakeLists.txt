@@ -78,6 +78,7 @@ set(LINPHONE_SOURCE_FILES_C
 	enum.c
 	error_info.c
 	event.c
+	factory.c
 	friend.c
 	friendlist.c
 	im_notif_policy.c

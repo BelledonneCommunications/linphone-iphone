@@ -91,17 +91,29 @@ LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishStat
 /**
  * Callback prototype for notifying the application about notification received from the network.
 **/
-typedef void (*LinphoneCoreNotifyReceivedCb)(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body);
+typedef void (*LinphoneCoreCbsNotifyReceivedCb)(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body);
+/**
+ * Old name of #LinphoneCoreCbsNotifyReceivedCb.
+ */
+typedef LinphoneCoreCbsNotifyReceivedCb LinphoneCoreNotifyReceivedCb;
 
 /**
  * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
 **/
-typedef void (*LinphoneCoreSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
+typedef void (*LinphoneCoreCbsSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
+/**
+ * Old name of #LinphoneCoreCbsSubscriptionStateChangedCb.
+ */
+typedef LinphoneCoreCbsSubscriptionStateChangedCb LinphoneCoreSubscriptionStateChangedCb;
 
 /**
  * Callback prototype for notifying the application about changes of publish states.
 **/
-typedef void (*LinphoneCorePublishStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
+typedef void (*LinphoneCoreCbsPublishStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
+/**
+ * Old name of LinphoneCoreCbsPublishStateChangedCb.
+ */
+typedef LinphoneCoreCbsPublishStateChangedCb LinphoneCorePublishStateChangedCb;
 
 /**
  * Create an outgoing subscription, specifying the destination resource, the event name, and an optional content body.

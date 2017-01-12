@@ -150,9 +150,11 @@ static void simple_publish_with_expire(int expires) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
-	LinphoneCoreVTable *vtable = linphone_core_v_table_new();
-	vtable->publish_state_changed = linphone_publish_state_changed;
-	_linphone_core_add_listener(marie->lc, vtable, TRUE, TRUE );
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	
+	linphone_core_cbs_set_publish_state_changed(cbs, linphone_publish_state_changed);
+	_linphone_core_add_callbacks(marie->lc, cbs, TRUE);
+	linphone_core_cbs_unref(cbs);
 
 	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);

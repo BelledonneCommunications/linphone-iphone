@@ -21,11 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/lpconfig.h"
 #include "private.h"
 
-LinphoneAddress * linphone_address_new(const char *addr){
+LinphoneAddress * _linphone_address_new(const char *addr){
 	SalAddress *saddr=sal_address_new(addr);
 	if (saddr==NULL)
 		ms_error("Cannot create LinphoneAddress, bad uri [%s]",addr);
 	return saddr;
+}
+
+LinphoneAddress * linphone_address_new(const char *addr) {
+	return _linphone_address_new(addr);
 }
 
 LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr){

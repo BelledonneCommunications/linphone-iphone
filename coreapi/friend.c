@@ -1223,7 +1223,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	int ret;
 	const char *errmsg;
 	sqlite3 *db;
-	const bctbx_list_t *friends_lists = NULL;
+	bctbx_list_t *friends_lists = NULL;
 
 	linphone_core_friends_storage_close(lc);
 
@@ -1246,14 +1246,15 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 
 	friends_lists = linphone_core_fetch_friends_lists_from_db(lc);
 	if (friends_lists) {
+		const bctbx_list_t *it;
 		ms_warning("Replacing current default friend list by the one(s) from the database");
-		lc->friends_lists = bctbx_list_free_with_data(lc->friends_lists, (void (*)(void*))linphone_friend_list_unref);
-
-		while (friends_lists) {
-			LinphoneFriendList *list = (LinphoneFriendList *)bctbx_list_get_data(friends_lists);
+		lc->friends_lists = bctbx_list_free_with_data(lc->friends_lists, (bctbx_list_free_func)linphone_friend_list_unref);
+		
+		for (it=friends_lists;it!=NULL;it=bctbx_list_next(it)) {
+			LinphoneFriendList *list = (LinphoneFriendList *)bctbx_list_get_data(it);
 			linphone_core_add_friend_list(lc, list);
-			friends_lists = bctbx_list_next(friends_lists);
 		}
+		friends_lists = bctbx_list_free_with_data(friends_lists, (bctbx_list_free_func)linphone_friend_list_unref);
 	}
 }
 

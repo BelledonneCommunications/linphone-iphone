@@ -208,7 +208,7 @@ private:
 	const char *m_focusAddr;
 	char *m_focusContact;
 	LinphoneCall *m_focusCall;
-	LinphoneCoreVTable *m_vtable;
+	LinphoneCoreCbs *m_coreCbs;
 	std::list<LinphoneCall *> m_pendingCalls;
 	std::list<LinphoneCall *> m_transferingCalls;
 };
@@ -625,19 +625,19 @@ RemoteConference::RemoteConference(LinphoneCore *core, const Conference::Params 
 	m_focusAddr = NULL;
 	m_focusContact = NULL;
 	m_focusCall = NULL;
-	m_vtable = NULL;
+	m_coreCbs = NULL;
 	m_focusAddr = lp_config_get_string(m_core->config, "misc", "conference_focus_addr", "");
-	m_vtable = linphone_core_v_table_new();
-	m_vtable->call_state_changed = callStateChangedCb;
-	m_vtable->transfer_state_changed = transferStateChanged;
-	linphone_core_v_table_set_user_data(m_vtable, this);
-	_linphone_core_add_listener(m_core, m_vtable, FALSE, TRUE);
+	m_coreCbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(m_coreCbs, callStateChangedCb);
+	linphone_core_cbs_set_transfer_state_changed(m_coreCbs, transferStateChanged);
+	linphone_core_cbs_set_user_data(m_coreCbs, this);
+	_linphone_core_add_callbacks(m_core, m_coreCbs, TRUE);
 }
 
 RemoteConference::~RemoteConference() {
 	terminate();
-	linphone_core_remove_listener(m_core, m_vtable);
-	linphone_core_v_table_destroy(m_vtable);
+	linphone_core_remove_callbacks(m_core, m_coreCbs);
+	linphone_core_cbs_unref(m_coreCbs);
 }
 
 int RemoteConference::addParticipant(LinphoneCall *call) {

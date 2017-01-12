@@ -26,6 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
+#ifndef LINPHONE_DEPRECATED
+#define LINPHONE_DEPRECATED MS2_DEPRECATED
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -42,16 +46,33 @@ extern "C"
 typedef struct _LinphoneVcard LinphoneVcard;
 
 /**
+ * Cast a belle_sip_object_t into LinphoneVcard.
+ */
+#define LINPHONE_VCARD BELLE_SIP_CAST(object, LinphoneVcard)
+
+/**
  * Creates a LinphoneVcard object that has a pointer to an empty vCard
  * @return a new LinphoneVcard object
+ * @deprecated Use linphone_factory_create_vcard() instead.
  */
-LINPHONE_PUBLIC LinphoneVcard* linphone_vcard_new(void);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneVcard* linphone_vcard_new(void);
 
 /**
  * Deletes a LinphoneVcard object properly
  * @param[in] vCard the LinphoneVcard to destroy
+ * @deprecated Use linphone_vcard_unref() or belle_sip_object_unref() instead.
  */
-LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVcard *vCard);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVcard *vCard);
+
+/**
+ * Take a ref on a #LinphoneVcard.
+ */
+LINPHONE_PUBLIC LinphoneVcard *linphone_vcard_ref(LinphoneVcard *vCard);
+
+/**
+ * Release a #LinphoneVcard.
+ */
+LINPHONE_PUBLIC void linphone_vcard_unref(LinphoneVcard *vCard);
 
 /**
  * Returns the vCard4 representation of the LinphoneVcard.

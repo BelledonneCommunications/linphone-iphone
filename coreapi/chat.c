@@ -916,6 +916,11 @@ void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage 
 	_linphone_chat_room_send_message(cr, msg);
 }
 
+void linphone_chat_room_send_message_3(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	linphone_chat_message_ref(msg);
+	_linphone_chat_room_send_message(cr, msg);
+}
+
 void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	_linphone_chat_room_send_message(cr, msg);
 }

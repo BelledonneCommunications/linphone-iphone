@@ -26,13 +26,22 @@
 #include "private.h"
 #include "linphone/lpconfig.h"
 
-/**
- * @addtogroup authentication
- * @{
-**/
+static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
+static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAuthInfo);
+BELLE_SIP_DECLARE_VPTR(LinphoneAuthInfo);
+BELLE_SIP_INSTANCIATE_VPTR(
+	LinphoneAuthInfo,
+	belle_sip_object_t,
+	_linphone_auth_info_uninit, // destroy
+	_linphone_auth_info_copy, // clone
+	NULL, // marshal
+	FALSE
+);
 
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain){
-	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
+	LinphoneAuthInfo *obj=belle_sip_object_new(LinphoneAuthInfo);
 	if (username!=NULL && (strlen(username)>0) ) obj->username=ms_strdup(username);
 	if (userid!=NULL && (strlen(userid)>0)) obj->userid=ms_strdup(userid);
 	if (passwd!=NULL && (strlen(passwd)>0)) obj->passwd=ms_strdup(passwd);
@@ -42,19 +51,29 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	return obj;
 }
 
+static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src) {
+	if (src->username)      dst->username = ms_strdup(src->username);
+	if (src->userid)        dst->userid = ms_strdup(src->userid);
+	if (src->passwd)        dst->passwd = ms_strdup(src->passwd);
+	if (src->ha1)           dst->ha1 = ms_strdup(src->ha1);
+	if (src->realm)         dst->realm = ms_strdup(src->realm);
+	if (src->domain)        dst->domain = ms_strdup(src->domain);
+	if (src->tls_cert)      dst->tls_cert = ms_strdup(src->tls_cert);
+	if (src->tls_key)       dst->tls_key = ms_strdup(src->tls_key);
+	if (src->tls_cert_path) dst->tls_cert_path = ms_strdup(src->tls_cert_path);
+	if (src->tls_key_path)  dst->tls_key_path = ms_strdup(src->tls_key_path);
+}
+
 LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
-	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
-	if (ai->username) 		obj->username = ms_strdup(ai->username);
-	if (ai->userid) 		obj->userid = ms_strdup(ai->userid);
-	if (ai->passwd) 		obj->passwd = ms_strdup(ai->passwd);
-	if (ai->ha1)			obj->ha1 = ms_strdup(ai->ha1);
-	if (ai->realm)			obj->realm = ms_strdup(ai->realm);
-	if (ai->domain)			obj->domain = ms_strdup(ai->domain);
-	if (ai->tls_cert)		obj->tls_cert = ms_strdup(ai->tls_cert);
-	if (ai->tls_key)		obj->tls_key = ms_strdup(ai->tls_key);
-	if (ai->tls_cert_path)	obj->tls_cert_path = ms_strdup(ai->tls_cert_path);
-	if (ai->tls_key_path)	obj->tls_key_path = ms_strdup(ai->tls_key_path);
-	return obj;
+	return LINPHONE_AUTH_INFO(belle_sip_object_clone(BELLE_SIP_OBJECT(ai)));
+}
+
+LinphoneAuthInfo *linphone_auth_info_ref(LinphoneAuthInfo *obj) {
+	return LINPHONE_AUTH_INFO(belle_sip_object_ref(obj));
+}
+
+void linphone_auth_info_unref(LinphoneAuthInfo *obj) {
+	belle_sip_object_unref(obj);
 }
 
 const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i) {
@@ -178,10 +197,7 @@ void linphone_auth_info_set_tls_key_path(LinphoneAuthInfo *info, const char *tls
 	if (tls_key_path && strlen(tls_key_path) > 0) info->tls_key_path = ms_strdup(tls_key_path);
 }
 
-/**
- * Destroys a LinphoneAuthInfo object.
-**/
-void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
+static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj) {
 	if (obj->username != NULL) ms_free(obj->username);
 	if (obj->userid != NULL) ms_free(obj->userid);
 	if (obj->passwd != NULL) ms_free(obj->passwd);
@@ -192,7 +208,13 @@ void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
 	if (obj->tls_key != NULL) ms_free(obj->tls_key);
 	if (obj->tls_cert_path != NULL) ms_free(obj->tls_cert_path);
 	if (obj->tls_key_path != NULL) ms_free(obj->tls_key_path);
-	ms_free(obj);
+}
+
+/**
+ * Destroys a LinphoneAuthInfo object.
+**/
+void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
+	belle_sip_object_unref(obj);
 }
 
 void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, int pos) {
@@ -457,11 +479,6 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	write_auth_infos(lc);
 }
 
-
-/**
- * This method is used to abort a user authentication request initiated by LinphoneCore
- * from the auth_info_requested callback of LinphoneCoreVTable.
-**/
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info){
 }
 
@@ -479,9 +496,6 @@ const bctbx_list_t *linphone_core_get_auth_info_list(const LinphoneCore *lc){
 	return lc->auth_info;
 }
 
-/**
- * Clear all authentication information.
-**/
 void linphone_core_clear_all_auth_info(LinphoneCore *lc){
 	bctbx_list_t *elem;
 	int i;
@@ -493,7 +507,3 @@ void linphone_core_clear_all_auth_info(LinphoneCore *lc){
 	bctbx_list_free(lc->auth_info);
 	lc->auth_info=NULL;
 }
-
-/**
- * @}
-**/
