@@ -920,7 +920,7 @@ static char * generate_random_e164_phone_from_dial_plan(const LinphoneDialPlan *
   He can immediately see me in his Linphone users list.
   However, it takes hours before I can see him in my Linphone users list.
   */
-static void long_term_presence_with_crossed_refferences(void) {
+static void long_term_presence_with_crossed_references(void) {
 	if (linphone_core_vcard_supported()){
 		const LinphoneDialPlan *dialPlan;
 		char *e164_marie, *e164_pauline, *e164_laure;
@@ -1012,7 +1012,7 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence list",long_term_presence_list, "longterm"),
 	TEST_ONE_TAG("Long term presence with +164 phone, without sip",long_term_presence_with_e164_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with phone, without sip",long_term_presence_with_phone_without_sip, "longterm"),
-	TEST_ONE_TAG("Long term presence with cross refference", long_term_presence_with_crossed_refferences,"longtern"),
+	TEST_ONE_TAG("Long term presence with cross references", long_term_presence_with_crossed_references,"longtern"),
 	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
 	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
 };
