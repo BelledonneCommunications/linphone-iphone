@@ -463,3 +463,9 @@ I/lib/Could not find decoder for SILK
 
 */
 
+/**
+ * @defgroup wrapper Wrapper utilities
+ * These functions are used by automatic API wrapper generators and should not
+ * be used by C API users.
+ */
+

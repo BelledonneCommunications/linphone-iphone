@@ -53,6 +53,7 @@ set(HEADER_FILES
 	vcard.h
 	xmlrpc.h
 	im_encryption_engine.h
+	wrapper_utils.h
 
 	# Deprecated header files
 	linphonecore.h
