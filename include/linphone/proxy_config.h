@@ -202,7 +202,7 @@ LINPHONE_PUBLIC const char *linphone_proxy_config_get_quality_reporting_collecto
  * @param[in] cfg #LinphoneProxyConfig object.
  * @param[in] interval The interval in seconds, 0 means interval reports are disabled.
  */
-LINPHONE_PUBLIC void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval);
+LINPHONE_PUBLIC void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, int interval);
 
 /**
  * Get the interval between interval reports when using quality reporting.

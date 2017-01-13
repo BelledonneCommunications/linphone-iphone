@@ -3097,7 +3097,8 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
 	linphone_core_notify_display_status(lc,barmsg);
 	ms_free(barmsg);
-	
+
+	linphone_call_ref(call); /* Take a ref because sal_call() may destroy the call if no SIP transport is available */
 	err=sal_call(call->op,from,real_url);
 	
 	if (err < 0){
@@ -3120,6 +3121,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 	linphone_call_set_state(call,LinphoneCallOutgoingProgress,"Outgoing call in progress");
 	
 end:
+	linphone_call_unref(call); /* Revert the ref taken before calling sal_call() */
 	ms_free(real_url);
 	ms_free(from);
 	return err;
