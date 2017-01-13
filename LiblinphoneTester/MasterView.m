@@ -31,12 +31,12 @@
 }
 
 - (void)setupLogging {
-	[Log enableLogs:0];
+	[Log enableLogs:ORTP_DEBUG];
 	linphone_core_enable_log_collection(NO);
 }
 
 void tester_logs_handler(int level, const char *fmt, va_list args) {
-	linphone_iphone_log_handler(NULL, level, fmt, args);
+	linphone_iphone_log_handler("Tester", level, fmt, args);
 }
 
 - (void)viewDidLoad {
