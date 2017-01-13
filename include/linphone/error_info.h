@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * @see linphone_error_info_get_reason()
 **/
 enum _LinphoneReason{
-	LinphoneReasonNone,
+	LinphoneReasonNone, /**< No reason has been set by the core */
 	LinphoneReasonNoResponse, /**< No response received from remote */
 	LinphoneReasonForbidden, /**< Authentication failed due to bad credentials or resource forbidden */
 	LinphoneReasonDeclined, /**< The call has been declined */

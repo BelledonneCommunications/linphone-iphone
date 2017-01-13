@@ -82,7 +82,7 @@ LINPHONE_PUBLIC LinphoneCore *linphone_factory_create_core_with_config(const Lin
 
 /**
  * Instanciate a #LinphoneCoreCbs object.
- * @return a new #LinponeCoreCbs.
+ * @return a new #LinphoneCoreCbs.
  */
 LINPHONE_PUBLIC LinphoneCoreCbs *linphone_factory_create_core_cbs(const LinphoneFactory *factory);
 

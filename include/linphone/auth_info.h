@@ -157,7 +157,7 @@ LINPHONE_PUBLIC void linphone_auth_info_set_tls_cert_path(LinphoneAuthInfo *info
 /**
  * Sets the TLS key path.
  * @param[in] info The #LinphoneAuthInfo object
- * @param[in] ha1 The TLS key path.
+ * @param[in] tls_key_path The TLS key path.
 **/
 LINPHONE_PUBLIC void linphone_auth_info_set_tls_key_path(LinphoneAuthInfo *info, const char *tls_key_path);
 

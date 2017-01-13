@@ -71,7 +71,8 @@ LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, Linph
 					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
 /**
  * Start the simulation of call to test the latency with an external device
- *@param bitrate
+ * @param lc The core.
+ * @param rate Sound sample rate.
 **/
 LINPHONE_PUBLIC int linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate);
 /**

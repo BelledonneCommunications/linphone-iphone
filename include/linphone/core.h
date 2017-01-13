@@ -64,27 +64,27 @@ typedef struct _LinphoneCore LinphoneCore;
 
 /**
  * Disable a sip transport
- * Use with #LCSipTransports
+ * Use with #LinphoneSipTransports
  * @ingroup initializing
  */
 #define LC_SIP_TRANSPORT_DISABLED 0
 /**
  * Randomly chose a sip port for this transport
- * Use with #LCSipTransports
+ * Use with #LinphoneSipTransports
  * @ingroup initializing
  */
 #define LC_SIP_TRANSPORT_RANDOM (-1)
 
 /**
  * Don't create any server socket for this transport, ie don't bind on any port.
- * Use with #LCSipTransports
+ * Use with #LinphoneSipTransports
  * @ingroup initializing
 **/
 #define LC_SIP_TRANSPORT_DONTBIND (-2)
 
 /**
  * Linphone core SIP transport ports.
- * Special values LC_SIP_TRANSPORT_RANDOM, LC_SIP_TRANSPORT_RANDOM, #define LC_SIP_TRANSPORT_DONTBIND can be used.
+ * Special values #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_DONTBIND can be used.
  * Use with #linphone_core_set_sip_transports
  * @ingroup initializing
  */
@@ -107,7 +107,9 @@ typedef struct _LinphoneSipTransports{
 	int tls_port;
 } LinphoneSipTransports;
 
-/* set LCSipTransports to ensure backward compatibility */
+/**
+ * Old name of LinphoneSipTransports
+ */
 typedef struct _LinphoneSipTransports LCSipTransports;
 
 
@@ -1065,7 +1067,7 @@ LINPHONE_PUBLIC void linphone_core_v_table_destroy(LinphoneCoreVTable* table);
  * callback setters on the events you need to monitor and pass the object to
  * a #LinphoneCore instance through linphone_core_add_listener().
  *
- * That class is inherited from #belle_sip_object_t.
+ * That class is inherited from belle_sip_object_t.
  */
 typedef struct _LinphoneCoreCbs LinphoneCoreCbs;
 
@@ -1632,7 +1634,7 @@ LINPHONE_PUBLIC LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, co
  * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
  * @param[in] lc LinphoneCore object
  * @param[in] url The destination of the call (sip address, or phone number).
- * @param[in] p Call parameters
+ * @param[in] params Call parameters
  * @return A LinphoneCall object or NULL in case of failure
  * @ingroup call_control
 **/
@@ -2176,7 +2178,7 @@ LINPHONE_PUBLIC bool_t linphone_core_dns_search_enabled(const LinphoneCore *lc);
 /**
  * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.
  * @param[in] lc #LinphoneCore object.
- * @param[in] servers A #bctbx_list_t of strings containing the IP addresses of DNS servers to be used.
+ * @param[in] servers A list of strings containing the IP addresses of DNS servers to be used.
  * Setting to NULL restores default behaviour, which is to use the DNS server list provided by the system.
  * The list is copied internally.
  * @ingroup media_parameters
@@ -2186,7 +2188,7 @@ LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx
 /**
  * Returns the list of available audio codecs.
  * @param[in] lc The LinphoneCore object
- * @return \bctbx_list{PayloadType}
+ * @return \bctbx_list{LinphonePayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
@@ -2199,7 +2201,7 @@ LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_audio_codecs(const Linphon
 /**
  * Sets the list of audio codecs.
  * @param[in] lc The LinphoneCore object
- * @param[in] codecs \bctbx_list{PayloadType}
+ * @param[in] codecs \bctbx_list{LinphonePayloadType}
  * @return 0
  * The list is taken by the LinphoneCore thus the application should not free it.
  * This list is made of struct PayloadType describing the codec parameters.
@@ -2210,7 +2212,7 @@ LINPHONE_PUBLIC int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_
 /**
  * Returns the list of available video codecs.
  * @param[in] lc The LinphoneCore object
- * @return \bctbx_list{PayloadType}
+ * @return \bctbx_list{LinphonePayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
@@ -2223,7 +2225,7 @@ LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_video_codecs(const Linphon
 /**
  * Sets the list of video codecs.
  * @param[in] lc The LinphoneCore object
- * @param[in] codecs \bctbx_list{PayloadType}
+ * @param[in] codecs \bctbx_list{LinphonePayloadType}
  * @return 0
  *
  * The list is taken by the LinphoneCore thus the application should not free it.
@@ -2235,7 +2237,7 @@ LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_
 /**
  * Returns the list of available text codecs.
  * @param[in] lc The LinphoneCore object
- * @return \bctbx_list{PayloadType}
+ * @return \bctbx_list{LinphonePayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
@@ -2775,7 +2777,7 @@ LINPHONE_PUBLIC int linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneS
  * A zero value means that the transport is not activated.
  * If LC_SIP_TRANSPORT_RANDOM was passed to linphone_core_set_sip_transports(), the random port choosed by the system is returned.
  * @param[in] lc LinphoneCore object
- * @param[out] transports A #LinphoneSipTransports structure that will receive the ports being used
+ * @param[out] tr A #LinphoneSipTransports structure that will receive the ports being used
  * @ingroup network_parameters
 **/
 LINPHONE_PUBLIC void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTransports *tr);
@@ -4568,7 +4570,7 @@ LINPHONE_PUBLIC bool_t linphone_core_file_format_supported(LinphoneCore *lc, con
 /**
  * This function controls signaling features supported by the core.
  * They are typically included in a SIP Supported header.
- * @param[in] lc LinphoneCore object
+ * @param[in] core LinphoneCore object
  * @param[in] tag The feature tag name
  * @ingroup initializing
 **/
@@ -4576,7 +4578,7 @@ LINPHONE_PUBLIC void linphone_core_add_supported_tag(LinphoneCore *core, const c
 
 /**
  * Remove a supported tag.
- * @param[in] lc LinphoneCore object
+ * @param[in] core LinphoneCore object
  * @param[in] tag The tag to remove
  * @ingroup initializing
  * @see linphone_core_add_supported_tag()

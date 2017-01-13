@@ -365,7 +365,7 @@ LINPHONE_PUBLIC void linphone_config_set_skip_flag_for_section(LinphoneConfig *l
 
 /**
  * Converts a config section into a dictionary.
- * @return a #LinphoneDictionary with all the keys from a section, or NULL if the section doesn't exist
+ * @return a dictionary with all the keys from a section, or NULL if the section doesn't exist
  */
 LINPHONE_PUBLIC LinphoneDictionary * lp_config_section_to_dict( const LpConfig* lpconfig, const char* section );
 
@@ -427,5 +427,9 @@ LINPHONE_PUBLIC void lp_config_load_dict_to_section( LpConfig* lpconfig, const c
 #define lp_config_set_skip_flag_for_entry linphone_config_set_skip_flag_for_entry
 #define lp_config_get_skip_flag_for_section linphone_config_get_skip_flag_for_section
 #define lp_config_set_skip_flag_for_section linphone_config_set_skip_flag_for_section
+
+/**
+ * @}
+ */
 
 #endif

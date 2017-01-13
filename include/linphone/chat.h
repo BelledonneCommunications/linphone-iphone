@@ -218,7 +218,7 @@ LINPHONE_PUBLIC void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void
  * Create a message attached to a dedicated chat room with a particular content.
  * Use #linphone_chat_room_send_message to initiate the transfer
  * @param cr the chat room.
- * @param initial_content #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if #LinphoneContent.data is NULL.
+ * @param initial_content #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if LinphoneContent.data is NULL.
  * @return a new #LinphoneChatMessage
  */
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content);
@@ -516,7 +516,7 @@ LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage
 LINPHONE_PUBLIC	const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
 /**
  * Removes a custom header from the message.
- * @param message the message
+ * @param msg the message
  * @param header_name name of the header to remove
 **/
 LINPHONE_PUBLIC	void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name);
