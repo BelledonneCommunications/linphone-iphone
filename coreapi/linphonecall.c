@@ -2419,6 +2419,53 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 	params->keyAgreementsCount = linphone_core_get_zrtp_key_agreement_suites(lc, params->keyAgreements);
 }
 
+static OrtpJitterBufferAlgorithm name_to_jb_algo(const char *value){
+	if (value){
+		if (strcasecmp(value, "basic") == 0) return OrtpJitterBufferBasic;
+		else if (strcasecmp(value, "rls") == 0) return OrtpJitterBufferRecursiveLeastSquare;
+	}
+	ms_error("Invalid jitter buffer algorithm: %s", value);
+	return OrtpJitterBufferRecursiveLeastSquare;
+}
+
+static void apply_jitter_buffer_params(LinphoneCore *lc, RtpSession *session, LinphoneStreamType type){
+	JBParameters params;
+	
+	rtp_session_get_jitter_buffer_params(session, &params);
+	params.min_size = lp_config_get_int(lc->config, "rtp", "jitter_buffer_min_size", 40);
+	params.max_size = lp_config_get_int(lc->config, "rtp", "jitter_buffer_max_size", 500);
+	params.max_packets = params.max_size * 200 / 1000; /*allow 200 packet per seconds, quite large*/
+	params.buffer_algorithm = name_to_jb_algo(lp_config_get_string(lc->config, "rtp", "jitter_buffer_algorithm", "rls"));
+	params.refresh_ms = lp_config_get_int(lc->config, "rtp", "jitter_buffer_refresh_period", 5000);
+	params.ramp_refresh_ms = lp_config_get_int(lc->config, "rtp", "jitter_buffer_ramp_refresh_period", 5000);
+	params.ramp_step_ms = lp_config_get_int(lc->config, "rtp", "jitter_buffer_ramp_step", 20);
+	params.ramp_threshold = lp_config_get_int(lc->config, "rtp", "jitter_buffer_ramp_threshold", 70);
+	
+	switch (type){
+		case LinphoneStreamTypeAudio:
+		case LinphoneStreamTypeText: /*let's use the same params for text as for audio.*/
+			params.nom_size = linphone_core_get_audio_jittcomp(lc);
+			params.adaptive = linphone_core_audio_adaptive_jittcomp_enabled(lc);
+		break;
+		case LinphoneStreamTypeVideo:
+			params.nom_size = linphone_core_get_video_jittcomp(lc);
+			params.adaptive = linphone_core_video_adaptive_jittcomp_enabled(lc);
+		break;
+		case LinphoneStreamTypeUnknown:
+			ms_fatal("apply_jitter_buffer_params: should not happen");
+		break;
+	}
+	params.enabled = params.nom_size > 0;
+	if (params.enabled){
+		if (params.min_size > params.nom_size){
+			params.min_size = params.nom_size;
+		}
+		if (params.max_size < params.nom_size){
+			params.max_size = params.nom_size;
+		}
+	}
+	rtp_session_set_jitter_buffer_params(session, &params);
+}
 
 void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
@@ -2443,6 +2490,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		if (multicast_role == SalMulticastReceiver)
 			linphone_call_join_multicast_group(call, call->main_audio_stream_index, &audiostream->ms);
 		rtp_session_enable_network_simulation(call->audiostream->ms.sessions.rtp_session, &lc->net_conf.netsim_params);
+		apply_jitter_buffer_params(lc, call->audiostream->ms.sessions.rtp_session, LinphoneStreamTypeAudio);
 		cname = linphone_address_as_string_uri_only(call->me);
 		audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 		ms_free(cname);
@@ -2557,6 +2605,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			if (multicast_role == SalMulticastReceiver)
 				linphone_call_join_multicast_group(call, call->main_video_stream_index, &call->videostream->ms);
 			rtp_session_enable_network_simulation(call->videostream->ms.sessions.rtp_session, &lc->net_conf.netsim_params);
+			apply_jitter_buffer_params(lc, call->videostream->ms.sessions.rtp_session, LinphoneStreamTypeVideo);
 			cname = linphone_address_as_string_uri_only(call->me);
 			video_stream_set_rtcp_information(call->videostream, cname, rtcp_tool);
 			ms_free(cname);
@@ -2628,6 +2677,7 @@ void linphone_call_init_text_stream(LinphoneCall *call){
 		if (multicast_role == SalMulticastReceiver)
 			linphone_call_join_multicast_group(call, call->main_text_stream_index, &textstream->ms);
 		rtp_session_enable_network_simulation(call->textstream->ms.sessions.rtp_session, &lc->net_conf.netsim_params);
+		apply_jitter_buffer_params(lc, call->textstream->ms.sessions.rtp_session, LinphoneStreamTypeText);
 		cname = linphone_address_as_string_uri_only(call->me);
 		ms_free(cname);
 		rtp_session_set_symmetric_rtp(textstream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
@@ -3184,8 +3234,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
 			media_stream_set_adaptive_bitrate_algorithm(&call->audiostream->ms,
 								ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
-			audio_stream_enable_adaptive_jittcomp(call->audiostream, linphone_core_audio_adaptive_jittcomp_enabled(lc));
-			rtp_session_set_jitter_compensation(call->audiostream->ms.sessions.rtp_session,linphone_core_get_audio_jittcomp(lc));
+			
 			rtp_session_enable_rtcp_mux(call->audiostream->ms.sessions.rtp_session, stream->rtcp_mux);
 			if (!call->params->in_conference && call->params->record_file){
 				audio_stream_mixed_record_open(call->audiostream,call->params->record_file);
@@ -3362,8 +3411,6 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 													  linphone_core_adaptive_rate_control_enabled(lc));
 			media_stream_set_adaptive_bitrate_algorithm(&call->videostream->ms,
 													  ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
-			video_stream_enable_adaptive_jittcomp(call->videostream, linphone_core_video_adaptive_jittcomp_enabled(lc));
-			rtp_session_set_jitter_compensation(call->videostream->ms.sessions.rtp_session, linphone_core_get_video_jittcomp(lc));
 			rtp_session_enable_rtcp_mux(call->videostream->ms.sessions.rtp_session, vstream->rtcp_mux);
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
@@ -3432,7 +3479,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 												   call->video_profile, rtp_addr, vstream->rtp_port,
 												   rtcp_addr,
 												   linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port ? vstream->rtcp_port : vstream->rtp_port+1) : 0,
-												   used_pt, linphone_core_get_video_jittcomp(lc), cam, source);
+												   used_pt, -1, cam, source);
 					reused_preview = TRUE;
 				} else {
 					bool_t ok = TRUE;
