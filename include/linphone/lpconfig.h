@@ -62,6 +62,11 @@ typedef struct _LpConfig LinphoneConfig;
  */
 #define LpConfig LinphoneConfig
 
+/**
+ * Safely downcast a belle_sip_object into LinphoneConfig
+ */
+#define LINPHONE_CONFIG(obj) BELLE_SIP_CAST(obj, LinphoneConfig);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
