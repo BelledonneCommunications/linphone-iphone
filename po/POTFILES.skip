@@ -1,4 +1,5 @@
 gtk/p2pwizard.ui
+mediastreamer2/src/otherfilters/mspcapfileplayer.c
 mediastreamer2/src/android/androidsound_depr.cpp
 mediastreamer2/src/android/androidvideo.cpp
 mediastreamer2/src/audiofilters/alaw.c

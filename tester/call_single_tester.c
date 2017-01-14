@@ -5366,6 +5366,33 @@ static void call_with_ice_ipv6_to_ipv6(void) {
 	} else ms_warning("Test skipped, need both ipv6 and v4 available");
 }
 
+static void my_call_state_changed_cb(LinphoneCore *lc, LinphoneCall*call, LinphoneCallState state, const char *text){
+	if (state == LinphoneCallError){
+		linphone_core_set_network_reachable(lc, FALSE);
+	}
+}
+
+/*This test simulates a case where a 404 not found is received from server when attempting to make a call,
+ * and the app decides to immediately shutdown the network reachability*/
+static void call_with_network_reachable_down_in_callback(void){
+	LinphoneCoreManager* marie;
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	LinphoneCall *call;
+	
+	linphone_core_cbs_set_call_state_changed(cbs, my_call_state_changed_cb);
+	
+	marie = linphone_core_manager_new("marie_rc");
+	
+	linphone_core_add_callbacks(marie->lc, cbs);
+	
+	call = linphone_core_invite(marie->lc, "inexistant_username_xbfuuuf");
+	BC_ASSERT_PTR_NOT_NULL(call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, NULL, &marie->stat.number_of_LinphoneCallError, 1));
+	
+	linphone_core_cbs_unref(cbs);
+	linphone_core_manager_destroy(marie);
+}
+
 test_t call_tests[] = {
 	TEST_NO_TAG("Early declined call", early_declined_call),
 	TEST_NO_TAG("Call declined", call_declined),
@@ -5507,7 +5534,8 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
 	TEST_NO_TAG("Call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side),
 	TEST_NO_TAG("Call from plain RTP to ZRTP mandatory should be silent", call_from_plain_rtp_to_zrtp),
-	TEST_NO_TAG("Call ZRTP mandatory to plain RTP should be silent", call_from_zrtp_to_plain_rtp)
+	TEST_NO_TAG("Call ZRTP mandatory to plain RTP should be silent", call_from_zrtp_to_plain_rtp),
+	TEST_NO_TAG("Call with network reachable down in callback", call_with_network_reachable_down_in_callback)
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

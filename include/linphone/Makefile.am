@@ -37,6 +37,7 @@ linphone_include_HEADERS=\
 	linphonefriend.h \
 	linphonepresence.h \
 	linphone_proxy_config.h \
-	linphone_tunnel.h
+	linphone_tunnel.h \
+	factory.h
 
 EXTRA_DIST=$(linphone_include_HEADERS)
