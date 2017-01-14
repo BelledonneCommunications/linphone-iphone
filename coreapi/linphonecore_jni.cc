@@ -1635,7 +1635,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeListener(JNIEnv* e
 	//jobject listener = env->NewGlobalRef(jlistener);
 	for (iterator = core->vtable_refs; iterator != NULL; ) {
 		VTableReference *ref=(VTableReference*)(iterator->data);
-		LinphoneCoreVTable *vTable = ref->valid ? ref->vtable : NULL;
+		LinphoneCoreVTable *vTable = ref->valid ? ref->cbs->vtable : NULL;
 		iterator = iterator->next; //Because linphone_core_remove_listener may change the list
 		if (vTable && !ref->internal) {
 			LinphoneCoreData *data = (LinphoneCoreData*) linphone_core_v_table_get_user_data(vTable);
