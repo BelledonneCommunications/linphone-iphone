@@ -45,6 +45,12 @@ typedef struct _LinphoneFactory LinphoneFactory;
 LINPHONE_PUBLIC LinphoneFactory *linphone_factory_get(void);
 
 /**
+ * Clean the factory. This function is generally useless as the factory is unique per process, however
+ * calling this function at the end avoid getting reports from belle-sip leak detector about memory leaked in linphone_factory_get().
+ */
+LINPHONE_PUBLIC void linphone_factory_clean(void);
+
+/**
  * Instanciate a #LinphoneCore object.
  *
  * The LinphoneCore object is the primary handle for doing all phone actions.

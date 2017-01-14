@@ -444,7 +444,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	marie2_params = configure_for_early_media_video_receiving_with_inactive_audio(marie2);
 
 	linphone_core_invite_address_with_params(pauline->lc, marie1->identity, pauline_params);
-	linphone_call_params_destroy(pauline_params);
+	linphone_call_params_unref(pauline_params);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
@@ -509,8 +509,8 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, 1, 3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallEnd, 1, 3000));
 
-	linphone_call_params_destroy(marie1_params);
-	linphone_call_params_destroy(marie2_params);
+	linphone_call_params_unref(marie1_params);
+	linphone_call_params_unref(marie2_params);
 	bctbx_list_free(lcs);
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(marie2);

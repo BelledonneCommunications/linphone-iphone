@@ -1547,7 +1547,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 			linphone_core_add_subscriber(lc,tmp,op);
 		}
 	}
-	linphone_address_destroy(uri);
+	linphone_address_unref(uri);
 	ms_free(tmp);
 }
 

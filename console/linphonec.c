@@ -368,7 +368,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 				linphone_call_params_enable_early_media_sending(callparams, TRUE);
 				if (vcap_enabled) linphone_call_params_enable_video(callparams, TRUE);
 				linphone_core_accept_early_media_with_params(lc, call, callparams);
-				linphone_call_params_destroy(callparams);
+				linphone_call_params_unref(callparams);
 			}
 		break;
 		case LinphoneCallOutgoingInit:
@@ -796,7 +796,7 @@ linphonec_finish(int exit_status)
 		stop_pipe_reader();
 #endif /*_WIN32_WCE*/
 
-	linphone_core_destroy (linphonec);
+	linphone_core_unref (linphonec);
 
 	if (mylogfile != NULL && mylogfile != stdout)
 	{

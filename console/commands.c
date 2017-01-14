@@ -597,7 +597,7 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 		{
 			snprintf(callee_name,sizeof(callee_name),"%s",args);
 		}
-		linphone_call_params_destroy(cp);
+		linphone_call_params_unref(cp);
 	}
 	return 1;
 }
@@ -1981,7 +1981,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		if ((from=linphone_address_new(identity))!=NULL){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,passwd,NULL,NULL,linphone_address_get_username(from));
 			linphone_core_add_auth_info(lc,info);
-			linphone_address_destroy(from);
+			linphone_address_unref(from);
 			linphone_auth_info_destroy(info);
 		}
 	}
@@ -2574,7 +2574,7 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 					LinphoneCallParams *ncp=linphone_call_params_copy(cp);
 					linphone_call_params_enable_video(ncp,TRUE);
 					linphone_core_update_call(lc,call,ncp);
-					linphone_call_params_destroy (ncp);
+					linphone_call_params_unref (ncp);
 					linphonec_out("Trying to bring up video stream...\n");
 				}
 			}

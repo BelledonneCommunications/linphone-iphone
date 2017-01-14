@@ -340,7 +340,7 @@ bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *pa
  * Constructor and destructor functions                                        *
  ******************************************************************************/
 
-static void _linphone_call_params_destroy(LinphoneCallParams *cp){
+static void _linphone_call_params_unref(LinphoneCallParams *cp){
 	unsigned int i;
 	if (cp->record_file) ms_free(cp->record_file);
 	if (cp->custom_headers) sal_custom_header_free(cp->custom_headers);
@@ -368,7 +368,7 @@ void linphone_call_params_destroy(LinphoneCallParams *cp) {
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCallParams);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallParams, belle_sip_object_t,
-	(belle_sip_object_destroy_t)_linphone_call_params_destroy,
+	(belle_sip_object_destroy_t)_linphone_call_params_unref,
 	NULL, // clone
 	NULL, // marshal
 	FALSE

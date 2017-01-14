@@ -194,7 +194,7 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
 	LinphoneAddress *addr = linphone_address_new(address);
 	if (addr){
 		linphone_core_get_chat_room(lc, addr);
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 	}
 	return 0;
 }

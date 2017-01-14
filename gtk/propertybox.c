@@ -287,7 +287,7 @@ void linphone_gtk_update_my_contact(GtkWidget *w){
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"sip_address")),contact);
 	linphone_core_set_primary_contact(linphone_gtk_get_core(),contact);
 	ms_free(contact);
-	linphone_address_destroy(parsed);
+	linphone_address_unref(parsed);
 	linphone_gtk_load_identities();
 }
 
@@ -974,7 +974,7 @@ static void update_proxy_transport(GtkWidget *w){
 		}else{
 			fill_transport_combo_box(combo,linphone_address_get_transport(laddr),TRUE);
 		}
-		linphone_address_destroy(laddr);
+		linphone_address_unref(laddr);
 	}
 }
 
@@ -998,7 +998,7 @@ void linphone_gtk_proxy_transport_changed(GtkWidget *combo){
 			gtk_entry_set_text(GTK_ENTRY(proxy),newaddr);
 			ms_free(newaddr);
 		}
-		linphone_address_destroy(laddr);
+		linphone_address_unref(laddr);
 	}
 	g_object_set_data(G_OBJECT(w),"combo-updating",GINT_TO_POINTER(0));
 }
@@ -1074,7 +1074,7 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 					linphone_proxy_config_set_server_addr(cfg,tmp);
 					ms_free(tmp);
 				}
-				linphone_address_destroy(laddr);
+				linphone_address_unref(laddr);
 			}
 		}
 	}
@@ -1698,7 +1698,7 @@ void linphone_gtk_show_parameters(void){
 		}
 		if (linphone_address_get_username(contact))
 			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"username")),linphone_address_get_username(contact));
-		linphone_address_destroy(contact);
+		linphone_address_unref(contact);
 	}
 #ifdef BUILD_WIZARD
 	gtk_widget_show(linphone_gtk_get_widget(pb,"wizard"));

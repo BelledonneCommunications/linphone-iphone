@@ -2079,7 +2079,7 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact) {
 		ms_free(lc->sip_conf.guessed_contact);
 		lc->sip_conf.guessed_contact=NULL;
 	}
-	linphone_address_destroy(ctt);
+	linphone_address_unref(ctt);
 	return 0;
 }
 
@@ -2110,7 +2110,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		it won't work. But we prefer to return something in all cases. It at least shows username and ip address.*/
 	guessed=linphone_address_as_string(url);
 	lc->sip_conf.guessed_contact=guessed;
-	linphone_address_destroy(url);
+	linphone_address_unref(url);
 }
 
 const char *linphone_core_get_primary_contact(LinphoneCore *lc){
@@ -2918,7 +2918,7 @@ LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *
 	ms_message("Starting new call to refered address %s",call->refer_to);
 	call->refer_pending=FALSE;
 	newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
-	linphone_call_params_destroy(cp);
+	linphone_call_params_unref(cp);
 	if (newcall) {
 		call->transfer_target=linphone_call_ref(newcall);
 		linphone_core_notify_refer_state(lc,call,newcall);
@@ -3132,7 +3132,7 @@ LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
 	p->has_video &= !!lc->video_policy.automatically_initiate;
 	call=linphone_core_invite_with_params(lc,url,p);
-	linphone_call_params_destroy(p);
+	linphone_call_params_unref(p);
 	return call;
 }
 
@@ -3141,7 +3141,7 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
 	if (addr){
 		LinphoneCall *call;
 		call=linphone_core_invite_address_with_params(lc,addr,p);
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 		return call;
 	}
 	return NULL;
@@ -3152,7 +3152,7 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
 	p->has_video &= !!lc->video_policy.automatically_initiate;
 	call=linphone_core_invite_address_with_params (lc,addr,p);
-	linphone_call_params_destroy(p);
+	linphone_call_params_unref(p);
 	return call;
 }
 
@@ -3244,7 +3244,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	{
 		ms_warning("we had a problem in adding the call into the invite ... weird");
 		linphone_call_unref(call);
-		linphone_call_params_destroy(cp);
+		linphone_call_params_unref(cp);
 		return NULL;
 	}
 
@@ -3294,7 +3294,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 
 	if (real_url!=NULL) ms_free(real_url);
-	linphone_call_params_destroy(cp);
+	linphone_call_params_unref(cp);
 	return call;
 }
 
@@ -3314,7 +3314,7 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
 	real_url=linphone_address_as_string (real_parsed_url);
 	sal_call_refer(call->op,real_url);
 	ms_free(real_url);
-	linphone_address_destroy(real_parsed_url);
+	linphone_address_unref(real_parsed_url);
 	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
 	return 0;
 }
@@ -3349,7 +3349,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	from_parsed=linphone_address_new(sal_op_get_from(call->op));
 	linphone_address_clean(from_parsed);
 	tmp=linphone_address_as_string(from_parsed);
-	linphone_address_destroy(from_parsed);
+	linphone_address_unref(from_parsed);
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
 		(sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):".");
 	linphone_core_notify_show_interface(lc);
@@ -5927,7 +5927,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	if (config->contact)
 		ms_free(config->contact);
 	if (lc->default_rls_addr)
-		linphone_address_destroy(lc->default_rls_addr);
+		linphone_address_unref(lc->default_rls_addr);
 
 	linphone_im_notif_policy_unref(lc->im_notif_policy);
 }

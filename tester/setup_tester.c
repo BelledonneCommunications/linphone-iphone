@@ -42,7 +42,7 @@ static void core_init_test(void) {
 }
 
 static void linphone_address_test(void) {
-	linphone_address_destroy(create_linphone_address(NULL));
+	linphone_address_unref(create_linphone_address(NULL));
 	BC_ASSERT_PTR_NULL(linphone_address_new("sip:@sip.linphone.org"));
 
 }
@@ -100,14 +100,14 @@ static void linphone_interpret_url_test(void)
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_scheme(address), "sips");
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_username(address), "margaux");
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(address), "sip.linphone.org");
-	linphone_address_destroy(address);
+	linphone_address_unref(address);
 
 	address = linphone_core_interpret_url(lc,"23");
 	BC_ASSERT_PTR_NOT_NULL(address);
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_scheme(address), "sip");
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_username(address), "23");
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(address), "sip.linphone.org");
-	linphone_address_destroy(address);
+	linphone_address_unref(address);
 
 	address = linphone_core_interpret_url(lc,"#24");
 	BC_ASSERT_PTR_NOT_NULL(address);
@@ -116,13 +116,13 @@ static void linphone_interpret_url_test(void)
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(address), "sip.linphone.org");
 	tmp = linphone_address_as_string(address);
 	BC_ASSERT_TRUE(strcmp (tmp,"sip:%2324@sip.linphone.org") == 0);
-	linphone_address_destroy(address);
+	linphone_address_unref(address);
 
 	address = linphone_core_interpret_url(lc,tmp);
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_scheme(address), "sip");
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_username(address), "#24");
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(address), "sip.linphone.org");
-	linphone_address_destroy(address);
+	linphone_address_unref(address);
 	ms_free(tmp);
 
 	linphone_core_destroy (lc);
@@ -225,12 +225,12 @@ void linphone_proxy_config_address_equal_test(void) {
 	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(c,f), LinphoneProxyConfigAddressDifferent, int, "%d");
 	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(e,f), LinphoneProxyConfigAddressWeakEqual, int, "%d");
 
-	linphone_address_destroy(a);
-	linphone_address_destroy(b);
-	linphone_address_destroy(c);
-	linphone_address_destroy(d);
-	linphone_address_destroy(e);
-	linphone_address_destroy(f);
+	linphone_address_unref(a);
+	linphone_address_unref(b);
+	linphone_address_unref(c);
+	linphone_address_unref(d);
+	linphone_address_unref(e);
+	linphone_address_unref(f);
 }
 
 void linphone_proxy_config_is_server_config_changed_test(void) {

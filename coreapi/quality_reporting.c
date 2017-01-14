@@ -380,7 +380,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		STR_REASSIGN(report->qos_analyzer.output, NULL);
 	}
 
-	linphone_address_destroy(request_uri);
+	linphone_address_unref(request_uri);
 	linphone_content_unref(content);
 
 	end:

@@ -50,14 +50,14 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	lcs=bctbx_list_append(lcs,laure->lc);
 
 	BC_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
-	linphone_call_params_destroy(marie_params);
+	linphone_call_params_unref(marie_params);
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
 
 	if (enable_caller_privacy)
 		linphone_call_params_set_privacy(laure_params,LinphonePrivacyId);
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(laure->lc,pauline->identity,laure_params));
-	linphone_call_params_destroy(laure_params);
+	linphone_call_params_unref(laure_params);
 
 	BC_ASSERT_TRUE(wait_for(laure->lc
 							,pauline->lc
@@ -134,7 +134,7 @@ static void second_call_rejection(bool_t second_without_audio){
 	linphone_call_params_enable_audio(params, !second_without_audio);
 	marie_call = linphone_core_invite_with_params(marie->lc, "sip:laure_non_exstent@test.linphone.org", params);
 
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 
 	if (second_without_audio){
 		BC_ASSERT_PTR_NOT_NULL(marie_call);
@@ -345,7 +345,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	if(conference) {
 		bctbx_list_t *participants = linphone_conference_get_participants(conference);
 		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(participants), 2, unsigned int, "%u");
-		bctbx_list_free_with_data(participants, (void(*)(void *))linphone_address_destroy);
+		bctbx_list_free_with_data(participants, (void(*)(void *))linphone_address_unref);
 	}
 
 	linphone_core_terminate_conference(marie->lc);

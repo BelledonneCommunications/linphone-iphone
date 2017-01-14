@@ -878,7 +878,7 @@ Daemon::~Daemon() {
 	}
 
 	enableLSD(false);
-	linphone_core_destroy(mLc);
+	linphone_core_unref(mLc);
 	if (mChildFd != (ortp_pipe_t)-1) {
 		ortp_server_pipe_close_client(mChildFd);
 	}

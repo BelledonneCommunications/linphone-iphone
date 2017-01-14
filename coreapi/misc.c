@@ -1302,14 +1302,14 @@ static void linphone_core_migrate_proxy_config(LinphoneCore *lc, LinphoneTranspo
 			tmp=linphone_address_as_string(proxy_addr);
 			linphone_proxy_config_set_server_addr(cfg,tmp);
 			ms_free(tmp);
-			linphone_address_destroy(proxy_addr);
+			linphone_address_unref(proxy_addr);
 		}
 		if (route_addr){
 			linphone_address_set_transport(route_addr,type);
 			tmp=linphone_address_as_string(route_addr);
 			linphone_proxy_config_set_route(cfg,tmp);
 			ms_free(tmp);
-			linphone_address_destroy(route_addr);
+			linphone_address_unref(route_addr);
 		}
 	}
 }

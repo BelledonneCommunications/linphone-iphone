@@ -465,7 +465,7 @@ static void video_button_clicked(GtkWidget *button, LinphoneCall *call){
 	gtk_widget_set_sensitive(button,FALSE);
 	linphone_call_params_enable_video(params, adding);
 	linphone_core_update_call(lc,call,params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 }
 
 void linphone_gtk_update_video_button(LinphoneCall *call){

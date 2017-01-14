@@ -54,6 +54,13 @@ LinphoneFactory *linphone_factory_get(void) {
 	return _factory;
 }
 
+void linphone_factory_clean(void){
+	if (_factory){
+		belle_sip_object_unref(_factory);
+		_factory = NULL;
+	}
+}
+
 LinphoneCore *linphone_factory_create_core(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
 		const char *config_path, const char *factory_config_path) {
 	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);

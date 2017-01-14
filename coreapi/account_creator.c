@@ -246,7 +246,7 @@ static char* _get_identity(const LinphoneAccountCreator *creator) {
 		addr = linphone_proxy_config_normalize_sip_uri(proxy, creator->username ? creator->username : creator->phone_number);
 
 		identity = linphone_address_as_string(addr);
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 		linphone_proxy_config_destroy(proxy);
 	}
 	return identity;
@@ -550,7 +550,7 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 			linphone_proxy_config_set_server_addr(cfg, tmp);
 			linphone_proxy_config_set_route(cfg, tmp);
 			ms_free(tmp);
-			linphone_address_destroy(addr);
+			linphone_address_unref(addr);
 		}
 		linphone_core_set_stun_server(creator->core, "stun.linphone.org");
 		linphone_core_set_firewall_policy(creator->core, LinphonePolicyUseIce);
@@ -564,7 +564,7 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 								linphone_address_get_domain(identity) // domain
 	);
 	linphone_core_add_auth_info(creator->core, info);
-	linphone_address_destroy(identity);
+	linphone_address_unref(identity);
 
 	if (linphone_core_add_proxy_config(creator->core, cfg) != -1) {
 		linphone_core_set_default_proxy(creator->core, cfg);

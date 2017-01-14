@@ -894,7 +894,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	update_media_description_from_stun(md, &call->ac, &call->vc, &call->tc);
 	call->localdesc=md;
 	linphone_call_update_local_media_description_from_ice_or_upnp(call);
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	if (old_md){
 		transfer_already_assigned_payload_types(old_md,md);
 		call->localdesc_changed=sal_media_description_equals(md,old_md);
@@ -4696,7 +4696,7 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 		sal_address_clean((SalAddress*)contact); /* clean out contact_params that come from proxy config*/
 		sal_address_set_transport((SalAddress*)contact,tport);
 		sal_op_set_contact_address(call->op, contact);
-		linphone_address_destroy(contact);
+		linphone_address_unref(contact);
 	}
 }
 

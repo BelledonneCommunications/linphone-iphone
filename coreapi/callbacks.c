@@ -334,13 +334,13 @@ static void call_received(SalOp *h){
 		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message.",addr);
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
-		linphone_address_destroy(from_addr);
-		linphone_address_destroy(to_addr);
-		linphone_address_destroy(from_address_to_search_if_me);
+		linphone_address_unref(from_addr);
+		linphone_address_unref(to_addr);
+		linphone_address_unref(from_address_to_search_if_me);
 		ms_free(addr);
 		return;
 	} else if (from_address_to_search_if_me) {
-		linphone_address_destroy(from_address_to_search_if_me);
+		linphone_address_unref(from_address_to_search_if_me);
 	}
 
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
@@ -748,7 +748,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 			LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
 			ms_message("Applying default policy for offering SDP on call [%p]",call);
 			linphone_call_set_new_params(call, p);
-			linphone_call_params_destroy(p);
+			linphone_call_params_unref(p);
 		}
 		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
@@ -1127,7 +1127,7 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	if(refer_to_addr) {
 		const char *tmp = linphone_address_get_method_param(refer_to_addr);
 		if(tmp) strncpy(method, tmp, sizeof(method));
-		linphone_address_destroy(refer_to_addr);
+		linphone_address_unref(refer_to_addr);
 	}
 	if (call && (strlen(method) == 0 || strcmp(method, "INVITE") == 0)) {
 		if (call->refer_to!=NULL){

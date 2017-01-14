@@ -43,7 +43,7 @@ static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 	linphone_address_set_username(addr,username);
 	tmp=linphone_address_as_string (addr);
 	do_login(ssctx,tmp,NULL,NULL);
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	linphone_gtk_load_identities();
 	return FALSE;
 }
@@ -98,7 +98,7 @@ static void linphone_gtk_init_login_frame(GtkWidget *login_frame, LinphoneProxyC
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(login_frame,"login_userid")),
 		userid ? userid : "");
 
-	linphone_address_destroy(from);
+	linphone_address_unref(from);
 }
 
 void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gboolean disable_auto_login){

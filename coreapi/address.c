@@ -163,7 +163,7 @@ bool_t linphone_address_equal(const LinphoneAddress *a1, const LinphoneAddress *
 }
 
 void linphone_address_destroy(LinphoneAddress *u){
-	sal_address_unref(u);
+	linphone_address_unref(u);
 }
 
 void linphone_address_set_password(LinphoneAddress *addr, const char *passwd){

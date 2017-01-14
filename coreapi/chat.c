@@ -130,7 +130,7 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 			cr->lc->chatrooms = bctbx_list_remove(cr->lc->chatrooms, cr);
 		}
 	}
-	linphone_address_destroy(cr->peer_url);
+	linphone_address_unref(cr->peer_url);
 	if (cr->pending_message)
 		linphone_chat_message_destroy(cr->pending_message);
 	ms_free(cr->peer);
@@ -243,7 +243,7 @@ static LinphoneChatRoom *_linphone_core_get_or_create_chat_room(LinphoneCore *lc
 		return NULL;
 	}
 	ret = _linphone_core_get_chat_room(lc, to_addr);
-	linphone_address_destroy(to_addr);
+	linphone_address_unref(to_addr);
 	if (!ret) {
 		ret = _linphone_core_create_chat_room_from_url(lc, to);
 	}
@@ -405,7 +405,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			 * BUG
 			 * the file transfer message constructor sets the from, but doesn't do it as well as here.
 			 */
-			linphone_address_destroy(msg->from);
+			linphone_address_unref(msg->from);
 		}
 		msg->from = linphone_address_new(identity);
 		
@@ -660,7 +660,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	linphone_chat_room_message_received(cr, lc, msg);
 	
 end:
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	linphone_chat_message_unref(msg);
 	return reason;
 }
@@ -769,7 +769,7 @@ LinphoneReason linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, 
 		}
 		linphone_chat_message_unref(msg);
 	}
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	
 	return reason;
 }
@@ -864,7 +864,7 @@ LinphoneReason linphone_core_imdn_received(LinphoneCore *lc, SalOp *op, const Sa
 	if (cr != NULL) {
 		linphone_chat_room_notify_imdn(cr, imdn->content);
 	}
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	return LinphoneReasonNone;
 }
 
@@ -1030,8 +1030,8 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 			}
 
 			linphone_chat_message_unref(msg);
-			linphone_address_destroy(from_addr);
-			linphone_address_destroy(to_addr);
+			linphone_address_unref(from_addr);
+			linphone_address_unref(to_addr);
 			ms_free(content);
 			sal_op_unref(op);
 		}
@@ -1182,8 +1182,8 @@ static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnTy
 		}
 		
 		linphone_chat_message_unref(msg);
-		linphone_address_destroy(from_addr);
-		linphone_address_destroy(to_addr);
+		linphone_address_unref(from_addr);
+		linphone_address_unref(to_addr);
 		ms_free(content);
 	}
 	sal_op_unref(op);
@@ -1259,7 +1259,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 
 			linphone_chat_message_set_from(msg, cr->peer_url);
 			if (msg->to)
-				linphone_address_destroy(msg->to);
+				linphone_address_unref(msg->to);
 			msg->to = call->dest_proxy ? linphone_address_clone(call->dest_proxy->identity_address) :
 					linphone_address_new(linphone_core_get_identity(lc));
 			msg->time = ms_time(0);
@@ -1319,7 +1319,7 @@ int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character)
 			msg->time = ms_time(0);
 			msg->state = LinphoneChatMessageStateDisplayed;
 			msg->dir = LinphoneChatMessageOutgoing;
-			if (msg->from) linphone_address_destroy(msg->from);
+			if (msg->from) linphone_address_unref(msg->from);
 			msg->from = linphone_address_new(linphone_core_get_identity(lc));
 			msg->storage_id = linphone_chat_message_store(msg);
 			ms_free(msg->message);
@@ -1441,7 +1441,7 @@ void linphone_chat_message_set_appdata(LinphoneChatMessage *msg, const char *dat
 
 void linphone_chat_message_set_from_address(LinphoneChatMessage *msg, const LinphoneAddress *from) {
 	if (msg->from)
-		linphone_address_destroy(msg->from);
+		linphone_address_unref(msg->from);
 	msg->from = linphone_address_clone(from);
 }
 
@@ -1451,7 +1451,7 @@ const LinphoneAddress *linphone_chat_message_get_from_address(const LinphoneChat
 
 void linphone_chat_message_set_to_address(LinphoneChatMessage *msg, const LinphoneAddress *to) {
 	if (msg->to)
-		linphone_address_destroy(msg->to);
+		linphone_address_unref(msg->to);
 	msg->to = linphone_address_clone(to);
 }
 
@@ -1552,9 +1552,9 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 	if (msg->appdata)
 		ms_free(msg->appdata);
 	if (msg->from)
-		linphone_address_destroy(msg->from);
+		linphone_address_unref(msg->from);
 	if (msg->to)
-		linphone_address_destroy(msg->to);
+		linphone_address_unref(msg->to);
 	if (msg->message_id)
 		ms_free(msg->message_id);
 	if (msg->custom_headers)

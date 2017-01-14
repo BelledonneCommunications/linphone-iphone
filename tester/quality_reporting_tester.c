@@ -197,7 +197,7 @@ static void quality_reporting_not_sent_if_low_bandwidth(void) {
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0, int, "%d");
 	}
-	linphone_call_params_destroy(marie_params);
+	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -320,8 +320,8 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,2,5000));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,2,5000));
 	}
-	linphone_call_params_destroy(marie_params);
-	linphone_call_params_destroy(pauline_params);
+	linphone_call_params_unref(marie_params);
+	linphone_call_params_unref(pauline_params);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -417,8 +417,8 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 		wait_for_until(marie->lc,pauline->lc,NULL,0,6000);
 	}
 
-	linphone_call_params_destroy(marie_params);
-	linphone_call_params_destroy(pauline_params);
+	linphone_call_params_unref(marie_params);
+	linphone_call_params_unref(pauline_params);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

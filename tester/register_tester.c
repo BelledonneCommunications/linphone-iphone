@@ -108,7 +108,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 	} else {
 		linphone_proxy_config_set_server_addr(proxy_cfg,server_addr);
 	}
-	linphone_address_destroy(from);
+	linphone_address_unref(from);
 
 	linphone_core_add_proxy_config(lc,proxy_cfg);
 	linphone_core_set_default_proxy(lc,proxy_cfg);
@@ -394,7 +394,7 @@ static void authenticated_register_with_provided_credentials(void){
 	linphone_proxy_config_set_expires(cfg,1);
 	linphone_proxy_config_set_route(cfg, test_route);
 	linphone_proxy_config_set_server_addr(cfg,test_route);
-	linphone_address_destroy(from);
+	linphone_address_unref(from);
 
 	ai = linphone_auth_info_new(test_username, NULL, test_password, NULL, NULL, NULL);
 	linphone_core_add_auth_info(lcm->lc, ai);
@@ -657,7 +657,7 @@ static void proxy_transport_change(void){
 	/*as we change p[roxy server destination, we should'nt be notified about the clear*/
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0, int, "%d");
 	ms_free(addr_as_string);
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	linphone_core_manager_destroy(lcm);
 
 }
@@ -938,7 +938,7 @@ static void tls_with_non_tls_server(void){
 				,(linphone_address_get_port(addr)>0?linphone_address_get_port(addr):5060));
 		linphone_proxy_config_set_server_addr(proxy_cfg,tmp);
 		linphone_proxy_config_done(proxy_cfg);
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 		BC_ASSERT_TRUE(wait_for_until(lc,lc,&lcm->stat.number_of_LinphoneRegistrationFailed,1,10000));
 		linphone_core_manager_destroy(lcm);
 	}

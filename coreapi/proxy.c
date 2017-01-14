@@ -29,13 +29,13 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
-	if (cfg->saved_identity) linphone_address_destroy(cfg->saved_identity);
+	if (cfg->saved_identity) linphone_address_unref(cfg->saved_identity);
 	if (cfg->identity_address)
 		cfg->saved_identity = linphone_address_clone(cfg->identity_address);
 	else
 		cfg->saved_identity = NULL;
 
-	if (cfg->saved_proxy) linphone_address_destroy(cfg->saved_proxy);
+	if (cfg->saved_proxy) linphone_address_unref(cfg->saved_proxy);
 	if (cfg->reg_proxy)
 		cfg->saved_proxy = linphone_address_new(cfg->reg_proxy);
 	else
@@ -52,7 +52,7 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(c
 		return LinphoneProxyConfigAddressEqual;
 	if (linphone_address_weak_equal(a,b)) {
 		/*also check both transport and uri */
-		if (linphone_address_is_secure(a) == linphone_address_is_secure(b) && linphone_address_get_transport(a) == linphone_address_get_transport(b))
+		if (linphone_address_get_secure(a) == linphone_address_get_secure(b) && linphone_address_get_transport(a) == linphone_address_get_transport(b))
 			return LinphoneProxyConfigAddressWeakEqual;
 		else
 			return LinphoneProxyConfigAddressDifferent;
@@ -78,7 +78,7 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_confi
 	if (result == LinphoneProxyConfigAddressEqual) result = result_identity;
 
 	end:
-	if (current_proxy) linphone_address_destroy(current_proxy);
+	if (current_proxy) linphone_address_unref(current_proxy);
 	ms_message("linphone_proxy_config_is_server_config_changed : %i", result);
 	return result;
 }
@@ -208,7 +208,7 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *cfg){
 void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->reg_proxy!=NULL) ms_free(cfg->reg_proxy);
 	if (cfg->reg_identity!=NULL) ms_free(cfg->reg_identity);
-	if (cfg->identity_address!=NULL) linphone_address_destroy(cfg->identity_address);
+	if (cfg->identity_address!=NULL) linphone_address_unref(cfg->identity_address);
 	if (cfg->reg_route!=NULL) ms_free(cfg->reg_route);
 	if (cfg->quality_reporting_collector!=NULL) ms_free(cfg->quality_reporting_collector);
 	if (cfg->ssctx!=NULL) sip_setup_context_free(cfg->ssctx);
@@ -217,8 +217,8 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->dial_prefix!=NULL) ms_free(cfg->dial_prefix);
 	if (cfg->contact_params) ms_free(cfg->contact_params);
 	if (cfg->contact_uri_params) ms_free(cfg->contact_uri_params);
-	if (cfg->saved_proxy!=NULL) linphone_address_destroy(cfg->saved_proxy);
-	if (cfg->saved_identity!=NULL) linphone_address_destroy(cfg->saved_identity);
+	if (cfg->saved_proxy!=NULL) linphone_address_unref(cfg->saved_proxy);
+	if (cfg->saved_identity!=NULL) linphone_address_unref(cfg->saved_identity);
 	if (cfg->sent_headers!=NULL) sal_custom_header_free(cfg->sent_headers);
 	if (cfg->pending_contact) linphone_address_unref(cfg->pending_contact);
 	if (cfg->refkey) ms_free(cfg->refkey);
@@ -267,7 +267,7 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *
 			addr=linphone_address_new(server_addr);
 		if (addr){
 			cfg->reg_proxy=linphone_address_as_string(addr);
-			linphone_address_destroy(addr);
+			linphone_address_unref(addr);
 		}else{
 			ms_warning("Could not parse %s",server_addr);
 			return -1;
@@ -285,7 +285,7 @@ int linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const L
 		return -1;
 	}
 	if (cfg->identity_address != NULL) {
-		linphone_address_destroy(cfg->identity_address);
+		linphone_address_unref(cfg->identity_address);
 	}
 	cfg->identity_address=linphone_address_clone(addr);
 
@@ -300,7 +300,7 @@ int linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *ide
 	if (identity!=NULL && strlen(identity)>0){
 		LinphoneAddress *addr=linphone_address_new(identity);
 		int ret=linphone_proxy_config_set_identity_address(cfg, addr);
-		if (addr) linphone_address_destroy(addr);
+		if (addr) linphone_address_unref(addr);
 		return ret;
 	}
 	return -1;
@@ -446,7 +446,7 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *cfg){
 
 		ret=contact;
 	}
-	linphone_address_destroy(proxy);
+	linphone_address_unref(proxy);
 	return ret;
 }
 
@@ -465,7 +465,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 		LinphoneAddress *contact;
 		ms_message("LinphoneProxyConfig [%p] about to register (LinphoneCore version: %s)",cfg,linphone_core_get_version());
 		proxy_string=linphone_address_as_string_uri_only(proxy);
-		linphone_address_destroy(proxy);
+		linphone_address_unref(proxy);
 		if (cfg->op)
 			sal_op_release(cfg->op);
 		cfg->op=sal_op_new(cfg->lc->sal);
@@ -474,7 +474,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 		if ((contact=guess_contact_for_register(cfg))) {
 			sal_op_set_contact_address(cfg->op,contact);
-			linphone_address_destroy(contact);
+			linphone_address_unref(contact);
 		}
 
 		sal_op_set_user_pointer(cfg->op,cfg);
@@ -558,7 +558,7 @@ void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *
 		}
 
 		if (addr){
-			linphone_address_destroy(addr);
+			linphone_address_unref(addr);
 		}
 	}
 }
@@ -693,7 +693,7 @@ static LinphoneAddress* _linphone_core_destroy_addr_if_not_sip( LinphoneAddress*
 	if( linphone_address_is_sip(addr) ) {
 		return addr;
 	} else {
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 		return NULL;
 	}
 }

@@ -77,7 +77,7 @@ int main(int argc, char *argv[]){
 		LinphoneCallParams *cp = linphone_core_create_call_params(lc, NULL);
 		linphone_call_params_enable_realtime_text(cp,TRUE); /*enable real time text*/
 		call=linphone_core_invite_with_params(lc,dest,cp);
-		linphone_call_params_destroy(cp);
+		linphone_call_params_unref(cp);
 		if (call==NULL){
 			printf("Could not place call to %s\n",dest);
 			goto end;

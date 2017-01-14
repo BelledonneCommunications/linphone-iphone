@@ -281,8 +281,8 @@ void linphone_call_log_unref(LinphoneCallLog *cl) {
  ******************************************************************************/
 
 static void _linphone_call_log_destroy(LinphoneCallLog *cl) {
-	if (cl->from!=NULL) linphone_address_destroy(cl->from);
-	if (cl->to!=NULL) linphone_address_destroy(cl->to);
+	if (cl->from!=NULL) linphone_address_unref(cl->from);
+	if (cl->to!=NULL) linphone_address_unref(cl->to);
 	if (cl->refkey!=NULL) ms_free(cl->refkey);
 	if (cl->call_id) ms_free(cl->call_id);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]);
@@ -454,10 +454,10 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	
 error:
 	if (from){
-		linphone_address_destroy(from);
+		linphone_address_unref(from);
 	}
 	if (to){
-		linphone_address_destroy(to);
+		linphone_address_unref(to);
 	}
 	ms_error("Bad call log at storage_id %u", storage_id);
 	return 0;

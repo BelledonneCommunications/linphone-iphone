@@ -906,8 +906,8 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 		linphone_call_params_set_record_file(params,record_file);
 		linphone_core_invite_address_with_params(lc,addr,params);
 		completion_add_text(GTK_ENTRY(uri_bar),entered);
-		linphone_address_destroy(addr);
-		linphone_call_params_destroy(params);
+		linphone_address_unref(addr);
+		linphone_call_params_unref(params);
 		g_free(record_file);
 	}else{
 		linphone_gtk_call_terminated(NULL,NULL);
@@ -921,7 +921,7 @@ static void accept_incoming_call(LinphoneCall *call){
 	gchar *record_file=linphone_gtk_get_record_path(linphone_call_get_remote_address(call),FALSE);
 	linphone_call_params_set_record_file(params,record_file);
 	linphone_core_accept_call_with_params(lc,call,params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 }
 
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call){
@@ -958,7 +958,7 @@ void linphone_gtk_start_chat(GtkWidget *w){
 	LinphoneAddress *addr=linphone_core_interpret_url(lc,entered);
 	if (addr) {
 		linphone_gtk_friend_list_set_chat_conversation(addr);
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 	}
 }
 
@@ -1312,7 +1312,7 @@ static void on_call_updated_response(GtkWidget *dialog, gint responseid, gpointe
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 		linphone_call_params_enable_video(params,responseid==GTK_RESPONSE_YES);
 		linphone_core_accept_call_update(lc,call,params);
-		linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
 	}
 	g_source_remove_by_user_data(dialog);
 	gtk_widget_destroy(dialog);
@@ -1997,7 +1997,7 @@ void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
 	if(addr) {
 		const char *tmp = linphone_address_get_method_param(addr);
 		strncpy(method, tmp, sizeof(20));
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 	}
 	if(strlen(method) == 0 || strcmp(method, "INVITE") == 0) {
 		GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(

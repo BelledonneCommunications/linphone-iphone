@@ -58,7 +58,7 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 			linphone_call_params_set_audio_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_call_params_set_video_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_core_accept_call_with_params(lc,call,call_params);
-			linphone_call_params_destroy(call_params);
+			linphone_call_params_unref(call_params);
 		break;
 		default:
 			break;

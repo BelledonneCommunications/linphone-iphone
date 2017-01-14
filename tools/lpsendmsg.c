@@ -186,9 +186,9 @@ int main(int argc, char *argv[]){
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
 	}
-	linphone_address_destroy(from);
-	linphone_address_destroy(to);
-	linphone_address_destroy(route);
+	linphone_address_unref(from);
+	linphone_address_unref(to);
+	linphone_address_unref(route);
 	linphone_core_destroy(lc);
 	return 0;
 }

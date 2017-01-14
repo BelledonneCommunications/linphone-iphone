@@ -404,7 +404,7 @@ int LocalConference::addParticipant(LinphoneCall *call) {
 		/*this will trigger a reINVITE that will later redraw the streams */
 		/*FIXME probably a bit too much to just redraw streams !*/
 		linphone_core_update_call(m_core,call,params);
-		linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
 		addLocalEndpoint();
 	}else{
 		ms_error("Call is in state %s, it cannot be added to the conference.",linphone_call_state_to_string(call->state));
@@ -441,7 +441,7 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 		}
 		ms_message("Updating call to actually remove from conference");
 		err=linphone_core_update_call(m_core,call,params);
-		linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
 	} else{
 		ms_message("Pausing call to actually remove from conference");
 		err=_linphone_core_pause_call(m_core,call);

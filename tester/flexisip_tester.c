@@ -568,7 +568,7 @@ static void early_media_call_forking(void) {
 	linphone_call_params_enable_video(params,TRUE);
 
 	linphone_core_invite_address_with_params(pauline->lc,marie->identity,params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
@@ -703,7 +703,7 @@ static bool_t is_remote_contact_ipv6(LinphoneCall *call){
 		if (ct_addr){
 			ret = strchr(linphone_address_get_domain(ct_addr),':') != NULL;
 		}
-		linphone_address_destroy(ct_addr);
+		linphone_address_unref(ct_addr);
 	}
 	return ret;
 }
@@ -994,7 +994,7 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 
 	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), linphone_auth_info_get_passwd(marie_auth), sip_example_org);
-	linphone_address_destroy(sip_example_org);
+	linphone_address_unref(sip_example_org);
 
 	if (sipp_out) {
 		/*wait for marie status*/
@@ -1140,7 +1140,7 @@ static void test_list_subscribe (void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
 
 	ms_free(subscribe_content);
-	linphone_address_destroy(list_name);
+	linphone_address_unref(list_name);
 	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -1159,7 +1159,7 @@ static void test_subscribe_on_wrong_dialog(void) {
 	scen = bc_tester_res("sipp/subscribe_on_wrong_dialog.xml");
 	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity),linphone_auth_info_get_passwd(marie_auth), sip_example_org);
-	linphone_address_destroy(sip_example_org);
+	linphone_address_unref(sip_example_org);
 
 	if (sipp_out) {
 		/*wait for marie status*/

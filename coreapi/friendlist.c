@@ -483,7 +483,7 @@ const char * linphone_friend_list_get_rls_uri(const LinphoneFriendList *list) {
 void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_uri) {
 	LinphoneAddress *addr = rls_uri ? linphone_core_create_address(list->lc, rls_uri) : NULL;
 	linphone_friend_list_set_rls_address(list, addr);
-	if (addr) linphone_address_destroy(addr);
+	if (addr) linphone_address_unref(addr);
 }
 
 static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize) {

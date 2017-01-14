@@ -731,7 +731,7 @@ static void long_term_presence_phone_alias2(void) {
 	long_term_presence_base(phone_addr_uri, TRUE, identity);
 	ms_free(identity);
 	ms_free(phone_addr_uri);
-	linphone_address_destroy(phone_addr);
+	linphone_address_unref(phone_addr);
 	linphone_core_manager_destroy(marie);
 }
 
@@ -827,7 +827,7 @@ static void long_term_presence_with_e164_phone_without_sip(void) {
 
 		ms_free(identity);
 		ms_free(phone_addr_uri);
-		linphone_address_destroy(phone_addr);
+		linphone_address_unref(phone_addr);
 		linphone_core_manager_destroy(marie);
 	}else ms_warning("Test skipped, no vcard support");
 }

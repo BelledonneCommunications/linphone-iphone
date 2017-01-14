@@ -365,7 +365,7 @@ static void text_message_compatibility_mode(void) {
 	sprintf(route,"sip:%s",test_route);
 	linphone_proxy_config_set_route(proxy,route);
 	ms_free(tmp);
-	linphone_address_destroy(proxy_address);
+	linphone_address_unref(proxy_address);
 	linphone_core_set_sip_transports(marie->lc,&transport);
 	marie->stat.number_of_LinphoneRegistrationOk=0;
 	BC_ASSERT_TRUE (wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneRegistrationOk,1));
@@ -1665,7 +1665,7 @@ static void history_range(void){
 
 end:
 	linphone_core_manager_destroy(marie);
-	linphone_address_destroy(jehan_addr);
+	linphone_address_unref(jehan_addr);
 	remove(tmp_db);
 	ms_free(src_db);
 	bc_free(tmp_db);
@@ -1735,7 +1735,7 @@ static void history_count(void) {
 
 end:
 	linphone_core_manager_destroy(marie);
-	linphone_address_destroy(jehan_addr);
+	linphone_address_unref(jehan_addr);
 	remove(tmp_db);
 	ms_free(src_db);
 	bc_free(tmp_db);
@@ -1929,7 +1929,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 end:
 		end_call(marie, pauline);
 	}
-	linphone_call_params_destroy(marie_params);
+	linphone_call_params_unref(marie_params);
 srtp_end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -2045,7 +2045,7 @@ static void real_time_text_conversation(void) {
 		}
 	}
 	end_call(marie, pauline);
-	linphone_call_params_destroy(marie_params);
+	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -2105,7 +2105,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 		}
 		end_call(marie, pauline);
 	}
-	linphone_call_params_destroy(marie_params);
+	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -2163,7 +2163,7 @@ static void real_time_text_message_accented_chars(void) {
 		}
 		end_call(marie, pauline);
 	}
-	linphone_call_params_destroy(marie_params);
+	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -2216,7 +2216,7 @@ static void real_time_text_copy_paste(void) {
 
 		end_call(marie, pauline);
 	}
-	linphone_call_params_destroy(marie_params);
+	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

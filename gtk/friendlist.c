@@ -307,7 +307,7 @@ static gboolean grab_focus(GtkWidget *w){
 void linphone_gtk_friend_list_set_active_address(const LinphoneAddress *addr){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
-	g_object_set_data_full(G_OBJECT(friendlist),"from", addr ? linphone_address_clone(addr) : NULL, (GDestroyNotify)linphone_address_destroy);
+	g_object_set_data_full(G_OBJECT(friendlist),"from", addr ? linphone_address_clone(addr) : NULL, (GDestroyNotify)linphone_address_unref);
 }
 
 const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void){
@@ -516,7 +516,7 @@ static void icon_press_handler(GtkEntry *entry){
 			linphone_friend_set_address(lf,addr);
 			linphone_gtk_show_contact(lf, w);
 		}
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 	}
 }
 
@@ -879,7 +879,7 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 			linphone_core_add_friend(linphone_gtk_get_core(),lf);
 		}
 	}
-	linphone_address_destroy(friend_address);
+	linphone_address_unref(friend_address);
 	linphone_gtk_show_friends();
 	gtk_widget_destroy(w);
 }

@@ -403,7 +403,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 	proxy = linphone_core_get_default_proxy_config(mgr->lc);
 	if (proxy) {
 		if (mgr->identity){
-			linphone_address_destroy(mgr->identity);
+			linphone_address_unref(mgr->identity);
 		}
 		mgr->identity = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 		linphone_address_clean(mgr->identity);
@@ -470,7 +470,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	}
 	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
 	if (mgr->identity) {
-		linphone_address_destroy(mgr->identity);
+		linphone_address_unref(mgr->identity);
 	}
 
 	manager_count--;
@@ -628,7 +628,7 @@ void liblinphone_tester_before_each(void) {
 static char* all_leaks_buffer = NULL;
 
 void liblinphone_tester_after_each(void) {
-
+	linphone_factory_clean();
 	if (!liblinphone_tester_leak_detector_disabled){
 		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
 		if (leaked_objects > 0) {
@@ -858,7 +858,7 @@ static void linphone_conference_server_refer_received(LinphoneCore *core, const 
 		if(call) linphone_core_terminate_call(core, call);
 		ms_free(uri);
 	}
-	linphone_address_destroy(refer_to_addr);
+	linphone_address_unref(refer_to_addr);
 }
 
 static void linphone_conference_server_registration_state_changed(LinphoneCore *core,

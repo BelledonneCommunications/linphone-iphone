@@ -162,7 +162,7 @@ static void phone_normalization_with_dial_escape_plus(void){
 		actual_str = linphone_address_as_string_uri_only(res); \
 		BC_ASSERT_STRING_EQUAL(actual_str, expected); \
 		ms_free(actual_str); \
-		linphone_address_destroy(res); \
+		linphone_address_unref(res); \
 		linphone_proxy_config_destroy(proxy); \
 	}
 

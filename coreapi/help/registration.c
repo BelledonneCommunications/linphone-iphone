@@ -109,7 +109,7 @@ int main(int argc, char *argv[]){
 	server_addr = linphone_address_get_domain(from); /*extract domain address from identity*/
 	linphone_proxy_config_set_server_addr(proxy_cfg,server_addr); /* we assume domain = proxy server address*/
 	linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
-	linphone_address_destroy(from); /*release resource*/
+	linphone_address_unref(from); /*release resource*/
 
 	linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
 	linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/

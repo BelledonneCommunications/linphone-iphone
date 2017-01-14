@@ -209,7 +209,7 @@ static void early_media_with_multicast_base(bool_t video) {
 		linphone_core_update_call(	pauline->lc
 									, linphone_core_get_current_call(pauline->lc)
 									, params);
-		linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
 
 		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2,1000));
 

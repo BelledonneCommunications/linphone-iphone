@@ -144,7 +144,7 @@ int main(int argc, char *argv[]){
 		linphone_proxy_config_set_server_addr(proxy_cfg,linphone_address_get_domain(from)); /* we assume domain = proxy server address*/
 		linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
 		linphone_proxy_config_enable_publish(proxy_cfg,TRUE); /* enable presence satus publication for this proxy*/
-		linphone_address_destroy(from); /*release resource*/
+		linphone_address_unref(from); /*release resource*/
 
 		linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
 		linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/

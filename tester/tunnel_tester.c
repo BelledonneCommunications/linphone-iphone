@@ -133,7 +133,7 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 					BC_ASSERT_PTR_NOT_NULL(tmp);
 					if (tmp){
 						BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(tmp), tunnel_ip);
-						linphone_address_destroy(tmp);
+						linphone_address_unref(tmp);
 					}
 				}
 			}
@@ -147,8 +147,8 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 
 		ms_free(public_ip);
 		if(public_ip2 != NULL) ms_free(public_ip2);
-		linphone_address_destroy(server_addr);
-		linphone_address_destroy(route);
+		linphone_address_unref(server_addr);
+		linphone_address_unref(route);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}else{
