@@ -3471,6 +3471,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	LinphoneCallState nextstate, initial_state;
+	const LinphoneCallParams *current_params;
 
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 	bool_t has_video = FALSE;
@@ -3501,7 +3502,12 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		ms_error("linphone_core_update_call() is not allowed in [%s] state",linphone_call_state_to_string(call->state));
 		return -1;
 	}
-	
+
+	current_params = linphone_call_get_current_params(call);
+	if ((current_params != NULL) && (current_params == params)) {
+		ms_warning("linphone_core_update_call() is given the current params of the call, this probably not what you intend to do!");
+	}
+
 	linphone_call_check_ice_session(call, IR_Controlling, TRUE);
 
 	if (params!=NULL){
