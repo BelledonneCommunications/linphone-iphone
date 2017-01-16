@@ -49,9 +49,9 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	for(it=lc->vtable_refs; it!=NULL; ){
 		VTableReference *ref=(VTableReference*)it->data;
 		next_it=it->next;
-		if (ref->valid==0){
-			ref->valid=0;
+		if (ref->valid == 0){
 			lc->vtable_refs=bctbx_list_erase_link(lc->vtable_refs, it);
+			belle_sip_object_unref(ref->cbs);
 			ms_free(ref);
 		}
 		it=next_it;

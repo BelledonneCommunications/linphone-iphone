@@ -26,6 +26,7 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 	LinphoneAuthInfo *info;
 	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,realm,domain);
 	linphone_core_add_auth_info(lc,info);
+	linphone_auth_info_destroy(info);
 }
 
 static void authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
@@ -121,6 +122,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 				BC_ASSERT_EQUAL(linphone_proxy_config_get_error(proxy_cfg),LinphoneReasonUnauthorized, int, "%d");
 				info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 				linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+				linphone_auth_info_destroy(info);
 			}
 		}
 		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials
@@ -169,7 +171,7 @@ static void register_with_refresh_with_send_error(void) {
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-
+	linphone_auth_info_destroy(info);
 	register_with_refresh_base(lcm->lc,TRUE,auth_domain,route);
 	/*simultate a network error*/
 	sal_set_send_error(lcm->lc->sal, -1);
@@ -311,6 +313,7 @@ static void simple_authenticated_register(void){
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
+	linphone_auth_info_destroy(info);
 	counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,auth_domain,route);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
@@ -327,6 +330,7 @@ static void ha1_authenticated_register(void){
 	info=linphone_auth_info_new(test_username,NULL,NULL,ha1,auth_domain,NULL); /*create authentication structure from identity*/
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
+	linphone_auth_info_destroy(info);
 	counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,auth_domain,route);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
@@ -398,7 +402,7 @@ static void authenticated_register_with_provided_credentials(void){
 
 	ai = linphone_auth_info_new(test_username, NULL, test_password, NULL, NULL, NULL);
 	linphone_core_add_auth_info(lcm->lc, ai);
-
+	linphone_auth_info_destroy(ai);
 	linphone_core_add_proxy_config(lcm->lc, cfg);
 
 	BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
@@ -448,6 +452,7 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 		linphone_core_set_user_agent(lcm->lc,user_agent,NULL);
 	}
 	linphone_core_add_auth_info(lcm->lc,info); /*add wrong authentication info to LinphoneCore*/
+	linphone_auth_info_destroy(info);
 	counters = get_stats(lcm->lc);
 	register_with_refresh_base_3(lcm->lc,TRUE,auth_domain,route,FALSE,transport,LinphoneRegistrationFailed);
 	//BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,3, int, "%d"); register_with_refresh_base_3 does not alow to precisely check number of number_of_auth_info_requested
@@ -634,7 +639,7 @@ static void proxy_transport_change(void){
 	char* addr_as_string;
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-
+	linphone_auth_info_destroy(info);
 	register_with_refresh_base(lcm->lc,FALSE,auth_domain,NULL);
 
 	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
@@ -671,7 +676,7 @@ static void proxy_transport_change_with_wrong_port(void) {
 	sprintf(route,"sip:%s",test_route);
 
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-
+	linphone_auth_info_destroy(info);
 	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
 
 	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
@@ -702,7 +707,7 @@ static void proxy_transport_change_with_wrong_port_givin_up(void) {
 	sprintf(route,"sip:%s",test_route);
 
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-
+	linphone_auth_info_destroy(info);
 	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
 
 	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
