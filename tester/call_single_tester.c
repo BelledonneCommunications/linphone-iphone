@@ -5394,9 +5394,9 @@ static void call_with_network_reachable_down_in_callback(void){
 }
 
 test_t call_tests[] = {
-	TEST_NO_TAG("Early declined call", early_declined_call),
-	TEST_NO_TAG("Call declined", call_declined),
-	TEST_NO_TAG("Cancelled call", cancelled_call),
+	TEST_ONE_TAG("Early declined call", early_declined_call, "TOTO"),
+	TEST_ONE_TAG("Call declined", call_declined, "TOTO"),
+	TEST_ONE_TAG("Cancelled call", cancelled_call, "TOTO"),
 	TEST_NO_TAG("Early cancelled call", early_cancelled_call),
 	TEST_NO_TAG("Call with DNS timeout", call_with_dns_time_out),
 	TEST_NO_TAG("Cancelled ringing call", cancelled_ringing_call),
