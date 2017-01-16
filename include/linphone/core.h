@@ -1820,10 +1820,12 @@ LINPHONE_PUBLIC int linphone_core_terminate_all_calls(LinphoneCore *lc);
 /**
  * Pauses the call. If a music file has been setup using linphone_core_set_play_file(),
  * this file will be played to the remote user.
+ * The only way to resume a paused call is to call linphone_core_resume_call().
  * @param[in] lc LinphoneCore object
  * @param[in] call The call to pause
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @see linphone_core_resume_call()
 **/
 LINPHONE_PUBLIC int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 
@@ -1837,10 +1839,12 @@ LINPHONE_PUBLIC int linphone_core_pause_all_calls(LinphoneCore *lc);
 
 /**
  * Resumes a call.
+ * The call needs to have been paused previously with linphone_core_pause_call().
  * @param[in] lc LinphoneCore object
  * @param[in] call The call to resume
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @see linphone_core_pause_call()
 **/
 LINPHONE_PUBLIC int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
@@ -1850,6 +1854,8 @@ LINPHONE_PUBLIC int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *ca
  * - setting up/down the video stream according to the video parameter of the LinphoneCallParams (see linphone_call_params_enable_video() ).
  * - changing the size of the transmitted video after calling linphone_core_set_preferred_video_size()
  * In case no changes are requested through the LinphoneCallParams argument, then this argument can be omitted and set to NULL.
+ * WARNING: Updating a call in the LinphoneCallPaused state will still result in a paused call even if the media directions set in the
+ * params are sendrecv. To resume a paused call, you need to call linphone_core_resume_call().
  * @param[in] lc LinphoneCore object
  * @param[in] call The call to be updated
  * @param[in] params The new call parameters to use (may be NULL)
