@@ -53,6 +53,7 @@ class CppTranslator(object):
 		classDict['ismultilistenable'] = ismultilistenable
 		classDict['isNotListener'] = True
 		classDict['isfactory'] = (_class.name.to_c() == 'LinphoneFactory')
+		classDict['isVcard'] = (_class.name.to_c() == 'LinphoneVcard')
 		classDict['parentClassName'] = None
 		classDict['className'] = CppTranslator.translate_class_name(_class.name)
 		classDict['cClassName'] = '::' + _class.name.to_c()

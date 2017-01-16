@@ -10,6 +10,9 @@
 {{/internal}}
 {{/includes}}
 
+{{#_class}}{{#isVcard}}
+#include <belcard/belcard.hpp>
+{{/isVcard}}{{/_class}}
 {{#_class}}{{#isfactory}}
 #include "config.hh"
 {{/isfactory}}{{/_class}}
@@ -50,6 +53,9 @@ namespace linphone {
 			std::shared_ptr<Core> createCore(const std::shared_ptr<CoreListener> & cbs, const std::string & configPath, const std::string & factoryConfigPath) const;
 			std::shared_ptr<Core> createCoreWithConfig(const std::shared_ptr<CoreListener> & cbs, const std::shared_ptr<Config> & config) const;
 			{{/isfactory}}
+			{{#isVcard}}
+			std::shared_ptr<belcard::BelCard> &getVcard();
+			{{/isVcard}}
 		
 			{{#methods}}
 			{{{prototype}}}

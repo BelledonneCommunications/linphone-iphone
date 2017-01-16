@@ -178,6 +178,10 @@ const char * linphone_vcard_as_vcard4_string(LinphoneVcard *vCard) {
 	return vCard->belCard->toFoldedString().c_str();
 }
 
+void *linphone_vcard_get_belcard(LinphoneVcard *vcard) {
+	return &vcard->belCard;
+}
+
 void linphone_vcard_set_full_name(LinphoneVcard *vCard, const char *name) {
 	if (!vCard || !name) return;
 

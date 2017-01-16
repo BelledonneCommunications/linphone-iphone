@@ -2013,7 +2013,7 @@ LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpCon
 }
 
 LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata) {
-	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());;
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	LinphoneCoreVTable *local_vtable = linphone_core_v_table_new();
 	LinphoneCore *core = NULL;
 	if (vtable != NULL) *local_vtable = *vtable;

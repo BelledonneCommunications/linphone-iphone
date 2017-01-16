@@ -423,7 +423,8 @@ class CParser(object):
 					   'linphone_buffer_get_content',
 					   'linphone_chat_room_send_chat_message',
 					   'linphone_config_read_relative_file',
-					   'linphone_core_new_with_config']
+					   'linphone_core_new_with_config',
+					   'linphone_vcard_get_belcard']
 		self.classBl = ['LinphoneImEncryptionEngine',
 					   'LinphoneImEncryptionEngineCbs',
 					   'LinphoneImNotifPolicy',

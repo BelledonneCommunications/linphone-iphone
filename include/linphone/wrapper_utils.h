@@ -51,6 +51,11 @@ extern "C" {
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message_2(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
 /**
+ * Accessor for the shared_ptr&lt;BelCard&gt; stored by a #LinphoneVcard
+ */
+LINPHONE_PUBLIC void *linphone_vcard_get_belcard(LinphoneVcard *vcard);
+
+/**
  * @}
  */
 

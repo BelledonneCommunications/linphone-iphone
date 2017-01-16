@@ -80,6 +80,12 @@ std::shared_ptr<Core> Factory::createCoreWithConfig(const std::shared_ptr<CoreLi
 }
 {{/isfactory}}
 
+{{#isVcard}}
+std::shared_ptr<belcard::BelCard> &Vcard::getVcard() {
+	return *(shared_ptr<belcard::BelCard> *)linphone_vcard_get_belcard((LinphoneVcard *)mPrivPtr);
+}
+{{/isVcard}}
+
 {{#methods}}
 {{{implPrototype}}} {
 	{{{sourceCode}}}
