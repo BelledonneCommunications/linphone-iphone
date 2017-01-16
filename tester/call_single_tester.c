@@ -322,7 +322,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		} else {
 			BC_ASSERT_FALSE(linphone_address_weak_equal(callee_from,linphone_call_get_remote_address(linphone_core_get_current_call(callee_mgr->lc))));
 		}
-		linphone_address_destroy(callee_from);
+		linphone_address_unref(callee_from);
 	}
 
 
@@ -332,7 +332,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		LinphoneCallParams *default_params=linphone_core_create_call_params(callee_mgr->lc,callee_call);
 		ms_message("Created default call params with video=%i", linphone_call_params_video_enabled(default_params));
 		linphone_core_accept_call_with_params(callee_mgr->lc,callee_call,default_params);
-		linphone_call_params_destroy(default_params);
+		linphone_call_params_unref(default_params);
 	}else{
 		linphone_core_accept_call(callee_mgr->lc,callee_call);
 	}
@@ -481,7 +481,7 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 		linphone_proxy_config_done(marie_cfg);
 
 		ms_free(marie_tmp_id);
-		linphone_address_destroy(marie_addr);
+		linphone_address_unref(marie_addr);
 	}
 
 	linphone_core_enable_audio_multicast(pauline->lc,enable_multicast_recv_side);
@@ -554,7 +554,7 @@ static void simple_call_with_udp(void) {
 		linphone_proxy_config_done(michelle_cfg);
 
 		ms_free(michelle_tmp_id);
-		linphone_address_destroy(michelle_addr);
+		linphone_address_unref(michelle_addr);
 	}
 
 	BC_ASSERT_TRUE(call(michelle,laure));
@@ -601,7 +601,7 @@ end:
 	linphone_core_manager_destroy(marie);
 }
 
-static void call_with_timeouted_bye(void) {
+static void call_with_timed_out_bye(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	belle_sip_timer_config_t timer_config;
@@ -662,7 +662,7 @@ static void direct_call_over_ipv6(void){
 		end_call(marie,pauline);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
-		linphone_address_destroy(pauline_dest);
+		linphone_address_unref(pauline_dest);
 	}else ms_warning("Test skipped, no ipv6 available");
 }
 
@@ -925,7 +925,7 @@ static void simple_call_compatibility_mode(void) {
 	sprintf(route,"sip:%s",test_route);
 	linphone_proxy_config_set_route(proxy,route);
 	ms_free(tmp);
-	linphone_address_destroy(proxy_address);
+	linphone_address_unref(proxy_address);
 	linphone_core_get_sip_transports(lc_marie,&transport);
 	transport.udp_port=0;
 	transport.tls_port=0;
@@ -1350,7 +1350,7 @@ static void ice_added_by_reinvite(void){
 	c = linphone_core_get_current_call(marie->lc);
 	params = linphone_core_create_call_params(marie->lc, c);
 	linphone_core_update_call(marie->lc, c, params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
 
 	/*wait for the ICE reINVITE*/
@@ -1382,7 +1382,7 @@ static void call_with_custom_headers(void) {
 	snprintf(tmp2,sizeof(tmp2),"%s?uriHeader=myUriHeader",tmp);
 	marie_identity=linphone_address_new(tmp2);
 	ms_free(tmp);
-	linphone_address_destroy(marie->identity);
+	linphone_address_unref(marie->identity);
 	marie->identity=marie_identity;
 
 	params=linphone_core_create_call_params(marie->lc, NULL);
@@ -1429,7 +1429,7 @@ static void call_with_custom_headers(void) {
 	end_call(pauline, marie);
 	
 end:
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1446,7 +1446,7 @@ static void call_with_custom_sdp_attributes_cb(LinphoneCore *lc, LinphoneCall *c
 		linphone_call_params_clear_custom_sdp_media_attributes(params, LinphoneStreamTypeAudio);
 		linphone_call_params_add_custom_sdp_attribute(params, "working", "no");
 		BC_ASSERT_EQUAL(linphone_core_accept_call_update(lc, call, params), 0, int, "%i");
-		linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
 	}
 }
 
@@ -1465,7 +1465,7 @@ static void call_with_custom_sdp_attributes(void) {
 	linphone_call_params_add_custom_sdp_attribute(pauline_params, "working", "yes");
 	linphone_call_params_add_custom_sdp_media_attribute(pauline_params, LinphoneStreamTypeAudio, "sleeping", "almost");
 	BC_ASSERT_TRUE(call_with_caller_params(pauline, marie, pauline_params));
-	linphone_call_params_destroy(pauline_params);
+	linphone_call_params_unref(pauline_params);
 
 	call_marie = linphone_core_get_current_call(marie->lc);
 	call_pauline = linphone_core_get_current_call(pauline->lc);
@@ -1490,7 +1490,7 @@ static void call_with_custom_sdp_attributes(void) {
 	linphone_core_update_call(pauline->lc, call_pauline, pauline_params);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallUpdatedByRemote, 1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallUpdating, 1));
-	linphone_call_params_destroy(pauline_params);
+	linphone_call_params_unref(pauline_params);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
 	pauline_remote_params = linphone_call_get_remote_params(call_pauline);
 	value = linphone_call_params_get_custom_sdp_attribute(pauline_remote_params, "working");
@@ -1866,7 +1866,7 @@ static void call_with_privacy(void) {
 	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
 	BC_ASSERT_TRUE(call_with_caller_params(pauline,marie,params));
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 
 	c1=linphone_core_get_current_call(pauline->lc);
 	c2=linphone_core_get_current_call(marie->lc);
@@ -1926,7 +1926,7 @@ static void call_with_privacy2(void) {
 	linphone_proxy_config_done(pauline_proxy);
 
 	BC_ASSERT_TRUE(call_with_caller_params(pauline,marie,params));
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 
 	c1=linphone_core_get_current_call(pauline->lc);
 	c2=linphone_core_get_current_call(marie->lc);
@@ -2514,7 +2514,7 @@ static void early_media_call_with_update_base(bool_t media_change){
 
 	linphone_call_params_set_session_name(pauline_params,UPDATED_SESSION_NAME);
 	linphone_core_update_call(pauline->lc, pauline_call, pauline_params);
-	linphone_call_params_destroy(pauline_params);
+	linphone_call_params_unref(pauline_params);
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEarlyUpdating,1,2000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEarlyUpdatedByRemote,1,2000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000));
@@ -2650,7 +2650,7 @@ static void call_established_with_complex_rejected_operation(void) {
 											,linphone_core_get_current_call(marie->lc)
 											,params);
 
-		linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
@@ -2896,7 +2896,7 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 		linphone_core_set_user_agent(marie->lc,user_agent,NULL);
 	}
 	if (!enable_auth_req_cb) {
-		((VTableReference*)(marie->lc->vtable_refs->data))->vtable->auth_info_requested=NULL;
+		((VTableReference*)(marie->lc->vtable_refs->data))->cbs->vtable->auth_info_requested=NULL;
 		linphone_core_add_auth_info(marie->lc,wrong_auth_info);
 	}
 
@@ -3062,8 +3062,8 @@ void record_call(const char *filename, bool_t enableVideo, const char *video_cod
 		remove(filepath);
 		ms_free(filepath);
 	}
-	linphone_call_params_destroy(paulineParams);
-	linphone_call_params_destroy(marieParams);
+	linphone_call_params_unref(paulineParams);
+	linphone_call_params_unref(marieParams);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -3087,7 +3087,7 @@ static void call_with_in_dialog_update(void) {
 	params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
 	params->no_user_consent=TRUE;
 	linphone_core_update_call(marie->lc,linphone_core_get_current_call(marie->lc),params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
@@ -3121,7 +3121,7 @@ static void call_with_very_early_call_update(void) {
 	if(linphone_core_get_current_call(pauline->lc)) {
 		params=linphone_core_create_call_params(pauline->lc,linphone_core_get_current_call(pauline->lc));
 		linphone_core_update_call(pauline->lc,linphone_core_get_current_call(pauline->lc),params);
-		linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
 	}
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
@@ -3158,7 +3158,7 @@ static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
 		linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
 	}
 	linphone_core_update_call(marie->lc,linphone_core_get_current_call(marie->lc),params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
@@ -3244,10 +3244,10 @@ static void call_log_from_taken_from_p_asserted_id(void) {
 
 	/*make sure remote identity is hidden*/
 	BC_ASSERT_TRUE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),pauline_asserted_id_addr));
-	linphone_address_destroy(pauline_asserted_id_addr);
+	linphone_address_unref(pauline_asserted_id_addr);
 	end_call(pauline, marie);
 end:
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -3370,7 +3370,7 @@ void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ice ){
 	}
 
 	marie_call = linphone_core_invite_address_with_params(marie->lc, pauline->identity, params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 	marie_call_log = linphone_call_get_call_log(marie_call);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
@@ -3658,7 +3658,7 @@ static void call_with_complex_late_offering(void){
 	linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
 
 	linphone_core_update_call(marie->lc, call_marie ,params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
@@ -3671,7 +3671,7 @@ static void call_with_complex_late_offering(void){
 	linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendOnly);
 	linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendOnly);
 	linphone_core_update_call(marie->lc, call_marie , params);
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 
 	//Pauline OK with sendonly
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,2));
@@ -3705,7 +3705,7 @@ static void call_with_complex_late_offering(void){
 
 	linphone_core_update_call(marie->lc, call_marie,params);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,3));
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,4));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,5));
@@ -3718,7 +3718,7 @@ static void call_with_complex_late_offering(void){
 	linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendRecv);
 	linphone_core_update_call(marie->lc, call_marie,params);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,3));
-	linphone_call_params_destroy(params);
+	linphone_call_params_unref(params);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,5));
@@ -3793,8 +3793,8 @@ static void call_with_rtp_io_mode(void) {
 		/* The callee uses the RTP IO mode with the PCMU codec to send back audio to the caller. */
 		disable_all_audio_codecs_except_one(pauline->lc, "pcmu", -1);
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_io", 1);
-		lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", "127.0.0.1");
-		lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", "127.0.0.1");
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", linphone_core_ipv6_enabled(pauline->lc) ? "::1" : "127.0.0.1");
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", linphone_core_ipv6_enabled(pauline->lc) ? "::1" : "127.0.0.1");
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_local_port", 17076);
 		lp_config_set_int(pauline->lc->config, "sound", "rtp_remote_port", 17076);
 		lp_config_set_string(pauline->lc->config, "sound", "rtp_map", "pcmu/8000/1");
@@ -4192,22 +4192,22 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
-static void recovered_call_on_network_switch_in_early_state_1(void) {
+static void recovered_call_on_network_switch_in_early_state(LinphoneCoreManager* callerMgr) {
 	const LinphoneCallParams *remote_params;
 	LinphoneCall *incoming_call;
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
-	linphone_core_invite_address(marie->lc, pauline->identity);
-	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
-	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+	linphone_core_invite_address(callerMgr->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
 
-	linphone_core_set_network_reachable(marie->lc, FALSE);
-	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
-	linphone_core_set_network_reachable(marie->lc, TRUE);
-	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+	linphone_core_set_network_reachable(callerMgr->lc, FALSE);
+	wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_NetworkReachableFalse, 1);
+	linphone_core_set_network_reachable(callerMgr->lc, TRUE);
+	wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_NetworkReachableTrue, 2);
 
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 2));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallOutgoingRinging, 2));
 	incoming_call = linphone_core_get_current_call(pauline->lc);
 	remote_params = linphone_call_get_remote_params(incoming_call);
 	BC_ASSERT_PTR_NOT_NULL(remote_params);
@@ -4216,18 +4216,27 @@ static void recovered_call_on_network_switch_in_early_state_1(void) {
 		BC_ASSERT_PTR_NOT_NULL(replaces_header);
 	}
 	linphone_core_accept_call(pauline->lc, incoming_call);
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 
 	linphone_core_terminate_call(pauline->lc, incoming_call);
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
 end:
-	linphone_core_manager_destroy(marie);
+	
 	linphone_core_manager_destroy(pauline);
 }
-
+static void recovered_call_on_network_switch_in_early_state_1(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	recovered_call_on_network_switch_in_early_state(marie);
+	linphone_core_manager_destroy(marie);
+}
+static void recovered_call_on_network_switch_in_early_state_1_udp(void) {
+	LinphoneCoreManager* laure = linphone_core_manager_new("laure_rc_udp");
+	recovered_call_on_network_switch_in_early_state(laure);
+	linphone_core_manager_destroy(laure);
+}
 static void recovered_call_on_network_switch_in_early_state_2(void) {
 	LinphoneCall *incoming_call;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -4508,10 +4517,12 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt) {
+static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt, bool_t caller_pause, bool_t callee_pause) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCallParams *pauline_params = NULL;
+	LinphoneCall *marie_call = NULL;
+	LinphoneCall *pauline_call = NULL;
 	bctbx_list_t *lcs = NULL;
 	bool_t call_ok;
 
@@ -4544,6 +4555,18 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 	}
 
+	if (caller_pause) {
+		pauline_call = linphone_core_get_current_call(pauline->lc);
+		linphone_core_pause_call(pauline->lc, pauline_call);
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPausedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPaused, 1));
+	} else if (callee_pause) {
+		marie_call = linphone_core_get_current_call(marie->lc);
+		linphone_core_pause_call(marie->lc, marie_call);
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
+	}
+
 	/*marie looses the network and reconnects*/
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
@@ -4563,10 +4586,25 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
 	}else{
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		if (caller_pause) {
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPausedByRemote, 2));
+			linphone_core_resume_call(pauline->lc, pauline_call);
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+		} else if (callee_pause) {
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 2));
+			linphone_core_resume_call(marie->lc, marie_call);
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		} else {
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		}
 	}
 
 	/*check that media is back*/
@@ -4586,19 +4624,27 @@ end:
 }
 
 static void call_with_network_switch(void){
-	_call_with_network_switch(FALSE, FALSE, FALSE);
+	_call_with_network_switch(FALSE, FALSE, FALSE, FALSE, FALSE);
+}
+
+static void call_with_network_switch_in_paused_state(void) {
+	_call_with_network_switch(FALSE, FALSE, FALSE, FALSE, TRUE);
+}
+
+static void call_with_network_switch_in_paused_by_remote_state(void) {
+	_call_with_network_switch(FALSE, FALSE, FALSE, TRUE, FALSE);
 }
 
 static void call_with_network_switch_and_ice(void){
-	_call_with_network_switch(TRUE, FALSE, FALSE);
+	_call_with_network_switch(TRUE, FALSE, FALSE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_ice_and_rtt(void) {
-	_call_with_network_switch(TRUE, FALSE, TRUE);
+	_call_with_network_switch(TRUE, FALSE, TRUE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_and_socket_refresh(void){
-	_call_with_network_switch(TRUE, TRUE, FALSE);
+	_call_with_network_switch(TRUE, TRUE, FALSE, FALSE, FALSE);
 }
 
 static void call_with_network_switch_no_recovery(void){
@@ -4828,7 +4874,7 @@ static void call_logs_sqlite_storage(void) {
 	laure = linphone_address_new("\"Laure\" <sip:laure@sip.example.org>");
 	logs = linphone_core_get_call_history_for_address(marie->lc, laure);
 	BC_ASSERT_TRUE(bctbx_list_size(logs) == 0);
-	linphone_address_destroy(laure);
+	linphone_address_unref(laure);
 
 	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
 	if (BC_ASSERT_TRUE(bctbx_list_size(logs) == 1)) {
@@ -4938,7 +4984,7 @@ static void call_with_http_proxy(void) {
 	marie_call = linphone_core_get_current_call(marie->lc);
 	contact_addr = linphone_address_new(linphone_call_get_remote_contact(marie_call));
 	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(contact_addr),ip);
-	linphone_address_destroy(contact_addr);
+	linphone_address_unref(contact_addr);
 	end_call(marie, pauline);
 end:
 	linphone_core_manager_destroy(marie);
@@ -5320,10 +5366,37 @@ static void call_with_ice_ipv6_to_ipv6(void) {
 	} else ms_warning("Test skipped, need both ipv6 and v4 available");
 }
 
+static void my_call_state_changed_cb(LinphoneCore *lc, LinphoneCall*call, LinphoneCallState state, const char *text){
+	if (state == LinphoneCallError){
+		linphone_core_set_network_reachable(lc, FALSE);
+	}
+}
+
+/*This test simulates a case where a 404 not found is received from server when attempting to make a call,
+ * and the app decides to immediately shutdown the network reachability*/
+static void call_with_network_reachable_down_in_callback(void){
+	LinphoneCoreManager* marie;
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	LinphoneCall *call;
+	
+	linphone_core_cbs_set_call_state_changed(cbs, my_call_state_changed_cb);
+	
+	marie = linphone_core_manager_new("marie_rc");
+	
+	linphone_core_add_callbacks(marie->lc, cbs);
+	
+	call = linphone_core_invite(marie->lc, "inexistant_username_xbfuuuf");
+	BC_ASSERT_PTR_NOT_NULL(call);
+	BC_ASSERT_TRUE(wait_for(marie->lc, NULL, &marie->stat.number_of_LinphoneCallError, 1));
+	
+	linphone_core_cbs_unref(cbs);
+	linphone_core_manager_destroy(marie);
+}
+
 test_t call_tests[] = {
-	TEST_NO_TAG("Early declined call", early_declined_call),
-	TEST_NO_TAG("Call declined", call_declined),
-	TEST_NO_TAG("Cancelled call", cancelled_call),
+	TEST_ONE_TAG("Early declined call", early_declined_call, "TOTO"),
+	TEST_ONE_TAG("Call declined", call_declined, "TOTO"),
+	TEST_ONE_TAG("Cancelled call", cancelled_call, "TOTO"),
 	TEST_NO_TAG("Early cancelled call", early_cancelled_call),
 	TEST_NO_TAG("Call with DNS timeout", call_with_dns_time_out),
 	TEST_NO_TAG("Cancelled ringing call", cancelled_ringing_call),
@@ -5333,7 +5406,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Simple call with UDP", simple_call_with_udp),
 	TEST_ONE_TAG("Call terminated automatically by linphone_core_destroy", automatic_call_termination, "LeaksMemory"),
 	TEST_NO_TAG("Call with http proxy", call_with_http_proxy),
-	TEST_NO_TAG("Call with timeouted bye", call_with_timeouted_bye),
+	TEST_NO_TAG("Call with timed-out bye", call_with_timed_out_bye),
 	TEST_NO_TAG("Direct call over IPv6", direct_call_over_ipv6),
 	TEST_NO_TAG("Call IPv6 to IPv4 without relay", v6_to_v4_call_without_relay),
 	TEST_NO_TAG("IPv6 call over NAT64", v6_call_over_nat_64),
@@ -5437,6 +5510,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with network switch", call_with_network_switch),
 	TEST_NO_TAG("Call with network switch and no recovery possible", call_with_network_switch_no_recovery),
 	TEST_ONE_TAG("Recovered call on network switch in early state 1", recovered_call_on_network_switch_in_early_state_1, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch in early state 1 (udp caller)", recovered_call_on_network_switch_in_early_state_1_udp, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch in early state 2", recovered_call_on_network_switch_in_early_state_2, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch in early state 3", recovered_call_on_network_switch_in_early_state_3, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch in early state 4", recovered_call_on_network_switch_in_early_state_4, "CallRecovery"),
@@ -5444,6 +5518,8 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 2", recovered_call_on_network_switch_during_reinvite_2, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 3", recovered_call_on_network_switch_during_reinvite_3, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 4", recovered_call_on_network_switch_during_reinvite_4, "CallRecovery"),
+	TEST_ONE_TAG("Call with network switch in paused state", call_with_network_switch_in_paused_state, "CallRecovery"),
+	TEST_ONE_TAG("Call with network switch in paused by remote state", call_with_network_switch_in_paused_by_remote_state, "CallRecovery"),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
 	TEST_ONE_TAG("Call with network switch, ICE and RTT", call_with_network_switch_ice_and_rtt, "ICE"),
 	TEST_NO_TAG("Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh),
@@ -5458,7 +5534,8 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
 	TEST_NO_TAG("Call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side),
 	TEST_NO_TAG("Call from plain RTP to ZRTP mandatory should be silent", call_from_plain_rtp_to_zrtp),
-	TEST_NO_TAG("Call ZRTP mandatory to plain RTP should be silent", call_from_zrtp_to_plain_rtp)
+	TEST_NO_TAG("Call ZRTP mandatory to plain RTP should be silent", call_from_zrtp_to_plain_rtp),
+	TEST_NO_TAG("Call with network reachable down in callback", call_with_network_reachable_down_in_callback)
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
