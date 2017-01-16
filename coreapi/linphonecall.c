@@ -688,24 +688,30 @@ void linphone_call_update_biggest_desc(LinphoneCall *call, SalMediaDescription *
 static void force_streams_dir_according_to_state(LinphoneCall *call, SalMediaDescription *md){
 	int i;
 
-	switch (call->state){
-		case LinphoneCallPausing:
-		case LinphoneCallPaused:
-		break;
-		default:
-			return;
-		break;
-	}
-
 	for (i=0; i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
 		SalStreamDescription *sd = &md->streams[i];
-		if (sd->dir != SalStreamInactive) {
-			sd->dir = SalStreamSendOnly;
-			if (sd->type == SalVideo){
-				if (lp_config_get_int(call->core->config, "sip", "inactive_video_on_pause", 0)) {
-					sd->dir = SalStreamInactive;
+
+		switch (call->state){
+			case LinphoneCallPausing:
+			case LinphoneCallPaused:
+				if (sd->dir != SalStreamInactive) {
+					sd->dir = SalStreamSendOnly;
+					if (sd->type == SalVideo){
+						if (lp_config_get_int(call->core->config, "sip", "inactive_video_on_pause", 0)) {
+							sd->dir = SalStreamInactive;
+						}
+					}
 				}
-			}
+				break;
+			default:
+				break;
+		}
+
+		/* Reflect the stream directions in the call params */
+		if (i == call->main_audio_stream_index) {
+			linphone_call_params_set_audio_direction(call->current_params, media_direction_from_sal_stream_dir(sd->dir));
+		} else if (i == call->main_video_stream_index) {
+			linphone_call_params_set_video_direction(call->current_params, media_direction_from_sal_stream_dir(sd->dir));
 		}
 	}
 }
