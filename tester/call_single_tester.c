@@ -2899,6 +2899,7 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 		((VTableReference*)(marie->lc->vtable_refs->data))->cbs->vtable->auth_info_requested=NULL;
 		linphone_core_add_auth_info(marie->lc,wrong_auth_info);
 	}
+	
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(marie->lc,marie->identity));
 
@@ -2918,6 +2919,7 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 	linphone_core_clear_all_auth_info(marie->lc);
 	linphone_core_add_auth_info(marie->lc,good_auth_info);
 	linphone_auth_info_destroy(good_auth_info);
+	linphone_auth_info_destroy(wrong_auth_info);
 	linphone_core_manager_destroy(marie);
 }
 
