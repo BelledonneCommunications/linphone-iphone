@@ -336,6 +336,8 @@ static void text_message_with_credential_from_auth_callback(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	linphone_auth_info_destroy(text_message_with_credential_from_auth_cb_auth_info);
+	text_message_with_credential_from_auth_cb_auth_info = NULL;
 }
 
 static void text_message_with_privacy(void) {
