@@ -5383,7 +5383,7 @@ static void call_with_network_reachable_down_in_callback(void){
 	
 	linphone_core_cbs_set_call_state_changed(cbs, my_call_state_changed_cb);
 	
-	marie = linphone_core_manager_new("marie_rc");
+	marie = linphone_core_manager_new("laure_rc_udp");
 	
 	linphone_core_add_callbacks(marie->lc, cbs);
 	
