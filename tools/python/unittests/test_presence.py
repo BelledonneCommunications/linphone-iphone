@@ -16,6 +16,9 @@ class PresenceCoreManager(CoreManager):
 
 class TestPresence:
 
+    def teardown(self):
+        linphone.Factory.clean()
+
     def subscribe_to_callee_presence(self, caller_mgr, callee_mgr):
         initial_caller_stats = deepcopy(caller_mgr.stats)
         initial_callee_stats = deepcopy(callee_mgr.stats)

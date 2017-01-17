@@ -427,104 +427,107 @@ static void pylinphone_init_ms2_plugins(LinphoneCore *lc) {
 	linphone_core_reload_ms_plugins(lc, NULL);
 }
 
-static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
+static PyObject * pylinphone_Factory_instance_method_create_core(PyObject *self, PyObject *args) {
 	LinphoneCore * cresult;
-	pylinphone_CoreObject *self;
+	PyObject * pyresult;
 	PyObject * pyret;
-	LinphoneCoreVTable _vtable = { 0 };
-	PyObject * _vtable_dict;
+	const LinphoneFactory *native_ptr;
+	PyObject * _cbs;
+	LinphoneCoreCbs * _cbs_native_ptr = NULL;
 	const char * _config_path;
 	const char * _factory_config_path;
-
-	if (!PyArg_ParseTuple(args, "Ozz", &_vtable_dict, &_config_path, &_factory_config_path)) {
-		return NULL;
-	}
-	if (!PyDict_Check(_vtable_dict)) {
-		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
+	native_ptr = pylinphone_Factory_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Factory instance");
 		return NULL;
 	}
 
-	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
-	if (self == NULL) {
+	if (!PyArg_ParseTuple(args, "Ozz", &_cbs, &_config_path, &_factory_config_path)) {
 		return NULL;
 	}
-	Py_INCREF(_vtable_dict);
-	self->vtable_dict = _vtable_dict;
-{{#core_events}}
-	{{{event_vtable_reference}}}
-{{/core_events}}
 
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, \"%s\", \"%s\")", __FUNCTION__, _vtable_dict, _config_path, _factory_config_path);
-	cresult = linphone_core_new(&_vtable, _config_path, _factory_config_path, self);
-	self->native_ptr = cresult;
+	if ((_cbs != Py_None) && !PyObject_IsInstance(_cbs, (PyObject *)&pylinphone_CoreCbsType)) {
+		PyErr_SetString(PyExc_TypeError, "The '_cbs' argument must be a linphone.CoreCbs instance.");
+		return NULL;
+	}
+
+	if ((_cbs != NULL) && (_cbs != Py_None)) {
+		if ((_cbs_native_ptr = pylinphone_CoreCbs_get_native_ptr(_cbs)) == NULL) {
+			return NULL;
+		}
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p], \"%s\", \"%s\")", __FUNCTION__, self, native_ptr, _cbs, _cbs_native_ptr, _config_path, _factory_config_path);
+	cresult = linphone_factory_create_core(native_ptr, _cbs_native_ptr, _config_path, _factory_config_path);
+	Py_INCREF(_cbs);
+
 	pylinphone_init_ms2_plugins(cresult);
-
-	pyret = Py_BuildValue("O", self);
-
-	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
-	Py_DECREF(self);
-	return pyret;
-}
-
-static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, PyObject *args) {
-	LinphoneCore * cresult;
-	pylinphone_CoreObject *self;
-	PyObject * pyret;
-	LinphoneCoreVTable _vtable = { 0 };
-	PyObject * _vtable_dict;
-	PyObject * _config;
-	LpConfig * _config_native_ptr;
-
-	if (!PyArg_ParseTuple(args, "OO", &_vtable_dict, &_config)) {
-		return NULL;
-	}
-	if (!PyDict_Check(_vtable_dict)) {
-		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
-		return NULL;
-	}
-
-	if ((_config_native_ptr = pylinphone_LpConfig_get_native_ptr(_config)) == NULL) {
-		return NULL;
-	}
-
-	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
-	if (self == NULL) {
-		return NULL;
-	}
-	Py_INCREF(_vtable_dict);
-	self->vtable_dict = _vtable_dict;
-{{#core_events}}
-	{{{event_vtable_reference}}}
-{{/core_events}}
-
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, _config, _config_native_ptr);
-	cresult = linphone_core_new_with_config(&_vtable, _config_native_ptr, self);
-	self->native_ptr = cresult;
-	pylinphone_init_ms2_plugins(cresult);
-
-	pyret = Py_BuildValue("O", self);
-
-	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
-	Py_DECREF(self);
-	return pyret;
-}
-
-static void pylinphone_Core_dealloc(PyObject *self) {
-	LinphoneCore * native_ptr = pylinphone_Core_get_native_ptr(self);
-	if (Py_REFCNT(self) < 0) return;
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
-
-	if (native_ptr != NULL) {
-		linphone_core_destroy(native_ptr);
-	}
 
 	pylinphone_dispatch_messages();
-	Py_XDECREF(((pylinphone_CoreObject *)self)->user_data);
-	Py_XDECREF(((pylinphone_CoreObject *)self)->vtable_dict);
+	pyresult = pylinphone_Core_from_native_ptr(&pylinphone_CoreType, cresult, FALSE);
 
-	self->ob_type->tp_free(self);
-	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+	pyret = Py_BuildValue("O", pyresult);
+	Py_XDECREF(pyresult);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
 }
+
+static PyObject * pylinphone_Factory_instance_method_create_core_with_config(PyObject *self, PyObject *args) {
+	LinphoneCore * cresult;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const LinphoneFactory *native_ptr;
+	PyObject * _cbs;
+	LinphoneCoreCbs * _cbs_native_ptr = NULL;
+	PyObject * _config;
+	LinphoneConfig * _config_native_ptr = NULL;
+	native_ptr = pylinphone_Factory_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Factory instance");
+		return NULL;
+	}
+
+	if (!PyArg_ParseTuple(args, "OO", &_cbs, &_config)) {
+		return NULL;
+	}
+
+	if ((_cbs != Py_None) && !PyObject_IsInstance(_cbs, (PyObject *)&pylinphone_CoreCbsType)) {
+		PyErr_SetString(PyExc_TypeError, "The '_cbs' argument must be a linphone.CoreCbs instance.");
+		return NULL;
+	}
+	if ((_config != Py_None) && !PyObject_IsInstance(_config, (PyObject *)&pylinphone_ConfigType)) {
+		PyErr_SetString(PyExc_TypeError, "The '_config' argument must be a linphone.Config instance.");
+		return NULL;
+	}
+
+	if ((_config != NULL) && (_config != Py_None)) {
+		if ((_config_native_ptr = pylinphone_Config_get_native_ptr(_config)) == NULL) {
+			return NULL;
+		}
+	}
+	if ((_cbs != NULL) && (_cbs != Py_None)) {
+		if ((_cbs_native_ptr = pylinphone_CoreCbs_get_native_ptr(_cbs)) == NULL) {
+			return NULL;
+		}
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p], %p [%p])", __FUNCTION__, self, native_ptr, _cbs, _cbs_native_ptr, _config, _config_native_ptr);
+	cresult = linphone_factory_create_core_with_config(native_ptr, _cbs_native_ptr, _config_native_ptr);
+	Py_INCREF(_cbs);
+
+	pylinphone_init_ms2_plugins(cresult);
+
+	pylinphone_dispatch_messages();
+	pyresult = pylinphone_Core_from_native_ptr(&pylinphone_CoreType, cresult, FALSE);
+
+	pyret = Py_BuildValue("O", pyresult);
+	Py_XDECREF(pyresult);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
 
 
 
@@ -994,18 +997,18 @@ static int pylinphone_Content_set_buffer(PyObject *self, PyObject *value, void *
 	return 0;
 }
 
-static PyObject * pylinphone_LpConfig_get_sections_names(PyObject *self, void *closure) {
+static PyObject * pylinphone_Config_get_sections_names(PyObject *self, void *closure) {
 	PyObject *_list;
 	const char **_names;
-	LpConfig *native_ptr = pylinphone_LpConfig_get_native_ptr(self);
+	LinphoneConfig *native_ptr = pylinphone_Config_get_native_ptr(self);
 
 	if (native_ptr == NULL) {
-		PyErr_SetString(PyExc_TypeError, "Invalid linphone.LpConfig instance");
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Config instance");
 		return NULL;
 	}
 
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
-	_names = lp_config_get_sections_names(native_ptr);
+	_names = linphone_config_get_sections_names(native_ptr);
 	pylinphone_dispatch_messages();
 
 	_list = PyList_New(0);

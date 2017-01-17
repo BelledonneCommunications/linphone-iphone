@@ -377,6 +377,11 @@ LINPHONE_PUBLIC bool_t linphone_local_player_matroska_supported(void);
 LINPHONE_PUBLIC LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address);
 
 /**
+ * @addtogroup misc
+ * @{
+ */
+
+/**
  * The LinphoneInfoMessage is an object representing an informational message sent or received by the core.
 **/
 typedef struct _LinphoneInfoMessage LinphoneInfoMessage;
@@ -396,7 +401,7 @@ LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneC
  * @param call the call
  * @param info the info message
 **/
-LINPHONE_PUBLIC int linphone_call_send_info_message(struct _LinphoneCall *call, const LinphoneInfoMessage *info);
+LINPHONE_PUBLIC int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info);
 
 /**
  * Add a header to an info message to be sent.
@@ -433,6 +438,9 @@ LINPHONE_PUBLIC const LinphoneContent * linphone_info_message_get_content(const 
 LINPHONE_PUBLIC void linphone_info_message_destroy(LinphoneInfoMessage *im);
 LINPHONE_PUBLIC LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig);
 
+/**
+ * @}
+ */
 
 
 /**
@@ -1089,7 +1097,7 @@ LINPHONE_PUBLIC void linphone_core_cbs_set_user_data(LinphoneCoreCbs *cbs, void 
 /**
  * Get the user pointer.
  */
-LINPHONE_PUBLIC void *linphone_core_cbs_get_user_data(LinphoneCoreCbs *cbs);
+LINPHONE_PUBLIC void *linphone_core_cbs_get_user_data(const LinphoneCoreCbs *cbs);
 
 /**
  * Gets the current #LinphoneCoreCbs.

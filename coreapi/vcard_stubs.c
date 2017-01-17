@@ -53,7 +53,18 @@ LinphoneVcard* linphone_vcard_new(void) {
 	return NULL;
 }
 
+LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
+	return NULL;
+}
+
 void linphone_vcard_free(LinphoneVcard *vCard) {
+}
+
+LinphoneVcard *linphone_vcard_ref(LinphoneVcard *vCard) {
+	return NULL;
+}
+
+void linphone_vcard_unref(LinphoneVcard *vCard) {
 }
 
 bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {

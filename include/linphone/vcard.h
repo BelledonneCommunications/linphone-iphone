@@ -66,11 +66,13 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVcard *vCar
 
 /**
  * Take a ref on a #LinphoneVcard.
+ * @param[in] vCard LinphoneVcard object
  */
 LINPHONE_PUBLIC LinphoneVcard *linphone_vcard_ref(LinphoneVcard *vCard);
 
 /**
  * Release a #LinphoneVcard.
+ * @param[in] vCard LinphoneVcard object
  */
 LINPHONE_PUBLIC void linphone_vcard_unref(LinphoneVcard *vCard);
 

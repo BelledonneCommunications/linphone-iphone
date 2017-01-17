@@ -7,16 +7,19 @@ import time
 class RegisterCoreManager(CoreManager):
 
     @classmethod
-    def auth_info_requested(cls, lc, realm, username, domain):
-        CoreManager.auth_info_requested(lc, realm, username, domain)
-        info = linphone.AuthInfo.new(test_username, None, test_password, None, realm, domain) # Create authentication structure from identity
+    def authentication_requested(cls, lc, auth_info, method):
+        info = linphone.Factory.get().create_auth_info(test_username, None, test_password, None, auth_info.realm, auth_info.domain) # Create authentication structure from identity
         lc.add_auth_info(info) # Add authentication info to LinphoneCore
 
     def __init__(self, with_auth = False):
-        vtable = {}
+        additional_cbs = None
         if with_auth:
-            vtable['auth_info_requested'] = RegisterCoreManager.auth_info_requested
-        CoreManager.__init__(self, vtable=vtable)
+            additional_cbs = linphone.Factory.get().create_core_cbs()
+            additional_cbs.authentication_requested = RegisterCoreManager.authentication_requested
+        CoreManager.__init__(self, additional_cbs=additional_cbs)
+
+    def __del__(self):
+        linphonetester_logger.info("deleting" + str(self))
 
     def register_with_refresh_base(self, refresh, domain, route, late_auth_info = False, transport = linphone.SipTransports(5070, 5070, 5071, 0), expected_final_state = linphone.RegistrationState.Ok):
         assert self.lc is not None
@@ -49,7 +52,7 @@ class RegisterCoreManager(CoreManager):
             if self.stats.number_of_auth_info_requested > 0 and proxy_cfg.state == linphone.RegistrationState.Failed and late_auth_info:
                 if len(self.lc.auth_info_list) == 0:
                     assert_equals(proxy_cfg.error, linphone.Reason.Unauthorized)
-                    info = linphone.AuthInfo.new(test_username, None, test_password, None, None, None) # Create authentication structure from identity
+                    info = linphone.Factory.get().create_auth_info(test_username, None, test_password, None, None, None) # Create authentication structure from identity
                     self.lc.add_auth_info(info)
             if proxy_cfg.error == linphone.Reason.Forbidden or \
                 (self.stats.number_of_auth_info_requested > 2 and proxy_cfg.error == linphone.Reason.Unauthorized):
@@ -75,6 +78,9 @@ class RegisterCoreManager(CoreManager):
 
 
 class TestRegister:
+
+    def teardown(self):
+        linphone.Factory.clean()
 
     def test_simple_register(self):
         cm = RegisterCoreManager()
@@ -137,7 +143,7 @@ class TestRegister:
         cm.lc.sip_transport_timeout = 3000
         pc = cm.lc.default_proxy_config
         pc.edit()
-        addr = linphone.Address.new(pc.server_addr)
+        addr = linphone.Factory.get().create_address(pc.server_addr)
         port = addr.port
         if port <= 0:
             port = 5060
@@ -147,7 +153,7 @@ class TestRegister:
 
     def test_simple_authenticated_register(self):
         cm = RegisterCoreManager()
-        info = linphone.AuthInfo.new(test_username, None, test_password, None, auth_domain, None) # Create authentication structure from identity
+        info = linphone.Factory.get().create_auth_info(test_username, None, test_password, None, auth_domain, None) # Create authentication structure from identity
         cm.lc.add_auth_info(info)
         cm.register_with_refresh(False, auth_domain, "sip:{route}".format(route=test_route))
         assert_equals(cm.stats.number_of_auth_info_requested, 0)

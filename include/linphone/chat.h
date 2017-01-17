@@ -590,7 +590,6 @@ LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom
  * Get the LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
  * @param[in] msg LinphoneChatMessage object
  * @return The LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
- * @deprecated Use linphone_chat_room_get_callbacks() instead.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg);
 

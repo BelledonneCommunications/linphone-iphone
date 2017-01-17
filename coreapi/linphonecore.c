@@ -172,7 +172,7 @@ void linphone_core_cbs_set_user_data(LinphoneCoreCbs *cbs, void *user_data) {
 	cbs->vtable->user_data = user_data;
 }
 
-void *linphone_core_cbs_get_user_data(LinphoneCoreCbs *cbs) {
+void *linphone_core_cbs_get_user_data(const LinphoneCoreCbs *cbs) {
 	return cbs->vtable->user_data;
 }
 

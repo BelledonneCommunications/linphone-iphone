@@ -85,6 +85,9 @@ class TestMessage:
         manager1.stats.reset()
         manager2.stats.reset()
 
+    def teardown(self):
+        linphone.Factory.clean()
+
     def test_text_message(self):
         marie = CoreManager('marie_rc')
         pauline = CoreManager('pauline_tcp_rc')
@@ -92,7 +95,7 @@ class TestMessage:
         self.wait_for_server_to_purge_messages(marie, pauline)
         msg = chat_room.create_message("hello")
         msg.callbacks.msg_state_changed = TestMessage.msg_state_changed
-        chat_room.send_chat_message(msg)
+        chat_room.send_chat_message_2(msg)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceived == 1), True)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneMessageDelivered == 1), True)
         assert marie.lc.get_chat_room(pauline.identity) is not None
@@ -106,7 +109,7 @@ class TestMessage:
         chat_room = pauline.lc.get_chat_room(marie.identity)
         msg = chat_room.create_message("Bla bla bla bla")
         msg.callbacks.msg_state_changed = TestMessage.msg_state_changed
-        chat_room.send_chat_message(msg)
+        chat_room.send_chat_message_2(msg)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceived == 1), True)
         # When using call dialogs, we will never receive delivered status
         assert_equals(pauline.stats.number_of_LinphoneMessageDelivered, 0)
@@ -122,7 +125,7 @@ class TestMessage:
         self.wait_for_server_to_purge_messages(marie, pauline)
         chat_room = pauline.lc.get_chat_room(marie.identity)
         message = self.create_message_from_no_webcam(chat_room)
-        chat_room.send_chat_message(message)
+        chat_room.send_chat_message_2(message)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceivedWithFile == 1), True)
         if marie.stats.last_received_chat_message is not None:
             cbs = marie.stats.last_received_chat_message.callbacks
@@ -145,7 +148,7 @@ class TestMessage:
         self.wait_for_server_to_purge_messages(marie, pauline)
         chat_room = pauline.lc.get_chat_room(marie.identity)
         message = self.create_message_from_no_webcam(chat_room)
-        chat_room.send_chat_message(message)
+        chat_room.send_chat_message_2(message)
         # Wait for file to be at least 50% uploaded and cancel the transfer
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.progress_of_LinphoneFileTransfer >= 50), True)
         message.cancel_file_transfer()

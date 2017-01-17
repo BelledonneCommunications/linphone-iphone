@@ -7,6 +7,9 @@ import time
 
 class TestCall:
 
+    def teardown(self):
+        linphone.Factory.clean()
+
     def test_early_declined_call(self):
         marie = CoreManager('marie_rc')
         pauline = CoreManager('pauline_rc')

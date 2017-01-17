@@ -310,12 +310,12 @@ static VTableReference * v_table_reference_new(LinphoneCoreCbs *cbs, bool_t inte
 	VTableReference *ref=ms_new0(VTableReference,1);
 	ref->valid=TRUE;
 	ref->internal = internal;
-	ref->cbs=(LinphoneCoreCbs *)belle_sip_object_ref(cbs);
+	ref->cbs=linphone_core_cbs_ref(cbs);
 	return ref;
 }
 
 void v_table_reference_destroy(VTableReference *ref){
-	belle_sip_object_unref(ref->cbs);
+	linphone_core_cbs_unref(ref->cbs);
 	ms_free(ref);
 }
 
@@ -328,7 +328,7 @@ void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable){
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	_linphone_core_cbs_set_v_table(cbs, vtable, FALSE);
 	_linphone_core_add_callbacks(lc, cbs, FALSE);
-	belle_sip_object_unref(cbs);
+	linphone_core_cbs_unref(cbs);
 }
 
 void linphone_core_add_callbacks(LinphoneCore *lc, LinphoneCoreCbs *cbs) {

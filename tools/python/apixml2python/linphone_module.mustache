@@ -19,9 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Python.h>
 #include <structmember.h>
 #include <datetime.h>
-#include <linphone/linphonecore.h>
-#include <linphone/linphone_tunnel.h>
-#include <linphone/linphonecore_utils.h>
+#include <linphone/core.h>
+#include <linphone/tunnel.h>
+#include <linphone/core_utils.h>
+#include <linphone/wrapper_utils.h>
+#include <belle-sip/belle-sip.h>
 #include <stdarg.h>
 
 #include "gitversion.h"
@@ -62,7 +64,7 @@ typedef struct {
 
 {{#classes}}
 static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self);
-static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr);
+static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr, bool_t take_native_ref);
 {{#class_type_hand_written_methods}}
 static PyObject * pylinphone_{{class_name}}_class_method_{{method_name}}(PyObject *cls, PyObject *args);
 {{/class_type_hand_written_methods}}
@@ -76,7 +78,7 @@ PyObject * PyList_FromBctbxListOf{{c_contained_type}}(const bctbx_list_t *msl) {
 	PyObject *pyl = PyList_New(0);
 	while (msl != NULL) {
 		{{c_contained_type}} *native_ptr = ({{c_contained_type}} *)msl->data;
-		PyObject *item = pylinphone_{{python_contained_type}}_from_native_ptr(&pylinphone_{{python_contained_type}}Type, native_ptr);
+		PyObject *item = pylinphone_{{python_contained_type}}_from_native_ptr(&pylinphone_{{python_contained_type}}Type, native_ptr, TRUE);
 		PyList_Append(pyl, item);
 		msl = bctbx_list_next(msl);
 	}
@@ -113,7 +115,7 @@ static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self
 	return ((pylinphone_{{class_name}}Object *)self)->native_ptr;
 }
 
-static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr) {
+static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr, bool_t take_native_ref) {
 {{{from_native_pointer_body}}}
 }
 

@@ -32,6 +32,7 @@ blacklisted_classes = [
 ]
 blacklisted_events = [
 	'LinphoneChatMessageStateChangedCb',	# not respecting naming convention
+	'LinphoneCoreAuthInfoRequestedCb',
 	'LinphoneCoreInfoReceivedCb',	# missing LinphoneInfoMessage
 	'LinphoneCoreNotifyReceivedCb',	# missing LinphoneContent
 	'LinphoneCoreFileTransferProgressIndicationCb',	# missing LinphoneContent
@@ -46,7 +47,13 @@ blacklisted_functions = [
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
 	'linphone_chat_message_start_file_download',	# callback function in parameter
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
+	'linphone_chat_room_send_chat_message',	# Use linphone_chat_room_send_chat_message_2 instead
 	'linphone_chat_room_send_message2',	# callback function in parameter
+	'linphone_config_for_each_entry',	# to be handwritten because of callback
+	'linphone_config_for_each_section',	# to be handwritten because of callback
+	'linphone_config_get_range',	# to be handwritten because of result via arguments
+	'linphone_config_load_dict_to_section',	# missing LinphoneDictionary
+	'linphone_config_section_to_dict',	# missing LinphoneDictionary
 	'linphone_core_add_listener',
 	'linphone_core_can_we_add_call',	# private function
 	'linphone_core_enable_log_collection',	# need to handle class properties
@@ -58,6 +65,8 @@ blacklisted_functions = [
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
+	'linphone_core_new', # replaced by linphone_factory_create_core
+	'linphone_core_new_with_config', # replaced by linphone_factory_create_core_with_config
 	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
 	'linphone_core_set_dns_servers',
@@ -76,12 +85,8 @@ blacklisted_functions = [
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
 	'linphone_proxy_config_set_privacy',	# missing LinphonePrivacyMask
 	'linphone_tunnel_get_http_proxy',	# to be handwritten because of double pointer indirection
+	'linphone_vcard_get_belcard', # specific to C++
 	'linphone_xml_rpc_request_new_with_args',	# to be handwritten because of va_list
-	'lp_config_for_each_entry',	# to be handwritten because of callback
-	'lp_config_for_each_section',	# to be handwritten because of callback
-	'lp_config_get_range',	# to be handwritten because of result via arguments
-	'lp_config_load_dict_to_section',	# missing LinphoneDictionary
-	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
 	HandWrittenClassMethod('Buffer', 'new_from_data', 'linphone_buffer_new_from_data', "Create a new LinphoneBuffer object from existing data.\n\n:param data: The initial data to store in the LinphoneBuffer.\n:type data: ByteArray\n:returns: A new LinphoneBuffer object.\n:rtype: linphone.Buffer"),
@@ -94,10 +99,9 @@ hand_written_functions = [
 	HandWrittenProperty('Core', 'sip_transports_used', 'linphone_core_get_sip_transports_used', None, "[:py:class:`linphone.SipTransports`] Retrieves the real port number assigned for each sip transport (udp, tcp, tls). A zero value means that the transport is not activated. If LC_SIP_TRANSPORT_RANDOM was passed to :py:attr:`linphone.Core.sip_transports`, the random port choosed by the system is returned."),
 	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None, "[list of string] Get the available sound devices."),
 	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None, "[list of string] Get the available video capture devices."),
-	HandWrittenProperty('LpConfig', 'sections_names', 'lp_config_get_sections_names', None, "[list of string] Get the sections' names in the lp config."),
-	HandWrittenClassMethod('Core', 'new', 'linphone_core_new', "Instantiate a LinphoneCore object.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param configPath: A path to a config file. If it does not exists it will be created. The config file is used to store all settings, call logs, friends, proxies... so that all these settings become persistent over the life of the LinphoneCore object. It is allowed to set to None. In that case LinphoneCore will not store any settings.\n:type configPath: string\n:param factoryConfigPath: A path to a read-only config file that can be used to store hard-coded preference such as proxy settings or internal preferences. The settings in this factory file always override the one in the normal config file. It is OPTIONAL, use None if unneeded.\n:type factoryConfigPath: string\n:rtype: linphone.Core"),
-	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config', "Instantiate a LinphoneCore object from a LpConfig.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param config: A LpConfig object holding the configuration of the LinphoneCore to be instantiated.\n:rtype: linphone.Core"),
-	HandWrittenDeallocMethod('Core', 'linphone_core_destroy')
+	HandWrittenProperty('Config', 'sections_names', 'linphone_config_get_sections_names', None, "[list of string] Get the sections' names in the lp config."),
+	HandWrittenInstanceMethod('Factory', 'create_core', 'linphone_factory_create_core', "Instanciate a LinphoneCore object.\n\nThe LinphoneCore object is the primary handle for doing all phone actions. It should be unique within your application.\n\n:param cbs: a LinphoneCoreCbs object holding your application callbacks. A reference will be taken on it until the destruciton of the core or the unregistration with linphone_core_remove_cbs().\n:type cbs: linphone.CoreCbs\n:param config_path: a path to a config file. If it does not exists it will be created. The config file is used to store all settings, call logs, friends, proxies... so that all these settings become persistent over the life of the LinphoneCore object. It is allowed to set a None config file. In that case LinphoneCore will not store any settings.\n:type config_path: string\n:param factory_config_path: a path to a read-only config file that can be used to to store hard-coded preference such as proxy settings or internal preferences. The settings in this factory file always override the one in the normal config file. It is OPTIONAL, use None if unneeded.\n:type factory_config_path: string\n:returns: \n:rtype: linphone.Core"),
+	HandWrittenInstanceMethod('Factory', 'create_core_with_config', 'linphone_factory_create_core_with_config', "Instantiates a LinphoneCore object with a given LpConfig.\n\n:param cbs: a LinphoneCoreCbs object holding your application callbacks. A reference will be taken on it until the destruciton of the core or the unregistration with linphone_core_remove_cbs().\n:type cbs: linphone.CoreCbs\n:param config: a pointer to an LpConfig object holding the configuration of the LinphoneCore to be instantiated.\n:type config: linphone.Config\n:returns: \n:rtype: linphone.Core"),
 ]
 
 def generate(apixmlfile, outputfile):

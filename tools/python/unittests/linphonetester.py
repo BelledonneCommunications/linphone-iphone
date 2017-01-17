@@ -39,7 +39,7 @@ linphone.set_log_handler(linphonetester_log_handler)
 
 
 def create_address(domain):
-    addr = linphone.Address.new(None)
+    addr = linphone.Factory.get().create_address(None)
     assert addr != None
     addr.username = test_username
     assert_equals(addr.username, test_username)
@@ -121,7 +121,7 @@ class AccountManager:
             self._create_account_on_server(account, cfg)
         if original_ai is not None:
             lc.remove_auth_info(original_ai)
-        ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
+        ai = linphone.Factory.get().create_auth_info(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
         return account.modified_identity
 
@@ -132,18 +132,18 @@ class AccountManager:
         return None
 
     def _create_account_on_server(self, account, refcfg):
-        vtable = {}
         tmp_identity = account.modified_identity.clone()
-        vtable['registration_state_changed'] = AccountManager.account_created_on_server_cb
-        vtable['auth_info_requested'] = AccountManager.account_created_auth_requested_cb
-        lc = CoreManager.configure_lc_from(vtable, tester_resources_path, None, account)
+        cbs = linphone.Factory.get().create_core_cbs()
+        cbs.registration_state_changed = AccountManager.account_created_on_server_cb
+        cbs.authentication_requested = AccountManager.account_created_auth_requested_cb
+        lc = CoreManager.configure_lc_from(cbs, tester_resources_path, None, account)
         lc.sip_transports = linphone.SipTransports(-1, -1, -1, -1)
         cfg = lc.create_proxy_config()
         tmp_identity.secure = False
         tmp_identity.password = account.password
         tmp_identity.set_header("X-Create-Account", "yes")
         cfg.identity_address = tmp_identity
-        server_addr = linphone.Address.new(refcfg.server_addr)
+        server_addr = linphone.Factory.get().create_address(refcfg.server_addr)
         server_addr.secure = False
         server_addr.transport = linphone.TransportType.Tcp;
         server_addr.port = 0
@@ -157,7 +157,7 @@ class AccountManager:
         cfg.identity_address = account.modified_identity.clone()
         cfg.identity_address.secure = False
         cfg.done()
-        ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
+        ai = linphone.Factory.get().create_auth_info(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
         if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().registered == True, 3000) != True:
             linphonetester_logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity_address.as_string()))
@@ -289,12 +289,12 @@ class CoreManagerStats:
 class CoreManager:
 
     @classmethod
-    def configure_lc_from(cls, vtable, resources_path, rc_path, user_data=None):
+    def configure_lc_from(cls, cbs, resources_path, rc_path, user_data=None):
         filepath = None
         if rc_path is not None:
             filepath = os.path.join(resources_path, rc_path)
             assert_equals(os.path.isfile(filepath), True)
-        lc = linphone.Core.new(vtable, None, filepath)
+        lc = linphone.Factory.get().create_core(cbs, None, filepath)
         linphone.testing.set_dns_user_hosts_file(lc, os.path.join(resources_path, 'tester_hosts'))
         lc.root_ca = os.path.join(resources_path, 'certificates', 'cn', 'cafile.pem')
         lc.ring = os.path.join(resources_path, 'sounds', 'oldphone.wav')
@@ -419,10 +419,10 @@ class CoreManager:
             raise Exception("Unexpected registration state")
 
     @classmethod
-    def auth_info_requested(cls, lc, realm, username, domain):
+    def authentication_requested(cls, lc, auth_info, method):
         manager = lc.user_data()
         linphonetester_logger.info("[TESTER] Auth info requested  for user id [{username}] at realm [{realm}]".format(
-            username=username, realm=realm))
+            username=auth_info.username, realm=auth_info.realm))
         manager.stats.number_of_auth_info_requested +=1
 
     @classmethod
@@ -576,41 +576,22 @@ class CoreManager:
             else:
                 manager.stats.number_of_LinphonePresenceActivityOffline += 1
 
-    def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}):
-        if not vtable.has_key('registration_state_changed'):
-            vtable['registration_state_changed'] = CoreManager.registration_state_changed
-        if not vtable.has_key('auth_info_requested'):
-            vtable['auth_info_requested'] = CoreManager.auth_info_requested
-        if not vtable.has_key('call_state_changed'):
-            vtable['call_state_changed'] = CoreManager.call_state_changed
-        if not vtable.has_key('message_received'):
-            vtable['message_received'] = CoreManager.message_received
-        #if not vtable.has_key('is_composing_received'):
-            #vtable['is_composing_received'] = CoreManager.is_composing_received
-        if not vtable.has_key('new_subscription_requested'):
-            vtable['new_subscription_requested'] = CoreManager.new_subscription_requested
-        if not vtable.has_key('notify_presence_received'):
-            vtable['notify_presence_received'] = CoreManager.notify_presence_received
-        #if not vtable.has_key('transfer_state_changed'):
-            #vtable['transfer_state_changed'] = CoreManager.transfer_state_changed
-        #if not vtable.has_key('info_received'):
-            #vtable['info_received'] = CoreManager.info_received
-        #if not vtable.has_key('subscription_state_changed'):
-            #vtable['subscription_state_changed'] = CoreManager.subscription_state_changed
-        #if not vtable.has_key('notify_received'):
-            #vtable['notify_received'] = CoreManager.notify_received
-        #if not vtable.has_key('publish_state_changed'):
-            #vtable['publish_state_changed'] = CoreManager.publish_state_changed
-        #if not vtable.has_key('configuring_status'):
-            #vtable['configuring_status'] = CoreManager.configuring_status
-        #if not vtable.has_key('call_encryption_changed'):
-            #vtable['call_encryption_changed'] = CoreManager.call_encryption_changed
+    def __init__(self, rc_file = None, check_for_proxies = True, additional_cbs = None):
+        cbs = linphone.Factory.get().create_core_cbs()
+        cbs.registration_state_changed = CoreManager.registration_state_changed
+        cbs.authentication_requested = CoreManager.authentication_requested
+        cbs.call_state_changed = CoreManager.call_state_changed
+        cbs.message_received = CoreManager.message_received
+        cbs.new_subscription_requested = CoreManager.new_subscription_requested
+        cbs.notify_presence_received = CoreManager.notify_presence_received
         self.identity = None
         self.stats = CoreManagerStats()
         rc_path = None
         if rc_file is not None:
             rc_path = os.path.join('rcfiles', rc_file)
-        self.lc = CoreManager.configure_lc_from(vtable, tester_resources_path, rc_path, self)
+        self.lc = CoreManager.configure_lc_from(cbs, tester_resources_path, rc_path, self)
+        if additional_cbs:
+            self.lc.add_callbacks(additional_cbs)
         self.check_accounts()
 
         self.lc.play_file = os.path.join(tester_resources_path, 'sounds', 'hello8000.wav')
