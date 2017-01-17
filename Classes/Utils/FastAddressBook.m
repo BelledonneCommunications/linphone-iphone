@@ -32,14 +32,16 @@
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
 
 + (UIImage *)imageForContact:(Contact *)contact thumbnail:(BOOL)thumbnail {
-	UIImage *retImage = [contact avatar:thumbnail];
-	if (retImage == nil) {
-		retImage = [UIImage imageNamed:@"avatar.png"];
+	@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
+		UIImage *retImage = [contact avatar:thumbnail];
+		if (retImage == nil) {
+			retImage = [UIImage imageNamed:@"avatar.png"];
+		}
+		if (retImage.size.width != retImage.size.height) {
+			retImage = [retImage squareCrop];
+		}
+		return retImage;
 	}
-	if (retImage.size.width != retImage.size.height) {
-		retImage = [retImage squareCrop];
-	}
-	return retImage;
 }
 
 + (UIImage *)imageForAddress:(const LinphoneAddress *)addr thumbnail:(BOOL)thumbnail {
@@ -159,7 +161,9 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 			}
 
 			ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(weakSelf));
-			[weakSelf loadData];
+			dispatch_async(dispatch_get_main_queue(), ^(void) {
+			  [weakSelf loadData];
+			});
 
 		});
 	} else {
@@ -312,54 +316,58 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 
 - (int)removeContact:(Contact *)contact {
 	// Remove contact from book
-	if (contact.person && ABRecordGetRecordID(contact.person) != kABRecordInvalidID) {
-		CFErrorRef error = NULL;
-		ABAddressBookRemoveRecord(addressBook, contact.person, (CFErrorRef *)&error);
-		if (error != NULL) {
-			LOGE(@"Remove contact %p: Fail(%@)", contact, [(__bridge NSError *)error localizedDescription]);
-		} else {
-			LOGI(@"Remove contact %p: Success!", contact);
-		}
-		contact = NULL;
-		// Save address book
-		error = NULL;
-		ABAddressBookSave(addressBook, (CFErrorRef *)&error);
+	@synchronized(_addressBookMap) {
+		if (contact.person && ABRecordGetRecordID(contact.person) != kABRecordInvalidID) {
+			CFErrorRef error = NULL;
+			ABAddressBookRemoveRecord(addressBook, contact.person, (CFErrorRef *)&error);
+			if (error != NULL) {
+				LOGE(@"Remove contact %p: Fail(%@)", contact, [(__bridge NSError *)error localizedDescription]);
+			} else {
+				LOGI(@"Remove contact %p: Success!", contact);
+			}
+			contact = NULL;
+			// Save address book
+			error = NULL;
+			ABAddressBookSave(addressBook, (CFErrorRef *)&error);
 
-		// TODO: stop reloading the whole address book but just clear the removed entries!
-		[self loadData];
+			// TODO: stop reloading the whole address book but just clear the removed entries!
+			[self loadData];
 
-		if (error != NULL) {
-			LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
-		} else {
-			LOGI(@"Save AddressBook: Success!");
+			if (error != NULL) {
+				LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
+			} else {
+				LOGI(@"Save AddressBook: Success!");
+			}
+			return error ? -1 : 0;
 		}
-		return error ? -1 : 0;
+		return -2;
 	}
-	return -2;
 }
 
 - (BOOL)saveContact:(Contact *)contact {
-	CFErrorRef error = NULL;
-	if (ABRecordGetRecordID(contact.person) == kABRecordInvalidID) {
-		if (ABAddressBookAddRecord(addressBook, contact.person, (CFErrorRef *)&error)) {
-			LOGI(@"Add contact %p: Success!", contact.person);
+	@synchronized(_addressBookMap) {
+		CFErrorRef error = NULL;
+		if (ABRecordGetRecordID(contact.person) == kABRecordInvalidID) {
+			if (ABAddressBookAddRecord(addressBook, contact.person, (CFErrorRef *)&error)) {
+				LOGI(@"Add contact %p: Success!", contact.person);
+			} else {
+				LOGE(@"Add contact %p: Fail(%@)", contact.person, [(__bridge NSError *)error localizedDescription]);
+				return FALSE;
+			}
+		}
+
+		// Save address book
+		error = NULL;
+		if (ABAddressBookSave(addressBook, &error)) {
+			LOGI(@"Save AddressBook: Success!");
 		} else {
-			LOGE(@"Add contact %p: Fail(%@)", contact.person, [(__bridge NSError *)error localizedDescription]);
+			LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
 			return FALSE;
 		}
-	}
+		[self reload];
 
-	// Save address book
-	error = NULL;
-	if (ABAddressBookSave(addressBook, &error)) {
-		LOGI(@"Save AddressBook: Success!");
-	} else {
-		LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
-		return FALSE;
+		return error == NULL;
 	}
-	[self reload];
-
-	return error == NULL;
 }
 
 @end

@@ -44,7 +44,9 @@
 #pragma mark -
 
 - (void)onAddressBookUpdate:(NSNotification *)k {
-	if (!inhibUpdate && ![_tableController isEditing]) {
+	if (!inhibUpdate && ![_tableController isEditing] &&
+		(PhoneMainView.instance.currentView == self.compositeViewDescription) &&
+		(_nameLabel.text == PhoneMainView.instance.currentName)) {
 		[self resetData];
 	}
 }
