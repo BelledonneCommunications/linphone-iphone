@@ -1,0 +1,40 @@
+cmake_minimum_required(VERSION 3.0)
+
+include(GNUInstallDirs)
+
+set(GENERATED_SOURCES
+	{{#classes}}
+	src/{{{source}}}
+	{{/classes}}
+)
+set(SOURCES
+	${GENERATED_SOURCES}
+	src/object.cc
+)
+set(GENERATED_HEADERS
+	{{#classes}}
+	${CMAKE_CURRENT_SOURCE_DIR}/include/{{{header}}}
+	{{/classes}}
+)
+set(HEADERS
+	${GENERATED_HEADERS}
+	${CMAKE_CURRENT_SOURCE_DIR}/include/object.hh
+)
+
+add_library(linphone++ SHARED ${SOURCES})
+target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.so.@LINPHONE_SO_VERSION@)
+target_include_directories(linphone++
+	PUBLIC include
+	PRIVATE @PROJECT_SOURCE_DIR@/include
+)
+set_target_properties(linphone++
+	PROPERTIES SOVERSION @LINPHONE_SO_VERSION@
+)
+
+install(TARGETS linphone++
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+install(FILES ${HEADERS}
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/linphone++
+)
+

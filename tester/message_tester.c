@@ -75,34 +75,25 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 void file_transfer_received(LinphoneChatMessage *msg, const LinphoneContent* content, const LinphoneBuffer *buffer){
 	FILE* file=NULL;
 	char *receive_file = NULL;
-	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
-	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	
-	if (linphone_chat_message_get_file_transfer_filepath(msg) != NULL) {
-		if (linphone_buffer_is_empty(buffer)) {
-			stats* counters = get_stats(lc);
-			counters->number_of_LinphoneFileTransferDownloadSuccessful++;
-			return;
-		}
-	} else {
-		receive_file = bc_tester_file("receive_file.dump");
-		if (!linphone_chat_message_get_user_data(msg)) {
-			/*first chunk, creating file*/
-			file = fopen(receive_file,"wb");
-			linphone_chat_message_set_user_data(msg,(void*)file); /*store fd for next chunks*/
-		}
-		bc_free(receive_file);
-		file = (FILE*)linphone_chat_message_get_user_data(msg);
-		BC_ASSERT_PTR_NOT_NULL(file);
-		if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
-			stats* counters = get_stats(lc);
-			counters->number_of_LinphoneFileTransferDownloadSuccessful++;
-			linphone_chat_message_set_user_data(msg, NULL);
-			fclose(file);
-		} else { /* store content on a file*/
-			if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==0){
-				ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
-			}
+	// If a file path is set, we should NOT call the on_recv callback !
+	BC_ASSERT_PTR_NULL(msg->file_transfer_filepath);
+	
+	receive_file = bc_tester_file("receive_file.dump");
+	if (!linphone_chat_message_get_user_data(msg)) {
+		/*first chunk, creating file*/
+		file = fopen(receive_file,"wb");
+		linphone_chat_message_set_user_data(msg,(void*)file); /*store fd for next chunks*/
+	}
+	bc_free(receive_file);
+	file = (FILE*)linphone_chat_message_get_user_data(msg);
+	BC_ASSERT_PTR_NOT_NULL(file);
+	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
+		linphone_chat_message_set_user_data(msg, NULL);
+		fclose(file);
+	} else { /* store content on a file*/
+		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==0){
+			ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
 		}
 	}
 }
@@ -116,6 +107,9 @@ LinphoneBuffer * tester_file_transfer_send(LinphoneChatMessage *msg, const Linph
 	size_t size_to_send;
 	uint8_t *buf;
 	FILE *file_to_send = linphone_chat_message_get_user_data(msg);
+	
+	// If a file path is set, we should NOT call the on_send callback !
+	BC_ASSERT_PTR_NULL(msg->file_transfer_filepath);
 
 	BC_ASSERT_PTR_NOT_NULL(file_to_send);
 	if (file_to_send == NULL){
@@ -126,7 +120,7 @@ LinphoneBuffer * tester_file_transfer_send(LinphoneChatMessage *msg, const Linph
 	fseek(file_to_send, (long)offset, SEEK_SET);
 	size_to_send = MIN(size, file_size - offset);
 	buf = ms_malloc(size_to_send);
-	if (fread(buf, size_to_send, 1, file_to_send)!=size_to_send){
+	if (fread(buf, sizeof(uint8_t), size_to_send, file_to_send) != size_to_send){
 		// reaching end of file, close it
 		fclose(file_to_send);
 		linphone_chat_message_set_user_data(msg, NULL);
@@ -154,6 +148,9 @@ void file_transfer_progress_indication(LinphoneChatMessage *msg, const LinphoneC
 																	,(linphone_chat_message_is_outgoing(msg)?"to":"from")
 																	, address);
 	counters->progress_of_LinphoneFileTransfer = progress;
+	if (progress == 100) {
+		counters->number_of_LinphoneFileTransferDownloadSuccessful++;
+	}
 	free(address);
 }
 
@@ -224,7 +221,7 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	LinphoneContent* content;
 	LinphoneChatMessage* msg;
 	size_t file_size;
-	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
 	file_to_send = fopen(send_filepath, "rb");
 	fseek(file_to_send, 0, SEEK_END);
 	file_size = ftell(file_to_send);
@@ -235,7 +232,7 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	linphone_content_set_type(content,"image");
 	linphone_content_set_subtype(content,"jpeg");
 	linphone_content_set_size(content,file_size); /*total size to be transfered*/
-	linphone_content_set_name(content,"nowebcamCIF.jpg");
+	linphone_content_set_name(content,"nowebcamVGA.jpg");
 
 	msg = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	cbs = linphone_chat_message_get_callbacks(msg);
@@ -243,6 +240,7 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 	linphone_chat_message_set_user_data(msg, file_to_send);
+	BC_ASSERT_PTR_NOT_NULL(linphone_chat_message_get_user_data(msg));
 
 	linphone_content_unref(content);
 	ms_free(send_filepath);
@@ -253,17 +251,18 @@ LinphoneChatMessage* create_file_transfer_message_from_nowebcam(LinphoneChatRoom
 	LinphoneChatMessageCbs *cbs;
 	LinphoneContent* content;
 	LinphoneChatMessage* msg;
-	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
 
 	content = linphone_core_create_content(chat_room->lc);
 	belle_sip_object_set_name(&content->base, "nowebcam content");
 	linphone_content_set_type(content,"image");
 	linphone_content_set_subtype(content,"jpeg");
-	linphone_content_set_name(content,"nowebcamCIF.jpg");
+	linphone_content_set_name(content,"nowebcamVGA.jpg");
 
 	msg = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	linphone_chat_message_set_file_transfer_filepath(msg, send_filepath);
 	cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 
@@ -451,7 +450,7 @@ static void text_message_with_external_body(void) {
 
 void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, bool_t upload_error, bool_t download_error, 
 							bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download, bool_t download_from_history) {
-	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessage* msg;
@@ -681,7 +680,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 		LinphoneChatMessage* msg;
 		LinphoneChatMessage* msg2;
 		LinphoneChatMessageCbs *cbs;
-		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+		char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
 		char *receive_filepath = bc_tester_file("receive_file.dump");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -722,11 +721,13 @@ static void file_transfer_2_messages_simultaneously(void) {
 				cbs = linphone_chat_message_get_callbacks(msg);
 				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+				linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 				linphone_chat_message_download_file(msg);
 
 				cbs = linphone_chat_message_get_callbacks(msg2);
 				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+				linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 				linphone_chat_message_download_file(msg2);
 
 				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,2));
@@ -1217,7 +1218,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	LinphoneChatMessageCbs *cbs;
 	char *pauline_id, *marie_id;
 	char *filepath;
-	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	MSList * msg_list = NULL;
 	
@@ -1286,6 +1287,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 		cbs = linphone_chat_message_get_callbacks(recv_msg);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+		linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 		content = linphone_chat_message_get_file_transfer_information(recv_msg);
 		if (!content) goto end;
 		if (encrypt_file)
@@ -1564,7 +1566,7 @@ int message_tester_copy_file(const char *from, const char *to)
 	}
 
 	/* Copy data from "in" to "out" */
-	while ( (n=fread(buf, 1, sizeof buf, in)) > 0 )
+	while ( (n=fread(buf, sizeof(char), sizeof(buf), in)) > 0 )
 	{
 		if ( ! fwrite(buf, 1, n, out) )
 		{

@@ -130,7 +130,9 @@ set(RC_FILES
 	rcfiles/zero_length_params_rc
 )
 
-set(IMAGE_FILES images/nowebcamCIF.jpg)
+set(IMAGE_FILES 
+	images/nowebcamCIF.jpg
+	images/nowebcamVGA.jpg)
 
 set(VCARD_FILES
 	vcards/thousand_vcards.vcf

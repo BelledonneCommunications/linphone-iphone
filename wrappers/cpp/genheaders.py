@@ -1,5 +1,21 @@
 #!/usr/bin/python
 
+# Copyright (C) 2017 Belledonne Communications SARL
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 
 import pystache
 import re
@@ -611,6 +627,11 @@ class ClassImpl(object):
 		namespace = parsedClass.find_first_ancestor_by_type(AbsApi.Namespace)
 		self.namespace = namespace.name.concatenate(fullName=True) if namespace is not None else None
 
+class CMakeLists(object):
+	def __init__(self):
+		self.classes = []
+		self.interfaces = []
+
 
 def main():
 	argparser = argparse.ArgumentParser(description='Generate source files for the C++ wrapper')
@@ -631,26 +652,6 @@ def main():
 	parser = AbsApi.CParser(project)
 	parser.parse_all()
 	translator = CppTranslator()
-	#translator.ignore += ['linphone_tunnel_get_http_proxy',
-					   #'linphone_core_can_we_add_call',
-					   #'linphone_core_get_default_proxy',
-					   #'linphone_core_add_listener',
-					   #'linphone_core_remove_listener',
-					   #'linphone_core_get_current_callbacks',
-					   #'linphone_proxy_config_normalize_number',
-					   #'linphone_proxy_config_set_file_transfer_server',
-					   #'linphone_proxy_config_get_file_transfer_server',
-					   #'linphone_factory_create_core',
-					   #'linphone_factory_create_core_with_config',
-					   #'linphone_buffer_get_content',
-					   #'linphone_chat_room_send_chat_message',
-					   #'linphone_config_read_relative_file',
-					   #'linphone_core_new_with_config',
-					   #'LinphoneImEncryptionEngine',
-					   #'LinphoneImEncryptionEngineCbs',
-					   #'LinphoneImNotifPolicy',
-					   #'LpConfig']
-	
 	renderer = pystache.Renderer()	
 	
 	header = EnumsHeader(translator)
@@ -664,13 +665,23 @@ def main():
 		f.write(renderer.render(header))
 	
 	mainHeader = MainHeader()
+	cmakelists = CMakeLists()
 	
 	for _class in parser.classesIndex.values() + parser.interfacesIndex.values():
 		if _class is not None:
 			try:
 				header = ClassHeader(_class, translator, ignore=['LinphoneBuffer'])
 				impl = ClassImpl(_class, header._class)
-				mainHeader.add_include(_class.name.to_snake_case() + '.hh')
+				
+				headerName = _class.name.to_snake_case() + '.hh'
+				sourceName = _class.name.to_snake_case() + '.cc'
+				mainHeader.add_include(headerName)
+				
+				if type(_class) is AbsApi.Class:
+					cmakelists.classes.append({'header': headerName, 'source': sourceName})
+				else:
+					cmakelists.interfaces.append({'header': headerName})
+				
 				with open(args.outputdir + '/include/' + header.filename, mode='w') as f:
 					f.write(renderer.render(header))
 				
@@ -683,6 +694,9 @@ def main():
 	
 	with open(args.outputdir + '/include/linphone.hh', mode='w') as f:
 		f.write(renderer.render(mainHeader))
+	
+	with open(args.outputdir + '/CMakeLists.txt', mode='w') as f:
+		f.write(renderer.render(cmakelists))
 
 
 if __name__ == '__main__':

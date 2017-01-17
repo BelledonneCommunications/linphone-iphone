@@ -149,6 +149,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			belle_sip_object_unref(address);
 			belle_sip_free(from);
 			if (salmsg.url) ms_free((char*)salmsg.url);
+			ms_free((char *)salmsg.content_type);
 		}
 	} else {
 		ms_error("Unsupported MESSAGE (no Content-Type)");
