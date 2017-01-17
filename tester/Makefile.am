@@ -78,7 +78,7 @@ RCFILES = \
 					rcfiles/friends_rc\
 					rcfiles/carddav_rc
 
-IMAGE_FILES = images/nowebcamCIF.jpg
+IMAGE_FILES = images/nowebcamCIF.jpg images/nowebcamVGA.jpg
 
 VCARDS_FILE = vcards/vcards.vcf vcards/thousand_vcards.vcf
 
