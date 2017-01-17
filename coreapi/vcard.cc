@@ -201,6 +201,19 @@ const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard) {
 	return result;
 }
 
+void linphone_vcard_set_skip_validation(LinphoneVcard *vCard, bool_t skip) {
+	if (!vCard || !vCard->belCard) return;
+
+	vCard->belCard->setSkipFieldValidation(skip);
+}
+
+bool_t linphone_vcard_get_skip_validation(const LinphoneVcard *vCard) {
+	if (!vCard) return FALSE;
+
+	bool_t result = vCard->belCard->getSkipFieldValidation();
+	return result;
+}
+
 void linphone_vcard_set_family_name(LinphoneVcard *vCard, const char *name) {
 	if (!vCard || !name) return;
 

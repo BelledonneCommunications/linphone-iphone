@@ -79,6 +79,13 @@ const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
+void linphone_vcard_set_skip_validation(LinphoneVcard *vCard, bool_t skip) {
+}
+
+bool_t linphone_vcard_get_skip_validation(const LinphoneVcard *vCard) {
+	return FALSE;
+}
+
 void linphone_vcard_set_family_name(LinphoneVcard *vCard, const char *name) {
 }
 
@@ -133,7 +140,7 @@ void linphone_vcard_set_uid(LinphoneVcard *vCard, const char *uid) {
 const char* linphone_vcard_get_uid(const LinphoneVcard *vCard) {
 	return NULL;
 }
-
+ 
 void linphone_vcard_set_etag(LinphoneVcard *vCard, const char * etag) {
 }
 

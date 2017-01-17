@@ -1083,6 +1083,8 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 	}
 
 	vcard = linphone_vcard_new();
+	bool_t skip = 1 - lp_config_get_int(fr->lc->config, "misc", "store_friends", 1);
+	linphone_vcard_set_skip_validation(vcard, skip);
 	linphone_vcard_set_full_name(vcard, name);
 	linphone_friend_set_vcard(fr, vcard);
 	return TRUE;
