@@ -20,6 +20,9 @@ import genapixml as CApi
 class Error(RuntimeError):
 	pass
 
+class BlacklistedException:
+	pass
+
 class Name(object):
 	camelCaseParsingRegex = re.compile('[A-Z][a-z0-9]*')
 	lowerCamelCaseSplitingRegex = re.compile('([a-z][a-z0-9]*)([A-Z][a-z0-9]*)')
@@ -427,20 +430,58 @@ class CParser(object):
 		self.methodBl = ['ref', 'unref', 'new', 'destroy', 'getCurrentCallbacks', 'setUserData', 'getUserData']
 		self.functionBl = ['linphone_tunnel_get_http_proxy',
 					   'linphone_core_can_we_add_call',
-					   'linphone_core_get_default_proxy',
 					   'linphone_core_add_listener',
 					   'linphone_core_remove_listener',
 					   'linphone_core_get_current_callbacks',
-					   'linphone_proxy_config_normalize_number',
 					   'linphone_proxy_config_set_file_transfer_server',
 					   'linphone_proxy_config_get_file_transfer_server',
-					   'linphone_factory_create_core',
-					   'linphone_factory_create_core_with_config',
+					   'linphone_factory_create_core', # manualy wrapped
+					   'linphone_factory_create_core_with_config', # manualy wrapped
 					   'linphone_buffer_get_content',
-					   'linphone_chat_room_send_chat_message',
+					   'linphone_chat_room_send_chat_message', # overloaded
 					   'linphone_config_read_relative_file',
-					   'linphone_core_new_with_config',
-					   'linphone_vcard_get_belcard']
+					   'linphone_vcard_get_belcard', # manualy wrapped
+					   'linphone_chat_room_destroy', # was deprecated when the wrapper generator was made
+					   'linphone_chat_room_send_message', # was deprecated when the wrapper generator was made
+					   'linphone_chat_room_send_message2', # was deprecated when the wrapper generator was made
+					   'linphone_chat_room_get_lc', # was deprecated when the wrapper generator was made
+					   'linphone_chat_message_start_file_download', # was deprecated when the wrapper generator was made
+					   'linphone_vcard_new', # was deprecated when the wrapper generator was made
+					   'linphone_vcard_free', # was deprecated when the wrapper generator was made
+					   'linphone_call_params_destroy', # was deprecated when the wrapper generator was made
+					   'linphone_address_is_secure', # was deprecated when the wrapper generator was made
+					   'linphone_address_destroy', # was deprecated when the wrapper generator was made
+					   'linphone_core_enable_logs', # was deprecated when the wrapper generator was made
+					   'linphone_core_enable_logs_with_cb', # was deprecated when the wrapper generator was made
+					   'linphone_core_disable_logs', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_user_agent_name', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_user_agent_version', # was deprecated when the wrapper generator was made
+					   'linphone_core_new', # was deprecated when the wrapper generator was made
+					   'linphone_core_new_with_config', # was deprecated when the wrapper generator was made
+					   'linphone_core_add_listener', # was deprecated when the wrapper generator was made
+					   'linphone_core_remove_listener', # was deprecated when the wrapper generator was made
+					   'linphone_core_send_dtmf', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_default_proxy', # was deprecated when the wrapper generator was made
+					   'linphone_core_set_firewall_policy', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_firewall_policy', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_ring_level', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_play_level', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_rec_level', # was deprecated when the wrapper generator was made
+					   'linphone_core_set_ring_level', # was deprecated when the wrapper generator was made
+					   'linphone_core_set_play_level', # was deprecated when the wrapper generator was made
+					   'linphone_core_set_rec_level', # was deprecated when the wrapper generator was made
+					   'linphone_core_mute_mic', # was deprecated when the wrapper generator was made
+					   'linphone_core_is_mic_muted', # was deprecated when the wrapper generator was made
+					   'linphone_core_enable_video', # was deprecated when the wrapper generator was made
+					   'linphone_core_create_lp_config', # was deprecated when the wrapper generator was made
+					   'linphone_core_destroy', # was deprecated when the wrapper generator was made
+					   'linphone_proxy_config_normalize_number', # was deprecated when the wrapper generator was made
+					   'linphone_call_is_in_conference', # was deprecated when the wrapper generator was made
+					   'linphone_friend_new', # was deprecated when the wrapper generator was made
+					   'linphone_friend_new_with_address', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_sound_source', # was deprecated when the wrapper generator was made
+					   'linphone_core_set_sound_source'] # was deprecated when the wrapper generator was made
+
 		self.classBl = ['LinphoneImEncryptionEngine',
 					   'LinphoneImEncryptionEngineCbs',
 					   'LinphoneImNotifPolicy',
@@ -483,6 +524,8 @@ class CParser(object):
 		for _class in self.cProject.classes:
 			try:
 				CParser.parse_class(self, _class)
+			except BlacklistedException:
+				pass
 			except Error as e:
 				print('Could not parse \'{0}\' class: {1}'.format(_class.name, e.args[0]))
 		CParser._fix_all_types(self)
@@ -560,7 +603,7 @@ class CParser(object):
 	
 	def parse_class(self, cclass):
 		if cclass.name in self.classBl:
-			raise Error('{0} is blacklisted'.format(cclass.name));
+			raise BlacklistedException('{0} is blacklisted'.format(cclass.name));
 		
 		if cclass.name.endswith('Cbs'):
 			_class = CParser._parse_listener(self, cclass)
@@ -598,6 +641,8 @@ class CParser(object):
 				else:
 					_class.add_instance_method(method)
 					
+			except BlacklistedException:
+				pass
 			except Error as e:
 				print('Could not parse {0} function: {1}'.format(cMethod.name, e.args[0]))
 				
@@ -605,6 +650,8 @@ class CParser(object):
 			try:
 				method = CParser.parse_method(self, cMethod, type=Method.Type.Class, namespace=name)
 				_class.add_class_method(method)
+			except BlacklistedException:
+				pass
 			except Error as e:
 				print('Could not parse {0} function: {1}'.format(cMethod.name, e.args[0]))
 		
@@ -681,7 +728,7 @@ class CParser(object):
 		name.from_snake_case(cfunction.name, namespace=namespace)
 		
 		if CParser._is_blacklisted(self, name):
-			raise Error('{0} is blacklisted'.format(name.to_c()));
+			raise BlacklistedException('{0} is blacklisted'.format(name.to_c()));
 		
 		method = Method(name, type=type)
 		method.returnType = CParser.parse_type(self, cfunction.returnArgument)
