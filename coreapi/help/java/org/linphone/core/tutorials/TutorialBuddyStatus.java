@@ -150,7 +150,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 		try {
 
 			// Create friend object from string address
-			LinphoneFriend lf = lcFactory.createLinphoneFriend(sipAddress);
+			LinphoneFriend lf = lc.createFriendWithAddress(sipAddress);
 			if (lf == null) {
 				write("Could not create friend; weird SIP address?");
 				return;

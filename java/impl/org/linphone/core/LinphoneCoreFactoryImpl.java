@@ -174,11 +174,13 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	@Override
+	@Deprecated
 	public LinphoneFriend createLinphoneFriend(String friendUri) {
 		return new LinphoneFriendImpl(friendUri);
 	}
 
 	@Override
+	@Deprecated
 	public LinphoneFriend createLinphoneFriend() {
 		return createLinphoneFriend(null);
 	}
