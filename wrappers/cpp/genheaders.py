@@ -212,8 +212,10 @@ class CppTranslator(object):
 		else:
 			methodElems['methodType'] = ''
 		
+		methodElems['deprecated'] = 'LINPHONE_DEPRECATED ' if method.deprecated else ''
+		
 		methodDict = {}
-		methodDict['prototype'] = '{methodType}{return} {name}({params}){const}{semicolon}'.format(**methodElems)
+		methodDict['prototype'] = 'LINPHONE_PUBLIC {deprecated}{methodType}{return} {name}({params}){const}{semicolon}'.format(**methodElems)
 	
 		if genImpl:
 			if not CppTranslator.is_ambigous_type(self, method.returnType):

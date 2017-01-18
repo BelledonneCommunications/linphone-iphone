@@ -20,7 +20,7 @@ import genapixml as CApi
 class Error(RuntimeError):
 	pass
 
-class BlacklistedException:
+class BlacklistedException(Error):
 	pass
 
 class Name(object):
@@ -193,6 +193,7 @@ class Object(object):
 	def __init__(self, name):
 		self.name = name
 		self.parent = None
+		self.deprecated = False
 	
 	def find_first_ancestor_by_type(self, _type):
 		ancestor = self.parent
@@ -731,6 +732,7 @@ class CParser(object):
 			raise BlacklistedException('{0} is blacklisted'.format(name.to_c()));
 		
 		method = Method(name, type=type)
+		method.deprecated = cfunction.deprecated
 		method.returnType = CParser.parse_type(self, cfunction.returnArgument)
 		
 		for arg in cfunction.arguments:
