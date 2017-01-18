@@ -1031,13 +1031,16 @@ int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEn
 }
 
 int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer) {
+	size_t file_size = linphone_content_get_size(msg->file_transfer_information);
 	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
 	
 	if (buffer == NULL || *size == 0) {
 		return lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
 	}
 	
-	if (offset + *size < linphone_content_get_size(msg->file_transfer_information)) {
+	if (file_size == 0) {
+		ms_warning("File size has not been set, encryption will fail if not done in one step (if file is larger than 16K)");
+	} else if (offset + *size < file_size) {
 		*size -= (*size % 16);
 	}
 	

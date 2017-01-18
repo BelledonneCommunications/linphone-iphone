@@ -2167,7 +2167,7 @@ LinphoneLimeState linphone_core_lime_enabled(const LinphoneCore *lc){
 LinphoneLimeState linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc){
 	LinphoneLimeState s = linphone_core_lime_enabled(lc);
 	if (s != LinphoneLimeDisabled) {
-		s = lp_config_get_int(lc->config,"sip", "lime_for_file_sharing", LinphoneLimeMandatory);
+		s = lp_config_get_int(lc->config,"sip", "lime_for_file_sharing", 1);
 	}
 	return s;
 }

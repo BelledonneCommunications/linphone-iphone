@@ -220,8 +220,8 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	LinphoneChatMessageCbs *cbs;
 	LinphoneContent* content;
 	LinphoneChatMessage* msg;
-	size_t file_size;
 	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
+	size_t file_size;
 	file_to_send = fopen(send_filepath, "rb");
 	fseek(file_to_send, 0, SEEK_END);
 	file_size = ftell(file_to_send);
@@ -1237,7 +1237,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 	if (!encrypt_file) {
 		LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
-		lp_config_set_int(pauline_lp,"sip","lime_for_file_sharing",0);
+		lp_config_set_int(pauline_lp, "sip", "lime_for_file_sharing", 0);
 	}
 
 	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */

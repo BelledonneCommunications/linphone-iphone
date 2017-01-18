@@ -133,7 +133,7 @@ static int on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *
 		LinphoneImEncryptionEngineCbsUploadingFileCb cb_process_uploading_file = linphone_im_encryption_engine_cbs_get_process_uploading_file(imee_cbs);
 		if (cb_process_uploading_file) {
 			char *encrypted_buffer = (char *)ms_malloc0(*size);
-			retval = cb_process_uploading_file(imee, msg, offset, (char *)buffer, size, encrypted_buffer);
+			retval = cb_process_uploading_file(imee, msg, offset, (const char *)buffer, size, encrypted_buffer);
 			if (retval == 0) {
 				memcpy(buffer, encrypted_buffer, *size);
 			}
@@ -234,7 +234,8 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			if (msg->file_transfer_filepath != NULL) {
 				belle_sip_user_body_handler_t *body_handler = (belle_sip_user_body_handler_t *)first_part_bh;
 				first_part_bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(msg->file_transfer_filepath, 
-					linphone_chat_message_file_transfer_on_progress, msg);
+					NULL, msg); // No need to add again the callback for progression, otherwise it will be called twice
+				linphone_content_set_size(msg->file_transfer_information, belle_sip_file_body_handler_get_file_size((belle_sip_file_body_handler_t *)first_part_bh));
 				belle_sip_file_body_handler_set_user_body_handler((belle_sip_file_body_handler_t *)first_part_bh, body_handler);
 			} else if (linphone_content_get_buffer(msg->file_transfer_information) != NULL) {
 				first_part_bh = (belle_sip_body_handler_t *)belle_sip_memory_body_handler_new_from_buffer(
