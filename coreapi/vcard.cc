@@ -204,7 +204,7 @@ const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard) {
 void linphone_vcard_set_skip_validation(LinphoneVcard *vCard, bool_t skip) {
 	if (!vCard || !vCard->belCard) return;
 
-	vCard->belCard->setSkipFieldValidation(skip);
+	vCard->belCard->setSkipFieldValidation((skip == TRUE) ? true : false);
 }
 
 bool_t linphone_vcard_get_skip_validation(const LinphoneVcard *vCard) {
