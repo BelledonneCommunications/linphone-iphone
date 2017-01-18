@@ -3,7 +3,7 @@ configure_file(object.cc src/object.cc COPYONLY)
 configure_file(object.hh include/object.hh COPYONLY)
 
 add_custom_command(OUTPUT CMakeLists.txt include/linphone.hh
-	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genheaders.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/xml"
+	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/xml"
 	DEPENDS *.py *.mustache linphone-doc
 	"${PROJECT_BINARY_DIR}/coreapi/help/doc/xml/index.xml"
 	"${CMAKE_CURRENT_BINARY_DIR}/c_make_lists.mustache"
