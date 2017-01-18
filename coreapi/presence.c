@@ -29,15 +29,18 @@ extern const char *__policy_enum_to_str(LinphoneSubscribePolicy pol);
 
 
 struct _LinphonePresenceNote {
+	belle_sip_object_t base;
 	void *user_data;
-	int refcnt;
 	char *lang;
 	char *content;
 };
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceNote);
+BELLE_SIP_DECLARE_VPTR(LinphonePresenceNote);
+
 struct _LinphonePresenceService {
+	belle_sip_object_t base;
 	void *user_data;
-	int refcnt;
 	char *id;
 	LinphonePresenceBasicStatus status;
 	char *contact;
@@ -45,16 +48,22 @@ struct _LinphonePresenceService {
 	time_t timestamp;
 };
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceService);
+BELLE_SIP_DECLARE_VPTR(LinphonePresenceService);
+
 struct _LinphonePresenceActivity {
+	belle_sip_object_t base;
 	void *user_data;
-	int refcnt;
 	LinphonePresenceActivityType type;
 	char *description;
 };
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceActivity);
+BELLE_SIP_DECLARE_VPTR(LinphonePresenceActivity);
+
 struct _LinphonePresencePerson {
+	belle_sip_object_t base;
 	void *user_data;
-	int refcnt;
 	char *id;
 	bctbx_list_t *activities;		/**< A list of _LinphonePresenceActivity structures. */
 	bctbx_list_t *activities_notes;	/**< A list of _LinphonePresenceNote structures. */
@@ -62,18 +71,24 @@ struct _LinphonePresencePerson {
 	time_t timestamp;
 };
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresencePerson);
+BELLE_SIP_DECLARE_VPTR(LinphonePresencePerson);
+
 /**
  * Represents the presence model as defined in RFC 4479 and RFC 4480.
  * This model is not complete. For example, it does not handle devices.
  */
 struct _LinphonePresenceModel {
+	belle_sip_object_t base;
 	LinphoneAddress *presentity; /* "The model seeks to describe the presentity, identified by a presentity URI.*/
 	void *user_data;
-	int refcnt;
 	bctbx_list_t *services;	/**< A list of _LinphonePresenceService structures. Also named tuples in the RFC. */
 	bctbx_list_t *persons;	/**< A list of _LinphonePresencePerson structures. */
 	bctbx_list_t *notes;		/**< A list of _LinphonePresenceNote structures. */
 };
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceModel);
+BELLE_SIP_DECLARE_VPTR(LinphonePresenceModel);
 
 
 static const char *person_prefix = "/pidf:presence/dm:person";
@@ -111,17 +126,15 @@ static const char * presence_basic_status_to_string(LinphonePresenceBasicStatus 
 	}
 }
 
-static void presence_note_delete(LinphonePresenceNote *note) {
+static void presence_note_uninit(LinphonePresenceNote *note) {
 	ms_free(note->content);
 	if (note->lang != NULL) {
 		ms_free(note->lang);
 	}
-	ms_free(note);
 }
 
 static LinphonePresenceService * presence_service_new(const char *id, LinphonePresenceBasicStatus status) {
-	LinphonePresenceService *service = ms_new0(LinphonePresenceService, 1);
-	service->refcnt = 1;
+	LinphonePresenceService *service = belle_sip_object_new(LinphonePresenceService);
 	if (id != NULL) {
 		service->id = ms_strdup(id);
 	}
@@ -130,7 +143,7 @@ static LinphonePresenceService * presence_service_new(const char *id, LinphonePr
 	return service;
 }
 
-static void presence_service_delete(LinphonePresenceService *service) {
+static void presence_service_uninit(LinphonePresenceService *service) {
 	if (service->id != NULL) {
 		ms_free(service->id);
 	}
@@ -139,7 +152,6 @@ static void presence_service_delete(LinphonePresenceService *service) {
 	}
 	bctbx_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
 	bctbx_list_free(service->notes);
-	ms_free(service);
 };
 
 static void presence_service_set_timestamp(LinphonePresenceService *service, time_t timestamp) {
@@ -150,11 +162,10 @@ static void presence_service_add_note(LinphonePresenceService *service, Linphone
 	service->notes = bctbx_list_append(service->notes, note);
 }
 
-static void presence_activity_delete(LinphonePresenceActivity *activity) {
+static void presence_activity_uninit(LinphonePresenceActivity *activity) {
 	if (activity->description != NULL) {
 		ms_free(activity->description);
 	}
-	ms_free(activity);
 }
 
 static time_t parse_timestamp(const char *timestamp) {
@@ -200,8 +211,7 @@ char * linphone_timestamp_to_rfc3339_string(time_t timestamp) {
 }
 
 static LinphonePresencePerson * presence_person_new(const char *id,  time_t timestamp) {
-	LinphonePresencePerson *person = ms_new0(LinphonePresencePerson, 1);
-	person->refcnt = 1;
+	LinphonePresencePerson *person = belle_sip_object_new(LinphonePresencePerson);
 	if (id != NULL) {
 		person->id = ms_strdup(id);
 	}
@@ -212,7 +222,7 @@ static LinphonePresencePerson * presence_person_new(const char *id,  time_t time
 	return person;
 }
 
-static void presence_person_delete(LinphonePresencePerson *person) {
+static void presence_person_uninit(LinphonePresencePerson *person) {
 	if (person->id != NULL) {
 		ms_free(person->id);
 	}
@@ -222,7 +232,6 @@ static void presence_person_delete(LinphonePresencePerson *person) {
 	bctbx_list_free(person->activities_notes);
 	bctbx_list_for_each(person->notes, (MSIterateFunc)linphone_presence_note_unref);
 	bctbx_list_free(person->notes);
-	ms_free(person);
 }
 
 static void presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
@@ -251,8 +260,7 @@ static void presence_model_find_open_basic_status(LinphonePresenceService *servi
 	}
 }
 
-static void presence_model_delete(LinphonePresenceModel *model) {
-	if (model == NULL) return;
+static void presence_model_uninit(LinphonePresenceModel *model) {
 	if (model->presentity)
 		linphone_address_unref(model->presentity);
 	bctbx_list_for_each(model->services, (MSIterateFunc)linphone_presence_service_unref);
@@ -261,7 +269,6 @@ static void presence_model_delete(LinphonePresenceModel *model) {
 	bctbx_list_free(model->persons);
 	bctbx_list_for_each(model->notes, (MSIterateFunc)linphone_presence_note_unref);
 	bctbx_list_free(model->notes);
-	ms_free(model);
 }
 
 
@@ -624,8 +631,7 @@ int linphone_presence_model_clear_notes(LinphonePresenceModel *model) {
  ****************************************************************************/
 
 LinphonePresenceModel * linphone_presence_model_new(void) {
-	LinphonePresenceModel *model = ms_new0(LinphonePresenceModel, 1);
-	model->refcnt = 1;
+	LinphonePresenceModel *model = belle_sip_object_new(LinphonePresenceModel);
 	return model;
 }
 
@@ -697,6 +703,15 @@ int linphone_presence_model_set_presentity(LinphonePresenceModel *model, const L
 const LinphoneAddress * linphone_presence_model_get_presentity(const LinphonePresenceModel *model) {
 	return model->presentity;
 }
+
+BELLE_SIP_INSTANCIATE_VPTR(
+	LinphonePresenceModel,
+	belle_sip_object_t,
+	presence_model_uninit, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE // unown
+);
 
 /*****************************************************************************
  * PRESENCE SERVICE FUNCTIONS TO GET ACCESS TO ALL FUNCTIONALITIES           *
@@ -784,6 +799,15 @@ int linphone_presence_service_clear_notes(LinphonePresenceService *service) {
 	service->notes = NULL;
 	return 0;
 }
+
+BELLE_SIP_INSTANCIATE_VPTR(
+	LinphonePresenceService,
+	belle_sip_object_t,
+	presence_service_uninit, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE // unown
+);
 
 
 
@@ -887,6 +911,15 @@ int linphone_presence_person_clear_activities_notes(LinphonePresencePerson *pers
 	return 0;
 }
 
+BELLE_SIP_INSTANCIATE_VPTR(
+	LinphonePresencePerson,
+	belle_sip_object_t,
+	presence_person_uninit, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE // unown
+)
+
 
 /*****************************************************************************
  * PRESENCE ACTIVITY FUNCTIONS TO GET ACCESS TO ALL FUNCTIONALITIES          *
@@ -949,8 +982,7 @@ static const char * presence_activity_type_to_string(LinphonePresenceActivityTyp
 }
 
 LinphonePresenceActivity * linphone_presence_activity_new(LinphonePresenceActivityType acttype, const char *description) {
-	LinphonePresenceActivity *act = ms_new0(LinphonePresenceActivity, 1);
-	act->refcnt = 1;
+	LinphonePresenceActivity *act = belle_sip_object_new(LinphonePresenceActivity);
 	act->type = acttype;
 	if (description != NULL) {
 		act->description = ms_strdup(description);
@@ -1004,6 +1036,14 @@ int linphone_presence_activity_set_description(LinphonePresenceActivity *activit
 	return 0;
 }
 
+BELLE_SIP_INSTANCIATE_VPTR(
+	LinphonePresenceActivity,
+	belle_sip_object_t, // parent
+	presence_activity_uninit, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE // unown
+);
 
 
 /*****************************************************************************
@@ -1014,8 +1054,7 @@ LinphonePresenceNote * linphone_presence_note_new(const char *content, const cha
 	LinphonePresenceNote *note;
 
 	if (content == NULL) return NULL;
-	note = ms_new0(LinphonePresenceNote, 1);
-	note->refcnt = 1;
+	note = belle_sip_object_new(LinphonePresenceNote);
 	note->content = ms_strdup(content);
 	if (lang != NULL) {
 		note->lang = ms_strdup(lang);
@@ -1055,6 +1094,14 @@ int linphone_presence_note_set_lang(LinphonePresenceNote *note, const char *lang
 	return 0;
 }
 
+BELLE_SIP_INSTANCIATE_VPTR(
+	LinphonePresenceNote,
+	belle_sip_object_t, // parent
+	presence_note_uninit, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE // unown
+)
 
 
 /*****************************************************************************
@@ -1062,17 +1109,13 @@ int linphone_presence_note_set_lang(LinphonePresenceNote *note, const char *lang
  ****************************************************************************/
 
 LinphonePresenceModel * linphone_presence_model_ref(LinphonePresenceModel *model) {
-	model->refcnt++;
-	return model;
+	return (LinphonePresenceModel *)belle_sip_object_ref(model);
 }
 
 LinphonePresenceModel * linphone_presence_model_unref(LinphonePresenceModel *model) {
-	model->refcnt--;
-	if (model->refcnt == 0) {
-		presence_model_delete(model);
-		return NULL;
-	}
-	return model;
+	LinphonePresenceModel *returned_model = model->base.ref > 1 ? model : NULL;
+	belle_sip_object_unref(model);
+	return returned_model;
 }
 
 void linphone_presence_model_set_user_data(LinphonePresenceModel *model, void *user_data) {
@@ -1084,17 +1127,13 @@ void * linphone_presence_model_get_user_data(const LinphonePresenceModel *model)
 }
 
 LinphonePresenceService * linphone_presence_service_ref(LinphonePresenceService *service) {
-	service->refcnt++;
-	return service;
+	return (LinphonePresenceService *)belle_sip_object_ref(service);
 }
 
 LinphonePresenceService * linphone_presence_service_unref(LinphonePresenceService *service) {
-	service->refcnt--;
-	if (service->refcnt == 0) {
-		presence_service_delete(service);
-		return NULL;
-	}
-	return service;
+	LinphonePresenceService *returned_service = service->base.ref > 1 ? service : NULL;
+	belle_sip_object_unref(service);
+	return returned_service;
 }
 
 void linphone_presence_service_set_user_data(LinphonePresenceService *service, void *user_data) {
@@ -1106,17 +1145,13 @@ void * linphone_presence_service_get_user_data(const LinphonePresenceService *se
 }
 
 LinphonePresencePerson * linphone_presence_person_ref(LinphonePresencePerson *person) {
-	person->refcnt++;
-	return person;
+	return (LinphonePresencePerson *)belle_sip_object_ref(person);
 }
 
 LinphonePresencePerson * linphone_presence_person_unref(LinphonePresencePerson *person) {
-	person->refcnt--;
-	if (person->refcnt == 0) {
-		presence_person_delete(person);
-		return NULL;
-	}
-	return person;
+	LinphonePresencePerson *returned_person = person->base.ref > 1 ? person : NULL;
+	belle_sip_object_unref(person);
+	return returned_person;
 }
 
 void linphone_presence_person_set_user_data(LinphonePresencePerson *person, void *user_data) {
@@ -1128,17 +1163,13 @@ void * linphone_presence_person_get_user_data(const LinphonePresencePerson *pers
 }
 
 LinphonePresenceActivity * linphone_presence_activity_ref(LinphonePresenceActivity *activity) {
-	activity->refcnt++;
-	return activity;
+	return (LinphonePresenceActivity *)belle_sip_object_ref(activity);
 }
 
 LinphonePresenceActivity * linphone_presence_activity_unref(LinphonePresenceActivity *activity) {
-	activity->refcnt--;
-	if (activity->refcnt == 0) {
-		presence_activity_delete(activity);
-		return NULL;
-	}
-	return activity;
+	LinphonePresenceActivity *returned_activity = activity->base.ref > 1 ? activity : NULL;
+	belle_sip_object_unref(activity);
+	return returned_activity;
 }
 
 void linphone_presence_activity_set_user_data(LinphonePresenceActivity *activity, void *user_data) {
@@ -1150,17 +1181,13 @@ void * linphone_presence_activity_get_user_data(const LinphonePresenceActivity *
 }
 
 LinphonePresenceNote * linphone_presence_note_ref(LinphonePresenceNote *note) {
-	note->refcnt++;
-	return note;
+	return (LinphonePresenceNote *)belle_sip_object_ref(note);
 }
 
 LinphonePresenceNote * linphone_presence_note_unref(LinphonePresenceNote *note) {
-	note->refcnt--;
-	if (note->refcnt == 0) {
-		presence_note_delete(note);
-		return NULL;
-	}
-	return note;
+	LinphonePresenceNote *returned_note = note->base.ref > 1 ? note : NULL;
+	belle_sip_object_unref(note);
+	return returned_note;
 }
 
 void linphone_presence_note_set_user_data(LinphonePresenceNote *note, void *user_data) {

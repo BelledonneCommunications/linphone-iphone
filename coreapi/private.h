@@ -1595,7 +1595,12 @@ BELLE_SIP_TYPE_ID(LinphoneCoreCbs),
 BELLE_SIP_TYPE_ID(LinphoneFactory),
 BELLE_SIP_TYPE_ID(LinphoneAuthInfo),
 BELLE_SIP_TYPE_ID(LinphoneVcard),
-BELLE_SIP_TYPE_ID(LinphoneConfig)
+BELLE_SIP_TYPE_ID(LinphoneConfig),
+BELLE_SIP_TYPE_ID(LinphonePresenceModel),
+BELLE_SIP_TYPE_ID(LinphonePresenceService),
+BELLE_SIP_TYPE_ID(LinphonePresencePerson),
+BELLE_SIP_TYPE_ID(LinphonePresenceActivity),
+BELLE_SIP_TYPE_ID(LinphonePresenceNote)
 BELLE_SIP_DECLARE_TYPES_END
 
 
