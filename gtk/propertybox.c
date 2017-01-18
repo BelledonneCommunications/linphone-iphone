@@ -464,8 +464,14 @@ void linphone_gtk_alsa_special_device_changed(GtkWidget *w){
 }
 
 void linphone_gtk_cam_changed(GtkWidget *w){
+	LinphoneCall *call;
+	LinphoneCore *lc = linphone_gtk_get_core();
 	gchar *sel=gtk_combo_box_get_active_text(GTK_COMBO_BOX(w));
 	linphone_core_set_video_device(linphone_gtk_get_core(),sel);
+	if ((call = linphone_core_get_current_call(lc)) != NULL) {
+		//linphone_core_update_call(lc, call, call->params);
+		video_stream_change_camera(call->videostream, lc->video_conf.device);
+	}
 	g_free(sel);
 }
 
@@ -1854,7 +1860,7 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	linphone_tunnel_config_set_host(config, host);
 	linphone_tunnel_config_set_port(config, port);
 	linphone_tunnel_add_server(tunnel, config);
-	
+
 	if (enabled){
 		mode = LinphoneTunnelModeEnable;
 	}else if (autodetect){
