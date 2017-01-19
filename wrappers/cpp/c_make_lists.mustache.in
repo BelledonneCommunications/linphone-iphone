@@ -26,6 +26,7 @@ target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphon
 target_include_directories(linphone++
 	PUBLIC include
 	PRIVATE @PROJECT_SOURCE_DIR@/include
+	PRIVATE @BELLESIP_INCLUDE_DIRS@
 )
 set_target_properties(linphone++
 	PROPERTIES SOVERSION @LINPHONE_SO_VERSION@
