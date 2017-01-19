@@ -361,6 +361,7 @@ static LinphoneFriendList * linphone_friend_list_new(void) {
 	LinphoneFriendList *list = belle_sip_object_new(LinphoneFriendList);
 	list->cbs = linphone_friend_list_cbs_new();
 	list->enable_subscriptions = TRUE;
+	list->friends_map = bctbx_mmap_cchar_new();
 	return list;
 }
 
@@ -532,6 +533,8 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 	lf->friend_list = list;
 	lf->lc = list->lc;
 	list->friends = bctbx_list_append(list->friends, linphone_friend_ref(lf));
+	bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(lf->refkey, linphone_friend_ref(lf));
+	bctbx_map_cchar_insert_and_delete(list->friends_map, pair);
 	if (synchronize) {
 		list->dirty_friends_to_update = bctbx_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
 	}
@@ -574,6 +577,8 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 	lf->friend_list = NULL;
 	linphone_friend_unref(lf);
 	list->friends = bctbx_list_erase_link(list->friends, elem);
+	bctbx_iterator_t * it = bctbx_map_cchar_find_key(list->friends_map, lf->refkey);
+	bctbx_map_cchar_erase(list->friends_map, it);
 	return LinphoneFriendListOK;
 }
 
@@ -704,14 +709,12 @@ LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendLis
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
-	const bctbx_list_t *elem;
-	if (ref_key == NULL) return NULL;
-	if (list == NULL) return NULL;
-	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
-		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
-		if ((lf->refkey != NULL) && (strcmp(lf->refkey, ref_key) == 0)) return lf;
+	bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map, (void*)ref_key);
+	if (it == bctbx_map_cchar_end(list->friends_map)) {
+		return NULL;
 	}
-	return NULL;
+	bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
+	return (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op) {

@@ -793,6 +793,28 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void find_friend_by_ref_key_test(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(manager->lc, "sip:toto@sip.linphone.org");
+	LinphoneFriend *lf2 = NULL;
+	const LinphoneAddress *addr = NULL;
+	linphone_friend_set_ref_key(lf, "totorefkey");
+	linphone_friend_list_add_friend(lfl, lf);
+	lf2 = linphone_friend_list_find_friend_by_ref_key(lfl, "totorefkey");
+	BC_ASSERT_PTR_NOT_NULL(lf2);
+	if (!lf2) {
+		goto end;
+	}
+	addr = linphone_friend_get_address(lf2);
+	BC_ASSERT_STRING_EQUAL(linphone_address_as_string_uri_only(addr), "sip:toto@sip.linphone.org");
+	BC_ASSERT_EQUAL(lf2, lf, void*, "%p");
+	linphone_friend_unref(lf2);
+end:
+	linphone_friend_unref(lf);
+	linphone_core_manager_destroy(manager);
+}
+
 test_t vcard_tests[] = {
 	TEST_NO_TAG("Import / Export friends from vCards", linphone_vcard_import_export_friends_test),
 	TEST_NO_TAG("Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test),
@@ -803,6 +825,7 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("Friends storage migration from rc to db", friends_migration),
 	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 #endif
+<<<<<<< Updated upstream
 	TEST_ONE_TAG("CardDAV clean", carddav_clean, "CardDAV"), // This is to ensure the content of the test addressbook is in the correct state for the following tests
 	TEST_ONE_TAG("CardDAV synchronization", carddav_sync, "CardDAV"),
 	TEST_ONE_TAG("CardDAV synchronization 2", carddav_sync_2, "CardDAV"),
@@ -811,6 +834,17 @@ test_t vcard_tests[] = {
 	TEST_ONE_TAG("CardDAV integration", carddav_integration, "CardDAV"),
 	TEST_ONE_TAG("CardDAV multiple synchronizations", carddav_multiple_sync, "CardDAV"),
 	TEST_ONE_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync, "CardDAV")
+=======
+	TEST_NO_TAG("CardDAV clean", carddav_clean), // This is to ensure the content of the test addressbook is in the correct state for the following tests
+	TEST_NO_TAG("CardDAV synchronization", carddav_sync),
+	TEST_NO_TAG("CardDAV synchronization 2", carddav_sync_2),
+	TEST_NO_TAG("CardDAV synchronization 3", carddav_sync_3),
+	TEST_NO_TAG("CardDAV synchronization 4", carddav_sync_4),
+	TEST_NO_TAG("CardDAV integration", carddav_integration),
+	TEST_NO_TAG("CardDAV multiple synchronizations", carddav_multiple_sync),
+	TEST_NO_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync),
+	TEST_NO_TAG("Find friend by ref key", find_friend_by_ref_key_test)
+>>>>>>> Stashed changes
 };
 
 test_suite_t vcard_test_suite = {

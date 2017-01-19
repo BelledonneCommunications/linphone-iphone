@@ -39,6 +39,7 @@
 #include "carddav.h"
 
 #include "bctoolbox/port.h"
+#include "bctoolbox/map.h"
 #include "bctoolbox/vfs.h"
 #include "belle-sip/belle-sip.h" /*we need this include for all http operations*/
 
@@ -779,6 +780,7 @@ struct _LinphoneFriendList {
 	char *rls_uri; /*this field is take in sync with rls_addr*/
 	LinphoneAddress *rls_addr;
 	MSList *friends;
+	bctbx_map_t *friends_map;
 	unsigned char *content_digest;
 	int expected_notification_version;
 	unsigned int storage_id;
