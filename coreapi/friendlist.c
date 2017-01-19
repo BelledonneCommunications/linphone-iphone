@@ -533,8 +533,10 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 	lf->friend_list = list;
 	lf->lc = list->lc;
 	list->friends = bctbx_list_append(list->friends, linphone_friend_ref(lf));
-	bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(lf->refkey, linphone_friend_ref(lf));
-	bctbx_map_cchar_insert_and_delete(list->friends_map, pair);
+	if (lf->refkey) {
+		bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(lf->refkey, linphone_friend_ref(lf));
+		bctbx_map_cchar_insert_and_delete(list->friends_map, pair);
+	}
 	if (synchronize) {
 		list->dirty_friends_to_update = bctbx_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
 	}
