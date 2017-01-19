@@ -710,7 +710,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendLis
 
 LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
 	bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map, (void*)ref_key);
-	if (it == bctbx_map_cchar_end(list->friends_map)) {
+	if (bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))) {
 		return NULL;
 	}
 	bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);

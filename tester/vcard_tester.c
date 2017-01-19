@@ -814,6 +814,19 @@ end:
 	linphone_friend_unref(lf);
 	linphone_core_manager_destroy(manager);
 }
+static void find_friend_by_ref_key_empty_list_test(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
+	LinphoneFriend *lf2;
+	lf2 = linphone_friend_list_find_friend_by_ref_key(lfl, "totorefkey");
+	BC_ASSERT_PTR_NULL(lf2);
+	if (lf2) {
+		linphone_friend_unref(lf2);
+		goto end;
+	}
+end:
+	linphone_core_manager_destroy(manager);
+}
 
 test_t vcard_tests[] = {
 	TEST_NO_TAG("Import / Export friends from vCards", linphone_vcard_import_export_friends_test),
@@ -833,7 +846,8 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("CardDAV integration", carddav_integration),
 	TEST_NO_TAG("CardDAV multiple synchronizations", carddav_multiple_sync),
 	TEST_NO_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync),
-	TEST_NO_TAG("Find friend by ref key", find_friend_by_ref_key_test)
+	TEST_NO_TAG("Find friend by ref key", find_friend_by_ref_key_test),
+	TEST_NO_TAG("Find friend by ref key in empty list", find_friend_by_ref_key_empty_list_test)
 
 };
 
