@@ -39,7 +39,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #undef alloca
 #endif
 #include "linphone/core.h"
-#include "private.h"
 
 #include "linphone/ldapprovider.h"
 
