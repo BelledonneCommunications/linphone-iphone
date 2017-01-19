@@ -672,16 +672,15 @@ LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFrien
 	const bctbx_list_t *elem;
 	const char *param = linphone_address_get_uri_param(address, "user");
 	bool_t find_phone_number = (param && (strcmp(param, "phone") == 0));
+	char *uri = linphone_address_as_string_uri_only(address);
 
 	for (elem = list->friends; (elem != NULL) && (result == NULL); elem = bctbx_list_next(elem)) {
 		bctbx_list_t *iterator;
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
 		if (find_phone_number == TRUE) {
-			char *uri = linphone_address_as_string_uri_only(address);
 			const char *phone_number = linphone_friend_sip_uri_to_phone_number(lf, uri);
 			bctbx_list_t *phone_numbers = linphone_friend_get_phone_numbers(lf);
 			iterator = phone_numbers;
-			ms_free(uri);
 			if (!phone_number) continue;
 			while (iterator && (result == NULL)) {
 				const char *number = (const char *)bctbx_list_get_data(iterator);
@@ -697,7 +696,9 @@ LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFrien
 				iterator = bctbx_list_next(iterator);
 			}
 		}
+		if (result) break;
 	}
+	ms_free(uri);
 	return result;
 }
 
