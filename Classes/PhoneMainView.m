@@ -400,6 +400,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallEarlyUpdatedByRemote:
 		case LinphoneCallEarlyUpdating:
 		case LinphoneCallIdle:
+			break;
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingProgress: {
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call &&
