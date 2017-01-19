@@ -825,16 +825,6 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("Friends storage migration from rc to db", friends_migration),
 	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 #endif
-<<<<<<< Updated upstream
-	TEST_ONE_TAG("CardDAV clean", carddav_clean, "CardDAV"), // This is to ensure the content of the test addressbook is in the correct state for the following tests
-	TEST_ONE_TAG("CardDAV synchronization", carddav_sync, "CardDAV"),
-	TEST_ONE_TAG("CardDAV synchronization 2", carddav_sync_2, "CardDAV"),
-	TEST_ONE_TAG("CardDAV synchronization 3", carddav_sync_3, "CardDAV"),
-	TEST_ONE_TAG("CardDAV synchronization 4", carddav_sync_4, "CardDAV"),
-	TEST_ONE_TAG("CardDAV integration", carddav_integration, "CardDAV"),
-	TEST_ONE_TAG("CardDAV multiple synchronizations", carddav_multiple_sync, "CardDAV"),
-	TEST_ONE_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync, "CardDAV")
-=======
 	TEST_NO_TAG("CardDAV clean", carddav_clean), // This is to ensure the content of the test addressbook is in the correct state for the following tests
 	TEST_NO_TAG("CardDAV synchronization", carddav_sync),
 	TEST_NO_TAG("CardDAV synchronization 2", carddav_sync_2),
@@ -844,7 +834,7 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("CardDAV multiple synchronizations", carddav_multiple_sync),
 	TEST_NO_TAG("CardDAV client to server and server to client sync", carddav_server_to_client_and_client_to_sever_sync),
 	TEST_NO_TAG("Find friend by ref key", find_friend_by_ref_key_test)
->>>>>>> Stashed changes
+
 };
 
 test_suite_t vcard_test_suite = {
