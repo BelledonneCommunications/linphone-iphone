@@ -710,8 +710,16 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else if (strcmp("CANCEL",method)==0) {
-			/*call leg does not exist because 200ok already sent*/
-			belle_sip_server_transaction_send_response(server_transaction,sal_op_create_response_from_request(op,req,481));
+			belle_sip_transaction_t *last_transaction = belle_sip_dialog_get_last_transaction(op->dialog);
+			if (last_transaction == NULL) {
+				/*call leg does not exist because 200ok already sent*/
+				belle_sip_server_transaction_send_response(server_transaction,sal_op_create_response_from_request(op,req,481));
+			} else {
+				/* CANCEL on re-INVITE for which a 200ok has not been sent yet */
+				belle_sip_server_transaction_send_response(server_transaction, sal_op_create_response_from_request(op, req, 200));
+				belle_sip_server_transaction_send_response(BELLE_SIP_SERVER_TRANSACTION(last_transaction),
+					sal_op_create_response_from_request(op, belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_transaction)), 487));
+			}
 		} else if (strcmp("MESSAGE",method)==0){
 			sal_process_incoming_message(op,event);
 		}else{
