@@ -486,7 +486,8 @@ class CParser(object):
 		self.classBl = ['LinphoneImEncryptionEngine',
 					   'LinphoneImEncryptionEngineCbs',
 					   'LinphoneImNotifPolicy',
-					   'LpConfig']
+					   'LpConfig',
+					   'LinphoneCallStats']  # temporarly blacklisted
 		
 		self.cProject = cProject
 		
