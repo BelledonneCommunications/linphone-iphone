@@ -26,7 +26,7 @@
 #include "carddav.h"
 
 #include <time.h>
-
+#include <stdio.h>
 #define CARDDAV_SERVER "http://dav.linphone.org/card.php/addressbooks/tester/default"
 #define CARDDAV_SYNC_TIMEOUT 15000
 
