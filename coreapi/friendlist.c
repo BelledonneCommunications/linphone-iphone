@@ -379,6 +379,7 @@ static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->cbs) linphone_friend_list_cbs_unref(list->cbs);
 	if (list->dirty_friends_to_update) list->dirty_friends_to_update = bctbx_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 	if (list->friends) list->friends = bctbx_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
+	if (list->friends_map) bctbx_mmap_cchar_delete(list->friends_map);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriendList);
@@ -581,14 +582,14 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 	if (!list->lc->friends_db_file) {
 		linphone_core_write_friends_config(list->lc);
 	}
-
-	lf->friend_list = NULL;
-	linphone_friend_unref(lf);
 	list->friends = bctbx_list_erase_link(list->friends, elem);
 	if(lf->refkey) {
 		bctbx_iterator_t * it = bctbx_map_cchar_find_key(list->friends_map, lf->refkey);
 		bctbx_map_cchar_erase(list->friends_map, it);
 	}
+
+	lf->friend_list = NULL;
+	linphone_friend_unref(lf);
 	return LinphoneFriendListOK;
 }
 
