@@ -52,7 +52,7 @@ typedef struct _LinphoneCallStats LinphoneCallStats;
  * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
 **/
 struct _LinphoneCallStats {
-	int		type; /**< Can be either LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO*/
+	LinphoneStreamType		type; /**< Type of the stream which the stats refer to */
 	jitter_stats_t	jitter_stats; /**<jitter buffer statistics, see oRTP documentation for details */
 	mblk_t*		received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
