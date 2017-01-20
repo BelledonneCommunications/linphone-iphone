@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package org.linphone.core;
 
 import java.io.Serializable;
-import org.linphone.LinphoneContact;
 
 public class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	protected final long nativePtr;
@@ -42,12 +41,12 @@ public class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native void setRefKey(long nativePtr, String key);
 	private native String getRefKey(long nativePtr);
 	
-	private LinphoneContact contact;
-	public LinphoneContact getLinphoneContact() {
-		return contact;
+	private Object userdData;
+	public Object getUserData() {
+		return userdData;
 	}
-	public void setLinphoneContact(LinphoneContact c) {
-		contact = c;
+	public void setUserData(Object ud) {
+		userdData = ud;
 	}
 
 	protected LinphoneFriendImpl()  {
