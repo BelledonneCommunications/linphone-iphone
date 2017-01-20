@@ -13,8 +13,13 @@ set(SOURCES
 )
 set(GENERATED_HEADERS
 	{{#classes}}
-	${CMAKE_CURRENT_SOURCE_DIR}/include/{{{header}}}
+	include/{{{header}}}
 	{{/classes}}
+	{{#interfaces}}
+	include/{{{header}}}
+	{{/interfaces}}
+	include/linphone.hh
+	include/enums.hh
 )
 set(HEADERS
 	${GENERATED_HEADERS}
