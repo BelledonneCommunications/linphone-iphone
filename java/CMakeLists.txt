@@ -58,6 +58,6 @@ if(ANDROID)
 
 	# HACK: accessing mediastreamer2 source directory from here is just wrong!
 	add_custom_target(linphonecore-jni-header
-		COMMAND ${Java_JAVAH_EXECUTABLE} -o "${CMAKE_BINARY_DIR}/linphonecore_jni.h" -classpath "${CMAKE_CURRENT_SOURCE_DIR}/impl:${CMAKE_CURRENT_SOURCE_DIR}/common:${CMAKE_CURRENT_SOURCE_DIR}/../mediastreamer2/java/src" ${JNI_CLASSES}
+		COMMAND ${Java_JAVAH_EXECUTABLE} -o "${CMAKE_CURRENT_BINARY_DIR}/linphonecore_jni.h" -classpath "${CMAKE_CURRENT_SOURCE_DIR}/impl:${CMAKE_CURRENT_SOURCE_DIR}/common:${CMAKE_CURRENT_SOURCE_DIR}/../mediastreamer2/java/src" ${JNI_CLASSES}
 	)
 endif()

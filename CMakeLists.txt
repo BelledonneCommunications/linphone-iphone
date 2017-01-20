@@ -207,6 +207,9 @@ include_directories(
 	${MEDIASTREAMER2_INCLUDE_DIRS}
 	${BCTOOLBOX_CORE_INCLUDE_DIRS}
 )
+if(ANDROID)
+	include_directories(${CMAKE_CURRENT_BINARY_DIR}/java)
+endif()
 if(ENABLE_TUNNEL)
 	include_directories(${TUNNEL_INCLUDE_DIRS})
 endif()

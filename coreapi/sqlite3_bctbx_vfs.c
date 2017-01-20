@@ -259,7 +259,7 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	}
 	bctbx_free(wideFilename);
 	return convertedFilename;
-#elif defined(__QNXNTO__)
+#elif defined(__QNXNTO__) || (defined(ANDROID) && defined(__LP64__))
 	return bctbx_strdup(fName);
 #else
 	#define MAX_PATH_SIZE 1024
