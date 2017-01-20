@@ -808,7 +808,6 @@ static void find_friend_by_ref_key_test(void) {
 	addr = linphone_friend_get_address(lf2);
 	BC_ASSERT_STRING_EQUAL(linphone_address_as_string_uri_only(addr), "sip:toto@sip.linphone.org");
 	BC_ASSERT_EQUAL(lf2, lf, void*, "%p");
-	linphone_friend_unref(lf2);
 end:
 	linphone_friend_unref(lf);
 	linphone_core_manager_destroy(manager);
@@ -820,7 +819,6 @@ static void find_friend_by_ref_key_empty_list_test(void) {
 	lf2 = linphone_friend_list_find_friend_by_ref_key(lfl, "totorefkey");
 	BC_ASSERT_PTR_NULL(lf2);
 	if (lf2) {
-		linphone_friend_unref(lf2);
 		goto end;
 	}
 end:
