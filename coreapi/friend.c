@@ -1689,9 +1689,7 @@ LinphoneSubscriptionState linphone_friend_get_subscription_state(const LinphoneF
 
 const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const char *phone_number) {
 	LinphoneFriendPhoneNumberSipUri * lfpnsu;
-	LinphoneAddress *addr;
 	char *normalized_number;
-	char *uri;
 	char *full_uri;
 	LinphoneProxyConfig *proxy_config;
 	bctbx_list_t *iterator = lf->phone_number_sip_uri_map;
@@ -1717,14 +1715,8 @@ const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const c
 	if (strstr(phone_number, "tel:") == phone_number) phone_number += 4; /* Remove the "tel:" prefix if it is present. */
 	normalized_number = linphone_proxy_config_normalize_phone_number(proxy_config, phone_number);
 	if (!normalized_number) return NULL;
-	uri = ms_strdup_printf("sip:%s@%s", normalized_number, linphone_proxy_config_get_domain(proxy_config));
+	full_uri = ms_strdup_printf("sip:%s@%s;user=phone", normalized_number, linphone_proxy_config_get_domain(proxy_config));
 	ms_free(normalized_number);
-	addr = linphone_core_create_address(linphone_friend_get_core(lf), uri);
-	ms_free(uri);
-	if (!addr) return NULL;
-	linphone_address_set_uri_param(addr, "user", "phone");
-	full_uri = linphone_address_as_string_uri_only(addr);
-	linphone_address_unref(addr);
 	lfpnsu = ms_new0(LinphoneFriendPhoneNumberSipUri, 1);
 	lfpnsu->number = ms_strdup(phone_number);
 	lfpnsu->uri = full_uri;
