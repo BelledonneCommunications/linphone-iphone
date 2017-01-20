@@ -499,19 +499,11 @@ static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendL
 		return status;
 	}
 	addr = linphone_friend_get_address(lf);
-	bool_t present= FALSE;
+	bool_t present = FALSE;
 	if (lf->refkey) {
-		if(linphone_friend_list_find_friend_by_ref_key(list, lf->refkey)) {
-			present = TRUE;
-		} else {
-			present = FALSE;
-		}
+		present = linphone_friend_list_find_friend_by_ref_key(list, lf->refkey) != NULL;
 	} else {
-		if (bctbx_list_find(list->friends, lf) != NULL) {
-			present = TRUE;
-		} else {
-			present = FALSE;
-		}
+		present = bctbx_list_find(list->friends, lf) != NULL;
 	}
 	if (present) {
 		char *tmp = NULL;
