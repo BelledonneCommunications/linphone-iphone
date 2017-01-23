@@ -408,17 +408,20 @@ static RootViewManager *rootViewManagerInstance = nil;
 				// Create CallKit Call
 				NSString *callId =
 					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-				NSUUID *uuid = [NSUUID UUID];
-				[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
-				[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
-				NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
-				CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
-				CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:uuid handle:handle];
-				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																			  completion:^(NSError *err){
-																			  }];
-			}
+                NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:callId];
+                if(!uuid) {
+                    uuid = [NSUUID UUID];
+                    [LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
+                    [LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
+                    NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
+                    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
+                    CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:uuid handle:handle];
+                    CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
+                    [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
+                                                                                  completion:^(NSError *err){
+                                                                                  }];
+                }
+            }
 		}
 		case LinphoneCallOutgoingRinging: {
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
