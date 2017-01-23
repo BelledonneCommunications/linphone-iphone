@@ -89,8 +89,16 @@ class HandWrittenProperty(HandWrittenCode):
 		self.setter_cfunction = setter_cfunction
 
 
+class UnknownTypeException(Exception):
+	def __init__(self, typename):
+		self.typename = typename
+	def __str__(self):
+		return "Unknown type " + self.typename
+
 class ArgumentType:
 	def __init__(self, basic_type, complete_type, contained_type, linphone_module):
+		if not basic_type in linphone_module.known_types:
+			raise UnknownTypeException(basic_type)
 		self.basic_type = basic_type
 		self.complete_type = complete_type
 		self.contained_type = contained_type
@@ -1032,6 +1040,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 
 class LinphoneModule(object):
 	def __init__(self, tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_codes):
+		self.known_types = ['char', 'int', 'int8_t', 'int16_t', 'int32_t', 'int64_t', 'uint8_t', 'uint16_t', 'uint32_t', 'uint64_t', 'bool_t', 'float', 'double', 'size_t', 'time_t', 'MSList', 'bctbx_list_t', 'MSVideoSize', 'LCSipTransports', 'PayloadType']
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
 		self.bctbxlist_types = Set([])
@@ -1044,7 +1053,8 @@ class LinphoneModule(object):
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
 			e = {}
-			e['enum_name'] = strip_leading_linphone(xml_enum.get('name'))
+			e['enum_cname'] = xml_enum.get('name')
+			e['enum_name'] = strip_leading_linphone(e['enum_cname'])
 			e['enum_doc'] = self.__format_doc_content(xml_enum.find('briefdescription'), xml_enum.find('detaileddescription'))
 			e['enum_doc'] = self.__replace_doc_special_chars(e['enum_doc'])
 			e['enum_doc'] += """
@@ -1076,6 +1086,7 @@ class LinphoneModule(object):
 			e['enum_doc'] = self.__replace_doc_special_chars(e['enum_doc'])
 			self.enums.append(e)
 			self.enum_names.append(e['enum_name'])
+			self.known_types.append(e['enum_cname'])
 		self.core_events = []
 		self.classes = []
 		xml_classes = tree.findall("./classes/class")
@@ -1109,6 +1120,7 @@ class LinphoneModule(object):
 				ev['event_name'] = compute_event_name(ev['event_cname'], c['class_name'])
 				ev['event_doc'] = self.__format_doc(xml_event.find('briefdescription'), xml_event.find('detaileddescription'))
 				c['class_events'].append(ev)
+				self.known_types.append(ev['event_cname'])
 				c['class_object_members'].append(ev['event_name'])
 				c['class_object_members_code'] += "\tPyObject *" + ev['event_name'] + ";\n"
 			for hand_written_code in hand_written_codes:
@@ -1203,6 +1215,7 @@ class LinphoneModule(object):
 					p['setter_reference'] = "NULL"
 				c['class_properties'].append(p)
 			self.classes.append(c)
+			self.known_types.append(c['class_cname'])
 		# Format events definitions
 		for c in self.classes:
 			for ev in c['class_events']:
@@ -1212,42 +1225,71 @@ class LinphoneModule(object):
 			xml_new_method = c['class_xml_node'].find("./classmethods/classmethod[@name='" + c['class_c_function_prefix'] + "new']")
 			try:
 				c['new_body'] = NewMethodDefinition(self, c, xml_new_method).format()
+			except UnknownTypeException, e:
+				print(e)
+				c['blacklisted'] = True
 			except Exception, e:
 				e.args += (c['class_name'], 'new_body')
 				raise
 			try:
 				c['init_body'] = InitMethodDefinition(self, c, xml_new_method).format()
+			except UnknownTypeException, e:
+				print(e)
+				c['blacklisted'] = True
 			except Exception, e:
 				e.args += (c['class_name'], 'init_body')
 				raise
 			try:
 				c['from_native_pointer_body'] = FromNativePointerMethodDefinition(self, c).format()
+			except UnknownTypeException, e:
+				print(e)
+				c['blacklisted'] = True
 			except Exception, e:
 				e.args += (c['class_name'], 'from_native_pointer_body')
 				raise
-			try:
-				for m in c['class_type_methods']:
+			for m in c['class_type_methods']:
+				try:
 					m['method_body'] = MethodDefinition(self, c, m['method_name'], m['method_xml_node']).format()
 					m['method_doc'] = self.__format_method_doc(m['method_xml_node'])
-				for m in c['class_instance_methods']:
+				except UnknownTypeException, e:
+					print(e)
+					m['blacklisted'] = True
+				except Exception, e:
+					e.args += (c['class_name'], m['method_name'])
+					raise
+			for m in c['class_instance_methods']:
+				try:
 					m['method_body'] = MethodDefinition(self, c, m['method_name'], m['method_xml_node']).format()
 					m['method_doc'] = self.__format_method_doc(m['method_xml_node'])
-			except Exception, e:
-				e.args += (c['class_name'], m['method_name'])
-				raise
-			try:
-				for p in c['class_properties']:
-					p['property_doc'] = ''
-					if p.has_key('setter_xml_node'):
+				except UnknownTypeException, e:
+					print(e)
+					m['blacklisted'] = True
+				except Exception, e:
+					e.args += (c['class_name'], m['method_name'])
+					raise
+			for p in c['class_properties']:
+				p['property_doc'] = ''
+				if p.has_key('setter_xml_node'):
+					try:
 						p['setter_body'] = SetterMethodDefinition(self, c, p['property_name'], p['setter_xml_node']).format()
 						p['property_doc'] = self.__format_setter_doc(p['setter_xml_node'])
-					if p.has_key('getter_xml_node'):
+					except UnknownTypeException, e:
+						print(e)
+						p['blacklisted'] = True
+					except Exception, e:
+						e.args += (c['class_name'], p['property_name'])
+						raise
+				if p.has_key('getter_xml_node'):
+					try:
 						p['getter_body'] = GetterMethodDefinition(self, c, p['property_name'], p['getter_xml_node']).format()
 						if p['property_doc'] == '':
 							p['property_doc'] = self.__format_getter_doc(p['getter_xml_node'])
-			except Exception, e:
-				e.args += (c['class_name'], p['property_name'])
-				raise
+					except UnknownTypeException, e:
+						print(e)
+						p['blacklisted'] = True
+					except Exception, e:
+						e.args += (c['class_name'], p['property_name'])
+						raise
 			if not 'class_has_hand_written_dealloc' in c:
 				try:
 					if c['class_refcountable']:
@@ -1258,9 +1300,18 @@ class LinphoneModule(object):
 						c['dealloc_definition'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
 					else:
 						c['dealloc_definition'] = DeallocMethodDefinition(self, c).format()
+				except UnknownTypeException, e:
+					print(e)
+					c['blacklisted'] = True
 				except Exception, e:
 					e.args += (c['class_name'], 'dealloc_body')
 					raise
+		# Remove blacklisted classes and methods
+		self.classes = [c for c in self.classes if not c.has_key('blacklisted')]
+		for c in self.classes:
+			c['class_type_methods'] = [m for m in c['class_type_methods'] if not m.has_key('blacklisted')]
+			c['class_instance_methods'] = [m for m in c['class_instance_methods'] if not m.has_key('blacklisted')]
+			c['class_properties'] = [m for m in c['class_properties'] if not m.has_key('blacklisted')]
 		# Convert bctbxlist_types to a list of dictionaries for the template
 		d = []
 		for bctbxlist_type in self.bctbxlist_types:

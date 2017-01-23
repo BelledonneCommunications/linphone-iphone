@@ -41,6 +41,7 @@ set(HEADER_FILES
 	factory.h
 	friend.h
 	friendlist.h
+	im_encryption_engine.h
 	im_notif_policy.h
 	ldapprovider.h
 	lpconfig.h
@@ -50,10 +51,10 @@ set(HEADER_FILES
 	ringtoneplayer.h
 	sipsetup.h
 	tunnel.h
+	types.h
 	vcard.h
-	xmlrpc.h
-	im_encryption_engine.h
 	wrapper_utils.h
+	xmlrpc.h
 
 	# Deprecated header files
 	linphonecore.h

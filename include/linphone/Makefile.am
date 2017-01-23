@@ -18,8 +18,10 @@ linphone_include_HEADERS=\
 	dictionary.h \
 	error_info.h \
 	event.h \
+	factory.h \
 	friend.h \
 	friendlist.h \
+	im_encryption_engine.h \
 	im_notif_policy.h \
 	ldapprovider.h \
 	lpconfig.h \
@@ -29,15 +31,15 @@ linphone_include_HEADERS=\
 	ringtoneplayer.h \
 	sipsetup.h \
 	tunnel.h \
+	types.h \
 	vcard.h \
+	wrapper_utils.h \
 	xmlrpc.h \
-	im_encryption_engine.h\
 	linphonecore.h \
 	linphonecore_utils.h \
 	linphonefriend.h \
 	linphonepresence.h \
 	linphone_proxy_config.h \
-	linphone_tunnel.h \
-	factory.h
+	linphone_tunnel.h
 
 EXTRA_DIST=$(linphone_include_HEADERS)

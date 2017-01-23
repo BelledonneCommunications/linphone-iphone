@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/call_params.h"
 #include "linphone/conference.h"
 #include "linphone/error_info.h"
+#include "linphone/types.h"
 
 /**
  * @addtogroup call_control
@@ -77,16 +78,6 @@ enum _LinphoneAudioRoute {
 **/
 typedef enum _LinphoneAudioRoute LinphoneAudioRoute;
 
-
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
-**/
-struct _LinphoneCall;
-
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
-**/
-typedef struct _LinphoneCall LinphoneCall;
 
 /** Callback prototype */
 typedef void (*LinphoneCallCbFunc)(LinphoneCall *call, void *user_data);
@@ -474,7 +465,7 @@ LINPHONE_PUBLIC bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *ca
  * @param call #LinphoneCall object
  * @return #LinphoneChatRoom where messaging can take place.
  */
-LINPHONE_PUBLIC struct _LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *call);
 
 /**
  * Get the mesured playback volume level (received from remote) in dbm0.

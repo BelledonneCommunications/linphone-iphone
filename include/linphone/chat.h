@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_CHAT_H_
 
 
+#include "linphone/types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,23 +32,6 @@ extern "C" {
  * @addtogroup chatroom
  * @{
  */
-
-/**
- * An object to handle the callbacks for the handling a LinphoneChatMessage objects.
- */
-typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
-
-/**
- * A chat room message to hold content to be sent.
- * <br> Can be created by linphone_chat_room_create_message().
- */
-typedef struct _LinphoneChatMessage LinphoneChatMessage;
-
-/**
- * A chat room is the place where text messages are exchanged.
- * <br> Can be created by linphone_core_create_chat_room().
- */
-typedef struct _LinphoneChatRoom LinphoneChatRoom;
 
 /**
  * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.

@@ -63,6 +63,7 @@ blacklisted_functions = [
 	'linphone_core_get_default_proxy',
 	'linphone_core_get_network_simulator_params',	# missing OrtpNetworkSimulatorParams
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
+	'linphone_core_get_tunnel', # blacklisted LinphoneTunnel
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_new', # replaced by linphone_factory_create_core
