@@ -393,15 +393,12 @@ static void test_presence_list_base(bool_t enable_compression) {
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), marie_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusBusy, int, "%d");
 	if (!BC_ASSERT_TRUE(lf->presence_received)) goto end;
-	if (!BC_ASSERT_TRUE(lf->subscribe_active)) goto end;
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusVacation, int, "%d");
 	if (!BC_ASSERT_TRUE(lf->presence_received)) goto end;
-	if (!BC_ASSERT_TRUE(lf->subscribe_active)) goto end;
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), "sip:michelle@sip.inexistentdomain.com");
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
 	BC_ASSERT_FALSE(lf->presence_received);
-	if (!BC_ASSERT_TRUE(lf->subscribe_active)) goto end;
 
 	lfl = linphone_core_create_friend_list(marie->lc);
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
@@ -419,7 +416,6 @@ static void test_presence_list_base(bool_t enable_compression) {
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(marie->lc), laure_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOnline, int, "%d");
 	if (!BC_ASSERT_TRUE(lf->presence_received)) goto end;
-	if (!BC_ASSERT_TRUE(lf->subscribe_active)) goto end;
 
 	lfl = linphone_core_create_friend_list(pauline->lc);
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
@@ -437,7 +433,6 @@ static void test_presence_list_base(bool_t enable_compression) {
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), marie_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusBusy, int, "%d");
 	if (!BC_ASSERT_TRUE(lf->presence_received)) goto end;
-	if (!BC_ASSERT_TRUE(lf->subscribe_active)) goto end;
 
 	linphone_core_set_presence_model(marie->lc, linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityOnThePhone, NULL));
 
@@ -547,11 +542,9 @@ static void test_presence_list_subscribe_before_publish(void) {
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusVacation, int, "%d");
 	BC_ASSERT_TRUE(lf->presence_received);
-	BC_ASSERT_TRUE(lf->subscribe_active);
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), "sip:michelle@sip.inexistentdomain.com");
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
 	BC_ASSERT_FALSE(lf->presence_received);
-	BC_ASSERT_TRUE(lf->subscribe_active);
 
 	enable_publish(laure, FALSE);
 	enable_publish(pauline, FALSE);
@@ -625,11 +618,9 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusVacation, int, "%d");
 	BC_ASSERT_TRUE(lf->presence_received);
-	BC_ASSERT_TRUE(lf->subscribe_active);
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), "sip:michelle@sip.inexistentdomain.com");
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
 	BC_ASSERT_FALSE(lf->presence_received);
-	BC_ASSERT_TRUE(lf->subscribe_active);
 
 	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityVacation, 2, 6000));
 	if (io_error) {
@@ -996,6 +987,28 @@ static void long_term_presence_with_crossed_references(void) {
 	}else ms_warning("Test skipped, no vcard support");
 }
 
+static void long_term_presence_list_for_many_friends(void) {
+	if (linphone_core_vcard_supported()) {
+		LinphoneFriendList *friends;
+		char *import_filepath = bc_tester_res("vcards/presence.vcf");
+		LinphoneCoreManager *pauline;
+		
+		pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+		friends = linphone_core_create_friend_list(pauline->lc);
+		linphone_friend_list_set_rls_uri(friends, "sip:rls@sip.example.org");
+		linphone_friend_list_import_friends_from_vcard4_file(friends, import_filepath);
+		linphone_core_remove_friend_list(pauline->lc, linphone_core_get_default_friend_list(pauline->lc));
+		linphone_core_add_friend_list(pauline->lc, friends);
+		linphone_core_refresh_registers(pauline->lc);
+		linphone_friend_list_unref(friends);
+
+		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_NotifyPresenceReceived,1));
+
+		linphone_core_manager_destroy(pauline);
+	} else ms_warning("Test skipped, no vcard support");
+}
+
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
@@ -1010,6 +1023,7 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence phone alias",long_term_presence_phone_alias, "longterm"),
 	TEST_ONE_TAG("Long term presence phone alias 2",long_term_presence_phone_alias2, "longterm"),
 	TEST_ONE_TAG("Long term presence list",long_term_presence_list, "longterm"),
+	TEST_ONE_TAG("Long term presence list for many friends",long_term_presence_list_for_many_friends, "longterm"),
 	TEST_ONE_TAG("Long term presence with +164 phone, without sip",long_term_presence_with_e164_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with phone, without sip",long_term_presence_with_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with cross references", long_term_presence_with_crossed_references,"longtern"),
