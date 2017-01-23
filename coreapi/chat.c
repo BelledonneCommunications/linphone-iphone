@@ -554,7 +554,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 		}
 	}
 	
-	if (retval < 0 && strcmp("text/plain", msg->content_type) != 0 && strcmp("message/external-body", msg->content_type) != 0
+	if (retval <= 0 && strcmp("text/plain", msg->content_type) != 0 && strcmp("message/external-body", msg->content_type) != 0
 			&& strcmp("application/vnd.gsma.rcs-ft-http+xml", msg->content_type) != 0) {
 		retval = 415;
 		ms_error("Unsupported MESSAGE (content-type %s not recognized)", msg->content_type);

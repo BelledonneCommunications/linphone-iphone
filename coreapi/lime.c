@@ -952,6 +952,9 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 				} else if (strcmp(msg->content_type, "application/im-iscomposing+xml") == 0) {
 					/* We don't encrypt composing messages */
 					return errcode;
+				} else if (strcmp(msg->content_type, "message/imdn+xml") == 0) {
+					/* We don't encrypt imdn messages */
+					return errcode;
 				}
 			}
 			msg->content_type = ms_strdup(content_type);
