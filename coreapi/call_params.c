@@ -340,11 +340,15 @@ static void _linphone_call_params_uninit(LinphoneCallParams *cp){
 static void _linphone_call_params_clone(LinphoneCallParams *dst, const LinphoneCallParams *src) {
 	unsigned int i;
 	
-	// WARNING: the structure is not copied entirely to avoid the belle_sip_object_t part to be corrupted.
-	memcpy(dst+sizeof(belle_sip_object_t),src+sizeof(belle_sip_object_t),sizeof(LinphoneCallParams)-sizeof(belle_sip_object_t));
+	/*
+	 * Save the belle_sip_object_t part, copy the entire structure and restore the belle_sip_object_t part
+	 */
+	belle_sip_object_t tmp = dst->base;
+	memcpy(dst, src, sizeof(LinphoneCallParams));
+	dst->base = tmp;
 	
 	if (src->record_file) dst->record_file=ms_strdup(src->record_file);
-	if (src->session_name) dst->session_name=ms_strdup(dst->session_name);
+	if (src->session_name) dst->session_name=ms_strdup(src->session_name);
 	/*
 	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
 	 */
