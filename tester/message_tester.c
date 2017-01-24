@@ -842,41 +842,48 @@ static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 	return file;
 }
 
+static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
+	char* filepath = NULL;
+	FILE *ZIDCacheMarieFD = NULL, *ZIDCachePaulineFD = NULL;
+
+	if (!linphone_core_lime_available(marie->lc)) {
+		ms_warning("Lime not available, skiping");
+		return -1;
+	}
+	/* make sure lime is enabled */
+	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
+	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
+	
+	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
+	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
+	ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
+	fprintf(ZIDCacheMarieFD, marie_zid_cache, linphone_address_as_string_uri_only(pauline->identity), linphone_address_as_string_uri_only(pauline->identity));
+	fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
+	fclose(ZIDCacheMarieFD);
+	fclose(ZIDCachePaulineFD);
+
+	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
+	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
+	bc_free(filepath);
+
+	filepath = bc_tester_file("tmpZIDCachePauline.xml");
+	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
+	bc_free(filepath);
+
+	return 0;
+}
+
 static void _is_composing_notification(bool_t lime_enabled) {
 	LinphoneChatRoom* chat_room;
 	int dummy = 0;
-	char* filepath = NULL;
-	FILE *ZIDCacheMarieFD = NULL, *ZIDCachePaulineFD = NULL;
 
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 	if (lime_enabled) {
-		if (!linphone_core_lime_available(marie->lc)) {
-			ms_warning("Lime not available, skiping");
-			goto end;
-		}
-		/* make sure lime is enabled */
-		linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
-		linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
-		
-		/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
-		ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
-		ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
-		fprintf(ZIDCacheMarieFD, marie_zid_cache, linphone_address_as_string_uri_only(pauline->identity), linphone_address_as_string_uri_only(pauline->identity));
-		fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
-		fclose(ZIDCacheMarieFD);
-		fclose(ZIDCachePaulineFD);
-
-		filepath = bc_tester_file("tmpZIDCacheMarie.xml");
-		linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
-		bc_free(filepath);
-
-		filepath = bc_tester_file("tmpZIDCachePauline.xml");
-		linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-		bc_free(filepath);
+		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
 	}
-	
+
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	linphone_core_get_chat_room(marie->lc, pauline->identity); /*make marie create the chatroom with pauline, which is necessary for receiving the is-composing*/
 	linphone_chat_room_compose(chat_room);
@@ -884,12 +891,12 @@ static void _is_composing_notification(bool_t lime_enabled) {
 	linphone_chat_room_send_message(chat_room, "Composing a msg");
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
-	
+
 end:
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	remove("tmpZIDCacheMarie.xml");
+	remove("tmpZIDCachePauline.xml");
 }
 
 static void is_composing_notification(void) {
@@ -900,7 +907,7 @@ static void is_composing_notification_with_lime(void) {
 	_is_composing_notification(TRUE);
 }
 
-static void imdn_notifications(void) {
+static void _imdn_notifications(bool_t with_lime) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneChatRoom *pauline_chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
@@ -909,6 +916,10 @@ static void imdn_notifications(void) {
 	LinphoneChatMessage *received_cm;
 	LinphoneChatMessageCbs *cbs;
 	bctbx_list_t *history;
+
+	if (with_lime) {
+		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
+	}
 
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
@@ -931,11 +942,15 @@ static void imdn_notifications(void) {
 	}
 
 	linphone_chat_message_unref(sent_cm);
+
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	remove("tmpZIDCacheMarie.xml");
+	remove("tmpZIDCachePauline.xml");
 }
 
-static void im_notification_policy(void) {
+static void _im_notification_policy(bool_t with_lime) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneImNotifPolicy *marie_policy = linphone_core_get_im_notif_policy(marie->lc);
@@ -948,6 +963,10 @@ static void im_notification_policy(void) {
 	LinphoneChatMessage *msg4;
 	LinphoneChatMessageCbs *cbs;
 	int dummy = 0;
+
+	if (with_lime) {
+		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
+	}
 
 	linphone_im_notif_policy_enable_all(marie_policy);
 	linphone_im_notif_policy_clear(pauline_policy);
@@ -1015,8 +1034,28 @@ static void im_notification_policy(void) {
 	linphone_chat_message_unref(msg2);
 	linphone_chat_message_unref(msg3);
 	linphone_chat_message_unref(msg4);
+
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	remove("tmpZIDCacheMarie.xml");
+	remove("tmpZIDCachePauline.xml");
+}
+
+static void imdn_notifications(void) {
+	_imdn_notifications(FALSE);
+}
+
+static void im_notification_policy(void) {
+	_im_notification_policy(FALSE);
+}
+
+static void imdn_notifications_with_lime(void) {
+	_imdn_notifications(TRUE);
+}
+
+static void im_notification_policy_with_lime(void) {
+	_im_notification_policy(TRUE);
 }
 
 static void _im_error_delivery_notification(bool_t online) {
@@ -2293,6 +2332,8 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("IsComposing notification lime", is_composing_notification_with_lime, "LIME"),
 	TEST_NO_TAG("IMDN notifications", imdn_notifications),
 	TEST_NO_TAG("IM notification policy", im_notification_policy),
+	TEST_ONE_TAG("IMDN notifications with lime", imdn_notifications_with_lime, "LIME"),
+	TEST_ONE_TAG("IM notification policy with lime", im_notification_policy_with_lime, "LIME"),
 	TEST_ONE_TAG("IM error delivery notification online", im_error_delivery_notification_online, "LIME"),
 	TEST_ONE_TAG("IM error delivery notification offline", im_error_delivery_notification_offline, "LIME"),
 	TEST_ONE_TAG("Lime text message", lime_text_message, "LIME"),
