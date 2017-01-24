@@ -528,7 +528,7 @@ class EnumsHeader(object):
 
 
 class ClassHeader(object):
-	def __init__(self, _class, translator, ignore=[]):
+	def __init__(self, _class, translator):
 		if type(_class) is AbsApi.Class:
 			self._class = translator.translate_class(_class)
 		else:
@@ -538,7 +538,6 @@ class ClassHeader(object):
 		self.filename = '{0}.hh'.format(_class.name.to_snake_case())
 		self.priorDeclarations = []
 		self.private_type = _class.name.to_camel_case(fullName=True)
-		self.ignore = ignore
 		
 		self.includes = {'internal': [], 'external': []}
 		includes = ClassHeader.needed_includes(self, _class)
@@ -595,7 +594,7 @@ class ClassHeader(object):
 	def _needed_includes_from_type(self, _type, includes):
 		if isinstance(_type, AbsApi.ClassType):
 			includes['external'].add('memory')
-			if _type.desc is not None and _type.name not in self.ignore:
+			if _type.desc is not None:
 				includes['internal'].add(_type.desc.name.to_snake_case())
 		elif isinstance(_type, AbsApi.EnumType):
 			includes['internal'].add('enums')
@@ -672,7 +671,7 @@ def main():
 	for _class in parser.classesIndex.values() + parser.interfacesIndex.values():
 		if _class is not None:
 			try:
-				header = ClassHeader(_class, translator, ignore=['LinphoneBuffer'])
+				header = ClassHeader(_class, translator)
 				impl = ClassImpl(_class, header._class)
 				
 				headerName = _class.name.to_snake_case() + '.hh'
