@@ -581,7 +581,10 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 	list->friends = bctbx_list_erase_link(list->friends, elem);
 	if(lf->refkey) {
 		bctbx_iterator_t * it = bctbx_map_cchar_find_key(list->friends_map, lf->refkey);
-		bctbx_map_cchar_erase(list->friends_map, it);
+		if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))){
+			linphone_friend_unref((LinphoneFriend*)bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
+			bctbx_map_cchar_erase(list->friends_map, it);
+		}
 	}
 
 	lf->friend_list = NULL;
