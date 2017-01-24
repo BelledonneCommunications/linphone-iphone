@@ -128,21 +128,7 @@ void linphone_call_params_clear_custom_sdp_media_attributes(LinphoneCallParams *
 }
 
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
-	unsigned int i;
-	LinphoneCallParams *ncp=linphone_call_params_new();
-	memcpy(ncp,cp,sizeof(LinphoneCallParams));
-	if (cp->record_file) ncp->record_file=ms_strdup(cp->record_file);
-	if (cp->session_name) ncp->session_name=ms_strdup(cp->session_name);
-	/*
-	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
-	 */
-	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
-	if (cp->custom_sdp_attributes) ncp->custom_sdp_attributes = sal_custom_sdp_attribute_clone(cp->custom_sdp_attributes);
-	for (i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
-		if (cp->custom_sdp_media_attributes[i]) ncp->custom_sdp_media_attributes[i] = sal_custom_sdp_attribute_clone(cp->custom_sdp_media_attributes[i]);
-	}
-
-	return ncp;
+	return (LinphoneCallParams *)belle_sip_object_clone((const belle_sip_object_t *)cp);
 }
 
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp){
@@ -340,7 +326,7 @@ bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *pa
  * Constructor and destructor functions                                        *
  ******************************************************************************/
 
-static void _linphone_call_params_unref(LinphoneCallParams *cp){
+static void _linphone_call_params_uninit(LinphoneCallParams *cp){
 	unsigned int i;
 	if (cp->record_file) ms_free(cp->record_file);
 	if (cp->custom_headers) sal_custom_header_free(cp->custom_headers);
@@ -349,6 +335,24 @@ static void _linphone_call_params_unref(LinphoneCallParams *cp){
 		if (cp->custom_sdp_media_attributes[i]) sal_custom_sdp_attribute_free(cp->custom_sdp_media_attributes[i]);
 	}
 	if (cp->session_name) ms_free(cp->session_name);
+}
+
+static void _linphone_call_params_clone(LinphoneCallParams *dst, const LinphoneCallParams *src) {
+	unsigned int i;
+	
+	// WARNING: the structure is not copied entirely to avoid the belle_sip_object_t part to be corrupted.
+	memcpy(dst+sizeof(belle_sip_object_t),src+sizeof(belle_sip_object_t),sizeof(LinphoneCallParams)-sizeof(belle_sip_object_t));
+	
+	if (src->record_file) dst->record_file=ms_strdup(src->record_file);
+	if (src->session_name) dst->session_name=ms_strdup(dst->session_name);
+	/*
+	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
+	 */
+	if (src->custom_headers) dst->custom_headers=sal_custom_header_clone(src->custom_headers);
+	if (src->custom_sdp_attributes) dst->custom_sdp_attributes = sal_custom_sdp_attribute_clone(src->custom_sdp_attributes);
+	for (i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
+		if (src->custom_sdp_media_attributes[i]) dst->custom_sdp_media_attributes[i] = sal_custom_sdp_attribute_clone(src->custom_sdp_media_attributes[i]);
+	}
 }
 
 LinphoneCallParams * linphone_call_params_new(void) {
@@ -368,8 +372,8 @@ void linphone_call_params_destroy(LinphoneCallParams *cp) {
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCallParams);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallParams, belle_sip_object_t,
-	(belle_sip_object_destroy_t)_linphone_call_params_unref,
-	NULL, // clone
+	(belle_sip_object_destroy_t)_linphone_call_params_uninit,
+	(belle_sip_object_clone_t)_linphone_call_params_clone, // clone
 	NULL, // marshal
 	FALSE
 );
