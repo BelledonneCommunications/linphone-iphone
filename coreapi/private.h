@@ -930,9 +930,10 @@ typedef struct autoreplier_config
 
 
 typedef struct _LinphoneToneDescription{
-	LinphoneReason reason;
-	LinphoneToneID toneid;
-	char *audiofile;
+	LinphoneReason reason; /*the call error code*/
+	LinphoneToneID toneid; /*A tone type to play when this error arrives. This is played using tone generator*/
+	char *audiofile; /*An override audio file to play instead, when this error arrives*/
+	/*Note that some tones are not affected to any error, in which case it is affected LinphoneReasonNone*/
 }LinphoneToneDescription;
 
 LinphoneToneDescription * linphone_tone_description_new(LinphoneReason reason, LinphoneToneID id, const char *audiofile);

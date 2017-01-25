@@ -1349,22 +1349,26 @@ void linphone_tone_description_destroy(LinphoneToneDescription *obj){
 	ms_free(obj);
 }
 
-LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *lc, LinphoneReason reason){
+static LinphoneToneDescription *linphone_core_lookup_tone(const LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id){
 	const bctbx_list_t *elem;
 	for (elem=lc->tones;elem!=NULL;elem=elem->next){
 		LinphoneToneDescription *tone=(LinphoneToneDescription*)elem->data;
-		if (tone->reason==reason) return tone;
+		if (reason == LinphoneReasonNone){
+			if (tone->toneid == id && tone->reason == LinphoneReasonNone) return tone;
+		}else{
+			if (tone->reason==reason) return tone;
+		}
 	}
 	return NULL;
 }
 
+LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *lc, LinphoneReason reason){
+	return linphone_core_lookup_tone(lc, reason, LinphoneToneUndefined);
+}
+
 const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id){
-	const bctbx_list_t *elem;
-	for (elem=lc->tones;elem!=NULL;elem=elem->next){
-		LinphoneToneDescription *tone=(LinphoneToneDescription*)elem->data;
-		if (tone->toneid==id && tone->reason==LinphoneReasonNone && tone->audiofile!=NULL) return tone->audiofile;
-	}
-	return NULL;
+	LinphoneToneDescription *tone = linphone_core_lookup_tone(lc, LinphoneReasonNone, id);
+	return tone ? tone->audiofile : NULL;
 }
 
 void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile){

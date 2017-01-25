@@ -5760,7 +5760,7 @@ void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason)
 		if (tone){
 			if (tone->audiofile){
 				linphone_core_play_local(lc,tone->audiofile);
-			}else if (tone->toneid!=LinphoneToneUndefined){
+			}else if (tone->toneid != LinphoneToneUndefined){
 				linphone_core_play_named_tone(lc,tone->toneid);
 			}
 		}
