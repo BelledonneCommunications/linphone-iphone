@@ -54,7 +54,8 @@ static PyMethodDef pylinphone_TestingModuleMethods[] = {
 };
 
 static void pylinphone_init_testing_module(PyObject *linphone_module) {
-	PyObject *mtesting = Py_InitModule3("testing", pylinphone_TestingModuleMethods, "Python module adding some testing features for the Linphone library.");
+	PyObject *mtesting;
+	MOD_DEF(mtesting, "testing", pylinphone_TestingModuleMethods, "Python module adding some testing features for the Linphone library.");
 	Py_INCREF(mtesting);
 	if (PyModule_AddObject(linphone_module, "testing", mtesting) < 0) return;
 }

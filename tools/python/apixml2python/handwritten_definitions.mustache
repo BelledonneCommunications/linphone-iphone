@@ -1,3 +1,7 @@
+static bctbx_list_t * pylinphone_bctbx_list_free(bctbx_list_t * elem) {
+	return bctbx_list_free_with_data(elem, bctbx_free);
+}
+
 PyObject * PyList_FromBctbxListOfString(const bctbx_list_t *msl) {
 	PyObject *pyl = PyList_New(0);
 	while (msl != NULL) {
@@ -15,6 +19,7 @@ bctbx_list_t * PyList_AsBctbxListOfString(PyObject *pyl) {
 	for (idx = 0; idx < size; idx++) {
 		PyObject *item = PyList_GetItem(pyl, idx);
 		char *citem = (char *)PyString_AsString(item);
+		if (citem != NULL) citem = bctbx_strdup_printf(citem);
 		msl = bctbx_list_append(msl, citem);
 	}
 	return msl;
@@ -562,8 +567,7 @@ static PyMemberDef pylinphone_VideoSize_members[] = {
 };
 
 static PyTypeObject pylinphone_VideoSizeType = {
-	PyObject_HEAD_INIT(NULL)
-	0,	/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"linphone.VideoSize",	/* tp_name */
 	sizeof(pylinphone_VideoSizeObject),	/* tp_basicsize */
 	0,	/* tp_itemsize */
@@ -680,8 +684,7 @@ static PyMemberDef pylinphone_SipTransports_members[] = {
 };
 
 static PyTypeObject pylinphone_SipTransportsType = {
-	PyObject_HEAD_INIT(NULL)
-	0,	/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"linphone.SipTransports",	/* tp_name */
 	sizeof(pylinphone_SipTransportsObject),	/* tp_basicsize */
 	0,	/* tp_itemsize */

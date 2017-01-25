@@ -18,6 +18,7 @@
 
 import argparse
 import os
+import six
 import string
 import sys
 import xml.etree.ElementTree as ET
@@ -399,7 +400,7 @@ class Project:
 	def __parseCStructMember(self, node, structname):
 		name = node.find('./name').text
 		definition = node.find('./definition').text
-		t = definition[0:string.find(definition, structname + "::" + name)]
+		t = definition[0:definition.find(structname + "::" + name)]
 		sm = CStructMember(name, t)
 		deprecatedNode = node.find(".//xrefsect[xreftitle='Deprecated']")
 		if deprecatedNode is not None:
@@ -433,7 +434,7 @@ class Project:
 		if definition.startswith('typedef '):
 			definition = definition[8 :]
 		if name.endswith('Cb'):
-			pos = string.find(definition, "(*")
+			pos = definition.find("(*")
 			if pos == -1:
 				return None
 			returntype = definition[0:pos].strip()
@@ -448,13 +449,13 @@ class Project:
 			elif returnarg.completeType != 'void':
 				missingDocWarning += "\tReturn value is not documented\n"
 			definition = definition[pos + 2 :]
-			pos = string.find(definition, "(")
+			pos = definition.find("(")
 			definition = definition[pos + 1 : -1]
 			argslist = CArgumentsList()
 			for argdef in definition.split(', '):
 				argType = ''
-				starPos = string.rfind(argdef, '*')
-				spacePos = string.rfind(argdef, ' ')
+				starPos = argdef.rfind('*')
+				spacePos = argdef.rfind(' ')
 				if starPos != -1:
 					argType = argdef[0 : starPos + 1]
 					argName = argdef[starPos + 1 :]
@@ -483,7 +484,7 @@ class Project:
 			f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 			return f
 		else:
-			pos = string.rfind(definition, " " + name)
+			pos = definition.rfind(" " + name)
 			if pos != -1:
 				definition = definition[0 : pos]
 			td = CTypedef(name, definition)
@@ -595,7 +596,7 @@ class Project:
 
 	def check(self):
 		for c in self.classes:
-			for name, p in c.properties.iteritems():
+			for name, p in six.iteritems(c.properties):
 				if p.getter is None and p.setter is not None:
 					print("Property '" + name + "' of class '" + c.name + "' has a setter but no getter")
 
@@ -734,7 +735,7 @@ class Generator:
 			project.classes.sort(key = lambda c: c.name)
 			for cclass in project.classes:
 				self.__generateClass(cclass, classesNode)
-		s = '<?xml version="1.0" encoding="UTF-8" ?>\n'
+		s = '<?xml version="1.0" encoding="UTF-8" ?>\n'.encode('utf-8')
 		s += ET.tostring(apiNode, 'utf-8')
 		if project.prettyPrint:
 			s = minidom.parseString(s).toprettyxml(indent='\t')

@@ -381,7 +381,7 @@ class CoreManager:
             lambda callee_manager, caller_manager: (callee_manager.stats.number_of_LinphoneCallStreamsRunning == initial_callee_stats.number_of_LinphoneCallStreamsRunning + 1) and \
                 (caller_manager.stats.number_of_LinphoneCallStreamsRunning == initial_caller_stats.number_of_LinphoneCallStreamsRunning + 1))
 
-        if caller_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone and callee_manager.lc.media_encryption != linphone.MediaEncryption.None:
+        if caller_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone and callee_manager.lc.media_encryption != linphone.MediaEncryption._None:
             # Wait for encryption to be on, in case of zrtp, it can take a few seconds
             if caller_manager.lc.media_encryption == linphone.MediaEncryption.ZRTP:
                 CoreManager.wait_for(callee_manager, caller_manager,
@@ -405,7 +405,7 @@ class CoreManager:
         manager = lc.user_data()
         linphonetester_logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
             state=linphone.RegistrationState.string(state), identity=cfg.identity_address.as_string(), addr=cfg.server_addr))
-        if state == linphone.RegistrationState.None:
+        if state == linphone.RegistrationState._None:
             manager.stats.number_of_LinphoneRegistrationNone += 1
         elif state == linphone.RegistrationState.Progress:
             manager.stats.number_of_LinphoneRegistrationProgress += 1

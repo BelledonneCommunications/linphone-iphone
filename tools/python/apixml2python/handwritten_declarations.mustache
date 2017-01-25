@@ -25,6 +25,7 @@ typedef struct {
 	LCSipTransports lcst;
 } pylinphone_SipTransportsObject;
 
+static bctbx_list_t * pylinphone_bctbx_list_free(bctbx_list_t * elem);
 PyObject * PyList_FromBctbxListOfString(const bctbx_list_t *msl);
 bctbx_list_t * PyList_AsBctbxListOfString(PyObject *pyl);
 

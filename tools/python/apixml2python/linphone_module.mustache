@@ -38,6 +38,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PYLINPHONE_INLINE inline
 #endif
 
+/**
+ * Definitions for Python 2 and 3 support.
+ */
+
+#ifndef PyVarObject_HEAD_INIT
+#define PyVarObject_HEAD_INIT(type, size) PyObject_HEAD_INIT(type) size,
+#endif
+
+#ifndef PyInt_Check
+#define PyInt_Check(p) PyLong_Check(p)
+#endif
+
+#ifndef PyInt_AsLong
+#define PyInt_AsLong(io) PyLong_AsLong(io)
+#endif
+
+#ifndef PyInt_AS_LONG
+static int pylinphone_aslongoverflow;
+#define PyInt_AS_LONG(io) PyLong_AsLongAndOverflow(io, &pylinphone_aslongoverflow)
+#endif
+
+#ifndef PyInt_AsSsize_t
+#define PyInt_AsSsize_t(io) PyLong_AsSsize_t(io)
+#endif
+
+#ifndef PyInt_AsUnsignedLongMask
+#define PyInt_AsUnsignedLongMask(io) PyLong_AsUnsignedLongMask(io)
+#endif
+
+#ifndef PyString_Check
+#define PyString_Check(io) PyUnicode_Check(io)
+#endif
+
+#ifndef PyString_FromString
+#define PyString_FromString(v) PyUnicode_FromString(v)
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+#define PyString_AsString(s) PyUnicode_AsUTF8(s)
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+#define MOD_DEF(ob, name, methods, doc) \
+	static struct PyModuleDef moduledef_##ob = { \
+		PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
+	ob = PyModule_Create(&moduledef_##ob);
+#else
+#define MOD_DEF(ob, name, methods, doc) \
+	ob = Py_InitModule3(name, methods, doc);
+#endif
+
 
 static void pylinphone_dispatch_messages(void);
 static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...);
@@ -193,8 +244,7 @@ static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
 };
 
 static PyTypeObject pylinphone_{{class_name}}Type = {
-	PyObject_HEAD_INIT(NULL)
-	0,	/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"linphone.{{class_name}}",	/* tp_name */
 	sizeof(pylinphone_{{class_name}}Object),	/* tp_basicsize */
 	0,	/* tp_itemsize */
@@ -280,54 +330,57 @@ static PyMethodDef pylinphone_{{enum_name}}_ModuleMethods[] = {
 
 {{> linphone_testing_module}}
 
-PyMODINIT_FUNC initlinphone(void) {
+static PyObject * pylinphone_moduleinit(void) {
 	PyObject *m;
-	PyObject *menum;
+	PyObject *menum_PayloadType;
 
 	PyDateTime_IMPORT;
 	PyEval_InitThreads();
 	pylinphone_init_logging();
 
 {{#classes}}
-	if (PyType_Ready(&pylinphone_{{class_name}}Type) < 0) return;
+	if (PyType_Ready(&pylinphone_{{class_name}}Type) < 0) return NULL;
 {{/classes}}
 
 	/* Hand-written classes. */
-	if (PyType_Ready(&pylinphone_VideoSizeType) < 0) return;
-	if (PyType_Ready(&pylinphone_SipTransportsType) < 0) return;
+	if (PyType_Ready(&pylinphone_VideoSizeType) < 0) return NULL;
+	if (PyType_Ready(&pylinphone_SipTransportsType) < 0) return NULL;
 
-	m = Py_InitModule3("linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
-	if (m == NULL) return;
-	if (PyModule_AddStringConstant(m, "__version__", LINPHONE_GIT_REVISION) < 0) return;
+	MOD_DEF(m, "linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
+	if (m == NULL) return NULL;
+	if (PyModule_AddStringConstant(m, "__version__", LINPHONE_GIT_REVISION) < 0) return NULL;
 
 {{#enums}}
-	menum = Py_InitModule3("{{enum_name}}", pylinphone_{{enum_name}}_ModuleMethods, "{{{enum_doc}}}");
-	if (menum == NULL) return;
-	Py_INCREF(menum);
-	if (PyModule_AddObject(m, "{{enum_name}}", menum) < 0) return;
+	{
+		PyObject *menum_{{enum_name}};
+		MOD_DEF(menum_{{enum_name}}, "{{enum_name}}", pylinphone_{{enum_name}}_ModuleMethods, "{{{enum_doc}}}");
+		if (menum_{{enum_name}} == NULL) return NULL;
+		Py_INCREF(menum_{{enum_name}});
+		if (PyModule_AddObject(m, "{{enum_name}}", menum_{{enum_name}}) < 0) return NULL;
 {{#enum_values}}
-	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return;
+		if (PyModule_AddIntConstant(menum_{{enum_name}}, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return NULL;
 {{/enum_values}}
 {{#enum_deprecated_values}}
-	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return;
+		if (PyModule_AddIntConstant(menum_{{enum_name}}, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return NULL;
 {{/enum_deprecated_values}}
+	}
 {{/enums}}
 
-	menum = Py_InitModule3("PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of :py:class:`linphone.PayloadType`.\n\n.. csv-table::\n   :delim: |\n   :header: Value,Description\n\n   AudioContinuous|\n   AudioPacketized|\n   Video|\n   Text|\n   Other|\n");
-	if (menum == NULL) return;
-	Py_INCREF(menum);
-	if (PyModule_AddObject(m, "PayloadTypeType", menum) < 0) return;
-	if (PyModule_AddIntConstant(menum, "AudioContinuous", PAYLOAD_AUDIO_CONTINUOUS) < 0) return;
-	if (PyModule_AddIntConstant(menum, "AudioPacketized", PAYLOAD_AUDIO_PACKETIZED) < 0) return;
-	if (PyModule_AddIntConstant(menum, "Video", PAYLOAD_VIDEO) < 0) return;
-	if (PyModule_AddIntConstant(menum, "Text", PAYLOAD_TEXT) < 0) return;
-	if (PyModule_AddIntConstant(menum, "Other", PAYLOAD_OTHER) < 0) return;
+	MOD_DEF(menum_PayloadType, "PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of :py:class:`linphone.PayloadType`.\n\n.. csv-table::\n   :delim: |\n   :header: Value,Description\n\n   AudioContinuous|\n   AudioPacketized|\n   Video|\n   Text|\n   Other|\n");
+	if (menum_PayloadType == NULL) return NULL;
+	Py_INCREF(menum_PayloadType);
+	if (PyModule_AddObject(m, "PayloadTypeType", menum_PayloadType) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "AudioContinuous", PAYLOAD_AUDIO_CONTINUOUS) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "AudioPacketized", PAYLOAD_AUDIO_PACKETIZED) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "Video", PAYLOAD_VIDEO) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "Text", PAYLOAD_TEXT) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "Other", PAYLOAD_OTHER) < 0) return NULL;
 	// TODO: To remove. Deprecated enum values.
-	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_CONTINUOUS", PAYLOAD_AUDIO_CONTINUOUS) < 0) return;
-	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_PACKETIZED", PAYLOAD_AUDIO_PACKETIZED) < 0) return;
-	if (PyModule_AddIntConstant(menum, "PAYLOAD_VIDEO", PAYLOAD_VIDEO) < 0) return;
-	if (PyModule_AddIntConstant(menum, "PAYLOAD_TEXT", PAYLOAD_TEXT) < 0) return;
-	if (PyModule_AddIntConstant(menum, "PAYLOAD_OTHER", PAYLOAD_OTHER) < 0) return;
+	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_AUDIO_CONTINUOUS", PAYLOAD_AUDIO_CONTINUOUS) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_AUDIO_PACKETIZED", PAYLOAD_AUDIO_PACKETIZED) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_VIDEO", PAYLOAD_VIDEO) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_TEXT", PAYLOAD_TEXT) < 0) return NULL;
+	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_OTHER", PAYLOAD_OTHER) < 0) return NULL;
 
 {{#classes}}
 	Py_INCREF(&pylinphone_{{class_name}}Type);
@@ -341,4 +394,16 @@ PyMODINIT_FUNC initlinphone(void) {
 	PyModule_AddObject(m, "SipTransports", (PyObject *)&pylinphone_SipTransportsType);
 
 	pylinphone_init_testing_module(m);
+
+	return m;
 }
+
+#if PY_MAJOR_VERSION < 3
+PyMODINIT_FUNC initlinphone(void) {
+	pylinphone_moduleinit();
+}
+#else
+PyMODINIT_FUNC PyInit_linphone(void) {
+	return pylinphone_moduleinit();
+}
+#endif

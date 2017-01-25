@@ -16,7 +16,7 @@
 
 
 import re
-from sets import Set
+import six
 import sys
 
 
@@ -35,7 +35,9 @@ def remove_useless_enum_prefix(senum, svalue):
 		i = 0
 		while i < len(lenum) and lenum[i] == lvalue[i]:
 			i += 1
-		return ''.join(lvalue[i:])
+		svalue = ''.join(lvalue[i:])
+	if svalue == "None":
+		return "_None"
 	return svalue
 
 def is_callback(s):
@@ -238,7 +240,7 @@ class ArgumentType:
 				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsBctbxListOf" + self.contained_type + "({arg_name});\n"
 				self.convert_from_func = 'PyList_FromBctbxListOf' + self.contained_type
 			if not is_const_from_complete_type(self.complete_type):
-				self.free_convert_result_func = "bctbx_list_free"
+				self.free_convert_result_func = "pylinphone_bctbx_list_free"
 			self.check_condition = "!PyList_Check({arg_name})"
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
@@ -1043,7 +1045,7 @@ class LinphoneModule(object):
 		self.known_types = ['char', 'int', 'int8_t', 'int16_t', 'int32_t', 'int64_t', 'uint8_t', 'uint16_t', 'uint32_t', 'uint64_t', 'bool_t', 'float', 'double', 'size_t', 'time_t', 'MSList', 'bctbx_list_t', 'MSVideoSize', 'LCSipTransports', 'PayloadType']
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
-		self.bctbxlist_types = Set([])
+		self.bctbxlist_types = set([])
 		self.enums = []
 		self.enum_names = []
 		self.cfunction2methodmap = {}
@@ -1084,6 +1086,7 @@ class LinphoneModule(object):
 					v['enum_value_doc'] = self.__format_doc(xml_enum_value.find('briefdescription'), xml_enum_value.find('detaileddescription'))
 					e['enum_deprecated_values'].append(v)
 			e['enum_doc'] = self.__replace_doc_special_chars(e['enum_doc'])
+			e['enum_doc'] = e['enum_doc'].encode('unicode_escape')
 			self.enums.append(e)
 			self.enum_names.append(e['enum_name'])
 			self.known_types.append(e['enum_cname'])
@@ -1099,6 +1102,7 @@ class LinphoneModule(object):
 			c['class_name'] = strip_leading_linphone(c['class_cname'])
 			c['class_c_function_prefix'] = xml_class.get('cfunctionprefix')
 			c['class_doc'] = self.__format_doc(xml_class.find('briefdescription'), xml_class.find('detaileddescription'))
+			c['class_doc'] = c['class_doc'].encode('unicode_escape')
 			c['class_refcountable'] = (xml_class.get('refcountable') == 'true')
 			c['class_destroyable'] = (xml_class.get('destroyable') == 'true')
 			c['class_has_user_data'] = False
@@ -1119,6 +1123,7 @@ class LinphoneModule(object):
 				ev['event_cname'] = xml_event.get('name')
 				ev['event_name'] = compute_event_name(ev['event_cname'], c['class_name'])
 				ev['event_doc'] = self.__format_doc(xml_event.find('briefdescription'), xml_event.find('detaileddescription'))
+				ev['event_doc'] = ev['event_doc'].encode('unicode_escape')
 				c['class_events'].append(ev)
 				self.known_types.append(ev['event_cname'])
 				c['class_object_members'].append(ev['event_name'])
@@ -1129,11 +1134,13 @@ class LinphoneModule(object):
 						m = {}
 						m['method_name'] = hand_written_code.name
 						m['method_doc'] = self.__replace_doc_special_chars(hand_written_code.doc)
+						m['method_doc'] = m['method_doc'].encode('unicode_escape')
 						c['class_type_hand_written_methods'].append(m)
 					elif isinstance(hand_written_code, HandWrittenInstanceMethod):
 						m = {}
 						m['method_name'] = hand_written_code.name
 						m['method_doc'] = self.__replace_doc_special_chars(hand_written_code.doc)
+						m['method_doc'] = m['method_doc'].encode('unicode_escape')
 						c['class_instance_hand_written_methods'].append(m)
 					elif isinstance(hand_written_code, HandWrittenDeallocMethod):
 						c['class_has_hand_written_dealloc'] = True
@@ -1149,6 +1156,7 @@ class LinphoneModule(object):
 						else:
 							p['setter_reference'] = '(setter)pylinphone_' + c['class_name'] + '_set_' + p['property_name']
 						p['property_doc'] = self.__replace_doc_special_chars(hand_written_code.doc)
+						p['property_doc'] = p['property_doc'].encode('unicode_escape')
 						c['class_hand_written_properties'].append(p)
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
@@ -1225,71 +1233,74 @@ class LinphoneModule(object):
 			xml_new_method = c['class_xml_node'].find("./classmethods/classmethod[@name='" + c['class_c_function_prefix'] + "new']")
 			try:
 				c['new_body'] = NewMethodDefinition(self, c, xml_new_method).format()
-			except UnknownTypeException, e:
+			except (UnknownTypeException) as e:
 				print(e)
 				c['blacklisted'] = True
-			except Exception, e:
+			except (Exception) as e:
 				e.args += (c['class_name'], 'new_body')
 				raise
 			try:
 				c['init_body'] = InitMethodDefinition(self, c, xml_new_method).format()
-			except UnknownTypeException, e:
+			except (UnknownTypeException) as e:
 				print(e)
 				c['blacklisted'] = True
-			except Exception, e:
+			except (Exception) as e:
 				e.args += (c['class_name'], 'init_body')
 				raise
 			try:
 				c['from_native_pointer_body'] = FromNativePointerMethodDefinition(self, c).format()
-			except UnknownTypeException, e:
+			except (UnknownTypeException) as e:
 				print(e)
 				c['blacklisted'] = True
-			except Exception, e:
+			except (Exception) as e:
 				e.args += (c['class_name'], 'from_native_pointer_body')
 				raise
 			for m in c['class_type_methods']:
 				try:
 					m['method_body'] = MethodDefinition(self, c, m['method_name'], m['method_xml_node']).format()
 					m['method_doc'] = self.__format_method_doc(m['method_xml_node'])
-				except UnknownTypeException, e:
+					m['method_doc'] = m['method_doc'].encode('unicode_escape')
+				except (UnknownTypeException) as e:
 					print(e)
 					m['blacklisted'] = True
-				except Exception, e:
+				except (Exception) as e:
 					e.args += (c['class_name'], m['method_name'])
 					raise
 			for m in c['class_instance_methods']:
 				try:
 					m['method_body'] = MethodDefinition(self, c, m['method_name'], m['method_xml_node']).format()
 					m['method_doc'] = self.__format_method_doc(m['method_xml_node'])
-				except UnknownTypeException, e:
+					m['method_doc'] = m['method_doc'].encode('unicode_escape')
+				except (UnknownTypeException) as e:
 					print(e)
 					m['blacklisted'] = True
-				except Exception, e:
+				except (Exception) as e:
 					e.args += (c['class_name'], m['method_name'])
 					raise
 			for p in c['class_properties']:
 				p['property_doc'] = ''
-				if p.has_key('setter_xml_node'):
+				if 'setter_xml_node' in p:
 					try:
 						p['setter_body'] = SetterMethodDefinition(self, c, p['property_name'], p['setter_xml_node']).format()
 						p['property_doc'] = self.__format_setter_doc(p['setter_xml_node'])
-					except UnknownTypeException, e:
+					except (UnknownTypeException) as e:
 						print(e)
 						p['blacklisted'] = True
-					except Exception, e:
+					except (Exception) as e:
 						e.args += (c['class_name'], p['property_name'])
 						raise
-				if p.has_key('getter_xml_node'):
+				if 'getter_xml_node' in p:
 					try:
 						p['getter_body'] = GetterMethodDefinition(self, c, p['property_name'], p['getter_xml_node']).format()
 						if p['property_doc'] == '':
 							p['property_doc'] = self.__format_getter_doc(p['getter_xml_node'])
-					except UnknownTypeException, e:
+					except (UnknownTypeException) as e:
 						print(e)
 						p['blacklisted'] = True
-					except Exception, e:
+					except (Exception) as e:
 						e.args += (c['class_name'], p['property_name'])
 						raise
+				p['property_doc'] = p['property_doc'].encode('unicode_escape')
 			if not 'class_has_hand_written_dealloc' in c:
 				try:
 					if c['class_refcountable']:
@@ -1300,18 +1311,18 @@ class LinphoneModule(object):
 						c['dealloc_definition'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
 					else:
 						c['dealloc_definition'] = DeallocMethodDefinition(self, c).format()
-				except UnknownTypeException, e:
+				except (UnknownTypeException) as e:
 					print(e)
 					c['blacklisted'] = True
-				except Exception, e:
+				except (Exception) as e:
 					e.args += (c['class_name'], 'dealloc_body')
 					raise
 		# Remove blacklisted classes and methods
-		self.classes = [c for c in self.classes if not c.has_key('blacklisted')]
+		self.classes = [c for c in self.classes if not 'blacklisted' in c]
 		for c in self.classes:
-			c['class_type_methods'] = [m for m in c['class_type_methods'] if not m.has_key('blacklisted')]
-			c['class_instance_methods'] = [m for m in c['class_instance_methods'] if not m.has_key('blacklisted')]
-			c['class_properties'] = [m for m in c['class_properties'] if not m.has_key('blacklisted')]
+			c['class_type_methods'] = [m for m in c['class_type_methods'] if not 'blacklisted' in m]
+			c['class_instance_methods'] = [m for m in c['class_instance_methods'] if not 'blacklisted' in m]
+			c['class_properties'] = [m for m in c['class_properties'] if not 'blacklisted' in m]
 		# Convert bctbxlist_types to a list of dictionaries for the template
 		d = []
 		for bctbxlist_type in self.bctbxlist_types:
@@ -1365,12 +1376,12 @@ class LinphoneModule(object):
 		return doc
 
 	def __replace_doc_special_chars(self, doc):
-		return doc.replace('"', '').encode('string-escape')
+		return doc.replace('"', '') #.encode('utf-8') #.encode('unicode_escape')
 
 	def __replace_doc_cfunction_by_method(self, doc):
-		for cfunction, method in self.cfunction2methodmap.iteritems():
+		for cfunction, method in six.iteritems(self.cfunction2methodmap):
 			doc = doc.replace(cfunction + '()', method)
-		for cfunction, method in self.cfunction2methodmap.iteritems():
+		for cfunction, method in six.iteritems(self.cfunction2methodmap):
 			doc = doc.replace(cfunction, method)
 		return doc
 
