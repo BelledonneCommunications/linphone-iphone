@@ -2092,9 +2092,23 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
 	return call->refer_pending;
 }
 
+static int _linphone_call_get_duration (const LinphoneCall *call) {
+	return (int)(ms_time(NULL) - call->log->connected_date_time);
+}
+
 int linphone_call_get_duration(const LinphoneCall *call){
 	if (call->log->connected_date_time==0) return 0;
-	return (int)(ms_time(NULL) - call->log->connected_date_time);
+
+	switch (call->state) {
+	  case LinphoneCallEnd:
+	  case LinphoneCallError:
+	  case LinphoneCallReleased:
+	    return call->log->duration;
+
+	  default: break;
+	}
+
+	return _linphone_call_get_duration(call);
 }
 
 LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
@@ -2436,7 +2450,7 @@ static OrtpJitterBufferAlgorithm name_to_jb_algo(const char *value){
 
 static void apply_jitter_buffer_params(LinphoneCore *lc, RtpSession *session, LinphoneStreamType type){
 	JBParameters params;
-	
+
 	rtp_session_get_jitter_buffer_params(session, &params);
 	params.min_size = lp_config_get_int(lc->config, "rtp", "jitter_buffer_min_size", 40);
 	params.max_size = lp_config_get_int(lc->config, "rtp", "jitter_buffer_max_size", 500);
@@ -2446,7 +2460,7 @@ static void apply_jitter_buffer_params(LinphoneCore *lc, RtpSession *session, Li
 	params.ramp_refresh_ms = lp_config_get_int(lc->config, "rtp", "jitter_buffer_ramp_refresh_period", 5000);
 	params.ramp_step_ms = lp_config_get_int(lc->config, "rtp", "jitter_buffer_ramp_step", 20);
 	params.ramp_threshold = lp_config_get_int(lc->config, "rtp", "jitter_buffer_ramp_threshold", 70);
-	
+
 	switch (type){
 		case LinphoneStreamTypeAudio:
 		case LinphoneStreamTypeText: /*let's use the same params for text as for audio.*/
@@ -3221,7 +3235,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				}
 			}
 			/*if playfile are supplied don't use soundcards*/
-			if (lc->use_files || (use_rtp_io && !use_rtp_io_enable_local_output)) {	
+			if (lc->use_files || (use_rtp_io && !use_rtp_io_enable_local_output)) {
 				captcard=NULL;
 				playcard=NULL;
 			}
@@ -3240,7 +3254,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
 			media_stream_set_adaptive_bitrate_algorithm(&call->audiostream->ms,
 								ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
-			
+
 			rtp_session_enable_rtcp_mux(call->audiostream->ms.sessions.rtp_session, stream->rtcp_mux);
 			if (!call->params->in_conference && call->params->record_file){
 				audio_stream_mixed_record_open(call->audiostream,call->params->record_file);
@@ -3267,7 +3281,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				if(use_rtp_io_enable_local_output){
 					io.input.type = MSResourceRtp;
 					io.input.session = create_audio_rtp_io_session(call);
-					
+
 					if (playcard){
 						io.output.type = MSResourceSoundcard;
 						io.output.soundcard = playcard;
@@ -3280,7 +3294,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 					io.input.type = io.output.type = MSResourceRtp;
 					io.input.session = io.output.session = create_audio_rtp_io_session(call);
 				}
-			
+
 				if (io.input.session == NULL) {
 					ok = FALSE;
 				}
@@ -4569,7 +4583,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	bool_t call_logs_sqlite_db_found = FALSE;
 
-	call->log->duration=linphone_call_get_duration(call); /*store duration since connected*/
+	call->log->duration=_linphone_call_get_duration(call); /*store duration since connected*/
 
 	if (call->log->status==LinphoneCallMissed){
 		char *info;
