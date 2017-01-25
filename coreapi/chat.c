@@ -1049,6 +1049,11 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum
 	int err;
 	char *content = NULL;
 	char *datetime = NULL;
+	const char *message_id;
+
+	/* Check that the chat message has a message id */
+	message_id = linphone_chat_message_get_message_id(cm);
+	if (message_id == NULL) return NULL;
 
 	buf = xmlBufferCreate();
 	if (buf == NULL) {
@@ -1071,7 +1076,7 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, enum
 		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"linphoneimdn", NULL, (const xmlChar *)"http://www.linphone.org/xsds/imdn.xsd");
 	}
 	if (err >= 0) {
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"message-id", (const xmlChar *)linphone_chat_message_get_message_id(cm));
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"message-id", (const xmlChar *)message_id);
 	}
 	if (err >= 0) {
 		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"datetime", (const xmlChar *)datetime);
