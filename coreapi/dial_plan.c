@@ -221,7 +221,7 @@ static LinphoneDialPlan const dial_plans[]={
 	{"Sudan"                        ,"SD"		, "249"     , 9		, "00"  },
 	{"Suriname"                     ,"SR"		, "597"     , 7		, "00"  },
 	{"Swaziland"                    ,"SZ"		, "268"     , 8     , "00"  },
-	{"Sweden"                       ,"SE"		, "1"       , 9     , "00"	},
+	{"Sweden"                       ,"SE"		, "46"      , 9     , "00"	},
 	{"Switzerland"                  ,"XK"		, "41"      , 9		, "00"	},
 	{"Syria"                        ,"SY"		, "963"     , 9		, "00"  },
 	{"Taiwan"                       ,"TW"		, "886"     , 9		, "810"	},
