@@ -385,7 +385,7 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	if(linphone_chat_room_get_unread_messages_count(cr) == 0) return;
 
 	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-	buf = sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q AND direction=%i", peer, LinphoneChatMessageIncoming);
+	buf = sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q AND direction = %i AND status != %i", peer, LinphoneChatMessageIncoming, LinphoneChatMessageStateDisplayed);
 	linphone_sql_request_message(lc->db, buf, cr);
 	sqlite3_free(buf);
 	for (item = cr->messages_hist; item != NULL; item = bctbx_list_next(item)) {
