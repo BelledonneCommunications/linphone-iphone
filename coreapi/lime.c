@@ -89,7 +89,7 @@ uint8_t lime_byteToChar(uint8_t inputByte) {
  * @param[in]	inputString			The input string buffer, must be hexadecimal(it is not checked by function, any non hexa char is converted to 0)
  * @param[in]	inputStringLength	The lenght in chars of the string buffer, output is half this length
  */
-void lime_strToUint8(uint8_t *outputBytes, uint8_t *inputString, uint16_t inputStringLength) {
+void lime_strToUint8(uint8_t *outputBytes, const uint8_t *inputString, uint16_t inputStringLength) {
 	int i;
 	for (i=0; i<inputStringLength/2; i++) {
 		outputBytes[i] = (lime_charToByte(inputString[2*i]))<<4 | lime_charToByte(inputString[2*i+1]);
@@ -481,7 +481,7 @@ void lime_freeKeys(limeURIKeys_t *associatedKeys) {
 	associatedKeys->peerURI = NULL;
 }
 
-int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
+int lime_encryptMessage(limeKey_t *key, const uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
 	uint8_t authenticatedData[28];
 	/* Authenticated data is senderZID(12 bytes)||receiverZID(12 bytes)||sessionIndex(4 bytes) */
 	memcpy(authenticatedData, selfZID, 12);
@@ -573,10 +573,11 @@ int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t mess
 	return retval;
 }
 
-int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output) {
+int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, uint8_t *message, uint8_t *peerURI, uint8_t **output) {
 	uint8_t selfZidHex[25];
 	uint8_t selfZid[12]; /* same data but in byte buffer */
 	uint32_t encryptedMessageLength;
+	uint32_t encryptedContentTypeLength;
 	limeURIKeys_t associatedKeys;
 	xmlDocPtr xmlOutputMessage;
 	xmlNodePtr rootNode;
@@ -592,6 +593,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 
 	/* encrypted message length is plaintext + 16 for tag */
 	encryptedMessageLength = (uint32_t)strlen((char *)message) + 16;
+	encryptedContentTypeLength = (uint32_t)strlen((char *)contentType) + 16;
 
 	/* retrieve keys associated to the peer URI */
 	associatedKeys.peerURI = (uint8_t *)malloc(strlen((char *)peerURI)+1);
@@ -624,17 +626,21 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 		xmlNodePtr msgNode;
 		size_t b64Size = 0;
 		unsigned char *encryptedMessageb64;
+		unsigned char *encryptedContentTypeb64;
 
 		/* encrypt message with current key */
 		limeKey_t *currentKey = associatedKeys.peerKeys[i];
 		/* encrypted message include a 16 bytes tag */
 		uint8_t *encryptedMessage = (uint8_t *)ms_malloc(encryptedMessageLength);
+		uint8_t *encryptedContentType = (uint8_t *)ms_malloc(encryptedContentTypeLength);
 		lime_encryptMessage(currentKey, message, (uint32_t)strlen((char *)message), selfZid, encryptedMessage);
+		lime_encryptMessage(currentKey, (const uint8_t *)contentType, (uint32_t)strlen((char *)contentType), selfZid, encryptedContentType);
 		/* add a "msg" node the the output message, doc node is :
 		 * <msg>
 		 * 		<pzid>peerZID</pzid>
 		 * 		<index>session index</index>
 		 * 		<text>ciphertext</text>
+		 * 		<content-type>ciphertext</content-type>
 		 * </msg> */
 		msgNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"msg", NULL);
 		lime_int8ToStr(peerZidHex, currentKey->peerZID, 12);
@@ -661,6 +667,16 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 		ms_free(encryptedMessage);
 		ms_free(encryptedMessageb64);
 
+		/* convert the encrypted content-type to base 64 */
+		b64Size = 0;
+		bctbx_base64_encode(NULL, &b64Size, encryptedContentType, encryptedContentTypeLength); /* b64Size is 0, so it is set to the requested output buffer size */
+		encryptedContentTypeb64 = ms_malloc(b64Size+1); /* allocate a buffer of requested size +1 for NULL termination */
+		bctbx_base64_encode(encryptedContentTypeb64, &b64Size, encryptedContentType, encryptedContentTypeLength); /* b64Size is 0, so it is set to the requested output buffer size */
+		encryptedContentTypeb64[b64Size] = '\0'; /* libxml need a null terminated string */
+		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"content-type", (const xmlChar *)encryptedContentTypeb64);
+		ms_free(encryptedContentType);
+		ms_free(encryptedContentTypeb64);
+
 		/* add the message Node into the doc */
 		xmlAddChild(rootNode, msgNode);
 
@@ -683,17 +699,21 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	return 0;
 }
 
-int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) {
-	int retval;
+int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output, char **content_type) {
+	int retval = 0;
 	uint8_t selfZidHex[25];
 	uint8_t selfZid[12]; /* same data but in byte buffer */
+	char xpath_str[MAX_XPATH_LENGTH];
 	limeKey_t associatedKey;
-	xmlChar *peerZidHex = NULL;
-	xmlNodePtr cur;
+	const char *peerZidHex = NULL;
+	xmlparsing_context_t *xml_ctx;
+	xmlXPathObjectPtr msg_object;
 	uint8_t *encryptedMessage = NULL;
 	size_t encryptedMessageLength = 0;
+	uint8_t *encryptedContentType = NULL;
+	size_t encryptedContentTypeLength = 0;
 	uint32_t usedSessionIndex = 0;
-	xmlDocPtr xmlEncryptedMessage;
+	int i;
 
 	if (cacheBuffer == NULL) {
 		return LIME_INVALID_CACHE;
@@ -704,80 +724,79 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	}
 	lime_strToUint8(selfZid, selfZidHex, 24);
 
-	/* parse the message into an xml doc */
-	/* make sure we have a valid xml message before trying to parse it */
-	if (memcmp(message, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38) != 0) {
-		return LIME_INVALID_ENCRYPTED_MESSAGE;
-	}
-	xmlEncryptedMessage = xmlParseDoc((const xmlChar *)message);
-	if (xmlEncryptedMessage == NULL) {
-		return LIME_INVALID_ENCRYPTED_MESSAGE;
+	xml_ctx = linphone_xmlparsing_context_new();
+	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
+	xml_ctx->doc = xmlReadDoc((const unsigned char*)message, 0, NULL, 0);
+	if (xml_ctx->doc == NULL) {
+		retval = LIME_INVALID_ENCRYPTED_MESSAGE;
+		goto error;
 	}
 
-	/* retrieve the sender ZID which is the first child of root */
-	cur = xmlDocGetRootElement(xmlEncryptedMessage);
-	if (cur != NULL) {
-		cur = cur->xmlChildrenNode;
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"ZID"))){ /* sender ZID found, extract it */
-			peerZidHex = xmlNodeListGetString(xmlEncryptedMessage, cur->xmlChildrenNode, 1);
-			/* convert it from hexa string to bytes string and set the result in the associatedKey structure */
-			lime_strToUint8(associatedKey.peerZID, peerZidHex, (uint16_t)strlen((char *)peerZidHex));
-			cur = cur->next;
-		}
+	if (linphone_create_xml_xpath_context(xml_ctx) < 0) {
+		retval = LIME_INVALID_ENCRYPTED_MESSAGE;
+		goto error;
 	}
 
+	/* Retrieve the sender ZID */
+	peerZidHex = linphone_get_xml_text_content(xml_ctx, "/doc/ZID");
 	if (peerZidHex != NULL) {
-		/* get from cache the matching key */
-		retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
+		/* Convert it from hexa string to bytes string and set the result in the associatedKey structure */
+		lime_strToUint8(associatedKey.peerZID, (const uint8_t *)peerZidHex, (uint16_t)strlen(peerZidHex));
+		linphone_free_xml_text_content(peerZidHex);
 
+		/* Get the matching key from cache */
+		retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
 		if (retval != 0) {
-			xmlFree(peerZidHex);
-			xmlFreeDoc(xmlEncryptedMessage);
-			return retval;
+			goto error;
 		}
 
-		/* retrieve the portion of message which is encrypted with our key */
-		while (cur != NULL) { /* loop on all "msg" node in the message */
-			xmlNodePtr msgChildrenNode = cur->xmlChildrenNode;
-			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1); /* pZID is the first element of msg */
-			if (!xmlStrcmp(currentZidHex, (const xmlChar *)selfZidHex)) { /* we found the msg node we are looking for */
-				/* get the index (second node in the msg one) */
-				xmlChar *sessionIndexHex;
-				xmlChar *encryptedMessageb64;
-
-				msgChildrenNode = msgChildrenNode->next;
-				sessionIndexHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
-				usedSessionIndex = (((uint32_t)lime_charToByte(sessionIndexHex[0]))<<28)
-					| (((uint32_t)lime_charToByte(sessionIndexHex[1]))<<24)
-					| (((uint32_t)lime_charToByte(sessionIndexHex[2]))<<20)
-					| (((uint32_t)lime_charToByte(sessionIndexHex[3]))<<16)
-					| (((uint32_t)lime_charToByte(sessionIndexHex[4]))<<12)
-					| (((uint32_t)lime_charToByte(sessionIndexHex[5]))<<8)
-					| (((uint32_t)lime_charToByte(sessionIndexHex[6]))<<4)
-					| (((uint32_t)lime_charToByte(sessionIndexHex[7])));
-				xmlFree(sessionIndexHex);
-
-				/* get the encrypted message */
-				msgChildrenNode = msgChildrenNode->next;
-
-				/* convert the cipherText from base 64 */
-				encryptedMessageb64 = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
-				bctbx_base64_decode(NULL, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64)); /* encryptedMessageLength is 0, so it will be set to the requested buffer length */
-				encryptedMessage = (uint8_t *)ms_malloc(encryptedMessageLength);
-				bctbx_base64_decode(encryptedMessage, &encryptedMessageLength, encryptedMessageb64, strlen((char *)encryptedMessageb64));
-
-				xmlFree(encryptedMessageb64);
-				xmlFree(currentZidHex);
-				break;
+		/* Retrieve the portion of message which is encrypted with our key */
+		msg_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/doc/msg");
+		if ((msg_object != NULL) && (msg_object->nodesetval != NULL)) {
+			for (i = 1; i <= msg_object->nodesetval->nodeNr; i++) {
+				const char *currentZidHex;
+				const char *sessionIndexHex;
+				const char *encryptedMessageb64;
+				const char *encryptedContentTypeb64;
+				snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/pzid", i);
+				currentZidHex = linphone_get_xml_text_content(xml_ctx, xpath_str);
+				if ((currentZidHex != NULL) && (strcmp(currentZidHex, (char *)selfZidHex) == 0)) {
+					/* We found the msg node we are looking for */
+					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/index", i);
+					sessionIndexHex = linphone_get_xml_text_content(xml_ctx, xpath_str);
+					if (sessionIndexHex != NULL) {
+						usedSessionIndex = (((uint32_t)lime_charToByte(sessionIndexHex[0]))<<28)
+							| (((uint32_t)lime_charToByte(sessionIndexHex[1]))<<24)
+							| (((uint32_t)lime_charToByte(sessionIndexHex[2]))<<20)
+							| (((uint32_t)lime_charToByte(sessionIndexHex[3]))<<16)
+							| (((uint32_t)lime_charToByte(sessionIndexHex[4]))<<12)
+							| (((uint32_t)lime_charToByte(sessionIndexHex[5]))<<8)
+							| (((uint32_t)lime_charToByte(sessionIndexHex[6]))<<4)
+							| (((uint32_t)lime_charToByte(sessionIndexHex[7])));
+						linphone_free_xml_text_content(sessionIndexHex);
+					}
+					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/text", i);
+					encryptedMessageb64 = linphone_get_xml_text_content(xml_ctx, xpath_str);
+					if (encryptedMessageb64 != NULL) {
+						bctbx_base64_decode(NULL, &encryptedMessageLength, (const unsigned char *)encryptedMessageb64, strlen(encryptedMessageb64)); /* encryptedMessageLength is 0, so it will be set to the requested buffer length */
+						encryptedMessage = (uint8_t *)ms_malloc(encryptedMessageLength);
+						bctbx_base64_decode(encryptedMessage, &encryptedMessageLength, (const unsigned char *)encryptedMessageb64, strlen(encryptedMessageb64));
+						linphone_free_xml_text_content(encryptedMessageb64);
+					}
+					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/content-type", i);
+					encryptedContentTypeb64 = linphone_get_xml_text_content(xml_ctx, xpath_str);
+					if (encryptedContentTypeb64 != NULL) {
+						bctbx_base64_decode(NULL, &encryptedContentTypeLength, (const unsigned char *)encryptedContentTypeb64, strlen(encryptedContentTypeb64)); /* encryptedContentTypeLength is 0, so it will be set to the requested buffer length */
+						encryptedContentType = (uint8_t *)ms_malloc(encryptedContentTypeLength);
+						bctbx_base64_decode(encryptedContentType, &encryptedContentTypeLength, (const unsigned char *)encryptedContentTypeb64, strlen(encryptedContentTypeb64));
+						linphone_free_xml_text_content(encryptedContentTypeb64);
+					}
+					break;
+				}
+				if (currentZidHex != NULL) linphone_free_xml_text_content(currentZidHex);
 			}
-
-			cur = cur->next;
-			xmlFree(currentZidHex);
-			}
+		}
 	}
-
-	xmlFree(peerZidHex);
-	xmlFreeDoc(xmlEncryptedMessage);
 
 	/* do we have retrieved correctly all the needed data */
 	if (encryptedMessage == NULL) {
@@ -801,23 +820,35 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 		lime_deriveKey(&associatedKey);
 	}
 
-	/* decrypt the message */
-	*output = (uint8_t *)ms_malloc(encryptedMessageLength - 16 +1); /* plain message is same length than encrypted one with 16 bytes less for the tag + 1 to add the null termination char */
+	/* Decrypt the message */
+	*output = (uint8_t *)ms_malloc(encryptedMessageLength - 16 + 1); /* plain message is same length than encrypted one with 16 bytes less for the tag + 1 to add the null termination char */
 	retval = lime_decryptMessage(&associatedKey, encryptedMessage, (uint32_t)encryptedMessageLength, selfZid, *output);
-
 	ms_free(encryptedMessage);
-
 	if (retval != 0) {
 		ms_free(*output);
 		*output = NULL;
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 
+	/* Decrypt the content-type */
+	if (encryptedContentType != NULL) {
+		*content_type = (char *)ms_malloc(encryptedContentTypeLength - 16 + 1); /* content-type is same length than encrypted one with 16 bytes less for the tag + 1 to add the null termination char */
+		retval = lime_decryptMessage(&associatedKey, encryptedContentType, (uint32_t)encryptedContentTypeLength, selfZid, *((uint8_t **)content_type));
+		ms_free(encryptedContentType);
+		if (retval != 0) {
+			ms_free(*content_type);
+			*content_type = NULL;
+			return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		}
+	}
+
 	/* update used key */
 	lime_deriveKey(&associatedKey);
 	lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER);
 
-	return 0;
+error:
+	linphone_xmlparsing_context_destroy(xml_ctx);
+	return retval;
 }
 
 bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
@@ -887,6 +918,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			int retval;
 			xmlDocPtr cacheXml;
 			uint8_t *decrypted_body = NULL;
+			char *decrypted_content_type = NULL;
 			
 			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
 			if (!cacheString){
@@ -899,7 +931,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			fclose(CACHEFD);
 			cacheXml = xmlParseDoc((xmlChar*)cacheString);
 			ms_free(cacheString);
-			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body);
+			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body, &decrypted_content_type);
 			if (retval != 0) {
 				ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
 				if (decrypted_body) ms_free(decrypted_body);
@@ -922,13 +954,15 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 					ms_free(msg->message);
 				}
 				msg->message = (char *)decrypted_body;
-				
-				if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
-					ms_free(msg->content_type);
-					msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+
+				if (decrypted_content_type != NULL) {
+					linphone_chat_message_set_content_type(msg, decrypted_content_type);
 				} else {
-					ms_free(msg->content_type);
-					msg->content_type = ms_strdup("text/plain");
+					if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
+						linphone_chat_message_set_content_type(msg, "application/vnd.gsma.rcs-ft-http+xml");
+					} else {
+						linphone_chat_message_set_content_type(msg, "text/plain");
+					}
 				}
 			}
 
@@ -941,25 +975,22 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
-	char *content_type = "xml/cipher";
+	char *new_content_type = "xml/cipher";
 	if(linphone_core_lime_enabled(room->lc)) {
 		if (linphone_chat_room_lime_available(room)) {
 			if (msg->content_type) {
 				if (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
-					/* it's a file transfer, content type shall be set to
-					application/cipher.vnd.gsma.rcs-ft-http+xml*/
-					content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
+					/* It's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml
+					   TODO: As of january 2017, the content type is now included in the encrypted body, this
+					   application/cipher.vnd.gsma.rcs-ft-http+xml is kept for compatibility with previous versions,
+					   but may be dropped in the future to use xml/cipher instead. */
+					new_content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
 				} else if (strcmp(msg->content_type, "application/im-iscomposing+xml") == 0) {
 					/* We don't encrypt composing messages */
 					return errcode;
-				} else if (strcmp(msg->content_type, "message/imdn+xml") == 0) {
-					/* We don't encrypt imdn messages */
-					return errcode;
 				}
 			}
-			msg->content_type = ms_strdup(content_type);
-	
-	
+
 			/* access the zrtp cache to get keys needed to cipher the message */
 			const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
 			FILE *CACHEFD = fopen(zrtp_secrets_cache, "rb+");
@@ -986,7 +1017,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 				fclose(CACHEFD);
 				cacheXml = xmlParseDoc((xmlChar*)cacheString);
 				ms_free(cacheString);
-				retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg->message, (uint8_t *)peer, &crypted_body);
+				retval = lime_createMultipartMessage(cacheXml, msg->content_type, (uint8_t *)msg->message, (uint8_t *)peer, &crypted_body);
 				if (retval != 0) {
 					ms_warning("Unable to encrypt message for %s : %s", peer, lime_error_code_to_string(retval));
 					if (crypted_body) ms_free(crypted_body);
@@ -1007,6 +1038,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 						ms_free(msg->message);
 					}
 					msg->message = (char *)crypted_body;
+					msg->content_type = ms_strdup(new_content_type);
 				}
 				ms_free(peer);
 				xmlFreeDoc(cacheXml);
@@ -1070,14 +1102,14 @@ void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptio
 bool_t lime_is_available() { return FALSE; }
 int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) { return LIME_NOT_ENABLED;}
 int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) { return LIME_NOT_ENABLED;}
-int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
+int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *content_type, uint8_t *message, uint8_t *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {return LIME_NOT_ENABLED;}
 void lime_freeKeys(limeURIKeys_t *associatedKeys){
 }
 int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys){
 	return LIME_NOT_ENABLED;
 }
-int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
+int lime_encryptMessage(limeKey_t *key, const uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
 	return LIME_NOT_ENABLED;
 }
 int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role) {

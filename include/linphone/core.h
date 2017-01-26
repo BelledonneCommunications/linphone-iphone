@@ -3206,7 +3206,7 @@ LINPHONE_PUBLIC void linphone_core_set_root_ca_data(LinphoneCore *lc, const char
  * Set the pointer to an externally provided ssl configuration for the crypto library
  * @param lc #LinphoneCore object
  * @param[in] ssl_config A pointer to an opaque structure which will be provided directly to the crypto library used in bctoolbox. Use with extra care.
- * This ssl_config structure is responsability of the caller and will not be freed at the connection's end.
+ * This ssl_config structure is responsibility of the caller and will not be freed at the connection's end.
  * @ingroup initializing
  * @endinternal
  */
@@ -3374,7 +3374,7 @@ LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_call_logs(LinphoneCore *l
 
 /**
  * Get the list of call logs (past calls) that matches the given #LinphoneAddress.
- * At the contrary of linphone_core_get_call_logs, it is your responsability to unref the logs and free this list once you are done using it.
+ * At the contrary of linphone_core_get_call_logs, it is your responsibility to unref the logs and free this list once you are done using it.
  * @param[in] lc LinphoneCore object
  * @param[in] addr LinphoneAddress object
  * @return \bctbx_list{LinphoneCallLog}
@@ -4919,6 +4919,22 @@ LINPHONE_PUBLIC void linphone_core_set_im_encryption_engine(LinphoneCore *lc, Li
  * @return the IM Encryption Engine in the core or NULL
  */
 LINPHONE_PUBLIC LinphoneImEncryptionEngine * linphone_core_get_im_encryption_engine(const LinphoneCore *lc);
+
+/**
+ * Tells whether a content type is supported.
+ * @param[in] lc LinphoneCore object
+ * @param[in] content_type The content type to check
+ * @return A boolean value telling whether the specified content type is supported or not.
+ */
+LINPHONE_PUBLIC bool_t linphone_core_is_content_type_supported(const LinphoneCore *lc, const char *content_type);
+
+/**
+ * Add support for the specified content type.
+ * It is the application responsibility to handle it correctly afterwards.
+ * @param[in] lc LinphoneCore object
+ * @param[in] content_type The content type to add support for
+ */
+LINPHONE_PUBLIC void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type);
 
 #include "linphone/ringtoneplayer.h"
 #include "linphone/factory.h"

@@ -41,6 +41,8 @@ static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr)
 static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *cr);
 static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneChatRoom *cr);
 static void _linphone_chat_message_destroy(LinphoneChatMessage *msg);
+static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const char *text);
+static void linphone_chat_room_notify_imdn(LinphoneChatRoom *cr, const char *text);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessageCbs);
 
@@ -511,6 +513,97 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 	linphone_chat_message_send_delivery_notification(msg, LinphoneReasonNone);
 }
 
+static bool_t is_file_transfer(const char *content_type) {
+	return (strcmp("application/vnd.gsma.rcs-ft-http+xml", content_type) == 0);
+}
+
+static bool_t is_im_iscomposing(const char* content_type) {
+	return (strcmp("application/im-iscomposing+xml", content_type) == 0);
+}
+
+static bool_t is_imdn(const char *content_type) {
+	return (strcmp("message/imdn+xml", content_type) == 0);
+}
+
+static void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChatMessage *msg) {
+	xmlChar *file_url = NULL;
+	xmlDocPtr xmlMessageBody;
+	xmlNodePtr cur;
+	/* parse the msg body to get all informations from it */
+	xmlMessageBody = xmlParseDoc((const xmlChar *)msg->message);
+	msg->file_transfer_information = linphone_content_new();
+
+	cur = xmlDocGetRootElement(xmlMessageBody);
+	if (cur != NULL) {
+		cur = cur->xmlChildrenNode;
+		while (cur != NULL) {
+			if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) {
+				/* we found a file info node, check if it has a type="file" attribute */
+				xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
+				if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
+					cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
+					while (cur != NULL) {
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
+							xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							linphone_content_set_size(msg->file_transfer_information, strtol((const char *)fileSizeString, NULL, 10));
+							xmlFree(fileSizeString);
+						}
+
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
+							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							linphone_content_set_name(msg->file_transfer_information, (char *)filename);
+							xmlFree(filename);
+						}
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
+							xmlChar *contentType = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							int contentTypeIndex = 0;
+							char *type;
+							char *subtype;
+							while (contentType[contentTypeIndex] != '/' && contentType[contentTypeIndex] != '\0') {
+								contentTypeIndex++;
+							}
+							type = ms_strndup((char *)contentType, contentTypeIndex);
+							subtype = ms_strdup(((char *)contentType + contentTypeIndex + 1));
+							linphone_content_set_type(msg->file_transfer_information, type);
+							linphone_content_set_subtype(msg->file_transfer_information, subtype);
+							ms_free(subtype);
+							ms_free(type);
+							xmlFree(contentType);
+						}
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
+							file_url = xmlGetProp(cur, (const xmlChar *)"url");
+						}
+
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) { 
+							/* there is a key in the msg: file has been encrypted */
+							/* convert the key from base 64 */
+							xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							size_t keyLength = b64_decode((char *)keyb64, strlen((char *)keyb64), NULL, 0);
+							uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
+							/* decode the key into local key buffer */
+							b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
+							linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength); 
+							/* duplicate key value into the linphone content private structure */
+							xmlFree(keyb64);
+							free(keyBuffer);
+						}
+
+						cur = cur->next;
+					}
+					xmlFree(typeAttribute);
+					break;
+				}
+				xmlFree(typeAttribute);
+			}
+			cur = cur->next;
+		}
+	}
+	xmlFreeDoc(xmlMessageBody);
+
+	linphone_chat_message_set_external_body_url(msg, (const char *)file_url);
+	xmlFree(file_url);
+}
+
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
 	LinphoneChatRoom *cr = NULL;
 	LinphoneAddress *addr;
@@ -525,18 +618,18 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	linphone_address_clean(addr);
 	cr = linphone_core_get_chat_room(lc, addr);
 
-	msg = linphone_chat_room_create_message(cr, sal_msg->text); /* create a msg with empty body */
-	msg->content_type = ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
+	msg = linphone_chat_room_create_message(cr, sal_msg->text);
+	msg->content_type = ms_strdup(sal_msg->content_type);
 	linphone_chat_message_set_from(msg, cr->peer_url);
 
 	to = sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op)) : linphone_address_new(linphone_core_get_identity(lc));
 	msg->to = to;
-	
+
 	msg->time = sal_msg->time;
 	msg->state = LinphoneChatMessageStateDelivered;
 	msg->dir = LinphoneChatMessageIncoming;
 	msg->message_id = ms_strdup(sal_op_get_call_id(op));
-	
+
 	ch = sal_op_get_recv_custom_header(op);
 	if (ch) {
 		msg->custom_headers = sal_custom_header_clone(ch);
@@ -545,7 +638,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	if (sal_msg->url) {
 		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
-	
+
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
@@ -553,101 +646,26 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 			retval = cb_process_incoming_message(imee, cr, msg);
 		}
 	}
-	
-	if (retval <= 0 && strcmp("text/plain", msg->content_type) != 0 && strcmp("message/external-body", msg->content_type) != 0
-			&& strcmp("application/vnd.gsma.rcs-ft-http+xml", msg->content_type) != 0) {
+
+	if ((retval <= 0) && (linphone_core_is_content_type_supported(lc, msg->content_type) == FALSE)) {
 		retval = 415;
 		ms_error("Unsupported MESSAGE (content-type %s not recognized)", msg->content_type);
 	}
-	
+
 	if (retval > 0) {
 		reason = linphone_error_code_to_reason(retval);
 		linphone_chat_message_send_delivery_notification(msg, reason);
 		goto end;
 	}
 
-	if (strcmp("application/vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
-		xmlChar *file_url = NULL;
-		xmlDocPtr xmlMessageBody;
-		xmlNodePtr cur;
-		/* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
-		/* parse the msg body to get all informations from it */
-		xmlMessageBody = xmlParseDoc((const xmlChar *)msg->message);
-		msg->file_transfer_information = linphone_content_new();
-
-		cur = xmlDocGetRootElement(xmlMessageBody);
-		if (cur != NULL) {
-			cur = cur->xmlChildrenNode;
-			while (cur != NULL) {
-				if (!xmlStrcmp(
-						cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check it has a
-																	   type="file" attribute */
-					xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
-					if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
-						cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
-						while (cur != NULL) {
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
-								xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-								linphone_content_set_size(msg->file_transfer_information,
-														  strtol((const char *)fileSizeString, NULL, 10));
-								xmlFree(fileSizeString);
-							}
-
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
-								xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-								linphone_content_set_name(
-									msg->file_transfer_information,
-									(char *)filename);
-								xmlFree(filename);
-							}
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
-								xmlChar *contentType = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-								int contentTypeIndex = 0;
-								char *type;
-								char *subtype;
-								while (contentType[contentTypeIndex] != '/' && contentType[contentTypeIndex] != '\0') {
-									contentTypeIndex++;
-								}
-								type = ms_strndup((char *)contentType, contentTypeIndex);
-								subtype = ms_strdup(((char *)contentType + contentTypeIndex + 1));
-								linphone_content_set_type(msg->file_transfer_information, type);
-								linphone_content_set_subtype(msg->file_transfer_information, subtype);
-								ms_free(subtype);
-								ms_free(type);
-								xmlFree(contentType);
-							}
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
-								file_url = xmlGetProp(cur, (const xmlChar *)"url");
-							}
-
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) { 
-								/* there is a key in the msg: file has been encrypted */
-								/* convert the key from base 64 */
-								xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-								size_t keyLength = b64_decode((char *)keyb64, strlen((char *)keyb64), NULL, 0);
-								uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
-								/* decode the key into local key buffer */
-								b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
-								linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength); 
-								/* duplicate key value into the linphone content private structure */
-								xmlFree(keyb64);
-								free(keyBuffer);
-							}
-
-							cur = cur->next;
-						}
-						xmlFree(typeAttribute);
-						break;
-					}
-					xmlFree(typeAttribute);
-				}
-				cur = cur->next;
-			}
-		}
-		xmlFreeDoc(xmlMessageBody);
-
-		linphone_chat_message_set_external_body_url(msg, (const char *)file_url);
-		xmlFree(file_url);
+	if (is_file_transfer(msg->content_type)) {
+		create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(msg);
+	} else if (is_im_iscomposing(msg->content_type)) {
+		linphone_chat_room_notify_is_composing(cr, msg->message);
+		goto end;
+	} else if (is_imdn(msg->content_type)) {
+		linphone_chat_room_notify_imdn(cr, msg->message);
+		goto end;
 	}
 
 	msg->storage_id = linphone_chat_message_store(msg);
@@ -744,36 +762,6 @@ static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const c
 	linphone_xmlparsing_context_destroy(xml_ctx);
 }
 
-LinphoneReason linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
-	LinphoneAddress *addr = linphone_address_new(is_composing->from);
-	LinphoneChatRoom *cr = _linphone_core_get_chat_room(lc, addr);
-	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
-	LinphoneReason reason = LinphoneReasonNone;
-
-	if (cr != NULL) {
-		int retval = -1;
-		LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, is_composing->text);
-		linphone_chat_message_set_from_address(msg, addr);
-		msg->content_type = ms_strdup("application/im-iscomposing+xml");
-		if (imee) {
-			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-			LinphoneImEncryptionEngineCbsIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
-			if (cb_process_incoming_message) {
-				retval = cb_process_incoming_message(imee, cr, msg);
-			}
-		}
-		if (retval <= 0) {
-			linphone_chat_room_notify_is_composing(cr, msg->message);
-		} else {
-			reason = linphone_error_code_to_reason(retval);
-		}
-		linphone_chat_message_unref(msg);
-	}
-	linphone_address_unref(addr);
-	
-	return reason;
-}
-
 bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 	return (cr->remote_is_composing == LinphoneIsComposingActive) ? TRUE : FALSE;
 }
@@ -858,16 +846,6 @@ static void linphone_chat_room_notify_imdn(LinphoneChatRoom *cr, const char *tex
 	linphone_xmlparsing_context_destroy(xml_ctx);
 }
 
-LinphoneReason linphone_core_imdn_received(LinphoneCore *lc, SalOp *op, const SalImdn *imdn) {
-	LinphoneAddress *addr = linphone_address_new(imdn->from);
-	LinphoneChatRoom *cr = _linphone_core_get_chat_room(lc, addr);
-	if (cr != NULL) {
-		linphone_chat_room_notify_imdn(cr, imdn->content);
-	}
-	linphone_address_unref(addr);
-	return LinphoneReasonNone;
-}
-
 LinphoneCore *linphone_chat_room_get_lc(LinphoneChatRoom *cr) {
 	return linphone_chat_room_get_core(cr);
 }
@@ -886,7 +864,7 @@ LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->callbacks = linphone_chat_message_cbs_new();
 	msg->chat_room = (LinphoneChatRoom *)cr;
 	msg->message = message ? ms_strdup(message) : NULL;
-	msg->content_type = NULL;			   /* this property is used only when transfering file */
+	msg->content_type = ms_strdup("text/plain");
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	msg->http_request = NULL;
 	msg->time = ms_time(0);
@@ -1430,6 +1408,17 @@ void linphone_chat_message_set_external_body_url(LinphoneChatMessage *msg, const
 		ms_free(msg->external_body_url);
 	}
 	msg->external_body_url = url ? ms_strdup(url) : NULL;
+}
+
+const char * linphone_chat_message_get_content_type(const LinphoneChatMessage *msg) {
+	return msg->content_type;
+}
+
+void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char *content_type) {
+	if (msg->content_type) {
+		ms_free(msg->content_type);
+	}
+	msg->content_type = content_type ? ms_strdup(content_type) : NULL;
 }
 
 const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {

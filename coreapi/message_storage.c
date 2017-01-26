@@ -203,16 +203,17 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
  * | 0  | storage_id
  * | 1  | localContact
  * | 2  | remoteContact
- * | 3  | direction flag
- * | 4  | message
- * | 5  | time (unused now, used to be string-based timestamp)
- * | 6  | read flag
- * | 7  | status
- * | 8  | external body url
+ * | 3  | direction flag (LinphoneChatMessageDir)
+ * | 4  | message (text content of the message)
+ * | 5  | time (unused now, used to be string-based timestamp, replaced by the utc timestamp)
+ * | 6  | read flag (no longer used, replaced by the LinphoneChatMessageStateDisplayed state)
+ * | 7  | status (LinphoneChatMessageState)
+ * | 8  | external body url (deprecated file transfer system)
  * | 9  | utc timestamp
  * | 10 | app data text
- * | 11 | linphone content id
- * | 12 | message id
+ * | 11 | linphone content id (LinphoneContent describing a file transfer)
+ * | 12 | message id (used for IMDN)
+ * | 13 | content type (of the message field [must be text representable])
  */
 static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
@@ -245,11 +246,23 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 		new_message->external_body_url= ms_strdup(argv[8]);
 		new_message->appdata = ms_strdup(argv[10]);
 		new_message->message_id = ms_strdup(argv[12]);
+		new_message->content_type = ms_strdup(argv[13]);
 
 		if (argv[11] != NULL) {
 			int id = atoi(argv[11]);
 			if (id >= 0) {
 				fetch_content_from_database(cr->lc->db, new_message, id);
+			}
+		}
+
+		/* Fix content type for old messages that were stored without it */
+		if (new_message->content_type == NULL) {
+			if (new_message->file_transfer_information != NULL) {
+				new_message->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+			} else if (new_message->external_body_url != NULL) {
+				new_message->content_type = ms_strdup("message/external-body");
+			} else {
+				new_message->content_type = ms_strdup("text/plain");
 			}
 		}
 
@@ -330,7 +343,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 
 		peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
-		buf = sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%lld,%Q,%i,%Q);",
+		buf = sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%lld,%Q,%i,%Q,%Q);",
 						local_contact,
 						peer,
 						msg->dir,
@@ -342,7 +355,8 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						(int64_t)msg->time,
 						msg->appdata,
 						content_id,
-						msg->message_id
+						msg->message_id,
+						msg->content_type
 					);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
@@ -748,13 +762,21 @@ void linphone_update_table(sqlite3* db) {
 	if (ret != SQLITE_OK) {
 		ms_message("Table already up to date: %s", errmsg);
 	} else {
-		ms_message("Table history updated successfully for message_id data.");
+		ms_message("Table history updated successfully for messageId data.");
 	}
 
 	// Convert is_read to LinphoneChatMessageStateDisplayed
 	buf = sqlite3_mprintf("UPDATE history SET status=%i WHERE read=1 AND direction=%i;", LinphoneChatMessageStateDisplayed, LinphoneChatMessageIncoming);
 	linphone_sql_request(db, buf);
 	sqlite3_free(buf);
+
+	/* New field for content type */
+	ret = sqlite3_exec(db, "ALTER TABLE history ADD COLUMN content_type TEXT;", NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_message("Table already up to date: %s", errmsg);
+	} else {
+		ms_message("Table history updated successfully for content_type data.");
+	}
 }
 
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {

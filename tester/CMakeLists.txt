@@ -130,9 +130,11 @@ set(RC_FILES
 	rcfiles/zero_length_params_rc
 )
 
-set(IMAGE_FILES 
+set(IMAGE_FILES
+	images/linphone.svg
 	images/nowebcamCIF.jpg
-	images/nowebcamVGA.jpg)
+	images/nowebcamVGA.jpg
+)
 
 set(VCARD_FILES
 	vcards/thousand_vcards.vcf

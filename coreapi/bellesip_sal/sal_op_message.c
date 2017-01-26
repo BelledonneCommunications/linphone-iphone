@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 static void process_error( SalOp* op) {
 	if (op->dir == SalOpDirOutgoing) {
-		op->base.root->callbacks.text_delivery_update(op, SalTextDeliveryFailed);
+		op->base.root->callbacks.message_delivery_update(op, SalMessageDeliveryFailed);
 	} else {
 		ms_warning("unexpected io error for incoming message on op [%p]",op);
 	}
@@ -46,35 +46,39 @@ static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *eve
 static void process_response_event(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
 	int code = belle_sip_response_get_status_code(belle_sip_response_event_get_response(event));
-	SalTextDeliveryStatus status;
+	SalMessageDeliveryStatus status;
 	sal_op_set_error_info_from_response(op,belle_sip_response_event_get_response(event));
 	
 	if (code>=100 && code <200)
-		status=SalTextDeliveryInProgress;
+		status=SalMessageDeliveryInProgress;
 	else if (code>=200 && code <300)
-		status=SalTextDeliveryDone;
+		status=SalMessageDeliveryDone;
 	else
-		status=SalTextDeliveryFailed;
+		status=SalMessageDeliveryFailed;
 	
-	op->base.root->callbacks.text_delivery_update(op,status);
+	op->base.root->callbacks.message_delivery_update(op,status);
 }
 
 static bool_t is_external_body(belle_sip_header_content_type_t* content_type) {
 	return strcmp("message",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("external-body",belle_sip_header_content_type_get_subtype(content_type))==0;
 }
-static bool_t is_im_iscomposing(belle_sip_header_content_type_t* content_type) {
-	return strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
-			&&	strcmp("im-iscomposing+xml",belle_sip_header_content_type_get_subtype(content_type))==0;
-}
 
-static bool_t is_imdn_xml(belle_sip_header_content_type_t *content_type) {
-	return (strcmp("message", belle_sip_header_content_type_get_type(content_type)) == 0)
-		&& (strcmp("imdn+xml", belle_sip_header_content_type_get_subtype(content_type)) == 0);
-}
+static void add_message_accept(SalOp *op, belle_sip_message_t *msg) {
+	bctbx_list_t *item;
+	const char *str;
+	char *old;
+	char *header = ms_strdup("xml/cipher, application/cipher.vnd.gsma.rcs-ft-http+xml");
 
-static void add_message_accept(belle_sip_message_t *msg){
-	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml, xml/cipher, application/vnd.gsma.rcs-ft-http+xml, application/cipher.vnd.gsma.rcs-ft-http+xml, message/imdn+xml"));
+	for (item = op->base.root->supported_content_types; item != NULL; item = bctbx_list_next(item)) {
+		str = (const char *)bctbx_list_get_data(item);
+		old = header;
+		header = ms_strdup_printf("%s, %s", old, str);
+		ms_free(old);
+	}
+
+	belle_sip_message_add_header(msg, belle_sip_header_create("Accept", header));
+	ms_free(header);
 }
 
 void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *event){
@@ -95,72 +99,45 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 	
 	if (content_type) {
-		
+		SalMessage salmsg;
+		char message_id[256]={0};
+
 		if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
 		op->pending_server_trans=server_transaction;
 		belle_sip_object_ref(op->pending_server_trans);
-			
-		if (is_im_iscomposing(content_type)) {
-			SalIsComposing saliscomposing;
-			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
-					,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
-			from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
-			saliscomposing.from=from;
-			saliscomposing.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
-			op->base.root->callbacks.is_composing_received(op,&saliscomposing);
-			belle_sip_object_unref(address);
-			belle_sip_free(from);
-		} else if (is_imdn_xml(content_type)) {
-			SalImdn salimdn;
-			address = belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header)),
-				belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
-			from = belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
-			salimdn.from = from;
-			salimdn.content = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
-			op->base.root->callbacks.imdn_received(op, &salimdn);
-			belle_sip_object_unref(address);
-			belle_sip_free(from);
-		} else {
-			SalMessage salmsg;
-			char message_id[256]={0};
-			
-			external_body=is_external_body(content_type);
-		
-			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
-					,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
-			from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
-			snprintf(message_id,sizeof(message_id)-1,"%s%i"
-					,belle_sip_header_call_id_get_call_id(call_id)
-					,belle_sip_header_cseq_get_seq_number(cseq));
-			salmsg.from=from;
-			/* if we just deciphered a message, use the deciphered part(which can be a rcs xml body pointing to the file to retreive from server)*/
-			salmsg.text=(!external_body)?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
-			salmsg.url=NULL;
-			salmsg.content_type = ms_strdup_printf("%s/%s", belle_sip_header_content_type_get_type(content_type), belle_sip_header_content_type_get_subtype(content_type));
-			if (external_body && belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")) {
-				size_t url_length=strlen(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"));
-				salmsg.url = ms_strdup(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")+1); /* skip first "*/
-				((char*)salmsg.url)[url_length-2]='\0'; /*remove trailing "*/
-			}
-			salmsg.message_id=message_id;
-			salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);
-			op->base.root->callbacks.text_received(op,&salmsg);
 
-			belle_sip_object_unref(address);
-			belle_sip_free(from);
-			if (salmsg.url) ms_free((char*)salmsg.url);
-			ms_free((char *)salmsg.content_type);
+		external_body=is_external_body(content_type);
+		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+				,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
+		snprintf(message_id,sizeof(message_id)-1,"%s%i"
+				,belle_sip_header_call_id_get_call_id(call_id)
+				,belle_sip_header_cseq_get_seq_number(cseq));
+		salmsg.from=from;
+		/* if we just deciphered a message, use the deciphered part(which can be a rcs xml body pointing to the file to retreive from server)*/
+		salmsg.text=(!external_body)?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
+		salmsg.url=NULL;
+		salmsg.content_type = ms_strdup_printf("%s/%s", belle_sip_header_content_type_get_type(content_type), belle_sip_header_content_type_get_subtype(content_type));
+		if (external_body && belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")) {
+			size_t url_length=strlen(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"));
+			salmsg.url = ms_strdup(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")+1); /* skip first "*/
+			((char*)salmsg.url)[url_length-2]='\0'; /*remove trailing "*/
 		}
+		salmsg.message_id=message_id;
+		salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);
+		op->base.root->callbacks.message_received(op,&salmsg);
+
+		belle_sip_object_unref(address);
+		belle_sip_free(from);
+		if (salmsg.url) ms_free((char*)salmsg.url);
+		ms_free((char *)salmsg.content_type);
 	} else {
 		ms_error("Unsupported MESSAGE (no Content-Type)");
-		goto error;
+		resp = belle_sip_response_create_from_request(req, errcode);
+		add_message_accept(op, (belle_sip_message_t*)resp);
+		belle_sip_server_transaction_send_response(server_transaction,resp);
+		sal_op_release(op);
 	}
-	return;
-error:
-	resp = belle_sip_response_create_from_request(req, errcode);
-	add_message_accept((belle_sip_message_t*)resp);
-	belle_sip_server_transaction_send_response(server_transaction,resp);
-	sal_op_release(op);
 }
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {

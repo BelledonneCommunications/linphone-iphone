@@ -591,12 +591,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.notify_presence=(SalOnNotifyPresence)unimplemented_stub;
 	if (ctx->callbacks.subscribe_presence_received==NULL)
 		ctx->callbacks.subscribe_presence_received=(SalOnSubscribePresenceReceived)unimplemented_stub;
-	if (ctx->callbacks.text_received==NULL)
-		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
-	if (ctx->callbacks.is_composing_received==NULL)
-		ctx->callbacks.is_composing_received=(SalOnIsComposingReceived)unimplemented_stub;
-	if (ctx->callbacks.imdn_received == NULL)
-		ctx->callbacks.imdn_received = (SalOnImdnReceived)unimplemented_stub;
+	if (ctx->callbacks.message_received==NULL)
+		ctx->callbacks.message_received=(SalOnMessageReceived)unimplemented_stub;
 	if (ctx->callbacks.ping_reply==NULL)
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL)
@@ -618,6 +614,7 @@ void sal_uninit(Sal* sal){
 	belle_sip_object_unref(sal->listener);
 	if (sal->supported) belle_sip_object_unref(sal->supported);
 	bctbx_list_free_with_data(sal->supported_tags,ms_free);
+	bctbx_list_free_with_data(sal->supported_content_types, ms_free);
 	if (sal->uuid) ms_free(sal->uuid);
 	if (sal->root_ca) ms_free(sal->root_ca);
 	if (sal->root_ca_data) ms_free(sal->root_ca_data);
@@ -1500,4 +1497,17 @@ void *sal_get_stack_impl(Sal *sal) {
 	return sal->stack;
 }
 
+bool_t sal_is_content_type_supported(const Sal *sal, const char *content_type) {
+	bctbx_list_t *item;
+	for (item = sal->supported_content_types; item != NULL; item = bctbx_list_next(item)) {
+		const char *item_content_type = (const char *)bctbx_list_get_data(item);
+		if (strcmp(item_content_type, content_type) == 0) return TRUE;
+	}
+	return FALSE;
+}
 
+void sal_add_content_type_support(Sal *sal, const char *content_type) {
+	if ((content_type != NULL) && (sal_is_content_type_supported(sal, content_type) == FALSE)) {
+		sal->supported_content_types = bctbx_list_append(sal->supported_content_types, ms_strdup(content_type));
+	}
+}

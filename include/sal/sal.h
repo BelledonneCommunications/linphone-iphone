@@ -307,16 +307,6 @@ typedef struct SalMessage{
 	time_t time;
 }SalMessage;
 
-typedef struct SalIsComposing {
-	const char *from;
-	const char *text;
-} SalIsComposing;
-
-typedef struct SalImdn {
-	const char *from;
-	const char *content;
-} SalImdn;
-
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
 SalMediaDescription *sal_media_description_new(void);
@@ -447,11 +437,11 @@ typedef enum SalSubscribeStatus{
 	SalSubscribeTerminated
 }SalSubscribeStatus;
 
-typedef enum SalTextDeliveryStatus{
-	SalTextDeliveryInProgress,
-	SalTextDeliveryDone,
-	SalTextDeliveryFailed
-}SalTextDeliveryStatus;
+typedef enum SalMessageDeliveryStatus{
+	SalMessageDeliveryInProgress,
+	SalMessageDeliveryDone,
+	SalMessageDeliveryFailed
+}SalMessageDeliveryStatus;
 
 /**
  * auth event mode
@@ -505,10 +495,8 @@ typedef void (*SalOnRegisterFailure)(SalOp *op);
 typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
-typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
-typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus);
-typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
-typedef void (*SalOnImdnReceived)(SalOp *op, const SalImdn *imdn);
+typedef void (*SalOnMessageReceived)(SalOp *op, const SalMessage *msg);
+typedef void (*SalOnMessageDeliveryUpdate)(SalOp *op, SalMessageDeliveryStatus);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, int will_retry);
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, SalBodyHandler *body);
@@ -544,10 +532,8 @@ typedef struct SalCallbacks{
 	SalOnVfuRequest vfu_request;
 	SalOnDtmfReceived dtmf_received;
 	SalOnRefer refer_received;
-	SalOnTextReceived text_received;
-	SalOnTextDeliveryUpdate text_delivery_update;
-	SalOnIsComposingReceived is_composing_received;
-	SalOnImdnReceived imdn_received;
+	SalOnMessageReceived message_received;
+	SalOnMessageDeliveryUpdate message_delivery_update;
 	SalOnNotifyRefer notify_refer;
 	SalOnSubscribeReceived subscribe_received;
 	SalOnIncomingSubscribeClosed incoming_subscribe_closed;
@@ -644,6 +630,8 @@ void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
 int sal_set_tunnel(Sal *ctx, void *tunnelclient);
 /*Default value is true*/
 void sal_enable_sip_update_method(Sal *ctx,bool_t value);
+bool_t sal_is_content_type_supported(const Sal *sal, const char *content_type);
+void sal_add_content_type_support(Sal *sal, const char *content_type);
 
 /**
  * returns keepalive period in ms

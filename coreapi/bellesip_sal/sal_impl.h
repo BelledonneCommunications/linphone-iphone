@@ -55,6 +55,7 @@ struct Sal{
 	SalOpSDPHandling default_sdp_handling;
 	bool_t pending_trans_checking; /*testing purpose*/
 	void *ssl_config;
+	bctbx_list_t *supported_content_types; /* list of char* */
 };
 
 typedef enum SalOpState {
@@ -177,5 +178,6 @@ int sal_reason_to_sip_code(SalReason r);
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
 
 SalSubscribeStatus belle_sip_message_get_subscription_state(const belle_sip_message_t *msg);
+
 
 #endif /* SAL_IMPL_H_ */

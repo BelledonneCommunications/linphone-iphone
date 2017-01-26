@@ -554,8 +554,6 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
-LinphoneReason linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
-LinphoneReason linphone_core_imdn_received(LinphoneCore *lc, SalOp *op, const SalImdn *imdn);
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call);
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type);
@@ -1093,9 +1091,7 @@ struct _LinphoneCore
 	char *tls_cert;
 	char *tls_key;
 
-	/*default resource list server*/
-	LinphoneAddress *default_rls_addr;
-	
+	LinphoneAddress *default_rls_addr; /*default resource list server*/
 	LinphoneImEncryptionEngine *im_encryption_engine;
 };
 
@@ -1147,6 +1143,8 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 
 #define linphone_core_ready(lc) ((lc)->state==LinphoneGlobalOn || (lc)->state==LinphoneGlobalShutdown)
 void _linphone_core_configure_resolver(void);
+
+void linphone_core_initialize_supported_content_types(LinphoneCore *lc);
 
 struct _EcCalibrator{
 	MSFactory *factory;

@@ -1997,9 +1997,10 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 #ifdef SQLITE_STORAGE_ENABLED
 	sqlite3_bctbx_vfs_register(0);
 #endif
-	
+
 	lc->vcard_context = linphone_vcard_context_new();
-	
+	linphone_core_initialize_supported_content_types(lc);
+
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
@@ -7198,4 +7199,20 @@ void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncrypti
 
 LinphoneImEncryptionEngine *linphone_core_get_im_encryption_engine(const LinphoneCore *lc) {
 	return lc->im_encryption_engine;
+}
+
+void linphone_core_initialize_supported_content_types(LinphoneCore *lc) {
+	sal_add_content_type_support(lc->sal, "text/plain");
+	sal_add_content_type_support(lc->sal, "message/external-body");
+	sal_add_content_type_support(lc->sal, "application/vnd.gsma.rcs-ft-http+xml");
+	sal_add_content_type_support(lc->sal, "application/im-iscomposing+xml");
+	sal_add_content_type_support(lc->sal, "message/imdn+xml");
+}
+
+bool_t linphone_core_is_content_type_supported(const LinphoneCore *lc, const char *content_type) {
+	return sal_is_content_type_supported(lc->sal, content_type);
+}
+
+void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type) {
+	sal_add_content_type_support(lc->sal, content_type);
 }

@@ -1169,7 +1169,7 @@ static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
 }
 
 
-static void text_received(SalOp *op, const SalMessage *msg){
+static void message_received(SalOp *op, const SalMessage *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	LinphoneReason reason = lc->chat_deny_code;
@@ -1178,20 +1178,6 @@ static void text_received(SalOp *op, const SalMessage *msg){
 	}
 	sal_message_reply(op, linphone_reason_to_sal(reason));
 	if (!call) sal_op_release(op);
-}
-
-static void is_composing_received(SalOp *op, const SalIsComposing *is_composing) {
-	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	LinphoneReason reason = linphone_core_is_composing_received(lc, op, is_composing);
-	sal_message_reply(op, linphone_reason_to_sal(reason));
-	sal_op_release(op);
-}
-
-static void imdn_received(SalOp *op, const SalImdn *imdn) {
-	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	LinphoneReason reason = linphone_core_imdn_received(lc, op, imdn);
-	sal_message_reply(op, linphone_reason_to_sal(reason));
-	sal_op_release(op);
 }
 
 static void parse_presence_requested(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
@@ -1348,19 +1334,19 @@ static void notify_refer(SalOp *op, SalReferStatus status){
 	}
 }
 
-static LinphoneChatMessageState chatStatusSal2Linphone(SalTextDeliveryStatus status){
+static LinphoneChatMessageState chatStatusSal2Linphone(SalMessageDeliveryStatus status){
 	switch(status){
-		case SalTextDeliveryInProgress:
+		case SalMessageDeliveryInProgress:
 			return LinphoneChatMessageStateInProgress;
-		case SalTextDeliveryDone:
+		case SalMessageDeliveryDone:
 			return LinphoneChatMessageStateDelivered;
-		case SalTextDeliveryFailed:
+		case SalMessageDeliveryFailed:
 			return LinphoneChatMessageStateNotDelivered;
 	}
 	return LinphoneChatMessageStateIdle;
 }
 
-static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
+static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
 
 	if (chat_msg == NULL) {
@@ -1371,7 +1357,7 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	if (chat_msg->chat_room != NULL) {
 		linphone_chat_message_update_state(chat_msg, chatStatusSal2Linphone(status));
 	}
-	if (status != SalTextDeliveryInProgress) { /*only release op if not in progress*/
+	if (status != SalMessageDeliveryInProgress) { /*only release op if not in progress*/
 		linphone_chat_message_destroy(chat_msg);
 	}
 }
@@ -1507,10 +1493,8 @@ SalCallbacks linphone_sal_callbacks={
 	vfu_request,
 	dtmf_received,
 	refer_received,
-	text_received,
-	text_delivery_update,
-	is_composing_received,
-	imdn_received,
+	message_received,
+	message_delivery_update,
 	notify_refer,
 	subscribe_received,
 	incoming_subscribe_closed,

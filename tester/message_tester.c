@@ -279,6 +279,10 @@ void text_message_base(LinphoneCoreManager* marie, LinphoneCoreManager* pauline)
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_PTR_NOT_NULL(marie->stat.last_received_chat_message);
+	if (marie->stat.last_received_chat_message != NULL) {
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(marie->stat.last_received_chat_message), "text/plain");
+	}
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 }
@@ -1410,6 +1414,7 @@ static void lime_unit(void) {
 		xmlDocPtr cacheBufferBob;
 		uint8_t *multipartMessage = NULL;
 		uint8_t *decryptedMessage = NULL;
+		char *decryptedContentType = NULL;
 		xmlChar *xmlStringOutput;
 		int xmlStringLength;
 		limeURIKeys_t associatedKeys;
@@ -1529,7 +1534,7 @@ static void lime_unit(void) {
 
 
 		/* encrypt a msg */
-		retval = lime_createMultipartMessage(cacheBufferAlice, (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
+		retval = lime_createMultipartMessage(cacheBufferAlice, "text/plain", (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
 
 		BC_ASSERT_EQUAL(retval, 0, int, "%d");
 		if (retval == 0) {
@@ -1537,15 +1542,17 @@ static void lime_unit(void) {
 		}
 
 		/* decrypt the multipart msg */
-		retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage);
+		retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage, &decryptedContentType);
 
 		BC_ASSERT_EQUAL(retval, 0, int, "%d");
 		if (retval == 0) {
 			BC_ASSERT_STRING_EQUAL((char *)decryptedMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
+			BC_ASSERT_STRING_EQUAL((char *)decryptedContentType, "text/plain");
 			ms_message("Succesfully decrypted msg is %s", decryptedMessage);
 		}
-		free(multipartMessage);
-		free(decryptedMessage);
+		ms_free(multipartMessage);
+		ms_free(decryptedMessage);
+		ms_free(decryptedContentType);
 
 		/* update ZID files */
 		/* dump the xml document into a string */
@@ -2304,6 +2311,64 @@ void chat_message_custom_headers(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+void _text_message_with_custom_content_type(bool_t with_lime) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneChatRoom *chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	LinphoneChatMessage *msg;
+	LinphoneChatMessageCbs *cbs;
+	bctbx_vfs_t *vfs = bctbx_vfs_get_default();
+	char *send_filepath;
+	bctbx_vfs_file_t *file_to_send;
+	size_t file_size;
+	char *buf;
+
+	if (with_lime) {
+		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
+	}
+
+	send_filepath = bc_tester_res("images/linphone.svg");
+	file_to_send = bctbx_file_open(vfs, send_filepath, "r");
+	file_size = (size_t)bctbx_file_size(file_to_send);
+	buf = bctbx_malloc(file_size + 1);
+	bctbx_file_read(file_to_send, buf, file_size, 0);
+	buf[file_size] = '\0';
+	bctbx_file_close(file_to_send);
+	bc_free(send_filepath);
+	msg = linphone_chat_room_create_message(chat_room, buf);
+	linphone_chat_message_set_content_type(msg, "image/svg+xml");
+
+	linphone_core_add_content_type_support(marie->lc, "image/svg+xml");
+	linphone_core_add_content_type_support(pauline->lc, "image/svg+xml");
+	cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_room_send_chat_message(chat_room, msg);
+
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDelivered, 1));
+
+	if (marie->stat.last_received_chat_message) {
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(marie->stat.last_received_chat_message), "image/svg+xml");
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), buf);
+	}
+
+	bctbx_free(buf);
+
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	remove("tmpZIDCacheMarie.xml");
+	remove("tmpZIDCachePauline.xml");
+}
+
+void text_message_with_custom_content_type(void) {
+	_text_message_with_custom_content_type(FALSE);
+}
+
+void text_message_with_custom_content_type_and_lime(void) {
+	_text_message_with_custom_content_type(TRUE);
+}
+
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
 	TEST_NO_TAG("Text message within call dialog", text_message_within_call_dialog),
@@ -2371,7 +2436,9 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side, "RTT"),
 	TEST_ONE_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side, "RTT"),
 	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
-	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers)
+	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers),
+	TEST_NO_TAG("Text message with custom content-type", text_message_with_custom_content_type),
+	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME")
 };
 
 test_suite_t message_test_suite = {
