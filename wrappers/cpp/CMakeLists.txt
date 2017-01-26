@@ -1,6 +1,7 @@
 configure_file(c_make_lists.mustache.in c_make_lists.mustache @ONLY)
 configure_file(object.cc src/object.cc COPYONLY)
 configure_file(object.hh include/object.hh COPYONLY)
+configure_file(LinphoneCxxConfig.cmake.in LinphoneCxxConfig.cmake @ONLY)
 
 add_custom_command(OUTPUT CMakeLists.txt include/linphone.hh
 	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/xml"

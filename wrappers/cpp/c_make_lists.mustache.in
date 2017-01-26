@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
+project(LinphoneCxx VERSION @LINPHONE_VERSION@)
+
 include(GNUInstallDirs)
 
 set(GENERATED_SOURCES
@@ -37,10 +39,24 @@ set_target_properties(linphone++
 	PROPERTIES SOVERSION @LINPHONE_SO_VERSION@
 )
 
-install(TARGETS linphone++
+install(TARGETS linphone++ EXPORT LinphoneCxxTargets
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(FILES ${HEADERS}
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/linphone++
 )
 
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneCxxVersion.cmake"
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY AnyNewerVersion
+)
+export(EXPORT LinphoneCxxTargets
+	FILE "${CMAKE_CURRENT_BINARY_DIR}/LinphoneCxxTargets.cmake"
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LinphoneCxxVersion.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/LinphoneCxxTargets.cmake
+	${CMAKE_CURRENT_SOURCE_DIR}/LinphoneCxxConfig.cmake
+	DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake
+)
