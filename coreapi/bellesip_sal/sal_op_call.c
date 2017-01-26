@@ -538,6 +538,12 @@ static void sal_op_reset_descriptions(SalOp *op) {
 		op->result=NULL;
 	}
 }
+
+static bool_t is_a_pending_invite_incoming_transaction(belle_sip_transaction_t *tr){
+	return BELLE_SIP_OBJECT_IS_INSTANCE_OF(tr, belle_sip_ist_t) && belle_sip_transaction_state_is_transient(
+		belle_sip_transaction_get_state(tr));
+}
+
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_server_transaction_t* server_transaction=NULL;
@@ -711,7 +717,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else if (strcmp("CANCEL",method)==0) {
 			belle_sip_transaction_t *last_transaction = belle_sip_dialog_get_last_transaction(op->dialog);
-			if (last_transaction == NULL) {
+			if (last_transaction == NULL || !is_a_pending_invite_incoming_transaction(last_transaction) ) {
 				/*call leg does not exist because 200ok already sent*/
 				belle_sip_server_transaction_send_response(server_transaction,sal_op_create_response_from_request(op,req,481));
 			} else {
