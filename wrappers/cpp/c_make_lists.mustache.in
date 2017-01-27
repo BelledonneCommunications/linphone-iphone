@@ -4,7 +4,7 @@ project(LinphoneCxx VERSION @LINPHONE_VERSION@)
 
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STRANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
 
 set(GENERATED_SOURCES
 	{{#classes}}
