@@ -1542,6 +1542,10 @@ bctbx_list_t* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFrie
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
 		lf->lc = lc;
 		lf->friend_list = list;
+		if (lf->refkey) {
+			bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(lf->refkey, linphone_friend_ref(lf));
+			bctbx_map_cchar_insert_and_delete(list->friends_map, pair);
+		}
 		linphone_friend_save(lf, lc); /* required if we freshly created vcard but core was not set at this time */
 	}
 	linphone_vcard_context_set_user_data(lc->vcard_context, NULL);
