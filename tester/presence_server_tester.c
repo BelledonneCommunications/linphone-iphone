@@ -987,28 +987,6 @@ static void long_term_presence_with_crossed_references(void) {
 	}else ms_warning("Test skipped, no vcard support");
 }
 
-static void long_term_presence_list_for_many_friends(void) {
-	if (linphone_core_vcard_supported()) {
-		LinphoneFriendList *friends;
-		char *import_filepath = bc_tester_res("vcards/presence.vcf");
-		LinphoneCoreManager *pauline;
-		
-		pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-
-		friends = linphone_core_create_friend_list(pauline->lc);
-		linphone_friend_list_set_rls_uri(friends, "sip:rls@sip.example.org");
-		linphone_friend_list_import_friends_from_vcard4_file(friends, import_filepath);
-		linphone_core_remove_friend_list(pauline->lc, linphone_core_get_default_friend_list(pauline->lc));
-		linphone_core_add_friend_list(pauline->lc, friends);
-		linphone_core_refresh_registers(pauline->lc);
-		linphone_friend_list_unref(friends);
-
-		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_NotifyPresenceReceived,1));
-
-		linphone_core_manager_destroy(pauline);
-	} else ms_warning("Test skipped, no vcard support");
-}
-
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
@@ -1023,7 +1001,6 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence phone alias",long_term_presence_phone_alias, "longterm"),
 	TEST_ONE_TAG("Long term presence phone alias 2",long_term_presence_phone_alias2, "longterm"),
 	TEST_ONE_TAG("Long term presence list",long_term_presence_list, "longterm"),
-	TEST_ONE_TAG("Long term presence list for many friends",long_term_presence_list_for_many_friends, "longterm"),
 	TEST_ONE_TAG("Long term presence with +164 phone, without sip",long_term_presence_with_e164_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with phone, without sip",long_term_presence_with_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with cross references", long_term_presence_with_crossed_references,"longtern"),
