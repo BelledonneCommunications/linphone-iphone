@@ -28,7 +28,11 @@ namespace belledonnecomm {
  * @addtogroup tunnel_client
  * @{
 **/
-
+	struct DualSocket {
+		TunnelSocket *sendSocket;
+		TunnelSocket *recvSocket;
+	};
+		
 	/**
 	 * The TunnelManager class extends the LinphoneCore functionnality in order to provide an easy to use API to
 	 * - provision tunnel servers ip addresses and ports
@@ -60,9 +64,31 @@ namespace belledonnecomm {
 		 */
 		void addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay);
 		/**
+		 * Add a tunnel server couple. At least one should be provided to be able to connect.
+		 * This is used when using the dual socket mode where one client will connect to one ip and the other client to the other ip.
+		 *
+		 * @param ip1 server ip address n°1
+		 * @param port1 tunnel server tls port, recommended value is 443
+		 * @param ip2 server ip address n°2
+		 * @param port2 tunnel server tls port, recommended value is 443
+		 */
+		void addServerPair(const char *ip1, int port1, const char *ip2, int port2);
+		/**
 		 * Removes all tunnel server address previously entered with addServer()
 		**/
 		void cleanServers();
+		
+		/**
+		 * Enables the dual socket mode. In this mode, we have to configure pairs or ServerAddr
+		 * 2 TunneClient will be used, one for each IP and each one will only either send or receive the data stream.
+		 * @param enable true to enable the DualMode, false otherwise
+		 */
+		void enableDualMode(bool enable);
+		/**
+		 * Returns whether or not the DualMode is enabled
+		 * @return true if it is enabled, false otherwise
+		 */
+		bool isDualModeEnabled();
 		/**
 		 * Forces reconnection to the tunnel server.
 		 * This method is useful when the device switches from wifi to Edge/3G or vice versa. In most cases the tunnel client socket
@@ -174,6 +200,7 @@ namespace belledonnecomm {
 		static int customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen);
 		static int customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen);
 		static void tunnelCallback(bool connected, void *zis);
+		static void tunnelCallback2(TunnelDirection direction, bool connected, void *zis);
 		static void sOnIterate(TunnelManager *zis);
 		static void sUdpMirrorClientCallback(bool result, void* data);
 		static void networkReachableCb(LinphoneCore *lc, bool_t reachable);
@@ -203,13 +230,14 @@ namespace belledonnecomm {
 		
 		LinphoneCore* mCore;
 		LinphoneTunnelMode mMode;
-		TunnelClient* mTunnelClient;
+		TunnelClientI* mTunnelClient;
 		std::string mHttpUserName;
 		std::string mHttpPasswd;
 		std::string mHttpProxyHost;
 		int mHttpProxyPort;
 		LinphoneCoreVTable *mVTable;
 		std::list <ServerAddr> mServerAddrs;
+		std::list <std::pair<ServerAddr, ServerAddr>> mDualServerAddrs;
 		UdpMirrorClientList mUdpMirrorClients;
 		UdpMirrorClientList::iterator mCurrentUdpMirrorClient;
 		LinphoneRtpTransportFactories mTransportFactories;
@@ -224,6 +252,7 @@ namespace belledonnecomm {
 		bool mAutodetectionRunning;
 		bool mTunnelizeSipPackets;
 		bool mSimulateUdpLoss;
+		bool mUseDualClient;
 	};
 
 /**

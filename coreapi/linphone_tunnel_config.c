@@ -31,6 +31,8 @@ struct _LinphoneTunnelConfig {
 	int remote_udp_mirror_port;
 	int delay;
 	void *user_data;
+	char *host2;
+	int port2;
 };
 
 LinphoneTunnelConfig *linphone_tunnel_config_new() {
@@ -38,6 +40,8 @@ LinphoneTunnelConfig *linphone_tunnel_config_new() {
 	ltc->remote_udp_mirror_port = 12345;
 	ltc->delay = 1000;
 	ltc->port = 443;
+	ltc->host2 = NULL;
+	ltc->port2 = 0;
 	return ltc;
 }
 
@@ -61,6 +65,28 @@ void linphone_tunnel_config_set_port(LinphoneTunnelConfig *tunnel, int port) {
 
 int linphone_tunnel_config_get_port(const LinphoneTunnelConfig *tunnel) {
 	return tunnel->port;
+}
+
+void linphone_tunnel_config_set_host2(LinphoneTunnelConfig *tunnel, const char *host) {
+	if(tunnel->host2 != NULL) {
+		ms_free(tunnel->host2);
+		tunnel->host2 = NULL;
+	}
+	if(host != NULL && strlen(host)) {
+		tunnel->host2 = ms_strdup(host);
+	}
+}
+
+const char *linphone_tunnel_config_get_host2(const LinphoneTunnelConfig *tunnel) {
+	return tunnel->host2;
+}
+
+void linphone_tunnel_config_set_port2(LinphoneTunnelConfig *tunnel, int port) {
+	tunnel->port2 = port;
+}
+
+int linphone_tunnel_config_get_port2(const LinphoneTunnelConfig *tunnel) {
+	return tunnel->port2;
 }
 
 void linphone_tunnel_config_set_remote_udp_mirror_port(LinphoneTunnelConfig *tunnel, int remote_udp_mirror_port) {

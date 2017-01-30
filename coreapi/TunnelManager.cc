@@ -41,12 +41,39 @@ void TunnelManager::addServer(const char *ip, int port) {
 		ms_warning("Adding tunnel server with empty ip, it will not work!");
 		return;
 	}
+	if (mUseDualClient) {
+		ms_warning("TunnelManager is configured in dual mode, use addServerPair instead");
+		return;
+	}
+	
 	mServerAddrs.push_back(ServerAddr(ip,port));
-	if (mTunnelClient) mTunnelClient->addServer(ip,port);
+	if (mTunnelClient && !mUseDualClient) {
+		((TunnelClient*)mTunnelClient)->addServer(ip,port);
+	}
+}
+
+void TunnelManager::addServerPair(const char *ip1, int port1, const char *ip2, int port2) {
+	if (ip1 == NULL || ip2 == NULL) {
+		ms_warning("Adding tunnel server with empty ip, it will not work!");
+		return;
+	}
+	if (!mUseDualClient) {
+		ms_warning("TunnelManager is configured in single mode, use addServer instead");
+		return;
+	}
+	
+	pair<ServerAddr, ServerAddr> addr;
+	addr.first = ServerAddr(ip1, port1);
+	addr.second = ServerAddr(ip2, port2);
+	mDualServerAddrs.push_back(addr);
+	if (mTunnelClient && mUseDualClient) {
+		((DualTunnelClient*)mTunnelClient)->addServerPair(ip1, port1, ip2, port2);
+	}
 }
 
 void TunnelManager::cleanServers() {
 	mServerAddrs.clear();
+	mDualServerAddrs.clear();
 	if (mLongRunningTaskId > 0) {
 		sal_end_background_task(mLongRunningTaskId);
 		mLongRunningTaskId = 0;
@@ -61,15 +88,27 @@ void TunnelManager::cleanServers() {
 	if (mTunnelClient) mTunnelClient->cleanServers();
 }
 
+void TunnelManager::enableDualMode(bool enable) {
+	mUseDualClient = enable;
+}
+
+bool TunnelManager::isDualModeEnabled() {
+	return mUseDualClient;
+}
+
 void TunnelManager::reconnect(){
 	if (mTunnelClient)
 		mTunnelClient->reconnect();
 }
 
 static void sCloseRtpTransport(RtpTransport *t){
-	TunnelSocket *s=(TunnelSocket*)t->data;
-	TunnelManager *manager=(TunnelManager*)s->getUserPointer();
-	manager->closeRtpTransport(t, s);
+	DualSocket *ds = (DualSocket *)t->data;
+	TunnelSocket *sendSocket = ds->sendSocket;
+	TunnelSocket *recvSocket = ds->recvSocket;
+	TunnelManager *manager=(TunnelManager*)sendSocket->getUserPointer();
+	manager->closeRtpTransport(t, sendSocket);
+	manager->closeRtpTransport(t, recvSocket);
+	ms_free(ds);
 }
 void TunnelManager::closeRtpTransport(RtpTransport *t, TunnelSocket *s){
 	mTunnelClient->closeSocket(s);
@@ -84,15 +123,26 @@ void sDestroyRtpTransport(RtpTransport *t){
 }
 
 RtpTransport *TunnelManager::createRtpTransport(int port){
-	TunnelSocket *socket=mTunnelClient->createSocket(port);
-	socket->setUserPointer(this);
-	RtpTransport *t=ms_new0(RtpTransport,1);
+	DualSocket *dualSocket = ms_new0(DualSocket, 1);
+	if (!mUseDualClient) {
+		TunnelSocket *socket = ((TunnelClient *)mTunnelClient)->createSocket(port);
+		socket->setUserPointer(this);
+		dualSocket->sendSocket = socket;
+		dualSocket->recvSocket = socket;
+	} else {
+		dualSocket->sendSocket = ((DualTunnelClient *)mTunnelClient)->createSocket(TunnelSendOnly, port);
+		dualSocket->sendSocket->setUserPointer(this);
+		dualSocket->recvSocket = ((DualTunnelClient *)mTunnelClient)->createSocket(TunnelRecvOnly, port);
+		dualSocket->recvSocket->setUserPointer(this);
+	}
+	
+	RtpTransport *t = ms_new0(RtpTransport,1);
 	t->t_getsocket=NULL;
 	t->t_recvfrom=customRecvfrom;
 	t->t_sendto=customSendto;
 	t->t_close=sCloseRtpTransport;
 	t->t_destroy=sDestroyRtpTransport;
-	t->data=socket;
+	t->data=dualSocket;
 	ms_message("Creating tunnel RTP transport for local virtual port %i", port);
 	return t;
 }
@@ -102,7 +152,11 @@ void TunnelManager::startClient() {
 	if (!mTunnelClient){
 		mTunnelClient = new TunnelClient(TRUE);
 		sal_set_tunnel(mCore->sal, mTunnelClient);
-		mTunnelClient->setCallback(tunnelCallback,this);
+		if (!mUseDualClient) {
+			((TunnelClient*)mTunnelClient)->setCallback(tunnelCallback,this);
+		} else {
+			((DualTunnelClient*)mTunnelClient)->setCallback(tunnelCallback2,this);
+		}
 	}
 	
 	if (mVerifyServerCertificate) {
@@ -115,10 +169,20 @@ void TunnelManager::startClient() {
 		}
 	}
 	mTunnelClient->cleanServers();
-	list<ServerAddr>::iterator it;
-	for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
-		const ServerAddr &addr=*it;
-		mTunnelClient->addServer(addr.mAddr.c_str(), addr.mPort);
+	if (mUseDualClient) {
+		list<pair<ServerAddr, ServerAddr>>::iterator it;
+		for(it=mDualServerAddrs.begin();it!=mDualServerAddrs.end();++it){
+			pair<ServerAddr, ServerAddr> &addr=*it;
+			const ServerAddr addr1 = addr.first;
+			const ServerAddr addr2 = addr.second;
+			((DualTunnelClient*)mTunnelClient)->addServerPair(addr1.mAddr.c_str(), addr1.mPort, addr2.mAddr.c_str(), addr2.mPort);
+		}
+	} else {
+		list<ServerAddr>::iterator it;
+		for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
+			const ServerAddr &addr=*it;
+			((TunnelClient*)mTunnelClient)->addServer(addr.mAddr.c_str(), addr.mPort);
+		}
 	}
 	mTunnelClient->setHttpProxy(mHttpProxyHost.c_str(), mHttpProxyPort, mHttpUserName.c_str(), mHttpPasswd.c_str());
 	if (!mTunnelClient->isStarted())
@@ -145,19 +209,21 @@ bool TunnelManager::isConnected() const {
 
 int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen){
 	int size;
+	DualSocket *ds = (DualSocket *)t->data;
 	msgpullup(msg,-1);
 	size=msgdsize(msg);
-	((TunnelSocket*)t->data)->sendto(msg->b_rptr,size,to,tolen);
+	ds->sendSocket->sendto(msg->b_rptr,size,to,tolen);
 	return size;
 }
 
 int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen){
+	DualSocket *ds = (DualSocket *)t->data;
 	memset(&msg->recv_addr,0,sizeof(msg->recv_addr));
-	int err=((TunnelSocket*)t->data)->recvfrom(msg->b_wptr,dblk_lim(msg->b_datap)-dblk_base(msg->b_datap),from,*fromlen);
+	int err=ds->recvSocket->recvfrom(msg->b_wptr,dblk_lim(msg->b_datap)-dblk_base(msg->b_datap),from,*fromlen);
 	//to make ice happy
-	inet_aton(((TunnelManager*)((TunnelSocket*)t->data)->getUserPointer())->mLocalAddr,&msg->recv_addr.addr.ipi_addr);
+	inet_aton(((TunnelManager*)(ds->recvSocket)->getUserPointer())->mLocalAddr,&msg->recv_addr.addr.ipi_addr);
 	msg->recv_addr.family = AF_INET;
-	msg->recv_addr.port = htons((unsigned short)((TunnelSocket*)t->data)->getPort());
+	msg->recv_addr.port = htons((unsigned short)(ds->recvSocket)->getPort());
 	if (err>0) return err;
 	return 0;
 }
@@ -169,7 +235,8 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mHttpProxyPort(0),
 	mVTable(NULL),
 	mLongRunningTaskId(0),
-	mSimulateUdpLoss(false)
+	mSimulateUdpLoss(false),
+	mUseDualClient(false)
 {
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
@@ -248,7 +315,6 @@ void TunnelManager::untunnelizeLiblinphone(){
 	}
 }
 
-
 void TunnelManager::applyState() {
 	if (!linphone_core_is_network_reachable(mCore)) return;
 	if (mTargetState == On && mState == Off){
@@ -266,8 +332,6 @@ void TunnelManager::setState ( TunnelManager::State state ) {
 	mTargetState = state;
 	applyState();
 }
-
-
 
 void TunnelManager::processTunnelEvent(const Event &ev){
 	if (ev.mData.mConnected){
@@ -296,7 +360,6 @@ void TunnelManager::applyMode() {
 	}
 }
 
-
 void TunnelManager::setMode(LinphoneTunnelMode mode) {
 	if(mMode == mode) return;
 	ms_message("TunnelManager: switching mode from %s to %s",
@@ -314,8 +377,16 @@ void TunnelManager::stopLongRunningTask() {
 	}
 }
 
-
 void TunnelManager::tunnelCallback(bool connected, void *user_pointer){
+	TunnelManager *zis = static_cast<TunnelManager*>(user_pointer);
+	Event ev;
+	
+	ev.mType=TunnelEvent;
+	ev.mData.mConnected=connected;
+	zis->postEvent(ev);
+}
+
+void TunnelManager::tunnelCallback2(TunnelDirection direction, bool connected, void *user_pointer){
 	TunnelManager *zis = static_cast<TunnelManager*>(user_pointer);
 	Event ev;
 	
@@ -383,7 +454,6 @@ void TunnelManager::enableLogs(bool isEnabled,LogHandler logHandler) {
 		SetLogLevel(TUNNEL_ERROR|TUNNEL_WARN);
 	}
 }
-
 
 LinphoneTunnelMode TunnelManager::getMode() const {
 	return mMode;

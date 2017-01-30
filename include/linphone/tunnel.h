@@ -147,6 +147,34 @@ LINPHONE_PUBLIC void linphone_tunnel_config_set_port(LinphoneTunnelConfig *tunne
 LINPHONE_PUBLIC int linphone_tunnel_config_get_port(const LinphoneTunnelConfig *tunnel);
 
 /**
+ * Set the IP address or hostname of the second tunnel server when using dual tunnel client.
+ * @param tunnel LinphoneTunnelConfig object
+ * @param host The tunnel server IP address or hostname
+ */
+LINPHONE_PUBLIC void linphone_tunnel_config_set_host2(LinphoneTunnelConfig *tunnel, const char *host);
+
+/**
+ * Get the IP address or hostname of the second tunnel server when using dual tunnel client.
+ * @param tunnel LinphoneTunnelConfig object
+ * @return The tunnel server IP address or hostname
+ */
+LINPHONE_PUBLIC const char *linphone_tunnel_config_get_host2(const LinphoneTunnelConfig *tunnel);
+
+/**
+ * Set tls port of the second server when using dual tunnel client.
+ * @param tunnel LinphoneTunnelConfig object
+ * @param port The tunnel server TLS port, recommended value is 443
+ */
+LINPHONE_PUBLIC void linphone_tunnel_config_set_port2(LinphoneTunnelConfig *tunnel, int port);
+
+/**
+ * Get the TLS port of the second tunnel server when using dual tunnel client.
+ * @param tunnel LinphoneTunnelConfig object
+ * @return The TLS port of the tunnel server
+ */
+LINPHONE_PUBLIC int linphone_tunnel_config_get_port2(const LinphoneTunnelConfig *tunnel);
+
+/**
  * Set the remote port on the tunnel server side used to test UDP reachability.
  * This is used when the mode is set auto, to detect whether the tunnel has to be enabled or not.
  * @param tunnel LinphoneTunnelConfig object
@@ -254,6 +282,22 @@ LINPHONE_PUBLIC void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTu
  * @return The current LinphoneTunnelMode
 **/
 LINPHONE_PUBLIC LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel);
+
+/**
+ * Sets whether or not to use the dual tunnel client mode.
+ * By default this feature is disabled.
+ * After enabling it, add a server with 2 hosts and 2 ports for the feature to work.
+ * @param tunnel LinphoneTunnel object
+ * @param dual_mode_enabled TRUE to enable it, FALSE to disable it
+ */
+LINPHONE_PUBLIC void linphone_tunnel_set_dual_mode(LinphoneTunnel *tunnel, bool_t dual_mode_enabled);
+
+/**
+ * Get the dual tunnel client mode
+ * @param tunnel LinphoneTunnel object
+ * @return TRUE if dual tunnel client mode is enabled, FALSE otherwise
+**/
+LINPHONE_PUBLIC bool_t linphone_tunnel_get_dual_mode(const LinphoneTunnel *tunnel);
 
 /**
  * Returns whether the tunnel is activated. If mode is set to auto, this gives indication whether the automatic detection determined
