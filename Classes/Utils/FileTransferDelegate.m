@@ -51,7 +51,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 			UIAlertController *errView = [UIAlertController
 				alertControllerWithTitle:NSLocalizedString(@"File download error", nil)
 								 message:NSLocalizedString(@"Error while downloading the file.\n"
-														   @"The file is probably emcrypted.\n"
+														   @"The file is probably encrypted.\n"
 														   @"Please retry to download this file after activating LIME.",
 														   nil)
 						  preferredStyle:UIAlertControllerStyleAlert];

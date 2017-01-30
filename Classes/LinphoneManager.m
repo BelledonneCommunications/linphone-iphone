@@ -237,7 +237,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 - (id)init {
 	if ((self = [super init])) {
-		AudioSessionInitialize(NULL, NULL, NULL, NULL);
 		[NSNotificationCenter.defaultCenter addObserver:self
 											   selector:@selector(audioRouteChangeListenerCallback:)
 												   name:AVAudioSessionRouteChangeNotification
@@ -2262,22 +2261,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LinphoneCall *c = linphone_core_get_current_call(theLinphoneCore);
 	LOGI(@"Sound interruption detected!");
 	if (c && linphone_call_get_state(c) == LinphoneCallStreamsRunning) {
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-			NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
-				objectForKey:[NSString
-								 stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(c))]];
-			if (!uuid) {
-				linphone_core_pause_call(theLinphoneCore, c);
-				return;
-			}
-			CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:YES];
-			CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-			[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																		  completion:^(NSError *err){
-																		  }];
-		} else {
-			linphone_core_pause_call(theLinphoneCore, c);
-		}
+		linphone_core_pause_call(theLinphoneCore, c);
 	}
 }
 
@@ -2452,7 +2436,25 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_accept_call_with_params(theLinphoneCore, call, lcallParams);
 }
 
-- (BOOL)call:(const LinphoneAddress *)iaddr {
+- (void)call:(const LinphoneAddress *)iaddr {
+	if (linphone_core_get_calls_nb(theLinphoneCore) < 1 &&
+		floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+		NSUUID *uuid = [NSUUID UUID];
+		[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:@""];
+		LinphoneManager.instance.providerDelegate.pendingAddr = linphone_address_clone(iaddr);
+		NSString *address = [FastAddressBook displayNameForAddress:iaddr];
+		CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
+		CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:uuid handle:handle];
+		CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
+		[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
+																	  completion:^(NSError *err){
+																	  }];
+	} else {
+		[self doCall:iaddr];
+	}
+}
+
+- (BOOL)doCall:(const LinphoneAddress *)iaddr {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)

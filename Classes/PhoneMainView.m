@@ -19,7 +19,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioServices.h>
-
 #import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 
@@ -366,6 +365,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		}
 		case LinphoneCallError: {
 			[self displayCallError:call message:message];
+			break;
 		}
 		case LinphoneCallEnd: {
 			const MSList *calls = linphone_core_get_calls(LC);
@@ -376,23 +376,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[self popCurrentView];
 				}
 			} else {
-				if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-					NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
-						objectForKey:[NSString
-										 stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(
-																  (LinphoneCall *)calls->data))]];
-					if (!uuid) {
-						linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
-						return;
-					}
-					CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
-					CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-					[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																				  completion:^(NSError *err){
-																				  }];
-				} else {
-					linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
-				}
+				linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
 				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
@@ -405,20 +389,17 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallOutgoingProgress: {
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call &&
 				(linphone_core_get_calls_nb(LC) < 2)) {
-				// Create CallKit Call
+				// Link call ID to UUID
 				NSString *callId =
 					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-				NSUUID *uuid = [NSUUID UUID];
-				[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
-				[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
-				NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
-				CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
-				CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:uuid handle:handle];
-				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																			  completion:^(NSError *err){
-																			  }];
+				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:@""];
+				if (uuid) {
+					[LinphoneManager.instance.providerDelegate.uuids removeObjectForKey:@""];
+					[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
+					[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
+				}
 			}
+			break;
 		}
 		case LinphoneCallOutgoingRinging: {
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
@@ -440,12 +421,29 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[LinphoneManager.instance.providerDelegate.provider reportCallWithUUID:uuid updated:update];
 				}
 			}
+			break;
 		}
 		case LinphoneCallPaused:
 		case LinphoneCallPausing:
 		case LinphoneCallRefered:
 		case LinphoneCallReleased:
-		case LinphoneCallResuming:
+			break;
+		case LinphoneCallResuming: {
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
+				NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
+					objectForKey:[NSString stringWithUTF8String:linphone_call_log_get_call_id(
+																	linphone_call_get_call_log(call))]];
+				if (!uuid) {
+					return;
+				}
+				CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
+				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
+				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
+																			  completion:^(NSError *err){
+																			  }];
+			}
+			break;
+		}
 		case LinphoneCallUpdating:
 			break;
 	}

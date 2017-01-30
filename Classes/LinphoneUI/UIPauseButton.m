@@ -82,22 +82,7 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
-				if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-					NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
-						objectForKey:[NSString stringWithUTF8String:linphone_call_log_get_call_id(
-																		linphone_call_get_call_log(call))]];
-					if (!uuid) {
-						linphone_core_pause_call(LC, call);
-						return;
-					}
-					CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:YES];
-					CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-					[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																				  completion:^(NSError *err){
-																				  }];
-				} else {
-					linphone_core_pause_call(LC, call);
-				}
+				linphone_core_pause_call(LC, call);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -113,22 +98,7 @@
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
 			if (currentCall != nil) {
-				if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-					NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
-						objectForKey:[NSString stringWithUTF8String:linphone_call_log_get_call_id(
-																		linphone_call_get_call_log(currentCall))]];
-					if (!uuid) {
-						linphone_core_pause_call(LC, currentCall);
-						return;
-					}
-					CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:YES];
-					CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-					[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																				  completion:^(NSError *err){
-																				  }];
-				} else {
-					linphone_core_pause_call(LC, currentCall);
-				}
+				linphone_core_pause_call(LC, currentCall);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -141,22 +111,7 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
-				if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-					NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
-						objectForKey:[NSString stringWithUTF8String:linphone_call_log_get_call_id(
-																		linphone_call_get_call_log(call))]];
-					if (!uuid) {
-						linphone_core_resume_call(LC, call);
-						return;
-					}
-					CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
-					CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-					[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																				  completion:^(NSError *err){
-																				  }];
-				} else {
-					linphone_core_resume_call(LC, call);
-				}
+				linphone_core_resume_call(LC, call);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -164,11 +119,9 @@
 		}
 		case UIPauseButtonType_Conference: {
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-				NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids allValues].firstObject;
+				NSString *key = (NSString *)[LinphoneManager.instance.providerDelegate.uuids allKeys][0];
+				NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids objectForKey:key];
 				if (!uuid) {
-					linphone_core_enter_conference(LC);
-					// Fake event
-					[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 					return;
 				}
 				CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
@@ -176,31 +129,15 @@
 				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
 																			  completion:^(NSError *err){
 																			  }];
-			} else {
-				linphone_core_enter_conference(LC);
-				// Fake event
-				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			}
+			linphone_core_enter_conference(LC);
+			// Fake event
+			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			break;
 		}
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
-			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-				NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
-					objectForKey:[NSString stringWithUTF8String:linphone_call_log_get_call_id(
-																	linphone_call_get_call_log(currentCall))]];
-				if (!uuid) {
-					linphone_core_resume_call(LC, currentCall);
-					return;
-				}
-				CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
-				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																			  completion:^(NSError *err){
-																			  }];
-			} else {
-				linphone_core_resume_call(LC, currentCall);
-			}
+			linphone_core_resume_call(LC, currentCall);
 			break;
 		}
 	}
