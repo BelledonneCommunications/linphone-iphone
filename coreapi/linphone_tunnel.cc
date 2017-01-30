@@ -291,6 +291,7 @@ LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_set_dual_mode(LinphoneTunnel *tunnel, bool_t dual_mode_enabled) {
+	lp_config_set_int(config(tunnel), "tunnel", "dual_mode", (dual_mode_enabled ? TRUE : FALSE));
 	bcTunnel(tunnel)->enableDualMode(dual_mode_enabled);
 }
 
@@ -410,6 +411,8 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	LinphoneTunnelMode mode = linphone_tunnel_mode_from_string(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
 	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "sip", TRUE);
 	bool_t tunnelVerifyServerCertificate = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "verify_cert", FALSE);
+	bool_t useDualMode = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "dual_mode", FALSE);
+	linphone_tunnel_set_dual_mode(tunnel, useDualMode);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);
 	linphone_tunnel_enable_sip(tunnel, tunnelizeSIPPackets);
