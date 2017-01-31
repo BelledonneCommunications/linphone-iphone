@@ -359,6 +359,11 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 	linphone_core_set_user_data(mLc, this);
 	linphone_core_enable_video_capture(mLc,capture_video);
 	linphone_core_enable_video_display(mLc,display_video);
+	
+	for(const bctbx_list_t *proxy = linphone_core_get_proxy_config_list(mLc); proxy != NULL; proxy = bctbx_list_next(proxy)) {
+		updateProxyId((LinphoneProxyConfig *)bctbx_list_get_data(proxy));
+	}
+	
 	initCommands();
 	mUseStatsEvents=true;
 }
