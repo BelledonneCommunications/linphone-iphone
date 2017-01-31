@@ -48,7 +48,7 @@ void TunnelManager::addServer(const char *ip, int port) {
 	
 	mServerAddrs.push_back(ServerAddr(ip,port));
 	if (mTunnelClient && !mUseDualClient) {
-		((TunnelClient*)mTunnelClient)->addServer(ip,port);
+		static_cast<TunnelClient*>(mTunnelClient)->addServer(ip,port);
 	}
 }
 
@@ -62,12 +62,9 @@ void TunnelManager::addServerPair(const char *ip1, int port1, const char *ip2, i
 		return;
 	}
 	
-	pair<ServerAddr, ServerAddr> addr;
-	addr.first = ServerAddr(ip1, port1);
-	addr.second = ServerAddr(ip2, port2);
-	mDualServerAddrs.push_back(addr);
+	mDualServerAddrs.push_back(DualServerAddr(ip1, port1, ip2, port2));
 	if (mTunnelClient && mUseDualClient) {
-		((DualTunnelClient*)mTunnelClient)->addServerPair(ip1, port1, ip2, port2);
+		static_cast<DualTunnelClient*>(mTunnelClient)->addServerPair(ip1, port1, ip2, port2);
 	}
 }
 
@@ -149,13 +146,18 @@ RtpTransport *TunnelManager::createRtpTransport(int port){
 
 void TunnelManager::startClient() {
 	ms_message("TunnelManager: Starting tunnel client");
-	if (!mTunnelClient){
-		mTunnelClient = new TunnelClient(TRUE);
+	if (!mTunnelClient) {
+		if (mUseDualClient) {
+			mTunnelClient = DualTunnelClient::create(TRUE);
+		} else {
+			mTunnelClient = TunnelClient::create(TRUE);
+		}
+		
 		sal_set_tunnel(mCore->sal, mTunnelClient);
 		if (!mUseDualClient) {
-			((TunnelClient*)mTunnelClient)->setCallback(tunnelCallback,this);
+			static_cast<TunnelClient*>(mTunnelClient)->setCallback(tunnelCallback,this);
 		} else {
-			((DualTunnelClient*)mTunnelClient)->setCallback(tunnelCallback2,this);
+			static_cast<DualTunnelClient*>(mTunnelClient)->setCallback(tunnelCallback2,this);
 		}
 	}
 	
@@ -170,26 +172,28 @@ void TunnelManager::startClient() {
 	}
 	mTunnelClient->cleanServers();
 	if (mUseDualClient) {
-		list<pair<ServerAddr, ServerAddr>>::iterator it;
+		list<DualServerAddr>::iterator it;
 		for(it=mDualServerAddrs.begin();it!=mDualServerAddrs.end();++it){
-			pair<ServerAddr, ServerAddr> &addr=*it;
-			const ServerAddr addr1 = addr.first;
-			const ServerAddr addr2 = addr.second;
-			((DualTunnelClient*)mTunnelClient)->addServerPair(addr1.mAddr.c_str(), addr1.mPort, addr2.mAddr.c_str(), addr2.mPort);
+			const DualServerAddr &addr=*it;
+			static_cast<DualTunnelClient*>(mTunnelClient)->addServerPair(addr.mAddr1.c_str(), addr.mPort1, addr.mAddr2.c_str(), addr.mPort2);
 		}
 	} else {
 		list<ServerAddr>::iterator it;
 		for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
 			const ServerAddr &addr=*it;
-			((TunnelClient*)mTunnelClient)->addServer(addr.mAddr.c_str(), addr.mPort);
+			static_cast<TunnelClient*>(mTunnelClient)->addServer(addr.mAddr.c_str(), addr.mPort);
 		}
 	}
-	mTunnelClient->setHttpProxy(mHttpProxyHost.c_str(), mHttpProxyPort, mHttpUserName.c_str(), mHttpPasswd.c_str());
-	if (!mTunnelClient->isStarted())
-		mTunnelClient->start();
-	else
-		mTunnelClient->reconnect(); /*force a reconnection to take into account new parameters*/
 	
+	mTunnelClient->setHttpProxy(mHttpProxyHost.c_str(), mHttpProxyPort, mHttpUserName.c_str(), mHttpPasswd.c_str());
+	if (!mTunnelClient->isStarted()) {
+		ms_message("Starting tunnel client");
+		mTunnelClient->start();
+	}
+	else {
+		ms_message("Reconnecting tunnel client");
+		mTunnelClient->reconnect(); /*force a reconnection to take into account new parameters*/
+	}
 }
 
 void TunnelManager::stopClient(){

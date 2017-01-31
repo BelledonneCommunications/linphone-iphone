@@ -47,7 +47,7 @@ static char* get_public_contact_ip(LinphoneCore* lc)  {
 }
 
 
-static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice) {
+static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice, bool_t dual_socket) {
 	if (linphone_core_tunnel_available()){
 		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
 		LinphoneCoreManager *marie = linphone_core_manager_new( "marie_rc");
@@ -84,7 +84,18 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 
 			linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
 			linphone_tunnel_config_set_port(config, 443);
-			linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
+			if (!dual_socket) {
+				linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
+				linphone_tunnel_config_set_port(config, 443);
+				linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
+			} else {
+				linphone_tunnel_config_set_host(config, "94.23.19.176");
+				linphone_tunnel_config_set_port(config, 4443);
+				linphone_tunnel_config_set_host2(config, "188.165.40.171");
+				linphone_tunnel_config_set_port2(config, 4443);
+				linphone_tunnel_config_set_remote_udp_mirror_port(config, -1);
+				linphone_tunnel_enable_dual_mode(tunnel, TRUE);
+			}
 			linphone_tunnel_add_server(tunnel, config);
 			linphone_tunnel_set_mode(tunnel, tunnel_mode);
 			linphone_tunnel_enable_sip(tunnel, with_sip);
@@ -107,7 +118,11 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 				*/
 				ms_free(public_ip);
 				public_ip = get_public_contact_ip(pauline->lc);
-				BC_ASSERT_STRING_EQUAL(public_ip, tunnel_ip);
+				if (!dual_socket) {
+					BC_ASSERT_STRING_EQUAL(public_ip, tunnel_ip);
+				} else {
+					BC_ASSERT_STRING_EQUAL(public_ip, "94.23.19.176");
+				}
 			} else {
 				public_ip2 = get_public_contact_ip(pauline->lc);
 				BC_ASSERT_STRING_EQUAL(public_ip, public_ip2);
@@ -132,7 +147,11 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 					LinphoneAddress *tmp = linphone_address_new(remote_contact);
 					BC_ASSERT_PTR_NOT_NULL(tmp);
 					if (tmp){
-						BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(tmp), tunnel_ip);
+						if (!dual_socket) {
+							BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(tmp), tunnel_ip);
+						} else {
+							BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(tmp), "94.23.19.176");
+						}
 						linphone_address_unref(tmp);
 					}
 				}
@@ -158,30 +177,30 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 
 
 static void call_with_tunnel(void) {
-	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE, FALSE);
 }
 
 static void call_with_tunnel_srtp(void) {
-	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionSRTP, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionSRTP, FALSE, FALSE);
 }
 
 static void call_with_tunnel_without_sip(void) {
-	call_with_tunnel_base(LinphoneTunnelModeEnable, FALSE, LinphoneMediaEncryptionNone, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeEnable, FALSE, LinphoneMediaEncryptionNone, FALSE, FALSE);
 }
 
 static void call_with_tunnel_auto(void) {
-	call_with_tunnel_base(LinphoneTunnelModeAuto, TRUE, LinphoneMediaEncryptionNone, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeAuto, TRUE, LinphoneMediaEncryptionNone, FALSE, FALSE);
 }
 
 static void call_with_tunnel_auto_without_sip_with_srtp(void) {
-	call_with_tunnel_base(LinphoneTunnelModeAuto, FALSE, LinphoneMediaEncryptionSRTP, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeAuto, FALSE, LinphoneMediaEncryptionSRTP, FALSE, FALSE);
 }
 
 #ifdef VIDEO_ENABLED
 
 static void full_tunnel_video_ice_call(void){
 	if (linphone_core_tunnel_available()){
-		call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, TRUE);
+		call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, TRUE, FALSE);
 	}else
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
@@ -281,6 +300,20 @@ static void register_on_second_tunnel(void) {
 	}
 }
 
+static void dual_socket_mode(void) {
+	if (linphone_core_tunnel_available())
+		call_with_tunnel_base(LinphoneTunnelModeEnable, FALSE, LinphoneMediaEncryptionNone, FALSE, TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
+}
+
+static void dual_socket_mode_with_sip(void) {
+	if (linphone_core_tunnel_available())
+		call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE, TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
+}
+
 test_t tunnel_tests[] = {
 	TEST_NO_TAG("Simple", call_with_tunnel),
 	TEST_NO_TAG("With SRTP", call_with_tunnel_srtp),
@@ -298,6 +331,8 @@ test_t tunnel_tests[] = {
 	TEST_NO_TAG("ZRTP ice video call", tunnel_zrtp_video_ice_call),
 #endif
 	TEST_NO_TAG("Register on second tunnel", register_on_second_tunnel),
+	TEST_NO_TAG("Dual socket mode", dual_socket_mode),
+	TEST_NO_TAG("Dual socket mode with SIP", dual_socket_mode_with_sip),
 };
 
 test_suite_t tunnel_test_suite = {"Tunnel", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -290,14 +290,14 @@ LINPHONE_PUBLIC LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel
  * @param tunnel LinphoneTunnel object
  * @param dual_mode_enabled TRUE to enable it, FALSE to disable it
  */
-LINPHONE_PUBLIC void linphone_tunnel_set_dual_mode(LinphoneTunnel *tunnel, bool_t dual_mode_enabled);
+LINPHONE_PUBLIC void linphone_tunnel_enable_dual_mode(LinphoneTunnel *tunnel, bool_t dual_mode_enabled);
 
 /**
  * Get the dual tunnel client mode
  * @param tunnel LinphoneTunnel object
  * @return TRUE if dual tunnel client mode is enabled, FALSE otherwise
 **/
-LINPHONE_PUBLIC bool_t linphone_tunnel_get_dual_mode(const LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC bool_t linphone_tunnel_dual_mode_enabled(const LinphoneTunnel *tunnel);
 
 /**
  * Returns whether the tunnel is activated. If mode is set to auto, this gives indication whether the automatic detection determined
