@@ -5060,3 +5060,10 @@ void linphone_call_replace_op(LinphoneCall *call, SalOp *op) {
 	}
 	sal_op_release(oldop);
 }
+
+void linphone_call_ogl_render(LinphoneCall *call) {
+	VideoStream *stream = call->videostream;
+
+	if (stream && stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
+		ms_filter_call_method(stream->output, MS_VIDEO_DISPLAY_CALL_GENERIC_RENDER, NULL);
+}

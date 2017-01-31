@@ -568,6 +568,12 @@ LINPHONE_PUBLIC LinphonePlayer * linphone_call_get_player(LinphoneCall *call);
 LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
 
 /**
+ * Call generic OpenGL render for a given call.
+ * @param call The call.
+ */
+LINPHONE_PUBLIC void linphone_call_ogl_render(LinphoneCall *call);
+
+/**
  * @}
  */
 
