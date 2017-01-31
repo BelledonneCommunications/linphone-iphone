@@ -71,6 +71,7 @@ void linphone_tunnel_set_dual_mode(LinphoneTunnel *tunnel, bool_t dual_mode_enab
 
 bool_t linphone_tunnel_get_dual_mode(const LinphoneTunnel *tunnel) {
 	ms_warning("linphone_tunnel_get_dual_mode() - stubbed, no implementation");
+	return FALSE;
 }
 
 bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel){
