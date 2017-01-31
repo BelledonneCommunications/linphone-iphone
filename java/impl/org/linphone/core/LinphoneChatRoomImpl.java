@@ -44,14 +44,15 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 			boolean isIncoming);
 	private native void sendChatMessage(long ptr, Object message, long messagePtr);
 	private native void finalize(long nativePtr);
-	
+	private native boolean islimeAvailable(long nativePtr);
+
 	protected void finalize() throws Throwable {
 		if (nativePtr != 0) {
 			finalize(nativePtr);
 		}
 		super.finalize();
 	}
-	
+
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
 	}
@@ -160,7 +161,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private LinphoneChatMessage[] getHistoryPrivate(Object[] typesPtr) {
 		return (LinphoneChatMessage[]) typesPtr;
 	}
-	
+
 	private native long createFileTransferMessage(long ptr, String name, String type, String subtype, int size);
 	@Override
 	public LinphoneChatMessage createFileTransferMessage(LinphoneContent content) {
@@ -172,16 +173,21 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public void sendChatMessage(LinphoneChatMessage message) {
 		sendChatMessage(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr());
 	}
-	
+
 	private native Object getCall(long nativePtr);
 	@Override
 	public LinphoneCall getCall() {
 		return (LinphoneCall) getCall(nativePtr);
 	}
-	
+
 	private native long getChar(long nativePtr);
 	@Override
 	public long getChar() {
 		return getChar(nativePtr);
+	}
+
+	@Override
+	public boolean islimeAvailable() {
+		return islimeAvailable(nativePtr);
 	}
 }

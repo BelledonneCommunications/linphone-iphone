@@ -4317,7 +4317,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferM
 	return (jlong) message;
 }
 
-
+extern "C" jboolean Java_org_linphone_core_LinphoneChatRoomImpl_islimeAvailable(JNIEnv *env, jobject thiz, jlong ptr) {
+	return (jboolean) linphone_chat_room_lime_available((LinphoneChatRoom*)ptr);
+}
 
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_cancelFileTransfer(JNIEnv* env, jobject  thiz, jlong ptr) {
 	linphone_chat_message_cancel_file_transfer((LinphoneChatMessage *)ptr);

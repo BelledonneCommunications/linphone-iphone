@@ -33,13 +33,13 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneAddress peer address
 	 */
 	LinphoneAddress getPeerAddress();
-	
+
 	/**
 	* send a message to peer member of this chat room.
 	* @param  	message to be sent
 	*/
 	void sendMessage(String message);
-	
+
 	/**
 	 * Send a message to peer member of this chat room.
 	 * @param message chat message
@@ -120,26 +120,26 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneChatMessage object
 	 */
 	LinphoneChatMessage createLinphoneChatMessage(String message, String url, State state, long timestamp, boolean isRead, boolean isIncoming);
-	
+
 	/**
 	 * Returns a back pointer to the core managing the chat room.
 	 * @return the LinphoneCore
 	 */
 	LinphoneCore getCore();
-	
+
 	/**
 	 * Create a message attached to a dedicated chat room with a particular content.
 	 * @param content LinphoneContent initial content.
 	 * @return a new LinphoneChatMessage
 	 */
 	LinphoneChatMessage createFileTransferMessage(LinphoneContent content);
-	
+
 	/**
-	 * 
+	 *
 	 * @param message
 	 */
 	void sendChatMessage(LinphoneChatMessage message);
-	
+
 	/**
 	 * get Curent Call associated to this chatroom if any
 	 * To commit a message, use #linphone_chat_room_send_message
@@ -152,6 +152,11 @@ public interface LinphoneChatRoom {
 	 * @return  RFC 4103/T.140 char
 	 */
 	long getChar();
-	
-	
+
+	/**
+	 * Return if lime is available in this room
+	 * @param cr: chat room
+	 * @return
+     */
+	boolean islimeAvailable();
 }
