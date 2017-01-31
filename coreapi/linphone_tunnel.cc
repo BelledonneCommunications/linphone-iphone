@@ -125,6 +125,7 @@ static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str)
 	}
 	if (pos >= 2) {
 		tunnel_config = linphone_tunnel_config_new();
+		linphone_tunnel_config_set_remote_udp_mirror_port(tunnel_config, -1);
 		linphone_tunnel_config_set_host(tunnel_config, host);
 		linphone_tunnel_config_set_port(tunnel_config, port);
 	}
