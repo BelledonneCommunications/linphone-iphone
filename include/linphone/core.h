@@ -809,6 +809,15 @@ typedef void (*LinphoneCoreCbsMessageReceivedCb)(LinphoneCore *lc, LinphoneChatR
 typedef LinphoneCoreCbsMessageReceivedCb LinphoneCoreMessageReceivedCb;
 
 /**
+ * Chat message not decrypted callback prototype
+ *
+ * @param lc #LinphoneCore object
+ * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
+ * @param LinphoneChatMessage incoming message
+ */
+typedef void (*LinphoneCoreCbsMessageReceivedUnableDecryptCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
+
+/**
  * File transfer receive callback prototype. This function is called by the core upon an incoming File transfer is started. This function may be call several time for the same file in case of large file.
  *
  *
@@ -1014,6 +1023,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreAuthenticationRequestedCb authentication_requested; /**< Ask the application some authentication information */
 	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
 	LinphoneCoreMessageReceivedCb message_received; /**< a message is received, can be text or external body*/
+	LinphoneCoreCbsMessageReceivedUnableDecryptCb message_received_unable_decrypt; /**< an encrypted message is received but we can't decrypt it*/
 	LinphoneCoreIsComposingReceivedCb is_composing_received; /**< An is-composing notification has been received */
 	LinphoneCoreDtmfReceivedCb dtmf_received; /**< A dtmf has been received received */
 	LinphoneCoreReferReceivedCb refer_received; /**< An out of call refer was received */

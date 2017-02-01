@@ -650,6 +650,9 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 			retval = cb_process_incoming_message(imee, cr, msg);
 			if(retval == 0) {
 				msg->is_secured = TRUE;
+			} else if(retval > 0) {
+				// Unable to decrypt message
+				linphone_core_notify_message_received_unable_decrypt(cr->lc, cr, msg);
 			}
 		}
 	}

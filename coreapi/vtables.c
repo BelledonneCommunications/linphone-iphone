@@ -188,6 +188,11 @@ void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *r
 	NOTIFY_IF_EXIST(message_received, lc,room,message);
 	cleanup_dead_vtable_refs(lc);
 }
+
+void linphone_core_notify_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message){
+	NOTIFY_IF_EXIST(message_received_unable_decrypt, lc,room,message);
+	cleanup_dead_vtable_refs(lc);
+}
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif

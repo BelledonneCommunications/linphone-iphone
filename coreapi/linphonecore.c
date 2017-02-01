@@ -212,6 +212,10 @@ void linphone_core_cbs_set_message_received(LinphoneCoreCbs *cbs, LinphoneCoreCb
 	cbs->vtable->message_received = cb;
 }
 
+void linphone_core_cbs_set_message_received_unable_decrypt(LinphoneCoreCbs *cbs, LinphoneCoreCbsMessageReceivedUnableDecryptCb cb) {
+	cbs->vtable->message_received_unable_decrypt = cb;
+}
+
 void linphone_core_cbs_set_is_composing_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsIsComposingReceivedCb cb) {
 	cbs->vtable->is_composing_received = cb;
 }
