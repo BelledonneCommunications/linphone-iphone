@@ -52,6 +52,15 @@ void TunnelManager::addServer(const char *ip, int port) {
 	}
 }
 
+void TunnelManager::addServerPair(const char *ip1, int port1, const char *ip2, int port2, unsigned int udpMirrorPort, unsigned int delay) {
+	if (ip1 == NULL || ip2 == NULL) {
+		ms_warning("Adding tunnel server with empty ip, it will not work!");
+		return;
+	}
+	addServerPair(ip1, port1, ip2, port2);
+	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip1, udpMirrorPort), delay));
+}
+
 void TunnelManager::addServerPair(const char *ip1, int port1, const char *ip2, int port2) {
 	if (ip1 == NULL || ip2 == NULL) {
 		ms_warning("Adding tunnel server with empty ip, it will not work!");

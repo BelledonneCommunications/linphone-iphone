@@ -71,6 +71,18 @@ namespace belledonnecomm {
 		 * @param port1 tunnel server tls port, recommended value is 443
 		 * @param ip2 server ip address n°2
 		 * @param port2 tunnel server tls port, recommended value is 443
+		 * @param udpMirrorPort remote port on the tunnel server 1 side  used to test udp reachability
+		 * @param delay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms.
+		 */
+		void addServerPair(const char *ip1, int port1, const char *ip2, int port2, unsigned int udpMirrorPort, unsigned int delay);
+		/**
+		 * Add a tunnel server couple. At least one should be provided to be able to connect.
+		 * This is used when using the dual socket mode where one client will connect to one ip and the other client to the other ip.
+		 *
+		 * @param ip1 server ip address n°1
+		 * @param port1 tunnel server tls port, recommended value is 443
+		 * @param ip2 server ip address n°2
+		 * @param port2 tunnel server tls port, recommended value is 443
 		 */
 		void addServerPair(const char *ip1, int port1, const char *ip2, int port2);
 		/**

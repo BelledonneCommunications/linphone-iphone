@@ -961,6 +961,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return tunnelSipEnabled(nativePtr);
 	}
 
+	private native void tunnelEnableDualMode(long nativePtr, boolean enable);
+	@Override
+	public void tunnelEnableDualMode(boolean enable) {
+		tunnelEnableDualMode(nativePtr, enable);
+	}
+
+	private native boolean tunnelDualModeEnabled(long nativePtr);
+	@Override
+	public boolean tunnelDualModeEnabled() {
+		return tunnelDualModeEnabled(nativePtr);
+	}
+
 	@Override
 	public native boolean isTunnelAvailable();
 

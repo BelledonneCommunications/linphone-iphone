@@ -1745,6 +1745,18 @@ public interface LinphoneCore {
 	boolean tunnelSipEnabled();
 
 	/**
+	 * Set whether to use two tunnel client to connect to the same tunnel server but on two different IPs
+	 * @param enable If true, two tunnel clients will be created
+	 */
+	void tunnelEnableDualMode(boolean enable);
+
+	/**
+	 * Check whether dual tunnel client mode is enabled
+	 * @return true means two tunnel clients will be created
+	 */
+	boolean tunnelDualModeEnabled();
+
+	/**
 	 * @deprecated Use tunnelSetMode instaead
 	 * Enable tunnel if the mirror RTP session cannot be established
 	 */

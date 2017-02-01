@@ -25,6 +25,26 @@ public class TunnelConfigImpl implements TunnelConfig{
 	public void setPort(int port) {
 		setPort(mNativePtr, port);
 	}
+	private native String getHost2(long nativePtr);
+	@Override
+	public String getHost2() {
+		return getHost2(mNativePtr);
+	}
+	private native void setHost2(long nativePtr, String host);
+	@Override
+	public void setHost2(String host) {
+		setHost2(mNativePtr, host);
+	}
+	private native int getPort2(long nativePtr);
+	@Override
+	public int getPort2() {
+		return getPort2(mNativePtr);
+	}
+	private native void setPort2(long nativePtr, int port);
+	@Override
+	public void setPort2(int port) {
+		setPort2(mNativePtr, port);
+	}
 	private native int getRemoteUdpMirrorPort(long nativePtr);
 	@Override
 	public int getRemoteUdpMirrorPort() {

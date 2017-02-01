@@ -66,11 +66,21 @@ static char *linphone_tunnel_config_to_string(const LinphoneTunnelConfig *tunnel
 	const char *host2 = linphone_tunnel_config_get_host2(tunnel_config);
 	if(host != NULL) {
 		if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) != -1) {
-			str = ms_strdup_printf("%s:%d:%d:%d",
-								   linphone_tunnel_config_get_host(tunnel_config),
-								   linphone_tunnel_config_get_port(tunnel_config),
-								   linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
-								   linphone_tunnel_config_get_delay(tunnel_config));
+			if (host2 != NULL) {
+				str = ms_strdup_printf("%s:%d:%d:%d/%s:%d",
+									linphone_tunnel_config_get_host(tunnel_config),
+									linphone_tunnel_config_get_port(tunnel_config),
+									linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+									linphone_tunnel_config_get_delay(tunnel_config),
+									linphone_tunnel_config_get_host2(tunnel_config),
+									linphone_tunnel_config_get_port2(tunnel_config));
+			} else {
+				str = ms_strdup_printf("%s:%d:%d:%d",
+									linphone_tunnel_config_get_host(tunnel_config),
+									linphone_tunnel_config_get_port(tunnel_config),
+									linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+									linphone_tunnel_config_get_delay(tunnel_config));
+			}
 		} else if (host2 != NULL) {
 			str = ms_strdup_printf("%s:%d/%s:%d",
 								   linphone_tunnel_config_get_host(tunnel_config),
@@ -198,11 +208,20 @@ static void linphone_tunnel_save_config(const LinphoneTunnel *tunnel) {
 
 
 static void linphone_tunnel_add_server_intern(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config) {
-	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) != -1) {
-		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config),
-			linphone_tunnel_config_get_port(tunnel_config),
-			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
-			linphone_tunnel_config_get_delay(tunnel_config));
+	if (linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) != -1) {
+		if (linphone_tunnel_config_get_host2(tunnel_config) != NULL) {
+			bcTunnel(tunnel)->addServerPair(linphone_tunnel_config_get_host(tunnel_config),
+				linphone_tunnel_config_get_port(tunnel_config),
+				linphone_tunnel_config_get_host2(tunnel_config),
+				linphone_tunnel_config_get_port2(tunnel_config),
+				linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+				linphone_tunnel_config_get_delay(tunnel_config));
+		} else {
+			bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config),
+				linphone_tunnel_config_get_port(tunnel_config),
+				linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+				linphone_tunnel_config_get_delay(tunnel_config));
+		}
 	} else if (linphone_tunnel_config_get_host2(tunnel_config) != NULL) {
 		bcTunnel(tunnel)->addServerPair(linphone_tunnel_config_get_host(tunnel_config),
 			linphone_tunnel_config_get_port(tunnel_config),

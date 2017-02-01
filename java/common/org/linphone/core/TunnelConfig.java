@@ -28,6 +28,27 @@ public interface TunnelConfig {
 	 */
 	void setPort(int port);
 	/**
+	 * Get the hostname of the second tunnel server
+	 * @return
+	 */
+	String getHost2();
+	/**
+	 * Set the hostname (or ip address) of the second tunnel server.
+	 * @param host
+	 */
+	void setHost2(String host);
+	/**
+	 * Get the port where to connect to the second tunnel server.
+	 * @return
+	 */
+	int getPort2();
+	/**
+	 * Set the port where to connect to the second tunnel server.
+	 * When not set, the default value is used (443).
+	 * @param port
+	 */
+	void setPort2(int port);
+	/**
 	 * Get the remote udp mirror port, which is used to check udp connectivity of the network.
 	 * @return
 	 */

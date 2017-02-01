@@ -5607,6 +5607,22 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_tunnelSipEnabled(JNI
 	}
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnableDualMode(JNIEnv *env, jobject thiz, jlong pCore, jboolean enable) {
+	LinphoneTunnel *tunnel = ((LinphoneCore *)pCore)->tunnel;
+	if(tunnel != NULL) {
+		linphone_tunnel_enable_dual_mode(tunnel, (bool_t)enable);
+	}
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_tunnelDualModeEnabled(JNIEnv *env, jobject thiz, jlong pCore) {
+	LinphoneTunnel *tunnel = ((LinphoneCore *)pCore)->tunnel;
+	if(tunnel != NULL) {
+		return (jboolean)linphone_tunnel_dual_mode_enabled(tunnel);
+	} else {
+		return JNI_FALSE;
+	}
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUserAgent(JNIEnv *env,jobject thiz,jlong pCore, jstring name, jstring version){
 	const char* cname = GetStringUTFChars(env, name);
 	const char* cversion = GetStringUTFChars(env, version);
@@ -7620,6 +7636,52 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_TunnelConfigImpl_getPort(JNIEnv *e
 JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_setPort(JNIEnv *env, jobject jobj, jlong ptr, jint port){
 	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
 	linphone_tunnel_config_set_port(cfg, port);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    getHost
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_TunnelConfigImpl_getHost2(JNIEnv *env, jobject obj, jlong ptr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	const char *host = linphone_tunnel_config_get_host2(cfg);
+	if (host){
+		return env->NewStringUTF(host);
+	}
+	return NULL;
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    setHost
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_setHost2(JNIEnv *env, jobject obj, jlong ptr, jstring jstr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	const char* host = GetStringUTFChars(env, jstr);
+	linphone_tunnel_config_set_host2(cfg, host);
+	ReleaseStringUTFChars(env, jstr, host);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    getPort
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_TunnelConfigImpl_getPort2(JNIEnv *env, jobject jobj, jlong ptr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	return linphone_tunnel_config_get_port2(cfg);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    setPort
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_setPort2(JNIEnv *env, jobject jobj, jlong ptr, jint port){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	linphone_tunnel_config_set_port2(cfg, port);
 }
 
 /*
