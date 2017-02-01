@@ -4,7 +4,7 @@ mediastreamer2/src/android/androidsound_depr.cpp
 mediastreamer2/src/android/androidvideo.cpp
 mediastreamer2/src/audiofilters/alaw.c
 mediastreamer2/src/audiofilters/alsa.c
-mediastreamer2/src/audiofilters/aqsnd.c
+mediastreamer2/src/audiofilters/aqsnd.m
 mediastreamer2/src/audiofilters/audiomixer.c
 mediastreamer2/src/audiofilters/chanadapt.c
 mediastreamer2/src/audiofilters/dtmfgen.c
