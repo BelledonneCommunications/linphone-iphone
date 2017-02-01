@@ -218,6 +218,10 @@
 
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(nonnull AVAudioSession *)audioSession {
 	LOGD(@"CallKit : Audio session deactivated");
+
+	_pendingCall = NULL;
+	_pendingAddr = NULL;
+	_pendingCallVideo = FALSE;
 }
 
 - (void)providerDidReset:(CXProvider *)provider {
