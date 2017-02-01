@@ -549,7 +549,7 @@ LINPHONE_PUBLIC void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *l
  * @param fr the linphone friend to save
  * @param lc the linphone core
  */
-void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc);
 
 /**
  * @}

@@ -21,6 +21,9 @@ import pystache
 import re
 import argparse
 import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
+print(sys.path)
 import genapixml as CApi
 import abstractapi as AbsApi
 
@@ -215,7 +218,7 @@ class CppTranslator(object):
 		methodElems['deprecated'] = 'LINPHONE_DEPRECATED ' if method.deprecated else ''
 		
 		methodDict = {}
-		methodDict['prototype'] = 'LINPHONE_PUBLIC {deprecated}{methodType}{return} {name}({params}){const}{semicolon}'.format(**methodElems)
+		methodDict['prototype'] = 'LINPHONECXX_PUBLIC {deprecated}{methodType}{return} {name}({params}){const}{semicolon}'.format(**methodElems)
 	
 		if genImpl:
 			if not CppTranslator.is_ambigous_type(self, method.returnType):

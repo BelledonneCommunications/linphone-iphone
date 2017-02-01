@@ -252,7 +252,7 @@ LINPHONE_PUBLIC void linphone_friend_list_set_uri(LinphoneFriendList *list, cons
  * @param[in] list LinphoneFriendList object.
  * @param[in] rev The revision
  */
-void linphone_friend_list_update_revision(LinphoneFriendList *list, int rev);
+LINPHONE_PUBLIC void linphone_friend_list_update_revision(LinphoneFriendList *list, int rev);
 
 /**
  * An object to handle the callbacks for LinphoneFriend synchronization.
@@ -389,7 +389,7 @@ LINPHONE_PUBLIC void linphone_friend_list_synchronize_friends_from_server(Linpho
  * Goes through all the LinphoneFriend that are dirty and does a CardDAV PUT to update the server.
  * @param[in] list LinphoneFriendList object.
  */
-void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list);
+LINPHONE_PUBLIC void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list);
 
 /**
  * Returns the LinphoneCore object attached to this LinphoneFriendList.

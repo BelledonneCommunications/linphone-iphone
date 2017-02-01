@@ -25,15 +25,16 @@
 #
 # It defines the following variables:
 #
-#  LINPHONE_CXX_FOUND - system has linphone++
-#  LINPHONE_CXX_INCLUDE_DIRS - the linphone++ include directory
-#  LINPHONE_CXX_LIBRARIES - The libraries needed to use linphone++
-#  LINPHONE_CXX_LDFLAGS - The linking flags needed to use linphone++
+#  LINPHONECXX_FOUND - system has linphone++
+#  LINPHONECXX_INCLUDE_DIRS - the linphone++ include directory
+#  LINPHONECXX_LIBRARIES - The libraries needed to use linphone++
+#  LINPHONECXX_LDFLAGS - The linking flags needed to use linphone++
 
 find_package(BelleSIP)
+find_package(Linphone)
 include("${CMAKE_CURRENT_LIST_DIR}/LinphoneCxxTargets.cmake")
-get_filename_component(LINPHONE_CXX_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set(LINPHONE_CXX_INCLUDE_DIRS "${LINPHONE_CXX_CMAKE_DIR}/../../../include")
-set(LINPHONE_CXX_LDFLAGS "")
-set(LINPHONE_CXX_LIBRARIES linphone++ ${BELLESIP_LIBRARIES})
+get_filename_component(LINPHONECXX_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(LINPHONECXX_INCLUDE_DIRS "${LINPHONECXX_CMAKE_DIR}/../../../include" "${BELLESIP_INCLUDE_DIRS}" "${LINPHONE_INCLUDE_DIRS}")
+set(LINPHONECXX_LDFLAGS "")
+set(LINPHONECXX_LIBRARIES linphone++ ${BELLESIP_LIBRARIES} ${LINPHONE_LIBRARIES})
 

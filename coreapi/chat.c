@@ -27,6 +27,7 @@
 #include "linphone/lpconfig.h"
 #include "belle-sip/belle-sip.h"
 #include "ortp/b64.h"
+#include "linphone/wrapper_utils.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>

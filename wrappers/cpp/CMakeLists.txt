@@ -5,7 +5,7 @@ configure_file(LinphoneCxxConfig.cmake.in LinphoneCxxConfig.cmake @ONLY)
 
 add_custom_command(OUTPUT CMakeLists.txt include/linphone.hh
 	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/xml"
-	DEPENDS *.py *.mustache linphone-doc
+	DEPENDS abstractapi.py genwrapper.py class_header.mustache class_impl.mustache enums_header.mustache main_header.mustache linphone-doc
 	"${PROJECT_BINARY_DIR}/coreapi/help/doc/xml/index.xml"
 	"${CMAKE_CURRENT_BINARY_DIR}/c_make_lists.mustache"
 )

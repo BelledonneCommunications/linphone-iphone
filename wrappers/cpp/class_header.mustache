@@ -40,6 +40,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/linphonecore_utils.h"
 #include "linphone/wrapper_utils.h"
 
+#ifndef LINPHONECXX_PUBLIC
+#if defined(_MSC_VER)
+#ifdef LINPHONECXX_EXPORTS
+#define LINPHONECXX_PUBLIC	__declspec(dllexport)
+#else
+#define LINPHONECXX_PUBLIC	__declspec(dllimport)
+#endif
+#else
+#define LINPHONECXX_PUBLIC
+#endif
+#endif
+
 namespace linphone {
 
 	{{#priorDeclarations}}
@@ -58,21 +70,21 @@ namespace linphone {
 			{{/isNotListener}}
 			
 			{{#ismonolistenable}}
-			LINPHONE_PUBLIC void setListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
+			LINPHONECXX_PUBLIC void setListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
 			{{/ismonolistenable}}
 
 			{{#ismultilistenable}}
-			LINPHONE_PUBLIC void addListener(std::shared_ptr<{{{listenerClassName}}}> &listener);
-			LINPHONE_PUBLIC void removeListener(std::shared_ptr<{{{listenerClassName}}}> &listener);
+			LINPHONECXX_PUBLIC void addListener(std::shared_ptr<{{{listenerClassName}}}> &listener);
+			LINPHONECXX_PUBLIC void removeListener(std::shared_ptr<{{{listenerClassName}}}> &listener);
 			{{/ismultilistenable}}
 	
 		public:
 			{{#isfactory}}
-			LINPHONE_PUBLIC std::shared_ptr<Core> createCore(const std::shared_ptr<CoreListener> & cbs, const std::string & configPath, const std::string & factoryConfigPath) const;
-			LINPHONE_PUBLIC std::shared_ptr<Core> createCoreWithConfig(const std::shared_ptr<CoreListener> & cbs, const std::shared_ptr<Config> & config) const;
+			LINPHONECXX_PUBLIC std::shared_ptr<Core> createCore(const std::shared_ptr<CoreListener> & cbs, const std::string & configPath, const std::string & factoryConfigPath) const;
+			LINPHONECXX_PUBLIC std::shared_ptr<Core> createCoreWithConfig(const std::shared_ptr<CoreListener> & cbs, const std::shared_ptr<Config> & config) const;
 			{{/isfactory}}
 			{{#isVcard}}
-			LINPHONE_PUBLIC std::shared_ptr<belcard::BelCard> &getVcard();
+			LINPHONECXX_PUBLIC std::shared_ptr<belcard::BelCard> &getVcard();
 			{{/isVcard}}
 		
 			{{#methods}}

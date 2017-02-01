@@ -83,12 +83,12 @@ LINPHONE_PUBLIC int linphone_core_stop_echo_tester(LinphoneCore *lc);
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode
  */
-void linphone_core_start_dtmf_stream(LinphoneCore* lc);
+LINPHONE_PUBLIC void linphone_core_start_dtmf_stream(LinphoneCore* lc);
 /**
  * @ingroup IOS
  * Special function to stop dtmf feed back function. Must be called before entering BG mode
  */
-void linphone_core_stop_dtmf_stream(LinphoneCore* lc);
+LINPHONE_PUBLIC void linphone_core_stop_dtmf_stream(LinphoneCore* lc);
 
 
 typedef bool_t (*LinphoneCoreIterateHook)(void *data);

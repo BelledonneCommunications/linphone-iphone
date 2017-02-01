@@ -26,6 +26,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <belle-sip/object.h>
 #include <bctoolbox/list.h>
 
+#ifndef LINPHONECXX_PUBLIC
+#if defined(_MSC_VER)
+#ifdef LINPHONECXX_EXPORTS
+#define LINPHONECXX_PUBLIC	__declspec(dllexport)
+#else
+#define LINPHONECXX_PUBLIC	__declspec(dllimport)
+#endif
+#else
+#define LINPHONECXX_PUBLIC
+#endif
+#endif
+
 namespace linphone {
 	
 	class Object;
@@ -79,8 +91,8 @@ namespace linphone {
 				return *(T *)ptr;
 			}
 		}
-		void unsetData(const std::string &key);
-		bool dataExists(const std::string &key);
+		LINPHONECXX_PUBLIC void unsetData(const std::string &key);
+		LINPHONECXX_PUBLIC bool dataExists(const std::string &key);
 	
 	public:
 		template <class T>
@@ -117,7 +129,7 @@ namespace linphone {
 		static std::list<std::string> cStringArrayToCppList(const char **cArray);
 	
 	private:
-		std::map<std::string,void *> &getUserData() const;
+		LINPHONECXX_PUBLIC std::map<std::string,void *> &getUserData() const;
 		template <class T> static void deleteSharedPtr(std::shared_ptr<T> *ptr) {if (ptr != NULL) delete ptr;}
 		static void deleteString(std::string *str) {if (str != NULL) delete str;}
 	

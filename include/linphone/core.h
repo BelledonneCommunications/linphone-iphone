@@ -2167,7 +2167,7 @@ LINPHONE_PUBLIC void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, i
  * @return The SIP transport timeout in milliseconds.
  * @ingroup media_parameters
  */
-int linphone_core_get_sip_transport_timeout(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_sip_transport_timeout(LinphoneCore *lc);
 
 /**
  * Enable or disable DNS SRV resolution.
