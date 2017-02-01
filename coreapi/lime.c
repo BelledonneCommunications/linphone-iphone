@@ -1101,7 +1101,7 @@ void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptio
 
 bool_t lime_is_available() { return FALSE; }
 int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) { return LIME_NOT_ENABLED;}
-int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) { return LIME_NOT_ENABLED;}
+int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output, char **content_type) { return LIME_NOT_ENABLED;}
 int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *content_type, uint8_t *message, uint8_t *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {return LIME_NOT_ENABLED;}
 void lime_freeKeys(limeURIKeys_t *associatedKeys){
