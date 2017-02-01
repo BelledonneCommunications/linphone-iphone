@@ -1093,6 +1093,7 @@ struct _LinphoneCore
 
 	LinphoneAddress *default_rls_addr; /*default resource list server*/
 	LinphoneImEncryptionEngine *im_encryption_engine;
+	MSBandwidthController *bw_controller;
 };
 
 

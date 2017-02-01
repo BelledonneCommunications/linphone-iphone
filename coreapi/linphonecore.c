@@ -1618,20 +1618,20 @@ bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
 }
 
 void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, const char* algorithm){
-	if (ms_qos_analyzer_algorithm_from_string(algorithm) != MSQosAnalyzerAlgorithmSimple) {
-		ms_warning("Unsupported adaptive rate algorithm [%s] on core [%p], using Simple",algorithm,lc);
-		linphone_core_set_adaptive_rate_algorithm(lc,ms_qos_analyzer_algorithm_to_string(MSQosAnalyzerAlgorithmSimple));
+	if (strcasecmp(algorithm, "basic") != 0 && strcasecmp(algorithm, "advanced") != 0) {
+		ms_warning("Unsupported adaptive rate algorithm [%s] on core [%p], using advanced",algorithm,lc);
+		linphone_core_set_adaptive_rate_algorithm(lc, "advanced");
 		return;
 	}
 	lp_config_set_string(lc->config,"net","adaptive_rate_algorithm",algorithm);
 }
 
 const char * linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
-	const char* saved_value = lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "Simple");
-	if (ms_qos_analyzer_algorithm_from_string(saved_value) != MSQosAnalyzerAlgorithmSimple) {
-		ms_warning("Unsupported adaptive rate algorithm [%s] on core [%p], using Simple",saved_value,lc);
+	const char* saved_value = lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "advanced");
+	if (strcasecmp(saved_value, "basic") != 0 && strcasecmp(saved_value, "advanced") != 0) {
+		ms_warning("Unsupported adaptive rate algorithm [%s] on core [%p]",saved_value,lc);
 	}
-	return ms_qos_analyzer_algorithm_to_string(MSQosAnalyzerAlgorithmSimple);
+	return saved_value;
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
@@ -2005,6 +2005,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
+	lc->bw_controller = ms_bandwidth_controller_new();
 }
 
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata) {
@@ -6169,7 +6170,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	bctbx_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
-
+	ms_bandwidth_controller_destroy(lc->bw_controller);
 	ms_factory_destroy(lc->factory);
 }
 

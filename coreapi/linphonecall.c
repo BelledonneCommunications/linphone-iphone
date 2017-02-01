@@ -573,7 +573,7 @@ static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		md->streams[i].rtcp_fb.generic_nack_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_generic_nack_enabled", 0);
-		md->streams[i].rtcp_fb.tmmbr_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_tmmbr_enabled", 0);
+		md->streams[i].rtcp_fb.tmmbr_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_tmmbr_enabled", 1);
 		md->streams[i].implicit_rtcp_fb = call->params->implicit_rtcp_fb;
 
 		for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
@@ -3170,7 +3170,37 @@ static void linphone_call_set_on_hold_file(LinphoneCall *call, const char *file)
 	}
 }
 
-static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallState next_state, bool_t use_arc){
+static void configure_adaptive_rate_control(LinphoneCall *call, MediaStream *ms, bool_t video_will_be_used){
+	LinphoneCore *lc = call->core;
+	bool_t enabled = linphone_core_adaptive_rate_control_enabled(lc);
+	bool_t is_advanced = TRUE;
+	const char *algo = linphone_core_get_adaptive_rate_algorithm(lc);
+	
+	if (strcasecmp(algo, "basic") == 0) is_advanced = FALSE;
+	else if (strcasecmp(algo, "advanced") == 0) is_advanced = TRUE;
+	
+	if (enabled && is_advanced && !media_stream_avpf_enabled(ms)){
+		ms_warning("Advanced adaptive rate control requested but avpf is not activated. Reverting to basic rate control instead.");
+		is_advanced = TRUE;
+	}
+	if (enabled){
+		if (is_advanced){
+			ms_bandwidth_controller_add_stream(lc->bw_controller, ms);
+			media_stream_enable_adaptive_bitrate_control(ms, FALSE);
+		}else{
+			media_stream_set_adaptive_bitrate_algorithm(ms, MSQosAnalyzerAlgorithmSimple);
+			if (ms->type == MSAudio && video_will_be_used){
+				enabled = FALSE; /*if this is an audio stream but video is going to be used, there is
+				no need to perform basic rate control on the audio stream, just the video stream.*/
+			}
+			media_stream_enable_adaptive_bitrate_control(ms, enabled);
+		}
+	}else{
+		media_stream_enable_adaptive_bitrate_control(ms, FALSE);
+	}
+}
+
+static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallState next_state, bool_t video_will_be_used){
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
 	const SalStreamDescription *stream;
@@ -3251,9 +3281,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			audio_stream_enable_echo_canceller(call->audiostream, use_ec);
 			if (playcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(playcard, stream->max_rate);
 			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
-			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
-			media_stream_set_adaptive_bitrate_algorithm(&call->audiostream->ms,
-								ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
+			configure_adaptive_rate_control(call, (MediaStream*)call->audiostream, video_will_be_used);
 
 			rtp_session_enable_rtcp_mux(call->audiostream->ms.sessions.rtp_session, stream->rtcp_mux);
 			if (!call->params->in_conference && call->params->record_file){
@@ -3427,10 +3455,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 			call->current_params->video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			call->current_params->has_video=TRUE;
 
-			video_stream_enable_adaptive_bitrate_control(call->videostream,
-													  linphone_core_adaptive_rate_control_enabled(lc));
-			media_stream_set_adaptive_bitrate_algorithm(&call->videostream->ms,
-													  ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
+			configure_adaptive_rate_control(call, (MediaStream*)call->videostream, TRUE);
 			rtp_session_enable_rtcp_mux(call->videostream->ms.sessions.rtp_session, vstream->rtcp_mux);
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
@@ -3617,7 +3642,7 @@ void linphone_call_set_symmetric_rtp(LinphoneCall *call, bool_t val){
 
 void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState next_state){
 	LinphoneCore *lc=call->core;
-	bool_t use_arc = linphone_core_adaptive_rate_control_enabled(lc);
+	bool_t video_will_be_used = FALSE;
 #ifdef VIDEO_ENABLED
 	const SalStreamDescription *vstream=sal_media_description_find_best_stream(call->resultdesc,SalVideo);
 #endif
@@ -3657,7 +3682,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 #if defined(VIDEO_ENABLED)
 	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
 		/*when video is used, do not make adaptive rate control on audio, it is stupid.*/
-		use_arc=FALSE;
+		video_will_be_used = TRUE;
 	}
 #endif
 	ms_message("linphone_call_start_media_streams() call=[%p] local upload_bandwidth=[%i] kbit/s; local download_bandwidth=[%i] kbit/s",
@@ -3665,7 +3690,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 
 	call->current_params->has_audio = FALSE;
 	if (call->audiostream!=NULL) {
-		linphone_call_start_audio_stream(call, next_state, use_arc);
+		linphone_call_start_audio_stream(call, next_state, video_will_be_used);
 	} else {
 		ms_warning("linphone_call_start_media_streams(): no audio stream!");
 	}
@@ -3833,6 +3858,7 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 			linphone_conference_on_call_stream_stopping(lc->conf_ctx, call);
 		}
 		update_rtp_stats(call, call->main_audio_stream_index);
+		ms_bandwidth_controller_remove_stream(lc->bw_controller, (MediaStream*)call->audiostream);
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
 		linphone_call_handle_stream_events(call, call->main_audio_stream_index);
@@ -3852,6 +3878,7 @@ static void linphone_call_stop_video_stream(LinphoneCall *call) {
 		media_stream_reclaim_sessions(&call->videostream->ms,&call->sessions[call->main_video_stream_index]);
 		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		update_rtp_stats(call, call->main_video_stream_index);
+		ms_bandwidth_controller_remove_stream(call->core->bw_controller, (MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 		linphone_call_handle_stream_events(call, call->main_video_stream_index);

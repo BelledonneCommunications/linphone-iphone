@@ -2097,7 +2097,9 @@ LINPHONE_PUBLIC bool_t linphone_core_adaptive_rate_control_enabled(const Linphon
 /**
  * Sets adaptive rate algorithm. It will be used for each new calls starting from
  * now. Calls already started will not be updated.
- *
+ * @param lc the core
+ * @param algorithm the adaptive rate control algorithm. Currently two values are supported: 'advanced', which is the default value, or 'basic'.
+ * 
  * @ingroup media_parameters
  *
 **/
