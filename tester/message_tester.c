@@ -209,10 +209,13 @@ void compare_files(const char *path1, const char *path2) {
 	buf2 = (uint8_t*)ms_load_path_content(path2, &size2);
 	BC_ASSERT_PTR_NOT_NULL(buf1);
 	BC_ASSERT_PTR_NOT_NULL(buf2);
+	if (buf1 && buf2){
+		BC_ASSERT_EQUAL(memcmp(buf1, buf2, size1), 0, int, "%d");
+	}
 	BC_ASSERT_EQUAL((uint8_t)size2, (uint8_t)size1, uint8_t, "%u");
-	BC_ASSERT_EQUAL(memcmp(buf1, buf2, size1), 0, int, "%d");
-	ms_free(buf1);
-	ms_free(buf2);
+	
+	if (buf1) ms_free(buf1);
+	if (buf2) ms_free(buf2);
 }
 
 LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
