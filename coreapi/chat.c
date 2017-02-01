@@ -1472,10 +1472,7 @@ void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secur
 }
 
 bool_t linphone_chat_message_is_secured(LinphoneChatMessage *msg) {
-	if(msg) {
-		return msg->is_secured;
-	}
-	return NULL;
+	return msg->is_secured;
 }
 
 LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage *msg) {
