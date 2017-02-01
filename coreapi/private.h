@@ -258,6 +258,7 @@ struct _LinphoneChatMessage {
 	belle_http_request_listener_t *http_listener; /* our listener, only owned by us*/
 	char *file_transfer_filepath;
 	unsigned long bg_task_id;
+	bool_t is_secured;
 
 #if defined(__clang__) || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
@@ -613,6 +614,7 @@ void linphone_chat_room_add_weak_message(LinphoneChatRoom *cr, LinphoneChatMessa
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
+void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured);
 void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, LinphoneReason reason);
 void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg);

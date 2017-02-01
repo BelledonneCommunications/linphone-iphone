@@ -214,6 +214,7 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
  * | 11 | linphone content id (LinphoneContent describing a file transfer)
  * | 12 | message id (used for IMDN)
  * | 13 | content type (of the message field [must be text representable])
+ * | 14 | secured flag
  */
 static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
@@ -247,6 +248,7 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 		new_message->appdata = ms_strdup(argv[10]);
 		new_message->message_id = ms_strdup(argv[12]);
 		new_message->content_type = ms_strdup(argv[13]);
+		new_message->is_secured = (bool_t)atoi(argv[14]);
 
 		if (argv[11] != NULL) {
 			int id = atoi(argv[11]);
@@ -343,7 +345,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 
 		peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
-		buf = sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%lld,%Q,%i,%Q,%Q);",
+		buf = sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%lld,%Q,%i,%Q,%Q,%i);",
 						local_contact,
 						peer,
 						msg->dir,
@@ -356,7 +358,8 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						msg->appdata,
 						content_id,
 						msg->message_id,
-						msg->content_type
+						msg->content_type,
+						(int)msg->is_secured
 					);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
@@ -776,6 +779,14 @@ void linphone_update_table(sqlite3* db) {
 		ms_message("Table already up to date: %s", errmsg);
 	} else {
 		ms_message("Table history updated successfully for content_type data.");
+	}
+
+	// new field for secured flag
+	ret = sqlite3_exec(db, "ALTER TABLE history ADD COLUMN is_secured INTEGER DEFAULT 0;", NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_message("Table already up to date: %s", errmsg);
+	} else {
+		ms_message("Table history updated successfully for is_secured data.");
 	}
 }
 

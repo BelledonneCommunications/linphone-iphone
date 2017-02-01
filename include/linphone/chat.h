@@ -422,6 +422,13 @@ LINPHONE_PUBLIC void linphone_chat_message_set_to_address(LinphoneChatMessage* m
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMessage* message);
 
 /**
+ * Get if the message was encrypted when transfered
+ * @param[in] message #LinphoneChatMessage obj
+ * @return whether the message was encrypted when transfered or not
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_secured(LinphoneChatMessage *msg);
+
+/**
  * Linphone message can carry external body as defined by rfc2017
  * @param message #LinphoneChatMessage
  * @return external body url or NULL if not present.

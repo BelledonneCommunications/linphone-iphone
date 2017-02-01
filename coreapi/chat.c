@@ -416,6 +416,9 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			LinphoneImEncryptionEngineCbsOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
 			if (cb_process_outgoing_message) {
 				retval = cb_process_outgoing_message(imee, cr, msg);
+				if(retval == 0) {
+					msg->is_secured = TRUE;
+				}
 			}
 		}
 		
@@ -644,6 +647,9 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 		LinphoneImEncryptionEngineCbsIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
 		if (cb_process_incoming_message) {
 			retval = cb_process_incoming_message(imee, cr, msg);
+			if(retval == 0) {
+				msg->is_secured = TRUE;
+			}
 		}
 	}
 
@@ -868,6 +874,7 @@ LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	msg->http_request = NULL;
 	msg->time = ms_time(0);
+	msg->is_secured = FALSE;
 	return msg;
 }
 
@@ -878,6 +885,7 @@ LinphoneChatMessage *linphone_chat_room_create_message_2(LinphoneChatRoom *cr, c
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	msg->external_body_url = external_body_url ? ms_strdup(external_body_url) : NULL;
 	msg->time = time;
+	msg->is_secured = FALSE;
 	linphone_chat_message_set_state(msg, state);
 	if (is_incoming) {
 		msg->dir = LinphoneChatMessageIncoming;
@@ -1454,6 +1462,17 @@ const LinphoneAddress *linphone_chat_message_get_to_address(const LinphoneChatMe
 		return msg->to;
 	if (msg->dir == LinphoneChatMessageOutgoing) {
 		return msg->chat_room->peer_url;
+	}
+	return NULL;
+}
+
+void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured) {
+	msg->is_secured = secured;
+}
+
+bool_t linphone_chat_message_is_secured(LinphoneChatMessage *msg) {
+	if(msg) {
+		return msg->is_secured;
 	}
 	return NULL;
 }
