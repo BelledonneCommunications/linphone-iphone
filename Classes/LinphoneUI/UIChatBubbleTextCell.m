@@ -160,6 +160,13 @@
 	} else {
 		[_messageText setAccessibilityLabel:@"Incoming message"];
 	}
+
+	if (!outgoing && !linphone_chat_message_is_secured(_message) &&
+		linphone_core_lime_enabled(LC) == LinphoneLimeMandatory) {
+		_LIMEKO.hidden = FALSE;
+	} else {
+		_LIMEKO.hidden = TRUE;
+	}
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -169,6 +176,21 @@
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	_messageText.userInteractionEnabled = !editing;
 	_resendRecognizer.enabled = !editing;
+}
+
+- (void)displayLIMEWarning {
+	UIAlertController *errView = [UIAlertController
+		alertControllerWithTitle:NSLocalizedString(@"LIME warning", nil)
+						 message:NSLocalizedString(@"This message you received wasn't encrypted.", nil)
+				  preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction *action){
+														  }];
+
+	[errView addAction:defaultAction];
+	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 }
 
 #pragma mark - Action Functions
@@ -184,6 +206,11 @@
 }
 
 - (IBAction)onResendClick:(id)event {
+	if (!_LIMEKO.hidden) {
+		[self displayLIMEWarning];
+		return;
+	}
+
 	if (_message == nil || !linphone_chat_message_is_outgoing(_message))
 		return;
 

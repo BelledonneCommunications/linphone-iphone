@@ -672,6 +672,8 @@
 		8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */; };
 		8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2595DE1DEDCC8E007A6424 /* CallKit.framework */; };
 		8C2595E11DEDDC67007A6424 /* callkit_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2595E01DEDDC67007A6424 /* callkit_logo.png */; };
+		8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D981E40E0CC00728EF3 /* lime_ko.png */; };
+		8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
 		9EC6C1E11DF96991006C2FD2 /* armv7-apple-darwin.ios in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */; };
@@ -1595,6 +1597,8 @@
 		8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProviderDelegate.m; sourceTree = "<group>"; };
 		8C2595DE1DEDCC8E007A6424 /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		8C2595E01DEDDC67007A6424 /* callkit_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = callkit_logo.png; sourceTree = "<group>"; };
+		8C300D981E40E0CC00728EF3 /* lime_ko.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lime_ko.png; sourceTree = "<group>"; };
+		8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lime_ko@2x.png"; sourceTree = "<group>"; };
 		8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
 		8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
@@ -2440,6 +2444,8 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				8C300D981E40E0CC00728EF3 /* lime_ko.png */,
+				8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */,
 				8C2595E01DEDDC67007A6424 /* callkit_logo.png */,
 				633FEBE21D3CD5570014B822 /* add_field_default.png */,
 				633FEBE31D3CD5570014B822 /* add_field_default@2x.png */,
@@ -3302,6 +3308,7 @@
 				633FEF021D3CD55A0014B822 /* options_disabled.png in Resources */,
 				633FEDC81D3CD5590014B822 /* call_missed.png in Resources */,
 				633FEF4B1D3CD55A0014B822 /* splashscreen@2x.png in Resources */,
+				8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */,
 				633FEE311D3CD5590014B822 /* color_I.png in Resources */,
 				633FEF1F1D3CD55A0014B822 /* presence_online@2x.png in Resources */,
 				633FEE641D3CD5590014B822 /* footer_chat_disabled.png in Resources */,
@@ -3689,6 +3696,7 @@
 				633FEE941D3CD55A0014B822 /* micro_default.png in Resources */,
 				633FEE611D3CD5590014B822 /* edit_list_disabled@2x.png in Resources */,
 				633FEE761D3CD5590014B822 /* history_all_selected.png in Resources */,
+				8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */,
 				633FEF321D3CD55A0014B822 /* route_speaker_selected.png in Resources */,
 				633FEDF51D3CD5590014B822 /* call_video_start_disabled@2x.png in Resources */,
 				63B81A0C1B57DA33009604A6 /* LICENSE.txt in Resources */,

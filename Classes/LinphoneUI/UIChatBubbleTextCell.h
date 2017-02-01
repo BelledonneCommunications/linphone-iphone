@@ -36,6 +36,7 @@
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property(strong, nonatomic) IBOutlet UIView *bubbleView;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *resendRecognizer;
+@property(weak, nonatomic) IBOutlet UIImageView *LIMEKO;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 
