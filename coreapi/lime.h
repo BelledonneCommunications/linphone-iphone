@@ -41,10 +41,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include <mediastreamer2/mscommon.h>
 
-#ifndef LINPHONE_PUBLIC
-#define LINPHONE_PUBLIC MS2_PUBLIC
-#endif
-
 /**
  * @brief Structure holding all needed material to encrypt/decrypt Messages */
 typedef struct limeKey_struct  {

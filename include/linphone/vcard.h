@@ -22,14 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <mediastreamer2/mscommon.h>
 
-#ifndef LINPHONE_PUBLIC
-#define LINPHONE_PUBLIC MS2_PUBLIC
-#endif
-
-#ifndef LINPHONE_DEPRECATED
-#define LINPHONE_DEPRECATED MS2_DEPRECATED
-#endif
-
 #ifdef __cplusplus
 extern "C"
 {

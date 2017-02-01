@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_VCARD_PRIVATE_H
 #define LINPHONE_VCARD_PRIVATE_H
 
-#include "linphone/vcard.h"
+#include "linphone/core.h"
 
 #ifdef __cplusplus
 extern "C"

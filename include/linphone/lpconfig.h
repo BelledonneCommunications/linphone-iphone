@@ -29,10 +29,6 @@
 #include <ortp/port.h>
 #include "linphone/dictionary.h"
 
-#ifndef LINPHONE_PUBLIC
-	#define LINPHONE_PUBLIC MS2_PUBLIC
-#endif
-
 /**
  * @addtogroup misc
  * @{

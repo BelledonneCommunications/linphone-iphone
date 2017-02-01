@@ -36,7 +36,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "belle-sip/mainloop.h"
 
 #ifndef LINPHONE_PUBLIC
-	#define LINPHONE_PUBLIC MS2_PUBLIC
+#if defined(_MSC_VER)
+#ifdef LINPHONE_EXPORTS
+#define LINPHONE_PUBLIC	__declspec(dllexport)
+#else
+#define LINPHONE_PUBLIC	__declspec(dllimport)
+#endif
+#else
+#define LINPHONE_PUBLIC
+#endif
 #endif
 
 #ifdef __cplusplus

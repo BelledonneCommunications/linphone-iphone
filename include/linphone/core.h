@@ -25,19 +25,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msvideo.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/bitratecontrol.h"
-#include "linphone/sipsetup.h"
-#include "linphone/lpconfig.h"
 
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
 
 #ifndef LINPHONE_PUBLIC
-#define LINPHONE_PUBLIC MS2_PUBLIC
+#if defined(_MSC_VER)
+#ifdef LINPHONE_EXPORTS
+#define LINPHONE_PUBLIC	__declspec(dllexport)
+#else
+#define LINPHONE_PUBLIC	__declspec(dllimport)
 #endif
+#else
+#define LINPHONE_PUBLIC
+#endif
+#endif
+
 
 #ifndef LINPHONE_DEPRECATED
 #define LINPHONE_DEPRECATED MS2_DEPRECATED
 #endif
+
+#include "linphone/sipsetup.h"
+#include "linphone/lpconfig.h"
 
 
 #ifdef __cplusplus

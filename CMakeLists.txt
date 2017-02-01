@@ -237,6 +237,7 @@ if(MSVC)
 	include_directories(${MSVC_INCLUDE_DIR})
 endif()
 
+add_definitions("-DLINPHONE_EXPORTS")
 if(ENABLE_DEBUG_LOGS)
 	add_definitions("-DDEBUG")
 endif()
