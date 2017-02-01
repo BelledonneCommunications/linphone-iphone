@@ -567,8 +567,9 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
 /**
  * Call generic OpenGL render for a given call.
  * @param call The call.
+ * @is_preview If true the preview is displayed otherwise it's the input stream.
  */
-LINPHONE_PUBLIC void linphone_call_ogl_render(LinphoneCall *call);
+LINPHONE_PUBLIC void linphone_call_ogl_render(LinphoneCall *call, bool_t is_preview);
 
 /**
  * @}

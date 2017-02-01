@@ -3175,10 +3175,10 @@ static void configure_adaptive_rate_control(LinphoneCall *call, MediaStream *ms,
 	bool_t enabled = linphone_core_adaptive_rate_control_enabled(lc);
 	bool_t is_advanced = TRUE;
 	const char *algo = linphone_core_get_adaptive_rate_algorithm(lc);
-	
+
 	if (strcasecmp(algo, "basic") == 0) is_advanced = FALSE;
 	else if (strcasecmp(algo, "advanced") == 0) is_advanced = TRUE;
-	
+
 	if (enabled && is_advanced && !media_stream_avpf_enabled(ms)){
 		ms_warning("Advanced adaptive rate control requested but avpf is not activated. Reverting to basic rate control instead.");
 		is_advanced = TRUE;
@@ -5088,9 +5088,18 @@ void linphone_call_replace_op(LinphoneCall *call, SalOp *op) {
 	sal_op_release(oldop);
 }
 
-void linphone_call_ogl_render(LinphoneCall *call) {
+void linphone_call_ogl_render(LinphoneCall *call, bool_t is_preview) {
 	VideoStream *stream = call->videostream;
+	if (!stream)
+		return;
 
-	if (stream && stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
-		ms_filter_call_method(stream->output, MS_VIDEO_DISPLAY_CALL_GENERIC_RENDER, NULL);
+	if (!is_preview) {
+		if (stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
+			ms_filter_call_method(stream->output, MS_VIDEO_DISPLAY_CALL_GENERIC_RENDER, NULL);
+
+		return;
+	}
+
+	if (stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
+		ms_filter_call_method(stream->output2, MS_VIDEO_DISPLAY_CALL_GENERIC_RENDER, NULL);
 }
