@@ -257,7 +257,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		pushCallIDs = [[NSMutableArray alloc] init];
 		_photoLibrary = [[ALAssetsLibrary alloc] init];
 		_isTesting = [LinphoneManager isRunningTests];
-
 		[self renameDefaultSettings];
 		[self copyDefaultSettings];
 		[self overrideDefaultSettings];
@@ -1293,6 +1292,63 @@ static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom 
 	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onMessageReceived:lc room:room message:message];
 }
 
+static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room,
+															LinphoneChatMessage *message) {
+	const LinphoneAddress *address = linphone_chat_message_get_peer_address(message);
+	NSString *strAddr = [FastAddressBook displayNameForAddress:address];
+	NSString *title = NSLocalizedString(@"LIME warning", nil);
+	NSString *body = [NSString
+		stringWithFormat:NSLocalizedString(@"You have received an encrypted message you're unable to decrypt from "
+										   @"%@.\nYou need to call your correspondant in order to exchange your ZRTP "
+										   @"keys if you want to decrypt the future messages you'll receive.",
+										   nil),
+						 strAddr];
+	NSString *action = NSLocalizedString(@"Call", nil);
+
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+			content.title = title;
+			content.body = body;
+			UNNotificationRequest *req =
+				[UNNotificationRequest requestWithIdentifier:@"decrypt_request" content:content trigger:NULL];
+			[[UNUserNotificationCenter currentNotificationCenter]
+				addNotificationRequest:req
+				 withCompletionHandler:^(NSError *_Nullable error) {
+				   // Enable or disable features based on authorization.
+				   if (error) {
+					   LOGD(@"Error while adding notification request :");
+					   LOGD(error.description);
+				   }
+				 }];
+		} else {
+			UILocalNotification *notification = [[UILocalNotification alloc] init];
+			notification.repeatInterval = 0;
+			notification.alertTitle = title;
+			notification.alertBody = body;
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+		}
+	} else {
+		UIAlertController *errView =
+			[UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction *action){
+															  }];
+
+		UIAlertAction *callAction = [UIAlertAction actionWithTitle:action
+															 style:UIAlertActionStyleDefault
+														   handler:^(UIAlertAction *action) {
+															 [LinphoneManager.instance call:address];
+														   }];
+
+		[errView addAction:defaultAction];
+		[errView addAction:callAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+	}
+}
+
 - (void)onNotifyReceived:(LinphoneCore *)lc
 				   event:(LinphoneEvent *)lev
 			 notifyEvent:(const char *)notified_event
@@ -1692,6 +1748,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.notify_presence_received_for_uri_or_tel = linphone_iphone_notify_presence_received_for_uri_or_tel,
 	.auth_info_requested = linphone_iphone_popup_password_request,
 	.message_received = linphone_iphone_message_received,
+	.message_received_unable_decrypt = linphone_iphone_message_received_unable_decrypt,
 	.transfer_state_changed = linphone_iphone_transfer_state_changed,
 	.is_composing_received = linphone_iphone_is_composing_received,
 	.configuring_status = linphone_iphone_configuring_status_changed,
