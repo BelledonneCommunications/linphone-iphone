@@ -19,15 +19,15 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native int downloadFile(long ptr);
 	private native void setListener(long ptr, LinphoneChatMessageListener listener);
 	private native void unref(long ptr);
-	
+
 	protected LinphoneChatMessageImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
 	}
-	
+
 	public long getNativePtr() {
 		return nativePtr;
 	}
-	
+
 	@Override
 	public String getText() {
 		byte rawText[];
@@ -39,33 +39,33 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public LinphoneAddress getPeerAddress() {
 		return new LinphoneAddressImpl(getPeerAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
-	
+
 	@Override
 	public String getExternalBodyUrl() {
 		return getExternalBodyUrl(nativePtr);
 	}
-	
+
 	@Override
 	public void setExternalBodyUrl(String url) {
 		setExternalBodyUrl(nativePtr, url);
 	}
-	
+
 	@Override
 	public LinphoneAddress getFrom() {
 		return new LinphoneAddressImpl(getFrom(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
-	
+
 	private native long getTo(long ptr);
 	@Override
 	public LinphoneAddress getTo() {
 		return new LinphoneAddressImpl(getTo(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
-	
+
 	private native void addCustomHeader(long nativePtr, String name, String value);
 	@Override
 	public void addCustomHeader(String name, String value) {
@@ -76,27 +76,27 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public String getCustomHeader(String name) {
 		return getCustomHeader(nativePtr,name);
 	}
-	
+
 	public long getTime() {
 		return getTime(nativePtr) * 1000; // Need milliseconds, not seconds
 	}
-	
+
 	public LinphoneChatMessage.State getStatus() {
 		return LinphoneChatMessage.State.fromInt(getStatus(nativePtr));
 	}
-	
+
 	public boolean isRead() {
 		return isRead(nativePtr);
 	}
-	
+
 	public boolean isOutgoing() {
 		return isOutgoing(nativePtr);
 	}
-	
+
 	public void store() {
 		store(nativePtr);
 	}
-	
+
 	public int getStorageId() {
 		return getStorageId(nativePtr);
 	}
@@ -115,19 +115,19 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 		destroy();
 		super.finalize();
 	}
-	
+
 	private native Object getFileTransferInformation(long ptr);
 	@Override
 	public LinphoneContent getFileTransferInformation() {
 		return (LinphoneContent) getFileTransferInformation(nativePtr);
 	}
-	
+
 	private native void setAppData(long ptr, String data);
 	@Override
 	public void setAppData(String data) {
 		setAppData(nativePtr, data);
 	}
-	
+
 	private native String getAppData(long ptr);
 	@Override
 	public String getAppData() {
@@ -139,22 +139,22 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public void cancelFileTransfer() {
 		cancelFileTransfer(nativePtr);
 	}
-	
+
 	@Override
 	public void setFileTransferFilepath(String path) {
 		setFileTransferFilepath(nativePtr, path);
 	}
-	
+
 	@Override
 	public int downloadFile() {
 		return downloadFile(nativePtr);
 	}
-	
+
 	@Override
 	public void setListener(LinphoneChatMessageListener listener) {
 		setListener(nativePtr, listener);
 	}
-	
+
 	private native void putChar(long nativePtr, long character);
 	@Override
 	public void putChar(long character) throws LinphoneCoreException {
@@ -165,5 +165,11 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 			unref(nativePtr);
 			nativePtr = 0;
 		}
+	}
+
+	private native boolean isSecured(long nativePtr);
+	@Override
+	public boolean isSecured() {
+		return isSecured(nativePtr);
 	}
 }

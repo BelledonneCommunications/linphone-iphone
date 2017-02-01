@@ -4480,6 +4480,12 @@ extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIE
 	return (jint) linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isSecured(JNIEnv* env
+																			,jobject thiz
+																			,jlong ptr) {
+	return linphone_chat_message_is_secured((LinphoneChatMessage*)ptr);
+}
+
 static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageState state) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);

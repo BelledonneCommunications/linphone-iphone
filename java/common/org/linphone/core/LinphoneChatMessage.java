@@ -8,17 +8,17 @@ public interface LinphoneChatMessage {
 	interface StateListener {
 		void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg, State state);
 	}
-	
+
 	interface LinphoneChatMessageListener {
 		void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg, State state);
-		
+
 		/**
 		 * This function is called by the core upon an incoming File transfer is started. This function may be call several time for the same file in case of large file.
 		 * @param content incoming content information
 		 * @param buffer holding the received data. Empty buffer means end of file.
 		 */
 		void onLinphoneChatMessageFileTransferReceived(LinphoneChatMessage msg, LinphoneContent content, LinphoneBuffer buffer);
-		
+
 		/**
 		 * This function is called by the core when an outgoing file transfer is started. This function is called until size is set to 0.
 		 * @param content incoming content information
@@ -27,7 +27,7 @@ public interface LinphoneChatMessage {
 		 * @param bufferToFill A LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
 		 */
 		void onLinphoneChatMessageFileTransferSent(LinphoneChatMessage msg, LinphoneContent content, int offset, int size, LinphoneBuffer bufferToFill);
-		
+
 		/**
 		 * File transfer progress indication callback prototype.
 		 * @param content incoming content information
@@ -40,7 +40,7 @@ public interface LinphoneChatMessage {
 		static private Vector<State> values = new Vector<State>();
 		private final int mValue;
 		public final int value() {return mValue;}
-		
+
 		private final String mStringValue;
 		/**
 		 * Initial state
@@ -74,13 +74,13 @@ public interface LinphoneChatMessage {
 		 * Message displayed to the remote user
 		 */
 		public final static State Displayed = new State(7,"Displayed");
-		
+
 		private State(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
 			mStringValue=stringValue;
 		}
-		
+
 		public static State fromInt(int value) {
 
 			for (int i=0; i<values.size();i++) {
@@ -96,88 +96,88 @@ public interface LinphoneChatMessage {
 			return mValue;
 		}
 	}
-	
-	
+
+
 	/**
 	 * get text associated to this LinphoneChatMessage
-	 * 
+	 *
 	 * @return text sent along with the message
 	 */
 	String getText();
-	
+
 	/**
 	 * get peer address associated to this LinphoneChatMessage
 	 *
 	 * @return LinphoneAddress peer address
 	 */
 	LinphoneAddress getPeerAddress();
-	
+
 	/**
 	 * get from address associated to this LinphoneChatMessage
 	 *
 	 * @return LinphoneAddress from address
 	 */
 	LinphoneAddress getFrom();
-	
+
 	/**
 	 * Get destination address of the LinphoneChatMessage.
 	 * @return the LinphoneAddress in the To field of the message.
 	 */
 	LinphoneAddress getTo();
-	
+
 	/**
 	 * Linphone message can carry external body as defined by rfc2017
 	 * @return return external body url null if not present.
 	 */
 	String getExternalBodyUrl();
-	
+
 	/**
 	 * Linphone message can carry external body as defined by rfc2017
 	 * @param url ex: access-type=URL; URL="http://www.foo.com/file"
 	 */
 	void setExternalBodyUrl(String url);
-	
+
 	/**
 	 * Add a custom header into the message.
 	 */
 	void addCustomHeader(String name, String value);
-	
+
 	/**
 	 * Obtain a header value.
 	 * @param name
 	 * @return the value of the header, or null if not found.
 	 */
 	String  getCustomHeader(String name);
-	
+
 	/**
 	 * Gets the time at which the message was sent
 	 * @return the time in milliseconds
 	 */
 	long getTime();
-	
+
 	/**
 	 * Gets the status of the message
 	 * @return the status of the message
 	 */
 	LinphoneChatMessage.State getStatus();
-	
+
 	/**
 	 * Returns wether or not the message has been read
 	 * @return true if it has been read, flase otherwise
 	 */
 	boolean isRead();
-	
+
 	/**
 	 * Returns wether the message has been sent or received
 	 * @return true if the message has been sent, false if it has been received
 	 */
 	boolean isOutgoing();
-	
+
 	/**
 	 * THIS METHOD IS ONLY USED TO IMPORT OLD MESSAGES, DON'T USE IT FOR ANY OTHER USAGE!
 	 */
 	void store();
-	
+
 	/**
 	 * Returns the id used to id this message in the database
 	 * @return the id used to id this message in the database
@@ -188,13 +188,13 @@ public interface LinphoneChatMessage {
      * @return the reason if response received
      */
 	Reason getReason();
-	
+
 	/**
 	 * Returns full error in case of failure when sending message.
 	 * @return an ErrorInfo.
 	 */
 	ErrorInfo getErrorInfo();
-	
+
 	/**
 	 * 	Cancel an ongoing file transfer attached to this message.(upload or download).
 	 */
@@ -204,13 +204,13 @@ public interface LinphoneChatMessage {
 	 * @return a pointer to the LinphoneContent structure or NULL if not present.
 	 */
 	LinphoneContent getFileTransferInformation();
-	
+
 	/**
 	 * Sets data in the chat message
 	 * @param data to store in the message
 	 */
 	void setAppData(String data);
-	
+
 	/**
 	 * @return the data stored in the chat message if any, else null
 	 */
@@ -221,12 +221,12 @@ public interface LinphoneChatMessage {
 	 * @param path The path to the file to use for the file transfer.
 	 */
 	void setFileTransferFilepath(String path);
-	
+
 	/**
 	 * Start the download of the file referenced in a LinphoneChatMessage from remote server.
 	 */
 	int downloadFile();
-	
+
 	/**
 	 * Set the callbacks associated with the LinphoneChatMessage.
 	 */
@@ -245,5 +245,12 @@ public interface LinphoneChatMessage {
 	 * This is for optimizing the memory resources at runtime. Not calling this does not result in a memory leak.
 	**/
 	void destroy();
-	
+
+	/**
+	 * Get if the message was encrypted when transfered
+	 * @param message LinphoneChatMessage obj
+	 * @return whether the message was encrypted when transfered or not
+     */
+	boolean isSecured();
+
 }
