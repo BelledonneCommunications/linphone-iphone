@@ -623,7 +623,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	cr = linphone_core_get_chat_room(lc, addr);
 
 	msg = linphone_chat_room_create_message(cr, sal_msg->text);
-	msg->content_type = ms_strdup(sal_msg->content_type);
+	linphone_chat_message_set_content_type(msg, sal_msg->content_type);
 	linphone_chat_message_set_from(msg, cr->peer_url);
 
 	to = sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op)) : linphone_address_new(linphone_core_get_identity(lc));
@@ -1161,7 +1161,7 @@ static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnTy
 		msg = linphone_chat_room_create_message(cr, content);
 		linphone_chat_message_set_from_address(msg, from_addr);
 		linphone_chat_message_set_to_address(msg, to_addr);
-		msg->content_type = ms_strdup("message/imdn+xml");
+		linphone_chat_message_set_content_type(msg, "message/imdn+xml");
 
 		/* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
 		if (imee && (reason == LinphoneReasonNone)) {
