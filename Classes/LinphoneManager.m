@@ -894,6 +894,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				}
 			}
 		}
+		if (state == LinphoneCallError) {
+			[PhoneMainView.instance popCurrentView];
+		}
 	}
 
 	if (state == LinphoneCallReleased) {
