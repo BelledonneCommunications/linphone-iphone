@@ -1633,6 +1633,7 @@
 		8C1C430C1E43409D00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/TabBarView.strings; sourceTree = "<group>"; };
 		8C1C430D1E43409E00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPad.strings; sourceTree = "<group>"; };
 		8C1C430E1E43409E00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
+		8C1C43211E438DB600FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8C23BCB71D82AAC3005F19BB /* linphone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = linphone.entitlements; sourceTree = "<group>"; };
 		8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProviderDelegate.h; sourceTree = "<group>"; };
 		8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProviderDelegate.m; sourceTree = "<group>"; };
@@ -4331,6 +4332,7 @@
 				63AADBDD1B6A0FF200AA16FD /* nl */,
 				63AADBE11B6A0FF200AA16FD /* ru */,
 				63AADBE71B6A0FF200AA16FD /* zh_TW */,
+				8C1C43211E438DB600FE9A91 /* fr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
