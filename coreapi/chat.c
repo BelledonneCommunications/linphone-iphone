@@ -343,6 +343,29 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
 	cr->user_data = ud;
 }
 
+void linphone_chat_room_add_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	if (bctbx_list_find(msg->chat_room->transient_messages, msg) == NULL) {
+		cr->transient_messages = bctbx_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+	}
+}
+
+void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	if (bctbx_list_find(msg->chat_room->transient_messages, msg) != NULL) {
+		cr->transient_messages = bctbx_list_remove(cr->transient_messages, msg);
+		linphone_chat_message_unref(msg);
+	}
+}
+
+static void store_or_update_chat_message(LinphoneChatMessage *msg) {
+	if (msg->storage_id != 0) {
+		/* The message has already been stored (probably because of file transfer), update it */
+		linphone_chat_message_store_update(msg);
+	} else {
+		/* Store the new message */
+		msg->storage_id = linphone_chat_message_store(msg);
+	}
+}
+
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	int retval = -1;
 	LinphoneCore *lc = cr->lc;
@@ -363,8 +386,10 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 	if (msg->file_transfer_information != NULL && msg->content_type == NULL) {
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
 		if (linphone_chat_room_upload_file(msg) == 0) {
-			// add to transient list only if message is going out
-			cr->transient_messages = bctbx_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+			/* Add to transient list only if message is going out */
+			linphone_chat_room_add_transient_message(cr, msg);
+			/* Store the message so that even if the upload is stopped, it can be done again */
+			msg->storage_id = linphone_chat_message_store(msg);
 		} else {
 			linphone_chat_message_unref(msg);
 			return;
@@ -380,8 +405,8 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			message_not_encrypted = ms_strdup(msg->message);
 		}
 		
-		// add to transient list
-		cr->transient_messages = bctbx_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+		/* Add to transient list */
+		linphone_chat_room_add_transient_message(cr, msg);
 		msg->time = ms_time(0);
 		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 			if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
@@ -433,6 +458,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		
 		if (retval > 0) {
 			sal_error_info_set((SalErrorInfo *)sal_op_get_error_info(op), SalReasonNotAcceptable, retval, "Unable to encrypt IM", NULL);
+			store_or_update_chat_message(msg);
 			linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 			linphone_chat_message_unref(msg);
 			return;
@@ -459,7 +485,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			msg->message = ms_strdup(message_not_encrypted);
 		}
 		msg->message_id = ms_strdup(sal_op_get_call_id(op)); /* must be known at that time */
-		msg->storage_id = linphone_chat_message_store(msg);
+		store_or_update_chat_message(msg);
 
 		if (cr->is_composing == LinphoneIsComposingActive) {
 			cr->is_composing = LinphoneIsComposingIdle;
@@ -474,8 +500,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		if (call && call->op == op) {
 			/*In this case, chat delivery status is not notified, so unrefing chat message right now*/
 			/*Might be better fixed by delivering status, but too costly for now*/
-			msg->chat_room->transient_messages = bctbx_list_remove(msg->chat_room->transient_messages, msg);
-			linphone_chat_message_unref(msg);
+			linphone_chat_room_remove_transient_message(msg->chat_room, msg);
 			linphone_chat_message_unref(msg);
 			return;
 		}
@@ -493,9 +518,8 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
 		if (bctbx_list_find(msg->chat_room->transient_messages, msg) != NULL) {
 			// msg is not transient anymore, we can remove it from our transient list and unref it
-			msg->chat_room->transient_messages = bctbx_list_remove(msg->chat_room->transient_messages, msg);
 			linphone_chat_room_add_weak_message(msg->chat_room, msg);
-			linphone_chat_message_unref(msg);
+			linphone_chat_room_remove_transient_message(msg->chat_room, msg);
 		} else {
 			// msg has already been removed from the transient messages, do nothing. */
 		}

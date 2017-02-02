@@ -247,7 +247,7 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 		new_message->external_body_url= ms_strdup(argv[8]);
 		new_message->appdata = ms_strdup(argv[10]);
 		new_message->message_id = ms_strdup(argv[12]);
-		new_message->content_type = ms_strdup(argv[13]);
+		linphone_chat_message_set_content_type(new_message, argv[13]);
 		new_message->is_secured = (bool_t)atoi(argv[14]);
 
 		if (argv[11] != NULL) {
@@ -368,6 +368,41 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
 	}
 	return id;
+}
+
+void linphone_chat_message_store_update(LinphoneChatMessage *msg) {
+	LinphoneCore *lc = linphone_chat_room_get_core(msg->chat_room);
+
+	if (lc->db) {
+		char *peer;
+		char *local_contact;
+		char *buf;
+
+		peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
+		local_contact = linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
+		buf = sqlite3_mprintf("UPDATE history SET"
+			" localContact = %Q,"
+			" remoteContact = %Q,"
+			" message = %Q,"
+			" status = %i,"
+			" appdata = %Q,"
+			" messageId = %Q,"
+			" content_type = %Q"
+			" WHERE (id = %u);",
+			local_contact,
+			peer,
+			msg->message,
+			msg->state,
+			msg->appdata,
+			msg->message_id,
+			msg->content_type,
+			msg->storage_id
+		);
+		linphone_sql_request(lc->db, buf);
+		sqlite3_free(buf);
+		ms_free(local_contact);
+		ms_free(peer);
+	}
 }
 
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
@@ -563,6 +598,7 @@ bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int sta
 		while (it) {
 			LinphoneChatMessage* msg = it->data;
 			if (msg->dir == LinphoneChatMessageOutgoing) {
+				if (msg->from != NULL) linphone_address_unref(msg->from);
 				msg->from = linphone_address_ref(local_addr);
 			} else {
 				msg->to = linphone_address_ref(local_addr);
@@ -604,7 +640,7 @@ LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, cons
 	return cm;
 }
 
-void linphone_create_table(sqlite3* db){
+static void linphone_create_history_table(sqlite3* db){
 	char* errmsg=NULL;
 	int ret;
 	ret=sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS history ("
@@ -686,7 +722,7 @@ static void linphone_migrate_timestamps(sqlite3* db){
 	}
 }
 
-void linphone_update_table(sqlite3* db) {
+static void linphone_update_history_table(sqlite3* db) {
 	char* errmsg=NULL;
 	char *buf;
 	int ret;
@@ -764,6 +800,7 @@ void linphone_update_table(sqlite3* db) {
 	ret = sqlite3_exec(db, "ALTER TABLE history ADD COLUMN messageId TEXT;", NULL, NULL, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_message("Table already up to date: %s", errmsg);
+		sqlite3_free(errmsg);
 	} else {
 		ms_message("Table history updated successfully for messageId data.");
 	}
@@ -777,6 +814,7 @@ void linphone_update_table(sqlite3* db) {
 	ret = sqlite3_exec(db, "ALTER TABLE history ADD COLUMN content_type TEXT;", NULL, NULL, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_message("Table already up to date: %s", errmsg);
+		sqlite3_free(errmsg);
 	} else {
 		ms_message("Table history updated successfully for content_type data.");
 	}
@@ -785,9 +823,18 @@ void linphone_update_table(sqlite3* db) {
 	ret = sqlite3_exec(db, "ALTER TABLE history ADD COLUMN is_secured INTEGER DEFAULT 0;", NULL, NULL, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_message("Table already up to date: %s", errmsg);
+		sqlite3_free(errmsg);
 	} else {
 		ms_message("Table history updated successfully for is_secured data.");
 	}
+}
+
+static void linphone_fix_outgoing_messages_state(sqlite3* db) {
+	/* Convert Idle and InProgress states of outgoing messages to NotDelivered */
+	char *buf = sqlite3_mprintf("UPDATE history SET status=%i WHERE direction=%i AND (status=%i OR status=%i);",
+		LinphoneChatMessageStateNotDelivered, LinphoneChatMessageOutgoing, LinphoneChatMessageStateIdle, LinphoneChatMessageStateInProgress);
+	linphone_sql_request(db, buf);
+	sqlite3_free(buf);
 }
 
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
@@ -837,8 +884,9 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 
 	linphone_message_storage_activate_debug(db, lc->debug_storage);
 
-	linphone_create_table(db);
-	linphone_update_table(db);
+	linphone_create_history_table(db);
+	linphone_update_history_table(db);
+	linphone_fix_outgoing_messages_state(db);
 	lc->db=db;
 
 	// Create a chatroom for each contact in the chat history

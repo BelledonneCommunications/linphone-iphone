@@ -218,12 +218,12 @@ void compare_files(const char *path1, const char *path2) {
 	if (buf2) ms_free(buf2);
 }
 
-LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
+LinphoneChatMessage* create_message_from_sintel_trailer(LinphoneChatRoom *chat_room) {
 	FILE *file_to_send = NULL;
 	LinphoneChatMessageCbs *cbs;
 	LinphoneContent* content;
 	LinphoneChatMessage* msg;
-	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
+	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	size_t file_size;
 	file_to_send = fopen(send_filepath, "rb");
 	fseek(file_to_send, 0, SEEK_END);
@@ -231,11 +231,11 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	fseek(file_to_send, 0, SEEK_SET);
 
 	content = linphone_core_create_content(chat_room->lc);
-	belle_sip_object_set_name(&content->base, "nowebcam content");
-	linphone_content_set_type(content,"image");
-	linphone_content_set_subtype(content,"jpeg");
+	belle_sip_object_set_name(&content->base, "sintel trailer content");
+	linphone_content_set_type(content,"video");
+	linphone_content_set_subtype(content,"mkv");
 	linphone_content_set_size(content,file_size); /*total size to be transfered*/
-	linphone_content_set_name(content,"nowebcamVGA.jpg");
+	linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
 
 	msg = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	cbs = linphone_chat_message_get_callbacks(msg);
@@ -246,21 +246,21 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	BC_ASSERT_PTR_NOT_NULL(linphone_chat_message_get_user_data(msg));
 
 	linphone_content_unref(content);
-	ms_free(send_filepath);
+	bc_free(send_filepath);
 	return msg;
 }
 
-LinphoneChatMessage* create_file_transfer_message_from_nowebcam(LinphoneChatRoom *chat_room) {
+LinphoneChatMessage* create_file_transfer_message_from_sintel_trailer(LinphoneChatRoom *chat_room) {
 	LinphoneChatMessageCbs *cbs;
 	LinphoneContent* content;
 	LinphoneChatMessage* msg;
-	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
+	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 
 	content = linphone_core_create_content(chat_room->lc);
-	belle_sip_object_set_name(&content->base, "nowebcam content");
-	linphone_content_set_type(content,"image");
-	linphone_content_set_subtype(content,"jpeg");
-	linphone_content_set_name(content,"nowebcamVGA.jpg");
+	belle_sip_object_set_name(&content->base, "sintel trailer content");
+	linphone_content_set_type(content,"video");
+	linphone_content_set_subtype(content,"mkv");
+	linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
 
 	msg = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	linphone_chat_message_set_file_transfer_filepath(msg, send_filepath);
@@ -270,7 +270,7 @@ LinphoneChatMessage* create_file_transfer_message_from_nowebcam(LinphoneChatRoom
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 
 	linphone_content_unref(content);
-	ms_free(send_filepath);
+	bc_free(send_filepath);
 	return msg;
 }
 
@@ -457,7 +457,7 @@ static void text_message_with_external_body(void) {
 
 void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, bool_t upload_error, bool_t download_error, 
 							bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download, bool_t download_from_history) {
-	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
+	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessage* msg;
@@ -475,16 +475,28 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 
 	/* create a file transfer msg */
 	if (use_file_body_handler_in_upload) {
-		msg = create_file_transfer_message_from_nowebcam(chat_room);
+		msg = create_file_transfer_message_from_sintel_trailer(chat_room);
 	} else {
-		msg = create_message_from_nowebcam(chat_room);
+		msg = create_message_from_sintel_trailer(chat_room);
 	}
 	
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	if (upload_error) {
+		int chat_room_size = 0;
+		bctbx_list_t *history;
+
 		/*wait for file to be 25% uploaded and simulate a network error*/
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer,25));
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer,25, 60000));
+		/* Check that the message is already in the chat room history during file upload */
+		chat_room_size = linphone_chat_room_get_history_size(chat_room);
+		BC_ASSERT_EQUAL(chat_room_size, 1, int, "%d");
+		if (chat_room_size == 1) {
+			history = linphone_chat_room_get_history(chat_room, 0);
+			LinphoneChatMessage *sent_msg = (LinphoneChatMessage *)bctbx_list_get_data(history);
+			BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateInProgress, int, "%d");
+			bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
+		}
 		sal_set_send_error(pauline->lc->sal, -1);
 
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
@@ -496,8 +508,18 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 
 		linphone_core_refresh_registers(pauline->lc); /*to make sure registration is back in registered and so it can be later unregistered*/
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneRegistrationOk,pauline->stat.number_of_LinphoneRegistrationOk+1));
+
+		/* Check that the message is in the chat room history even if the file upload failed */
+		chat_room_size = linphone_chat_room_get_history_size(chat_room);
+		BC_ASSERT_EQUAL(chat_room_size, 1, int, "%d");
+		if (chat_room_size == 1) {
+			history = linphone_chat_room_get_history(chat_room, 0);
+			LinphoneChatMessage *sent_msg = (LinphoneChatMessage *)bctbx_list_get_data(history);
+			BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateNotDelivered, int, "%d");
+			bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
+		}
 	} else {
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000));
 		if (marie->stat.last_received_chat_message) {
 			LinphoneChatMessage *recv_msg;
 			if (download_from_history) {
@@ -538,7 +560,7 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 end:
 	bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
 	remove(receive_filepath);
-	ms_free(send_filepath);
+	bc_free(send_filepath);
 	bc_free(receive_filepath);
 }
 
@@ -593,11 +615,11 @@ static void transfer_message_upload_cancelled(void) {
 		/* create a chatroom on pauline's side */
 		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
-		msg = create_message_from_nowebcam(chat_room);
+		msg = create_message_from_sintel_trailer(chat_room);
 		linphone_chat_room_send_chat_message(chat_room,msg);
 
-		/*wait for file to be 50% uploaded and cancel the transfer */
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer, 50));
+		/*wait for file to be 25% uploaded and cancel the transfer */
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer, 25, 60000));
 		linphone_chat_message_cancel_file_transfer(msg);
 
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
@@ -621,11 +643,11 @@ static void transfer_message_download_cancelled(void) {
 
 	/* create a chatroom on pauline's side */
 	chat_room = linphone_core_get_chat_room(pauline->lc,marie->identity);
-	msg = create_message_from_nowebcam(chat_room);
+	msg = create_message_from_sintel_trailer(chat_room);
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* wait for marie to receive pauline's msg */
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000));
 
 	if (marie->stat.last_received_chat_message ) { /* get last msg and use it to download file */
 		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
@@ -687,7 +709,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 		LinphoneChatMessage* msg;
 		LinphoneChatMessage* msg2;
 		LinphoneChatMessageCbs *cbs;
-		char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
+		char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 		char *receive_filepath = bc_tester_file("receive_file.dump");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -699,8 +721,8 @@ static void file_transfer_2_messages_simultaneously(void) {
 
 		/* create a chatroom on pauline's side */
 		pauline_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-		msg = create_message_from_nowebcam(pauline_room);
-		msg2 = create_message_from_nowebcam(pauline_room);
+		msg = create_message_from_sintel_trailer(pauline_room);
+		msg2 = create_message_from_sintel_trailer(pauline_room);
 
 		cbs = linphone_chat_message_get_callbacks(msg2);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
@@ -709,9 +731,9 @@ static void file_transfer_2_messages_simultaneously(void) {
 		if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) == 0) {
 			linphone_chat_room_send_chat_message(pauline_room,msg);
 			linphone_chat_room_send_chat_message(pauline_room,msg2);
-			if (BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1))) {
+			if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000))) {
 				msg = linphone_chat_message_clone(marie->stat.last_received_chat_message);
-				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2));
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2, 60000));
 				msg2 = marie->stat.last_received_chat_message;
 				BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, unsigned int, "%u");
 				if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
@@ -748,7 +770,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 		}
 		linphone_core_manager_destroy(pauline);
 		remove(receive_filepath);
-		ms_free(send_filepath);
+		bc_free(send_filepath);
 		bc_free(receive_filepath);
 		linphone_core_manager_destroy(marie);
 	}
@@ -1230,9 +1252,18 @@ static void lime_text_message_to_non_lime(bool_t sender_policy_mandatory, bool_t
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	//since we cannot decrypt message, we should not receive any message
 	if (sender_policy_mandatory || lime_key_available) {
+		int chat_room_size = 0;
 		BC_ASSERT_FALSE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 		BC_ASSERT_FALSE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy, 0, int, "%d");
+		chat_room_size = linphone_chat_room_get_history_size(chat_room);
+		BC_ASSERT_EQUAL(chat_room_size, 1, int, "%d");
+		if (chat_room_size == 1) {
+			bctbx_list_t *history = linphone_chat_room_get_history(chat_room, 0);
+			LinphoneChatMessage *sent_msg = (LinphoneChatMessage *)bctbx_list_get_data(history);
+			BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateNotDelivered, int, "%d");
+			bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
+		}
 	} else {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy, 1, int, "%d");
@@ -1257,6 +1288,10 @@ static void lime_text_message_to_non_lime_preferred_policy_2(void) {
 	lime_text_message_to_non_lime(FALSE, FALSE);
 }
 
+static void lime_text_message_without_cache(void) {
+	lime_text_message_to_non_lime(TRUE, FALSE);
+}
+
 void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_stored_msg, bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download) {
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
@@ -1264,7 +1299,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	LinphoneChatMessageCbs *cbs;
 	char *pauline_id, *marie_id;
 	char *filepath;
-	char *send_filepath = bc_tester_res("images/nowebcamVGA.jpg");
+	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	MSList * msg_list = NULL;
 	
@@ -1311,13 +1346,13 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 
 	/* create a file transfer msg */
 	if (use_file_body_handler_in_upload) {
-		msg = create_file_transfer_message_from_nowebcam(linphone_core_get_chat_room(pauline->lc, marie->identity));
+		msg = create_file_transfer_message_from_sintel_trailer(linphone_core_get_chat_room(pauline->lc, marie->identity));
 	} else {
-		msg = create_message_from_nowebcam(linphone_core_get_chat_room(pauline->lc, marie->identity));
+		msg = create_message_from_sintel_trailer(linphone_core_get_chat_room(pauline->lc, marie->identity));
 	}
 
 	linphone_chat_room_send_chat_message(msg->chat_room, msg);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000));
 	if (marie->stat.last_received_chat_message ) {
 		LinphoneChatMessage *recv_msg;
 		const LinphoneContent* content;
@@ -1359,7 +1394,7 @@ end:
 	remove("tmpZIDCacheMarie.xml");
 	remove("tmpZIDCachePauline.xml");
 	remove(receive_filepath);
-	ms_free(send_filepath);
+	bc_free(send_filepath);
 	bc_free(receive_filepath);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -1676,7 +1711,7 @@ static void database_migration(void) {
 end:
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
-	ms_free(src_db);
+	bc_free(src_db);
 	bc_free(tmp_db);
 }
 
@@ -1720,7 +1755,7 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_unref(jehan_addr);
 	remove(tmp_db);
-	ms_free(src_db);
+	bc_free(src_db);
 	bc_free(tmp_db);
 }
 
@@ -1790,7 +1825,7 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_address_unref(jehan_addr);
 	remove(tmp_db);
-	ms_free(src_db);
+	bc_free(src_db);
 	bc_free(tmp_db);
 }
 #endif
@@ -1810,7 +1845,7 @@ static void text_status_after_destroying_chat_room(void) {
 static void file_transfer_not_sent_if_invalid_url(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneChatRoom *chatroom = linphone_core_get_chat_room_from_uri(marie->lc, "<sip:Jehan@sip.linphone.org>");
-	LinphoneChatMessage *msg = create_message_from_nowebcam(chatroom);
+	LinphoneChatMessage *msg = create_message_from_sintel_trailer(chatroom);
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 	linphone_core_set_file_transfer_server(marie->lc, "INVALID URL");
@@ -1822,7 +1857,7 @@ static void file_transfer_not_sent_if_invalid_url(void) {
 void file_transfer_io_error_base(char *server_url, bool_t destroy_room) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneChatRoom *chatroom = linphone_core_get_chat_room_from_uri(marie->lc, "<sip:Jehan@sip.linphone.org>");
-	LinphoneChatMessage *msg = create_message_from_nowebcam(chatroom);
+	LinphoneChatMessage *msg = create_message_from_sintel_trailer(chatroom);
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 	linphone_core_set_file_transfer_server(marie->lc, server_url);
@@ -2372,6 +2407,59 @@ void text_message_with_custom_content_type_and_lime(void) {
 	_text_message_with_custom_content_type(TRUE);
 }
 
+void crash_during_file_transfer(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
+	char *initial_db  = bc_tester_file("initial.db");
+	char *saved_db  = bc_tester_file("saved.db");
+	LinphoneChatRoom *chat_room;
+	LinphoneChatMessage *msg;
+	int chat_room_size = 0;
+	bctbx_list_t *msg_list = NULL;
+
+	/* Remove any previous files */
+	remove(initial_db);
+	remove(saved_db);
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(pauline->lc, "https://www.linphone.org:444/lft.php");
+	linphone_core_set_chat_database_path(pauline->lc, initial_db);
+
+	/* Create a chatroom and a file transfer message on pauline's side */
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	msg = create_file_transfer_message_from_sintel_trailer(chat_room);
+	linphone_chat_room_send_chat_message(chat_room, msg);
+
+	/* Wait for 25% of the file to be uploaded and crash by stopping the iteration, saving the chat database and destroying the core */
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.progress_of_LinphoneFileTransfer, 25, 60000));
+	BC_ASSERT_EQUAL(message_tester_copy_file(initial_db, saved_db), 0, int, "%d");
+	linphone_chat_message_unref(msg);
+	linphone_core_manager_destroy(pauline);
+
+	/* Create a new core and check that the message stored in the saved database is in the not delivered state */
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
+	linphone_core_set_chat_database_path(pauline->lc, saved_db);
+	BC_ASSERT_TRUE(wait_for(pauline->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	chat_room_size = linphone_chat_room_get_history_size(chat_room);
+	BC_ASSERT_EQUAL(chat_room_size, 1, int, "%d");
+	if (chat_room_size == 1) {
+		msg_list = linphone_chat_room_get_history(chat_room, 0);
+		LinphoneChatMessage *sent_msg = (LinphoneChatMessage *)bctbx_list_get_data(msg_list);
+		BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateNotDelivered, int, "%d");
+	}
+
+	bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
+	bc_free(send_filepath);
+	bc_free(initial_db);
+	bc_free(saved_db);
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
 	TEST_NO_TAG("Text message within call dialog", text_message_within_call_dialog),
@@ -2408,6 +2496,7 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Lime text message to non lime", lime_text_message_to_non_lime_mandatory_policy, "LIME"),
 	TEST_ONE_TAG("Lime text message to non lime with preferred policy", lime_text_message_to_non_lime_preferred_policy, "LIME"),
 	TEST_ONE_TAG("Lime text message to non lime with preferred policy 2", lime_text_message_to_non_lime_preferred_policy_2, "LIME"),
+	TEST_ONE_TAG("Lime text message without cache", lime_text_message_without_cache, "LIME"),
 	TEST_ONE_TAG("Lime transfer message", lime_transfer_message, "LIME"),
 	TEST_ONE_TAG("Lime transfer message 2", lime_transfer_message_2, "LIME"),
 	TEST_ONE_TAG("Lime transfer message 3", lime_transfer_message_3, "LIME"),
@@ -2441,7 +2530,8 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
 	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers),
 	TEST_NO_TAG("Text message with custom content-type", text_message_with_custom_content_type),
-	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME")
+	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME"),
+	TEST_NO_TAG("Crash during file transfer", crash_during_file_transfer)
 };
 
 test_suite_t message_test_suite = {

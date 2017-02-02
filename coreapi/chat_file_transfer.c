@@ -48,6 +48,7 @@ static void linphone_chat_message_process_io_error_upload(void *data, const bell
 	ms_error("I/O Error during file upload of msg [%p]", msg);
 	linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 	_release_http_request(msg);
+	linphone_chat_room_remove_transient_message(msg->chat_room, msg);
 	linphone_chat_message_unref(msg);
 }
 
@@ -56,6 +57,7 @@ static void linphone_chat_message_process_auth_requested_upload(void *data, bell
 	ms_error("Error during file upload: auth requested for msg [%p]", msg);
 	linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 	_release_http_request(msg);
+	linphone_chat_room_remove_transient_message(msg->chat_room, msg);
 	linphone_chat_message_unref(msg);
 }
 
@@ -260,7 +262,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			linphone_chat_room_upload_file(msg);
 			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(msg->http_request), BELLE_SIP_BODY_HANDLER(bh));
 			linphone_chat_message_unref(msg);
-		} else if (code == 200) { /* file has been uplaoded correctly, get server reply and send it */
+		} else if (code == 200) { /* file has been uploaded correctly, get server reply and send it */
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			if (body && strlen(body) > 0) {
 				/* if we have an encryption key for the file, we must insert it into the msg and restore the correct

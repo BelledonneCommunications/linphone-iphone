@@ -621,6 +621,8 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
+void linphone_chat_room_add_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 /**/
 
 struct _LinphoneProxyConfig
@@ -1238,6 +1240,7 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db);
 sqlite3 * linphone_message_storage_init(void);
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
+void linphone_chat_message_store_update(LinphoneChatMessage *msg);
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);
 void linphone_chat_message_store_appdata(LinphoneChatMessage* msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);

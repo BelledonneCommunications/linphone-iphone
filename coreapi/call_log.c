@@ -329,7 +329,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallLog, belle_sip_object_t,
 
 #ifdef SQLITE_STORAGE_ENABLED
 
-static void linphone_create_table(sqlite3* db) {
+static void linphone_create_call_log_table(sqlite3* db) {
 	char* errmsg=NULL;
 	int ret;
 	ret=sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS call_history ("
@@ -386,7 +386,7 @@ void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 		return;
 	}
 
-	linphone_create_table(db);
+	linphone_create_call_log_table(db);
 	linphone_update_call_log_table(db);
 	lc->logs_db = db;
 

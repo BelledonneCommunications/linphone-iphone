@@ -1152,7 +1152,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriend, belle_sip_object_t,
 
 #ifdef SQLITE_STORAGE_ENABLED
 
-static void linphone_create_table(sqlite3* db) {
+static void linphone_create_friends_table(sqlite3* db) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS friends ("
@@ -1187,7 +1187,7 @@ static void linphone_create_table(sqlite3* db) {
 	}
 }
 
-static bool_t linphone_update_table(sqlite3* db) {
+static bool_t linphone_update_friends_table(sqlite3* db) {
 	static sqlite3_stmt *stmt_version;
 	int database_user_version = -1;
 	char *errmsg = NULL;
@@ -1246,8 +1246,8 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 		return;
 	}
 
-	linphone_create_table(db);
-	if (linphone_update_table(db)) {
+	linphone_create_friends_table(db);
+	if (linphone_update_friends_table(db)) {
 		// After updating schema, database need to be closed/reopenned
 		sqlite3_close(db);
 		_linphone_sqlite3_open(lc->friends_db_file, &db);
