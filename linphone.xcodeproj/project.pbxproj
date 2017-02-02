@@ -1592,6 +1592,47 @@
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		8C1C42E61E43408E00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
+		8C1C42E71E43408F00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
+		8C1C42E81E43409000FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantView.strings; sourceTree = "<group>"; };
+		8C1C42E91E43409000FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
+		8C1C42EA1E43409000FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallIncomingView.strings; sourceTree = "<group>"; };
+		8C1C42EB1E43409100FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallOutgoingView.strings; sourceTree = "<group>"; };
+		8C1C42EC1E43409100FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallView.strings; sourceTree = "<group>"; };
+		8C1C42ED1E43409100FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/CallView~ipad.strings"; sourceTree = "<group>"; };
+		8C1C42EE1E43409200FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatConversationCreateView.strings; sourceTree = "<group>"; };
+		8C1C42EF1E43409200FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatConversationView.strings; sourceTree = "<group>"; };
+		8C1C42F01E43409300FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatsListView.strings; sourceTree = "<group>"; };
+		8C1C42F11E43409300FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ContactDetailsView.strings; sourceTree = "<group>"; };
+		8C1C42F21E43409300FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ContactsListView.strings; sourceTree = "<group>"; };
+		8C1C42F31E43409400FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CountryListView.strings; sourceTree = "<group>"; };
+		8C1C42F41E43409400FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/DialerView.strings; sourceTree = "<group>"; };
+		8C1C42F51E43409400FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/DialerView~ipad.strings"; sourceTree = "<group>"; };
+		8C1C42F61E43409500FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/FirstLoginView.strings; sourceTree = "<group>"; };
+		8C1C42F71E43409500FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
+		8C1C42F81E43409500FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/HistoryListView.strings; sourceTree = "<group>"; };
+		8C1C42F91E43409600FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ImageView.strings; sourceTree = "<group>"; };
+		8C1C42FA1E43409600FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallConferenceCell.strings; sourceTree = "<group>"; };
+		8C1C42FB1E43409600FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallPausedCell.strings; sourceTree = "<group>"; };
+		8C1C42FC1E43409700FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatBubblePhotoCell.strings; sourceTree = "<group>"; };
+		8C1C42FD1E43409700FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatBubbleTextCell.strings; sourceTree = "<group>"; };
+		8C1C42FE1E43409800FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatCell.strings; sourceTree = "<group>"; };
+		8C1C42FF1E43409800FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatCreateCell.strings; sourceTree = "<group>"; };
+		8C1C43001E43409800FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICompositeView.strings; sourceTree = "<group>"; };
+		8C1C43011E43409900FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/UICompositeView~ipad.strings"; sourceTree = "<group>"; };
+		8C1C43021E43409900FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIConfirmationDialog.strings; sourceTree = "<group>"; };
+		8C1C43031E43409A00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactCell.strings; sourceTree = "<group>"; };
+		8C1C43041E43409A00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactDetailsCell.strings; sourceTree = "<group>"; };
+		8C1C43051E43409A00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIHistoryCell.strings; sourceTree = "<group>"; };
+		8C1C43061E43409B00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PhoneMainView.strings; sourceTree = "<group>"; };
+		8C1C43071E43409B00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SettingsView.strings; sourceTree = "<group>"; };
+		8C1C43081E43409C00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
+		8C1C43091E43409C00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SideMenuView.strings; sourceTree = "<group>"; };
+		8C1C430A1E43409D00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/SideMenuView~ipad.strings"; sourceTree = "<group>"; };
+		8C1C430B1E43409D00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/StatusBarView.strings; sourceTree = "<group>"; };
+		8C1C430C1E43409D00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/TabBarView.strings; sourceTree = "<group>"; };
+		8C1C430D1E43409E00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPad.strings; sourceTree = "<group>"; };
+		8C1C430E1E43409E00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
 		8C23BCB71D82AAC3005F19BB /* linphone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = linphone.entitlements; sourceTree = "<group>"; };
 		8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProviderDelegate.h; sourceTree = "<group>"; };
 		8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProviderDelegate.m; sourceTree = "<group>"; };
@@ -1604,48 +1645,6 @@
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
 		8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		8CA2004B1D8158440095F859 /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
-		8CA5F89D1DD093EE00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
-		8CA5F89E1DD093F200E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
-		8CA5F89F1DD093F200E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantView.strings; sourceTree = "<group>"; };
-		8CA5F8A01DD093F300E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
-		8CA5F8A11DD093F400E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallIncomingView.strings; sourceTree = "<group>"; };
-		8CA5F8A21DD093F400E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallOutgoingView.strings; sourceTree = "<group>"; };
-		8CA5F8A31DD093F500E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallView.strings; sourceTree = "<group>"; };
-		8CA5F8A41DD093F600E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/CallView~ipad.strings"; sourceTree = "<group>"; };
-		8CA5F8A51DD093F600E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatConversationCreateView.strings; sourceTree = "<group>"; };
-		8CA5F8A61DD093F700E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatConversationView.strings; sourceTree = "<group>"; };
-		8CA5F8A71DD093F800E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatsListView.strings; sourceTree = "<group>"; };
-		8CA5F8A81DD093F900E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ContactDetailsView.strings; sourceTree = "<group>"; };
-		8CA5F8A91DD093F900E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ContactsListView.strings; sourceTree = "<group>"; };
-		8CA5F8AA1DD093FA00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CountryListView.strings; sourceTree = "<group>"; };
-		8CA5F8AB1DD093FB00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/DialerView.strings; sourceTree = "<group>"; };
-		8CA5F8AC1DD093FC00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/DialerView~ipad.strings"; sourceTree = "<group>"; };
-		8CA5F8AD1DD093FC00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/FirstLoginView.strings; sourceTree = "<group>"; };
-		8CA5F8AE1DD093FD00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
-		8CA5F8AF1DD093FE00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/HistoryListView.strings; sourceTree = "<group>"; };
-		8CA5F8B01DD093FE00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ImageView.strings; sourceTree = "<group>"; };
-		8CA5F8B11DD093FF00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallConferenceCell.strings; sourceTree = "<group>"; };
-		8CA5F8B21DD0940000E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallPausedCell.strings; sourceTree = "<group>"; };
-		8CA5F8B31DD0940100E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatBubblePhotoCell.strings; sourceTree = "<group>"; };
-		8CA5F8B41DD0940200E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatBubbleTextCell.strings; sourceTree = "<group>"; };
-		8CA5F8B51DD0940200E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatCell.strings; sourceTree = "<group>"; };
-		8CA5F8B61DD0940300E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatCreateCell.strings; sourceTree = "<group>"; };
-		8CA5F8B71DD0940400E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICompositeView.strings; sourceTree = "<group>"; };
-		8CA5F8B81DD0940500E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/UICompositeView~ipad.strings"; sourceTree = "<group>"; };
-		8CA5F8B91DD0940600E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIConfirmationDialog.strings; sourceTree = "<group>"; };
-		8CA5F8BA1DD0940700E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactCell.strings; sourceTree = "<group>"; };
-		8CA5F8BB1DD0940700E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactDetailsCell.strings; sourceTree = "<group>"; };
-		8CA5F8BC1DD0940800E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIHistoryCell.strings; sourceTree = "<group>"; };
-		8CA5F8BD1DD0940900E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PhoneMainView.strings; sourceTree = "<group>"; };
-		8CA5F8BE1DD0940A00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SettingsView.strings; sourceTree = "<group>"; };
-		8CA5F8BF1DD0940A00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
-		8CA5F8C01DD0940B00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SideMenuView.strings; sourceTree = "<group>"; };
-		8CA5F8C11DD0940C00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/SideMenuView~ipad.strings"; sourceTree = "<group>"; };
-		8CA5F8C21DD0940D00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/StatusBarView.strings; sourceTree = "<group>"; };
-		8CA5F8C31DD0940E00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/TabBarView.strings; sourceTree = "<group>"; };
-		8CA5F8C41DD0940F00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPad.strings; sourceTree = "<group>"; };
-		8CA5F8C51DD0941000E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
-		8CA5F8CC1DD21DCB00E06627 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "armv7-apple-darwin.ios"; path = "liblinphone-sdk/armv7-apple-darwin.ios"; sourceTree = "<group>"; };
 		9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libturbojpeg.a; path = "liblinphone-sdk/apple-darwin/lib/libturbojpeg.a"; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsView.h; sourceTree = "<group>"; };
@@ -4069,7 +4068,7 @@
 			children = (
 				570742571D5A0691004B9C84 /* Base */,
 				570742631D5A1860004B9C84 /* en */,
-				8CA5F8BF1DD0940A00E06627 /* fr */,
+				8C1C43081E43409C00FE9A91 /* fr */,
 			);
 			name = ShopView.xib;
 			sourceTree = "<group>";
@@ -4103,7 +4102,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63058A161B4E821E00EFAE36 /* Base */,
-				8CA5F8C41DD0940F00E06627 /* fr */,
+				8C1C430D1E43409E00FE9A91 /* fr */,
 			);
 			name = Main_iPad.storyboard;
 			sourceTree = "<group>";
@@ -4112,7 +4111,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63058A181B4E821E00EFAE36 /* Base */,
-				8CA5F8C51DD0941000E06627 /* fr */,
+				8C1C430E1E43409E00FE9A91 /* fr */,
 			);
 			name = Main_iPhone.storyboard;
 			sourceTree = "<group>";
@@ -4130,7 +4129,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				631098511D4660630041F2B3 /* Base */,
-				8CA5F8AA1DD093FA00E06627 /* fr */,
+				8C1C42F31E43409400FE9A91 /* fr */,
 			);
 			name = CountryListView.xib;
 			sourceTree = "<group>";
@@ -4139,7 +4138,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63130FB11C1ED06900371918 /* Base */,
-				8CA5F8C11DD0940C00E06627 /* fr */,
+				8C1C430A1E43409D00FE9A91 /* fr */,
 			);
 			name = "SideMenuView~ipad.xib";
 			sourceTree = "<group>";
@@ -4148,7 +4147,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				634610111B6140A500548952 /* Base */,
-				8CA5F8A21DD093F400E06627 /* fr */,
+				8C1C42EB1E43409100FE9A91 /* fr */,
 			);
 			name = CallOutgoingView.xib;
 			sourceTree = "<group>";
@@ -4158,7 +4157,7 @@
 			children = (
 				636316D21A1DEBCB0009B839 /* Base */,
 				F0AF06F01A24BA760086C9C1 /* ar */,
-				8CA5F89D1DD093EE00E06627 /* fr */,
+				8C1C42E61E43408E00FE9A91 /* fr */,
 			);
 			name = AboutView.xib;
 			sourceTree = "<group>";
@@ -4168,7 +4167,7 @@
 			children = (
 				636316D51A1DEC650009B839 /* Base */,
 				F0AF070E1A24BA770086C9C1 /* ar */,
-				8CA5F8BE1DD0940A00E06627 /* fr */,
+				8C1C43071E43409B00FE9A91 /* fr */,
 			);
 			name = SettingsView.xib;
 			sourceTree = "<group>";
@@ -4177,7 +4176,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				638F1A611C2021B2004B8E02 /* Base */,
-				8CA5F8AC1DD093FC00E06627 /* fr */,
+				8C1C42F51E43409400FE9A91 /* fr */,
 			);
 			name = "DialerView~ipad.xib";
 			sourceTree = "<group>";
@@ -4186,7 +4185,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				638F1A871C2167C2004B8E02 /* Base */,
-				8CA5F8A41DD093F600E06627 /* fr */,
+				8C1C42ED1E43409100FE9A91 /* fr */,
 			);
 			name = "CallView~ipad.xib";
 			sourceTree = "<group>";
@@ -4195,7 +4194,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				638F1A901C21993D004B8E02 /* Base */,
-				8CA5F8B81DD0940500E06627 /* fr */,
+				8C1C43011E43409900FE9A91 /* fr */,
 			);
 			name = "UICompositeView~ipad.xib";
 			sourceTree = "<group>";
@@ -4205,7 +4204,7 @@
 			children = (
 				639CEAFE1A1DF4D9004DE38F /* Base */,
 				F0AF070C1A24BA770086C9C1 /* ar */,
-				8CA5F8C21DD0940D00E06627 /* fr */,
+				8C1C430B1E43409D00FE9A91 /* fr */,
 			);
 			name = StatusBarView.xib;
 			path = LinphoneUI;
@@ -4216,7 +4215,7 @@
 			children = (
 				639CEB011A1DF4E4004DE38F /* Base */,
 				F0AF07091A24BA770086C9C1 /* ar */,
-				8CA5F8BC1DD0940800E06627 /* fr */,
+				8C1C43051E43409A00FE9A91 /* fr */,
 			);
 			name = UIHistoryCell.xib;
 			sourceTree = "<group>";
@@ -4226,7 +4225,7 @@
 			children = (
 				639CEB041A1DF4EB004DE38F /* Base */,
 				F0AF07041A24BA770086C9C1 /* ar */,
-				8CA5F8B71DD0940400E06627 /* fr */,
+				8C1C43001E43409800FE9A91 /* fr */,
 			);
 			name = UICompositeView.xib;
 			sourceTree = "<group>";
@@ -4236,7 +4235,7 @@
 			children = (
 				639CEB0A1A1DF4FA004DE38F /* Base */,
 				F0AF07021A24BA770086C9C1 /* ar */,
-				8CA5F8B51DD0940200E06627 /* fr */,
+				8C1C42FE1E43409800FE9A91 /* fr */,
 			);
 			name = UIChatCell.xib;
 			sourceTree = "<group>";
@@ -4245,7 +4244,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9C941C0DB7BE00019A75 /* Base */,
-				8CA5F8AD1DD093FC00E06627 /* fr */,
+				8C1C42F61E43409500FE9A91 /* fr */,
 			);
 			name = FirstLoginView.xib;
 			sourceTree = "<group>";
@@ -4254,7 +4253,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9C9E1C0DB7DF00019A75 /* Base */,
-				8CA5F8B21DD0940000E06627 /* fr */,
+				8C1C42FB1E43409600FE9A91 /* fr */,
 			);
 			name = UICallPausedCell.xib;
 			sourceTree = "<group>";
@@ -4263,7 +4262,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9CA11C0DB7E500019A75 /* Base */,
-				8CA5F8B31DD0940100E06627 /* fr */,
+				8C1C42FC1E43409700FE9A91 /* fr */,
 			);
 			name = UIChatBubblePhotoCell.xib;
 			sourceTree = "<group>";
@@ -4272,7 +4271,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9CA41C0DB7EA00019A75 /* Base */,
-				8CA5F8B41DD0940200E06627 /* fr */,
+				8C1C42FD1E43409700FE9A91 /* fr */,
 			);
 			name = UIChatBubbleTextCell.xib;
 			sourceTree = "<group>";
@@ -4281,7 +4280,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9CA71C0DB7F200019A75 /* Base */,
-				8CA5F8B61DD0940300E06627 /* fr */,
+				8C1C42FF1E43409800FE9A91 /* fr */,
 			);
 			name = UIChatCreateCell.xib;
 			sourceTree = "<group>";
@@ -4290,7 +4289,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9CAA1C0DB7FB00019A75 /* Base */,
-				8CA5F8B91DD0940600E06627 /* fr */,
+				8C1C43021E43409900FE9A91 /* fr */,
 			);
 			name = UIConfirmationDialog.xib;
 			sourceTree = "<group>";
@@ -4299,7 +4298,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9CAD1C0DB80300019A75 /* Base */,
-				8CA5F8BB1DD0940700E06627 /* fr */,
+				8C1C43041E43409A00FE9A91 /* fr */,
 			);
 			name = UIContactDetailsCell.xib;
 			sourceTree = "<group>";
@@ -4308,7 +4307,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9CB11C0DB83000019A75 /* Base */,
-				8CA5F8C01DD0940B00E06627 /* fr */,
+				8C1C43091E43409C00FE9A91 /* fr */,
 			);
 			name = SideMenuView.xib;
 			sourceTree = "<group>";
@@ -4317,7 +4316,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				639E9CB41C0DB88200019A75 /* Base */,
-				8CA5F8BD1DD0940900E06627 /* fr */,
+				8C1C43061E43409B00FE9A91 /* fr */,
 			);
 			name = PhoneMainView.xib;
 			sourceTree = "<group>";
@@ -4332,7 +4331,6 @@
 				63AADBDD1B6A0FF200AA16FD /* nl */,
 				63AADBE11B6A0FF200AA16FD /* ru */,
 				63AADBE71B6A0FF200AA16FD /* zh_TW */,
-				8CA5F8CC1DD21DCB00E06627 /* fr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4341,7 +4339,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63B8D68D1BCBE65600C12B09 /* Base */,
-				8CA5F8A51DD093F600E06627 /* fr */,
+				8C1C42EE1E43409200FE9A91 /* fr */,
 			);
 			name = ChatConversationCreateView.xib;
 			sourceTree = "<group>";
@@ -4350,7 +4348,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63EC8D3A1D7438660066547B /* Base */,
-				8CA5F89E1DD093F200E06627 /* fr */,
+				8C1C42E71E43408F00FE9A91 /* fr */,
 			);
 			name = AssistantLinkView.xib;
 			sourceTree = "<group>";
@@ -4359,7 +4357,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63F1DF521BCE986A00EDED90 /* Base */,
-				8CA5F8B11DD093FF00E06627 /* fr */,
+				8C1C42FA1E43409600FE9A91 /* fr */,
 			);
 			name = UICallConferenceCell.xib;
 			sourceTree = "<group>";
@@ -4370,7 +4368,7 @@
 				F09548221883F15400E8A69B /* Base */,
 				F09548441883F52900E8A69B /* ru */,
 				F0AF06FB1A24BA770086C9C1 /* ar */,
-				8CA5F8B01DD093FE00E06627 /* fr */,
+				8C1C42F91E43409600FE9A91 /* fr */,
 			);
 			name = ImageView.xib;
 			sourceTree = "<group>";
@@ -4381,7 +4379,7 @@
 				F09548181883F15300E8A69B /* Base */,
 				F09548321883F20A00E8A69B /* ru */,
 				F0AF06F11A24BA760086C9C1 /* ar */,
-				8CA5F8A61DD093F700E06627 /* fr */,
+				8C1C42EF1E43409200FE9A91 /* fr */,
 			);
 			name = ChatConversationView.xib;
 			sourceTree = "<group>";
@@ -4392,7 +4390,7 @@
 				F09548191883F15300E8A69B /* Base */,
 				F09548341883F25F00E8A69B /* ru */,
 				F0AF06F21A24BA760086C9C1 /* ar */,
-				8CA5F8A71DD093F800E06627 /* fr */,
+				8C1C42F01E43409300FE9A91 /* fr */,
 			);
 			name = ChatsListView.xib;
 			sourceTree = "<group>";
@@ -4403,7 +4401,7 @@
 				F095481B1883F15300E8A69B /* Base */,
 				F09548381883F29C00E8A69B /* ru */,
 				F0AF06F41A24BA760086C9C1 /* ar */,
-				8CA5F8A81DD093F900E06627 /* fr */,
+				8C1C42F11E43409300FE9A91 /* fr */,
 			);
 			name = ContactDetailsView.xib;
 			sourceTree = "<group>";
@@ -4414,7 +4412,7 @@
 				F095481C1883F15300E8A69B /* Base */,
 				F095483A1883F2CA00E8A69B /* ru */,
 				F0AF06F51A24BA760086C9C1 /* ar */,
-				8CA5F8A91DD093F900E06627 /* fr */,
+				8C1C42F21E43409300FE9A91 /* fr */,
 			);
 			name = ContactsListView.xib;
 			sourceTree = "<group>";
@@ -4425,7 +4423,7 @@
 				F095481D1883F15300E8A69B /* Base */,
 				F095483C1883F2E300E8A69B /* ru */,
 				F0AF06F61A24BA760086C9C1 /* ar */,
-				8CA5F8AB1DD093FB00E06627 /* fr */,
+				8C1C42F41E43409400FE9A91 /* fr */,
 			);
 			name = DialerView.xib;
 			sourceTree = "<group>";
@@ -4436,7 +4434,7 @@
 				F09548201883F15400E8A69B /* Base */,
 				636316DB1A1DEDD80009B839 /* ru */,
 				F0AF06F91A24BA760086C9C1 /* ar */,
-				8CA5F8AE1DD093FD00E06627 /* fr */,
+				8C1C42F71E43409500FE9A91 /* fr */,
 			);
 			name = HistoryDetailsView.xib;
 			sourceTree = "<group>";
@@ -4447,7 +4445,7 @@
 				F09548211883F15400E8A69B /* Base */,
 				F09548421883F51B00E8A69B /* ru */,
 				F0AF06FA1A24BA770086C9C1 /* ar */,
-				8CA5F8AF1DD093FE00E06627 /* fr */,
+				8C1C42F81E43409500FE9A91 /* fr */,
 			);
 			name = HistoryListView.xib;
 			sourceTree = "<group>";
@@ -4458,7 +4456,7 @@
 				F09548241883F15400E8A69B /* Base */,
 				F09548481883F55800E8A69B /* ru */,
 				F0AF06FD1A24BA770086C9C1 /* ar */,
-				8CA5F8A11DD093F400E06627 /* fr */,
+				8C1C42EA1E43409000FE9A91 /* fr */,
 			);
 			name = CallIncomingView.xib;
 			sourceTree = "<group>";
@@ -4469,7 +4467,7 @@
 				F095482E1883F15500E8A69B /* Base */,
 				F095485A1883F67B00E8A69B /* ru */,
 				F0AF070F1A24BA770086C9C1 /* ar */,
-				8CA5F89F1DD093F200E06627 /* fr */,
+				8C1C42E81E43409000FE9A91 /* fr */,
 			);
 			name = AssistantView.xib;
 			sourceTree = "<group>";
@@ -4480,7 +4478,7 @@
 				F095482C1883F15400E8A69B /* Base */,
 				F09548561883F61600E8A69B /* ru */,
 				F0AF070A1A24BA770086C9C1 /* ar */,
-				8CA5F8C31DD0940E00E06627 /* fr */,
+				8C1C430C1E43409D00FE9A91 /* fr */,
 			);
 			name = TabBarView.xib;
 			path = LinphoneUI;
@@ -4492,7 +4490,7 @@
 				F09548231883F15400E8A69B /* Base */,
 				F09548461883F54200E8A69B /* ru */,
 				F0AF06FC1A24BA770086C9C1 /* ar */,
-				8CA5F8A31DD093F500E06627 /* fr */,
+				8C1C42EC1E43409100FE9A91 /* fr */,
 			);
 			name = CallView.xib;
 			sourceTree = "<group>";
@@ -4503,7 +4501,7 @@
 				F09548301883F15500E8A69B /* Base */,
 				F095485E1883F6EA00E8A69B /* ru */,
 				F0AF07111A24BA770086C9C1 /* ar */,
-				8CA5F8A01DD093F300E06627 /* fr */,
+				8C1C42E91E43409000FE9A91 /* fr */,
 			);
 			name = AssistantViewScreens.xib;
 			sourceTree = "<group>";
@@ -4513,7 +4511,7 @@
 			children = (
 				F088488C19FF8C41007FFCF3 /* Base */,
 				F0AF07061A24BA770086C9C1 /* ar */,
-				8CA5F8BA1DD0940700E06627 /* fr */,
+				8C1C43031E43409A00FE9A91 /* fr */,
 			);
 			name = UIContactCell.xib;
 			sourceTree = "<group>";
