@@ -17,9 +17,9 @@ public class LinphoneCoreListenerBase implements LinphoneCoreListener {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
-	public void authenticationRequested(LinphoneCore lc, 
+	public void authenticationRequested(LinphoneCore lc,
 			LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method) {
 		// TODO Auto-generated method stub
 	}
@@ -133,86 +133,91 @@ public class LinphoneCoreListenerBase implements LinphoneCoreListener {
 	@Override
 	public void globalState(LinphoneCore lc, GlobalState state, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg,
 			RegistrationState state, String smessage) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void configuringStatus(LinphoneCore lc,
 			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr,
 			LinphoneChatMessage message) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void messageReceivedUnableToDecrypted(LinphoneCore lc, LinphoneChatRoom cr,
+			LinphoneChatMessage message) {
 	}
 
 	@Override
 	public void callState(LinphoneCore lc, LinphoneCall call, State state,
 			String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void callEncryptionChanged(LinphoneCore lc, LinphoneCall call,
 			boolean encrypted, String authenticationToken) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,
 			int delay_ms, Object data) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uploadStateChanged(LinphoneCore lc,
 			LogCollectionUploadState state, String info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

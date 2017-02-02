@@ -1,6 +1,6 @@
 /*
 TutorialHelloWorld.java
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,7 +49,7 @@ import org.linphone.core.SubscriptionState;
 /**
  * This program is a _very_ simple usage example of liblinphone.
  * It just takes a sip-uri as first argument and attempts to call it.
- * 
+ *
  * Ported from helloworld.c
  *
  * @author Guillaume Beraudo
@@ -68,8 +68,8 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 		this.TutorialNotifier = new TutorialNotifier();
 	}
 
-	
-	
+
+
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
 	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
@@ -103,7 +103,7 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 		if (args.length != 1) {
 			throw new IllegalArgumentException("Bad number of arguments");
 		}
-		
+
 		// Create tutorial object
 		TutorialHelloWorld helloWorld = new TutorialHelloWorld();
 		try {
@@ -114,16 +114,16 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 		}
 	}
 
-	
-	
+
+
 	public void launchTutorial(String destinationSipAddress) throws LinphoneCoreException {
-		
+
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
 		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this, null);
 
 
-		
+
 		try {
 			// Send the INVITE message to destination SIP address
 			LinphoneCall call = lc.invite(destinationSipAddress);
@@ -135,7 +135,7 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 			write("Call to " + destinationSipAddress + " is in progress...");
 
 
-			
+
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
@@ -149,7 +149,7 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 			}
 
 
-			
+
 			if (!State.CallEnd.equals(call.getState())) {
 				write("Terminating the call");
 				lc.terminateCall(call);
@@ -167,7 +167,7 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 		running=false;
 	}
 
-	
+
 	private void write(String s) {
 		TutorialNotifier.notify(s);
 	}
@@ -176,68 +176,73 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr,
 			LinphoneChatMessage message) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void messageReceivedUnableToDecrypted(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+
 	}
 
 	@Override
 	public void transferState(LinphoneCore lc, LinphoneCall call,
 			State new_call_state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			SubscriptionState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			PublishState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void configuringStatus(LinphoneCore lc,
 			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileTransferProgressIndication(LinphoneCore lc,
 			LinphoneChatMessage message, LinphoneContent content, int progress) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message,
 			LinphoneContent content, byte[] buffer, int size) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -250,17 +255,17 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 	@Override
 	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uploadStateChanged(LinphoneCore lc,
 			LogCollectionUploadState state, String info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+
         @Override
         public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
                 // TODO Auto-generated method stub

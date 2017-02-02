@@ -1,6 +1,6 @@
 /*
 TutorialBuddyStatus
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -48,7 +48,7 @@ import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 
 /**
- * 
+ *
  * This program is a _very_ simple usage example of liblinphone,
  * demonstrating how to initiate  SIP subscriptions and receive notifications
  * from a sip uri identity passed from the command line.
@@ -123,9 +123,9 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 		// Create tutorial object
 		TutorialBuddyStatus tutorial = new TutorialBuddyStatus();
 		try {
-			// takes sip uri identity from the command line arguments 
+			// takes sip uri identity from the command line arguments
 			String userSipAddress = args[1];
-			
+
 			// takes sip uri identity from the command line arguments
 			String mySipAddress = args.length>1?args[1]:null;
 			// takes password from the command line arguments
@@ -183,10 +183,10 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 					}
 				}
 			}
-			
+
 			// configure this friend to emit SUBSCRIBE message after being added to LinphoneCore
 			lf.enableSubscribes(true);
-			
+
 			// accept incoming subscription request for this friend
 			lf.setIncSubscribePolicy(SubscribePolicy.SPAccept);
 			try {
@@ -196,11 +196,11 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 				write("Error while adding friend " + lf.getAddress().getUserName() + " to linphone");
 				return;
 			}
-			
-			// set my status to online 
+
+			// set my status to online
 			lc.setPresenceInfo(0, null, OnlineStatus.Online);
-			
-			
+
+
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
@@ -219,8 +219,8 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 			// just to make sure new status is initiate message is issued
 			lc.iterate();
 
-			
-			lf.edit(); // start editing friend 
+
+			lf.edit(); // start editing friend
 			lf.enableSubscribes(false); // disable subscription for this friend
 			lf.done(); // commit changes triggering an UNSUBSCRIBE message
 			lc.iterate(); // just to make sure unsubscribe message is issued
@@ -247,65 +247,70 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void messageReceivedUnableToDecrypted(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+
 	}
 
 	@Override
 	public void transferState(LinphoneCore lc, LinphoneCall call,
 			State new_call_state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			SubscriptionState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			PublishState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void configuringStatus(LinphoneCore lc,
 			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void authInfoRequested(LinphoneCore lc, String realm,
 			String username, String domain) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@Override
-	public void authenticationRequested(LinphoneCore lc, 
+	public void authenticationRequested(LinphoneCore lc,
 			LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method) {
 		// TODO Auto-generated method stub
 	}
@@ -314,14 +319,14 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	public void fileTransferProgressIndication(LinphoneCore lc,
 			LinphoneChatMessage message, LinphoneContent content, int progress) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message,
 			LinphoneContent content, byte[] buffer, int size) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -334,16 +339,16 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	@Override
 	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uploadStateChanged(LinphoneCore lc,
 			LogCollectionUploadState state, String info) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
         @Override
         public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
                 // TODO Auto-generated method stub

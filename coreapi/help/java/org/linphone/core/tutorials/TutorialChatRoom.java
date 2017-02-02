@@ -1,6 +1,6 @@
 /*
 TutorialChatRoom.java
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,7 +55,7 @@ import org.linphone.core.SubscriptionState;
  *
  * ex chatroom sip:jehan@sip.linphone.org
  * just takes a sip-uri as first argument and attempts to call it.
- * 
+ *
  * Ported from chatroom.c
  *
  * @author Guillaume Beraudo
@@ -74,8 +74,8 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		this.TutorialNotifier = new TutorialNotifier();
 	}
 
-	
-	
+
+
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
 	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
@@ -94,15 +94,15 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	public void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event){}
 	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {}
 
-	
-	
+
+
 	public static void main(String[] args) {
 		// Check tutorial was called with the right number of arguments
 		// Takes the sip uri identity from the command line arguments
 		if (args.length != 1) {
 			throw new IllegalArgumentException("Bad number of arguments");
 		}
-		
+
 		// Create tutorial object
 		TutorialChatRoom tutorial = new TutorialChatRoom();
 		try {
@@ -113,10 +113,10 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		}
 	}
 
-	
-	
+
+
 	public void launchTutorial(String destinationSipAddress) throws LinphoneCoreException {
-		
+
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
 		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this, null);
@@ -124,11 +124,11 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		try {
 			// Next step is to create a chat room
 			LinphoneChatRoom chatRoom = lc.getOrCreateChatRoom(destinationSipAddress);
-			
+
 			// Send message
 			LinphoneChatMessage chatMessage = chatRoom.createLinphoneChatMessage("Hello world");
 			chatRoom.sendMessage(chatMessage, this);
-			
+
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
@@ -154,7 +154,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		running=false;
 	}
 
-	
+
 	private void write(String s) {
 		TutorialNotifier.notify(s);
 	}
@@ -163,6 +163,11 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr,
 			LinphoneChatMessage message) {
 		write("Message [" + message.getText() + "] received from [" + message.getFrom().asString() + "]");
+	}
+
+	@Override
+	public void messageReceivedUnableToDecrypted(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+
 	}
 
 	@Override
@@ -175,34 +180,34 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	public void transferState(LinphoneCore lc, LinphoneCall call,
 			State new_call_state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			SubscriptionState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			PublishState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -217,21 +222,21 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	public void configuringStatus(LinphoneCore lc,
 			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileTransferProgressIndication(LinphoneCore lc,
 			LinphoneChatMessage message, LinphoneContent content, int progress) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message,
 			LinphoneContent content, byte[] buffer, int size) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -244,17 +249,17 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	@Override
 	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uploadStateChanged(LinphoneCore lc,
 			LogCollectionUploadState state, String info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+
         @Override
         public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
                 // TODO Auto-generated method stub

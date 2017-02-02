@@ -22,25 +22,25 @@ import java.nio.ByteBuffer;
 
 
 /**
- * 
+ *
  *This interface holds all callbacks that the application should implement. None is mandatory.
  */
 public interface LinphoneCoreListener {
 
 	/**
 	 * @deprecated
-	 * Ask the application some authentication information 
+	 * Ask the application some authentication information
 	 **/
 	@Deprecated
 	void authInfoRequested(LinphoneCore lc, String realm, String username, String domain);
-	
+
 	/**
 	 * Ask the application some authentication information
 	 * @param lc the LinphoneCore
 	 * @param authInfo a LinphoneAuthInfo pre-filled with username, realm and domain values as much as possible
 	 * @param method the type of authentication requested (HttpDigest, Tls, ...)
 	 **/
-	void authenticationRequested(LinphoneCore lc, LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method); 
+	void authenticationRequested(LinphoneCore lc, LinphoneAuthInfo authInfo, LinphoneCore.AuthMethod method);
 
 	/**
 	 * Call stats notification
@@ -48,12 +48,12 @@ public interface LinphoneCoreListener {
 	void callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats);
 
 	/**
-	 * Reports that a new subscription request has been received and wait for a decision. 
+	 * Reports that a new subscription request has been received and wait for a decision.
 	 *Status on this subscription request is notified by changing policy for this friend
-	 *@param lc LinphoneCore 	
+	 *@param lc LinphoneCore
 	 *@param lf LinphoneFriend corresponding to the subscriber
 	 *@param url of the subscriber
-	 * 
+	 *
 	 */
 	void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url);
 
@@ -78,15 +78,15 @@ public interface LinphoneCoreListener {
 	 *  @param call LinphoneCall in case the notify is part of a dialog, may be null
 	 *  @param from LinphoneAddress the message comes from
 	 *  @param event String the raw body of the notify event.
-	 *  
+	 *
 	 */
 	void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event);
 
-	/** 
-	 * Notifies progress of a call transfer. 
+	/**
+	 * Notifies progress of a call transfer.
 	 * @param lc the LinphoneCore
 	 * @param call the call through which the transfer was sent.
-	 * @param new_call_state the state of the call resulting of the transfer, at the other party. 
+	 * @param new_call_state the state of the call resulting of the transfer, at the other party.
 	 **/
 	void transferState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State new_call_state);
 
@@ -128,14 +128,14 @@ public interface LinphoneCoreListener {
 	void displayStatus(LinphoneCore lc,String message);
 
 	/**
-	 * Callback to display a message to the user 
+	 * Callback to display a message to the user
 	 * @deprecated
 	 */
 	@Deprecated
 	void displayMessage(LinphoneCore lc,String message);
 
 	/**
-	 * Callback to display a warning to the user 
+	 * Callback to display a warning to the user
 	 * @deprecated
 	 */
 	@Deprecated
@@ -172,9 +172,9 @@ public interface LinphoneCoreListener {
 	int fileTransferSend(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, ByteBuffer buffer, int size);
 
 	/**
-	 * General State notification  
+	 * General State notification
 	 * @param state LinphoneCore.State
-	 */		
+	 */
 	void globalState(LinphoneCore lc,LinphoneCore.GlobalState state, String message);
 
 	/**
@@ -198,10 +198,17 @@ public interface LinphoneCoreListener {
 	 */
 	void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message);
 
+	/**
+	 * invoked when a new linphone chat message is received and we cannot decrypt this
+	 * @param lc LinphoneCore
+	 * @param cr LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
+	 * @param message incoming linphone chat message message
+     */
+	void messageReceivedUnableToDecrypted(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message);
 
-	/** Call  State notification  
+	/** Call  State notification
 	 * @param state LinphoneCall.State
-	 */		
+	 */
 	void callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State state, String message);
 
 	/**
@@ -214,7 +221,7 @@ public interface LinphoneCoreListener {
 	/**
 	 * Notifies of an incoming NOTIFY received.
 	 * @param lc the linphoneCore
-	 * @param ev a LinphoneEvent representing the subscription context for which this notify belongs, or null if it is a NOTIFY out of of any subscription. 
+	 * @param ev a LinphoneEvent representing the subscription context for which this notify belongs, or null if it is a NOTIFY out of of any subscription.
 	 * @param eventName the event name
 	 * @param content content of the NOTIFY request.
 	 */
@@ -230,7 +237,7 @@ public interface LinphoneCoreListener {
 	/**
 	 * Invoked when echo cancalation calibration is completed
 	 * @param lc LinphoneCore
-	 * @param status 
+	 * @param status
 	 * @param delay_ms echo delay
 	 * @param data
 	 */
@@ -248,14 +255,14 @@ public interface LinphoneCoreListener {
 	 * @param info Additional information: error message in case of error state, URL of uploaded file in case of success.
 	 */
 	void uploadStateChanged(LinphoneCore lc, LinphoneCore.LogCollectionUploadState state, String info);
-	
+
 	/**
 	 * Callback prototype for reporting LinphoneFriendList creation.
 	 * @param lc LinphoneCore object
 	 * @param list LinphoneFriendList object
 	 */
 	void friendListCreated(LinphoneCore lc, LinphoneFriendList list);
-	
+
 	/**
 	 * Callback prototype for reporting LinphoneFriendList removal.
 	 * @param lc LinphoneCore object

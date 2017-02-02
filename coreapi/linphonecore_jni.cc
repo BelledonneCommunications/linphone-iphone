@@ -297,6 +297,8 @@ public:
 
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
 
+		messageReceivedUnableToDecryptedId = env->GetMethodID(listenerClass,"messageReceivedUnableToDecrypted","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
+
 		isComposingReceivedId = env->GetMethodID(listenerClass,"isComposingReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;)V");
 
 		dtmfReceivedId = env->GetMethodID(listenerClass,"dtmfReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;I)V");
@@ -431,6 +433,7 @@ public:
 	jmethodID newSubscriptionRequestId;
 	jmethodID notifyPresenceReceivedId;
 	jmethodID messageReceivedId;
+	jmethodID messageReceivedUnableToDecryptedId;
 	jmethodID isComposingReceivedId;
 	jmethodID dtmfReceivedId;
 	jmethodID callStatsUpdatedId;
@@ -844,6 +847,10 @@ public:
 			vTable->message_received = message_received;
 		}
 
+		if (ljb->messageReceivedUnableToDecryptedId) {
+		    vTable->message_received_unable_decrypt = message_received_unable_decrypt;
+		}
+
 		if (ljb->isComposingReceivedId) {
 			vTable->is_composing_received = is_composing_received;
 		}
@@ -1178,6 +1185,36 @@ public:
 			env->DeleteLocalRef(jroom);
 		}
 	}
+
+	static void message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+
+		jobject jmsg;
+		jobject jroom;
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		/*note: we call linphone_chat_message_ref() because the application does not acquire the object when invoked from a callback*/
+		env->CallVoidMethod(lcData->listener
+			,ljb->messageReceivedUnableToDecryptedId
+			,lcData->core
+			,(jroom = getChatRoom(env, room))
+			,(jmsg = getChatMessage(env, msg)));
+			handle_possible_java_exception(env, lcData->listener);
+
+			if (jmsg) {
+				env->DeleteLocalRef(jmsg);
+			}
+			if (jroom) {
+				env->DeleteLocalRef(jroom);
+			}
+		}
+
 	static void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);

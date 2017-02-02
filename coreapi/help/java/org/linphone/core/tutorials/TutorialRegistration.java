@@ -1,6 +1,6 @@
 /*
 TutorialRegistration.java
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -73,7 +73,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		this.TutorialNotifier = new TutorialNotifier();
 	}
 
-	
+
 	/*
 	 * Registration state notification listener
 	 */
@@ -103,7 +103,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		if (args.length != 2) {
 			throw new IllegalArgumentException("Bad number of arguments");
 		}
-		
+
 		// Create tutorial object
 		TutorialRegistration tutorial = new TutorialRegistration();
 		try {
@@ -117,8 +117,8 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		}
 	}
 
-	
-	
+
+
 	public void launchTutorial(String sipAddress, String password) throws LinphoneCoreException {
 		final LinphoneCoreFactory lcFactory = LinphoneCoreFactory.instance();
 
@@ -126,9 +126,9 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		// The listener will react to events in Linphone core.
 		LinphoneCore lc = lcFactory.createLinphoneCore(this, null);
 
-	
+
 		try {
-			
+
 			// Parse identity
 			LinphoneAddress address = lcFactory.createLinphoneAddress(sipAddress);
 			String username = address.getUserName();
@@ -147,11 +147,11 @@ public class TutorialRegistration implements LinphoneCoreListener {
 			lc.setDefaultProxyConfig(proxyCfg);
 
 
-			
+
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
 			while (running) {
-				lc.iterate(); // first iterate initiates registration 
+				lc.iterate(); // first iterate initiates registration
 				sleep(50);
 			}
 
@@ -197,7 +197,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		running=false;
 	}
 
-	
+
 	private void write(String s) {
 		TutorialNotifier.notify(s);
 	}
@@ -206,68 +206,73 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr,
 			LinphoneChatMessage message) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void messageReceivedUnableToDecrypted(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+
 	}
 
 	@Override
 	public void transferState(LinphoneCore lc, LinphoneCall call,
 			State new_call_state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			SubscriptionState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			PublishState state) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void configuringStatus(LinphoneCore lc,
 			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileTransferProgressIndication(LinphoneCore lc,
 			LinphoneChatMessage message, LinphoneContent content, int progress) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message,
 			LinphoneContent content, byte[] buffer, int size) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -280,17 +285,17 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	@Override
 	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uploadStateChanged(LinphoneCore lc,
 			LogCollectionUploadState state, String info) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+
         @Override
         public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
                 // TODO Auto-generated method stub
