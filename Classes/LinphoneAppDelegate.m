@@ -800,10 +800,22 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 															   userInfo:sheet
 																repeats:NO];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"zrtp_request"]) {
-			[UIConfirmationDialog
-				ShowWithMessage:[NSString stringWithFormat:NSLocalizedString(
-															   @"Confirm the following SAS with peer:\n%s", nil),
-														   linphone_call_get_authentication_token(call)]
+			NSString *code = [NSString stringWithUTF8String:linphone_call_get_authentication_token(call)];
+			NSString *myCode;
+			NSString *correspondantCode;
+			if (linphone_call_get_dir(call) == LinphoneCallIncoming) {
+				myCode = [code substringToIndex:2];
+				correspondantCode = [code substringFromIndex:2];
+			} else {
+				correspondantCode = [code substringToIndex:2];
+				myCode = [code substringFromIndex:2];
+			}
+			NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n"
+																			 @"Say : %@\n"
+																			 @"Your correspondant should say : %@",
+																			 nil),
+														   myCode, correspondantCode];
+			[UIConfirmationDialog ShowWithMessage:message
 				cancelMessage:NSLocalizedString(@"DENY", nil)
 				confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 				onCancelClick:^() {
