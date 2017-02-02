@@ -337,20 +337,34 @@ public interface LinphoneProxyConfig {
 	 * @return an Object.
 	 */
 	Object getUserData();
-	
-	/** 
+
+	/**
 	 * Set a custom header
 	 * @param name a string containing the name of the header
 	 * @param value a string containing the value of the header
 	 **/
 	public void setCustomHeader(String name, String value);
-	
+
 	/**
 	 * Return the value of a header
 	 * @param name a string containing the name of the header
 	 * @return the value of the header
 	 **/
 	public String getCustomHeader(String name);
-	
-	
+
+	/**
+	 * Refresh a proxy registration.
+	 * This is useful if for example you resuming from suspend, thus IP address may have changed.
+	 **/
+	public void refreshRegister();
+
+	/**
+	 * Prevent a proxy config from refreshing its registration.
+	 * This is useful to let registrations to expire naturally (or) when the application wants to keep control on when
+	 * refreshes are sent.
+	 * However, linphone_core_set_network_reachable(lc,TRUE) will always request the proxy configs to refresh their registrations.
+	 * The refreshing operations can be resumed with linphone_proxy_config_refresh_register().
+	 * @param[in] cfg #LinphoneProxyConfig object.
+	 **/
+	public void pauseRegister();
 }

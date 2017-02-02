@@ -2950,6 +2950,15 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setPublishExpires
 																					,jint jval) {
 	linphone_proxy_config_set_publish_expires((LinphoneProxyConfig *) ptr, jval);
 }
+
+extern "C" void  Java_org_linphone_core_LinphoneProxyConfigImpl_refreshRegister(JNIEnv*  env,jobject thiz,jlong ptr) {
+	linphone_proxy_config_refresh_register((LinphoneProxyConfig *) ptr);
+}
+
+extern "C" void  Java_org_linphone_core_LinphoneProxyConfigImpl_pauseRegister(JNIEnv*  env,jobject thiz,jlong ptr) {
+	linphone_proxy_config_pause_register((LinphoneProxyConfig *) ptr);
+}
+
 //Auth Info
 
 extern "C" jlong Java_org_linphone_core_LinphoneAuthInfoImpl_newLinphoneAuthInfo(JNIEnv* env
