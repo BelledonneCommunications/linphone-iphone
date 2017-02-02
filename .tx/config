@@ -231,3 +231,4 @@ source_file = Classes/Base.lproj/CountryListView.strings
 source_lang = en
 file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Chat.strings
 source_file = Settings/InAppSettings.bundle/en.lproj/Chat.strings
+type = STRINGS
