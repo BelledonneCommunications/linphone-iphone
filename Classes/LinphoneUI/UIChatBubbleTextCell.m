@@ -179,10 +179,10 @@
 }
 
 - (void)displayLIMEWarning {
-	UIAlertController *errView = [UIAlertController
-		alertControllerWithTitle:NSLocalizedString(@"LIME warning", nil)
-						 message:NSLocalizedString(@"This message you received wasn't encrypted.", nil)
-				  preferredStyle:UIAlertControllerStyleAlert];
+	UIAlertController *errView =
+		[UIAlertController alertControllerWithTitle:NSLocalizedString(@"LIME warning", nil)
+											message:NSLocalizedString(@"This message is not encrypted.", nil)
+									 preferredStyle:UIAlertControllerStyleAlert];
 
 	UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
 															style:UIAlertActionStyleDefault

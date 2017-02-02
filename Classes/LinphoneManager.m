@@ -1298,9 +1298,9 @@ static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, Li
 	NSString *strAddr = [FastAddressBook displayNameForAddress:address];
 	NSString *title = NSLocalizedString(@"LIME warning", nil);
 	NSString *body = [NSString
-		stringWithFormat:NSLocalizedString(@"You have received an encrypted message you're unable to decrypt from "
+		stringWithFormat:NSLocalizedString(@"You have received an encrypted message you are unable to decrypt from "
 										   @"%@.\nYou need to call your correspondant in order to exchange your ZRTP "
-										   @"keys if you want to decrypt the future messages you'll receive.",
+										   @"keys if you want to decrypt the future messages you will receive.",
 										   nil),
 						 strAddr];
 	NSString *action = NSLocalizedString(@"Call", nil);
@@ -1418,15 +1418,15 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 
 #pragma mark - Message composition start
 - (void)alertLIME:(LinphoneChatRoom *)room {
+	NSString *title = NSLocalizedString(@"LIME warning", nil);
+	NSString *body =
+		NSLocalizedString(@"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
+						  @"Please call this contact and verify his ZRTP key before sending your messages.",
+						  nil);
+
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-		UIAlertController *errView = [UIAlertController
-			alertControllerWithTitle:NSLocalizedString(@"LIME Error", nil)
-							 message:
-								 NSLocalizedString(
-									 @"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
-									 @"Please call this contact and verify his ZRTP key before sending your messages.",
-									 nil)
-					  preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertController *errView =
+			[UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
 
 		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																style:UIAlertActionStyleDefault
@@ -1444,11 +1444,8 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 	} else {
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-			content.title = NSLocalizedString(@"LIME error", nil);
-			content.body =
-				NSLocalizedString(@"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
-								  @"Please call this contact and verify his ZRTP key before sending your messages.",
-								  nil);
+			content.title = title;
+			content.body = body;
 			content.categoryIdentifier = @"lime";
 
 			UNNotificationRequest *req = [UNNotificationRequest
@@ -1467,11 +1464,8 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 		} else {
 			UILocalNotification *notification = [[UILocalNotification alloc] init];
 			notification.repeatInterval = 0;
-			notification.alertTitle = NSLocalizedString(@"LIME error", nil);
-			notification.alertBody =
-				NSLocalizedString(@"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
-								  @"Please call this contact and verify his ZRTP key before sending your messages.",
-								  nil);
+			notification.alertTitle = title;
+			notification.alertBody = body;
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 		}
 	}

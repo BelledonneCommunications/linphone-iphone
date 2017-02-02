@@ -758,10 +758,11 @@
 				[self setCString:"ZRTP" forKey:@"media_encryption_preference"];
 				UIAlertController *errView = [UIAlertController
 					alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)
-									 message:NSLocalizedString(
-												 @"LIME requires ZRTP encryption.\n"
-												 @"By activating LIME you automatically ZRTP media encryption.",
-												 nil)
+									 message:
+										 NSLocalizedString(
+											 @"LIME requires ZRTP encryption.\n"
+											 @"By activating LIME you automatically activate ZRTP media encryption.",
+											 nil)
 							  preferredStyle:UIAlertControllerStyleAlert];
 
 				UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
