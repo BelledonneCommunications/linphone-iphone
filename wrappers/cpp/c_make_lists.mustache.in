@@ -36,8 +36,10 @@ add_definitions("-DLINPHONECXX_EXPORTS")
 add_library(linphone++ SHARED ${SOURCES})
 if(WIN32)
 	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/${CMAKE_BUILD_TYPE}/linphone.lib ${BELLESIP_LIBRARIES})
+elseif(APPLE)
+	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.@LINPHONE_SO_VERSION@.dylib ${BELLESIP_LIBRARIES})
 else()
-	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.so.@LINPHONE_SO_VERSION@)
+	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.so.@LINPHONE_SO_VERSION@ ${BELLESIP_LIBRARIES})
 endif()
 target_include_directories(linphone++
 	PUBLIC include
