@@ -983,6 +983,11 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	/* Wait for ICE reINVITEs to complete. */
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2)
 		&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	if (callee_policy.automatically_accept == FALSE){
+		marie_remote_params = linphone_call_get_remote_params(linphone_core_get_current_call(marie->lc));
+		/*The ICE reINVITE must not propose again video if was refused by callee*/
+		BC_ASSERT_FALSE(linphone_call_params_video_enabled(marie_remote_params));
+	}
 	BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
 	BC_ASSERT_TRUE(check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts));
 	

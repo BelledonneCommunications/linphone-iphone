@@ -149,11 +149,15 @@ static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event
 	if (op->state == SalOpStateTerminated) return;
 
 	if (op->pending_client_trans && (belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_INIT)) {
-		/* Call terminated very very early, before INVITE is even sent, probably DNS resolution timeout. */
+		
 		sal_error_info_set(&op->error_info, SalReasonIOError, 503, "IO error", NULL);
 		op->base.root->callbacks.call_failure(op);
-		op->state = SalOpStateTerminating;
-		call_set_released(op);
+		
+		if (!op->dialog || belle_sip_dialog_get_state(op->dialog) != BELLE_SIP_DIALOG_CONFIRMED){
+			/* Call terminated very very early, before INVITE is even sent, probably DNS resolution timeout. */
+			op->state = SalOpStateTerminating;
+			call_set_released(op);
+		}
 	} else {
 		/* Nothing to be done. If the error comes from a connectivity loss,
 		 * the call will be marked as broken, and an attempt to repair it will be done. */
