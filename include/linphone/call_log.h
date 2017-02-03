@@ -21,44 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __LINPHONE_CALL_LOG_H__
 #define __LINPHONE_CALL_LOG_H__
 
+#include "linphone/types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @addtogroup call_logs
  * @{
 **/
-
-
-/*******************************************************************************
- * Structures and enums                                                        *
- ******************************************************************************/
-
-/**
- * Enum representing the direction of a call.
-**/
-enum _LinphoneCallDir {
-	LinphoneCallOutgoing, /**< outgoing calls*/
-	LinphoneCallIncoming  /**< incoming calls*/
-};
-
-/**
- * Typedef for enum
-**/
-typedef enum _LinphoneCallDir LinphoneCallDir;
-
-/**
- * Enum representing the status of a call
-**/
-typedef enum _LinphoneCallStatus {
-	LinphoneCallSuccess, /**< The call was sucessful */
-	LinphoneCallAborted, /**< The call was aborted */
-	LinphoneCallMissed, /**< The call was missed (unanswered) */
-	LinphoneCallDeclined /**< The call was declined, either locally or by remote end */
-} LinphoneCallStatus;
-
-/**
- * Structure representing a call log.
-**/
-typedef struct _LinphoneCallLog LinphoneCallLog;
-
 
 /*******************************************************************************
  * Public functions                                                            *
@@ -242,10 +214,12 @@ LINPHONE_PUBLIC void linphone_call_log_unref(LinphoneCallLog *cl);
  */
 LINPHONE_PUBLIC void linphone_call_log_destroy(LinphoneCallLog *cl);
 
-
 /**
  * @}
 **/
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __LINPHONE_CALL_LOG_H__ */

@@ -34,26 +34,6 @@ extern "C" {
  */
 
 /**
- * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
- */
-typedef enum _LinphoneChatMessageState {
-	LinphoneChatMessageStateIdle, /**< Initial state */
-	LinphoneChatMessageStateInProgress, /**< Delivery in progress */
-	LinphoneChatMessageStateDelivered, /**< Message successfully delivered and acknowledged by server */
-	LinphoneChatMessageStateNotDelivered, /**< Message was not delivered */
-	LinphoneChatMessageStateFileTransferError, /**< Message was received(and acknowledged) but cannot get file from server */
-	LinphoneChatMessageStateFileTransferDone, /**< File transfer has been completed successfully. */
-	LinphoneChatMessageStateDeliveredToUser, /**< Message successfully delivered and acknowledged to destination */
-	LinphoneChatMessageStateDisplayed /**< Message displayed to the remote user */
-} LinphoneChatMessageState;
-
-typedef enum _LinphoneLimeState {
-	LinphoneLimeDisabled, /**< Lime is not used at all */
-	LinphoneLimeMandatory, /**< Lime is always used */
-	LinphoneLimePreferred, /**< Lime is used only if we already shared a secret with remote */
-} LinphoneLimeState;
-
-/**
  * Call back used to notify message delivery status
  * @param msg #LinphoneChatMessage object
  * @param status LinphoneChatMessageState
@@ -97,61 +77,6 @@ typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneCha
 typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 
 /**
- * Set the chat database path.
- * @param lc the linphone core
- * @param path the database path
- */
-LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
-
-/**
- * Get path to the database file used for storing chat messages.
- * @param lc the linphone core
- * @return file path or NULL if not exist
- **/
-
-LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneCore *lc);
-/**
- * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
- * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
- * @param lc the linphone core
- * @param addr a linphone address.
- * @return #LinphoneChatRoom where messaging can take place.
-**/
-LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
-/**
- * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
- * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
- * @param lc A #LinphoneCore object
- * @param to The destination address for messages.
- * @return #LinphoneChatRoom where messaging can take place.
-**/
-LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to);
-
-/**
- * Removes a chatroom including all message history from the LinphoneCore.
- * @param lc A #LinphoneCore object
- * @param cr A #LinphoneChatRoom object
-**/
-LINPHONE_PUBLIC void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr);
-
-/**
- * Inconditionnaly disable incoming chat messages.
- * @param lc A #LinphoneCore object
- * @param deny_reason the deny reason (#LinphoneReasonNone has no effect).
-**/
-LINPHONE_PUBLIC void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason);
-/**
- * Enable reception of incoming chat messages.
- * By default it is enabled but it can be disabled with linphone_core_disable_chat().
- * @param lc A #LinphoneCore object
-**/
-LINPHONE_PUBLIC void linphone_core_enable_chat(LinphoneCore *lc);
-/**
- * Returns whether chat is enabled.
- * @param lc A #LinphoneCore object
-**/
-LINPHONE_PUBLIC bool_t linphone_core_chat_enabled(const LinphoneCore *lc);
-/**
  * Destroy a LinphoneChatRoom.
  * @param cr #LinphoneChatRoom object
  * @deprecated Use linphone_chat_room_unref() instead.
@@ -163,7 +88,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_destroy(LinphoneChat
  * @param message text message, NULL if absent.
  * @return a new #LinphoneChatMessage
  */
-LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr,const char* message);
+LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr,const char* message);
 /**
  * Create a message attached to a dedicated chat room;
  * @param cr the chat room.
@@ -175,7 +100,7 @@ LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message(LinphoneC
  * @param is_incoming TRUE if the message has been received, FALSE otherwise.
  * @return a new #LinphoneChatMessage
  */
-LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming);
+LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming);
 
 /**
  * Acquire a reference to the chat room.
@@ -211,14 +136,14 @@ LINPHONE_PUBLIC void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void
  * @param initial_content #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if LinphoneContent.data is NULL.
  * @return a new #LinphoneChatMessage
  */
-LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content);
+LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content);
 
 /**
  * get peer address \link linphone_core_get_chat_room() associated to \endlink this #LinphoneChatRoom
  * @param cr #LinphoneChatRoom object
  * @return #LinphoneAddress peer address
  */
-LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
 
 /**
  * Send a message to peer member of this chat room.
@@ -226,7 +151,8 @@ LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_room_get_peer_address(Linph
  * @param cr #LinphoneChatRoom object
  * @param msg message to be sent
  */
-LINPHONE_PUBLIC	LINPHONE_DEPRECATED void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
+
 /**
  * Send a message to peer member of this chat room.
  * @param cr #LinphoneChatRoom object
@@ -237,7 +163,8 @@ LINPHONE_PUBLIC	LINPHONE_DEPRECATED void linphone_chat_room_send_message(Linphon
  * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
  * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
  */
-LINPHONE_PUBLIC	LINPHONE_DEPRECATED void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
+
 /**
  * Send a message to peer member of this chat room.
  * @param[in] cr LinphoneChatRoom object
@@ -253,6 +180,7 @@ LINPHONE_PUBLIC void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, 
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
  */
 LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
+
 /**
  * Delete a message from the chat room history.
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
@@ -260,11 +188,13 @@ LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
  */
 
 LINPHONE_PUBLIC void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+
 /**
  * Delete all messages from the history
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
  */
 LINPHONE_PUBLIC void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
+
 /**
  * Gets the number of messages in a chat room.
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which size has to be computed
@@ -344,20 +274,14 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 **/
 LINPHONE_PUBLIC const bctbx_list_t* linphone_core_get_chat_rooms(LinphoneCore *lc);
 
-
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
-
-/**
- * Returns a #LinphoneChatMessageState as a string.
- */
-LINPHONE_PUBLIC	const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
 
 /**
  * Get the state of the message
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneChatMessageState
  */
-LINPHONE_PUBLIC	LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
 
 /**
  * Duplicate a LinphoneChatMessage
@@ -400,7 +324,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_from_address(LinphoneChatMessage*
  * @param[in] message #LinphoneChatMessage obj
  * @return #LinphoneAddress
  */
-LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_from_address(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_from_address(const LinphoneChatMessage* message);
 
 #define linphone_chat_message_set_to(msg, addr) linphone_chat_message_set_to_address(msg, addr)
 
@@ -419,7 +343,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_to_address(LinphoneChatMessage* m
  * @param[in] message #LinphoneChatMessage obj
  * @return #LinphoneAddress
  */
-LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMessage* message);
 
 /**
  * Get if the message was encrypted when transfered
@@ -433,7 +357,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_is_secured(LinphoneChatMessage *msg
  * @param message #LinphoneChatMessage
  * @return external body url or NULL if not present.
  */
-LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
 
 /**
  * Linphone message can carry external body as defined by rfc2017
@@ -441,7 +365,7 @@ LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const Li
  * @param message a LinphoneChatMessage
  * @param url ex: access-type=URL; URL="http://www.foo.com/file"
  */
-LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
+LINPHONE_PUBLIC void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
 
 /**
  * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
@@ -449,7 +373,7 @@ LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMes
  * @param message #LinphoneChatMessage
  * @return a pointer to the LinphoneContent structure or NULL if not present.
  */
-LINPHONE_PUBLIC	const LinphoneContent* linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const LinphoneContent* linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage* message);
 
 /**
  * Get the content type of a chat message.
@@ -494,7 +418,7 @@ LINPHONE_PUBLIC void linphone_chat_message_cancel_file_transfer(LinphoneChatMess
  * @param message #LinphoneChatMessage
  * @return the application-specific data or NULL if none has been stored.
  */
-LINPHONE_PUBLIC	const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message);
 
 /**
  * Linphone message has an app-specific field that can store a text. The application might want
@@ -506,42 +430,42 @@ LINPHONE_PUBLIC	const char* linphone_chat_message_get_appdata(const LinphoneChat
  * @param message #LinphoneChatMessage
  * @param data the data to store into the message
  */
-LINPHONE_PUBLIC	void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data);
+LINPHONE_PUBLIC void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data);
 
 /**
  * Get text part of this message
  * @return text or NULL if no text.
  */
-LINPHONE_PUBLIC	const char* linphone_chat_message_get_text(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const char* linphone_chat_message_get_text(const LinphoneChatMessage* message);
 
 /**
  * Get the time the message was sent.
  */
-LINPHONE_PUBLIC	time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
 
 /**
  * User pointer get function
  */
-LINPHONE_PUBLIC	void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 
 /**
  *User pointer set function
  */
-LINPHONE_PUBLIC	void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
+LINPHONE_PUBLIC void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
 
 /**
  * Returns the chatroom this message belongs to.
 **/
 LINPHONE_PUBLIC LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
 
-LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
+LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
 
 /**
  * Returns the origin address of a message if it was a outgoing message, or the destination address if it was an incoming message.
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneAddress
  */
-LINPHONE_PUBLIC	LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage* message);
 
 /**
  * Add custom headers to the message.
@@ -549,21 +473,21 @@ LINPHONE_PUBLIC	LinphoneAddress *linphone_chat_message_get_local_address(const L
  * @param header_name name of the header
  * @param header_value header value
 **/
-LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value);
+LINPHONE_PUBLIC void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value);
 
 /**
  * Retrieve a custom header value given its name.
  * @param message the message
  * @param header_name header name searched
 **/
-LINPHONE_PUBLIC	const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
+LINPHONE_PUBLIC const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
 
 /**
  * Removes a custom header from the message.
  * @param msg the message
  * @param header_name name of the header to remove
 **/
-LINPHONE_PUBLIC	void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name);
+LINPHONE_PUBLIC void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name);
 
 /**
  * Returns TRUE if the message has been read, otherwise returns FALSE.
@@ -622,7 +546,7 @@ LINPHONE_PUBLIC int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint
  * @param[in] cm LinphoneChatMessage object
  * @return The message identifier.
  */
-LINPHONE_PUBLIC	const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *cm);
+LINPHONE_PUBLIC const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *cm);
 
 /**
  * get Curent Call associated to this chatroom if any
@@ -631,7 +555,6 @@ LINPHONE_PUBLIC	const char* linphone_chat_message_get_message_id(const LinphoneC
  * @returns LinphoneCall or NULL.
  */
 LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room);
-
 
 /**
  * Get the LinphoneChatMessageCbs object associated with the LinphoneChatMessage.

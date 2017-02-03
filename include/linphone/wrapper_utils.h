@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _WRAPPER_UTILS_H
 #define _WRAPPER_UTILS_H
 
-#include "chat.h"
+#include "linphone/types.h"
 
 #ifdef __cplusplus
 extern "C" {

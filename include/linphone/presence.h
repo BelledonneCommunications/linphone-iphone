@@ -1,5 +1,5 @@
 /*
-linphonepresence.h
+presence.h
 Copyright (C) 2010-2013  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
@@ -17,8 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LINPHONEPRESENCE_H_
-#define LINPHONEPRESENCE_H_
+#ifndef LINPHONE_PRESENCE_H_
+#define LINPHONE_PRESENCE_H_
+
+
+#include "linphone/types.h"
 
 
 #ifdef __cplusplus
@@ -30,167 +33,6 @@ extern "C" {
  * @addtogroup buddy_list
  * @{
  */
-
-
-/** Basic status as defined in section 4.1.4 of RFC 3863 */
-typedef enum LinphonePresenceBasicStatus {
-	/** This value means that the associated contact element, if any, is ready to accept communication. */
-	LinphonePresenceBasicStatusOpen,
-
-	/** This value means that the associated contact element, if any, is unable to accept communication. */
-	LinphonePresenceBasicStatusClosed
-} LinphonePresenceBasicStatus;
-
-/** Activities as defined in section 3.2 of RFC 4480 */
-typedef enum LinphonePresenceActivityType {
-	/** This value is not defined in the RFC, it corresponds to no activity with a basic status of "closed". */
-	LinphonePresenceActivityOffline,
-
-	/** This value is not defined in the RFC, it corresponds to no activity with a basic status of "open". */
-	LinphonePresenceActivityOnline,
-
-	/** The person has a calendar appointment, without specifying exactly of what type. This activity is
-	 *  indicated if more detailed information is not available or the person chooses not to reveal more
-	 * information. */
-	LinphonePresenceActivityAppointment,
-
-	/** The person is physically away from all interactive communication devices. */
-	LinphonePresenceActivityAway,
-
-	/** The person is eating the first meal of the day, usually eaten in the morning. */
-	LinphonePresenceActivityBreakfast,
-
-	/** The person is busy, without further details. */
-	LinphonePresenceActivityBusy,
-
-	/** The person is having his or her main meal of the day, eaten in the evening or at midday. */
-	LinphonePresenceActivityDinner,
-
-	/**  This is a scheduled national or local holiday. */
-	LinphonePresenceActivityHoliday,
-
-	/** The person is riding in a vehicle, such as a car, but not steering. */
-	LinphonePresenceActivityInTransit,
-
-	/** The person is looking for (paid) work. */
-	LinphonePresenceActivityLookingForWork,
-
-	/** The person is eating his or her midday meal. */
-	LinphonePresenceActivityLunch,
-
-	/** The person is scheduled for a meal, without specifying whether it is breakfast, lunch, or dinner,
-	 *  or some other meal. */
-	LinphonePresenceActivityMeal,
-
-	/** The person is in an assembly or gathering of people, as for a business, social, or religious purpose.
-	 *  A meeting is a sub-class of an appointment. */
-	LinphonePresenceActivityMeeting,
-
-	/** The person is talking on the telephone. */
-	LinphonePresenceActivityOnThePhone,
-
-	/** The person is engaged in an activity with no defined representation. A string describing the activity
-	 *  in plain text SHOULD be provided. */
-	LinphonePresenceActivityOther,
-
-	/** A performance is a sub-class of an appointment and includes musical, theatrical, and cinematic
-	 *  performances as well as lectures. It is distinguished from a meeting by the fact that the person
-	 *  may either be lecturing or be in the audience, with a potentially large number of other people,
-	 *  making interruptions particularly noticeable. */
-	LinphonePresenceActivityPerformance,
-
-	/** The person will not return for the foreseeable future, e.g., because it is no longer working for
-	 *  the company. */
-	LinphonePresenceActivityPermanentAbsence,
-
-	/** The person is occupying himself or herself in amusement, sport, or other recreation. */
-	LinphonePresenceActivityPlaying,
-
-	/** The person is giving a presentation, lecture, or participating in a formal round-table discussion. */
-	LinphonePresenceActivityPresentation,
-
-	/** The person is visiting stores in search of goods or services. */
-	LinphonePresenceActivityShopping,
-
-	/** The person is sleeping.*/
-	LinphonePresenceActivitySleeping,
-
-	/** The person is observing an event, such as a sports event. */
-	LinphonePresenceActivitySpectator,
-
-	/** The person is controlling a vehicle, watercraft, or plane. */
-	LinphonePresenceActivitySteering,
-
-	/** The person is on a business or personal trip, but not necessarily in-transit. */
-	LinphonePresenceActivityTravel,
-
-	/** The person is watching television. */
-	LinphonePresenceActivityTV,
-
-	/** The activity of the person is unknown. */
-	LinphonePresenceActivityUnknown,
-
-	/** A period of time devoted to pleasure, rest, or relaxation. */
-	LinphonePresenceActivityVacation,
-
-	/** The person is engaged in, typically paid, labor, as part of a profession or job. */
-	LinphonePresenceActivityWorking,
-
-	/** The person is participating in religious rites. */
-	LinphonePresenceActivityWorship
-} LinphonePresenceActivityType;
-
-/**
- * Structure holding the information about the presence of a person.
- */
-struct _LinphonePresenceModel;
-
-/**
- * Presence model type holding information about the presence of a person.
- */
-typedef struct _LinphonePresenceModel LinphonePresenceModel;
-
-/**
- * Structure holding the information about a presence service.
- */
-struct _LinphonePresenceService;
-
-/**
- * Structure holding the information about a presence person.
- */
-struct _LinphonePresencePerson;
-
-/**
- * Presence person holding information about a presence person.
- */
-typedef struct _LinphonePresencePerson LinphonePresencePerson;
-
-/**
- * Presence service type holding information about a presence service.
- */
-typedef struct _LinphonePresenceService LinphonePresenceService;
-
-/**
- * Structure holding the information about a presence activity.
- */
-struct _LinphonePresenceActivity;
-
-/**
- * Presence activity type holding information about a presence activity.
- */
-typedef struct _LinphonePresenceActivity LinphonePresenceActivity;
-
-/**
- * Structure holding the information about a presence note.
- */
-struct _LinphonePresenceNote;
-
-/**
- * Presence note type holding information about a presence note.
- */
-typedef struct _LinphonePresenceNote LinphonePresenceNote;
-
-
 
 /*****************************************************************************
  * HELPER FUNCTIONS TO EASE ACCESS IN MOST SIMPLER CASES                     *
@@ -268,6 +110,7 @@ LINPHONE_PUBLIC int linphone_presence_model_set_contact(LinphonePresenceModel *m
  * @return 0 if successful, a value < 0 in case of error.
  */
 LINPHONE_PUBLIC int linphone_presence_model_set_presentity(LinphonePresenceModel *model, const LinphoneAddress *presentity);
+
 /**
  * Gets the presentity of a presence model.
  * @param[in] model The #LinphonePresenceModel object to get the contact from.
@@ -881,73 +724,6 @@ LINPHONE_PUBLIC void linphone_presence_note_set_user_data(LinphonePresenceNote *
  */
 LINPHONE_PUBLIC void * linphone_presence_note_get_user_data(const LinphonePresenceNote *note);
 
-
-/*****************************************************************************
- * LINPHONE CORE FUNCTIONS RELATED TO PRESENCE                               *
- ****************************************************************************/
-
-/**
- * Create a LinphonePresenceActivity with the given type and description.
- * @param[in] lc #LinphoneCore object.
- * @param[in] acttype The #LinphonePresenceActivityType to set for the activity.
- * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
- * @return The created #LinphonePresenceActivity object.
- */
-LINPHONE_PUBLIC LinphonePresenceActivity * linphone_core_create_presence_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description);
-
-/**
- * Create a default LinphonePresenceModel.
- * @param[in] lc #LinphoneCore object.
- * @return The created #LinphonePresenceModel object.
- */
-LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model(LinphoneCore *lc);
-
-/**
- * Create a LinphonePresenceModel with the given activity type and activity description.
- * @param[in] lc #LinphoneCore object.
- * @param[in] acttype The #LinphonePresenceActivityType to set for the activity of the created model.
- * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
- * @return The created #LinphonePresenceModel object.
- */
-LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description);
-
-/**
- * Create a LinphonePresenceModel with the given activity type, activity description, note content and note language.
- * @param[in] lc #LinphoneCore object.
- * @param[in] acttype The #LinphonePresenceActivityType to set for the activity of the created model.
- * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
- * @param[in] note The content of the note to be added to the created model.
- * @param[in] lang The language of the note to be added to the created model.
- * @return The created #LinphonePresenceModel object.
- */
-LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with_activity_and_note(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description, const char *note, const char *lang);
-
-/**
- * Create a LinphonePresenceNote with the given content and language.
- * @param[in] lc #LinphoneCore object.
- * @param[in] content The content of the note to be created.
- * @param[in] lang The language of the note to be created.
- * @return The created #LinphonePresenceNote object.
- */
-LINPHONE_PUBLIC LinphonePresenceNote * linphone_core_create_presence_note(LinphoneCore *lc, const char *content, const char *lang);
-
-/**
- * Create a LinphonePresencePerson with the given id.
- * @param[in] lc #LinphoneCore object
- * @param[in] id The id of the person to be created.
- * @return The created #LinphonePresencePerson object.
- */
-LINPHONE_PUBLIC LinphonePresencePerson * linphone_core_create_presence_person(LinphoneCore *lc, const char *id);
-
-/**
- * Create a LinphonePresenceService with the given id, basic status and contact.
- * @param[in] lc #LinphoneCore object.
- * @param[in] id The id of the service to be created.
- * @param[in] basic_status The basic status of the service to be created.
- * @param[in] contact A string containing a contact information corresponding to the service to be created.
- * @return The created #LinphonePresenceService object.
- */
-LINPHONE_PUBLIC LinphonePresenceService * linphone_core_create_presence_service(LinphoneCore *lc, const char *id, LinphonePresenceBasicStatus basic_status, const char *contact);
 
 /**
  * @}

@@ -16,8 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef RINGPLAYER_H
-#define RINGPLAYER_H
+
+#ifndef LINPHONE_RINGTONEPLAYER_H
+#define LINPHONE_RINGTONEPLAYER_H
+
+#include "linphone/types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef void (*LinphoneRingtonePlayerFunc)(LinphoneRingtonePlayer* rp, void* user_data, int status);
 
@@ -41,4 +48,8 @@ LINPHONE_PUBLIC int linphone_ringtoneplayer_start_with_cb(MSFactory *factory, Li
 LINPHONE_PUBLIC bool_t linphone_ringtoneplayer_is_started(LinphoneRingtonePlayer* rp);
 LINPHONE_PUBLIC int linphone_ringtoneplayer_stop(LinphoneRingtonePlayer* rp);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* LINPHONE_RINGTONEPLAYER_H */

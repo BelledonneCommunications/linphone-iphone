@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_IM_NOTIF_POLICY_H_
 
 
+#include "linphone/types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,13 +33,6 @@ extern "C" {
  * @addtogroup chatroom
  * @{
  */
-
-/**
- * Policy to use to send/receive instant messaging composing/delivery/display notifications.
- * The sending of this information is done as in the RFCs 3994 (is_composing) and 5438 (imdn delivered/displayed).
- */
-typedef struct _LinphoneImNotifPolicy LinphoneImNotifPolicy;
-
 
 /**
  * Acquire a reference to the LinphoneImNotifPolicy object.
@@ -160,13 +156,6 @@ LINPHONE_PUBLIC bool_t linphone_im_notif_policy_get_recv_imdn_displayed(const Li
  * @param[in] enable Boolean value telling whether to notify received imdn displayed notifications.
  */
 LINPHONE_PUBLIC void linphone_im_notif_policy_set_recv_imdn_displayed(LinphoneImNotifPolicy *policy, bool_t enable);
-
-/**
- * Get the LinphoneImNotifPolicy object controlling the instant messaging notifications.
- * @param[in] lc LinphoneCore object
- * @return A LinphoneImNotifPolicy object.
- */
-LINPHONE_PUBLIC LinphoneImNotifPolicy * linphone_core_get_im_notif_policy(const LinphoneCore *lc);
 
 /**
  * @}

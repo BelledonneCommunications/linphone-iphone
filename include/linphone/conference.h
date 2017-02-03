@@ -23,10 +23,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONFERENCE_H
-#define CONFERENCE_H
+#ifndef LINPHONE_CONFERENCE_H
+#define LINPHONE_CONFERENCE_H
 	
-#include "linphonecore.h"
+#include "linphone/types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,21 +36,6 @@ extern "C" {
  * @addtogroup call_control
  * @{
  */
-
-/**
- * LinphoneConference class
- * The _LinphoneConference struct does not exists, it's the Conference C++ class that is used behind
- */
-typedef struct _LinphoneConference LinphoneConference;
-
-/**
- * Parameters for initialization of conferences
- * The _LinphoneConferenceParams struct does not exists, it's the ConferenceParams C++ class that is used behind
- */
-typedef struct _LinphoneConferenceParams LinphoneConferenceParams;
-
-
-
 
 /**
  * Create a #LinphoneConferenceParams with default parameters set.
@@ -86,9 +71,6 @@ LINPHONE_PUBLIC void linphone_conference_params_enable_video(LinphoneConferenceP
 LINPHONE_PUBLIC bool_t linphone_conference_params_video_requested(const LinphoneConferenceParams *params);
 
 
-
-
-
 /**
  * Remove a participant from a conference
  * @param obj A #LinphoneConference
@@ -115,4 +97,4 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_conference_get_participants(const Linphon
 }
 #endif
 
-#endif // CONFERENCE_H
+#endif // LINPHONE_CONFERENCE_H

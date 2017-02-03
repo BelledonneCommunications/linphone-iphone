@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_NAT_POLICY_H_
 
 
+#include "linphone/types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,12 +33,6 @@ extern "C" {
  * @addtogroup network_parameters
  * @{
  */
-
-/**
- * Policy to use to pass through NATs/firewalls.
- */
-typedef struct _LinphoneNatPolicy LinphoneNatPolicy;
-
 
 /**
  * Acquire a reference to the LinphoneNatPolicy object.
@@ -177,21 +174,6 @@ LINPHONE_PUBLIC void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *
  * @return addrinfo representation of the STUN server address.
  */
 LINPHONE_PUBLIC const struct addrinfo * linphone_nat_policy_get_stun_server_addrinfo(LinphoneNatPolicy *policy);
-
-/**
- * Create a new LinphoneNatPolicy object with every policies being disabled.
- * @param[in] lc LinphoneCore object
- * @return A new LinphoneNatPolicy object.
- */
-LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_create_nat_policy(LinphoneCore *lc);
-
-/**
- * Create a new LinphoneNatPolicy by reading the config of a LinphoneCore according to the passed ref.
- * @param[in] lc LinphoneCore object
- * @param[in] ref The reference of a NAT policy in the config of the LinphoneCore
- * @return A new LinphoneNatPolicy object.
- */
-LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_create_nat_policy_from_config(LinphoneCore *lc, const char *ref);
 
 /**
  * @}

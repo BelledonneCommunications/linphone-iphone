@@ -19,6 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_PROXY_CONFIG_H
 #define LINPHONE_PROXY_CONFIG_H
 
+#include "linphone/types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @addtogroup proxies
  * @{
@@ -382,7 +388,9 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphonePr
 LINPHONE_PUBLIC void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 
 LINPHONE_PUBLIC void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
+
 LINPHONE_PUBLIC SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
+
 LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
 
 /**
@@ -526,7 +534,6 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig
 **/
 LINPHONE_PUBLIC const LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg);
 
-
 /**
  * Get the persistent reference key associated to the proxy config.
  *
@@ -570,5 +577,9 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *c
 /**
  * @}
  */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

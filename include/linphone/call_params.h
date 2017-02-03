@@ -21,42 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __LINPHONE_CALL_PARAMS_H__
 #define __LINPHONE_CALL_PARAMS_H__
 
+
+#include "linphone/types.h"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @addtogroup call_control
  * @{
 **/
-
-
-/*******************************************************************************
- * Structures and enums                                                        *
- ******************************************************************************/
-/**
- * Indicates for a given media the stream direction
- * */
-enum _LinphoneMediaDirection {
-	LinphoneMediaDirectionInvalid = -1,
-	LinphoneMediaDirectionInactive, /** No active media not supported yet*/
-	LinphoneMediaDirectionSendOnly, /** Send only mode*/
-	LinphoneMediaDirectionRecvOnly, /** recv only mode*/
-	LinphoneMediaDirectionSendRecv, /** send receive*/
-};
-/**
- * Typedef for enum
-**/
-typedef enum _LinphoneMediaDirection LinphoneMediaDirection;
-
-/**
- * Private structure definition for LinphoneCallParams.
-**/
-struct _LinphoneCallParams;
-
-/**
- * The LinphoneCallParams is an object containing various call related parameters.
- * It can be used to retrieve parameters from a currently running call or modify
- * the call's characteristics dynamically.
-**/
-typedef struct _LinphoneCallParams LinphoneCallParams;
-
 
 /*******************************************************************************
  * Public functions                                                            *
@@ -468,10 +444,12 @@ LINPHONE_PUBLIC void linphone_call_params_clear_custom_sdp_media_attributes(Linp
 **/
 LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_call_params_destroy(LinphoneCallParams *cp);
 
-
 /**
  * @}
 **/
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __LINPHONE_CALL_PARAMS_H__ */

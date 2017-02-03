@@ -35,6 +35,7 @@ set(HEADER_FILES
 	content.h
 	core.h
 	core_utils.h
+	defs.h
 	dictionary.h
 	error_info.h
 	event.h
@@ -43,9 +44,13 @@ set(HEADER_FILES
 	friendlist.h
 	im_encryption_engine.h
 	im_notif_policy.h
+	info_message.h
 	ldapprovider.h
 	lpconfig.h
+	misc.h
 	nat_policy.h
+	payload_type.h
+	player.h
 	presence.h
 	proxy_config.h
 	ringtoneplayer.h

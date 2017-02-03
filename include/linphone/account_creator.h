@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_ACCOUNT_CREATOR_H_
 #define LINPHONE_ACCOUNT_CREATOR_H_
 
-#include "linphonecore.h"
+#include "linphone/types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,63 +30,6 @@ extern "C" {
  * @addtogroup misc
  * @{
  */
-
-/**
-* Enum describing the status of a LinphoneAccountCreator operation.
-**/
-typedef enum _LinphoneAccountCreatorStatus {
-	LinphoneAccountCreatorOK,
-	LinphoneAccountCreatorReqFailed,
-
-	LinphoneAccountCreatorAccountCreated,
-	LinphoneAccountCreatorAccountNotCreated,
-
-	LinphoneAccountCreatorAccountExist,
-	LinphoneAccountCreatorAccountExistWithAlias,
-	LinphoneAccountCreatorAccountNotExist,
-
-	LinphoneAccountCreatorAccountActivated,
-	LinphoneAccountCreatorAccountAlreadyActivated,
-	LinphoneAccountCreatorAccountNotActivated,
-
-	LinphoneAccountCreatorAccountLinked,
-	LinphoneAccountCreatorAccountNotLinked,
-
-	LinphoneAccountCreatorEmailInvalid,
-
-	LinphoneAccountCreatorUsernameInvalid,
-	LinphoneAccountCreatorUsernameTooShort,
-	LinphoneAccountCreatorUsernameTooLong,
-	LinphoneAccountCreatorUsernameInvalidSize,
-
-	LinphoneAccountCreatorPhoneNumberInvalid,
-	LinphoneAccountCreatorPhoneNumberTooShort,
-	LinphoneAccountCreatorPhoneNumberTooLong,
-	LinphoneAccountCreatorPhoneNumberUsedAccount,
-	LinphoneAccountCreatorPhoneNumberUsedAlias,
-	LinphoneAccountCreatorPhoneNumberNotUsed,
-
-	LinphoneAccountCreatorPasswordTooShort,
-	LinphoneAccountCreatorPasswordTooLong,
-
-	LinphoneAccountCreatorDomainInvalid,
-	LinphoneAccountCreatorRouteInvalid,
-	LinphoneAccountCreatorDisplayNameInvalid,
-	LinphoneAccountCreatorTransportNotSupported,
-	LinphoneAccountCreatorCountryCodeInvalid,
-
-	LinphoneAccountCreatorErrorServer,
-} LinphoneAccountCreatorStatus;
-
-/**
- * The LinphoneAccountCreator object used to create an account on a server via XML-RPC.
-**/
-typedef struct _LinphoneAccountCreator LinphoneAccountCreator;
-
-/**
- * An object to handle the callbacks for handling the LinphoneAccountCreator operations.
-**/
-typedef struct _LinphoneAccountCreatorCbs LinphoneAccountCreatorCbs;
 
 /**
  * Callback to notify a status change of the account creator.
@@ -514,6 +457,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_g
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_is_phone_number_used(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
 
 LINPHONE_PUBLIC void linphone_account_creator_cbs_set_recover_phone_account(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsStatusCb cb);
+
 LINPHONE_PUBLIC LinphoneAccountCreatorCbsStatusCb linphone_account_creator_cbs_get_recover_phone_account(const LinphoneAccountCreatorCbs *cbs);
 
 /**

@@ -20,17 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_IM_ENCRYPTION_ENGINE_H
 #define LINPHONE_IM_ENCRYPTION_ENGINE_H
 
-#include <mediastreamer2/mscommon.h>
+#include "linphone/types.h"
 
 /**
  * @addtogroup misc
  * @{
  */
-
-/**
- * IM encryption engine.
- */
-typedef struct _LinphoneImEncryptionEngine LinphoneImEncryptionEngine;
 
 /**
  * Callback to decrypt incoming LinphoneChatMessage
@@ -89,11 +84,6 @@ typedef int (*LinphoneImEncryptionEngineCbsDownloadingFileCb)(LinphoneImEncrypti
  * @return -1 if nothing to be done, 0 on success or an integer > 0 for error
 */
 typedef int (*LinphoneImEncryptionEngineCbsUploadingFileCb)(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer);
-
-/**
- * An object to handle the callbacks for the handling a LinphoneImEncryptionEngine object.
- */
-typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 
 /**
  * Acquire a reference to the LinphoneImEncryptionEngineCbs.

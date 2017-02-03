@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_BUFFER_H_
 
 
+#include "linphone/types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,12 +33,6 @@ extern "C" {
  * @addtogroup misc
  * @{
  */
-
-/**
- * The LinphoneContent object representing a data buffer.
-**/
-typedef struct _LinphoneBuffer LinphoneBuffer;
-
 
 /**
  * Create a new empty LinphoneBuffer object.

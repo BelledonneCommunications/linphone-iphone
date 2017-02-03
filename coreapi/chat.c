@@ -1546,18 +1546,6 @@ unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage *msg) {
 }
 
 LinphoneChatMessage *linphone_chat_message_clone(const LinphoneChatMessage *msg) {
-	/*struct _LinphoneChatMessage {
-	 char* msg;
-	 LinphoneChatRoom* chat_room;
-	 LinphoneChatMessageStateChangeCb cb;
-	 void* cb_ud;
-	 void* message_userdata;
-	 char* external_body_url;
-	 LinphoneAddress* from;
-	 time_t time;
-	 SalCustomHeader *custom_headers;
-	 LinphoneChatMessageState state;
-	 };*/
 	LinphoneChatMessage *new_message = linphone_chat_room_create_message(msg->chat_room, msg->message);
 	if (msg->external_body_url)
 		new_message->external_body_url = ms_strdup(msg->external_body_url);

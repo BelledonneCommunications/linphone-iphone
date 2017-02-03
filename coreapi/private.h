@@ -37,6 +37,7 @@
 #include "linphone/ringtoneplayer.h"
 #include "vcard_private.h"
 #include "carddav.h"
+#include "linphone/player.h"
 
 #include "bctoolbox/port.h"
 #include "bctoolbox/map.h"
@@ -392,7 +393,6 @@ void linphone_call_set_symmetric_rtp(LinphoneCall *call, bool_t val);
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *local, LinphoneAddress * remote);
 void linphone_call_log_completed(LinphoneCall *call);
-void linphone_call_log_destroy(LinphoneCallLog *cl);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 void linphone_call_refresh_sockets(LinphoneCall *call);
@@ -407,7 +407,8 @@ void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const S
 void linphone_call_params_set_custom_sdp_attributes(LinphoneCallParams *params, const SalCustomSdpAttribute *csa);
 void linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa);
 
-void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
+void linphone_auth_info_write_config(LinphoneConfig *config, LinphoneAuthInfo *obj, int pos);
+LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);
 void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai);
 const LinphoneAuthInfo *_linphone_core_find_tls_auth_info(LinphoneCore *lc);
 const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain, bool_t ignore_realm);
@@ -542,7 +543,7 @@ bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescr
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
-void linphone_friend_write_to_config_file(struct _LpConfig *config, LinphoneFriend *lf, int index);
+void linphone_friend_write_to_config_file(LinphoneConfig *config, LinphoneFriend *lf, int index);
 LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, int index);
 
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
@@ -552,7 +553,7 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result);
 LINPHONE_PUBLIC void linphone_core_get_local_ip(LinphoneCore *lc, int af, const char *dest, char *result);
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc, int index);
-void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
+void linphone_proxy_config_write_to_config_file(LinphoneConfig* config,LinphoneProxyConfig *obj, int index);
 
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call);
@@ -965,6 +966,10 @@ struct _LinphoneCoreCbs {
 
 void _linphone_core_cbs_set_v_table(LinphoneCoreCbs *cbs, LinphoneCoreVTable *vtable, bool_t autorelease);
 
+typedef struct _LCCallbackObj {
+	LinphoneCoreCbFunc _func;
+	void *_user_data;
+} LCCallbackObj;
 
 struct _LinphoneCore
 {

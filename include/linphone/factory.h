@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_FACTORY_H
 #define LINPHONE_FACTORY_H
 
-#include "linphone/core.h"
+#include "linphone/types.h"
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -30,12 +30,6 @@ extern "C" {
  * @addtogroup initializing
  * @{
  */
-
-/**
- * #LinphoneFactory is a singleton object devoted to the creation of all the object
- * of Liblinphone that cannot created by #LinphoneCore or #LinphoneCore itself.
- */
-typedef struct _LinphoneFactory LinphoneFactory;
 
 /**
  * Create the #LinphoneFactory if that has not been done and return
@@ -128,7 +122,7 @@ LINPHONE_PUBLIC LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *fa
  * @}
  */
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

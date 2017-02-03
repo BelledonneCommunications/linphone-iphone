@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_XMLRPC_H_
 
 
+#include "linphone/types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,39 +33,6 @@ extern "C" {
  * @addtogroup misc
  * @{
  */
-
-/**
-* Enum describing the types of argument for LinphoneXmlRpcRequest.
-**/
-typedef enum _LinphoneXmlRpcArgType {
-	LinphoneXmlRpcArgNone,
-	LinphoneXmlRpcArgInt,
-	LinphoneXmlRpcArgString
-} LinphoneXmlRpcArgType;
-
-/**
-* Enum describing the status of a LinphoneXmlRpcRequest.
-**/
-typedef enum _LinphoneXmlRpcStatus {
-	LinphoneXmlRpcStatusPending,
-	LinphoneXmlRpcStatusOk,
-	LinphoneXmlRpcStatusFailed
-} LinphoneXmlRpcStatus;
-
-/**
- * The LinphoneXmlRpcRequest object representing a XML-RPC request to be sent.
-**/
-typedef struct _LinphoneXmlRpcRequest LinphoneXmlRpcRequest;
-
-/**
- * An object to handle the callbacks for handling the LinphoneXmlRpcRequest operations.
-**/
-typedef struct _LinphoneXmlRpcRequestCbs LinphoneXmlRpcRequestCbs;
-
-/**
- * The LinphoneXmlRpcSession object used to send XML-RPC requests and handle their responses.
-**/
-typedef struct _LinphoneXmlRpcSession LinphoneXmlRpcSession;
 
 /**
  * Callback used to notify the response to an XML-RPC request.
@@ -163,7 +133,6 @@ LINPHONE_PUBLIC int linphone_xml_rpc_request_get_int_response(const LinphoneXmlR
 **/
 LINPHONE_PUBLIC const char * linphone_xml_rpc_request_get_string_response(const LinphoneXmlRpcRequest *request);
 
-
 /**
  * Create a new LinphoneXmlRpcSession object.
  * @param[in] core The LinphoneCore object used to send the XML-RPC requests.
@@ -207,13 +176,11 @@ LINPHONE_PUBLIC void linphone_xml_rpc_session_set_user_data(LinphoneXmlRpcSessio
 **/
 LINPHONE_PUBLIC void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcRequest *request);
 
-
 /**
  * Stop and unref an XML rpc session. Pending requests will be aborted.
  * @param[in] session LinphoneXmlRpcSession object.
 **/
 LINPHONE_PUBLIC void linphone_xml_rpc_session_release(LinphoneXmlRpcSession *session);
-
 
 /**
  * Acquire a reference to a LinphoneXmlRpcRequestCbs object.

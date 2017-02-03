@@ -17,16 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LINPHONECORE_UTILS_H
-#define LINPHONECORE_UTILS_H
+#ifndef LINPHONE_CORE_UTILS_H_
+#define LINPHONE_CORE_UTILS_H_
 
-#include "linphone/core.h"
+
+#include "linphone/types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct _LsdPlayer LsdPlayer;
-typedef struct _LinphoneSoundDaemon LinphoneSoundDaemon;
 
 typedef void (*LsdEndOfPlayCallback)(LsdPlayer *p);
 
@@ -47,16 +47,6 @@ LINPHONE_PUBLIC void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon 
 LINPHONE_PUBLIC void linphone_sound_daemon_release_all_players(LinphoneSoundDaemon *obj);
 LINPHONE_PUBLIC void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSoundDaemon *lsd);
 LINPHONE_PUBLIC void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
-
-/**
- * Enum describing the result of the echo canceller calibration process.
-**/
-typedef enum {
-	LinphoneEcCalibratorInProgress,	/**< The echo canceller calibration process is on going. */
-	LinphoneEcCalibratorDone,	/**< The echo canceller calibration has been performed and produced an echo delay measure. */
-	LinphoneEcCalibratorFailed,	/**< The echo canceller calibration process has failed. */
-	LinphoneEcCalibratorDoneNoEcho	/**< The echo canceller calibration has been performed and no echo has been detected. */
-}LinphoneEcCalibratorStatus;
 
 
 typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
@@ -112,6 +102,7 @@ typedef struct _LinphoneDialPlan {
  *@return call country code or -1 if not found
  */
 LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_iso(const char* iso);
+
 /**
  * @ingroup misc
  *Function to get  call country code from  an e164 number, ex: +33952650121 will return 33
@@ -135,8 +126,7 @@ LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *cc
  * @return Return matching dial plan, or a generic one if none found
  **/
 LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc);
-	
-	
+
 /**
  * Return if given plan is generic
 **/
@@ -145,5 +135,5 @@ LINPHONE_PUBLIC bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc
 #ifdef __cplusplus
 }
 #endif
-#endif
 
+#endif /* LINPHONE_CORE_UTILS_H_ */

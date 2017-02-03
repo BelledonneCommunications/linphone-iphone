@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "sal/sal.h"
 #include <bctoolbox/crypto.h>
 #include "private.h"
+#include "linphone/factory.h"
 #include "linphone/wrapper_utils.h"
 
 #define VCARD_MD5_HASH_SIZE 16
@@ -95,10 +96,6 @@ static LinphoneVcard* _linphone_vcard_new(void) {
 }
 
 LinphoneVcard *linphone_vcard_new(void) {
-	return _linphone_vcard_new();
-}
-
-LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
 	return _linphone_vcard_new();
 }
 

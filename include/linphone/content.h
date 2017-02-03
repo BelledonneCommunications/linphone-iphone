@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_CONTENT_H_
 
 
+#include "linphone/types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,23 +33,6 @@ extern "C" {
  * @addtogroup misc
  * @{
  */
-
-/**
- * The LinphoneContent object holds data that can be embedded in a signaling message.
-**/
-struct _LinphoneContent;
-/**
- * The LinphoneContent object holds data that can be embedded in a signaling message.
-**/
-typedef struct _LinphoneContent LinphoneContent;
-
-
-/**
- * Create a content with default values from Linphone core.
- * @param[in] lc LinphoneCore object
- * @return LinphoneContent object with default values set
- */
-LINPHONE_PUBLIC LinphoneContent * linphone_core_create_content(LinphoneCore *lc);
 
 /**
  * Acquire a reference to the content.

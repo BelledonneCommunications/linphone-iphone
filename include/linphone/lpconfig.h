@@ -25,38 +25,12 @@
 #ifndef LPCONFIG_H
 #define LPCONFIG_H
 
-#include <mediastreamer2/mscommon.h>
-#include <ortp/port.h>
-#include "linphone/dictionary.h"
+#include "linphone/types.h"
 
 /**
  * @addtogroup misc
  * @{
  */
-
-/**
- * The LinphoneConfig object is used to manipulate a configuration file.
- *
- * The format of the configuration file is a .ini like format:
- * - sections are defined in []
- * - each section contains a sequence of key=value pairs.
- *
- * Example:
- * @code
- * [sound]
- * echocanceler=1
- * playback_dev=ALSA: Default device
- *
- * [video]
- * enabled=1
- * @endcode
-**/
-typedef struct _LpConfig LinphoneConfig;
-
-/**
- * Define old struct name for backward compatibility
- */
-#define LpConfig LinphoneConfig
 
 /**
  * Safely downcast a belle_sip_object into LinphoneConfig

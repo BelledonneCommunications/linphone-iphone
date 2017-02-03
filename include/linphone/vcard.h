@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_VCARD_H
 #define LINPHONE_VCARD_H
 
-#include <mediastreamer2/mscommon.h>
+#include "linphone/types.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -31,11 +31,6 @@ extern "C"
  * @addtogroup carddav_vcard
  * @{
  */
-
-/**
- * The LinphoneVcard object.
- */
-typedef struct _LinphoneVcard LinphoneVcard;
 
 /**
  * Cast a belle_sip_object_t into LinphoneVcard.

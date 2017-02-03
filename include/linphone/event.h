@@ -16,82 +16,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LINPHONEEVENT_H
-#define LINPHONEEVENT_H
+
+#ifndef LINPHONE_EVENT_H_
+#define LINPHONE_EVENT_H_
+
+#include "linphone/types.h"
 
 /**
  * @addtogroup event_api
  * @{
 **/
 
-struct _LinphoneEvent;
-
-/**
- * Object representing an event state, which is subcribed or published.
- * @see linphone_core_publish()
- * @see linphone_core_subscribe()
-**/
-typedef struct _LinphoneEvent LinphoneEvent;
-
-/**
- * Enum for subscription direction (incoming or outgoing).
-**/
-enum _LinphoneSubscriptionDir{
-	LinphoneSubscriptionIncoming, /**< Incoming subscription. */
-	LinphoneSubscriptionOutgoing, /**< Outgoing subscription. */
-	LinphoneSubscriptionInvalidDir /**< Invalid subscription direction. */
-};
-
-/**
- * Typedef alias for _LinphoneSubscriptionDir
-**/
-typedef enum _LinphoneSubscriptionDir LinphoneSubscriptionDir;
-
-/**
- * Enum for subscription states.
- * LinphoneSubscriptionTerminated and LinphoneSubscriptionError are final states.
-**/
-enum _LinphoneSubscriptionState{
-	LinphoneSubscriptionNone, /**< Initial state, should not be used.**/
-	LinphoneSubscriptionOutgoingProgress, /**<An outgoing subcription was sent*/
-	LinphoneSubscriptionIncomingReceived, /**<An incoming subcription is received*/
-	LinphoneSubscriptionPending, /**<Subscription is pending, waiting for user approval*/
-	LinphoneSubscriptionActive, /**<Subscription is accepted.*/
-	LinphoneSubscriptionTerminated, /**<Subscription is terminated normally*/
-	LinphoneSubscriptionError, /**<Subscription was terminated by an error, indicated by linphone_event_get_reason().*/
-	LinphoneSubscriptionExpiring, /**<Subscription is about to expire, only sent if [sip]->refresh_generic_subscribe property is set to 0.*/
-};
-
-/**
- * Typedef for subscription state enum.
-**/
-typedef enum _LinphoneSubscriptionState LinphoneSubscriptionState;
-
-LINPHONE_PUBLIC const char *linphone_subscription_state_to_string(LinphoneSubscriptionState state);
-
-/**
- * Enum for publish states.
-**/
-enum _LinphonePublishState{
-	LinphonePublishNone, /**< Initial state, do not use**/
-	LinphonePublishProgress, /**<An outgoing publish was created and submitted*/
-	LinphonePublishOk, /**<Publish is accepted.*/
-	LinphonePublishError, /**<Publish encoutered an error, linphone_event_get_reason() gives reason code*/
-	LinphonePublishExpiring, /**<Publish is about to expire, only sent if [sip]->refresh_generic_publish property is set to 0.*/
-	LinphonePublishCleared /**<Event has been un published*/
-};
-
-/**
- * Typedef for publish state enum
-**/
-typedef enum _LinphonePublishState LinphonePublishState;
-
-LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishState state);
-
 /**
  * Callback prototype for notifying the application about notification received from the network.
 **/
 typedef void (*LinphoneCoreCbsNotifyReceivedCb)(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body);
+
 /**
  * Old name of #LinphoneCoreCbsNotifyReceivedCb.
  */
@@ -101,6 +41,7 @@ typedef LinphoneCoreCbsNotifyReceivedCb LinphoneCoreNotifyReceivedCb;
  * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
 **/
 typedef void (*LinphoneCoreCbsSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
+
 /**
  * Old name of #LinphoneCoreCbsSubscriptionStateChangedCb.
  */
@@ -110,45 +51,11 @@ typedef LinphoneCoreCbsSubscriptionStateChangedCb LinphoneCoreSubscriptionStateC
  * Callback prototype for notifying the application about changes of publish states.
 **/
 typedef void (*LinphoneCoreCbsPublishStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
+
 /**
  * Old name of LinphoneCoreCbsPublishStateChangedCb.
  */
 typedef LinphoneCoreCbsPublishStateChangedCb LinphoneCorePublishStateChangedCb;
-
-/**
- * Create an outgoing subscription, specifying the destination resource, the event name, and an optional content body.
- * If accepted, the subscription runs for a finite period, but is automatically renewed if not terminated before.
- * @param lc the #LinphoneCore
- * @param resource the destination resource
- * @param event the event name
- * @param expires the whished duration of the subscription
- * @param body an optional body, may be NULL.
- * @return a LinphoneEvent holding the context of the created subcription.
-**/
-LINPHONE_PUBLIC LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires, const LinphoneContent *body);
-
-/**
- * Create an outgoing subscription, specifying the destination resource, the event name, and an optional content body.
- * If accepted, the subscription runs for a finite period, but is automatically renewed if not terminated before.
- * Unlike linphone_core_subscribe() the subscription isn't sent immediately. It will be send when calling linphone_event_send_subscribe().
- * @param lc the #LinphoneCore
- * @param resource the destination resource
- * @param event the event name
- * @param expires the whished duration of the subscription
- * @return a LinphoneEvent holding the context of the created subcription.
-**/
-LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires);
-
-
-/**
- * Create an out-of-dialog notification, specifying the destination resource, the event name.
- * The notification can be send with linphone_event_notify().
- * @param lc the #LinphoneCore
- * @param resource the destination resource
- * @param event the event name
- * @return a LinphoneEvent holding the context of the notification.
-**/
-LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_notify(LinphoneCore *lc, const LinphoneAddress *resource, const char *event);
 
 
 /**
@@ -178,10 +85,12 @@ LINPHONE_PUBLIC int linphone_event_refresh_subscribe(LinphoneEvent *lev);
  * Accept an incoming subcription.
 **/
 LINPHONE_PUBLIC int linphone_event_accept_subscription(LinphoneEvent *lev);
+
 /**
  * Deny an incoming subscription with given reason.
 **/
 LINPHONE_PUBLIC int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason);
+
 /**
  * Send a notification.
  * @param lev a #LinphoneEvent corresponding to an incoming subscription previously received and accepted.
@@ -189,45 +98,6 @@ LINPHONE_PUBLIC int linphone_event_deny_subscription(LinphoneEvent *lev, Linphon
  * @return 0 if successful, -1 otherwise.
  **/
 LINPHONE_PUBLIC int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body);
-
-
-/**
- * Publish an event state.
- * This first create a LinphoneEvent with linphone_core_create_publish() and calls linphone_event_send_publish() to actually send it.
- * After expiry, the publication is refreshed unless it is terminated before.
- * @param lc the #LinphoneCore
- * @param resource the resource uri for the event
- * @param event the event name
- * @param expires the lifetime of event being published, -1 if no associated duration, in which case it will not be refreshed.
- * @param body the actual published data
- * @return the LinphoneEvent holding the context of the publish.
-**/
-LINPHONE_PUBLIC LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires, const LinphoneContent *body);
-
-/**
- * Create a publish context for an event state.
- * After being created, the publish must be sent using linphone_event_send_publish().
- * After expiry, the publication is refreshed unless it is terminated before.
- * @param lc the #LinphoneCore
- * @param resource the resource uri for the event
- * @param event the event name
- * @param expires the lifetime of event being published, -1 if no associated duration, in which case it will not be refreshed.
- * @return the LinphoneEvent holding the context of the publish.
-**/
-LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires);
-
-
-/**
- * Create a publish context for a one-shot publish.
- * After being created, the publish must be sent using linphone_event_send_publish().
- * The LinphoneEvent is automatically terminated when the publish transaction is finished, either with success or failure.
- * The application must not call linphone_event_terminate() for such one-shot publish.
- * @param lc the #LinphoneCore
- * @param resource the resource uri for the event
- * @param event the event name
- * @return the LinphoneEvent holding the context of the publish.
-**/
-LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_one_shot_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event);
 
 /**
  * Send a publish created by linphone_core_create_publish().
@@ -318,7 +188,6 @@ LINPHONE_PUBLIC const char *linphone_event_get_custom_header(LinphoneEvent *ev, 
 **/
 LINPHONE_PUBLIC void linphone_event_terminate(LinphoneEvent *lev);
 
-
 /**
  * Increase reference count of LinphoneEvent.
  * By default LinphoneEvents created by the core are owned by the core only.
@@ -359,4 +228,4 @@ LINPHONE_PUBLIC LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev);
 **/
 
 
-#endif
+#endif /* LINPHONE_EVENT_H_ */
