@@ -29,12 +29,10 @@ Enter the Beta :
  - You will receive an invitation code to the beta in the following days via your email associated to your apple-id
  - Enter the invitation code received into TestFlight
  - Download Linphone from TestFlight
- 
- And voilà !
-TestFlight will send you a notification every time a new beta test is available.
+ - And voilà ! TestFlight will send you a notification every time a new beta test is available.
  
 Send a crash report :
-It is done automatically by TestFlight
+ - It is done automatically by TestFlight
  
 Report a bug :
  - Open Linphone
