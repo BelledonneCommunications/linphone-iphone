@@ -24,29 +24,29 @@ If you want to dig through Linphone code or report a bug, please read `CONTRIBUT
 ## How to be a beta tester ?
  
 Enter the Beta :
-	- Download TestFlight from the App Store and log in it with your apple-id
-	- Send an email to linphone-iphone@belledonne-communications.com, with object : [Beta test - Request], where you precise your apple-id you logged in TestFlight with
-	- You will receive an invitation code to the beta in the following days via your email associated to your apple-id
-	- Enter the invitation code received into TestFlight
-	- Download Linphone from TestFlight
+ - Download TestFlight from the App Store and log in it with your apple-id
+ - Send an email to linphone-iphone@belledonne-communications.com, with object : [Beta test - Request], where you precise your apple-id you logged in TestFlight with	
+ - You will receive an invitation code to the beta in the following days via your email associated to your apple-id
+ - Enter the invitation code received into TestFlight
+ - Download Linphone from TestFlight
  
-	And voilà !
-	TestFlight will send you a notification every time a new beta test is available.
+ And voilà !
+ TestFlight will send you a notification every time a new beta test is available.
  
 Send a crash report :
-	It is done automatically by TestFlight
+ It is done automatically by TestFlight
  
 Report a bug :
-	- Open Linphone
-	- Go to Settings —> Advanced —> Send logs
-	- An email to linphone-iphone@belledonne-communications.com is created with your logs attached
-	- Fill in the bug description with :
-		* What you were doing
-		* What happened
-		* What you were expecting
-		* Approximately when the bug happened
-	- Change the object to [Beta test - Bug report]
-	- Send the mail
+ - Open Linphone
+ - Go to Settings —> Advanced —> Send logs
+ - An email to linphone-iphone@belledonne-communications.com is created with your logs attached
+ - Fill in the bug description with :
+	* What you were doing
+	* What happened
+	* What you were expecting
+	* Approximately when the bug happened
+ - Change the object to [Beta test - Bug report]
+ - Send the mail
 
 # Building and customizing the SDK
 
