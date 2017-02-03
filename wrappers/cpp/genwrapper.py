@@ -307,6 +307,8 @@ class CppTranslator(object):
 				return 'cStringToCpp({0})'.format(cExpr)
 			elif exprtype.name == 'string_array':
 				return 'cStringArrayToCppList({0})'.format(cExpr)
+			elif exprtype.name == 'boolean':
+				return '({0} != FALSE)'.format(cExpr)
 			else:
 				return cExpr
 		elif type(exprtype) is AbsApi.EnumType:
