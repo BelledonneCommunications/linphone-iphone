@@ -1691,12 +1691,18 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 	if (call->state!=cstate){
 		call->prevstate=call->state;
+		
+		/*Make sanity checks with call state changes. Any bad transition can result in unpredictable results 
+		 *or irrecoverable errors in the application*/
 		if (call->state==LinphoneCallEnd || call->state==LinphoneCallError){
 			if (cstate!=LinphoneCallReleased){
-				ms_fatal("Spurious call state change from %s to %s, ignored."	,linphone_call_state_to_string(call->state)
+				ms_fatal("Abnormal call resurection from %s to %s, aborting."	,linphone_call_state_to_string(call->state)
 																				,linphone_call_state_to_string(cstate));
 				return;
 			}
+		}else if (cstate == LinphoneCallReleased && (call->prevstate != LinphoneCallError && call->prevstate != LinphoneCallEnd)){
+			ms_fatal("Attempt to move call [%p] to Released state while it was not previously in Error or End state. Aborting.", call);
+			return;
 		}
 		ms_message("Call %p: moving from state %s to %s",call
 														,linphone_call_state_to_string(call->state)
