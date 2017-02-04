@@ -307,8 +307,11 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
 
 		/*remove video*/
+		linphone_call_params_unref(pauline_params);
+		pauline_params=linphone_core_create_call_params(pauline->lc, call_pauline);
 		linphone_call_params_enable_video(pauline_params,FALSE);
 		linphone_core_update_call(pauline->lc,call_pauline,pauline_params);
+		linphone_call_params_unref(pauline_params);
 
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,10000));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,10000));
@@ -321,7 +324,7 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,2,5000));
 	}
 	linphone_call_params_unref(marie_params);
-	linphone_call_params_unref(pauline_params);
+	
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
