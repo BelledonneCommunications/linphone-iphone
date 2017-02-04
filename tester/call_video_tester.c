@@ -1526,12 +1526,22 @@ static void classic_video_entry_phone_setup(void) {
 	linphone_core_set_avpf_mode(callee_mgr->lc, LinphoneAVPFEnabled);
 	linphone_core_set_video_policy(caller_mgr->lc, &vpol);
 	linphone_core_set_video_policy(callee_mgr->lc, &vpol);
+	
+	
 
 	// important: VP8 has really poor performances with the mire camera, at least
 	// on iOS - so when ever h264 is available, let's use it instead
 	if (linphone_core_find_payload_type(caller_mgr->lc,"h264", -1, -1)!=NULL) {
 		disable_all_video_codecs_except_one(caller_mgr->lc,"h264");
 		disable_all_video_codecs_except_one(callee_mgr->lc,"h264");
+		
+		/*On Mac OS, set VGA as the prefered size, otherwise we don't benefit from the hardware
+		 * accelerated H264 videotoolbox codec*/
+		if (ms_factory_get_encoder(linphone_core_get_ms_factory(callee_mgr->lc), "H264")->id == MS_VT_H264_ENC_ID){
+			MSVideoSize vsize = MS_VIDEO_SIZE_VGA;
+			linphone_core_set_preferred_video_size(callee_mgr->lc, vsize);
+			linphone_core_set_preferred_video_size(callee_mgr->lc, vsize);
+		}
 	}
 
 	linphone_core_set_video_device(caller_mgr->lc, liblinphone_tester_mire_id);
