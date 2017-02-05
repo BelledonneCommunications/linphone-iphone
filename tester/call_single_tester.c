@@ -1826,6 +1826,8 @@ static void _call_with_media_relay(bool_t random_ports) {
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
+	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 
 	if (random_ports){
 		linphone_core_set_audio_port(marie->lc,-1);

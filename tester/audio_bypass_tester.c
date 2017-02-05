@@ -135,10 +135,11 @@ static int read_wav_header(PlayerData *d){
 static void audio_bypass_snd_read_preprocess(MSFilter *f) {
 	PlayerData *d=(PlayerData*)f->data;
 	int fd;
-	const char *file=bc_tester_res("sounds/hello44100.wav");
+	char *file=bc_tester_res("sounds/hello44100.wav");
 
 	if ((fd=open(file,O_RDONLY|O_BINARY))==-1){
 		ms_warning("MSFilePlayer[%p]: failed to open %s: %s",f,file,strerror(errno));
+		bc_free(file);
 		return;
 	}
 
@@ -153,6 +154,7 @@ static void audio_bypass_snd_read_preprocess(MSFilter *f) {
 
 	if (d->state==MSPlayerPaused)
 		d->state=MSPlayerPlaying;
+	bc_free(file);
 	return;
 }
 
@@ -307,8 +309,7 @@ static void audio_bypass_snd_write_preprocess(MSFilter *f) {
 }
 
 static void audio_bypass_snd_write_process(MSFilter *f) {
-	mblk_t *m = ms_queue_get(f->inputs[0]);
-	ms_free(m);
+	ms_queue_flush(f->inputs[0]);
 }
 
 static void audio_bypass_snd_write_postprocess(MSFilter *f) {
@@ -432,6 +433,15 @@ static void only_enable_payload(LinphoneCore *lc, const char *mime, int rate, in
 	}
 }
 
+/*
+ * set some conservative jitter buffer params to be more robust to late ticks.
+ * This is important so that the audio comparison is succesful*/
+static void set_jitter_buffer_params(LinphoneCore *lc){
+	int jitter_buffer_ms = 200;
+	lp_config_set_int(lc->config, "rtp", "jitter_buffer_min_size", jitter_buffer_ms);
+	linphone_core_set_audio_jittcomp(lc, jitter_buffer_ms);
+}
+
 static void audio_bypass(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCore *marie_lc = marie->lc;
@@ -473,6 +483,7 @@ static void audio_bypass(void) {
 	BC_ASSERT_STRING_EQUAL(linphone_core_get_playback_device(marie_lc), AUDIO_BYPASS_SOUNDCARD);
 	BC_ASSERT_STRING_EQUAL(linphone_core_get_playback_device(pauline_lc), AUDIO_BYPASS_SOUNDCARD);
 
+	set_jitter_buffer_params(pauline_lc);
 	linphone_core_use_files(pauline_lc, TRUE);
 	linphone_core_set_play_file(pauline_lc, NULL);
 	linphone_core_set_record_file(pauline_lc, recordpath);
@@ -480,10 +491,11 @@ static void audio_bypass(void) {
 	call_ok = call(marie, pauline);
 	BC_ASSERT_TRUE(call_ok);
 	if (!call_ok) goto end;
+	
 
 	BC_ASSERT_STRING_EQUAL(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie_lc)))->mime_type, "L16");
 
-	wait_for_until(pauline_lc, marie_lc, NULL, 0, 4000); //hello44100.wav is 4 seconds long
+	wait_for_until(pauline_lc, marie_lc, NULL, 0, 5000); //hello44100.wav is 4 seconds long
 	end_call(marie, pauline);
 
 	BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, &audio_cmp_params, NULL, NULL), 0, int, "%d");
