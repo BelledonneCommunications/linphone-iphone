@@ -953,4 +953,7 @@ int linphone_chat_room_get_history_size(LinphoneChatRoom *cr){
 	return 0;
 }
 
+void linphone_chat_message_store_update(LinphoneChatMessage *msg){
+}
+
 #endif
