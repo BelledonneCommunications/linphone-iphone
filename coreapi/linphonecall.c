@@ -3177,20 +3177,26 @@ static void linphone_call_set_on_hold_file(LinphoneCall *call, const char *file)
 	}
 }
 
-static void configure_adaptive_rate_control(LinphoneCall *call, MediaStream *ms, bool_t video_will_be_used){
+static void configure_adaptive_rate_control(LinphoneCall *call, MediaStream *ms, PayloadType *pt, bool_t video_will_be_used){
 	LinphoneCore *lc = call->core;
 	bool_t enabled = linphone_core_adaptive_rate_control_enabled(lc);
-	bool_t is_advanced = TRUE;
-	const char *algo = linphone_core_get_adaptive_rate_algorithm(lc);
 
-	if (strcasecmp(algo, "basic") == 0) is_advanced = FALSE;
-	else if (strcasecmp(algo, "advanced") == 0) is_advanced = TRUE;
-
-	if (enabled && is_advanced && !media_stream_avpf_enabled(ms)){
-		ms_warning("Advanced adaptive rate control requested but avpf is not activated. Reverting to basic rate control instead.");
-		is_advanced = TRUE;
-	}
 	if (enabled){
+		const char *algo = linphone_core_get_adaptive_rate_algorithm(lc);
+		bool_t is_advanced = TRUE;
+		if (strcasecmp(algo, "basic") == 0) is_advanced = FALSE;
+		else if (strcasecmp(algo, "advanced") == 0) is_advanced = TRUE;
+		
+		if (is_advanced){
+			/*we can't use media_stream_avpf_enabled() here because the active PayloadType is not set yet in the MediaStream.*/
+			if (!pt || !(pt->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED)){
+				ms_warning("LinphoneCall[%p] - advanced adaptive rate control requested but avpf is not activated in this stream. Reverting to basic rate control instead.", call);
+				is_advanced = FALSE;
+			}else{
+				ms_message("LinphoneCall[%p] - setting up advanced rate control.", call);
+			}
+		}
+		
 		if (is_advanced){
 			ms_bandwidth_controller_add_stream(lc->bw_controller, ms);
 			media_stream_enable_adaptive_bitrate_control(ms, FALSE);
@@ -3288,7 +3294,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			audio_stream_enable_echo_canceller(call->audiostream, use_ec);
 			if (playcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(playcard, stream->max_rate);
 			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
-			configure_adaptive_rate_control(call, (MediaStream*)call->audiostream, video_will_be_used);
 
 			rtp_session_enable_rtcp_mux(call->audiostream->ms.sessions.rtp_session, stream->rtcp_mux);
 			if (!call->params->in_conference && call->params->record_file){
@@ -3309,6 +3314,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			}
 			configure_rtp_session_for_rtcp_fb(call, stream);
 			configure_rtp_session_for_rtcp_xr(lc, call, SalAudio);
+			configure_adaptive_rate_control(call, (MediaStream*)call->audiostream, call->current_params->audio_codec, video_will_be_used);
 			if (is_multicast)
 				rtp_session_set_multicast_ttl(call->audiostream->ms.sessions.rtp_session,stream->ttl);
 
@@ -3462,7 +3468,6 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 			call->current_params->video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			call->current_params->has_video=TRUE;
 
-			configure_adaptive_rate_control(call, (MediaStream*)call->videostream, TRUE);
 			rtp_session_enable_rtcp_mux(call->videostream->ms.sessions.rtp_session, vstream->rtcp_mux);
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
@@ -3515,6 +3520,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 				}
 				configure_rtp_session_for_rtcp_fb(call, vstream);
 				configure_rtp_session_for_rtcp_xr(lc, call, SalVideo);
+				configure_adaptive_rate_control(call, (MediaStream*)call->videostream, call->current_params->video_codec, TRUE);
 
 				call->log->video_enabled = TRUE;
 				video_stream_set_direction (call->videostream, dir);

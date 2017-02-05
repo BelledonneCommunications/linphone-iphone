@@ -139,7 +139,7 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 		pt = (PayloadType *)pt_it->data;
 
-		/* AVPF/SAVPF profile is used so enable AVPF for all paylad types. */
+		/* AVPF/SAVPF profile is used so enable AVPF for all payload types. */
 		payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 		avpf_params = payload_type_get_avpf_params(pt);
 
