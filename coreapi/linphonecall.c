@@ -2531,6 +2531,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 			/*call->current_params.media_encryption will be set later when zrtp is activated*/
 			params.zid_file=lc->zrtp_secrets_cache;
 			params.uri=uri;
+			params.limeKeyTimeSpan = lp_config_get_int(lc->config, "sip", "lime_key_validity", 0); /* get key lifespan from config file, default is 0:forever valid */
 			setZrtpCryptoTypesParameters(&params,call->core);
 			audio_stream_enable_zrtp(call->audiostream,&params);
 			if (uri != NULL) ms_free(uri);

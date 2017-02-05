@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef HAVE_LIME
 #include "private.h"
 #include "bctoolbox/crypto.h"
+#include "bctoolbox/port.h"
 
 #define FILE_TRANSFER_KEY_SIZE 32
 
@@ -34,84 +35,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * @return TRUE when Lime was fully compiled, FALSE when it wasn't
  */
 bool_t lime_is_available(void) { return TRUE; }
-
-/**
- * @brief	convert an hexa char [0-9a-fA-F] into the corresponding unsigned integer value
- * Any invalid char will be converted to zero without any warning
- *
- * @param[in]	inputChar	a char which shall be in range [0-9a-fA-F]
- *
- * @return		the unsigned integer value in range [0-15]
- */
-uint8_t lime_charToByte(uint8_t inputChar) {
-	/* 0-9 */
-	if (inputChar>0x29 && inputChar<0x3A) {
-		return inputChar - 0x30;
-	}
-
-	/* a-f */
-	if (inputChar>0x60 && inputChar<0x67) {
-		return inputChar - 0x57; /* 0x57 = 0x61(a) + 0x0A*/
-	}
-
-	/* A-F */
-	if (inputChar>0x40 && inputChar<0x47) {
-		return inputChar - 0x37; /* 0x37 = 0x41(a) + 0x0A*/
-	}
-
-	/* shall never arrive here, string is not Hex*/
-	return 0;
-
-}
-
-/**
- * @brief	convert a byte which value is in range [0-15] into an hexa char [0-9a-fA-F]
- *
- * @param[in]	inputByte	an integer which shall be in range [0-15]
- *
- * @return		the hexa char [0-9a-f] corresponding to the input
- */
-uint8_t lime_byteToChar(uint8_t inputByte) {
-	inputByte &=0x0F; /* restrict the input value to range [0-15] */
-	/* 0-9 */
-	if(inputByte<0x0A) {
-		return inputByte+0x30;
-	}
-	/* a-f */
-	return inputByte + 0x57;
-}
-
-
-/**
- * @brief Convert an hexadecimal string into the corresponding byte buffer
- *
- * @param[out]	outputBytes			The output bytes buffer, must have a length of half the input string buffer
- * @param[in]	inputString			The input string buffer, must be hexadecimal(it is not checked by function, any non hexa char is converted to 0)
- * @param[in]	inputStringLength	The lenght in chars of the string buffer, output is half this length
- */
-void lime_strToUint8(uint8_t *outputBytes, const uint8_t *inputString, uint16_t inputStringLength) {
-	int i;
-	for (i=0; i<inputStringLength/2; i++) {
-		outputBytes[i] = (lime_charToByte(inputString[2*i]))<<4 | lime_charToByte(inputString[2*i+1]);
-	}
-}
-
-/**
- * @brief Convert a byte buffer into the corresponding hexadecimal string
- *
- * @param[out]	outputString		The output string buffer, must have a length of twice the input bytes buffer
- * @param[in]	inputBytes			The input bytes buffer
- * @param[in]	inputBytesLength	The lenght in bytes buffer, output is twice this length
- */
-void lime_int8ToStr(uint8_t *outputString, uint8_t *inputBytes, uint16_t inputBytesLength) {
-	int i;
-	for (i=0; i<inputBytesLength; i++) {
-		outputString[2*i] = lime_byteToChar((inputBytes[i]>>4)&0x0F);
-		outputString[2*i+1] = lime_byteToChar(inputBytes[i]&0x0F);
-	}
-}
-
-
 
 /**
  * @brief Retrieve selfZID from cache
@@ -158,6 +81,7 @@ static int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]) {
 
 int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys) {
 	xmlNodePtr cur;
+	size_t keysFound = 0; /* used to detect the no key found error because of validity expired */
 
 	/* parse the file to get all peer matching the sipURI given in associatedKeys*/
 	if (cacheBuffer == NULL ) { /* there is no cache return error */
@@ -192,64 +116,93 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 				peerNodeChildren = peerNodeChildren->next;
 			}
 
-			if (matchingURIFlag == 1) { /* we found a match for the URI in this peer node, extract the keys, session Id and index values */
+			if (matchingURIFlag == 1) { /* we found a match for the URI in this peer node, extract the keys, session Id, index values and key validity period */
 				/* allocate a new limeKey_t structure to hold the retreived keys */
 				limeKey_t *currentPeerKeys = (limeKey_t *)malloc(sizeof(limeKey_t));
 				uint8_t itemFound = 0; /* count the item found, we must get all of the requested infos: 5 nodes*/
 				uint8_t pvs = 0;
+				uint8_t keyValidityFound = 0; /* flag raised when we found a key validity in the cache */
+				bctoolboxTimeSpec currentTimeSpec;
+				bctoolboxTimeSpec validityTimeSpec; /* optionnal(backward compatibility) tag for key validity */
+				validityTimeSpec.tv_sec=0;
+				validityTimeSpec.tv_nsec=0;
 
 				peerNodeChildren = cur->xmlChildrenNode; /* reset peerNodeChildren to the first child of node */
-				while (peerNodeChildren!=NULL && itemFound<5) {
+				while (peerNodeChildren!=NULL && itemFound<6) {
 					xmlChar *nodeContent = NULL;
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"ZID")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(currentPeerKeys->peerZID, nodeContent, 24);
+						bctbx_strToUint8(currentPeerKeys->peerZID, nodeContent, 24);
 						itemFound++;
 					}
 
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndKey")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(currentPeerKeys->key, nodeContent, 64);
+						bctbx_strToUint8(currentPeerKeys->key, nodeContent, 64);
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndSId")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(currentPeerKeys->sessionId, nodeContent, 64);
+						bctbx_strToUint8(currentPeerKeys->sessionId, nodeContent, 64);
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndIndex")) {
 						uint8_t sessionIndexBuffer[4]; /* session index is a uint32_t but we first retrieved it as an hexa string, convert it to a 4 uint8_t buffer */
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(sessionIndexBuffer, nodeContent, 8);
+						bctbx_strToUint8(sessionIndexBuffer, nodeContent, 8);
 						/* convert it back to a uint32_t (MSByte first)*/
 						currentPeerKeys->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"pvs")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
+						bctbx_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
 						itemFound++;
+					}
+					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"valid")) {
+						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
+						validityTimeSpec.tv_sec = bctbx_strToUint64(nodeContent); /* validity is retrieved as a 16 characters hexa string, convert it to an uint64 */
+						itemFound++;
+						keyValidityFound = 1;
 					}
 
 					xmlFree(nodeContent);
 					peerNodeChildren = peerNodeChildren->next;
 				}
 
-				/* check if we have all the requested information and the PVS flag is set to 1 */
-				if (itemFound == 5 && pvs == 1) {
-					associatedKeys->associatedZIDNumber +=1;
-					/* extend array of pointer to limeKey_t structures to add the one we found */
-					associatedKeys->peerKeys = (limeKey_t **)realloc(associatedKeys->peerKeys, (associatedKeys->associatedZIDNumber)*sizeof(limeKey_t *));
+				/* key validity may not be present in cache(transition from older versions), so check this, if not found-> set it to 0 wich means valid for ever */
+				if (keyValidityFound == 0) {
+					itemFound++;
+					validityTimeSpec.tv_sec = 0;
+				}
 
-					/* add the new entry at the end */
-					associatedKeys->peerKeys[associatedKeys->associatedZIDNumber-1] = currentPeerKeys;
+				/* check if we have all the requested information and the PVS flag is set to 1 and key is still valid*/
+				_bctbx_get_cur_time(&currentTimeSpec, TRUE);
+				if (itemFound == 6 && pvs == 1) {
+					keysFound++;
+					if (validityTimeSpec.tv_sec == 0 || bctbx_timespec_compare(&currentTimeSpec, &validityTimeSpec)<0) {
+						associatedKeys->associatedZIDNumber +=1;
+						/* extend array of pointer to limeKey_t structures to add the one we found */
+						associatedKeys->peerKeys = (limeKey_t **)realloc(associatedKeys->peerKeys, (associatedKeys->associatedZIDNumber)*sizeof(limeKey_t *));
 
+						/* add the new entry at the end */
+						associatedKeys->peerKeys[associatedKeys->associatedZIDNumber-1] = currentPeerKeys;
+					} else {
+						free(currentPeerKeys);
+					}
 				} else {
 					free(currentPeerKeys);
 				}
 			}
 		}
 		cur = cur->next;
+	}
+	if (associatedKeys->associatedZIDNumber == 0) {
+		if (keysFound == 0) {
+			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+		} else {
+			return LIME_PEER_KEY_HAS_EXPIRED;
+		}
 	}
 	return 0;
 }
@@ -266,7 +219,7 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 	}
 
 	/* get the given ZID into hex format */
-	lime_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
+	bctbx_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
 	peerZidHex[24]='\0'; /* must be a null terminated string */
 
 	cur = xmlDocGetRootElement(cacheBuffer);
@@ -286,25 +239,25 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 					xmlChar *nodeContent = NULL;
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvKey")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(associatedKey->key, nodeContent, 64);
+						bctbx_strToUint8(associatedKey->key, nodeContent, 64);
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvSId")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(associatedKey->sessionId, nodeContent, 64);
+						bctbx_strToUint8(associatedKey->sessionId, nodeContent, 64);
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvIndex")) {
 						uint8_t sessionIndexBuffer[4]; /* session index is a uint32_t but we first retrieved it as an hexa string, convert it to a 4 uint8_t buffer */
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(sessionIndexBuffer, nodeContent, 8);
+						bctbx_strToUint8(sessionIndexBuffer, nodeContent, 8);
 						/* convert it back to a uint32_t (MSByte first)*/
 						associatedKey->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"pvs")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						lime_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
+						bctbx_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
 						itemFound++;
 					}
 					xmlFree(nodeContent);
@@ -327,12 +280,16 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 	return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
 }
 
-int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role) {
+int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan) {
+	uint8_t done=0;
 	xmlNodePtr cur;
 	uint8_t peerZidHex[25];
 	uint8_t keyHex[65]; /* key is 32 bytes long -> 64 bytes string + null termination */
 	uint8_t sessionIdHex[65]; /* sessionId is 32 bytes long -> 64 bytes string + null termination */
 	uint8_t sessionIndexHex[9]; /*  sessionInedx is an uint32_t : 4 bytes long -> 8 bytes string + null termination */
+	uint8_t validHex[17]; /* validity is a unix period in seconds on 64bits -> 16 bytes string + null termination */
+	bctoolboxTimeSpec currentTimeSpec;
+
 	uint8_t itemFound = 0;
 
 	if (cacheBuffer == NULL ) { /* there is no cache return error */
@@ -340,7 +297,7 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 	}
 
 	/* get the given ZID into hex format */
-	lime_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
+	bctbx_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
 	peerZidHex[24]='\0'; /* must be a null terminated string */
 
 	cur = xmlDocGetRootElement(cacheBuffer);
@@ -352,26 +309,27 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 	}
 
 	/* convert the given tag content to null terminated Hexadecimal strings */
-	lime_int8ToStr(keyHex, associatedKey->key, 32);
+	bctbx_int8ToStr(keyHex, associatedKey->key, 32);
 	keyHex[64] = '\0';
-	lime_int8ToStr(sessionIdHex, associatedKey->sessionId, 32);
+	bctbx_int8ToStr(sessionIdHex, associatedKey->sessionId, 32);
 	sessionIdHex[64] = '\0';
-	sessionIndexHex[0] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>28)&0x0F));
-	sessionIndexHex[1] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>24)&0x0F));
-	sessionIndexHex[2] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>20)&0x0F));
-	sessionIndexHex[3] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>16)&0x0F));
-	sessionIndexHex[4] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>12)&0x0F));
-	sessionIndexHex[5] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>8)&0x0F));
-	sessionIndexHex[6] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>4)&0x0F));
-	sessionIndexHex[7] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex)&0x0F));
-	sessionIndexHex[8] = '\0';
+	bctbx_uint32ToStr(sessionIndexHex, associatedKey->sessionIndex);
+	if (validityTimeSpan > 0 && role == LIME_RECEIVER) {
+		_bctbx_get_cur_time(&currentTimeSpec, TRUE);
+		bctbx_timespec_add(&currentTimeSpec, validityTimeSpan);
+		bctbx_uint64ToStr(validHex, currentTimeSpec.tv_sec);
+	}
 
-	while (cur!=NULL && itemFound<3) { /* loop on all peer nodes */
+	while (cur!=NULL && done==0) { /* loop on all peer nodes */
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))){ /* found a peer, check his ZID element */
 			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, cur->xmlChildrenNode->xmlChildrenNode, 1); /* ZID is the first element of peer */
 			if (!xmlStrcmp(currentZidHex, (const xmlChar *)peerZidHex)) { /* we found the peer element we are looking for */
+				uint8_t validFound = 0;
 				xmlNodePtr peerNodeChildren = cur->xmlChildrenNode->next;
-				while (peerNodeChildren != NULL && itemFound<3) { /* look for the tag we want to write */
+				if (role==LIME_SENDER) {
+					itemFound=1; /* we do not look for valid when setting sender key */
+				}
+				while (peerNodeChildren != NULL && itemFound<4) { /* look for the tag we want to write */
 					if (role == LIME_RECEIVER) { /* writing receiver key */
 						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvKey")) {
 							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)keyHex);
@@ -384,6 +342,13 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvIndex")) {
 							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)sessionIndexHex);
 							itemFound++;
+						}
+						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"valid")) {
+							if (validityTimeSpan > 0) {
+								xmlNodeSetContent(peerNodeChildren, (const xmlChar *)validHex);
+							}
+							itemFound++;
+							validFound=1;
 						}
 					} else { /* writing sender key */
 						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndKey")) {
@@ -401,13 +366,17 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 					}
 					peerNodeChildren = peerNodeChildren->next;
 				}
+
+				/* we may want to add the valid node which if it is missing and we've been ask to update it */
+				if (role == LIME_RECEIVER && validityTimeSpan>0 && validFound==0) {
+					xmlNewTextChild(cur, NULL, (const xmlChar *)"valid", validHex);
+				}
+				done=1; /* step out of the <peer> loop  */
 			}
 			xmlFree(currentZidHex);
 		}
 		cur = cur->next;
 	}
-
-
 	return 0;
 }
 
@@ -581,7 +550,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 	limeURIKeys_t associatedKeys;
 	xmlDocPtr xmlOutputMessage;
 	xmlNodePtr rootNode;
-	int i;
+	int i,ret;
 	int xmlStringLength;
 	xmlChar *local_output = NULL;
 
@@ -589,7 +558,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
 		return LIME_UNABLE_TO_ENCRYPT_MESSAGE;
 	}
-	lime_strToUint8(selfZid, selfZidHex, 24);
+	bctbx_strToUint8(selfZid, selfZidHex, 24);
 
 	/* encrypted message length is plaintext + 16 for tag */
 	encryptedMessageLength = (uint32_t)strlen((char *)message) + 16;
@@ -601,14 +570,9 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 	associatedKeys.associatedZIDNumber  = 0;
 	associatedKeys.peerKeys = NULL;
 
-	if (lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys) != 0) {
+	if ((ret = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys)) != 0) {
 		lime_freeKeys(&associatedKeys);
-		return LIME_UNABLE_TO_ENCRYPT_MESSAGE;
-	}
-
-	if (associatedKeys.associatedZIDNumber == 0) {
-		lime_freeKeys(&associatedKeys);
-		return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+		return ret;
 	}
 
 	/* create an xml doc to hold the multipart message */
@@ -643,17 +607,9 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 		 * 		<content-type>ciphertext</content-type>
 		 * </msg> */
 		msgNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"msg", NULL);
-		lime_int8ToStr(peerZidHex, currentKey->peerZID, 12);
+		bctbx_int8ToStr(peerZidHex, currentKey->peerZID, 12);
 		peerZidHex[24] = '\0';
-		sessionIndexHex[0] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>28)&0x0F));
-		sessionIndexHex[1] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>24)&0x0F));
-		sessionIndexHex[2] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>20)&0x0F));
-		sessionIndexHex[3] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>16)&0x0F));
-		sessionIndexHex[4] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>12)&0x0F));
-		sessionIndexHex[5] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>8)&0x0F));
-		sessionIndexHex[6] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>4)&0x0F));
-		sessionIndexHex[7] = lime_byteToChar((uint8_t)((currentKey->sessionIndex)&0x0F));
-		sessionIndexHex[8] = '\0';
+		bctbx_uint32ToStr(sessionIndexHex, currentKey->sessionIndex);
 
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"pzid", peerZidHex);
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"index", sessionIndexHex);
@@ -682,7 +638,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 
 		/* update the key used */
 		lime_deriveKey(currentKey);
-		lime_setCachedKey(cacheBuffer, currentKey, LIME_SENDER);
+		lime_setCachedKey(cacheBuffer, currentKey, LIME_SENDER, 0); /* never update validity when sending a message */
 	}
 
 	/* dump the whole message doc into the output */
@@ -699,7 +655,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 	return 0;
 }
 
-int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output, char **content_type) {
+int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output, char **content_type, uint64_t validityTimeSpan) {
 	int retval = 0;
 	uint8_t selfZidHex[25];
 	uint8_t selfZid[12]; /* same data but in byte buffer */
@@ -722,7 +678,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
-	lime_strToUint8(selfZid, selfZidHex, 24);
+	bctbx_strToUint8(selfZid, selfZidHex, 24);
 
 	xml_ctx = linphone_xmlparsing_context_new();
 	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
@@ -741,7 +697,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	peerZidHex = linphone_get_xml_text_content(xml_ctx, "/doc/ZID");
 	if (peerZidHex != NULL) {
 		/* Convert it from hexa string to bytes string and set the result in the associatedKey structure */
-		lime_strToUint8(associatedKey.peerZID, (const uint8_t *)peerZidHex, (uint16_t)strlen(peerZidHex));
+		bctbx_strToUint8(associatedKey.peerZID, (const uint8_t *)peerZidHex, (uint16_t)strlen(peerZidHex));
 		linphone_free_xml_text_content(peerZidHex);
 
 		/* Get the matching key from cache */
@@ -765,14 +721,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/index", i);
 					sessionIndexHex = linphone_get_xml_text_content(xml_ctx, xpath_str);
 					if (sessionIndexHex != NULL) {
-						usedSessionIndex = (((uint32_t)lime_charToByte(sessionIndexHex[0]))<<28)
-							| (((uint32_t)lime_charToByte(sessionIndexHex[1]))<<24)
-							| (((uint32_t)lime_charToByte(sessionIndexHex[2]))<<20)
-							| (((uint32_t)lime_charToByte(sessionIndexHex[3]))<<16)
-							| (((uint32_t)lime_charToByte(sessionIndexHex[4]))<<12)
-							| (((uint32_t)lime_charToByte(sessionIndexHex[5]))<<8)
-							| (((uint32_t)lime_charToByte(sessionIndexHex[6]))<<4)
-							| (((uint32_t)lime_charToByte(sessionIndexHex[7])));
+						usedSessionIndex = bctbx_strToUint32((const unsigned char *)sessionIndexHex);
 						linphone_free_xml_text_content(sessionIndexHex);
 					}
 					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/text", i);
@@ -844,7 +793,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 
 	/* update used key */
 	lime_deriveKey(&associatedKey);
-	lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER);
+	lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER, validityTimeSpan);
 
 error:
 	linphone_xmlparsing_context_destroy(xml_ctx);
@@ -884,7 +833,7 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 							associatedKeys.associatedZIDNumber  = 0;
 							associatedKeys.peerKeys = NULL;
 
-							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0 && associatedKeys.associatedZIDNumber != 0);
+							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0);
 							lime_freeKeys(&associatedKeys);
 							xmlFreeDoc(cacheXml);
 							ms_free(peer);
@@ -931,7 +880,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			fclose(CACHEFD);
 			cacheXml = xmlParseDoc((xmlChar*)cacheString);
 			ms_free(cacheString);
-			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body, &decrypted_content_type);
+			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body, &decrypted_content_type, lp_config_get_int(lc->config, "sip", "lime_key_validity", 0));
 			if (retval != 0) {
 				ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
 				if (decrypted_body) ms_free(decrypted_body);
@@ -1151,6 +1100,7 @@ char *lime_error_code_to_string(int errorCode) {
 		case LIME_UNABLE_TO_ENCRYPT_MESSAGE: return "Unable to encrypt message";
 		case LIME_UNABLE_TO_DECRYPT_MESSAGE: return "Unable to decrypt message";
 		case LIME_NO_VALID_KEY_FOUND_FOR_PEER: return "No valid key found";
+		case LIME_PEER_KEY_HAS_EXPIRED: return "Any key matching peer Uri has expired";
 		case LIME_INVALID_ENCRYPTED_MESSAGE: return "Invalid encrypted message";
 		case LIME_NOT_ENABLED: return "Lime not enabled at build";
 	}
