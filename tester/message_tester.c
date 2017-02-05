@@ -1858,6 +1858,61 @@ end:
 	bc_free(src_db);
 	bc_free(tmp_db);
 }
+
+
+void crash_during_file_transfer(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
+	char *initial_db  = bc_tester_file("initial.db");
+	char *saved_db  = bc_tester_file("saved.db");
+	LinphoneChatRoom *chat_room;
+	LinphoneChatMessage *msg;
+	int chat_room_size = 0;
+	bctbx_list_t *msg_list = NULL;
+
+	/* Remove any previous files */
+	remove(initial_db);
+	remove(saved_db);
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(pauline->lc, "https://www.linphone.org:444/lft.php");
+	linphone_core_set_chat_database_path(pauline->lc, initial_db);
+
+	/* Create a chatroom and a file transfer message on pauline's side */
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	msg = create_file_transfer_message_from_sintel_trailer(chat_room);
+	linphone_chat_room_send_chat_message(chat_room, msg);
+
+	/* Wait for 25% of the file to be uploaded and crash by stopping the iteration, saving the chat database and destroying the core */
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.progress_of_LinphoneFileTransfer, 25, 60000));
+	BC_ASSERT_EQUAL(message_tester_copy_file(initial_db, saved_db), 0, int, "%d");
+	linphone_chat_message_unref(msg);
+	linphone_core_manager_destroy(pauline);
+
+	/* Create a new core and check that the message stored in the saved database is in the not delivered state */
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
+	linphone_core_set_chat_database_path(pauline->lc, saved_db);
+	BC_ASSERT_TRUE(wait_for(pauline->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	chat_room_size = linphone_chat_room_get_history_size(chat_room);
+	BC_ASSERT_EQUAL(chat_room_size, 1, int, "%d");
+	if (chat_room_size == 1) {
+		msg_list = linphone_chat_room_get_history(chat_room, 0);
+		LinphoneChatMessage *sent_msg = (LinphoneChatMessage *)bctbx_list_get_data(msg_list);
+		BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateNotDelivered, int, "%d");
+	}
+
+	bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
+	bc_free(send_filepath);
+	bc_free(initial_db);
+	bc_free(saved_db);
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
 #endif
 
 static void text_status_after_destroying_chat_room(void) {
@@ -2437,58 +2492,6 @@ void text_message_with_custom_content_type_and_lime(void) {
 	_text_message_with_custom_content_type(TRUE);
 }
 
-void crash_during_file_transfer(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
-	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
-	char *initial_db  = bc_tester_file("initial.db");
-	char *saved_db  = bc_tester_file("saved.db");
-	LinphoneChatRoom *chat_room;
-	LinphoneChatMessage *msg;
-	int chat_room_size = 0;
-	bctbx_list_t *msg_list = NULL;
-
-	/* Remove any previous files */
-	remove(initial_db);
-	remove(saved_db);
-
-	/* Globally configure an http file transfer server. */
-	linphone_core_set_file_transfer_server(pauline->lc, "https://www.linphone.org:444/lft.php");
-	linphone_core_set_chat_database_path(pauline->lc, initial_db);
-
-	/* Create a chatroom and a file transfer message on pauline's side */
-	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-	msg = create_file_transfer_message_from_sintel_trailer(chat_room);
-	linphone_chat_room_send_chat_message(chat_room, msg);
-
-	/* Wait for 25% of the file to be uploaded and crash by stopping the iteration, saving the chat database and destroying the core */
-	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.progress_of_LinphoneFileTransfer, 25, 60000));
-	BC_ASSERT_EQUAL(message_tester_copy_file(initial_db, saved_db), 0, int, "%d");
-	linphone_chat_message_unref(msg);
-	linphone_core_manager_destroy(pauline);
-
-	/* Create a new core and check that the message stored in the saved database is in the not delivered state */
-	pauline = linphone_core_manager_new("pauline_tcp_rc");
-	linphone_core_set_chat_database_path(pauline->lc, saved_db);
-	BC_ASSERT_TRUE(wait_for(pauline->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
-
-	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-	chat_room_size = linphone_chat_room_get_history_size(chat_room);
-	BC_ASSERT_EQUAL(chat_room_size, 1, int, "%d");
-	if (chat_room_size == 1) {
-		msg_list = linphone_chat_room_get_history(chat_room, 0);
-		LinphoneChatMessage *sent_msg = (LinphoneChatMessage *)bctbx_list_get_data(msg_list);
-		BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateNotDelivered, int, "%d");
-	}
-
-	bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
-	bc_free(send_filepath);
-	bc_free(initial_db);
-	bc_free(saved_db);
-
-	linphone_core_manager_destroy(pauline);
-	linphone_core_manager_destroy(marie);
-}
 
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
@@ -2539,6 +2542,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
 	TEST_NO_TAG("History count", history_count),
+	TEST_NO_TAG("Crash during file transfer", crash_during_file_transfer),
 #endif
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
 	TEST_NO_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url),
@@ -2560,8 +2564,7 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
 	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers),
 	TEST_NO_TAG("Text message with custom content-type", text_message_with_custom_content_type),
-	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME"),
-	TEST_NO_TAG("Crash during file transfer", crash_during_file_transfer)
+	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME")
 };
 
 test_suite_t message_test_suite = {
