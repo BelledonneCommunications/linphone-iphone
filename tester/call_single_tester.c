@@ -4146,8 +4146,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	{
 		const LinphoneCallStats *marie_stats = linphone_call_get_audio_stats(call_marie);
 		const LinphoneCallStats *pauline_stats = linphone_call_get_audio_stats(call_pauline);
-		rtp_stats_t marie_rtp_stats = linphone_call_stats_get_rtp_stats(marie_stats);
-		rtp_stats_t pauline_rtp_stats = linphone_call_stats_get_rtp_stats(pauline_stats);
+		rtp_stats_t marie_rtp_stats = *linphone_call_stats_get_rtp_stats(marie_stats);
+		rtp_stats_t pauline_rtp_stats = *linphone_call_stats_get_rtp_stats(pauline_stats);
 		ms_message("Marie sent %i RTP packets and received %i (for real)", (int)marie_rtp_stats.packet_sent, (int)marie_rtp_stats.packet_recv);
 		ms_message("Pauline sent %i RTP packets and received %i (for real)", (int)pauline_rtp_stats.packet_sent, (int)pauline_rtp_stats.packet_recv);
 		BC_ASSERT_EQUAL(data_marie->packetReceivedCount, marie_rtp_stats.packet_recv, unsigned long long, "%llu");
@@ -4180,8 +4180,8 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 
-	ms_free(recordpath);
-	ms_free(hellopath);
+	bc_free(recordpath);
+	bc_free(hellopath);
 }
 
 static void call_with_custom_rtp_modifier(void) {

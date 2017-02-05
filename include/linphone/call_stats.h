@@ -86,6 +86,7 @@ LINPHONE_PUBLIC float linphone_call_stats_get_receiver_loss_rate(const LinphoneC
 /**
  * Gets the local interarrival jitter
  * @return The interarrival jitter at last emitted sender report
+ * @FIXME this function shall not take a LinphoneCall parameter.
 **/
 LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
 
@@ -95,13 +96,13 @@ LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter(const L
 **/
 LINPHONE_PUBLIC float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
 
-LINPHONE_PUBLIC rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *statss);
+LINPHONE_PUBLIC const rtp_stats_t *linphone_call_stats_get_rtp_stats(const LinphoneCallStats *statss);
 
 /**
  * Gets the cumulative number of late packets
  * @return The cumulative number of late packets
 **/
-LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats);
 
 /**
  * Get the bandwidth measurement of the received stream, expressed in kbit/s, including IP/UDP/RTP headers.
