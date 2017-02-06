@@ -177,7 +177,7 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 				}
 
 				/* check if we have all the requested information and the PVS flag is set to 1 and key is still valid*/
-				_bctbx_get_cur_time(&currentTimeSpec, TRUE);
+				bctbx_get_utc_cur_time(&currentTimeSpec);
 				if (itemFound == 6 && pvs == 1) {
 					keysFound++;
 					if (validityTimeSpec.tv_sec == 0 || bctbx_timespec_compare(&currentTimeSpec, &validityTimeSpec)<0) {
@@ -315,7 +315,7 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 	sessionIdHex[64] = '\0';
 	bctbx_uint32ToStr(sessionIndexHex, associatedKey->sessionIndex);
 	if (validityTimeSpan > 0 && role == LIME_RECEIVER) {
-		_bctbx_get_cur_time(&currentTimeSpec, TRUE);
+		bctbx_get_utc_cur_time(&currentTimeSpec);
 		bctbx_timespec_add(&currentTimeSpec, validityTimeSpan);
 		bctbx_uint64ToStr(validHex, currentTimeSpec.tv_sec);
 	}
