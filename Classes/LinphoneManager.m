@@ -864,9 +864,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 				[self.providerDelegate.uuids removeObjectForKey:callId2];
 				[self.providerDelegate.calls removeObjectForKey:uuid];
-				[self.providerDelegate.provider reportCallWithUUID:uuid
-													   endedAtDate:NULL
-															reason:CXCallEndedReasonRemoteEnded];
+
+				CXEndCallAction *act = [[CXEndCallAction alloc] initWithCallUUID:uuid];
+				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
+				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
+																			  completion:^(NSError *err){
+																			  }];
 			}
 		} else {
 			if (data != nil && data->notification != nil) {
