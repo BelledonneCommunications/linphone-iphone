@@ -63,6 +63,14 @@
 	}
 }
 
+- (void)layoutSubviews {
+	[self.tableView layoutSubviews];
+
+	CGSize contentSize = self.tableView.contentSize;
+	contentSize.width = self.tableView.bounds.size.width;
+	self.tableView.contentSize = contentSize;
+}
+
 #pragma mark -
 
 static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRoom *elem) {
