@@ -92,7 +92,7 @@ LINPHONE_PUBLIC int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *
  * @return 0 on success, error code otherwise
  */
 
-LINPHONE_PUBLIC int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, const uint8_t role, uint64_t validityTimeSpan);
+LINPHONE_PUBLIC int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan);
 
 /**
  * @brief Free all allocated data in the associated keys structure
