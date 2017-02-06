@@ -880,7 +880,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			fclose(CACHEFD);
 			cacheXml = xmlParseDoc((xmlChar*)cacheString);
 			ms_free(cacheString);
-			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body, &decrypted_content_type, lp_config_get_int(lc->config, "sip", "lime_key_validity", 0));
+			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body, &decrypted_content_type, bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
 			if (retval != 0) {
 				ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
 				if (decrypted_body) ms_free(decrypted_body);
