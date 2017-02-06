@@ -44,6 +44,7 @@ static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneCha
 static void _linphone_chat_message_destroy(LinphoneChatMessage *msg);
 static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const char *text);
 static void linphone_chat_room_notify_imdn(LinphoneChatRoom *cr, const char *text);
+static void linphone_chat_message_deactivate(LinphoneChatMessage *msg);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessageCbs);
 
@@ -310,6 +311,7 @@ void linphone_chat_room_release(LinphoneChatRoom *cr) {
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
+	bctbx_list_for_each(cr->weak_messages, (bctbx_list_iterate_func)linphone_chat_message_deactivate);
 	cr->lc = NULL;
 	linphone_chat_room_unref(cr);
 }
@@ -1619,12 +1621,16 @@ void linphone_chat_message_unref(LinphoneChatMessage *msg) {
 	belle_sip_object_unref(msg);
 }
 
-static void linphone_chat_message_release(LinphoneChatMessage *msg) {
-	/*mark the chat msg as orphan (it has no chat room anymore), and unref it*/
+static void linphone_chat_message_deactivate(LinphoneChatMessage *msg){
+	/*mark the chat msg as orphan (it has no chat room anymore)*/
 	msg->chat_room = NULL;
 	if (msg->file_transfer_information != NULL) {
 		linphone_chat_message_cancel_file_transfer(msg);
 	}
+}
+
+static void linphone_chat_message_release(LinphoneChatMessage *msg) {
+	linphone_chat_message_deactivate(msg);
 	linphone_chat_message_unref(msg);
 }
 

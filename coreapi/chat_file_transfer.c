@@ -78,7 +78,7 @@ static void linphone_chat_message_process_auth_requested_download(void *data, be
 static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *m,
 															void *data, size_t offset, size_t total) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
-	if (msg->http_request && !file_transfer_in_progress_and_valid(msg)) {
+	if (!file_transfer_in_progress_and_valid(msg)) {
 		ms_warning("Cancelled request for %s msg [%p], ignoring %s", msg->chat_room?"":"ORPHAN", msg, __FUNCTION__);
 		_release_http_request(msg);
 		return;
