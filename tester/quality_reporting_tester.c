@@ -386,7 +386,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, marie_params, pauline_params))  {
 		linphone_reporting_set_on_report_send(call_marie, on_report_send_mandatory);
-		linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 1);
+		linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 3);
 
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,NULL,0,3000));
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
@@ -396,8 +396,8 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
 
 		// PUBLISH submission to the collector should be ok
-		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,60000));
-		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,60000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,5000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,10000));
 
 		pauline_chat_room = linphone_call_get_chat_room(call_pauline);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
@@ -414,10 +414,10 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 		}
-
+		
 		end_call(marie, pauline);
-		/*wait for publish triggered by the end of call to be completed*/
-		wait_for_until(marie->lc,pauline->lc,NULL,0,6000);
+		/*wait that all publish complete*/
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,marie->stat.number_of_LinphonePublishProgress,15000));
 	}
 
 	linphone_call_params_unref(marie_params);

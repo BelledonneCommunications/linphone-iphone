@@ -162,7 +162,7 @@ static void subscriber_no_longer_reachable(void){
 		linphone_core_send_initial_subscribes(lc);
 	}
 	 */
-	wait_for_until(pauline1->lc, marie->lc, 0, 0, 3000);
+	wait_for_until(pauline1->lc, marie->lc, 0, 0, 4000);
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(pauline1->lc,presence);
