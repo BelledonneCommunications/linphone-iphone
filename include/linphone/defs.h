@@ -29,10 +29,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifndef LINPHONE_PUBLIC
 #if defined(_MSC_VER)
+#ifdef LINPHONE_STATIC
+#define LINPHONE_PUBLIC
+#else
 #ifdef LINPHONE_EXPORTS
 #define LINPHONE_PUBLIC	__declspec(dllexport)
 #else
 #define LINPHONE_PUBLIC	__declspec(dllimport)
+#endif
 #endif
 #else
 #define LINPHONE_PUBLIC
