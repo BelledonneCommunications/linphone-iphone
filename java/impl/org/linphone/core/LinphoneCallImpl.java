@@ -23,8 +23,6 @@ class LinphoneCallImpl implements LinphoneCall {
 	protected final long nativePtr;
 	boolean ownPtr = false;
 	Object userData;
-	private LinphoneCallStats audioStats;
-	private LinphoneCallStats videoStats;
 
 	native private void finalize(long nativePtr);
 	native private long  getCallLog(long nativePtr);
@@ -46,6 +44,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native boolean mediaInProgress(long nativePtr);
 	private native void setListener(long ptr, LinphoneCallListener listener);
 	native private long getDiversionAddress(long nativePtr);
+	native private Object getStats(long nativePtr, int stream_type);
 	
 	/*
 	 * This method must always be called from JNI, nothing else.
@@ -64,19 +63,12 @@ class LinphoneCallImpl implements LinphoneCall {
 			return null;
 		}
 	}
-	public void setAudioStats(LinphoneCallStats stats) {
-		audioStats = stats;
-	}
-	public void setVideoStats(LinphoneCallStats stats) {
-		videoStats = stats;
-	}
+	
 	public LinphoneCallStats getAudioStats() {
-		if (audioStats!=null) ((LinphoneCallStatsImpl)audioStats).updateRealTimeStats(this);
-		return audioStats;
+		return (LinphoneCallStats)getStats(nativePtr, 0);
 	}
 	public LinphoneCallStats getVideoStats() {
-		if (videoStats!=null) ((LinphoneCallStatsImpl)videoStats).updateRealTimeStats(this);
-		return videoStats;
+		return (LinphoneCallStats)getStats(nativePtr, 1);
 	}
 	public CallDirection getDirection() {
 		return isIncoming(nativePtr)?CallDirection.Incoming:CallDirection.Outgoing;

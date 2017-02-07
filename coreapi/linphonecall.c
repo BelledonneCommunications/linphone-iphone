@@ -4114,7 +4114,7 @@ static MediaStream *linphone_call_get_stream(LinphoneCall *call, LinphoneStreamT
 }
 
 const LinphoneCallStats *linphone_call_get_stats(LinphoneCall *call, LinphoneStreamType type){
-	if (type>=0 && type<=LinphoneStreamTypeText){
+	if ((int)type >=0 && type<=LinphoneStreamTypeText){
 		LinphoneCallStats *stats = &call->stats[type];
 		MediaStream *ms = linphone_call_get_stream(call, type);
 		if (ms) update_local_stats(stats, ms);

@@ -32,8 +32,11 @@ extern "C" {
 #include "mediastreamer2/devices.h"
 }
 #include "mediastreamer2/msjava.h"
-#include "private.h"
+#include "linphone/core.h"
+#include "linphone/tunnel.h"
 #include "linphone/account_creator.h"
+
+#include "private.h" /*Included for multicast and wifi lock management by linphonecore. Very ugly.*/
 #include <cpu-features.h>
 
 #include "linphone/lpconfig.h"
@@ -341,8 +344,6 @@ public:
 
 		callClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCallImpl"));
 		callCtrId = env->GetMethodID(callClass,"<init>", "(J)V");
-		callSetAudioStatsId = env->GetMethodID(callClass, "setAudioStats", "(Lorg/linphone/core/LinphoneCallStats;)V");
-		callSetVideoStatsId = env->GetMethodID(callClass, "setVideoStats", "(Lorg/linphone/core/LinphoneCallStats;)V");
 
 		chatMessageClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessageImpl"));
 		if (chatMessageClass) {
@@ -369,7 +370,7 @@ public:
 		addressCtrId = env->GetMethodID(addressClass,"<init>", "(J)V");
 
 		callStatsClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCallStatsImpl"));
-		callStatsId = env->GetMethodID(callStatsClass, "<init>", "(JJ)V");
+		callStatsId = env->GetMethodID(callStatsClass, "<init>", "(J)V");
 
 		infoMessageClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneInfoMessageImpl"));
 		infoMessageCtor = env->GetMethodID(infoMessageClass,"<init>", "(J)V");
@@ -466,8 +467,6 @@ public:
 
 	jclass callStatsClass;
 	jmethodID callStatsId;
-	jmethodID callSetAudioStatsId;
-	jmethodID callSetVideoStatsId;
 
 	jclass chatMessageStateClass;
 	jmethodID chatMessageStateFromIntId;
@@ -1280,13 +1279,6 @@ public:
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
 		statsobj = env->NewObject(ljb->callStatsClass, ljb->callStatsId, (jlong)call, (jlong)stats);
 		callobj = getCall(env, call);
-		if (stats->type == LINPHONE_CALL_STATS_AUDIO)
-			env->CallVoidMethod(callobj, ljb->callSetAudioStatsId, statsobj);
-		else if (stats->type == LINPHONE_CALL_STATS_VIDEO){
-			env->CallVoidMethod(callobj, ljb->callSetVideoStatsId, statsobj);
-		}else{
-			//text stats not updated yet.
-		}
 		env->CallVoidMethod(lcData->listener, ljb->callStatsUpdatedId, lcData->core, callobj, statsobj);
 		handle_possible_java_exception(env, lcData->listener);
 		if (statsobj) env->DeleteLocalRef(statsobj);
@@ -3395,23 +3387,20 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverLossRa
 	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	return (jfloat) linphone_call_stats_get_receiver_loss_rate(stats);
 }
-extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	LinphoneCall *call = (LinphoneCall *)call_ptr;
-	return (jfloat) linphone_call_stats_get_sender_interarrival_jitter(stats, call);
+	return (jfloat) linphone_call_stats_get_sender_interarrival_jitter(stats);
 }
-extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	LinphoneCall *call = (LinphoneCall *)call_ptr;
-	return (jfloat) linphone_call_stats_get_receiver_interarrival_jitter(stats, call);
+	return (jfloat) linphone_call_stats_get_receiver_interarrival_jitter(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getRoundTripDelay(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	return (jfloat)((LinphoneCallStats *)stats_ptr)->round_trip_delay;
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCallStatsImpl_getLatePacketsCumulativeNumber(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
+extern "C" jlong Java_org_linphone_core_LinphoneCallStatsImpl_getLatePacketsCumulativeNumber(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	LinphoneCall *call = (LinphoneCall *)call_ptr;
-	return (jlong) linphone_call_stats_get_late_packets_cumulative_number(stats, call);
+	return (jlong) linphone_call_stats_get_late_packets_cumulative_number(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getJitterBufferSize(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	return (jfloat)((LinphoneCallStats *)stats_ptr)->jitter_stats.jitter_buffer_size_ms;
@@ -3425,27 +3414,6 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getLocalLossRate(
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getLocalLateRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	return stats->local_late_rate;
-}
-
-extern "C" void Java_org_linphone_core_LinphoneCallStatsImpl_updateStats(JNIEnv *env, jobject thiz, jlong call_ptr, jint mediatype) {
-	if (mediatype==LINPHONE_CALL_STATS_AUDIO)
-		linphone_call_get_audio_stats((LinphoneCall*)call_ptr);
-	else
-		linphone_call_get_video_stats((LinphoneCall*)call_ptr);
-}
-
-extern "C" jstring Java_org_linphone_core_LinphoneCallStatsImpl_getEncoderName(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr, jlong payload_ptr) {
-    LinphoneCore *lc = linphone_call_get_core((LinphoneCall*)call_ptr);
-    PayloadType* jpayload = (PayloadType*)payload_ptr;
-    jstring jencodername =env->NewStringUTF(ms_factory_get_encoder(linphone_core_get_ms_factory(lc), jpayload->mime_type)->text);
-    return jencodername;
-}
-
-extern "C" jstring Java_org_linphone_core_LinphoneCallStatsImpl_getDecoderName(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr, jlong payload_ptr) {
-    LinphoneCore *lc = linphone_call_get_core((LinphoneCall*)call_ptr);
-    PayloadType* jpayload = (PayloadType*)payload_ptr;
-    jstring jdecodername =env->NewStringUTF(ms_factory_get_decoder(linphone_core_get_ms_factory(lc), jpayload->mime_type)->text);
-    return jdecodername;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCallStatsImpl_getIpFamilyOfRemote(JNIEnv *env, jobject thiz, jlong stats_ptr) {
@@ -3479,6 +3447,15 @@ extern "C" void Java_org_linphone_core_LinphoneCallImpl_finalize(JNIEnv*  env
 																		,jlong ptr) {
 	LinphoneCall *call=(LinphoneCall*)ptr;
 	linphone_call_unref(call);
+}
+
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getStats(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr, jint type) {
+	LinphoneCall *call=(LinphoneCall*)ptr;
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *) linphone_core_get_user_data(linphone_call_get_core(call));
+	const LinphoneCallStats *stats = linphone_call_get_stats(call, (LinphoneStreamType)type);
+	return stats ? env->NewObject(ljb->callStatsClass, ljb->callStatsId, (jlong)stats) : NULL;
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCallLog(	JNIEnv*  env
