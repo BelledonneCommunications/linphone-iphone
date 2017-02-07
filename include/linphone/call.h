@@ -571,6 +571,8 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
  */
 LINPHONE_PUBLIC void linphone_call_ogl_render(LinphoneCall *call, bool_t is_preview);
 
+
+
 /**
  * @}
  */
