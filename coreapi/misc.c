@@ -1372,7 +1372,7 @@ const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID i
 }
 
 void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile){
-	LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
+	LinphoneToneDescription *tone = linphone_core_lookup_tone(lc,reason, id);
 	if (tone){
 		lc->tones=bctbx_list_remove(lc->tones,tone);
 		linphone_tone_description_destroy(tone);
@@ -1589,7 +1589,10 @@ bool_t linphone_core_file_format_supported(LinphoneCore *lc, const char *fmt){
 }
 
 bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc){
-	return lp_config_get_int(lc->config,"rtp","symmetric",1);
+	/* Clients don't really need rtp symmetric, unless they have a public IP address and want
+	 * to interoperate with natted client. This case is not frequent with client apps.
+	 */
+	return lp_config_get_int(lc->config,"rtp","symmetric",0);
 }
 
 int linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params){

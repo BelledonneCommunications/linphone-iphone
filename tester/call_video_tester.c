@@ -1255,6 +1255,9 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 	linphone_core_set_video_policy(marie->lc,&pol);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 
+	/*The send-only client shall set rtp symmetric in absence of media relay for this test.*/
+	lp_config_set_int(marie->lc->config,"rtp","symmetric",1);
+	
 	linphone_call_set_next_video_frame_decoded_callback(linphone_core_invite_address(pauline->lc,marie->identity)
 														,linphone_call_iframe_decoded_cb
 														,pauline->lc);
@@ -1302,7 +1305,6 @@ static void accept_call_in_send_base(bool_t caller_has_ice) {
 	lcs=bctbx_list_append(lcs,marie->lc);
 
 	accept_call_in_send_only_base(pauline,marie,lcs);
-
 
 	end_call(marie,pauline);
 	bctbx_list_free(lcs);
@@ -1540,7 +1542,11 @@ static void classic_video_entry_phone_setup(void) {
 		if (ms_factory_get_encoder(linphone_core_get_ms_factory(callee_mgr->lc), "H264")->id == MS_VT_H264_ENC_ID){
 			MSVideoSize vsize = MS_VIDEO_SIZE_VGA;
 			linphone_core_set_preferred_video_size(callee_mgr->lc, vsize);
-			linphone_core_set_preferred_video_size(callee_mgr->lc, vsize);
+			linphone_core_set_preferred_video_size(caller_mgr->lc, vsize);
+			linphone_core_set_download_bandwidth(callee_mgr->lc, 512);
+			linphone_core_set_download_bandwidth(caller_mgr->lc, 512);
+			linphone_core_set_upload_bandwidth(callee_mgr->lc, 512);
+			linphone_core_set_upload_bandwidth(caller_mgr->lc, 512);
 		}
 	}
 

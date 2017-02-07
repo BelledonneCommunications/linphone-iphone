@@ -383,6 +383,25 @@ static void codec_setup(void){
 	
 }
 
+static void custom_tones_setup(void){
+	LinphoneCoreManager *mgr = linphone_core_manager_new2("empty_rc", FALSE);
+	const char *tone;
+	
+	linphone_core_set_tone(mgr->lc, LinphoneToneCallOnHold, "callonhold.wav");
+	tone = linphone_core_get_tone_file(mgr->lc, LinphoneToneCallOnHold);
+	BC_ASSERT_PTR_NOT_NULL(tone);
+	if (tone){
+		BC_ASSERT_STRING_EQUAL(tone, "callonhold.wav");
+	}
+	linphone_core_set_tone(mgr->lc, LinphoneToneCallOnHold, "callonhold2.wav");
+	tone = linphone_core_get_tone_file(mgr->lc, LinphoneToneCallOnHold);
+	BC_ASSERT_PTR_NOT_NULL(tone);
+	if (tone){
+		BC_ASSERT_STRING_EQUAL(tone, "callonhold2.wav");
+	}
+	linphone_core_manager_destroy(mgr);
+}
+
 test_t setup_tests[] = {
 	TEST_NO_TAG("Version check", linphone_version_test),
 	TEST_NO_TAG("Linphone Address", linphone_address_test),
@@ -398,7 +417,8 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("Chat room", chat_room_test),
 	TEST_NO_TAG("Devices reload", devices_reload_test),
 	TEST_NO_TAG("Codec usability", codec_usability_test),
-	TEST_NO_TAG("Codec setup", codec_setup)
+	TEST_NO_TAG("Codec setup", codec_setup),
+	TEST_NO_TAG("Custom tones setup", custom_tones_setup) 
 };
 
 test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
