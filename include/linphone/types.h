@@ -436,6 +436,7 @@ typedef struct _LinphoneFriendList LinphoneFriendList;
 
 /**
  * An object to handle the callbacks for LinphoneFriend synchronization.
+ * @ingroup buddy_list
 **/
 typedef struct _LinphoneFriendListCbs LinphoneFriendListCbs;
 
@@ -822,6 +823,7 @@ typedef struct _LinphoneProxyConfig LinphoneProxyConfig;
 
 /**
  * Enum for publish states.
+ * @ingroup event_api
 **/
 typedef enum _LinphonePublishState{
 	LinphonePublishNone, /**< Initial state, do not use */
