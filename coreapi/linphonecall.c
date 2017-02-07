@@ -4099,28 +4099,41 @@ static void update_local_stats(LinphoneCallStats *stats, MediaStream *stream) {
 	stats->clockrate = pt ? pt->clock_rate : 8000;
 }
 
-const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
-	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_AUDIO];
-	if (call->audiostream){
-		update_local_stats(stats,(MediaStream*)call->audiostream);
+static MediaStream *linphone_call_get_stream(LinphoneCall *call, LinphoneStreamType type){
+	switch(type){
+		case LinphoneStreamTypeAudio:
+			return &call->audiostream->ms;
+		case LinphoneStreamTypeVideo:
+			return &call->videostream->ms;
+		case LinphoneStreamTypeText:
+			return &call->textstream->ms;
+		case LinphoneStreamTypeUnknown:
+			break;
 	}
-	return stats;
+	return NULL;
+}
+
+const LinphoneCallStats *linphone_call_get_stats(LinphoneCall *call, LinphoneStreamType type){
+	if (type>=0 && type<=LinphoneStreamTypeText){
+		LinphoneCallStats *stats = &call->stats[type];
+		MediaStream *ms = linphone_call_get_stream(call, type);
+		if (ms) update_local_stats(stats, ms);
+		return stats;
+	}
+	ms_error("Invalid stream type %i", (int)type);
+	return NULL;
+}
+
+const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
+	return linphone_call_get_stats(call, LinphoneStreamTypeAudio);
 }
 
 const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
-	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_VIDEO];
-	if (call->videostream){
-		update_local_stats(stats,(MediaStream*)call->videostream);
-	}
-	return stats;
+	return linphone_call_get_stats(call, LinphoneStreamTypeVideo);
 }
 
 const LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call) {
-	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_TEXT];
-	if (call->textstream){
-		update_local_stats(stats,(MediaStream*)call->textstream);
-	}
-	return stats;
+	return linphone_call_get_stats(call, LinphoneStreamTypeText);
 }
 
 static bool_t ice_in_progress(LinphoneCallStats *stats){
