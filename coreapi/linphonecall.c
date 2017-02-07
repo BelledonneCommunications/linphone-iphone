@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msrtt4103.h"
 
+
 static const char *EC_STATE_STORE = ".linphone.ecstate";
 #define EC_STATE_MAX_LEN 1048576 // 1Mo
 
@@ -4085,12 +4086,16 @@ float linphone_call_get_average_quality(LinphoneCall *call){
 }
 
 static void update_local_stats(LinphoneCallStats *stats, MediaStream *stream) {
+	PayloadType *pt;
+	RtpSession *session = stream->sessions.rtp_session;
 	const MSQualityIndicator *qi = media_stream_get_quality_indicator(stream);
 	if (qi) {
 		stats->local_late_rate=ms_quality_indicator_get_local_late_rate(qi);
 		stats->local_loss_rate=ms_quality_indicator_get_local_loss_rate(qi);
 	}
 	media_stream_get_local_rtp_stats(stream, &stats->rtp_stats);
+	pt = rtp_profile_get_payload(rtp_session_get_profile(session), rtp_session_get_send_payload_type(session));
+	stats->clockrate = pt ? pt->clock_rate : 8000;
 }
 
 const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
@@ -4163,15 +4168,10 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 	return 100.0f * report_block_get_fraction_lost(rrb) / 256.0f;
 }
 
-float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
-	const LinphoneCallParams *params;
-	const PayloadType *pt;
+float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats) {
 	const report_block_t *srb = NULL;
-
-	if (!stats || !call || !stats->sent_rtcp)
-		return 0.0;
-	params = linphone_call_get_current_params(call);
-	if (!params)
+	
+	if (!stats || !stats->sent_rtcp)
 		return 0.0;
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->sent_rtcp->b_cont != NULL)
@@ -4182,24 +4182,15 @@ float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats
 		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
 	if (!srb)
 		return 0.0;
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
-		pt = linphone_call_params_get_used_audio_codec(params);
-	else
-		pt = linphone_call_params_get_used_video_codec(params);
-	if (!pt || (pt->clock_rate == 0))
+	if (stats->clockrate == 0)
 		return 0.0;
-	return (float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate;
+	return (float)report_block_get_interarrival_jitter(srb) / (float)stats->clockrate;
 }
 
-float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
-	const LinphoneCallParams *params;
-	const PayloadType *pt;
+float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats) {
 	const report_block_t *rrb = NULL;
 
-	if (!stats || !call || !stats->received_rtcp)
-		return 0.0;
-	params = linphone_call_get_current_params(call);
-	if (!params)
+	if (!stats || !stats->received_rtcp)
 		return 0.0;
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->received_rtcp->b_cont != NULL)
@@ -4210,13 +4201,9 @@ float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallSta
 		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
 	if (!rrb)
 		return 0.0;
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
-		pt = linphone_call_params_get_used_audio_codec(params);
-	else
-		pt = linphone_call_params_get_used_video_codec(params);
-	if (!pt || (pt->clock_rate == 0))
+	if (stats->clockrate == 0)
 		return 0.0;
-	return (float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate;
+	return (float)report_block_get_interarrival_jitter(rrb) / (float)stats->clockrate;
 }
 
 const rtp_stats_t *linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats) {
@@ -4261,47 +4248,29 @@ void linphone_call_stop_recording(LinphoneCall *call){
 	call->record_active=FALSE;
 }
 
-static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *vs, MediaStream *ts){
-	bool_t as_active =  as ? (media_stream_get_state(as) == MSStreamStarted) : FALSE;
-	bool_t vs_active =  vs ? (media_stream_get_state(vs) == MSStreamStarted) : FALSE;
-	bool_t ts_active =  ts ? (media_stream_get_state(ts) == MSStreamStarted) : FALSE;
-
-	call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth=(as_active) ? (float)(media_stream_get_down_bw(as)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth=(as_active) ? (float)(media_stream_get_up_bw(as)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth=(vs_active) ? (float)(media_stream_get_down_bw(vs)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth=(vs_active) ? (float)(media_stream_get_up_bw(vs)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_TEXT].download_bandwidth=(ts_active) ? (float)(media_stream_get_down_bw(ts)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_TEXT].upload_bandwidth=(ts_active) ? (float)(media_stream_get_up_bw(ts)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_download_bandwidth=(as_active) ? (float)(media_stream_get_rtcp_down_bw(as)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth=(as_active) ? (float)(media_stream_get_rtcp_up_bw(as)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth=(vs_active) ? (float)(media_stream_get_rtcp_down_bw(vs)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth=(vs_active) ? (float)(media_stream_get_rtcp_up_bw(vs)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_download_bandwidth=(ts_active) ? (float)(media_stream_get_rtcp_down_bw(ts)*1e-3) : 0.f;
-	call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_upload_bandwidth=(ts_active) ? (float)(media_stream_get_rtcp_up_bw(ts)*1e-3) : 0.f;
-	/* If not ipV6, it's not necessary IpV4, should be UNSPEC, TODO */
-	call->stats[LINPHONE_CALL_STATS_AUDIO].rtp_remote_family=(as_active)
-		? ((ortp_stream_is_ipv6((OrtpStream*)&(as->sessions.rtp_session->rtp.gs))) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].rtp_remote_family=(vs_active)
-		? ((ortp_stream_is_ipv6((OrtpStream*)&(vs->sessions.rtp_session->rtp.gs))) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
-	call->stats[LINPHONE_CALL_STATS_TEXT].rtp_remote_family=(ts_active)
-		? ((ortp_stream_is_ipv6((OrtpStream*)&(ts->sessions.rtp_session->rtp.gs))) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
-
+static void report_bandwidth_for_stream(LinphoneCall *call, MediaStream *ms, LinphoneStreamType type){
+	bool_t active = ms ?  (media_stream_get_state(ms) == MSStreamStarted) : FALSE;
+	LinphoneCallStats *stats = &call->stats[type];
+	
+	stats->download_bandwidth=(active) ? (float)(media_stream_get_down_bw(ms)*1e-3) : 0.f;
+	stats->upload_bandwidth=(active) ? (float)(media_stream_get_up_bw(ms)*1e-3) : 0.f;
+	stats->rtcp_download_bandwidth=(active) ? (float)(media_stream_get_rtcp_down_bw(ms)*1e-3) : 0.f;
+	stats->rtcp_upload_bandwidth=(active) ? (float)(media_stream_get_rtcp_up_bw(ms)*1e-3) : 0.f;
+	stats->rtp_remote_family=(active)
+		? (ortp_stream_is_ipv6(&ms->sessions.rtp_session->rtp.gs) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
+		
 	if (call->core->send_call_stats_periodical_updates){
-		call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-		call->stats[LINPHONE_CALL_STATS_AUDIO].updated=0;
-		if (as_active) update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], as);
-
-		call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-		call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
-		if (vs_active) update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
-
-		call->stats[LINPHONE_CALL_STATS_TEXT].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_TEXT]);
-		call->stats[LINPHONE_CALL_STATS_TEXT].updated=0;
-		if (ts_active) update_local_stats(&call->stats[LINPHONE_CALL_STATS_TEXT], ts);
+		if (active) update_local_stats(stats, ms);
+		stats->updated |= LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
+		linphone_core_notify_call_stats_updated(call->core, call, stats);
+		stats->updated=0;
 	}
+}
+
+static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *vs, MediaStream *ts){
+	report_bandwidth_for_stream(call, as, LinphoneStreamTypeAudio);
+	report_bandwidth_for_stream(call, vs, LinphoneStreamTypeVideo);
+	report_bandwidth_for_stream(call, ts, LinphoneStreamTypeText);
 
 	ms_message(	"Bandwidth usage for call [%p]:\n"
 				"\tRTP  audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f], text=[d=%5.1f,u=%5.1f] kbits/sec\n"

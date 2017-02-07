@@ -52,23 +52,24 @@ typedef struct _LinphoneCallStats LinphoneCallStats;
  * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
 **/
 struct _LinphoneCallStats {
-    LinphoneStreamType type; /**< Type of the stream which the stats refer to */
-    jitter_stats_t jitter_stats; /**<jitter buffer statistics, see oRTP documentation for details */
-    mblk_t *received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
-    mblk_t *sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
-    float round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
-    LinphoneIceState ice_state; /**< State of ICE processing. */
-    LinphoneUpnpState	upnp_state; /**< State of uPnP processing. */
-    float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-    float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-    float local_late_rate; /**<percentage of packet received too late over last second*/
-    float local_loss_rate; /**<percentage of lost packet over last second*/
-    int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
-    float rtcp_download_bandwidth; /**<RTCP download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-    float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-    rtp_stats_t rtp_stats; /**< RTP stats */
-    bool_t rtcp_received_via_mux; /*private flag, for non-regression test only*/
-    int rtp_remote_family; /* Ip adress family of the remote destination */
+	LinphoneStreamType type; /**< Type of the stream which the stats refer to */
+	jitter_stats_t jitter_stats; /**<jitter buffer statistics, see oRTP documentation for details */
+	mblk_t *received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
+	mblk_t *sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
+	float round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
+	LinphoneIceState ice_state; /**< State of ICE processing. */
+	LinphoneUpnpState	upnp_state; /**< State of uPnP processing. */
+	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float local_late_rate; /**<percentage of packet received too late over last second*/
+	float local_loss_rate; /**<percentage of lost packet over last second*/
+	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
+	float rtcp_download_bandwidth; /**<RTCP download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	rtp_stats_t rtp_stats; /**< RTP stats */
+	int rtp_remote_family; /**< Ip adress family of the remote destination */
+	int clockrate;  /*RTP clockrate of the stream, provided here for easily converting timestamp units expressed in RTCP packets in milliseconds*/
+	bool_t rtcp_received_via_mux; /*private flag, for non-regression test only*/
 };
 
 /**
@@ -85,21 +86,23 @@ LINPHONE_PUBLIC float linphone_call_stats_get_receiver_loss_rate(const LinphoneC
 
 /**
  * Gets the local interarrival jitter
+ * @param[in] stats LinphoneCallStats object
  * @return The interarrival jitter at last emitted sender report
- * @FIXME this function shall not take a LinphoneCall parameter.
 **/
-LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats);
 
 /**
  * Gets the remote reported interarrival jitter
+ * @param[in] stats LinphoneCallStats object
  * @return The interarrival jitter at last received receiver report
 **/
-LINPHONE_PUBLIC float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats);
 
-LINPHONE_PUBLIC const rtp_stats_t *linphone_call_stats_get_rtp_stats(const LinphoneCallStats *statss);
+LINPHONE_PUBLIC const rtp_stats_t *linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats);
 
 /**
  * Gets the cumulative number of late packets
+ * @param[in] stats LinphoneCallStats object
  * @return The cumulative number of late packets
 **/
 LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats);
