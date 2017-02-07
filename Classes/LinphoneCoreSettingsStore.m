@@ -577,7 +577,12 @@
 		}
 
 		LinphoneAuthInfo *proxyAi = (LinphoneAuthInfo *)linphone_proxy_config_find_auth_info(proxyCfg);
-
+		char *realm;
+		if (proxyAi) {
+			realm = ms_strdup(linphone_auth_info_get_realm(proxyAi));
+		} else {
+			realm = NULL;
+		}
 		// setup new proxycfg
 		linphone_proxy_config_done(proxyCfg);
 
@@ -593,12 +598,21 @@
 		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
-			LinphoneAuthInfo *info = linphone_auth_info_new(
-				linphone_address_get_username(from), userid_str, password ? password : NULL, password ? NULL : ha1,
-				linphone_proxy_config_get_realm(proxyCfg), linphone_proxy_config_get_domain(proxyCfg));
+			LinphoneAuthInfo *info;
+			if (password) {
+				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, password, NULL,
+											  linphone_proxy_config_get_realm(proxyCfg),
+											  linphone_proxy_config_get_domain(proxyCfg));
+			} else {
+				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, NULL, ha1,
+											  realm ? realm : linphone_proxy_config_get_realm(proxyCfg),
+											  linphone_proxy_config_get_domain(proxyCfg));
+			}
+
 			linphone_address_destroy(from);
 			linphone_core_add_auth_info(LC, info);
 			linphone_auth_info_destroy(info);
+			ms_free(realm);
 		}
 
 	bad_proxy:
@@ -661,36 +675,36 @@
 
 		bool enableAutoAnswer = [self boolForKey:@"enable_auto_answer_preference"];
 		[LinphoneManager.instance lpConfigSetBool:enableAutoAnswer forKey:@"auto_answer"];
+	}
+
+	// audio section
+	{
+		[self synchronizeCodecs:linphone_core_get_audio_codecs(LC)];
+
+		float playback_gain = [self floatForKey:@"playback_gain_preference"];
+		linphone_core_set_playback_gain_db(LC, playback_gain);
+
+		float mic_gain = [self floatForKey:@"microphone_gain_preference"];
+		linphone_core_set_mic_gain_db(LC, mic_gain);
+
+		[lm lpConfigSetInt:[self integerForKey:@"audio_codec_bitrate_limit_preference"]
+					forKey:@"codec_bitrate_limit"
+				 inSection:@"audio"];
+
+		BOOL voice_processing = [self boolForKey:@"voiceproc_preference"];
+		[lm lpConfigSetInt:voice_processing forKey:@"voiceproc_preference"];
+
+		BOOL equalizer = [self boolForKey:@"eq_active"];
+		[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
+
+		[LinphoneManager.instance configureVbrCodecs];
+
+		NSString *au_device = @"AU: Audio Unit Receiver";
+		if (!voice_processing) {
+			au_device = @"AU: Audio Unit NoVoiceProc";
 		}
-
-		// audio section
-		{
-			[self synchronizeCodecs:linphone_core_get_audio_codecs(LC)];
-
-			float playback_gain = [self floatForKey:@"playback_gain_preference"];
-			linphone_core_set_playback_gain_db(LC, playback_gain);
-
-			float mic_gain = [self floatForKey:@"microphone_gain_preference"];
-			linphone_core_set_mic_gain_db(LC, mic_gain);
-
-			[lm lpConfigSetInt:[self integerForKey:@"audio_codec_bitrate_limit_preference"]
-						forKey:@"codec_bitrate_limit"
-					 inSection:@"audio"];
-
-			BOOL voice_processing = [self boolForKey:@"voiceproc_preference"];
-			[lm lpConfigSetInt:voice_processing forKey:@"voiceproc_preference"];
-
-			BOOL equalizer = [self boolForKey:@"eq_active"];
-			[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
-
-			[LinphoneManager.instance configureVbrCodecs];
-
-			NSString *au_device = @"AU: Audio Unit Receiver";
-			if (!voice_processing) {
-				au_device = @"AU: Audio Unit NoVoiceProc";
-			}
-			linphone_core_set_capture_device(LC, [au_device UTF8String]);
-			linphone_core_set_playback_device(LC, [au_device UTF8String]);
+		linphone_core_set_capture_device(LC, [au_device UTF8String]);
+		linphone_core_set_playback_device(LC, [au_device UTF8String]);
 		}
 
 		// video section
