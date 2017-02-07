@@ -1372,7 +1372,7 @@ const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID i
 }
 
 void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile){
-	LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
+	LinphoneToneDescription *tone = linphone_core_lookup_tone(lc,reason, id);
 	if (tone){
 		lc->tones=bctbx_list_remove(lc->tones,tone);
 		linphone_tone_description_destroy(tone);
