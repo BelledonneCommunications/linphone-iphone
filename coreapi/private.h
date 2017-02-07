@@ -944,7 +944,7 @@ void linphone_tone_description_destroy(LinphoneToneDescription *obj);
 LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *lc, LinphoneReason reason);
 void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason);
 void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile);
-const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id);
+LINPHONE_PUBLIC const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id);
 int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params, LinphoneCallState next_state, const char *state_info);
 
 typedef struct _LinphoneTaskList{

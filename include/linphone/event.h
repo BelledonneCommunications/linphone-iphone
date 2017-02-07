@@ -22,6 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @addtogroup event_api
  * @{
@@ -226,6 +230,10 @@ LINPHONE_PUBLIC LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev);
 /**
  * @}
 **/
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* LINPHONE_EVENT_H_ */
