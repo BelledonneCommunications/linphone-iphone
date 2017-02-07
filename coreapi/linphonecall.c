@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/msfileplayer.h"
 #include "mediastreamer2/msjpegwriter.h"
+#include "mediastreamer2/msogl.h"
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msrtt4103.h"
@@ -1691,8 +1692,8 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 	if (call->state!=cstate){
 		call->prevstate=call->state;
-		
-		/*Make sanity checks with call state changes. Any bad transition can result in unpredictable results 
+
+		/*Make sanity checks with call state changes. Any bad transition can result in unpredictable results
 		 *or irrecoverable errors in the application*/
 		if (call->state==LinphoneCallEnd || call->state==LinphoneCallError){
 			if (cstate!=LinphoneCallReleased){
@@ -3186,7 +3187,7 @@ static void configure_adaptive_rate_control(LinphoneCall *call, MediaStream *ms,
 		bool_t is_advanced = TRUE;
 		if (strcasecmp(algo, "basic") == 0) is_advanced = FALSE;
 		else if (strcasecmp(algo, "advanced") == 0) is_advanced = TRUE;
-		
+
 		if (is_advanced){
 			/*we can't use media_stream_avpf_enabled() here because the active PayloadType is not set yet in the MediaStream.*/
 			if (!pt || !(pt->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED)){
@@ -3196,7 +3197,7 @@ static void configure_adaptive_rate_control(LinphoneCall *call, MediaStream *ms,
 				ms_message("LinphoneCall[%p] - setting up advanced rate control.", call);
 			}
 		}
-		
+
 		if (is_advanced){
 			ms_bandwidth_controller_add_stream(lc->bw_controller, ms);
 			media_stream_enable_adaptive_bitrate_control(ms, FALSE);
@@ -5097,11 +5098,11 @@ void linphone_call_ogl_render(LinphoneCall *call, bool_t is_preview) {
 
 	if (!is_preview) {
 		if (stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
-			ms_filter_call_method(stream->output, MS_VIDEO_DISPLAY_CALL_GENERIC_RENDER, NULL);
+			ms_filter_call_method(stream->output, MS_OGL_RENDER, NULL);
 
 		return;
 	}
 
 	if (stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
-		ms_filter_call_method(stream->output2, MS_VIDEO_DISPLAY_CALL_GENERIC_RENDER, NULL);
+		ms_filter_call_method(stream->output2, MS_OGL_RENDER, NULL);
 }
