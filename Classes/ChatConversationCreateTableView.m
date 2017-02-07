@@ -73,7 +73,12 @@
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 	}
 	cell.displayNameLabel.text = [_contacts.allValues objectAtIndex:indexPath.row];
-	cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contacts.allKeys objectAtIndex:indexPath.row]];
+	if (addr) {
+		cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
+	} else {
+		cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
+	}
 	return cell;
 }
 
