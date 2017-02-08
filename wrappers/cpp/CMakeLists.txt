@@ -15,4 +15,4 @@ add_custom_target(make_cpp_wrapper ALL ${CMAKE_COMMAND} -E make_directory build/
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
 	${CMAKE_CURRENT_BINARY_DIR}/include/linphone.hh
 )
-install(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_CURRENT_BINARY_DIR}/build\" --target install)")
+install(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_CURRENT_BINARY_DIR}/build\" --config \"${CMAKE_BUILD_TYPE}\" --target install)")
