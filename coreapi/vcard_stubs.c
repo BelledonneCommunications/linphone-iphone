@@ -53,10 +53,6 @@ LinphoneVcard* linphone_vcard_new(void) {
 	return NULL;
 }
 
-LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
-	return NULL;
-}
-
 void linphone_vcard_free(LinphoneVcard *vCard) {
 }
 
