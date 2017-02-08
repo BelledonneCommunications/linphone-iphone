@@ -12,7 +12,7 @@ Group changes to describe their impact on the project, as follows:
 
 ## [Unreleased]
 
-## [3.16] - 2017-09-01
+## [3.16.1] - 2017-09-01
 
 ### Added
 - Support of CallKit
@@ -99,7 +99,7 @@ consider inputs to be phone numbers, otherwise SIP addresses.
 ### Added
 - Initial version
 
-[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.15...HEAD
+[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.16...HEAD
 [3.15]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.14.12.zip
 [3.13.9]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.13.9.zip
 [plugins registration]: https://github.com/BelledonneCommunications/linphone-iphone/blob/3.12.1/Classes/LinphoneManager.m#L1461-L1472
