@@ -151,7 +151,7 @@
 		[result appendString:@"\n"];
 
 		// RTP stats section (packet loss count, etc)
-		rtp_stats_t rtp_stats = linphone_call_stats_get_rtp_stats(stats);
+		const rtp_stats_t rtp_stats = *linphone_call_stats_get_rtp_stats(stats);
 		[result
 			appendString:[NSString stringWithFormat:
 									   @"RTP packets: %llu total, %lld cum loss, %llu discarded, %llu OOT, %llu bad",
