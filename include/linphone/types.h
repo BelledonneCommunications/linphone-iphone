@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/msinterfaces.h"
 #include "mediastreamer2/msvideo.h"
-#include "sal/sal.h"
 #include "linphone/defs.h"
 
 
@@ -87,6 +86,8 @@ typedef enum _LinphoneAccountCreatorStatus {
 
 	LinphoneAccountCreatorErrorServer,
 } LinphoneAccountCreatorStatus;
+
+struct SalAddress;
 
 /**
  * Object that represents a SIP address.
