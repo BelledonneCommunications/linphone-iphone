@@ -7,6 +7,7 @@
 //
 
 #import "Contact.h"
+#import "ContactsListView.h"
 
 @implementation Contact
 
@@ -187,9 +188,10 @@
 - (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index {
 	BOOL ret = FALSE;
 	if (_person) {
+		NSString *normSip = [self setOrCreateSipContactEntry:index withValue:sip];
 		NSDictionary *lDict = @{
-			(NSString *) kABPersonInstantMessageUsernameKey : sip, (NSString *)
-			kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
+			(NSString *)kABPersonInstantMessageUsernameKey : normSip ? normSip : sip,
+			(NSString *)kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
 		};
 
 		ret = [self replaceInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict) atIndex:index];
@@ -336,6 +338,46 @@
 }
 
 #pragma mark - ABPerson utils
+- (NSString *)setOrCreateSipContactEntry:(NSInteger)index withValue:(NSString *)value {
+	ABMultiValueRef lcMap = ABRecordCopyValue(_person, kABPersonInstantMessageProperty);
+	ABMutableMultiValueRef lMap;
+	NSString *ret = NULL;
+	if (lcMap != NULL) {
+		lMap = ABMultiValueCreateMutableCopy(lcMap);
+		CFRelease(lcMap);
+	} else {
+		lMap = ABMultiValueCreateMutable(kABStringPropertyType);
+	}
+	CFErrorRef error = NULL;
+
+	NSDictionary *lDict = @{
+		(NSString *)kABPersonInstantMessageUsernameKey : value,
+		(NSString *)kABPersonInstantMessageServiceKey : [LinphoneManager instance].contactSipField
+	};
+	// CFStringRef label = (__bridge CFStringRef)[[NSBundle mainBundle]
+	// objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+	// ABMultiValueAddValueAndLabel(lMap, (__bridge CFTypeRef)lDict, label, nil);
+	ABMultiValueReplaceLabelAtIndex(lMap, (__bridge CFTypeRef)(lDict), index);
+	if (!ABRecordSetValue(_person, kABPersonInstantMessageProperty, lMap, &error)) {
+		LOGI(@"Can't set contact with value [%@] cause [%@]", value, [(__bridge NSError *)error localizedDescription]);
+		CFRelease(lMap);
+	} else {
+		CFRelease(lMap);
+
+		/*check if message type is kept or not*/
+		lcMap = ABRecordCopyValue(_person, kABPersonInstantMessageProperty);
+		lMap = ABMultiValueCreateMutableCopy(lcMap);
+		CFRelease(lcMap);
+		lDict = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
+
+		if ([lDict objectForKey:(__bridge NSString *)kABPersonInstantMessageServiceKey] == nil) {
+			/*too bad probably a gtalk number, storing uri*/
+			ret = [FastAddressBook normalizeSipURI:value];
+		}
+		CFRelease(lMap);
+	}
+	return ret ? ret : value;
+}
 
 - (void)loadProperties {
 	// First and Last name
@@ -369,7 +411,7 @@
 	}
 
 	// SIP (IM)
-	{
+	/*{
 		_sipAddresses = [[NSMutableArray alloc] init];
 		ABMultiValueRef map = ABRecordCopyValue(_person, kABPersonInstantMessageProperty);
 		if (map) {
@@ -389,7 +431,87 @@
 			}
 			CFRelease(map);
 		}
+	}*/
+
+	// SIP (IM)
+	{
+		_sipAddresses = [[NSMutableArray alloc] init];
+		ABMultiValueRef lMap = ABRecordCopyValue(_person, kABPersonInstantMessageProperty);
+		if (lMap) {
+			for (int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
+				CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
+				BOOL add = false;
+				if (CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
+					if (CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField,
+										CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey),
+										kCFCompareCaseInsensitive) == 0) {
+						add = true;
+					}
+				} else {
+					// check domain
+					LinphoneAddress *address = linphone_address_new(
+						[(NSString *)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey) UTF8String]);
+					if (address) {
+						if ([[ContactSelection getSipFilter] compare:@"*" options:NSCaseInsensitiveSearch] ==
+							NSOrderedSame) {
+							add = true;
+						} else {
+							NSString *domain = [NSString stringWithCString:linphone_address_get_domain(address)
+																  encoding:[NSString defaultCStringEncoding]];
+							add = [domain compare:[ContactSelection getSipFilter] options:NSCaseInsensitiveSearch] ==
+								  NSOrderedSame;
+						}
+						linphone_address_destroy(address);
+					} else {
+						add = false;
+					}
+				}
+				if (add) {
+					NSString *value = (NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
+					if (value != NULL) {
+						[_sipAddresses addObject:value];
+					}
+				}
+				CFRelease(lDict);
+			}
+			CFRelease(lMap);
+		}
 	}
+
+	// SIP
+	/*{
+		_sipAddresses = [[NSMutableArray alloc] init];
+		ABMultiValueRef lMap = ABRecordCopyValue(_person, kABPersonInstantMessageProperty);
+		if (lMap) {
+			for (int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
+				CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
+				BOOL add = false;
+				if (CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
+					if (CFStringCompare((CFStringRef)LinphoneManager.instance.contactSipField,
+										CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey),
+										kCFCompareCaseInsensitive) == 0) {
+						add = true;
+					}
+				} else {
+					add = true;
+				}
+				if (add) {
+					NSString *lValue =
+					(__bridge NSString *)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
+					if(lValue) {
+						NSString *lNormalizedKey = [FastAddressBook normalizeSipURI:lValue];
+						if (lNormalizedKey != NULL) {
+							[_sipAddresses addObject:lNormalizedKey];
+						} else {
+							[_sipAddresses addObject:lValue];
+						}
+					}
+				}
+				CFRelease(lDict);
+			}
+			CFRelease(lMap);
+		}
+	}*/
 
 	// Email
 	{
