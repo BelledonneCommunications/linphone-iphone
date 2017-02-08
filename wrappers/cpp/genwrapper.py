@@ -273,7 +273,7 @@ class CppTranslator(object):
 		if type(exprtype) is AbsApi.BaseType:
 			if exprtype.name == 'string':
 				cExpr = 'cppStringToC({0})'.format(cppExpr);
-			elif exprtype not in ['void', 'string', 'string_array'] and exprtype.isref:
+			elif exprtype.name not in ['void', 'string', 'string_array'] and exprtype.isref:
 				cExpr = '&' + cppExpr
 			else:
 				cExpr = cppExpr
