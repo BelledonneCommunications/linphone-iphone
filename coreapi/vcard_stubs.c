@@ -49,6 +49,10 @@ struct _LinphoneVcard {
 	void *dummy;
 };
 
+LinphoneVcard* _linphone_vcard_new(void) {
+	return NULL;
+}
+
 LinphoneVcard* linphone_vcard_new(void) {
 	return NULL;
 }
