@@ -3269,9 +3269,13 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	linphone_call_init_media_streams(call);
 
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
-		/* Defer the start of the call after the ICE gathering process. */
-		if (linphone_call_prepare_ice(call,FALSE)==1)
-			defer=TRUE;
+		if (lc->sip_conf.sdp_200_ack){
+			ms_warning("ICE is not supported when sending INVITE without SDP");
+		}else{
+			/* Defer the start of the call after the ICE gathering process. */
+			if (linphone_call_prepare_ice(call,FALSE)==1)
+				defer=TRUE;
+		}
 	}
 	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP

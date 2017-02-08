@@ -539,7 +539,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 
 		/* Handle remote ICE attributes if any. */
 		if (call->ice_session != NULL && rmd) {
-			linphone_call_update_ice_from_remote_media_description(call, rmd, FALSE);
+			linphone_call_update_ice_from_remote_media_description(call, rmd, !sal_call_is_offerer(op));
 		}
 
 		switch (call->state){

@@ -3357,6 +3357,9 @@ void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ice ){
 	lcs = bctbx_list_append(lcs,pauline->lc);
 	if (use_ice){
 		linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+		/* We need RTP symmetric because ICE will put the STUN address in the C line, and no relay is made in this 
+		 * scenario.*/
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "symmetric", 1);
 	}
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
@@ -5273,6 +5276,9 @@ static void v6_to_v4_call_without_relay(void){
 		lcs = bctbx_list_append(lcs, marie->lc);
 		lcs = bctbx_list_append(lcs, pauline->lc);
 		linphone_core_enable_ipv6(pauline->lc, FALSE);
+		/*RTP symmetric must be enabled for this test to pass, because the IPv4-only client cannot send by itself to
+		 * the IPv6 address in the SDP*/
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "symmetric", 1);
 		linphone_core_manager_start(pauline, TRUE);
 
 		if (BC_ASSERT_TRUE(call(marie,pauline))){
