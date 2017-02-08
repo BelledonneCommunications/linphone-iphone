@@ -963,7 +963,7 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 			}
 			linphone_friend_unref(lf);
 		} else {
-			linphone_vcard_free(vcard);
+			linphone_vcard_unref(vcard);
 		}
 		vcards_iterator = bctbx_list_next(vcards_iterator);
 	}
@@ -1002,7 +1002,7 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 			}
 			linphone_friend_unref(lf);
 		} else {
-			linphone_vcard_free(vcard);
+			linphone_vcard_unref(vcard);
 		}
 		vcards_iterator = bctbx_list_next(vcards_iterator);
 	}

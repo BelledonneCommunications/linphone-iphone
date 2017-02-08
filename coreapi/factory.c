@@ -87,5 +87,5 @@ LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *facto
 }
 
 LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
-	return linphone_vcard_new();
+	return _linphone_vcard_new();
 }

@@ -99,6 +99,8 @@ bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard);
 
 void linphone_vcard_clean_cache(LinphoneVcard *vCard);
 
+LinphoneVcard* _linphone_vcard_new(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -89,7 +89,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneVcard, belle_sip_object_t,
 	FALSE
 );
 
-static LinphoneVcard* _linphone_vcard_new(void) {
+LinphoneVcard* _linphone_vcard_new(void) {
 	LinphoneVcard* vCard = belle_sip_object_new(LinphoneVcard);
 	vCard->belCard = belcard::BelCardGeneric::create<belcard::BelCard>();
 	return vCard;
