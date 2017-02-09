@@ -200,7 +200,7 @@
 	}
 
 	if (ret) {
-		_sipAddresses[index] = sip;
+		_sipAddresses[index] = normSip ? normSip : normSip ? normSip : sip;
 	}
 	return ret;
 }
