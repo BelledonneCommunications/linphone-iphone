@@ -187,8 +187,9 @@
 
 - (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index {
 	BOOL ret = FALSE;
+	NSString *normSip = NULL;
 	if (_person) {
-		NSString *normSip = [self setOrCreateSipContactEntry:index withValue:sip];
+		normSip = [self setOrCreateSipContactEntry:index withValue:sip];
 		NSDictionary *lDict = @{
 			(NSString *)kABPersonInstantMessageUsernameKey : normSip ? normSip : sip,
 			(NSString *)kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
@@ -200,7 +201,7 @@
 	}
 
 	if (ret) {
-		_sipAddresses[index] = normSip ? normSip : normSip ? normSip : sip;
+		_sipAddresses[index] = normSip ? normSip : sip;
 	}
 	return ret;
 }
