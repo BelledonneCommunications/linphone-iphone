@@ -303,7 +303,6 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 	address = linphone_address_as_string_uri_only(fr);
 	if(lf->friend_list) {
 		bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(address, linphone_friend_ref(lf));
-		ms_message("inserting %s in map with friend [%p]", address, lf);
 		bctbx_map_cchar_insert_and_delete(lf->friend_list->friends_map_uri, pair);
 	}
 
@@ -333,7 +332,6 @@ void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr
 	uri = linphone_address_as_string_uri_only(fr);
 	if(lf->friend_list) {
 		bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(uri, linphone_friend_ref(lf));
-		ms_message("inserting %s in map with friend [%p]", uri, lf);
 		bctbx_map_cchar_insert_and_delete(lf->friend_list->friends_map_uri, pair);
 	}
 

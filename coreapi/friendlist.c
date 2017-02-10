@@ -547,7 +547,6 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 		const char *uri = linphone_friend_phone_number_to_sip_uri(lf, number);
 		if(uri) {
 			bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(uri, linphone_friend_ref(lf));
-			ms_message("inserting %s in map with friend [%p]", uri, lf);
 			bctbx_map_cchar_insert_and_delete(list->friends_map_uri, pair);
 			ms_free(uri);
 		}
@@ -561,7 +560,6 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 		char *uri = linphone_address_as_string_uri_only(lfaddr);
 		if(uri) {
 			bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(uri, linphone_friend_ref(lf));
-			ms_message("inserting %s in map with friend [%p]", uri, lf);
 			bctbx_map_cchar_insert_and_delete(list->friends_map_uri, pair);
 			ms_free(uri);
 		}
