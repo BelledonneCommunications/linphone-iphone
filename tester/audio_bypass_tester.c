@@ -437,7 +437,7 @@ static void only_enable_payload(LinphoneCore *lc, const char *mime, int rate, in
  * set some conservative jitter buffer params to be more robust to late ticks.
  * This is important so that the audio comparison is succesful*/
 static void set_jitter_buffer_params(LinphoneCore *lc){
-	int jitter_buffer_ms = 200;
+	int jitter_buffer_ms = 300;
 	lp_config_set_int(lc->config, "rtp", "jitter_buffer_min_size", jitter_buffer_ms);
 	linphone_core_set_audio_jittcomp(lc, jitter_buffer_ms);
 }

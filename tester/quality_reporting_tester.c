@@ -417,7 +417,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 		
 		end_call(marie, pauline);
 		/*wait that all publish complete*/
-		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,marie->stat.number_of_LinphonePublishProgress,15000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,marie->stat.number_of_LinphonePublishProgress,60000));
 	}
 
 	linphone_call_params_unref(marie_params);
