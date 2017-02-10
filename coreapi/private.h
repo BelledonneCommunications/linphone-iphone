@@ -784,6 +784,7 @@ struct _LinphoneFriendList {
 	LinphoneAddress *rls_addr;
 	MSList *friends;
 	bctbx_map_t *friends_map;
+	bctbx_map_t *friends_map_uri;
 	unsigned char *content_digest;
 	int expected_notification_version;
 	unsigned int storage_id;

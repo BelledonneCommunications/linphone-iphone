@@ -246,6 +246,7 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 }
 
 /* BEWARE this test will fail if the machine it is run on is behind an active firewall not sending ICMP errors on incoming connections! */
+/* It will create a leak of NOTIFY because during marie error after network switch off, Pauline will never received the acknowledgement of the notify ...*/
 static void subscribe_failure_handle_by_app(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
