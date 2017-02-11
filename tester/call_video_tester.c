@@ -347,7 +347,7 @@ static void call_with_video_added_2(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	bool_t call_ok;
 	/*in this variant marie is already in automatically accept*/
-	LinphoneVideoPolicy  marie_policy;
+	LinphoneVideoPolicy  marie_policy = {0};
 	marie_policy.automatically_accept=TRUE;
 
 
