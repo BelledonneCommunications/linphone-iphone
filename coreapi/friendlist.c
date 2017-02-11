@@ -548,7 +548,6 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 		if(uri) {
 			bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(uri, linphone_friend_ref(lf));
 			bctbx_map_cchar_insert_and_delete(list->friends_map_uri, pair);
-			ms_free(uri);
 		}
 		iterator = bctbx_list_next(iterator);
 	}
@@ -628,7 +627,6 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 				bctbx_map_cchar_erase(list->friends_map_uri, it);
 			}
 			bctbx_iterator_cchar_delete(it);
-			ms_free(uri);
 		}
 		iterator = bctbx_list_next(iterator);
 	}
@@ -761,7 +759,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFrien
 LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri) {
 	LinphoneAddress *address = linphone_address_new(uri);
 	LinphoneFriend *result = linphone_friend_list_find_friend_by_address(list, address);
-	linphone_address_destroy(address);
+	linphone_address_unref(address);
 	return result;
 }
 

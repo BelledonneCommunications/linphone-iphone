@@ -381,7 +381,6 @@ static void friends_sqlite_store_lot_of_friends(void) {
 	sqlite3 *db;
 	int i;
 	char* errmsg = NULL;
-	char *key;
 	int ret;
 	char *buf;
 
@@ -450,7 +449,6 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	sqlite3 *db;
 	int i;
 	char* errmsg = NULL;
-	char *key;
 	int ret;
 	char *buf;
 	bctoolboxTimeSpec t1;
@@ -969,17 +967,16 @@ end:
 static void insert_lot_of_friends_map_test(void) {
 	int i;
 	bctbx_map_t *friends_map = bctbx_mmap_cchar_new();
-	bctbx_pair_t *pair;
-	bctbx_iterator_t *it;
-	char *key[64];
-	ms_message("Départ\n");
+	bctbx_pair_cchar_t *pair;
+	
+	char key[64];
+	ms_message("Start\n");
 	for(i = 0; i < 20000; i++) {
 		snprintf(key, sizeof(key),"key_%i",i);
-		pair = bctbx_pair_cchar_new(key,i);
-		bctbx_map_cchar_insert_and_delete(friends_map, pair);
+		pair = bctbx_pair_cchar_new(key,(void*)(uintptr_t)i);
+		bctbx_map_cchar_insert_and_delete(friends_map, (bctbx_pair_t*)pair);
 	}
-	ms_message("Fin\n");
-	bctbx_iterator_cchar_delete(it);
+	ms_message("End\n");
 	bctbx_mmap_cchar_delete(friends_map);
 }
 
@@ -987,27 +984,27 @@ static void find_friend_by_ref_key_in_lot_of_friends_test(void) {
 	int i;
 	int j;
 	bctbx_map_t *friends_map = bctbx_mmap_cchar_new();
-	bctbx_pair_t *pair;
+	bctbx_pair_cchar_t *pair;
 	bctbx_iterator_t *it;
 	bctoolboxTimeSpec t1;
 	bctoolboxTimeSpec t2;
-	char *key[64];
+	char key[64];
 	for(i = 0; i < 20000; i++) {
 		snprintf(key, sizeof(key),"key_%i",i);
-		pair = bctbx_pair_cchar_new(key,i);
-		bctbx_map_cchar_insert_and_delete(friends_map, pair);
+		pair = bctbx_pair_cchar_new(key,(void*)(uintptr_t)i);
+		bctbx_map_cchar_insert_and_delete(friends_map, (bctbx_pair_t*)pair);
 	}
 	bctbx_get_cur_time(&t1);
-	ms_message("Départ : %li : %li\n",t1.tv_sec, t1.tv_nsec);
+	ms_message("Start : %li : %li\n",t1.tv_sec, t1.tv_nsec);
 	for(i = 0; i < 20000; i++) {
 		snprintf(key, sizeof(key),"key_%i",i);
 		it = bctbx_map_cchar_find_key(friends_map, key);
-		j = (int)bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it));
+		j = (int)(uintptr_t)bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it));
 		BC_ASSERT_TRUE(i == j);
 		bctbx_iterator_cchar_delete(it);
 	}
 	bctbx_get_cur_time(&t2);
-	ms_message("Fin : %li : %li\n", t2.tv_sec, t2.tv_nsec);
+	ms_message("End : %li : %li\n", t2.tv_sec, t2.tv_nsec);
 	bctbx_mmap_cchar_delete(friends_map);
 }
 
