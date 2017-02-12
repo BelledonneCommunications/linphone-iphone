@@ -406,7 +406,7 @@ static void friends_sqlite_store_lot_of_friends(void) {
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 
-	ms_message("Départ :\n");
+	ms_message("Start :\n");
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	for (i = 0; i < 20000; i++) {
@@ -430,7 +430,7 @@ static void friends_sqlite_store_lot_of_friends(void) {
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	
-	ms_message("Fin :\n");
+	ms_message("End :\n");
 	
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
@@ -501,7 +501,7 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	
 	bctbx_get_cur_time(&t1);
-	ms_message("Départ : %li : %li\n", t1.tv_sec, t1.tv_nsec);
+	ms_message("Start : %li : %li\n", (long int)t1.tv_sec, (long int)t1.tv_nsec);
 	for (i = 0; i < 20000; i++) {
 		buf = sqlite3_mprintf("SELECT * FROM friends WHERE ref_key LIKE 'key_%i';",
 							  i);
@@ -512,7 +512,7 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	}
 	
 	bctbx_get_cur_time(&t2);
-	ms_message("Fin : %li : %li\n", t2.tv_sec, t2.tv_nsec);
+	ms_message("End : %li : %li\n", (long int)t2.tv_sec, (long int)t2.tv_nsec);
 	
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
@@ -995,7 +995,7 @@ static void find_friend_by_ref_key_in_lot_of_friends_test(void) {
 		bctbx_map_cchar_insert_and_delete(friends_map, (bctbx_pair_t*)pair);
 	}
 	bctbx_get_cur_time(&t1);
-	ms_message("Start : %li : %li\n",t1.tv_sec, t1.tv_nsec);
+	ms_message("Start : %li : %li\n", (long int)t1.tv_sec, (long int)t1.tv_nsec);
 	for(i = 0; i < 20000; i++) {
 		snprintf(key, sizeof(key),"key_%i",i);
 		it = bctbx_map_cchar_find_key(friends_map, key);
@@ -1004,7 +1004,7 @@ static void find_friend_by_ref_key_in_lot_of_friends_test(void) {
 		bctbx_iterator_cchar_delete(it);
 	}
 	bctbx_get_cur_time(&t2);
-	ms_message("End : %li : %li\n", t2.tv_sec, t2.tv_nsec);
+	ms_message("End : %li : %li\n", (long int)t2.tv_sec, (long int)t2.tv_nsec);
 	bctbx_mmap_cchar_delete(friends_map);
 }
 
