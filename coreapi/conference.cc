@@ -445,7 +445,7 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 		linphone_call_params_unref(params);
 	} else{
 		ms_message("Pausing call to actually remove from conference");
-		err=_linphone_core_pause_call(m_core,call);
+		err=_linphone_call_pause(call);
 	}
 	return err;
 }
@@ -529,7 +529,7 @@ int LocalConference::enter() {
 		return -1;
 	}
 	if (m_core->current_call != NULL) {
-		_linphone_core_pause_call(m_core, m_core->current_call);
+		_linphone_call_pause(m_core->current_call);
 	}
 	if (m_localParticipantStream==NULL) addLocalEndpoint();
 	return 0;

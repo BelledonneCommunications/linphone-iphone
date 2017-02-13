@@ -63,6 +63,28 @@ LINPHONE_PUBLIC const char * linphone_payload_type_get_mime_type(const LinphoneP
 LINPHONE_PUBLIC int linphone_payload_type_get_channels(const LinphonePayloadType *pt);
 
 /**
+ * Returns the payload type number assigned for this codec.
+ * @param[in] pt LinphonePayloadType object
+ * @return The number of the payload type
+**/
+LINPHONE_PUBLIC int linphone_payload_type_get_number(const PayloadType *pt);
+
+/**
+ * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically. THis function is to be used mainly for tests, in order
+ * to override the automatic assignment mechanism.
+ * @param[in] pt LinphonePayloadType object
+ * @param[in] number The number to assign to the payload type
+**/
+LINPHONE_PUBLIC void linphone_payload_type_set_number(PayloadType *pt, int number);
+
+/**
+ * Tells whether the specified payload type represents a variable bitrate codec.
+ * @param[in] pt LinphonePayloadType object
+ * @return TRUE if the payload type represents a VBR codec, FALSE if disabled.
+ */
+LINPHONE_PUBLIC bool_t linphone_payload_type_is_vbr(const LinphonePayloadType *pt);
+
+/**
  * @}
 **/
 

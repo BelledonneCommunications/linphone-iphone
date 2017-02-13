@@ -1146,8 +1146,9 @@ LINPHONE_PUBLIC LinphoneCall * linphone_core_invite_address_with_params(Linphone
  * @param[in] refer_to The destination the call is to be refered to
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @deprecated Use linphone_call_transfer() instead
 **/
-LINPHONE_PUBLIC int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 
 /**
  * Transfers a call to destination of another running call. This is used for "attended transfer" scenarios.
@@ -1164,8 +1165,9 @@ LINPHONE_PUBLIC int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *
  * @param[in] dest A running call whose remote person will receive the transfer
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @deprecated Use linphone_call_transfer_to_another() instead
 **/
-LINPHONE_PUBLIC int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest);
 
 /**
  * Start a new call as a consequence of a transfer request received from a call.
@@ -1217,8 +1219,9 @@ LINPHONE_PUBLIC LinphoneCall *linphone_core_get_current_call(const LinphoneCore 
  * @param[in] call The LinphoneCall object representing the call to be answered
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @deprecated Use linphone_call_accept() instead
 **/
-LINPHONE_PUBLIC int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
 /**
  * Accept an incoming call, with parameters.
@@ -1233,8 +1236,9 @@ LINPHONE_PUBLIC int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *ca
  * @param[in] params The specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @deprecated Use linphone_call_accept_with_params() instead
 **/
-LINPHONE_PUBLIC int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 /**
  * When receiving an incoming, accept to start a media session as early-media.
@@ -1246,8 +1250,9 @@ LINPHONE_PUBLIC int linphone_core_accept_call_with_params(LinphoneCore *lc, Linp
  * @param[in] params The call parameters to use (can be NULL)
  * @return 0 if successful, -1 otherwise
  * @ingroup call_control
+ * @deprecated Use linphone_call_accept_early_media_with_params() instead
 **/
-LINPHONE_PUBLIC int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall* call, const LinphoneCallParams* params);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall* call, const LinphoneCallParams* params);
 
 /**
  * Accept an early media session for an incoming call.
@@ -1257,8 +1262,9 @@ LINPHONE_PUBLIC int linphone_core_accept_early_media_with_params(LinphoneCore* l
  * @return 0 if successful, -1 otherwise
  * @ingroup call_control
  * @see linphone_core_accept_early_media_with_params()
+ * @deprecated Use linphone_call_accept_early_media() instead
 **/
-LINPHONE_PUBLIC int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call);
 
 /**
  * Terminates a call.
@@ -1266,8 +1272,9 @@ LINPHONE_PUBLIC int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneC
  * @param[in] call The LinphoneCall object representing the call to be terminated
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @deprecated Use linphone_call_terminate() instead
 **/
-LINPHONE_PUBLIC int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
 /**
  * Redirect the specified call to the given redirect URI.
@@ -1276,8 +1283,9 @@ LINPHONE_PUBLIC int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall 
  * @param[in] redirect_uri The URI to redirect the call to
  * @return 0 if successful, -1 on error.
  * @ingroup call_control
+ * @deprecated Use linphone_call_redirect() instead
  */
-LINPHONE_PUBLIC int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
 
 /**
  * Decline a pending incoming call, with a reason.
@@ -1286,8 +1294,9 @@ LINPHONE_PUBLIC int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *
  * @param[in] reason The reason for rejecting the call: LinphoneReasonDeclined or LinphoneReasonBusy
  * @return 0 on success, -1 on failure
  * @ingroup call_control
+ * @deprecated Use linphone_call_decline() instead
 **/
-LINPHONE_PUBLIC int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
 
 /**
  * Terminates all the calls.
@@ -1306,8 +1315,9 @@ LINPHONE_PUBLIC int linphone_core_terminate_all_calls(LinphoneCore *lc);
  * @return 0 on success, -1 on failure
  * @ingroup call_control
  * @see linphone_core_resume_call()
+ * @deprecated Use linphone_call_pause() instead
 **/
-LINPHONE_PUBLIC int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 
 /**
  * Pause all currently running calls.
@@ -1325,8 +1335,9 @@ LINPHONE_PUBLIC int linphone_core_pause_all_calls(LinphoneCore *lc);
  * @return 0 on success, -1 on failure
  * @ingroup call_control
  * @see linphone_core_pause_call()
+ * @deprecated Use linphone_call_resume() instead
 **/
-LINPHONE_PUBLIC int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
 /**
  * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
@@ -1341,8 +1352,9 @@ LINPHONE_PUBLIC int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *ca
  * @param[in] params The new call parameters to use (may be NULL)
  * @return 0 if successful, -1 otherwise.
  * @ingroup call_control
+ * @deprecated Use linphone_call_update() instead
 **/
-LINPHONE_PUBLIC int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 /**
  * When receiving a #LinphoneCallUpdatedByRemote state notification, prevent LinphoneCore from performing an automatic answer.
@@ -1364,8 +1376,9 @@ LINPHONE_PUBLIC int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *ca
  * @param[in] call The call for which to defer the update
  * @return 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a valid #LinphoneCallUpdatedByRemote notification
  * @ingroup call_control
+ * @deprecated Use linphone_call_defer_update() instead
 **/
-LINPHONE_PUBLIC int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call);
 
 /**
  * Accept call modifications initiated by other end.
@@ -1385,8 +1398,9 @@ LINPHONE_PUBLIC int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCa
  * @param[in] params A LinphoneCallParams object describing the call parameters to accept
  * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state)
  * @ingroup call_control
+ * @deprecated Use linphone_call_accept_update() instead
 **/
-LINPHONE_PUBLIC int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 /**
  * Create a LinphoneCallParams suitable for linphone_core_invite_with_params(), linphone_core_accept_call_with_params(), linphone_core_accept_early_media_with_params(),
@@ -1781,8 +1795,9 @@ LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, cons
  * @param[in] pt The #LinphonePayloadType we want to know
  * @return TRUE if the payload type represents a VBR codec, FALSE if disabled.
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_is_vbr() instead
  */
-LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt);
 
 /**
  * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
@@ -1839,15 +1854,17 @@ LINPHONE_PUBLIC LinphonePayloadType* linphone_core_find_payload_type(LinphoneCor
 /**
  * Returns the payload type number assigned for this codec.
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_get_number() instead
 **/
-LINPHONE_PUBLIC int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
 
 /**
  * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically. THis function is to be used mainly for tests, in order
  * to override the automatic assignment mechanism.
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_set_number() instead
 **/
-LINPHONE_PUBLIC void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number);
 
 LINPHONE_PUBLIC const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 

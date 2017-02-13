@@ -679,7 +679,7 @@ int linphone_upnp_context_send_remove_port_binding(UpnpContext *lupnp, UpnpPortB
  * uPnP Core interfaces
  */
 
-int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool_t video) {
+int linphone_call_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool_t video) {
 	LinphoneCore *lc = call->core;
 	UpnpContext *lupnp = lc->upnp;
 	int ret = -1;
@@ -725,7 +725,7 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 
 
 
-int linphone_core_update_upnp_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md) {
+int linphone_call_update_upnp_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md) {
 	bool_t audio = FALSE;
 	bool_t video = FALSE;
 	int i;
@@ -741,14 +741,14 @@ int linphone_core_update_upnp_from_remote_media_description(LinphoneCall *call, 
 		}
 	}
 
-	return linphone_core_update_upnp_audio_video(call, audio, video);
+	return linphone_call_update_upnp_audio_video(call, audio, video);
 }
 
-int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call) {
-	return linphone_core_update_upnp_audio_video(call, call->audiostream!=NULL, call->videostream!=NULL);
+int linphone_call_update_upnp(LinphoneCall *call) {
+	return linphone_call_update_upnp_audio_video(call, call->audiostream!=NULL, call->videostream!=NULL);
 }
 
-void linphone_core_update_upnp_state_in_call_stats(LinphoneCall *call) {
+void linphone_call_update_upnp_state_in_call_stats(LinphoneCall *call) {
 	call->stats[LINPHONE_CALL_STATS_AUDIO].upnp_state = call->upnp_session->audio->state;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].upnp_state = call->upnp_session->video->state;
 }
@@ -799,7 +799,7 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 		/*
 		 * Update stat
 		 */
-		linphone_core_update_upnp_state_in_call_stats(call);
+		linphone_call_update_upnp_state_in_call_stats(call);
 
 		/*
 		 * Update session state
@@ -832,13 +832,13 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 
 		switch (call->state) {
 			case LinphoneCallUpdating:
-				linphone_core_start_update_call(lc, call);
+				linphone_call_start_update(call);
 				break;
 			case LinphoneCallUpdatedByRemote:
-				linphone_core_start_accept_call_update(lc, call,call->prevstate,linphone_call_state_to_string(call->prevstate));
+				linphone_call_start_accept_update(call, call->prevstate, linphone_call_state_to_string(call->prevstate));
 				break;
 			case LinphoneCallOutgoingInit:
-				linphone_core_proceed_with_invite_if_ready(lc, call, NULL);
+				linphone_call_proceed_with_invite_if_ready(call, NULL);
 				break;
 			case LinphoneCallIdle:
 				linphone_call_update_local_media_description_from_ice_or_upnp(call);
@@ -1056,7 +1056,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 	return TRUE;
 }
 
-int linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session) {
+int linphone_call_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session) {
 	int i;
 	SalStreamDescription *stream;
 	UpnpStream *upnpStream;

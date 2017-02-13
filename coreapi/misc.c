@@ -69,8 +69,12 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloa
 	return FALSE;
 }
 
-bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt){
-	if (pt->type==PAYLOAD_VIDEO) return TRUE;
+bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt) {
+	return linphone_payload_type_is_vbr(pt);
+}
+
+bool_t linphone_payload_type_is_vbr(const LinphonePayloadType *pt) {
+	if (pt->type == PAYLOAD_VIDEO) return TRUE;
 	return !!(pt->flags & PAYLOAD_TYPE_IS_VBR);
 }
 
@@ -85,12 +89,20 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt,
 	return -1;
 }
 
-int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt){
+int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt) {
+	return linphone_payload_type_get_number(pt);
+}
+
+int linphone_payload_type_get_number(const PayloadType *pt) {
 	return payload_type_get_number(pt);
 }
 
-void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number){
-	payload_type_set_number(pt,number);
+void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number) {
+	linphone_payload_type_set_number(pt, number);
+}
+
+void linphone_payload_type_set_number(PayloadType *pt, int number) {
+	payload_type_set_number(pt, number);
 }
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
@@ -772,8 +784,7 @@ const char *linphone_ice_state_to_string(LinphoneIceState state){
 	return "invalid";
 }
 
-void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
-{
+void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
 	IceCheckList *text_check_list;
@@ -891,7 +902,7 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDes
 		}
 	}
 
-	linphone_core_update_ice_state_in_call_stats(call);
+	linphone_call_update_ice_state_in_call_stats(call);
 }
 
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session, bool_t use_nortpproxy) {

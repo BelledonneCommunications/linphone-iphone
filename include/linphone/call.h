@@ -353,6 +353,176 @@ LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtp_transport(LinphoneCall
 LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stream_index);
 
 /**
+ * Pauses the call. If a music file has been setup using linphone_core_set_play_file(),
+ * this file will be played to the remote user.
+ * The only way to resume a paused call is to call linphone_call_resume().
+ * @param[in] call LinphoneCall object
+ * @return 0 on success, -1 on failure
+ * @see linphone_call_resume()
+**/
+LINPHONE_PUBLIC int linphone_call_pause(LinphoneCall *call);
+
+/**
+ * Resumes a call.
+ * The call needs to have been paused previously with linphone_call_pause().
+ * @param[in] call LinphoneCall object
+ * @return 0 on success, -1 on failure
+ * @see linphone_call_pause()
+**/
+LINPHONE_PUBLIC int linphone_call_resume(LinphoneCall *call);
+
+/**
+ * Terminates a call.
+ * @param[in] call LinphoneCall object
+ * @return 0 on success, -1 on failure
+**/
+LINPHONE_PUBLIC int linphone_call_terminate(LinphoneCall *call);
+
+/**
+ * Redirect the specified call to the given redirect URI.
+ * @param[in] call A LinphoneCall object
+ * @param[in] redirect_uri The URI to redirect the call to
+ * @return 0 if successful, -1 on error.
+ */
+LINPHONE_PUBLIC int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri);
+
+/**
+ * Decline a pending incoming call, with a reason.
+ * @param[in] call A LinphoneCall object that must be in the IncomingReceived state
+ * @param[in] reason The reason for rejecting the call: LinphoneReasonDeclined or LinphoneReasonBusy
+ * @return 0 on success, -1 on failure
+**/
+LINPHONE_PUBLIC int linphone_call_decline(LinphoneCall * call, LinphoneReason reason);
+
+/**
+ * Accept an incoming call.
+ *
+ * Basically the application is notified of incoming calls within the
+ * call_state_changed callback of the #LinphoneCoreVTable structure, where it will receive
+ * a LinphoneCallIncoming event with the associated LinphoneCall object.
+ * The application can later accept the call using this method.
+ * @param[in] call A LinphoneCall object
+ * @return 0 on success, -1 on failure
+**/
+LINPHONE_PUBLIC int linphone_call_accept(LinphoneCall *call);
+
+/**
+ * Accept an incoming call, with parameters.
+ *
+ * Basically the application is notified of incoming calls within the
+ * call_state_changed callback of the #LinphoneCoreVTable structure, where it will receive
+ * a LinphoneCallIncoming event with the associated LinphoneCall object.
+ * The application can later accept the call using this method.
+ * @param[in] call A LinphoneCall object
+ * @param[in] params The specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters
+ * @return 0 on success, -1 on failure
+**/
+LINPHONE_PUBLIC int linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParams *params);
+
+/**
+ * Accept an early media session for an incoming call.
+ * This is identical as calling linphone_call_accept_early_media_with_params() with NULL parameters.
+ * @param[in] call A LinphoneCall object
+ * @return 0 if successful, -1 otherwise
+ * @see linphone_call_accept_early_media_with_params()
+**/
+LINPHONE_PUBLIC int linphone_call_accept_early_media(LinphoneCall *call);
+
+/**
+ * When receiving an incoming, accept to start a media session as early-media.
+ * This means the call is not accepted but audio & video streams can be established if the remote party supports early media.
+ * However, unlike after call acceptance, mic and camera input are not sent during early-media, though received audio & video are played normally.
+ * The call can then later be fully accepted using linphone_call_accept() or linphone_call_accept_with_params().
+ * @param[in] call A LinphoneCall object
+ * @param[in] params The call parameters to use (can be NULL)
+ * @return 0 if successful, -1 otherwise
+**/
+LINPHONE_PUBLIC int linphone_call_accept_early_media_with_params(LinphoneCall *call, const LinphoneCallParams *params);
+
+/**
+ * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
+ * In this version this is limited to the following use cases:
+ * - setting up/down the video stream according to the video parameter of the LinphoneCallParams (see linphone_call_params_enable_video() ).
+ * - changing the size of the transmitted video after calling linphone_core_set_preferred_video_size()
+ * In case no changes are requested through the LinphoneCallParams argument, then this argument can be omitted and set to NULL.
+ * WARNING: Updating a call in the LinphoneCallPaused state will still result in a paused call even if the media directions set in the
+ * params are sendrecv. To resume a paused call, you need to call linphone_call_resume().
+ * @param[in] call A LinphoneCall update
+ * @param[in] params The new call parameters to use (may be NULL)
+ * @return 0 if successful, -1 otherwise.
+**/
+LINPHONE_PUBLIC int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params);
+
+/**
+ * When receiving a #LinphoneCallUpdatedByRemote state notification, prevent LinphoneCore from performing an automatic answer.
+ *
+ * When receiving a #LinphoneCallUpdatedByRemote state notification (ie an incoming reINVITE), the default behaviour of
+ * LinphoneCore is defined by the "defer_update_default" option of the "sip" section of the config. If this option is 0 (the default)
+ * then the LinphoneCore automatically answers the reINIVTE with call parameters unchanged.
+ * However when for example when the remote party updated the call to propose a video stream, it can be useful
+ * to prompt the user before answering. This can be achieved by calling linphone_core_defer_call_update() during
+ * the call state notification, to deactivate the automatic answer that would just confirm the audio but reject the video.
+ * Then, when the user responds to dialog prompt, it becomes possible to call linphone_call_accept_update() to answer
+ * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
+ *
+ * The #LinphoneCallUpdatedByRemote notification can also arrive when receiving an INVITE without SDP. In such case, an unchanged offer is made
+ * in the 200Ok, and when the ACK containing the SDP answer is received, #LinphoneCallUpdatedByRemote is triggered to notify the application of possible
+ * changes in the media session. However in such case defering the update has no meaning since we just generating an offer.
+ *
+ * @param[in] call A LinphoneCall object
+ * @return 0 if successful, -1 if the linphone_call_defer_update() was done outside a valid #LinphoneCallUpdatedByRemote notification
+**/
+LINPHONE_PUBLIC int linphone_call_defer_update(LinphoneCall *call);
+
+/**
+ * Accept call modifications initiated by other end.
+ *
+ * This call may be performed in response to a #LinphoneCallUpdatedByRemote state notification.
+ * When such notification arrives, the application can decide to call linphone_call_defer_update() so that it can
+ * have the time to prompt the user. linphone_call_get_remote_params() can be used to get information about the call parameters
+ * requested by the other party, such as whether a video stream is requested.
+ *
+ * When the user accepts or refuse the change, linphone_call_accept_update() can be done to answer to the other party.
+ * If params is NULL, then the same call parameters established before the update request will continue to be used (no change).
+ * If params is not NULL, then the update will be accepted according to the parameters passed.
+ * Typical example is when a user accepts to start video, then params should indicate that video stream should be used
+ * (see linphone_call_params_enable_video()).
+ * @param[in] call A LinphoneCall object
+ * @param[in] params A LinphoneCallParams object describing the call parameters to accept
+ * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state)
+**/
+LINPHONE_PUBLIC int linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *params);
+
+/**
+ * Performs a simple call transfer to the specified destination.
+ * The remote endpoint is expected to issue a new call to the specified destination.
+ * The current call remains active and thus can be later paused or terminated.
+ * It is possible to follow the progress of the transfer provided that transferee sends notification about it.
+ * In this case, the transfer_state_changed callback of the #LinphoneCoreVTable is invoked to notify of the state of the new call at the other party.
+ * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallConnected.
+ * @param[in] call The call to be transfered
+ * @param[in] refer_to The destination the call is to be refered to
+ * @return 0 on success, -1 on failure
+**/
+LINPHONE_PUBLIC int linphone_call_transfer(LinphoneCall *call, const char *refer_to);
+
+/**
+ * Transfers a call to destination of another running call. This is used for "attended transfer" scenarios.
+ * The transfered call is supposed to be in paused state, so that it is able to accept the transfer immediately.
+ * The destination call is a call previously established to introduce the transfered person.
+ * This method will send a transfer request to the transfered person. The phone of the transfered is then
+ * expected to automatically call to the destination of the transfer. The receiver of the transfer will then automatically
+ * close the call with us (the 'dest' call).
+ * It is possible to follow the progress of the transfer provided that transferee sends notification about it.
+ * In this case, the transfer_state_changed callback of the #LinphoneCoreVTable is invoked to notify of the state of the new call at the other party.
+ * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallConnected.
+ * @param[in] call A running call you want to transfer
+ * @param[in] dest A running call whose remote person will receive the transfer
+ * @return 0 on success, -1 on failure
+**/
+LINPHONE_PUBLIC int linphone_call_transfer_to_another(LinphoneCall *call, LinphoneCall *dest);
+
+/**
  * @}
  */
 
