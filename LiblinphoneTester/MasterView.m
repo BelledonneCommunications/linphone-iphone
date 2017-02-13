@@ -9,9 +9,10 @@
 #import "MasterView.h"
 #import "DetailTableView.h"
 
+#import "Log.h"
+#include "TargetConditionals.h"
 #include "linphone/liblinphone_tester.h"
 #include "mediastreamer2/msutils.h"
-#import "Log.h"
 
 @interface MasterView () {
 	NSMutableArray *_objects;
@@ -62,12 +63,14 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	LOGI(@"Bundle path: %@", bundlePath);
 	LOGI(@"Writable path: %@", writablePath);
 
+#if (TARGET_OS_SIMULATOR)
 	char *xmlFile = bc_tester_file("LibLinphoneIOS.xml");
 	char *args[] = {"--xml-file", xmlFile};
 	bc_tester_parse_args(2, args, 0);
 
 	char *logFile = bc_tester_file("LibLinphoneIOS.txt");
 	liblinphone_tester_set_log_file(logFile);
+#endif
 
 	liblinphonetester_ipv6 = true;
 
