@@ -447,7 +447,8 @@ LINPHONE_PUBLIC int linphone_call_accept_early_media_with_params(LinphoneCall *c
  * In case no changes are requested through the LinphoneCallParams argument, then this argument can be omitted and set to NULL.
  * WARNING: Updating a call in the LinphoneCallPaused state will still result in a paused call even if the media directions set in the
  * params are sendrecv. To resume a paused call, you need to call linphone_call_resume().
- * @param[in] call A LinphoneCall update
+ *
+ * @param[in] call A LinphoneCall object
  * @param[in] params The new call parameters to use (may be NULL)
  * @return 0 if successful, -1 otherwise.
 **/

@@ -1347,6 +1347,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_resume_call(LinphoneCore *
  * In case no changes are requested through the LinphoneCallParams argument, then this argument can be omitted and set to NULL.
  * WARNING: Updating a call in the LinphoneCallPaused state will still result in a paused call even if the media directions set in the
  * params are sendrecv. To resume a paused call, you need to call linphone_core_resume_call().
+ *
  * @param[in] lc LinphoneCore object
  * @param[in] call The call to be updated
  * @param[in] params The new call parameters to use (may be NULL)
