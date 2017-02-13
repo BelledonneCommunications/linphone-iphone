@@ -741,35 +741,33 @@ void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *li
 LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFriendList *list, const LinphoneAddress *address) {
 	LinphoneFriend *result = NULL;
 	char *uri = linphone_address_as_string_uri_only(address);
-
 	bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map_uri, (void*)uri);
-	if (bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map_uri))) {
-		bctbx_iterator_cchar_delete(it);
-		ms_free(uri);
-		return NULL;
+	if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map_uri))) {
+		bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
+		result = (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 	}
-	bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
-	result = (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 	bctbx_iterator_cchar_delete(it);
-	
 	ms_free(uri);
 	return result;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri) {
+	LinphoneFriend *result = NULL;
 	LinphoneAddress *address = linphone_address_new(uri);
-	LinphoneFriend *result = linphone_friend_list_find_friend_by_address(list, address);
-	linphone_address_unref(address);
+	if(address) {
+		result = linphone_friend_list_find_friend_by_address(list, address);
+		linphone_address_unref(address);
+	}
 	return result;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
 	bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map, (void*)ref_key);
-	if (bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))) {
-		return NULL;
+	if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))) {
+		bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
+		return (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 	}
-	bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
-	return (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
+	return NULL;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op) {
