@@ -123,7 +123,10 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 
 		lc->provisioning_http_listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
 
-		request=belle_http_request_create("GET",uri, NULL);
+		request=belle_http_request_create("GET"
+											, uri
+											, belle_sip_header_create("User-Agent",linphone_core_get_user_agent(lc))
+											, NULL);
 
 		return belle_http_provider_send_request(lc->http_provider, request, lc->provisioning_http_listener);
 	} else {

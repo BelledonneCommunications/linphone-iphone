@@ -1463,6 +1463,7 @@ static void call_with_custom_sdp_attributes(void) {
 	pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_add_custom_sdp_attribute(pauline_params, "weather", "bad");
 	linphone_call_params_add_custom_sdp_attribute(pauline_params, "working", "yes");
+	linphone_call_params_add_custom_sdp_attribute(pauline_params, "attribute_without_value", NULL); /*cannot be tested yet*/
 	linphone_call_params_add_custom_sdp_media_attribute(pauline_params, LinphoneStreamTypeAudio, "sleeping", "almost");
 	BC_ASSERT_TRUE(call_with_caller_params(pauline, marie, pauline_params));
 	linphone_call_params_unref(pauline_params);

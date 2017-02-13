@@ -1872,7 +1872,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_ilbc,"mode=30",FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_amr,"octet-align=1",FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_amrwb,"octet-align=1",FALSE);
-	linphone_core_register_payload_type(lc,&payload_type_g729,"annexb=no",FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_g729,"annexb=yes",TRUE);
 	/* For AAC, we use a config value to determine if we ought to support SBR. Since it is not offically supported
 	 * for the mpeg4-generic mime type, setting this flag to 1 will break compatibility with other clients. */
 	if( lp_config_get_int(lc->config, "misc", "aac_use_sbr", FALSE) ) {
