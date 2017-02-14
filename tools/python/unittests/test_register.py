@@ -183,7 +183,10 @@ class TestRegister:
 
     def test_transport_change(self):
         cm = CoreManager('multi_account_rc', True)
-        number_of_udp_proxies = reduce(lambda x, y: x + int(y.transport == "udp"), cm.lc.proxy_config_list, 0)
+        number_of_udp_proxies = 0
+        for p in cm.lc.proxy_config_list:
+            if p.transport == "udp":
+                number_of_udp_proxies += 1
         total_number_of_proxies = len(cm.lc.proxy_config_list)
         register_ok = cm.stats.number_of_LinphoneRegistrationOk
         # Keep only UDP

@@ -47,7 +47,6 @@ def create_address(domain):
         domain = test_route
     addr.domain = domain
     assert_equals(addr.domain, domain)
-    addr.display_name = None
     addr.display_name = "Mr Tester"
     assert_equals(addr.display_name, "Mr Tester")
     return addr
