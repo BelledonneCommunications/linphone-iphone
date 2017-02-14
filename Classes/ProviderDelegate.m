@@ -35,7 +35,7 @@
 - (void)config {
 	CXProviderConfiguration *config = [[CXProviderConfiguration alloc]
 		initWithLocalizedName:[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
-	config.ringtoneSound = @"shortring.caf";
+	config.ringtoneSound = @"notes_of_the_optimistic.caf";
 	config.supportsVideo = FALSE;
 	config.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"callkit_logo"]);
 
