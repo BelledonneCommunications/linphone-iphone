@@ -5689,7 +5689,7 @@ void linphone_call_reinvite_to_recover_from_connection_loss(LinphoneCall *call) 
 	LinphoneCallParams *params;
 	ms_message("LinphoneCall[%p] is going to be updated (reINVITE) in order to recover from lost connectivity", call);
 	if (call->ice_session){
-		ice_session_restart(call->ice_session, IR_Controlling);
+		ice_session_reset(call->ice_session, IR_Controlling);
 	}
 	params = linphone_core_create_call_params(call->core, call);
 	linphone_core_update_call(call->core, call, params);
