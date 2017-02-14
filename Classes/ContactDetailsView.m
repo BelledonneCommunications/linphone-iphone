@@ -260,6 +260,24 @@
 		self.tmpContact = NULL;
 		[self saveData];
 	}
+	BOOL rm = TRUE;
+	for (NSString *sip in _contact.sipAddresses) {
+		if (![sip isEqualToString:@""]) {
+			rm = FALSE;
+			break;
+		}
+	}
+	if (rm) {
+		for (NSString *phone in _contact.phoneNumbers) {
+			if (![phone isEqualToString:@""]) {
+				rm = FALSE;
+				break;
+			}
+		}
+	}
+	if (rm) {
+		[LinphoneManager.instance.fastAddressBook removeContact:_contact];
+	}
 }
 
 #pragma mark - UICompositeViewDelegate Functions
