@@ -23,7 +23,7 @@
 	self = [super init];
 	_person = aperson;
 	_friend = afriend ? linphone_friend_ref(afriend) : NULL;
-
+	_added = FALSE;
 	if (_person) {
 		[self loadProperties];
 
@@ -355,11 +355,8 @@
 		(NSString *)kABPersonInstantMessageUsernameKey : value,
 		(NSString *)kABPersonInstantMessageServiceKey : [LinphoneManager instance].contactSipField
 	};
-	// CFStringRef label = (__bridge CFStringRef)[[NSBundle mainBundle]
-	// objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-	// ABMultiValueAddValueAndLabel(lMap, (__bridge CFTypeRef)lDict, label, nil);
-	ABMultiValueReplaceLabelAtIndex(lMap, (__bridge CFTypeRef)(lDict), index);
-	if (!ABRecordSetValue(_person, kABPersonInstantMessageProperty, lMap, &error)) {
+
+	if (![self replaceInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict) atIndex:index]) {
 		LOGI(@"Can't set contact with value [%@] cause [%@]", value, [(__bridge NSError *)error localizedDescription]);
 		CFRelease(lMap);
 	} else {
@@ -374,6 +371,9 @@
 		if ([lDict objectForKey:(__bridge NSString *)kABPersonInstantMessageServiceKey] == nil) {
 			/*too bad probably a gtalk number, storing uri*/
 			ret = [FastAddressBook normalizeSipURI:value];
+		} else if (!_added) {
+			_added = TRUE;
+			[LinphoneManager.instance.fastAddressBook saveContact:self];
 		}
 		CFRelease(lMap);
 	}

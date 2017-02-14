@@ -21,6 +21,7 @@
 @property(nonatomic, strong) NSMutableArray *sipAddresses;
 @property(nonatomic, strong) NSMutableArray *emails;
 @property(nonatomic, strong) NSMutableArray *phoneNumbers;
+@property BOOL added;
 
 - (void)setAvatar:(UIImage *)avatar;
 - (UIImage *)avatar:(BOOL)thumbnail;
