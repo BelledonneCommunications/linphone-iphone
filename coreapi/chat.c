@@ -1538,8 +1538,8 @@ bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
 	if ((linphone_im_notif_policy_get_recv_imdn_displayed(policy) == TRUE) && (msg->state == LinphoneChatMessageStateDisplayed)) return TRUE;
-	if ((linphone_im_notif_policy_get_recv_imdn_delivered(policy) == TRUE) && (msg->state == LinphoneChatMessageStateDeliveredToUser)) return TRUE;
-	return (msg->state == LinphoneChatMessageStateDelivered);
+	if ((linphone_im_notif_policy_get_recv_imdn_delivered(policy) == TRUE) && (msg->state == LinphoneChatMessageStateDeliveredToUser || msg->state == LinphoneChatMessageStateDisplayed)) return TRUE;
+	return (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateDisplayed || msg->state == LinphoneChatMessageStateDeliveredToUser);
 }
 
 bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage *msg) {
