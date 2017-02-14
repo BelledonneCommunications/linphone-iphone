@@ -202,7 +202,6 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
 	xml_ctx->doc = xmlReadDoc((const unsigned char*)first_part_body, 0, NULL, 0);
 	if (xml_ctx->doc != NULL) {
-		char xpath_str[MAX_XPATH_LENGTH];
 		LinphoneFriend *lf;
 		LinphoneContent *presence_part;
 		xmlXPathObjectPtr resource_object;
@@ -253,8 +252,8 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		if ((resource_object != NULL) && (resource_object->nodesetval != NULL)) {
 			for (i = 1; i <= resource_object->nodesetval->nodeNr; i++) {
 				const char *cid = NULL;
-				snprintf(xpath_str, sizeof(xpath_str),"/rlmi:list/rlmi:resource[%i]/rlmi:instance/@cid", i);
-				cid = linphone_get_xml_text_content(xml_ctx, xpath_str);
+				linphone_xml_xpath_context_set_node(xml_ctx, xmlXPathNodeSetItem(resource_object->nodesetval, i-1));
+				cid = linphone_get_xml_text_content(xml_ctx, "./rlmi:instance/@cid");
 				if (cid != NULL) {
 					presence_part = linphone_content_find_part_by_header(body, "Content-Id", cid);
 					if (presence_part == NULL) {
@@ -265,8 +264,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 						if (presence != NULL) {
 							// Try to reduce CPU cost of linphone_address_new and find_friend_by_address by only doing it when we know for sure we have a presence to notify
 							LinphoneAddress* addr;
-							snprintf(xpath_str, sizeof(xpath_str), "/rlmi:list/rlmi:resource[%i]/@uri", i);
-							uri = linphone_get_xml_text_content(xml_ctx, xpath_str);
+							uri = linphone_get_xml_text_content(xml_ctx, "./@uri");
 							if (uri == NULL) continue;
 							addr = linphone_address_new(uri);
 							if (!addr) continue;

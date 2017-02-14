@@ -67,6 +67,11 @@ int linphone_create_xml_xpath_context(xmlparsing_context_t *xml_ctx) {
 	return 0;
 }
 
+void linphone_xml_xpath_context_set_node(xmlparsing_context_t *xml_ctx, xmlNodePtr node) {
+	//xmlXPathSetContextNode(node, xml_ctx->xpath_ctx);
+	xml_ctx->xpath_ctx->node = node;
+}
+
 char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression) {
 	xmlXPathObjectPtr xpath_obj;
 	xmlChar *text = NULL;
