@@ -111,13 +111,12 @@ def generate(apixmlfile, outputfile):
 	m = LinphoneModule(tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_functions)
 	os.chdir('apixml2python')
 	tmpfilename = outputfile.name + '.tmp'
-	f = open(tmpfilename, 'w')
-	f.write(renderer.render(m))
-	f.close()
-	f = open(tmpfilename, 'rU')
-	for line in f:
-		outputfile.write(line)
-	f.close()
+	with open(tmpfilename, mode='w') as f:
+		f.write(renderer.render(m))
+	with open(tmpfilename, mode='rU') as f:
+		for line in f:
+			if not line.isspace():
+				outputfile.write(line)
 	os.unlink(tmpfilename)
 
 
