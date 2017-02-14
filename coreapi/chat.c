@@ -1534,8 +1534,12 @@ void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const 
 }
 
 bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
-	// TODO : Only state == displayed when reception accused supported
-	return (msg->state == LinphoneChatMessageStateDisplayed || msg->state == LinphoneChatMessageStateDelivered) ? TRUE : FALSE;
+	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
+	LinphoneCore *lc = linphone_chat_room_get_core(cr);
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
+	if ((linphone_im_notif_policy_get_recv_imdn_displayed(policy) == TRUE) && (msg->state == LinphoneChatMessageStateDisplayed)) return TRUE;
+	if ((linphone_im_notif_policy_get_recv_imdn_delivered(policy) == TRUE) && (msg->state == LinphoneChatMessageStateDeliveredToUser)) return TRUE;
+	return (msg->state == LinphoneChatMessageStateDelivered);
 }
 
 bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage *msg) {
