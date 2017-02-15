@@ -672,6 +672,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call &&
 			(linphone_core_get_calls_nb(LC) < 2)) {
+#if !TARGET_IPHONE_SIMULATOR
 			NSString *callId =
 				[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
 			NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
@@ -684,6 +685,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					 linphone_core_get_video_policy(LC)->automatically_accept &&
 					 linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
 			[LinphoneManager.instance.providerDelegate reportIncomingCallwithUUID:uuid handle:address video:video];
+#else
+			[PhoneMainView.instance displayIncomingCall:call];
+#endif
 		} else if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 			// Create a UNNotification
 			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
