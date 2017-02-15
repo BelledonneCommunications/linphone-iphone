@@ -1131,11 +1131,11 @@ static void sip_config_read(LinphoneCore *lc) {
 	if (tmpstr==NULL || linphone_core_set_primary_contact(lc,tmpstr)==-1) {
 		const char *hostname=NULL;
 		const char *username=NULL;
-#ifdef HAVE_GETENV
+#if !defined(LINPHONE_WINDOWS_UNIVERSAL) && !defined(LINPHONE_WINDOWS_PHONE) // Using getenv is forbidden on Windows 10 and Windows Phone
 		hostname=getenv("HOST");
 		username=getenv("USER");
 		if (hostname==NULL) hostname=getenv("HOSTNAME");
-#endif /*HAVE_GETENV*/
+#endif
 		if (hostname==NULL)
 			hostname="unknown-host";
 		if (username==NULL){
