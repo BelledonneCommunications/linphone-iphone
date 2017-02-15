@@ -1551,12 +1551,17 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	/* check if we answer to this subscription */
 	lf = linphone_core_find_friend(lc, uri);
 	if (lf!=NULL){
-		linphone_friend_add_incoming_subscription(lf, op);
-		lf->inc_subscribe_pending=TRUE;
-		if (lp_config_get_int(lc->config,"sip","notify_pending_state",0)) {
-			sal_notify_pending_state(op);
+		if (lf->pol != LinphoneSPDeny) {
+			linphone_friend_add_incoming_subscription(lf, op);
+			lf->inc_subscribe_pending=TRUE;
+			if (lp_config_get_int(lc->config,"sip","notify_pending_state",0)) {
+				sal_notify_pending_state(op);
+			}
+			sal_subscribe_accept(op);
+		} else {
+			ms_message("%s is not authorized to subscribe", from);
+			sal_subscribe_decline(op, SalReasonDeclined);
 		}
-		sal_subscribe_accept(op);
 		linphone_friend_done(lf);	/*this will do all necessary actions */
 	}else{
 		/* check if this subscriber is in our black list */
