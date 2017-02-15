@@ -120,7 +120,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
+	[ContactSelection setNameOrEmailFilter:@""];
+	[tableController loadData];
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
 
 	if (tableController.isEditing) {
