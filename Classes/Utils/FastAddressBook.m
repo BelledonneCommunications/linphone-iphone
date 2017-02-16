@@ -300,8 +300,11 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr {
 	NSString *ret = NSLocalizedString(@"Unknown", nil);
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
+	LinphoneFriend *friend = linphone_core_find_friend(LC, addr);
 	if (contact) {
 		ret = [FastAddressBook displayNameForContact:contact];
+	} else if (friend) {
+		ret = [NSString stringWithUTF8String:linphone_friend_get_name(friend)];
 	} else {
 		const char *lDisplayName = linphone_address_get_display_name(addr);
 		const char *lUserName = linphone_address_get_username(addr);
@@ -310,10 +313,6 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 		} else if (lUserName) {
 			ret = [NSString stringWithUTF8String:lUserName];
 		}
-	}
-	LinphoneFriend *friend = linphone_core_find_friend(LC, addr);
-	if (friend) {
-		ret = [NSString stringWithUTF8String:linphone_friend_get_name(friend)];
 	}
 	return ret;
 }
