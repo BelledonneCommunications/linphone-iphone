@@ -1666,6 +1666,9 @@ void linphone_gtk_show_parameters(void){
 	if(!linphone_core_upnp_available()) {
 		gtk_widget_hide(linphone_gtk_get_widget(pb,"use_upnp"));
 	}
+	gtk_widget_hide(linphone_gtk_get_widget(pb, "use_nat_address"));
+	gtk_widget_hide(linphone_gtk_get_widget(pb, "nat_address"));
+	gtk_widget_hide(linphone_gtk_get_widget(pb, "nat_address_label"));
 
 	mtu=linphone_core_get_mtu(lc);
 	if (mtu<=0){
