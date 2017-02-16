@@ -315,7 +315,14 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 				while (iterator) {
 					const char *number = (const char *)bctbx_list_get_data(iterator);
 					const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lf, number);
-					if (presence) linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, number, presence);
+					if (presence) {
+						char *presence_address = linphone_presence_model_get_contact(presence);
+						if(!linphone_friend_list_find_friend_by_uri(lf->friend_list, presence_address)) {
+							bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(presence_address, linphone_friend_ref(lf));
+							bctbx_map_cchar_insert_and_delete(lf->friend_list->friends_map_uri, pair);
+						}
+						linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, number, presence);
+					}
 					iterator = bctbx_list_next(iterator);
 				}
 				if (numbers) bctbx_list_free(numbers);
