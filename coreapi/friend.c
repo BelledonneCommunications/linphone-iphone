@@ -494,8 +494,10 @@ void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 	if (lf->outsub!=NULL) {
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;
-		lf->subscribe_active=FALSE;
 	}
+
+	// To resend a subscribe on the next network_reachable(TRUE)
+	lf->subscribe_active=FALSE;
 
 	/* Notify application that we no longer know the presence activity */
 	iterator = lf->presence_models;

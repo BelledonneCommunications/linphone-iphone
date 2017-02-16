@@ -885,6 +885,14 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list){
 
 void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list) {
 	const bctbx_list_t *elem;
+
+	// Terminate subscription event
+	if (list->event) {
+		linphone_event_terminate(list->event);
+		linphone_event_unref(list->event);
+		list->event = NULL;
+	}
+
 	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
 		linphone_friend_invalidate_subscription(lf);
