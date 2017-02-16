@@ -1544,7 +1544,7 @@ static void video_config_read(LinphoneCore *lc){
 	linphone_core_set_video_device(lc,str);
 
 	linphone_core_set_preferred_video_size_by_name(lc,
-		lp_config_get_string(lc->config,"video","size","cif"));
+		lp_config_get_string(lc->config,"video","size","vga"));
 
 	linphone_core_set_preview_video_size_by_name(lc,
 		lp_config_get_string(lc->config,"video","preview_size",NULL));
