@@ -311,6 +311,10 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 			ret = [NSString stringWithUTF8String:lUserName];
 		}
 	}
+	LinphoneFriend *friend = linphone_core_find_friend(LC, addr);
+	if (friend) {
+		ret = [NSString stringWithUTF8String:linphone_friend_get_name(friend)];
+	}
 	return ret;
 }
 

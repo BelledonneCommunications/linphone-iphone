@@ -675,7 +675,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 #if !TARGET_IPHONE_SIMULATOR
 			NSString *callId =
 				[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-			NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
 
 			NSUUID *uuid = [NSUUID UUID];
 			[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
