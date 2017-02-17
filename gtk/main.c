@@ -258,6 +258,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
+	MSFactory *msfactory = NULL;
+	MSFilterDesc *ogl_filter_desc;
 
 	vtable.global_state_changed=linphone_gtk_global_state_changed;
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
@@ -302,6 +304,11 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	if (chat_messages_db_file) linphone_core_set_chat_database_path(the_core,chat_messages_db_file);
 	if (call_logs_db_file) linphone_core_set_call_logs_database_path(the_core, call_logs_db_file);
 	if (friends_db_file) linphone_core_set_friends_database_path(the_core, friends_db_file);
+	
+	// Disable the generic OpenGL displaying filter
+	msfactory = linphone_core_get_ms_factory(the_core);
+	ogl_filter_desc = ms_factory_lookup_filter_by_id(msfactory, MS_OGL_ID);
+	if (ogl_filter_desc != NULL) ogl_filter_desc->flags &= ~MS_FILTER_IS_ENABLED;
 }
 
 LinphoneCore *linphone_gtk_get_core(void){

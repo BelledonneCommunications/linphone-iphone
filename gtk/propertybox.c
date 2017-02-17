@@ -1457,7 +1457,7 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 		GtkTreeIter iter;
 
 		/* do not offer the user to select combo 'decoding/rendering' filter */
-		if (desc->enc_fmt != NULL)
+		if (desc->enc_fmt != NULL || (desc->flags & MS_FILTER_IS_ENABLED) == 0)
 			continue;
 
 		gtk_list_store_append(store,&iter);
