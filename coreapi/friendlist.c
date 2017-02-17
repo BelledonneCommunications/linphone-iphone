@@ -273,8 +273,19 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 							if (lf) {
 								const char *phone_number = linphone_friend_sip_uri_to_phone_number(lf, uri);
 								lf->presence_received = TRUE;
-								if (phone_number) linphone_friend_set_presence_model_for_uri_or_tel(lf, phone_number, (LinphonePresenceModel *)presence);
-								else linphone_friend_set_presence_model_for_uri_or_tel(lf, uri, (LinphonePresenceModel *)presence);
+								if (phone_number) {
+									char *presence_address = linphone_presence_model_get_contact((LinphonePresenceModel *)presence);
+									bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(presence_address, linphone_friend_ref(lf));
+									bctbx_iterator_t * it = bctbx_map_cchar_find_key(lf->friend_list->friends_map_uri, presence_address);
+									if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(lf->friend_list->friends_map_uri))){
+										linphone_friend_unref((LinphoneFriend*)bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
+										bctbx_map_cchar_erase(lf->friend_list->friends_map_uri, it);
+									}
+									bctbx_map_cchar_insert_and_delete(lf->friend_list->friends_map_uri, pair);
+									linphone_friend_set_presence_model_for_uri_or_tel(lf, phone_number, (LinphonePresenceModel *)presence);
+								} else {
+									linphone_friend_set_presence_model_for_uri_or_tel(lf, uri, (LinphonePresenceModel *)presence);
+								}
 								if (full_state == FALSE) {
 									if (phone_number)
 										linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, phone_number, (LinphonePresenceModel *)presence);
@@ -316,11 +327,6 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 					const char *number = (const char *)bctbx_list_get_data(iterator);
 					const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lf, number);
 					if (presence) {
-						char *presence_address = linphone_presence_model_get_contact(presence);
-						if(!linphone_friend_list_find_friend_by_uri(lf->friend_list, presence_address)) {
-							bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(presence_address, linphone_friend_ref(lf));
-							bctbx_map_cchar_insert_and_delete(lf->friend_list->friends_map_uri, pair);
-						}
 						linphone_core_notify_notify_presence_received_for_uri_or_tel(list->lc, lf, number, presence);
 					}
 					iterator = bctbx_list_next(iterator);
