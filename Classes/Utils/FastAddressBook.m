@@ -305,6 +305,7 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 		ret = [FastAddressBook displayNameForContact:contact];
 	} else if (friend) {
 		ret = [NSString stringWithUTF8String:linphone_friend_get_name(friend)];
+		ret = [ret stringByReplacingOccurrencesOfString:@"(null)" withString:@""];
 	} else {
 		const char *lDisplayName = linphone_address_get_display_name(addr);
 		const char *lUserName = linphone_address_get_username(addr);
