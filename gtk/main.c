@@ -144,7 +144,6 @@ static GOptionEntry linphone_options[]={
 	{0}
 };
 
-#define INSTALLED_XML_DIR PACKAGE_DATA_DIR "/linphone"
 #define RELATIVE_XML_DIR
 #define BUILD_TREE_XML_DIR "gtk"
 
@@ -334,12 +333,14 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 static int get_ui_file(const char *name, char *path, int pathsize){
 	snprintf(path,pathsize,"%s/%s.ui",BUILD_TREE_XML_DIR,name);
 	if (bctbx_file_exist(path)!=0){
-		snprintf(path,pathsize,"%s/%s.ui",INSTALLED_XML_DIR,name);
+		LinphoneFactory *factory = linphone_factory_get();
+		char *data_dir = linphone_factory_get_data_resources_dir(factory);
+		snprintf(path,pathsize,"%s/%s.ui",data_dir,name);
 		if (bctbx_file_exist(path)!=0){
-			g_error("Could not locate neither %s/%s.ui nor %s/%s.ui",BUILD_TREE_XML_DIR,name,
-				INSTALLED_XML_DIR,name);
+			g_error("Could not locate neither %s/%s.ui nor %s/%s.ui",BUILD_TREE_XML_DIR,name,data_dir,name);
 			return -1;
 		}
+		bctbx_free(data_dir);
 	}
 	return 0;
 }
@@ -478,17 +479,22 @@ static void about_url_clicked(GtkAboutDialog *dialog, const char *url, gpointer 
 
 void linphone_gtk_show_about(void){
 	struct stat filestat;
-	const char *license_file=PACKAGE_DATA_DIR "/linphone/COPYING";
+	char *data_dir;
+	char *license_file;
 	GtkWidget *about;
 	const char *tmp;
 	GdkPixbuf *logo=create_pixbuf(
 		linphone_gtk_get_ui_config("logo","linphone-banner.png"));
 	static const char *defcfg="defcfg";
+	LinphoneFactory *factory = linphone_factory_get();
 
 	about=linphone_gtk_create_window("about", the_ui);
 
 	gtk_about_dialog_set_url_hook(about_url_clicked,NULL,NULL);
 
+	data_dir = linphone_factory_get_data_resources_dir(factory);
+	license_file = bctbx_strdup_printf("%s/COPYING", data_dir);
+	bctbx_free(data_dir);
 	memset(&filestat,0,sizeof(filestat));
 	if (stat(license_file,&filestat)!=0){
 		license_file="COPYING";
@@ -503,6 +509,7 @@ void linphone_gtk_show_about(void){
 		}
 		g_free(license);
 	}
+	bctbx_free(license_file);
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),linphone_core_get_version());
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("title","Linphone"));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("home","http://www.linphone.org"));
@@ -2103,6 +2110,8 @@ static void populate_xdg_data_dirs_envvar(void) {
 	int i;
 	gchar *value;
 	gchar **paths;
+	char *data_dir;
+	LinphoneFactory *factory = linphone_factory_get();
 
 	if(g_getenv("XDG_DATA_DIRS") == NULL) {
 		value = g_strdup("/usr/share:/usr/local/share:/opt/local/share");
@@ -2110,12 +2119,14 @@ static void populate_xdg_data_dirs_envvar(void) {
 		value = g_strdup(g_getenv("XDG_DATA_DIRS"));
 	}
 	paths = g_strsplit(value, ":", -1);
-	for(i=0; paths[i] && strcmp(paths[i], PACKAGE_DATA_DIR) != 0; i++);
+	data_dir = linphone_factory_get_top_resources_dir(factory);
+	for(i=0; paths[i] && strcmp(paths[i], data_dir) != 0; i++);
 	if(paths[i] == NULL) {
-		gchar *new_value = g_strdup_printf("%s:%s", PACKAGE_DATA_DIR, value);
+		gchar *new_value = g_strdup_printf("%s:%s", data_dir, value);
 		g_setenv("XDG_DATA_DIRS", new_value, TRUE);
 		g_free(new_value);
 	}
+	bctbx_free(data_dir);
 	g_strfreev(paths);
 #endif
 }
@@ -2127,10 +2138,13 @@ int main(int argc, char *argv[]){
 	GtkSettings *settings;
 	const char *icon_name=LINPHONE_ICON_NAME;
 	const char *app_name="Linphone";
-	LpConfig *factory;
+	LpConfig *factory_config;
 	char *chat_messages_db_file, *call_logs_db_file, *friends_db_file;
 	GError *error=NULL;
 	const char *tmp;
+	char *resources_dir;
+	char *pixmaps_dir;
+	LinphoneFactory *factory;
 
 #if !GLIB_CHECK_VERSION(2, 31, 0)
 	g_thread_init(NULL);
@@ -2226,17 +2240,22 @@ int main(int argc, char *argv[]){
 	}
 #endif
 	add_pixmap_directory("pixmaps");
-	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
+	factory = linphone_factory_get();
+	resources_dir = linphone_factory_get_top_resources_dir(factory);
+	pixmaps_dir = bctbx_strdup_printf("%s/pixmaps/linphone", resources_dir);
+	add_pixmap_directory(pixmaps_dir);
+	bctbx_free(pixmaps_dir);
+	bctbx_free(resources_dir);
 
 	/* Now, look for the factory configuration file, we do it this late
 		 since we want to have had time to change directory and to parse
 		 the options, in case we needed to access the working directory */
 	factory_config_file = linphone_gtk_get_factory_config_file();
 	if (factory_config_file){
-		factory=lp_config_new(NULL);
-		lp_config_read_file(factory,factory_config_file);
-		app_name=lp_config_get_string(factory,"GtkUi","title","Linphone");
-		icon_name=lp_config_get_string(factory,"GtkUi","icon_name",LINPHONE_ICON_NAME);
+		factory_config=lp_config_new(NULL);
+		lp_config_read_file(factory_config,factory_config_file);
+		app_name=lp_config_get_string(factory_config,"GtkUi","title","Linphone");
+		icon_name=lp_config_get_string(factory_config,"GtkUi","icon_name",LINPHONE_ICON_NAME);
 	}
 	g_set_application_name(app_name);
 	gtk_window_set_default_icon_name(icon_name);

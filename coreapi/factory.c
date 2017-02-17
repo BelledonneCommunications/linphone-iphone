@@ -20,6 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/factory.h"
 #include "private.h"
 
+#ifndef PACKAGE_SOUND_DIR
+#define PACKAGE_SOUND_DIR "."
+#endif
+#ifndef PACKAGE_RING_DIR
+#define PACKAGE_RING_DIR "."
+#endif
+
+#ifndef PACKAGE_DATA_DIR
+#define PACKAGE_DATA_DIR "."
+#endif
+
 extern LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata);
 extern LinphoneCoreCbs *_linphone_core_cbs_new(void);
 extern LinphoneAddress *_linphone_address_new(const char *addr);
@@ -28,6 +39,12 @@ typedef belle_sip_object_t_vptr_t LinphoneFactory_vptr_t;
 
 struct _LinphoneFactory {
 	belle_sip_object_t base;
+	char *top_resources_dir;
+	char *data_resources_dir;
+	char *sound_resources_dir;
+	char *ring_resources_dir;
+	char *image_resources_dir;
+	char *msplugins_dir;
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFactory);
@@ -88,4 +105,67 @@ LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *facto
 
 LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
 	return _linphone_vcard_new();
+}
+
+char * linphone_factory_get_top_resources_dir(const LinphoneFactory *factory) {
+	if (factory->top_resources_dir) return factory->top_resources_dir;
+	return bctbx_strdup(PACKAGE_DATA_DIR);
+}
+
+void linphone_factory_set_top_resources_dir(LinphoneFactory *factory, const char *path) {
+	if (factory->top_resources_dir) bctbx_free(factory->top_resources_dir);
+	factory->top_resources_dir = bctbx_strdup(path);
+}
+
+char * linphone_factory_get_data_resources_dir(const LinphoneFactory *factory) {
+	if (factory->data_resources_dir) return factory->data_resources_dir;
+	if (factory->top_resources_dir) return bctbx_strdup_printf("%s/linphone", factory->top_resources_dir);
+	return bctbx_strdup_printf("%s/linphone", PACKAGE_DATA_DIR);
+}
+
+void linphone_factory_set_data_resources_dir(LinphoneFactory *factory, const char *path) {
+	if (factory->data_resources_dir) bctbx_free(factory->data_resources_dir);
+	factory->data_resources_dir = bctbx_strdup(path);
+}
+
+char * linphone_factory_get_sound_resources_dir(const LinphoneFactory *factory) {
+	if (factory->sound_resources_dir) return factory->sound_resources_dir;
+	if (factory->top_resources_dir) return bctbx_strdup_printf("%s/sounds/linphone", factory->top_resources_dir);
+	return bctbx_strdup(PACKAGE_SOUND_DIR);
+}
+
+void linphone_factory_set_sound_resources_dir(LinphoneFactory *factory, const char *path) {
+	if (factory->sound_resources_dir) bctbx_free(factory->sound_resources_dir);
+	factory->sound_resources_dir = bctbx_strdup(path);
+}
+
+char * linphone_factory_get_ring_resources_dir(const LinphoneFactory *factory) {
+	if (factory->ring_resources_dir) return factory->ring_resources_dir;
+	if (factory->sound_resources_dir) return bctbx_strdup_printf("%s/rings", factory->sound_resources_dir);
+	return bctbx_strdup(PACKAGE_RING_DIR);
+}
+
+void linphone_factory_set_ring_resources_dir(LinphoneFactory *factory, const char *path) {
+	if (factory->ring_resources_dir) bctbx_free(factory->ring_resources_dir);
+	factory->ring_resources_dir = bctbx_strdup(path);
+}
+
+char * linphone_factory_get_image_resources_dir(const LinphoneFactory *factory) {
+	if (factory->image_resources_dir) return factory->image_resources_dir;
+	if (factory->top_resources_dir) return bctbx_strdup_printf("%s/images", factory->top_resources_dir);
+	return bctbx_strdup_printf("%s/images", PACKAGE_DATA_DIR);
+}
+
+void linphone_factory_set_image_resources_dir(LinphoneFactory *factory, const char *path) {
+	if (factory->image_resources_dir) bctbx_free(factory->image_resources_dir);
+	factory->image_resources_dir = bctbx_strdup(path);
+}
+
+char * linphone_factory_get_msplugins_dir(const LinphoneFactory *factory) {
+	return factory->msplugins_dir;
+}
+
+void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *path) {
+	if (factory->msplugins_dir) bctbx_free(factory->msplugins_dir);
+	factory->msplugins_dir = bctbx_strdup(path);
 }

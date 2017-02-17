@@ -62,14 +62,6 @@
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
 #endif
 
-#ifndef PACKAGE_SOUND_DIR
-#define PACKAGE_SOUND_DIR "."
-#endif
-
-#ifndef PACKAGE_DATA_DIR
-#define PACKAGE_DATA_DIR "."
-#endif
-
 #ifdef ENABLE_NLS
 
 #ifdef _MSC_VER

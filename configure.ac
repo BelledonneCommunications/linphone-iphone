@@ -557,6 +557,8 @@ AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${package_prefix}/${DATADIRNAME}",[Defines
 dnl Set PACKAGE_SOUND_DIR in config.h.
 AC_DEFINE_UNQUOTED(PACKAGE_SOUND_DIR, "${package_prefix}/${DATADIRNAME}/sounds/linphone",[Defines the place where linphone sounds are found])
 
+dnl Set PACKAGE_RING_DIR in config.h.
+AC_DEFINE_UNQUOTED(PACKAGE_RING_DIR, "${package_prefix}/${DATADIRNAME}/sounds/linphone/rings",[Defines the place where linphone rings are found])
 
 dnl check if we have the getifaddrs() sytem call
 AC_CHECK_FUNCS(getifaddrs)
