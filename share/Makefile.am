@@ -8,7 +8,6 @@ LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav incoming_chat.wav $(LI
 
 LINPHONE_RINGS=		\
 			rings/oldphone-mono.wav \
-			rings/oldphone-mono-30s.caf \
 			rings/four_hands_together.mkv \
 			rings/house_keeping.mkv \
 			rings/its_a_game.mkv \

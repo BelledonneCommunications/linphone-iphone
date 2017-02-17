@@ -21,7 +21,6 @@
 ############################################################################
 
 set(RING_FILES
-	oldphone-mono-30s.caf
 	oldphone-mono.wav
 	four_hands_together.mkv
 	house_keeping.mkv
