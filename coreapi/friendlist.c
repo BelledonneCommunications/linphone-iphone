@@ -276,12 +276,12 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 								if (phone_number) {
 									char *presence_address = linphone_presence_model_get_contact((LinphonePresenceModel *)presence);
 									bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(presence_address, linphone_friend_ref(lf));
-									bctbx_iterator_t * it = bctbx_map_cchar_find_key(lf->friend_list->friends_map_uri, presence_address);
-									if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(lf->friend_list->friends_map_uri))){
+									bctbx_iterator_t * it = bctbx_map_cchar_find_key(list->friends_map_uri, presence_address);
+									if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map_uri))){
 										linphone_friend_unref((LinphoneFriend*)bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
-										bctbx_map_cchar_erase(lf->friend_list->friends_map_uri, it);
+										bctbx_map_cchar_erase(list->friends_map_uri, it);
 									}
-									bctbx_map_cchar_insert_and_delete(lf->friend_list->friends_map_uri, pair);
+									bctbx_map_cchar_insert_and_delete(list->friends_map_uri, pair);
 									linphone_friend_set_presence_model_for_uri_or_tel(lf, phone_number, (LinphonePresenceModel *)presence);
 								} else {
 									linphone_friend_set_presence_model_for_uri_or_tel(lf, uri, (LinphonePresenceModel *)presence);
