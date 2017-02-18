@@ -467,9 +467,13 @@ void linphone_gtk_cam_changed(GtkWidget *w){
 	LinphoneCall *call;
 	LinphoneCore *lc = linphone_gtk_get_core();
 	gchar *sel=gtk_combo_box_get_active_text(GTK_COMBO_BOX(w));
-	linphone_core_set_video_device(linphone_gtk_get_core(),sel);
-	if ((call = linphone_core_get_current_call(lc)) != NULL) {
-		linphone_core_update_call(lc, call, NULL);
+	if (sel){
+		if (strcmp(sel, linphone_core_get_video_device(lc)) != 0){
+			linphone_core_set_video_device(lc,sel);
+			if ((call = linphone_core_get_current_call(lc)) != NULL) {
+				linphone_core_update_call(lc, call, NULL);
+			}
+		}
 	}
 	g_free(sel);
 }
