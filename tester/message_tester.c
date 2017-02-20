@@ -1260,7 +1260,7 @@ static void lime_text_message_to_non_lime(bool_t sender_policy_mandatory, bool_t
 		if (chat_room_size == 1) {
 			bctbx_list_t *history = linphone_chat_room_get_history(chat_room, 0);
 			LinphoneChatMessage *sent_msg = (LinphoneChatMessage *)bctbx_list_get_data(history);
-			BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateNotDelivered, int, "%d");
+			BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateDelivered, int, "%d");
 			bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
 		}
 	} else {

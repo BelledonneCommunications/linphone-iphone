@@ -679,6 +679,11 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 			} else if(retval > 0) {
 				// Unable to decrypt message
 				linphone_core_notify_message_received_unable_decrypt(cr->lc, cr, msg);
+				reason = linphone_error_code_to_reason(retval);
+				linphone_chat_message_send_delivery_notification(msg, reason);
+				// return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt
+				reason = LinphoneReasonNone;
+				goto end;
 			}
 		}
 	}
