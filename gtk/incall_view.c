@@ -1014,7 +1014,7 @@ void linphone_gtk_record_call_toggled(GtkWidget *button){
 			linphone_core_stop_conference_recording(lc);
 
 	}
-	gtk_label_set_markup(GTK_LABEL(label),message);
+	gtk_label_set_markup(GTK_LABEL(label),g_locale_to_utf8(message, -1, NULL, NULL, NULL));
 	g_free(message);
 }
 
