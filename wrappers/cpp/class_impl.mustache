@@ -74,7 +74,7 @@ void {{{className}}}::removeListener(std::shared_ptr<{{{listenerClassName}}}> &l
 std::shared_ptr<Core> Factory::createCore(const std::shared_ptr<CoreListener> & cbs, const std::string & configPath, const std::string & factoryConfigPath) const {
 	::LinphoneFactory *factory = linphone_factory_get();
 	::LinphoneCoreCbs *c_cbs = cbs != nullptr ? Core::createCallbacks(cbs) : NULL;
-	::LinphoneCore *core_ptr = linphone_factory_create_core(factory, c_cbs, configPath.c_str(), factoryConfigPath.c_str());
+	::LinphoneCore *core_ptr = linphone_factory_create_core(factory, c_cbs, cppStringToC(configPath), cppStringToC(factoryConfigPath));
 	std::shared_ptr<Core> core = cPtrToSharedPtr<Core>((belle_sip_object_t *)core_ptr, false);
 	if (core != nullptr && cbs != nullptr) {
 		std::static_pointer_cast<MultiListenableObject,Core>(core)->addListener(cbs);
