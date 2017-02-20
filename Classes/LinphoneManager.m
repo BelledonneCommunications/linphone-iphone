@@ -501,7 +501,11 @@ exit_dbmigration:
 			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
 			const char *addr = linphone_proxy_config_get_addr(proxy);
 			// we want to enable AVPF for the proxies
-			if (addr && strstr(addr, "sip.linphone.org") != 0) {
+			if (addr &&
+				strstr(addr, [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
+																  inSection:@"app"
+																withDefault:@"sip.linphone.org"]
+								 .UTF8String) != 0) {
 				LOGI(@"Migrating proxy config to use AVPF");
 				linphone_proxy_config_enable_avpf(proxy, TRUE);
 			}
@@ -516,7 +520,11 @@ exit_dbmigration:
 			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
 			const char *addr = linphone_proxy_config_get_addr(proxy);
 			// we want to enable quality reporting for the proxies that are on linphone.org
-			if (addr && strstr(addr, "sip.linphone.org") != 0) {
+			if (addr &&
+				strstr(addr, [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
+																  inSection:@"app"
+																withDefault:@"sip.linphone.org"]
+								 .UTF8String) != 0) {
 				LOGI(@"Migrating proxy config to send quality report");
 				linphone_proxy_config_set_quality_reporting_collector(
 					proxy, "sip:voip-metrics@sip.linphone.org;transport=tls");
@@ -1918,7 +1926,12 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
 	} else {
 		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-		if (cfg) {
+		if (cfg &&
+			strcmp(linphone_proxy_config_get_domain(cfg),
+				   [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
+														inSection:@"app"
+													  withDefault:@"sip.linphone.org"]
+					   .UTF8String) == 0) {
 			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Link your account", nil)
 																			 message:[NSString stringWithFormat:NSLocalizedString(@"Link your Linphone.org account %s to your phone number.", nil),
 																					  linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg))]
