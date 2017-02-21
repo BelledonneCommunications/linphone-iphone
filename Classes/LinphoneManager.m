@@ -1280,7 +1280,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			}
 			content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
 			content.categoryIdentifier = @"msg_cat";
-			content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
+			content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"CallId" : callID };
 			content.accessibilityLabel = @"Message notif";
 			UNNotificationRequest *req =
 				[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
