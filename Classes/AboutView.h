@@ -27,7 +27,9 @@
 @property(weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 @property(weak, nonatomic) IBOutlet UILabel *appVersionLabel;
 @property(weak, nonatomic) IBOutlet UILabel *libVersionLabel;
+@property(weak, nonatomic) IBOutlet UILabel *licenceLabel;
 - (IBAction)onLinkTap:(id)sender;
+- (IBAction)onLicenceTap;
 - (IBAction)onDialerBackClick:(id)sender;
 
 @end
