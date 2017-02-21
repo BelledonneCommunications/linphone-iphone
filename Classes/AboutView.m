@@ -56,6 +56,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	tapGestureRecognizer.numberOfTapsRequired = 1;
 	[_licenceLabel addGestureRecognizer:tapGestureRecognizer];
 	_licenceLabel.userInteractionEnabled = YES;
+	UITapGestureRecognizer *tapGestureRecognizerPolicy =
+		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onPolicyTap)];
+	tapGestureRecognizerPolicy.numberOfTapsRequired = 1;
+	[_licenceLabel addGestureRecognizer:tapGestureRecognizerPolicy];
+	_licenceLabel.userInteractionEnabled = YES;
 }
 
 #pragma mark - Action Functions
@@ -63,6 +68,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onLinkTap:(id)sender {
 	UIGestureRecognizer *gest = sender;
 	NSString *url = ((UILabel *)gest.view).text;
+	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
+		LOGE(@"Failed to open %@, invalid URL", url);
+	}
+}
+
+- (IBAction)onPolicyTap {
+	NSString *url = @"http://www.linphone.org/privacy-policy.html";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}
