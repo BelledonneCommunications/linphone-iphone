@@ -216,6 +216,9 @@ class CoreManagerStats:
         self.number_of_LinphoneMessageInProgress = 0
         self.number_of_LinphoneMessageDelivered = 0
         self.number_of_LinphoneMessageNotDelivered = 0
+        self.number_of_LinphoneMessageFileTransferDone = 0
+        self.number_of_LinphoneMessageDeliveredToUser = 0
+        self.number_of_LinphoneMessageDisplayed = 0
         self.number_of_LinphoneIsComposingActiveReceived = 0
         self.number_of_LinphoneIsComposingIdleReceived = 0
         self.number_of_LinphoneFileTransferDownloadSuccessful = 0

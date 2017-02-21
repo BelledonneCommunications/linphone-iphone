@@ -46,32 +46,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PyVarObject_HEAD_INIT(type, size) PyObject_HEAD_INIT(type) size,
 #endif
 
-#ifndef PyInt_Check
+#if PY_MAJOR_VERSION >= 3
 #define PyInt_Check(p) PyLong_Check(p)
 #endif
 
-#ifndef PyInt_AsLong
+#if PY_MAJOR_VERSION >= 3
 #define PyInt_AsLong(io) PyLong_AsLong(io)
 #endif
 
-#ifndef PyInt_AS_LONG
+#if PY_MAJOR_VERSION >= 3
 static int pylinphone_aslongoverflow;
 #define PyInt_AS_LONG(io) PyLong_AsLongAndOverflow(io, &pylinphone_aslongoverflow)
 #endif
 
-#ifndef PyInt_AsSsize_t
+#if PY_MAJOR_VERSION >= 3
 #define PyInt_AsSsize_t(io) PyLong_AsSsize_t(io)
 #endif
 
-#ifndef PyInt_AsUnsignedLongMask
+#if PY_MAJOR_VERSION >= 3
 #define PyInt_AsUnsignedLongMask(io) PyLong_AsUnsignedLongMask(io)
 #endif
 
-#ifndef PyString_Check
+#if PY_MAJOR_VERSION >= 3
 #define PyString_Check(io) PyUnicode_Check(io)
 #endif
 
-#ifndef PyString_FromString
+#if PY_MAJOR_VERSION >= 3
 #define PyString_FromString(v) PyUnicode_FromString(v)
 #endif
 

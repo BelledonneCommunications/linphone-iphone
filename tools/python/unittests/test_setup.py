@@ -9,8 +9,7 @@ class TestSetup:
         linphone.Factory.clean()
 
     def test_version(self):
-        lc = linphone.Factory.get().create_core(None, None, None)
-        assert_equals(lc.version.find("unknown"), -1)
+        assert_equals(linphone.Core.get_version().find("unknown"), -1)
 
     def test_address(self):
         create_address(None)
