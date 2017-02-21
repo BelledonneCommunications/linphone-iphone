@@ -34,6 +34,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/port.cc \
 			commands/ptime.cc \
 			commands/register.cc \
+			commands/register-info.cc \
 			commands/register-status.cc \
 			commands/terminate.cc \
 			commands/unregister.cc \
@@ -73,6 +74,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/port.h \
 			commands/ptime.h \
 			commands/register.h \
+			commands/register-info.h \
 			commands/register-status.h \
 			commands/terminate.h \
 			commands/unregister.h \

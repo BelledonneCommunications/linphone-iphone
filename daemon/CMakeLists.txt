@@ -91,6 +91,7 @@ set(DAEMON_SOURCE_FILES
 	commands/quit.h
 	commands/register.cc
 	commands/register.h
+	commands/register-info.cc
 	commands/register-status.cc
 	commands/register-status.h
 	commands/terminate.cc

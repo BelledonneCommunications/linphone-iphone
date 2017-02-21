@@ -70,6 +70,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include "commands/port.h"
 #include "commands/ptime.h"
 #include "commands/register.h"
+#include "commands/register-info.h"
 #include "commands/register-status.h"
 #include "commands/terminate.h"
 #include "commands/unregister.h"
@@ -471,6 +472,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new RegisterCommand());
 	mCommands.push_back(new ContactCommand());
 	mCommands.push_back(new RegisterStatusCommand());
+	mCommands.push_back(new RegisterInfoCommand());
 	mCommands.push_back(new UnregisterCommand());
 	mCommands.push_back(new AuthInfosClearCommand());
 	mCommands.push_back(new CallCommand());
