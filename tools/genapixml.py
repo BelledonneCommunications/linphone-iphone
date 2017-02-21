@@ -202,20 +202,8 @@ class CClass(CObject):
 		self.properties[name].setter = f
 
 	def __addClassMethod(self, f):
-		name = f.name[len(self.cFunctionPrefix):]
-		if name.startswith('get_') and len(f.arguments) == 0:
-			self.__addPropertyGetter(name[4:], f)
-		elif name.startswith('is_') and len(f.arguments) == 0 and f.returnArgument.ctype == 'bool_t':
-			self.__addPropertyGetter(name[3:], f)
-		elif name.endswith('_enabled') and len(f.arguments) == 0 and f.returnArgument.ctype == 'bool_t':
-			self.__addPropertyGetter(name, f)
-		elif name.startswith('set_') and len(f.arguments) == 1:
-			self.__addPropertySetter(name[4:], f)
-		elif name.startswith('enable_') and len(f.arguments) == 1 and f.arguments[0].ctype == 'bool_t':
-			self.__addPropertySetter(name[7:] + '_enabled', f)
-		else:
-			if not f.name in self.classMethods:
-				self.classMethods[f.name] = f
+		if not f.name in self.classMethods:
+			self.classMethods[f.name] = f
 
 	def __addInstanceMethod(self, f):
 		name = f.name[len(self.cFunctionPrefix):]
