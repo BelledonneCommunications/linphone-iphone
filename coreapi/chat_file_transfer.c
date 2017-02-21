@@ -134,9 +134,14 @@ static int on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsUploadingFileCb cb_process_uploading_file = linphone_im_encryption_engine_cbs_get_process_uploading_file(imee_cbs);
 		if (cb_process_uploading_file) {
-			uint8_t *encrypted_buffer = (uint8_t *)ms_malloc0(*size);
+			size_t max_size = *size;
+			uint8_t *encrypted_buffer = (uint8_t *)ms_malloc0(max_size);
 			retval = cb_process_uploading_file(imee, msg, offset, (const uint8_t *)buffer, size, encrypted_buffer);
 			if (retval == 0) {
+				if (*size > max_size) {
+					ms_error("IM encryption engine process upload file callback returned a size bigger than the size of the buffer, so it will be truncated !");
+					*size = max_size;
+				}
 				memcpy(buffer, encrypted_buffer, *size);
 			}
 			ms_free(encrypted_buffer);

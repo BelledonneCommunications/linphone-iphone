@@ -67,9 +67,9 @@ typedef void (*LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb)(LinphoneI
  * @param engine LinphoneImEncryptionEngine object
  * @param msg LinphoneChatMessage object
  * @param offset The current offset of the upload
- * @param buffer Encrypted data buffer
- * @param size Size of the encrypted data buffer
- * @param decrypted_buffer Buffer in which to write the decrypted data
+ * @param[in] buffer Encrypted data buffer
+ * @param[in] size Size of the encrypted data buffer and maximum size of the decrypted data buffer
+ * @param[out] decrypted_buffer Buffer in which to write the decrypted data which maximum size is size
  * @return -1 if nothing to be done, 0 on success or an integer > 0 for error
 */
 typedef int (*LinphoneImEncryptionEngineCbsDownloadingFileCb)(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t size, uint8_t *decrypted_buffer);
@@ -79,9 +79,9 @@ typedef int (*LinphoneImEncryptionEngineCbsDownloadingFileCb)(LinphoneImEncrypti
  * @param engine LinphoneImEncryptionEngine object
  * @param msg LinphoneChatMessage object
  * @param offset The current offset of the upload
- * @param buffer Encrypted data buffer
- * @param size Size of the plain data buffer and the size of the encrypted data buffer once encryption is done
- * @param encrypted_buffer Buffer in which to write the encrypted data
+ * @param[in] buffer Encrypted data buffer
+ * @param[in,out] size Size of the plain data buffer and the size of the encrypted data buffer once encryption is done
+ * @param[out] encrypted_buffer Buffer in which to write the encrypted data which maxmimum size is size
  * @return -1 if nothing to be done, 0 on success or an integer > 0 for error
 */
 typedef int (*LinphoneImEncryptionEngineCbsUploadingFileCb)(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t *size, uint8_t *encrypted_buffer);
