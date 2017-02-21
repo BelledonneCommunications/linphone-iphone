@@ -649,7 +649,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	LinphoneChatRoom *cr = NULL;
 	LinphoneAddress *addr;
 	LinphoneAddress *to;
-	LinphoneChatMessage *msg;
+	LinphoneChatMessage *msg = NULL;
 	LinphoneImEncryptionEngine *imee = lc->im_encryption_engine;
 	const SalCustomHeader *ch;
 	LinphoneReason reason = LinphoneReasonNone;
@@ -737,7 +737,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	
 end:
 	linphone_address_unref(addr);
-	linphone_chat_message_unref(msg);
+	if (msg != NULL) linphone_chat_message_unref(msg);
 	return reason;
 }
 
