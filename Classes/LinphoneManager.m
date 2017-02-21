@@ -2091,7 +2091,10 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 }
 
 - (LinphoneCall *)callByCallId:(NSString *)call_id {
-	const bctbx_list_t *calls = linphone_core_get_calls(LC);
+	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
+	if (!calls) {
+		return NULL;
+	}
 	bctbx_list_t *call_tmp = bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [call_id UTF8String]);
 	if (!call_tmp) {
 		return NULL;
