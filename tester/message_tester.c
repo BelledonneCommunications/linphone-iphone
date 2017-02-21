@@ -2504,6 +2504,76 @@ void text_message_with_custom_content_type_and_lime(void) {
 	_text_message_with_custom_content_type(TRUE);
 }
 
+char* xor(char* message, char* key) {
+	size_t messagelen = strlen(message);
+	size_t keylen = strlen(key);
+	char* encrypted = (char *)ms_malloc(messagelen+1);
+
+	int i;
+	for(i = 0; i < (int)messagelen; i++) {
+		encrypted[i] = message[i] ^ key[i % keylen];
+	}
+	encrypted[messagelen] = '\0';
+
+	return encrypted;
+}
+
+int xor_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	char *new_content_type = "cipher/xor";
+	if (msg->content_type) {
+		if (strcmp(msg->content_type, new_content_type) == 0) {
+			msg->message = xor(msg->message, "SuperSecretXorKey");
+			msg->content_type = ms_strdup("text/plain");
+			return 0;
+		} else if (strcmp(msg->content_type, "text/plain") == 0) {
+			return -1; // Not encrypted, nothing to do
+		} else {
+			return 488; // Not acceptable
+		}
+	}
+	return 500;
+}
+
+int xor_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	char *new_content_type = "cipher/xor";
+	msg->message = xor(msg->message, "SuperSecretXorKey");
+	msg->content_type = ms_strdup(new_content_type);
+	return 0;
+}
+
+void im_encryption_engine_xor(void) {
+	LinphoneChatMessage *chat_msg = NULL;
+	LinphoneChatRoom* chat_room = NULL;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneImEncryptionEngine *marie_imee = linphone_im_encryption_engine_new(marie->lc);
+	LinphoneImEncryptionEngineCbs *marie_cbs = linphone_im_encryption_engine_get_callbacks(marie_imee);
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneImEncryptionEngine *pauline_imee = linphone_im_encryption_engine_new(pauline->lc);
+	LinphoneImEncryptionEngineCbs *pauline_cbs = linphone_im_encryption_engine_get_callbacks(pauline_imee);
+	
+	linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, xor_im_encryption_engine_process_incoming_message_cb);
+	linphone_im_encryption_engine_cbs_set_process_outgoing_message(marie_cbs, xor_im_encryption_engine_process_outgoing_message_cb);
+	linphone_im_encryption_engine_cbs_set_process_incoming_message(pauline_cbs, xor_im_encryption_engine_process_incoming_message_cb);
+	linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, xor_im_encryption_engine_process_outgoing_message_cb);
+	
+	linphone_core_set_im_encryption_engine(marie->lc, marie_imee);
+	linphone_core_set_im_encryption_engine(pauline->lc, pauline_imee);
+
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	chat_msg = linphone_chat_room_create_message(chat_room, "Bla bla bla bla");
+	linphone_chat_room_send_chat_message(chat_room, chat_msg);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_PTR_NOT_NULL(marie->stat.last_received_chat_message);
+	if (marie->stat.last_received_chat_message) {
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), "Bla bla bla bla");
+	}
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+	
+	linphone_im_encryption_engine_unref(marie_imee);
+	linphone_im_encryption_engine_unref(pauline_imee);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
@@ -2576,7 +2646,8 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
 	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers),
 	TEST_NO_TAG("Text message with custom content-type", text_message_with_custom_content_type),
-	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME")
+	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME"),
+	TEST_NO_TAG("IM Encryption Engine XOR", im_encryption_engine_xor)
 };
 
 test_suite_t message_test_suite = {
