@@ -832,7 +832,46 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																		   LinphoneAccountCreator *account_creator = linphone_account_creator_new(
 																												  LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
 																												  .UTF8String);
-																   
+																		   if (!ai) {
+																			   UIAlertController *errView = [UIAlertController
+																				   alertControllerWithTitle:
+																					   NSLocalizedString(
+																						   @"Error while changing your "
+																						   @"password",
+																						   nil)
+																									message:
+																										NSLocalizedString(
+																											@"Your "
+																											@"account "
+																											@"is not "
+																											@"a "
+																											@"Linphone"
+																											@" account"
+																											@".\n"
+																											@"We can "
+																											@"not "
+																											@"change "
+																											@"your "
+																											@"password"
+																											@".",
+																											nil)
+																							 preferredStyle:
+																								 UIAlertControllerStyleAlert];
+
+																			   UIAlertAction *defaultAction = [UIAlertAction
+																				   actionWithTitle:@"OK"
+																							 style:
+																								 UIAlertActionStyleDefault
+																						   handler:^(
+																							   UIAlertAction *action){
+																						   }];
+
+																			   [errView addAction:defaultAction];
+																			   [self presentViewController:errView
+																								  animated:YES
+																								completion:nil];
+																			   return;
+																		   }
 																		   linphone_account_creator_set_username(account_creator, linphone_auth_info_get_username(ai));
 																		   if (linphone_auth_info_get_passwd(ai) && !(strcmp(linphone_auth_info_get_passwd(ai),"") == 0)) {
 																			   linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(ai));
@@ -856,7 +895,6 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																		   [self presentViewController:errView animated:YES completion:nil];
 																	   }
 																   } else {
-																	   
 																	   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing your password", nil)
 																																		message:NSLocalizedString(@"Please enter and confirm your new password", nil)
 																																 preferredStyle:UIAlertControllerStyleAlert];
