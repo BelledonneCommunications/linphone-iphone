@@ -5245,7 +5245,6 @@ int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
 	LinphoneCallState nextstate;
 	LinphoneCallState initial_state = call->state;
 	const LinphoneCallParams *current_params;
-	LinphoneCore *lc;
 
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 	bool_t has_video = FALSE;
@@ -5277,7 +5276,6 @@ int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
 			return -1;
 	}
 
-	lc = linphone_call_get_core(call);
 	current_params = linphone_call_get_current_params(call);
 	if ((current_params != NULL) && (current_params == params)) {
 		ms_warning("linphone_call_update() is given the current params of the call, this probably not what you intend to do!");
@@ -5329,6 +5327,7 @@ int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
 		}
 	} else {
 #ifdef VIDEO_ENABLED
+		LinphoneCore *lc = linphone_call_get_core(call);
 		if ((call->videostream != NULL) && (call->state == LinphoneCallStreamsRunning)) {
 			video_stream_set_sent_video_size(call->videostream, linphone_core_get_preferred_video_size(lc));
 			video_stream_set_fps(call->videostream, linphone_core_get_preferred_framerate(lc));
