@@ -440,6 +440,7 @@ class CParser(object):
 					   'linphone_factory_create_core_with_config', # manualy wrapped
 					   'linphone_buffer_get_content',
 					   'linphone_chat_room_send_chat_message', # overloaded
+					   'linphone_chat_message_resend', # overloaded
 					   'linphone_config_read_relative_file',
 					   'linphone_vcard_get_belcard', # manualy wrapped
 					   'linphone_chat_room_destroy', # was deprecated when the wrapper generator was made

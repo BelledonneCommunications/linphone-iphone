@@ -1148,34 +1148,12 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	}
 }
 
-static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
-	bctbx_list_t *elem=lc->last_recv_msg_ids;
-	bctbx_list_t *tail=NULL;
-	int i;
-	bool_t is_duplicate=FALSE;
-	for(i=0;elem!=NULL;elem=elem->next,i++){
-		if (strcmp((const char*)elem->data,msg_id)==0){
-			is_duplicate=TRUE;
-		}
-		tail=elem;
-	}
-	if (!is_duplicate){
-		lc->last_recv_msg_ids=bctbx_list_prepend(lc->last_recv_msg_ids,ms_strdup(msg_id));
-	}
-	if (i>=10){
-		ms_free(tail->data);
-		lc->last_recv_msg_ids=bctbx_list_erase_link(lc->last_recv_msg_ids,tail);
-	}
-	return is_duplicate;
-}
-
-
 static void message_received(SalOp *op, const SalMessage *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	LinphoneReason reason = lc->chat_deny_code;
-	if (reason == LinphoneReasonNone && is_duplicate_msg(lc, msg->message_id) == FALSE) {
-		reason = linphone_core_message_received(lc, op, msg);
+	if (reason == LinphoneReasonNone) {
+		linphone_core_message_received(lc, op, msg);
 	}
 	sal_message_reply(op, linphone_reason_to_sal(reason));
 	if (!call) sal_op_release(op);

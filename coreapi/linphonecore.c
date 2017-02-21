@@ -5523,9 +5523,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	bctbx_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_unref);
 	lc->call_logs=bctbx_list_free(lc->call_logs);
 
-	bctbx_list_for_each(lc->last_recv_msg_ids,ms_free);
-	lc->last_recv_msg_ids=bctbx_list_free(lc->last_recv_msg_ids);
-
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}

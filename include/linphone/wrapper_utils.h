@@ -44,11 +44,21 @@ extern "C" {
  * @note Unlike linphone_chat_room_send_chat_message(), that function only takes a reference on the #LinphoneChatMessage
  * instead of totaly takes ownership on it. Thus, the #LinphoneChatMessage object must be released by the API user after calling
  * that function.
- * 
+ *
  * @param[in] cr A chat room.
  * @param[in] msg The message to send.
  */
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message_2(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+
+/**
+ * Resend a chat message if it is in the 'not delivered' state for whatever reason.
+ * @note Unlike linphone_chat_message_resend(), that function only takes a reference on the #LinphoneChatMessage
+ * instead of totaly takes ownership on it. Thus, the #LinphoneChatMessage object must be released by the API user after calling
+ * that function.
+ *
+ * @param[in] msg LinphoneChatMessage object
+ */
+LINPHONE_PUBLIC void linphone_chat_message_resend(LinphoneChatMessage *msg);
 
 /**
  * Accessor for the shared_ptr&lt;BelCard&gt; stored by a #LinphoneVcard

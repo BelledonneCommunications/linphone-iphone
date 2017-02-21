@@ -159,6 +159,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
 	belle_sip_uri_t* to_uri;
+	belle_sip_header_call_id_t *call_id_header;
 
 	const SalAddress* to_address;
 	const MSList *elem=sal_op_get_route_addresses(op);
@@ -189,11 +190,15 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	belle_sip_uri_set_secure(req_uri,sal_op_is_secure(op));
 
 	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(to_address),NULL);
+	call_id_header = belle_sip_provider_create_call_id(prov);
+	if (sal_op_get_call_id(op)) {
+		belle_sip_header_call_id_set_call_id(call_id_header, sal_op_get_call_id(op));
+	}
 
 	req=belle_sip_request_create(
 					req_uri,
 					method,
-					belle_sip_provider_create_call_id(prov),
+					call_id_header,
 					belle_sip_header_cseq_create(20,method),
 					from_header,
 					to_header,

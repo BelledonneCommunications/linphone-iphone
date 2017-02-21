@@ -1051,7 +1051,6 @@ struct _LinphoneCore
 	int max_calls;
 	LinphoneTunnel *tunnel;
 	char* device_id;
-	MSList *last_recv_msg_ids;
 	char *chat_db_file;
 	char *logs_db_file;
 	char *friends_db_file;

@@ -413,6 +413,12 @@ LINPHONE_PUBLIC int linphone_chat_message_download_file(LinphoneChatMessage *mes
 LINPHONE_PUBLIC void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage* msg);
 
 /**
+ * Resend a chat message if it is in the 'not delivered' state for whatever reason.
+ * @param[in] msg LinphoneChatMessage object
+ */
+LINPHONE_PUBLIC void linphone_chat_message_resend(LinphoneChatMessage *msg);
+
+/**
  * Linphone message has an app-specific field that can store a text. The application might want
  * to use it for keeping data over restarts, like thumbnail image path.
  * @param message #LinphoneChatMessage

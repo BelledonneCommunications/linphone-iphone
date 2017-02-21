@@ -383,7 +383,6 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 
 	msg->dir = LinphoneChatMessageOutgoing;
 
-
 	/* Check if we shall upload a file to a server */
 	if (msg->file_transfer_information != NULL && msg->content_type == NULL) {
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
@@ -397,16 +396,20 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			return;
 		}
 	} else {
-		SalOp *op = NULL;
+		SalOp *op = msg->op;
 		LinphoneCall *call=NULL;
 		char *content_type;
 		const char *identity = NULL;
-		char *message_not_encrypted = NULL;
-		
+		char *clear_text_message = NULL;
+		char *clear_text_content_type = NULL;
+
 		if (msg->message) {
-			message_not_encrypted = ms_strdup(msg->message);
+			clear_text_message = ms_strdup(msg->message);
 		}
-		
+		if (msg->content_type) {
+			clear_text_content_type = ms_strdup(msg->content_type);
+		}
+
 		/* Add to transient list */
 		linphone_chat_room_add_transient_message(cr, msg);
 		msg->time = ms_time(0);
@@ -421,7 +424,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 				}
 			}
 		}
-		
+
 		if (!identity) {
 			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
 			if (proxy) {
@@ -438,7 +441,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			linphone_address_unref(msg->from);
 		}
 		msg->from = linphone_address_new(identity);
-		
+
 		if (imee) {
 			LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 			LinphoneImEncryptionEngineCbsOutgoingMessageCb cb_process_outgoing_message = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imee_cbs);
@@ -449,7 +452,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 				}
 			}
 		}
-		
+
 		if (op == NULL) {
 			/*sending out of calls*/
 			msg->op = op = sal_op_new(cr->lc->sal);
@@ -457,7 +460,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 								  lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
 			sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 		}
-		
+
 		if (retval > 0) {
 			sal_error_info_set((SalErrorInfo *)sal_op_get_error_info(op), SalReasonNotAcceptable, retval, "Unable to encrypt IM", NULL);
 			store_or_update_chat_message(msg);
@@ -481,10 +484,15 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			ms_free(peer_uri);
 		}
 
-		if (msg->message && message_not_encrypted && strcmp(msg->message, message_not_encrypted) != 0) {
+		if (msg->message && clear_text_message && strcmp(msg->message, clear_text_message) != 0) {
 			// We replace the encrypted message by the original one so it can be correctly stored and displayed by the application
 			ms_free(msg->message);
-			msg->message = ms_strdup(message_not_encrypted);
+			msg->message = ms_strdup(clear_text_message);
+		}
+		if (msg->content_type && clear_text_content_type && (strcmp(msg->content_type, clear_text_content_type) != 0)) {
+			/* We replace the encrypted content type by the original one */
+			ms_free(msg->content_type);
+			msg->content_type = ms_strdup(clear_text_content_type);
 		}
 		msg->message_id = ms_strdup(sal_op_get_call_id(op)); /* must be known at that time */
 		store_or_update_chat_message(msg);
@@ -495,8 +503,11 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		linphone_chat_room_delete_composing_idle_timer(cr);
 		linphone_chat_room_delete_composing_refresh_timer(cr);
 
-		if (message_not_encrypted) {
-			ms_free(message_not_encrypted);
+		if (clear_text_message) {
+			ms_free(clear_text_message);
+		}
+		if (clear_text_content_type) {
+			ms_free(clear_text_content_type);
 		}
 
 		if (call && call->op == op) {
@@ -647,6 +658,12 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	cr = linphone_core_get_chat_room(lc, addr);
+
+	/* Check if this is a duplicate message */
+	if (linphone_chat_room_find_message(cr, sal_op_get_call_id(op)) != NULL) {
+		reason = lc->chat_deny_code;
+		goto end;
+	}
 
 	msg = linphone_chat_room_create_message(cr, sal_msg->text);
 	linphone_chat_message_set_content_type(msg, sal_msg->content_type);
@@ -948,6 +965,28 @@ void linphone_chat_room_send_chat_message_2(LinphoneChatRoom *cr, LinphoneChatMe
 
 void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	_linphone_chat_room_send_message(cr, msg);
+}
+
+void _linphone_chat_message_resend(LinphoneChatMessage *msg, bool_t ref_msg) {
+	LinphoneChatMessageState state = linphone_chat_message_get_state(msg);
+	LinphoneChatRoom *cr;
+
+	if (state != LinphoneChatMessageStateNotDelivered) {
+		ms_warning("Cannot resend chat message in state %s", linphone_chat_message_state_to_string(state));
+		return;
+	}
+
+	cr = linphone_chat_message_get_chat_room(msg);
+	if (ref_msg) linphone_chat_message_ref(msg);
+	_linphone_chat_room_send_message(cr, msg);
+}
+
+void linphone_chat_message_resend(LinphoneChatMessage *msg) {
+	_linphone_chat_message_resend(msg, FALSE);
+}
+
+void linphone_chat_message_resend_2(LinphoneChatMessage *msg) {
+	_linphone_chat_message_resend(msg, TRUE);
 }
 
 static char *linphone_chat_room_create_is_composing_xml(LinphoneChatRoom *cr) {
