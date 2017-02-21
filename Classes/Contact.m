@@ -33,7 +33,12 @@
 		if (!_friend) {
 			_friend = linphone_friend_ref(linphone_core_create_friend(LC));
 			linphone_friend_set_ref_key(_friend, key);
-			linphone_friend_set_name(_friend, [NSString stringWithFormat:@"%@ %@", _firstName, _lastName].UTF8String);
+			linphone_friend_set_name(
+				_friend,
+				[NSString
+					stringWithFormat:@"%@%@", _firstName ? _firstName : @"",
+									 _lastName ? [_firstName ? @" " : @"" stringByAppendingString:_lastName] : @""]
+					.UTF8String);
 			for (NSString* sipAddr in _sipAddresses) {
 				LinphoneAddress* addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
 				if (addr) {
@@ -100,9 +105,10 @@
 
 - (NSString *)displayName {
 	if (_friend) {
-	//	const char *dp = linphone_address_get_display_name(linphone_friend_get_address(_friend));
-		//if (dp)
-		//	return [NSString stringWithUTF8String:dp];
+		const char *friend_name = linphone_friend_get_name(_friend);
+		if (friend_name) {
+			return [NSString stringWithUTF8String:friend_name];
+		}
 	}
 
 	if (_person != nil) {
