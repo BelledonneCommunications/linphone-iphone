@@ -66,12 +66,13 @@ typedef void (*LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb)(LinphoneI
  * Callback to decrypt downloading file
  * @param engine LinphoneImEncryptionEngine object
  * @param msg LinphoneChatMessage object
+ * @param offset The current offset of the upload
  * @param buffer Encrypted data buffer
  * @param size Size of the encrypted data buffer
  * @param decrypted_buffer Buffer in which to write the decrypted data
  * @return -1 if nothing to be done, 0 on success or an integer > 0 for error
 */
-typedef int (*LinphoneImEncryptionEngineCbsDownloadingFileCb)(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, const char *buffer, size_t size, char *decrypted_buffer);
+typedef int (*LinphoneImEncryptionEngineCbsDownloadingFileCb)(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t size, uint8_t *decrypted_buffer);
 
 /**
  * Callback to encrypt uploading file
@@ -83,7 +84,7 @@ typedef int (*LinphoneImEncryptionEngineCbsDownloadingFileCb)(LinphoneImEncrypti
  * @param encrypted_buffer Buffer in which to write the encrypted data
  * @return -1 if nothing to be done, 0 on success or an integer > 0 for error
 */
-typedef int (*LinphoneImEncryptionEngineCbsUploadingFileCb)(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const char *buffer, size_t *size, char *encrypted_buffer);
+typedef int (*LinphoneImEncryptionEngineCbsUploadingFileCb)(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t *size, uint8_t *encrypted_buffer);
 
 /**
  * Acquire a reference to the LinphoneImEncryptionEngineCbs.
