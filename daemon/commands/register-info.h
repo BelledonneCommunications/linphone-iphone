@@ -20,6 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #ifndef LINPHONE_DAEMON_COMMAND_REGISTER_INFO_H_
 #define LINPHONE_DAEMON_COMMAND_REGISTER_INFO_H_
 
+#include <string>
 #include "daemon.h"
 
 class RegisterInfoCommand: public DaemonCommand {

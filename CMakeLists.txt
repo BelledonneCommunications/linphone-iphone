@@ -63,6 +63,9 @@ option(ENABLE_VCARD "Turn on compilation of vcard4 support." YES)
 option(CXX_WRAPPER "Build the C++ wrapper for Liblinphone." OFF)
 
 
+set(CMAKE_CXX_STANDARD 11)
+
+
 macro(apply_compile_flags SOURCE_FILES)
 	if(${SOURCE_FILES})
 		set(options "")
