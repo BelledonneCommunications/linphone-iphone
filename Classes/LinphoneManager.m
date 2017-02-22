@@ -662,6 +662,11 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	NSString *address = [FastAddressBook displayNameForAddress:addr];
 
 	if (state == LinphoneCallIncomingReceived) {
+		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+			LOGI(@"Call received, stopping background task");
+			[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
+			pushBgTask = 0;
+		}
 		LinphoneCallLog *callLog = linphone_call_get_call_log(call);
 		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 		/*first step is to re-enable ctcall center*/
@@ -1166,7 +1171,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		_silentPushCompletion = nil;
 	}
 #pragma deploymate pop
-
 	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
 	const LinphoneAddress *remoteAddress = linphone_chat_message_get_from_address(msg);
 	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];
@@ -1177,57 +1181,63 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground || ((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) && ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) || (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room != PhoneMainView.instance.currentRoom)) {
 		// Create a new notification
-        
-        if(floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-            NSArray *actions;
-            
-            if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
-                [LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
-                
-                UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
-                reply.identifier = @"reply";
-                reply.title = NSLocalizedString(@"Reply", nil);
-                reply.activationMode = UIUserNotificationActivationModeForeground;
-                reply.destructive = NO;
-                reply.authenticationRequired = YES;
-                
-                UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
-                mark_read.identifier = @"mark_read";
-                mark_read.title = NSLocalizedString(@"Mark Read", nil);
-                mark_read.activationMode = UIUserNotificationActivationModeBackground;
-                mark_read.destructive = NO;
-                mark_read.authenticationRequired = NO;
-                
-                actions = @[ mark_read, reply ];
-            } else {
-                // iOS 9 allows for inline reply. We don't propose mark_read in this case
-                UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
-                
-                reply_inline.identifier = @"reply_inline";
-                reply_inline.title = NSLocalizedString(@"Reply", nil);
-                reply_inline.activationMode = UIUserNotificationActivationModeBackground;
-                reply_inline.destructive = NO;
-                reply_inline.authenticationRequired = NO;
-                reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
-                
-                actions = @[ reply_inline ];
-            }
-            
-            UIMutableUserNotificationCategory *msgcat = [[UIMutableUserNotificationCategory alloc] init];
-            msgcat.identifier = @"incoming_msg";
-            [msgcat setActions:actions forContext:UIUserNotificationActionContextDefault];
-            [msgcat setActions:actions forContext:UIUserNotificationActionContextMinimal];
-            
-            NSSet* categories = [NSSet setWithObjects:msgcat, nil];
-            
-            UIUserNotificationSettings *set = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound) categories:categories];
-            [[UIApplication sharedApplication] registerUserNotificationSettings:set];
-            
-            UILocalNotification *notif = [[UILocalNotification alloc] init];
-            if (notif) {
-                NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
-                notif.repeatInterval = 0;
-                if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+		LOGI(@"Message received, stopping background task");
+		[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
+		pushBgTask = 0;
+
+		if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+			NSArray *actions;
+
+			if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
+				[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
+
+				UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
+				reply.identifier = @"reply";
+				reply.title = NSLocalizedString(@"Reply", nil);
+				reply.activationMode = UIUserNotificationActivationModeForeground;
+				reply.destructive = NO;
+				reply.authenticationRequired = YES;
+
+				UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
+				mark_read.identifier = @"mark_read";
+				mark_read.title = NSLocalizedString(@"Mark Read", nil);
+				mark_read.activationMode = UIUserNotificationActivationModeBackground;
+				mark_read.destructive = NO;
+				mark_read.authenticationRequired = NO;
+
+				actions = @[ mark_read, reply ];
+			} else {
+				// iOS 9 allows for inline reply. We don't propose mark_read in this case
+				UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
+
+				reply_inline.identifier = @"reply_inline";
+				reply_inline.title = NSLocalizedString(@"Reply", nil);
+				reply_inline.activationMode = UIUserNotificationActivationModeBackground;
+				reply_inline.destructive = NO;
+				reply_inline.authenticationRequired = NO;
+				reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
+
+				actions = @[ reply_inline ];
+			}
+
+			UIMutableUserNotificationCategory *msgcat = [[UIMutableUserNotificationCategory alloc] init];
+			msgcat.identifier = @"incoming_msg";
+			[msgcat setActions:actions forContext:UIUserNotificationActionContextDefault];
+			[msgcat setActions:actions forContext:UIUserNotificationActionContextMinimal];
+
+			NSSet *categories = [NSSet setWithObjects:msgcat, nil];
+
+			UIUserNotificationSettings *set =
+				[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeAlert |
+															  UIUserNotificationTypeBadge | UIUserNotificationTypeSound)
+												  categories:categories];
+			[[UIApplication sharedApplication] registerUserNotificationSettings:set];
+
+			UILocalNotification *notif = [[UILocalNotification alloc] init];
+			if (notif) {
+				NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
+				notif.repeatInterval = 0;
+				if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 #pragma deploymate push "ignored-api-availability"
                     notif.category = @"incoming_msg";
 #pragma deploymate pop
@@ -2192,6 +2202,52 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		 [[UIApplication sharedApplication] backgroundTimeRemaining]);
 }
 
+- (void)startPushLongRunningTask:(BOOL)msg {
+	pushBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+	  if (msg) {
+		  LOGW(@"Incomming message couldn't be received");
+		  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+		  content.title = NSLocalizedString(@"Message received", nil);
+		  content.body = NSLocalizedString(@"You have received a message.", nil);
+		  content.categoryIdentifier = @"push_msg";
+
+		  UNNotificationRequest *req =
+			  [UNNotificationRequest requestWithIdentifier:@"push_msg" content:content trigger:NULL];
+		  [[UNUserNotificationCenter currentNotificationCenter]
+			  addNotificationRequest:req
+			   withCompletionHandler:^(NSError *_Nullable error) {
+				 // Enable or disable features based on authorization.
+				 if (error) {
+					 LOGD(@"Error while adding notification request :");
+					 LOGD(error.description);
+				 }
+			   }];
+	  } else {
+		  LOGW(@"Incomming call couldn't be received");
+		  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+		  content.title = NSLocalizedString(@"Missed call", nil);
+		  content.body = NSLocalizedString(@"You have missed a call.", nil);
+		  content.categoryIdentifier = @"push_call";
+
+		  UNNotificationRequest *req =
+			  [UNNotificationRequest requestWithIdentifier:@"push_call" content:content trigger:NULL];
+		  [[UNUserNotificationCenter currentNotificationCenter]
+			  addNotificationRequest:req
+			   withCompletionHandler:^(NSError *_Nullable error) {
+				 // Enable or disable features based on authorization.
+				 if (error) {
+					 LOGD(@"Error while adding notification request :");
+					 LOGD(error.description);
+				 }
+			   }];
+	  }
+	  [[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
+	  pushBgTask = 0;
+	}];
+	LOGI(@"Long running task started, remaining [%g s] because a push has been received",
+		 [[UIApplication sharedApplication] backgroundTimeRemaining]);
+}
+
 - (void)enableProxyPublish:(BOOL)enabled {
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOn || !linphone_core_get_default_friend_list(LC)) {
 		LOGW(@"Not changing presence configuration because linphone core not ready yet");
@@ -2217,7 +2273,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		linphone_core_iterate(theLinphoneCore);
 	}
 
-	linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(LC), enabled);
+	linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(LC),
+											  enabled &&
+												  [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 }
 
 - (BOOL)enterBackgroundMode {

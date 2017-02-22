@@ -421,8 +421,9 @@
 
 	if (aps != nil) {
 		NSDictionary *alert = [aps objectForKey:@"alert"];
+		NSString *loc_key = [aps objectForKey:@"loc-key"];
 		if (alert != nil) {
-			NSString *loc_key = [alert objectForKey:@"loc-key"];
+			loc_key = [alert objectForKey:@"loc-key"];
 			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
@@ -463,11 +464,15 @@
 					} else  if ([callId  isEqual: @""]) {
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
-
-					if ([loc_key isEqualToString:@"IC_MSG"]) {
-						[self fixRing];
-					}
 				}
+			}
+		}
+		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && loc_key) {
+			if ([loc_key isEqualToString:@"IC_MSG"]) {
+				[LinphoneManager.instance startPushLongRunningTask:FALSE];
+				[self fixRing];
+			} else if ([loc_key isEqualToString:@"IM_MSG"]) {
+				[LinphoneManager.instance startPushLongRunningTask:TRUE];
 			}
 		}
 	}
@@ -669,11 +674,13 @@ didInvalidatePushTokenForType:(NSString *)type {
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
-    didUpdatePushCredentials:(PKPushCredentials *)credentials
-             forType:(NSString *)type {
-    LOGI(@"PushKit credentials updated");
-    LOGI(@"voip token: %@", (credentials.token));
-    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
+	didUpdatePushCredentials:(PKPushCredentials *)credentials
+					 forType:(PKPushType)type {
+	LOGI(@"PushKit credentials updated");
+	LOGI(@"voip token: %@", (credentials.token));
+	dispatch_async(dispatch_get_main_queue(), ^{
+	  [LinphoneManager.instance setPushNotificationToken:credentials.token];
+	});
 }
 
 #pragma mark - UNUserNotifications Framework
@@ -689,6 +696,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	LOGD(response.description);
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
+	if (!callId) {
+		return;
+	}
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
 	if (call) {
 		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
