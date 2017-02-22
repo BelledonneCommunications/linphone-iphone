@@ -6,6 +6,22 @@
 	<array>
 		<dict>
 			<key>Title</key>
+			<string>Presence</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable smart address book</string>
+			<key>Key</key>
+			<string>use_rls_presence</string>
+			<key>DefaultValue</key>
+			<string>YES</string>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Debug</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>

@@ -407,6 +407,7 @@
 		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];
+		[self setBool:[lm lpConfigBoolForKey:@"use_rls_presence" withDefault:YES] forKey:@"use_rls_presence"];
 		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference"]
 			   forKey:@"enable_first_login_view_preference"];
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(LC);
@@ -907,6 +908,36 @@
 			[lm lpConfigSetInt:[self integerForKey:@"autoanswer_notif_preference"]
 						forKey:@"autoanswer_notif_preference"];
 			[lm lpConfigSetInt:[self integerForKey:@"show_msg_in_notif"] forKey:@"show_msg_in_notif"];
+
+			if ([self integerForKey:@"use_rls_presence"]) {
+				[self setInteger:0 forKey:@"use_rls_presence"];
+				NSString *rls_uri =
+					[lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
+				LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
+				const char *rls_domain = linphone_address_get_domain(rls_addr);
+				const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+				if (!proxies) {
+					// Enable it if no proxy config for first launch of app
+					[self setInteger:1 forKey:@"use_rls_presence"];
+				} else {
+					while (proxies) {
+						const char *proxy_domain = linphone_proxy_config_get_domain(proxies->data);
+						if (strcmp(rls_domain, proxy_domain) == 0) {
+							[self setInteger:1 forKey:@"use_rls_presence"];
+							break;
+						}
+						proxies = proxies->next;
+					}
+				}
+				linphone_address_unref(rls_addr);
+			}
+			[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
+
+			const MSList *lists = linphone_core_get_friends_lists(LC);
+			while (lists) {
+				linphone_friend_list_enable_subscriptions(lists->data, [self integerForKey:@"use_rls_presence"]);
+				lists = lists->next;
+			}
 
 			BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
 			[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];
