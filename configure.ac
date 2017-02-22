@@ -86,6 +86,8 @@ case $target in
 
 esac
 
+CXXFLAGS="${CXXFLAGS} -std=c++11"
+
 AM_CONDITIONAL(BUILD_IOS, test x$ios_found = xyes)
 
 AC_SUBST(ACLOCAL_MACOS_FLAGS)
