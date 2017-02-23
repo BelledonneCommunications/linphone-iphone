@@ -483,12 +483,10 @@
 	}
 
 	// since user wants to escape plus, we assume it expects to have phone numbers by default
-	if (addr && cfg && (linphone_proxy_config_get_dial_escape_plus(cfg) || linphone_proxy_config_get_dial_prefix(cfg))) {
-		char *phone = linphone_proxy_config_normalize_phone_number(cfg, value.UTF8String);
-		if (phone) {
-			linphone_address_set_username(addr, phone);
-			ms_free(phone);
-		}
+	if (addr && cfg && (linphone_proxy_config_get_dial_escape_plus(cfg))) {
+		linphone_address_set_username(addr, normvalue);
+	} else {
+		linphone_address_set_username(addr, value.UTF8String);
 	}
 
 	return addr;
