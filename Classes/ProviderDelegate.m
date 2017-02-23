@@ -25,6 +25,7 @@
 	CXCallController *callController = [[CXCallController alloc] initWithQueue:dispatch_get_main_queue()];
 	[callController.callObserver setDelegate:self queue:dispatch_get_main_queue()];
 	self.controller = callController;
+	self.callKitCalls = 0;
 
 	if (!self) {
 		LOGD(@"ProviderDelegate not initialized...");
@@ -77,6 +78,7 @@
 
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action {
 	LOGD(@"CallKit : Answering Call");
+	self.callKitCalls++;
 	[self configAudioSession:[AVAudioSession sharedInstance]];
 	[action fulfill];
 	NSUUID *uuid = action.callUUID;
@@ -95,6 +97,7 @@
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
 	LOGD(@"CallKit : Starting Call");
+	self.callKitCalls++;
 	// To restart Audio Unit
 	[self configAudioSession:[AVAudioSession sharedInstance]];
 	[action fulfill];
@@ -114,6 +117,7 @@
 
 - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
 	LOGD(@"CallKit : Ending the Call");
+	self.callKitCalls--;
 	[action fulfill];
 	if (linphone_core_is_in_conference(LC)) {
 		LinphoneManager.instance.conf = TRUE;
