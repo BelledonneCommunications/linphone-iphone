@@ -97,7 +97,6 @@
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
 	LOGD(@"CallKit : Starting Call");
-	self.callKitCalls++;
 	// To restart Audio Unit
 	[self configAudioSession:[AVAudioSession sharedInstance]];
 	[action fulfill];

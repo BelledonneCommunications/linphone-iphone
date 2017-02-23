@@ -2626,6 +2626,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (linphone_core_get_calls_nb(theLinphoneCore) < 1 &&
 		floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max &&
 		self.providerDelegate.callKitCalls < 1) {
+		self.providerDelegate.callKitCalls++;
 		NSUUID *uuid = [NSUUID UUID];
 		[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:@""];
 		LinphoneManager.instance.providerDelegate.pendingAddr = linphone_address_clone(iaddr);
