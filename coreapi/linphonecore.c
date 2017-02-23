@@ -1136,9 +1136,9 @@ static void sip_config_read(LinphoneCore *lc) {
 		lp_config_set_int(lc->config, "sip", "ipv6_migration_done", TRUE);
 		ms_message("IPV6 settings migration done.");
 	}
-	
+
 	lc->sip_conf.ipv6_enabled=lp_config_get_int(lc->config,"sip","use_ipv6",ipv6_default);
-	
+
 	memset(&tr,0,sizeof(tr));
 
 	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
@@ -1814,7 +1814,7 @@ static void linphone_core_start(LinphoneCore * lc) {
 	linphone_friend_list_set_display_name(list, "_default");
 	linphone_core_add_friend_list(lc, list);
 	linphone_friend_list_unref(list);
-	
+
 	sip_setup_register_all(lc->factory);
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -1979,8 +1979,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	linphone_core_cbs_set_subscription_state_changed(internal_cbs, linphone_core_internal_subscription_state_changed);
 	_linphone_core_add_callbacks(lc, internal_cbs, TRUE);
 	belle_sip_object_unref(internal_cbs);
-	
-	
+
+
 	if (cbs != NULL) {
 		_linphone_core_add_callbacks(lc, cbs, FALSE);
 	} else {
@@ -1988,7 +1988,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 		_linphone_core_add_callbacks(lc, fallback_cbs, FALSE);
 		belle_sip_object_unref(fallback_cbs);
 	}
-	
+
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
@@ -2185,7 +2185,7 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 
 		linphone_im_encryption_engine_cbs_set_process_incoming_message(cbs, lime_im_encryption_engine_process_incoming_message_cb);
 		linphone_im_encryption_engine_cbs_set_process_downloading_file(cbs, lime_im_encryption_engine_process_downloading_file_cb);
-	
+
 		if (val != LinphoneLimeDisabled) {
 			linphone_im_encryption_engine_cbs_set_process_outgoing_message(cbs, lime_im_encryption_engine_process_outgoing_message_cb);
 			linphone_im_encryption_engine_cbs_set_process_uploading_file(cbs, lime_im_encryption_engine_process_uploading_file_cb);
@@ -2918,7 +2918,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
 	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
 	LinphoneAddress *result=NULL;
-	
+
 	if (linphone_proxy_config_is_phone_number(proxy,url)) {
 		char *normalized_number = linphone_proxy_config_normalize_phone_number(proxy, url);
 		result = linphone_proxy_config_normalize_sip_uri(proxy, normalized_number);
@@ -4148,7 +4148,7 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	LinphoneNatPolicy *nat_policy;
 	char *stun_server = NULL;
 	char *stun_server_username = NULL;
-	
+
 	if (lc->nat_policy != NULL) {
 		nat_policy = linphone_nat_policy_ref(lc->nat_policy);
 		stun_server = ms_strdup(linphone_nat_policy_get_stun_server(nat_policy));
@@ -5181,6 +5181,11 @@ void linphone_core_set_user_data(LinphoneCore *lc, void *userdata){
 	lc->data=userdata;
 }
 
+/**
+ * Returns the maximum transmission unit size in bytes.
+ *
+ * @ingroup media_parameters
+**/
 int linphone_core_get_mtu(const LinphoneCore *lc){
 	return lc->net_conf.mtu;
 }
@@ -5314,7 +5319,7 @@ void sip_config_uninit(LinphoneCore *lc)
 		belle_sip_object_unref(lc->http_crypto_config);
 		lc->http_crypto_config=NULL;
 	}
-	
+
 	/*now that we are unregisted, there is no more channel using tunnel socket we no longer need the tunnel.*/
 #ifdef TUNNEL_ENABLED
 	if (lc->tunnel) {
@@ -5496,7 +5501,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 #endif
 
 	lc->msevq=NULL;
-	
+
 	/* save all config */
 	friends_config_uninit(lc);
 	sip_config_uninit(lc);
