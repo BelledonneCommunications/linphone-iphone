@@ -1878,6 +1878,64 @@ static void call_with_early_media_and_no_sdp_in_200_with_video(void){
 	early_media_without_sdp_in_200_base(TRUE, FALSE);
 }
 
+
+
+/*
+ * This test simulates a network congestion in the video flow from marie to pauline. 
+ * The stream from pauline to marie is not under test.
+ * It checks that a first TMMBR consecutive to congestion detection is received, and a second one after congestion resolution is received 
+ * a few seconds later.
+ * The parameters used for the network simulator correspond to a "light congestion", which are the ones that translate into relatively
+ * small packet losses, hence the more difficult to detect at first sight.
+ * 
+**/
+static void video_call_with_thin_congestion(void){
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneVideoPolicy pol = {0};
+	OrtpNetworkSimulatorParams simparams = { 0 };
+	
+	linphone_core_set_video_device(marie->lc, "Mire: Mire (synthetic moving picture)");
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
+	
+	pol.automatically_accept = TRUE;
+	pol.automatically_initiate = TRUE;
+	linphone_core_set_video_policy(marie->lc, &pol);
+	linphone_core_set_video_policy(pauline->lc, &pol);
+	
+	linphone_core_set_preferred_video_size_by_name(marie->lc, "vga");
+	simparams.mode = OrtpNetworkSimulatorOutbound;
+	simparams.enabled = TRUE;
+	simparams.max_bandwidth = 400000;
+	simparams.max_buffer_size = simparams.max_bandwidth;
+	simparams.latency = 60;
+	
+	linphone_core_set_network_simulator_params(marie->lc, &simparams);
+	
+	if (BC_ASSERT_TRUE(call(marie, pauline))){
+		LinphoneCall *call = linphone_core_get_current_call(pauline->lc);
+		int first_tmmbr;
+
+		/*wait for the TMMBR*/
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, 1, 10000));
+		BC_ASSERT_GREATER(marie->stat.last_tmmbr_value_received, 220000, float, "%f");
+		BC_ASSERT_LOWER(marie->stat.last_tmmbr_value_received, 300000, float, "%f");
+		first_tmmbr = marie->stat.last_tmmbr_value_received;
+		
+		/*another tmmbr with a greater value is expected once the congestion is resolved*/
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, first_tmmbr + 1, 15000));
+		BC_ASSERT_GREATER(marie->stat.last_tmmbr_value_received, 290000, float, "%f");
+		BC_ASSERT_GREATER(linphone_call_get_current_quality(call), 4.0, float, "%f");
+		
+		end_call(marie, pauline);
+	}
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t call_video_tests[] = {
 #ifdef VIDEO_ENABLED
 	TEST_NO_TAG("Call paused resumed with video", call_paused_resumed_with_video),
@@ -1945,6 +2003,7 @@ test_t call_video_tests[] = {
 #endif
 	TEST_NO_TAG("Video call with no audio and no video codec", video_call_with_no_audio_and_no_video_codec),
 	TEST_NO_TAG("Call with early media and no SDP in 200 Ok with video", call_with_early_media_and_no_sdp_in_200_with_video),
+	TEST_NO_TAG("Video call with thin congestion", video_call_with_thin_congestion)
 };
 
 test_suite_t call_video_test_suite = {"Video Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

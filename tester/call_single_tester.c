@@ -80,6 +80,22 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 	}
 }
 
+static bool_t rtcp_is_type(const mblk_t *m, rtcp_type_t type){
+	const rtcp_common_header_t *ch=rtcp_get_common_header(m);
+	return (ch!=NULL && rtcp_common_header_get_packet_type(ch)==type);
+}
+
+static void rtcp_received(stats* counters, mblk_t *packet) {
+	do{
+		if (rtcp_is_type(packet, RTCP_RTPFB)){
+			if (rtcp_RTPFB_get_type(packet) ==  RTCP_RTPFB_TMMBR) {
+				counters->last_tmmbr_value_received = (int)rtcp_RTPFB_tmmbr_get_max_bitrate(packet);
+			}
+		}
+	}while (rtcp_next_packet(packet));
+	rtcp_rewind(packet);
+}
+
 void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *lstats) {
 	stats* counters = get_stats(lc);
 	counters->number_of_LinphoneCallStatsUpdated++;
@@ -88,6 +104,7 @@ void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCall
 		if (lstats->rtcp_received_via_mux){
 			counters->number_of_rtcp_received_via_mux++;
 		}
+		rtcp_received(counters, lstats->received_rtcp);
 	}
 	if (lstats->updated & LINPHONE_CALL_STATS_SENT_RTCP_UPDATE ) {
 		counters->number_of_rtcp_sent++;
