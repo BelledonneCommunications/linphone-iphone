@@ -169,7 +169,7 @@ struct _LinphoneCallParams{
 	bool_t encryption_mandatory;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallParams);
 
 
 struct _LinphoneQualityReporting{
@@ -201,7 +201,7 @@ struct _LinphoneCallLog{
 	unsigned int storage_id;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneCallLog);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallLog);
 
 
 typedef struct _CallCallbackObj
@@ -219,7 +219,7 @@ struct _LinphoneChatMessageCbs {
 	LinphoneChatMessageCbsFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneChatMessageCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessageCbs);
 
 typedef enum _LinphoneChatMessageDir{
 	LinphoneChatMessageIncoming,
@@ -268,7 +268,7 @@ struct _LinphoneChatMessage {
 #endif
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessage);
 
 typedef struct StunCandidate{
 	char addr[64];
@@ -372,7 +372,7 @@ struct _LinphoneCall{
 	bool_t reinvite_on_cancel_response_requested;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneCall);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCall);
 
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
@@ -669,7 +669,7 @@ struct _LinphoneProxyConfig
 	char *sip_etag; /*publish context*/
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneProxyConfig);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneProxyConfig);
 
 struct _LinphoneAuthInfo
 {
@@ -716,7 +716,7 @@ typedef struct _LinphoneChatMessageCharacter {
 	bool_t has_been_read;
 } LinphoneChatMessageCharacter;
 
-BELLE_SIP_DECLARE_VPTR(LinphoneChatRoom);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatRoom);
 
 
 typedef struct _LinphoneFriendPresence {
@@ -753,7 +753,7 @@ struct _LinphoneFriend{
 	LinphoneSubscriptionState out_sub_state;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneFriend);
 
 struct _LinphoneFriendListCbs {
 	belle_sip_object_t base;
@@ -764,7 +764,7 @@ struct _LinphoneFriendListCbs {
 	LinphoneFriendListCbsSyncStateChangedCb sync_state_changed_cb;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneFriendListCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneFriendListCbs);
 
 struct _LinphoneFriendList {
 	belle_sip_object_t base;
@@ -787,7 +787,7 @@ struct _LinphoneFriendList {
 	bool_t enable_subscriptions;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneFriendList);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneFriendList);
 
 
 
@@ -1115,7 +1115,7 @@ struct _LinphoneEvent{
 	bool_t oneshot;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneEvent);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneEvent);
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
@@ -1284,7 +1284,7 @@ struct _LinphoneContent {
 	bool_t owned_fields;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneContent);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneContent);
 
 struct _LinphoneBuffer {
 	belle_sip_object_t base;
@@ -1293,7 +1293,7 @@ struct _LinphoneBuffer {
 	size_t size;	/**< The size of the buffer content */
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneBuffer);
 
 struct _LinphoneNatPolicy {
 	belle_sip_object_t base;
@@ -1310,7 +1310,7 @@ struct _LinphoneNatPolicy {
 	bool_t upnp_enabled;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneNatPolicy);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneNatPolicy);
 
 void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy);
 
@@ -1326,7 +1326,7 @@ struct _LinphoneImNotifPolicy {
 	bool_t recv_imdn_displayed;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneImNotifPolicy);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneImNotifPolicy);
 
 void linphone_core_create_im_notif_policy(LinphoneCore *lc);
 
@@ -1349,7 +1349,7 @@ struct _LinphoneXmlRpcRequestCbs {
 	LinphoneXmlRpcRequestCbsResponseCb response;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcRequestCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneXmlRpcRequestCbs);
 
 struct _LinphoneXmlRpcRequest {
 	belle_sip_object_t base;
@@ -1362,7 +1362,7 @@ struct _LinphoneXmlRpcRequest {
 	LinphoneXmlRpcArg response;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcRequest);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneXmlRpcRequest);
 
 struct _LinphoneXmlRpcSession {
 	belle_sip_object_t base;
@@ -1372,7 +1372,7 @@ struct _LinphoneXmlRpcSession {
 	bool_t released;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcSession);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneXmlRpcSession);
 
 
 /*****************************************************************************
@@ -1394,7 +1394,7 @@ struct _LinphoneAccountCreatorCbs {
 	LinphoneAccountCreatorCbsStatusCb update_hash;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreatorCbs);
 
 struct _LinphoneAccountCreator {
 	belle_sip_object_t base;
@@ -1418,7 +1418,7 @@ struct _LinphoneAccountCreator {
 	char *language;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreator);
 
 /*****************************************************************************
  * CardDAV interface                                                         *
@@ -1549,7 +1549,7 @@ struct _LinphoneImEncryptionEngineCbs {
 	LinphoneImEncryptionEngineCbsUploadingFileCb process_uploading_file;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneImEncryptionEngineCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneImEncryptionEngineCbs);
 
 LinphoneImEncryptionEngineCbs * linphone_im_encryption_engine_cbs_new(void);
 
@@ -1560,7 +1560,7 @@ struct _LinphoneImEncryptionEngine {
 	LinphoneImEncryptionEngineCbs *callbacks;
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneImEncryptionEngine);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneImEncryptionEngine);
 
 LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc);
 
@@ -1717,7 +1717,7 @@ MSWebCam *get_nowebcam_device(MSFactory *f);
 #endif
 LinphoneLimeState linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 
-BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneTunnelConfig);
 
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
 

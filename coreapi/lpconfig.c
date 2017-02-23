@@ -93,7 +93,7 @@ struct _LpConfig{
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneConfig);
-BELLE_SIP_DECLARE_VPTR(LinphoneConfig);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneConfig);
 
 
 char* lp_realpath(const char* file, char* name) {

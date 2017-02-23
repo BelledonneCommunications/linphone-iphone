@@ -36,7 +36,7 @@ struct _LinphonePresenceNote {
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceNote);
-BELLE_SIP_DECLARE_VPTR(LinphonePresenceNote);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePresenceNote);
 
 struct _LinphonePresenceService {
 	belle_sip_object_t base;
@@ -49,7 +49,7 @@ struct _LinphonePresenceService {
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceService);
-BELLE_SIP_DECLARE_VPTR(LinphonePresenceService);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePresenceService);
 
 struct _LinphonePresenceActivity {
 	belle_sip_object_t base;
@@ -59,7 +59,7 @@ struct _LinphonePresenceActivity {
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceActivity);
-BELLE_SIP_DECLARE_VPTR(LinphonePresenceActivity);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePresenceActivity);
 
 struct _LinphonePresencePerson {
 	belle_sip_object_t base;
@@ -72,7 +72,7 @@ struct _LinphonePresencePerson {
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresencePerson);
-BELLE_SIP_DECLARE_VPTR(LinphonePresencePerson);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePresencePerson);
 
 /**
  * Represents the presence model as defined in RFC 4479 and RFC 4480.
@@ -88,7 +88,7 @@ struct _LinphonePresenceModel {
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceModel);
-BELLE_SIP_DECLARE_VPTR(LinphonePresenceModel);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePresenceModel);
 
 
 static const char *person_prefix = "/pidf:presence/dm:person";

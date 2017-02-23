@@ -1910,7 +1910,7 @@ static void video_call_with_thin_congestion(void){
 	simparams.mode = OrtpNetworkSimulatorOutbound;
 	simparams.enabled = TRUE;
 	simparams.max_bandwidth = 400000;
-	simparams.max_buffer_size = simparams.max_bandwidth;
+	simparams.max_buffer_size = (int)simparams.max_bandwidth;
 	simparams.latency = 60;
 	
 	linphone_core_set_network_simulator_params(marie->lc, &simparams);
@@ -1921,14 +1921,14 @@ static void video_call_with_thin_congestion(void){
 
 		/*wait for the TMMBR*/
 		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, 1, 10000));
-		BC_ASSERT_GREATER(marie->stat.last_tmmbr_value_received, 220000, float, "%f");
-		BC_ASSERT_LOWER(marie->stat.last_tmmbr_value_received, 300000, float, "%f");
+		BC_ASSERT_GREATER((float)marie->stat.last_tmmbr_value_received, 220000.f, float, "%f");
+		BC_ASSERT_LOWER((float)marie->stat.last_tmmbr_value_received, 300000.f, float, "%f");
 		first_tmmbr = marie->stat.last_tmmbr_value_received;
 		
 		/*another tmmbr with a greater value is expected once the congestion is resolved*/
 		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, first_tmmbr + 1, 15000));
-		BC_ASSERT_GREATER(marie->stat.last_tmmbr_value_received, 290000, float, "%f");
-		BC_ASSERT_GREATER(linphone_call_get_current_quality(call), 4.0, float, "%f");
+		BC_ASSERT_GREATER((float)marie->stat.last_tmmbr_value_received, 290000.f, float, "%f");
+		BC_ASSERT_GREATER(linphone_call_get_current_quality(call), 4.f, float, "%f");
 		
 		end_call(marie, pauline);
 	}

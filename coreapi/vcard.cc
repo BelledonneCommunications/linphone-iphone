@@ -80,7 +80,7 @@ static void _linphone_vcard_uninit(LinphoneVcard *vCard) {
 	vCard->belCard.reset();
 }
 
-BELLE_SIP_DECLARE_VPTR(LinphoneVcard);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneVcard);
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneVcard);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneVcard, belle_sip_object_t,
 	_linphone_vcard_uninit, // destroy

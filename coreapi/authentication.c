@@ -30,7 +30,7 @@ static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAuthInfo);
-BELLE_SIP_DECLARE_VPTR(LinphoneAuthInfo);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAuthInfo);
 BELLE_SIP_INSTANCIATE_VPTR(
 	LinphoneAuthInfo,
 	belle_sip_object_t,

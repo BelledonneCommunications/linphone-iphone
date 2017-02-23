@@ -31,7 +31,7 @@ struct _LinphoneContactSearch{
 };
 
 #define LINPHONE_CONTACT_SEARCH(obj) BELLE_SIP_CAST(obj,LinphoneContactSearch)
-BELLE_SIP_DECLARE_VPTR(LinphoneContactSearch)
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneContactSearch)
 
 
 struct _LinphoneContactProvider {
@@ -44,7 +44,7 @@ struct _LinphoneContactProvider {
 typedef LinphoneContactSearch* (*LinphoneContactProviderStartSearchMethod)( LinphoneContactProvider* thiz, const char* predicate, ContactSearchCallback cb, void* data );
 typedef unsigned int           (*LinphoneContactProviderCancelSearchMethod)( LinphoneContactProvider* thiz, LinphoneContactSearch *request );
 
-BELLE_SIP_DECLARE_CUSTOM_VPTR_BEGIN(LinphoneContactProvider,belle_sip_object_t)
+BELLE_SIP_DECLARE_CUSTOM_VPTR_BEGIN_NO_EXPORT(LinphoneContactProvider,belle_sip_object_t)
 	const char* name; /*!< Name of the contact provider (LDAP, Google, ...) */
 
 	/* pure virtual methods: inheriting objects must implement these */
