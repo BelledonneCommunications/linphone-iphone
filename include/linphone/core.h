@@ -3425,6 +3425,10 @@ LINPHONE_PUBLIC void linphone_core_stop_dtmf(LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 
+/**
+ * Returns the maximum transmission unit size in bytes.
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC int linphone_core_get_mtu(const LinphoneCore *lc);
 
 /**

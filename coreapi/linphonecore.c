@@ -5181,11 +5181,6 @@ void linphone_core_set_user_data(LinphoneCore *lc, void *userdata){
 	lc->data=userdata;
 }
 
-/**
- * Returns the maximum transmission unit size in bytes.
- *
- * @ingroup media_parameters
-**/
 int linphone_core_get_mtu(const LinphoneCore *lc){
 	return lc->net_conf.mtu;
 }
