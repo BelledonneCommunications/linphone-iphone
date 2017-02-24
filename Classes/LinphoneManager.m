@@ -662,6 +662,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	NSString *address = [FastAddressBook displayNameForAddress:addr];
 
 	if (state == LinphoneCallIncomingReceived) {
+		// TESTING !!
+		// linphone_call_accept_early_media(call);
 		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 			LOGI(@"Call received, stopping background task");
 			[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
@@ -2203,43 +2205,47 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 - (void)startPushLongRunningTask:(BOOL)msg {
+	[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
+	pushBgTask = 0;
 	pushBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-	  if (msg) {
-		  LOGW(@"Incomming message couldn't be received");
-		  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-		  content.title = NSLocalizedString(@"Message received", nil);
-		  content.body = NSLocalizedString(@"You have received a message.", nil);
-		  content.categoryIdentifier = @"push_msg";
+	  if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+		  if (msg) {
+			  LOGW(@"Incomming message couldn't be received");
+			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+			  content.title = NSLocalizedString(@"Message received", nil);
+			  content.body = NSLocalizedString(@"You have received a message.", nil);
+			  content.categoryIdentifier = @"push_msg";
 
-		  UNNotificationRequest *req =
-			  [UNNotificationRequest requestWithIdentifier:@"push_msg" content:content trigger:NULL];
-		  [[UNUserNotificationCenter currentNotificationCenter]
-			  addNotificationRequest:req
-			   withCompletionHandler:^(NSError *_Nullable error) {
-				 // Enable or disable features based on authorization.
-				 if (error) {
-					 LOGD(@"Error while adding notification request :");
-					 LOGD(error.description);
-				 }
-			   }];
-	  } else {
-		  LOGW(@"Incomming call couldn't be received");
-		  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-		  content.title = NSLocalizedString(@"Missed call", nil);
-		  content.body = NSLocalizedString(@"You have missed a call.", nil);
-		  content.categoryIdentifier = @"push_call";
+			  UNNotificationRequest *req =
+				  [UNNotificationRequest requestWithIdentifier:@"push_msg" content:content trigger:NULL];
+			  [[UNUserNotificationCenter currentNotificationCenter]
+				  addNotificationRequest:req
+				   withCompletionHandler:^(NSError *_Nullable error) {
+					 // Enable or disable features based on authorization.
+					 if (error) {
+						 LOGD(@"Error while adding notification request :");
+						 LOGD(error.description);
+					 }
+				   }];
+		  } else {
+			  LOGW(@"Incomming call couldn't be received");
+			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+			  content.title = NSLocalizedString(@"Missed call", nil);
+			  content.body = NSLocalizedString(@"You have missed a call.", nil);
+			  content.categoryIdentifier = @"push_call";
 
-		  UNNotificationRequest *req =
-			  [UNNotificationRequest requestWithIdentifier:@"push_call" content:content trigger:NULL];
-		  [[UNUserNotificationCenter currentNotificationCenter]
-			  addNotificationRequest:req
-			   withCompletionHandler:^(NSError *_Nullable error) {
-				 // Enable or disable features based on authorization.
-				 if (error) {
-					 LOGD(@"Error while adding notification request :");
-					 LOGD(error.description);
-				 }
-			   }];
+			  UNNotificationRequest *req =
+				  [UNNotificationRequest requestWithIdentifier:@"push_call" content:content trigger:NULL];
+			  [[UNUserNotificationCenter currentNotificationCenter]
+				  addNotificationRequest:req
+				   withCompletionHandler:^(NSError *_Nullable error) {
+					 // Enable or disable features based on authorization.
+					 if (error) {
+						 LOGD(@"Error while adding notification request :");
+						 LOGD(error.description);
+					 }
+				   }];
+		  }
 	  }
 	  [[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
 	  pushBgTask = 0;
