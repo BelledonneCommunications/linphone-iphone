@@ -1562,7 +1562,7 @@ struct _LinphoneImEncryptionEngine {
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneImEncryptionEngine);
 
-LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc);
 
 /** Belle Sip-based objects need unique ids
   */
