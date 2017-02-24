@@ -108,7 +108,7 @@ LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
 }
 
 char * linphone_factory_get_top_resources_dir(const LinphoneFactory *factory) {
-	if (factory->top_resources_dir) return factory->top_resources_dir;
+	if (factory->top_resources_dir) return bctbx_strdup(factory->top_resources_dir);
 	return bctbx_strdup(PACKAGE_DATA_DIR);
 }
 
@@ -118,7 +118,7 @@ void linphone_factory_set_top_resources_dir(LinphoneFactory *factory, const char
 }
 
 char * linphone_factory_get_data_resources_dir(const LinphoneFactory *factory) {
-	if (factory->data_resources_dir) return factory->data_resources_dir;
+	if (factory->data_resources_dir) return bctbx_strdup(factory->data_resources_dir);
 	if (factory->top_resources_dir) return bctbx_strdup_printf("%s/linphone", factory->top_resources_dir);
 	return bctbx_strdup_printf("%s/linphone", PACKAGE_DATA_DIR);
 }
@@ -129,7 +129,7 @@ void linphone_factory_set_data_resources_dir(LinphoneFactory *factory, const cha
 }
 
 char * linphone_factory_get_sound_resources_dir(const LinphoneFactory *factory) {
-	if (factory->sound_resources_dir) return factory->sound_resources_dir;
+	if (factory->sound_resources_dir) return bctbx_strdup(factory->sound_resources_dir);
 	if (factory->top_resources_dir) return bctbx_strdup_printf("%s/sounds/linphone", factory->top_resources_dir);
 	return bctbx_strdup(PACKAGE_SOUND_DIR);
 }
@@ -140,7 +140,7 @@ void linphone_factory_set_sound_resources_dir(LinphoneFactory *factory, const ch
 }
 
 char * linphone_factory_get_ring_resources_dir(const LinphoneFactory *factory) {
-	if (factory->ring_resources_dir) return factory->ring_resources_dir;
+	if (factory->ring_resources_dir) return bctbx_strdup(factory->ring_resources_dir);
 	if (factory->sound_resources_dir) return bctbx_strdup_printf("%s/rings", factory->sound_resources_dir);
 	return bctbx_strdup(PACKAGE_RING_DIR);
 }
@@ -151,7 +151,7 @@ void linphone_factory_set_ring_resources_dir(LinphoneFactory *factory, const cha
 }
 
 char * linphone_factory_get_image_resources_dir(const LinphoneFactory *factory) {
-	if (factory->image_resources_dir) return factory->image_resources_dir;
+	if (factory->image_resources_dir) return bctbx_strdup(factory->image_resources_dir);
 	if (factory->top_resources_dir) return bctbx_strdup_printf("%s/images", factory->top_resources_dir);
 	return bctbx_strdup_printf("%s/images", PACKAGE_DATA_DIR);
 }
@@ -162,7 +162,7 @@ void linphone_factory_set_image_resources_dir(LinphoneFactory *factory, const ch
 }
 
 char * linphone_factory_get_msplugins_dir(const LinphoneFactory *factory) {
-	return factory->msplugins_dir;
+	return bctbx_strdup(factory->msplugins_dir);
 }
 
 void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *path) {

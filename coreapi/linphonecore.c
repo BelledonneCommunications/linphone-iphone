@@ -1995,10 +1995,9 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	linphone_core_activate_log_serialization_if_needed();
 
 	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
-	lc->factory = ms_factory_new_with_voip_and_plugins_dir(msplugins_dir);
-	if (msplugins_dir) bctbx_free(msplugins_dir);
 	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
-	ms_factory_set_image_resources_dir(lc->factory, image_resources_dir);
+	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
+	if (msplugins_dir) bctbx_free(msplugins_dir);
 	bctbx_free(image_resources_dir);
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
