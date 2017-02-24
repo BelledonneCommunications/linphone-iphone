@@ -257,6 +257,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
+	MSFactory *msfactory = NULL;
+	MSFilterDesc *ogl_filter_desc;
 
 	vtable.global_state_changed=linphone_gtk_global_state_changed;
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
@@ -301,6 +303,11 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	if (chat_messages_db_file) linphone_core_set_chat_database_path(the_core,chat_messages_db_file);
 	if (call_logs_db_file) linphone_core_set_call_logs_database_path(the_core, call_logs_db_file);
 	if (friends_db_file) linphone_core_set_friends_database_path(the_core, friends_db_file);
+	
+	// Disable the generic OpenGL displaying filter
+	msfactory = linphone_core_get_ms_factory(the_core);
+	ogl_filter_desc = ms_factory_lookup_filter_by_id(msfactory, MS_OGL_ID);
+	if (ogl_filter_desc != NULL) ogl_filter_desc->flags &= ~MS_FILTER_IS_ENABLED;
 }
 
 LinphoneCore *linphone_gtk_get_core(void){
@@ -844,6 +851,7 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 	const char **fmts=linphone_core_get_supported_file_formats(linphone_gtk_get_core());
 	int i;
 	const char *ext="wav";
+	char *record_path_utf8, *record_path;
 
 #ifdef _WIN32
 	loctime=*localtime(&curtime);
@@ -876,7 +884,10 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 	if (!dir) {
 		ms_message ("No directory for music, using [%s] instead",dir=getenv("HOME"));
 	}
-	return g_build_filename(dir,filename,NULL);
+	record_path_utf8 = g_build_filename(dir,filename,NULL);
+	record_path = g_locale_from_utf8(record_path_utf8, -1, NULL, NULL, NULL);
+	g_free(record_path_utf8);
+	return record_path;
 }
 
 gchar *linphone_gtk_get_snapshot_path(void) {
@@ -886,6 +897,7 @@ gchar *linphone_gtk_get_snapshot_path(void) {
 	time_t curtime=time(NULL);
 	struct tm loctime;
 	const char *ext="jpg";
+	char *snapshot_path_utf8, *snapshot_path;
 
 #ifdef _WIN32
 	loctime=*localtime(&curtime);
@@ -899,7 +911,10 @@ gchar *linphone_gtk_get_snapshot_path(void) {
 	if (!dir) {
 		ms_message ("No directory for pictures, using [%s] instead",dir=getenv("HOME"));
 	}
-	return g_build_filename(dir,filename,NULL);
+	snapshot_path_utf8 = g_build_filename(dir,filename,NULL);
+	snapshot_path = g_locale_from_utf8(snapshot_path_utf8, -1, NULL, NULL, NULL);
+	g_free(snapshot_path_utf8);
+	return snapshot_path;
 }
 
 static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
@@ -1882,11 +1897,13 @@ void linphone_gtk_import_contacts(void) {
 
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
-		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		char *filename_utf8 = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		char *filename = g_locale_from_utf8(filename_utf8, -1, NULL, NULL, NULL);
 		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
 		linphone_friend_list_import_friends_from_vcard4_file(list, filename);
-		g_free(filename);
 		linphone_gtk_show_friends();
+		g_free(filename_utf8);
+		g_free(filename);
 	}
 	gtk_widget_destroy(dialog);
 }
@@ -1898,9 +1915,11 @@ void linphone_gtk_export_contacts(void) {
 
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
-		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		char *filename_utf8 = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		char *filename = g_locale_from_utf8(filename_utf8, -1, NULL, NULL, NULL);
 		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
 		linphone_friend_list_export_friends_as_vcard4_file(list, filename);
+		g_free(filename_utf8);
 		g_free(filename);
 	}
 	gtk_widget_destroy(dialog);

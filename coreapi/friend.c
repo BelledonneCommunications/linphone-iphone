@@ -514,10 +514,14 @@ void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 	lf->initial_subscribes_sent=FALSE;
 }
 
-void linphone_friend_close_subscriptions(LinphoneFriend *lf){
-	linphone_friend_unsubscribe(lf);
+static void linphone_friend_close_incoming_subscriptions(LinphoneFriend *lf) {
 	bctbx_list_for_each(lf->insubs, (MSIterateFunc) sal_notify_presence_close);
 	lf->insubs = bctbx_list_free_with_data(lf->insubs, (MSIterateFunc)sal_op_release);
+}
+
+void linphone_friend_close_subscriptions(LinphoneFriend *lf){
+	linphone_friend_unsubscribe(lf);
+	linphone_friend_close_incoming_subscriptions(lf);
 }
 
 static void _linphone_friend_release_ops(LinphoneFriend *lf){
@@ -793,6 +797,10 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 				break;
 		}
 		fr->inc_subscribe_pending = FALSE;
+	}
+	
+	if (fr->pol == LinphoneSPDeny && fr->insubs) {
+		linphone_friend_close_incoming_subscriptions(fr);
 	}
 
 	linphone_friend_update_subscribes(fr, linphone_core_should_subscribe_friends_only_when_registered(lc));

@@ -49,41 +49,42 @@ ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
 PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/$(PACKAGE).bundle
 
-EXTRA_DIST =		BUGS  \
-			README.arm \
-			README.mingw \
-			README.macos.md \
-			autogen.sh \
-			linphone.spec \
-			linphone.spec.in \
-			$(GTK_FILELIST) \
-			gen-gtkfilelist.sh \
-			$(LINPHONEDEPS_FILELIST) \
-			$(ISS_SCRIPT).in
-
-EXTRA_DIST += CMakeLists.txt \
-cmake/FindGtkMacIntegration.cmake \
-cmake/FindIconv.cmake \
-cmake/FindIntl.cmake \
-cmake/FindNotify.cmake \
-cmake/FindSqlite3.cmake \
-cmake/FindXML2.cmake \
-cmake/FindZlib.cmake \
-cmake/LinphoneConfig.cmake.in \
-config.h.cmake \
-console/CMakeLists.txt \
-coreapi/CMakeLists.txt \
-coreapi/gitversion.cmake \
-coreapi/help/CMakeLists.txt \
-gtk/CMakeLists.txt \
-java/CMakeLists.txt \
-pixmaps/CMakeLists.txt \
-po/CMakeLists.txt \
-share/CMakeLists.txt \
-share/rings/CMakeLists.txt \
-share/rootca.cmake \
-tester/CMakeLists.txt \
-tools/CMakeLists.txt
+EXTRA_DIST = \
+	BUGS  \
+	README.arm \
+	README.mingw \
+	README.macos.md \
+	README.md \
+	autogen.sh \
+	linphone.spec \
+	linphone.spec.in \
+	$(GTK_FILELIST) \
+	gen-gtkfilelist.sh \
+	$(LINPHONEDEPS_FILELIST) \
+	$(ISS_SCRIPT).in \
+	CMakeLists.txt \
+	cmake/FindGtkMacIntegration.cmake \
+	cmake/FindIconv.cmake \
+	cmake/FindIntl.cmake \
+	cmake/FindNotify.cmake \
+	cmake/FindSqlite3.cmake \
+	cmake/FindXML2.cmake \
+	cmake/FindZlib.cmake \
+	cmake/LinphoneConfig.cmake.in \
+	config.h.cmake \
+	console/CMakeLists.txt \
+	coreapi/CMakeLists.txt \
+	coreapi/gitversion.cmake \
+	coreapi/help/CMakeLists.txt \
+	gtk/CMakeLists.txt \
+	java/CMakeLists.txt \
+	pixmaps/CMakeLists.txt \
+	po/CMakeLists.txt \
+	share/CMakeLists.txt \
+	share/rings/CMakeLists.txt \
+	share/rootca.cmake \
+	tester/CMakeLists.txt \
+	tools/CMakeLists.txt
 
 DISTCLEANFILES= $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
 

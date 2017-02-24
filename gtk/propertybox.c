@@ -1461,7 +1461,7 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 		GtkTreeIter iter;
 
 		/* do not offer the user to select combo 'decoding/rendering' filter */
-		if (desc->enc_fmt != NULL)
+		if (desc->enc_fmt != NULL || (desc->flags & MS_FILTER_IS_ENABLED) == 0)
 			continue;
 
 		gtk_list_store_append(store,&iter);
@@ -1670,6 +1670,9 @@ void linphone_gtk_show_parameters(void){
 	if(!linphone_core_upnp_available()) {
 		gtk_widget_hide(linphone_gtk_get_widget(pb,"use_upnp"));
 	}
+	gtk_widget_hide(linphone_gtk_get_widget(pb, "use_nat_address"));
+	gtk_widget_hide(linphone_gtk_get_widget(pb, "nat_address"));
+	gtk_widget_hide(linphone_gtk_get_widget(pb, "nat_address_label"));
 
 	mtu=linphone_core_get_mtu(lc);
 	if (mtu<=0){

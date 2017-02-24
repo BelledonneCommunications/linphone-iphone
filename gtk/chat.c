@@ -160,6 +160,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	const GRegex *uri_regex = get_uri_regex();
 	GMatchInfo *match_info = NULL;
 	const char *message = linphone_chat_message_get_text(msg);
+	const char *external_body_url = linphone_chat_message_get_external_body_url(msg);
 	time_t t;
 	char buf[80];
 	time_t tnow;
@@ -180,10 +181,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	}
 	ms_free(from_str);
 
-	if (!message) {
-		const char *external_body_url = linphone_chat_message_get_external_body_url(msg);
-		if (external_body_url) message = external_body_url;
-	}
+	if (external_body_url) message = external_body_url;
 
 	// Inserts message body and tags URIs as hypertext links
 	if(message) {

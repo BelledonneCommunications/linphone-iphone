@@ -1156,11 +1156,11 @@ static void sip_config_read(LinphoneCore *lc) {
 	if (tmpstr==NULL || linphone_core_set_primary_contact(lc,tmpstr)==-1) {
 		const char *hostname=NULL;
 		const char *username=NULL;
-#ifdef HAVE_GETENV
+#if !defined(LINPHONE_WINDOWS_UNIVERSAL) && !defined(LINPHONE_WINDOWS_PHONE) // Using getenv is forbidden on Windows 10 and Windows Phone
 		hostname=getenv("HOST");
 		username=getenv("USER");
 		if (hostname==NULL) hostname=getenv("HOSTNAME");
-#endif /*HAVE_GETENV*/
+#endif
 		if (hostname==NULL)
 			hostname="unknown-host";
 		if (username==NULL){
@@ -1569,7 +1569,7 @@ static void video_config_read(LinphoneCore *lc){
 	linphone_core_set_video_device(lc,str);
 
 	linphone_core_set_preferred_video_size_by_name(lc,
-		lp_config_get_string(lc->config,"video","size","cif"));
+		lp_config_get_string(lc->config,"video","size","vga"));
 
 	linphone_core_set_preview_video_size_by_name(lc,
 		lp_config_get_string(lc->config,"video","preview_size",NULL));

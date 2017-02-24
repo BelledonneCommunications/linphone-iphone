@@ -186,13 +186,13 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="no">default</col>
+        <col id="0">default</col>
       </row>
       <row>
-        <col id="0" translatable="no">high-fps</col>
+        <col id="0">high-fps</col>
       </row>
       <row>
-        <col id="0" translatable="no">custom</col>
+        <col id="0">custom</col>
       </row>
     </data>
   </object>
@@ -2086,7 +2086,7 @@
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="homogeneous">True</property>
                                 <child>
-                                  <object class="GtkLabel" id="label39">
+                                  <object class="GtkLabel" id="nat_address_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>

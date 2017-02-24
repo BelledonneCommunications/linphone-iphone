@@ -192,8 +192,12 @@ void linphone_gtk_external_account_configuration_changed(GtkEntry *entry) {
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant), page, external_account_configuration_complete(page) > 0);
 }
 
+static bool_t check_username_validity(const char *username) {
+	return username  && g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", username, 0, 0);
+}
+
 void linphone_gtk_account_configuration_changed(GtkEntry *entry, GtkAssistant *assistant) {
-	gboolean complete = (gtk_entry_get_text_length(entry) > 0);
+	gboolean complete = check_username_validity(gtk_entry_get_text(entry));
 	GtkWidget *page = gtk_assistant_get_nth_page(assistant, gtk_assistant_get_current_page(assistant));
 	gtk_assistant_set_page_complete(assistant, page, complete);
 }
@@ -256,7 +260,7 @@ void linphone_gtk_account_creation_username_changed(GtkEntry *entry) {
 	linphone_account_creator_set_domain(creator, "sip.linphone.org");
 	linphone_account_creator_set_route(creator, "sip.linphone.org");
 
-	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
+	if (check_username_validity(gtk_entry_get_text(username))) {
 		guint timerID = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(page), "usernameAvailabilityTimerID"));
 		if (timerID > 0) {
 			g_source_remove(timerID);
@@ -266,7 +270,7 @@ void linphone_gtk_account_creation_username_changed(GtkEntry *entry) {
 	} else {
 		if (gtk_entry_get_text_length(username) < LOGIN_MIN_SIZE) {
 			gtk_label_set_text(usernameError, "Username is too short");
-		} else if (!g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
+		} else if (!check_username_validity(gtk_entry_get_text(username))) {
 			gtk_label_set_text(usernameError, "Unauthorized username");
 		}
 		g_object_set_data(G_OBJECT(page), "is_username_available", GINT_TO_POINTER(0));

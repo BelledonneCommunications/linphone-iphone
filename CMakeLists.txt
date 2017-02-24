@@ -21,7 +21,7 @@
 ############################################################################
 
 cmake_minimum_required(VERSION 3.0)
-project(linphone VERSION 3.10.2 LANGUAGES C CXX)
+project(linphone VERSION 3.11.0 LANGUAGES C CXX)
 
 
 set(LINPHONE_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
@@ -54,7 +54,6 @@ option(ENABLE_TOOLS "Turn on or off compilation of tools." YES)
 option(ENABLE_TUNNEL "Turn on compilation of tunnel support." NO)
 option(ENABLE_TUTORIALS "Enable compilation of tutorials." YES)
 option(ENABLE_UNIT_TESTS "Enable compilation of unit tests." YES)
-option(ENABLE_UPNP "Build with uPnP support." YES)
 option(ENABLE_VIDEO "Build with video support." YES)
 cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENABLE_GTK_UI" NO)
 option(ENABLE_DEBUG_LOGS "Turn on or off debug level logs." NO)
