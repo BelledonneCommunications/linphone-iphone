@@ -664,7 +664,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	if (state == LinphoneCallIncomingReceived) {
 		// TESTING !!
 		// linphone_call_accept_early_media(call);
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+		if (pushBgTask) {
 			LOGI(@"Call received, stopping background task");
 			[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
 			pushBgTask = 0;
@@ -1180,13 +1180,18 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
 	ms_free(c_address);
-
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground || ((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) && ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) || (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room != PhoneMainView.instance.currentRoom)) {
-		// Create a new notification
+	if (pushBgTask) {
 		LOGI(@"Message received, stopping background task");
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
 		pushBgTask = 0;
+	}
 
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+		((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) &&
+		 ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) ||
+		(PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription &&
+		 room != PhoneMainView.instance.currentRoom)) {
+		// Create a new notification
 		if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 			NSArray *actions;
 
