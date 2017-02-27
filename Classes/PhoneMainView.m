@@ -334,7 +334,18 @@ static RootViewManager *rootViewManagerInstance = nil;
 			break;
 		}
 		case LinphoneCallPausedByRemote:
-		case LinphoneCallConnected:
+		case LinphoneCallConnected: {
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
+				NSString *callId =
+					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
+				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:callId];
+				if (uuid) {
+					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
+																		   startedConnectingAtDate:nil];
+				}
+			}
+			break;
+		}
 		case LinphoneCallStreamsRunning: {
 			[self changeCurrentView:CallView.compositeViewDescription];
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
@@ -342,6 +353,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
 				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:callId];
 				if (uuid) {
+					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
+																				   connectedAtDate:nil];
 					NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
 					CXCallUpdate *update = [[CXCallUpdate alloc] init];
 					update.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
@@ -401,28 +414,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			}
 			break;
 		}
-		case LinphoneCallOutgoingRinging: {
-			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
-				NSString *callId =
-					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:callId];
-				if (uuid) {
-					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
-																		   startedConnectingAtDate:nil];
-					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
-																				   connectedAtDate:nil];
-					NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
-					CXCallUpdate *update = [[CXCallUpdate alloc] init];
-					update.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
-					update.supportsGrouping = TRUE;
-					update.supportsDTMF = TRUE;
-					update.supportsHolding = TRUE;
-					update.supportsUngrouping = TRUE;
-					[LinphoneManager.instance.providerDelegate.provider reportCallWithUUID:uuid updated:update];
-				}
-			}
-			break;
-		}
+		case LinphoneCallOutgoingRinging:
 		case LinphoneCallPaused:
 		case LinphoneCallPausing:
 		case LinphoneCallRefered:
