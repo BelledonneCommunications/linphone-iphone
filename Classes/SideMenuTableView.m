@@ -37,6 +37,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+	linphone_core_stop_dtmf(LC);
 	[super viewWillAppear:animated];
 
 	_sideMenuEntries = [[NSMutableArray alloc] init];
