@@ -141,22 +141,7 @@ namespace linphone {
 	};
 	
 	
-	class Listener {
-		public:
-			Listener(): mCbs(NULL) {}
-			virtual ~Listener() {setCallbacks(NULL);}
-		
-		public:
-			void setCallbacks(::belle_sip_object_t *cbs) {
-				if (mCbs != NULL) belle_sip_object_unref(mCbs);
-				if (cbs == NULL) mCbs = NULL;
-				else mCbs = belle_sip_object_ref(cbs);
-			}
-			belle_sip_object_t *getCallbacks() {return mCbs;}
-		
-		private:
-			::belle_sip_object_t *mCbs;
-	};
+	class Listener {};
 	
 	
 	class ListenableObject: public Object {
@@ -179,11 +164,12 @@ namespace linphone {
 		
 	protected:
 		MultiListenableObject(::belle_sip_object_t *ptr, bool takeRef=true);
-		virtual ~MultiListenableObject();
+		virtual ~MultiListenableObject() {};
 		
 	protected:
 		void addListener(const std::shared_ptr<Listener> &listener);
 		void removeListener(const std::shared_ptr<Listener> &listener);
+		std::list<std::shared_ptr<Listener> > &getListeners() const;
 	
 	private:
 		static void deleteListenerList(std::list<std::shared_ptr<Listener> > *listeners) {delete listeners;}

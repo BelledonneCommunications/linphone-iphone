@@ -88,12 +88,12 @@ class CppTranslator(object):
 		if islistenable:
 			classDict['listenerClassName'] = CppTranslator.translate_class_name(_class.listenerInterface.name)
 			classDict['cListenerName'] = _class.listenerInterface.name.to_c()
+			classDict['cppListenerName'] = CppTranslator.translate_class_name(_class.listenerInterface.name)
 			for method in _class.listenerInterface.methods:
 				classDict['wrapperCbs'].append(CppTranslator._generate_wrapper_callback(self, _class, method))
 		
 		if ismonolistenable:
 			classDict['cCbsGetter'] = _class.name.to_snake_case(fullName=True) + '_get_callbacks'
-			classDict['cppListenerName'] = CppTranslator.translate_class_name(_class.listenerInterface.name)
 			classDict['parentClassName'] = 'ListenableObject'
 		elif ismultilistenable:
 			classDict['parentClassName'] = 'MultiListenableObject'
@@ -101,6 +101,8 @@ class CppTranslator(object):
 			classDict['callbacksAdder'] = _class.name.to_snake_case(fullName=True)+ '_add_callbacks'
 			classDict['callbacksRemover'] = _class.name.to_snake_case(fullName=True)+ '_remove_callbacks'
 			classDict['userDataSetter'] = _class.listenerInterface.name.to_snake_case(fullName=True)[:-len('_listener')] + '_cbs_set_user_data'
+			classDict['userDataGetter'] = _class.listenerInterface.name.to_snake_case(fullName=True)[:-len('_listener')] + '_cbs_get_user_data'
+			classDict['currentCallbacksGetter'] = _class.name.to_snake_case(fullName=True) + '_get_current_callbacks'
 		
 		for property in _class.properties:
 			try:

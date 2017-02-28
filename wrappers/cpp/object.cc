@@ -170,15 +170,15 @@ std::string MultiListenableObject::sListenerListName = "cpp_listeners";
 
 MultiListenableObject::MultiListenableObject(::belle_sip_object_t *ptr, bool takeRef): Object(ptr, takeRef) {
 	if (ptr != NULL) {
-		list<shared_ptr<Listener> > *listeners = new list<shared_ptr<Listener> >;
-		belle_sip_object_data_set(ptr, sListenerListName.c_str(), listeners, (belle_sip_data_destroy)deleteListenerList);
+		if (belle_sip_object_data_get(ptr, sListenerListName.c_str()) == NULL) {
+			list<shared_ptr<Listener> > *listeners = new list<shared_ptr<Listener> >;
+			belle_sip_object_data_set(ptr, sListenerListName.c_str(), listeners, (belle_sip_data_destroy)deleteListenerList);
+		}
 	}
 }
 
-MultiListenableObject::~MultiListenableObject() {
-	if (mPrivPtr != NULL) {
-		belle_sip_object_data_set(mPrivPtr, sListenerListName.c_str(), NULL, NULL);
-	}
+std::list<std::shared_ptr<Listener> > &MultiListenableObject::getListeners() const {
+	return *(std::list<std::shared_ptr<Listener> > *)belle_sip_object_data_get(mPrivPtr, sListenerListName.c_str());
 }
 
 void MultiListenableObject::addListener(const std::shared_ptr<Listener> &listener) {
