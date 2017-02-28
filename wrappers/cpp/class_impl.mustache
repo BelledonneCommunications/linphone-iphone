@@ -74,8 +74,8 @@ void {{{className}}}::removeListener(const std::shared_ptr<{{{listenerClassName}
 {{#isfactory}}
 std::shared_ptr<Core> Factory::createCore(const std::shared_ptr<CoreListener> & listener, const std::string & configPath, const std::string & factoryConfigPath) const {
 	::LinphoneCoreCbs *cbs = NULL;
+	std::list<std::shared_ptr<Listener> > listeners;
 	if (listener != nullptr) {
-		std::list<std::shared_ptr<Listener> > listeners;
 		listeners.push_back(std::static_pointer_cast<Listener,CoreListener>(listener));
 		cbs = Core::createCallbacks(&listeners);
 	}
@@ -95,8 +95,8 @@ std::shared_ptr<Core> Factory::createCore(const std::shared_ptr<CoreListener> & 
 
 std::shared_ptr<Core> Factory::createCoreWithConfig(const std::shared_ptr<CoreListener> & listener, const std::shared_ptr<Config> & config) const {
 	::LinphoneCoreCbs *cbs = NULL;
+	std::list<std::shared_ptr<Listener> > listeners;
 	if (listener != nullptr) {
-		std::list<std::shared_ptr<Listener> > listeners;
 		listeners.push_back(std::static_pointer_cast<Listener,CoreListener>(listener));
 		cbs = Core::createCallbacks(&listeners);
 	}
