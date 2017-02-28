@@ -220,4 +220,9 @@ public class LinphoneCoreListenerBase implements LinphoneCoreListener {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void networkReachableChanged(LinphoneCore lc, boolean enable) {
+		// TODO Auto-generated method stub
+	}
 }

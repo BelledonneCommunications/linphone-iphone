@@ -308,4 +308,9 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
         }
 
+	@Override
+	public void networkReachableChanged(LinphoneCore lc, boolean enable) {
+
+	}
+
 }

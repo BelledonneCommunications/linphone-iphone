@@ -318,6 +318,8 @@ public:
 
 		notifyRecvId = env->GetMethodID(listenerClass,"notifyReceived", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Ljava/lang/String;Lorg/linphone/core/LinphoneContent;)V");
 
+		networkReachableId = env->GetMethodID(listenerClass,"networkReachableChanged", "(Lorg/linphone/core/LinphoneCore;Z)V");
+
 		configuringStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RemoteProvisioningState"));
 		configuringStateFromIntId = env->GetStaticMethodID(configuringStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;");
 		configuringStateId = env->GetMethodID(listenerClass,"configuringStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;Ljava/lang/String;)V");
@@ -445,6 +447,7 @@ public:
 	jmethodID authenticationRequestedId;
 	jmethodID publishStateId;
 	jmethodID notifyRecvId;
+	jmethodID networkReachableId;
 
 	jclass authMethodClass;
 	jmethodID authMethodFromIntId;
@@ -872,6 +875,10 @@ public:
 
 		if (ljb->notifyRecvId) {
 			vTable->notify_received = notifyReceived;
+		}
+
+		if (ljb->networkReachableId) {
+			vTable->network_reachable = networkReachableCb;
 		}
 
 		if (ljb->configuringStateId) {
@@ -1394,6 +1401,21 @@ public:
 							,env->NewStringUTF(evname)
 							,content ? create_java_linphone_content(env,content) : NULL
 							);
+		handle_possible_java_exception(env, lcData->listener);
+	}
+
+	static void networkReachableCb(LinphoneCore *lc, bool_t enable){
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		env->CallVoidMethod(lcData->listener, ljb->networkReachableId, lcData->core, (jboolean)enable);
 		handle_possible_java_exception(env, lcData->listener);
 	}
 
@@ -7876,8 +7898,6 @@ extern "C" void Java_org_linphone_core_LinphoneConferenceParamsImpl_enableVideo(
 extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoRequested(JNIEnv *env, jobject thiz, jlong paramsPtr) {
 	return linphone_conference_params_video_requested((LinphoneConferenceParams *)paramsPtr);
 }
-
-
 
 extern "C" jobjectArray Java_org_linphone_core_LinphoneConferenceImpl_getParticipants(JNIEnv *env, jobject thiz, jlong pconference) {
 	bctbx_list_t *participants, *it;

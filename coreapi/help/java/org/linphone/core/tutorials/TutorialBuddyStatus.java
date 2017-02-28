@@ -361,4 +361,9 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
         }
 
+	@Override
+	public void networkReachableChanged(LinphoneCore lc, boolean enable) {
+
+	}
+
 }

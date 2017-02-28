@@ -272,4 +272,9 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 
         }
 
+	@Override
+	public void networkReachableChanged(LinphoneCore lc, boolean enable) {
+
+	}
+
 }

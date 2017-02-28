@@ -269,5 +269,12 @@ public interface LinphoneCoreListener {
 	 * @param list LinphoneFriendList object
 	 */
 	void friendListRemoved(LinphoneCore lc, LinphoneFriendList list);
+
+	/**
+	 * Callback prototype for reporting network is reachable
+	 * @param lc LinphoneCore object
+	 * @param enable status of network
+     */
+	void networkReachableChanged(LinphoneCore lc, boolean enable);
 }
 
