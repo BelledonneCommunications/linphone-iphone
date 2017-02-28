@@ -543,17 +543,6 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
 	_linphone_chat_room_send_message(cr, linphone_chat_room_create_message(cr, msg));
 }
 
-void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg) {
-	if (msg->message) {
-		/*legacy API*/
-		linphone_core_notify_text_message_received(lc, cr, msg->from, msg->message);
-	}
-	linphone_core_notify_message_received(lc, cr, msg);
-	cr->remote_is_composing = LinphoneIsComposingIdle;
-	linphone_core_notify_is_composing_received(cr->lc, cr);
-	linphone_chat_message_send_delivery_notification(msg, LinphoneReasonNone);
-}
-
 static bool_t is_file_transfer(const char *content_type) {
 	return (strcmp("application/vnd.gsma.rcs-ft-http+xml", content_type) == 0);
 }
@@ -564,6 +553,23 @@ static bool_t is_im_iscomposing(const char* content_type) {
 
 static bool_t is_imdn(const char *content_type) {
 	return (strcmp("message/imdn+xml", content_type) == 0);
+}
+
+static bool_t is_text(const char *content_type) {
+	return (strcmp("text/plain", content_type) == 0);
+}
+
+void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg) {
+	if (msg->message) {
+		/*legacy API*/
+		linphone_core_notify_text_message_received(lc, cr, msg->from, msg->message);
+	}
+	linphone_core_notify_message_received(lc, cr, msg);
+	if(!is_imdn(msg->content_type) && !is_im_iscomposing(msg->content_type)) {
+		cr->remote_is_composing = LinphoneIsComposingIdle;
+		linphone_core_notify_is_composing_received(cr->lc, cr);
+		linphone_chat_message_send_delivery_notification(msg, LinphoneReasonNone);
+	}
 }
 
 static void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChatMessage *msg) {
@@ -718,23 +724,28 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 
 	if (is_file_transfer(msg->content_type)) {
 		create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(msg);
+		linphone_chat_message_set_to_be_stored(msg, TRUE);
 	} else if (is_im_iscomposing(msg->content_type)) {
 		linphone_chat_room_notify_is_composing(cr, msg->message);
-		goto end;
+		linphone_chat_message_set_to_be_stored(msg, FALSE);
 	} else if (is_imdn(msg->content_type)) {
 		linphone_chat_room_notify_imdn(cr, msg->message);
-		goto end;
+		linphone_chat_message_set_to_be_stored(msg, FALSE);
+	} else if (is_text(msg->content_type)) {
+		linphone_chat_message_set_to_be_stored(msg, TRUE);
 	}
 
-	msg->storage_id = linphone_chat_message_store(msg);
-
-	if (cr->unread_count < 0)
-		cr->unread_count = 1;
-	else
-		cr->unread_count++;
-
 	linphone_chat_room_message_received(cr, lc, msg);
-	
+
+	if(linphone_chat_message_get_to_be_stored(msg)) {
+		msg->storage_id = linphone_chat_message_store(msg);
+
+		if (cr->unread_count < 0)
+			cr->unread_count = 1;
+		else
+			cr->unread_count++;
+	}
+
 end:
 	linphone_address_unref(addr);
 	if (msg != NULL) linphone_chat_message_unref(msg);
@@ -1501,6 +1512,22 @@ void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char
 		ms_free(msg->content_type);
 	}
 	msg->content_type = content_type ? ms_strdup(content_type) : NULL;
+}
+
+bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *msg) {
+	return is_file_transfer(msg->content_type);
+}
+
+bool_t linphone_chat_message_is_text(LinphoneChatMessage *msg) {
+	return is_text(msg->content_type);
+}
+
+bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *msg) {
+	return msg->to_be_stored;
+}
+
+void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *msg, bool_t to_be_stored) {
+	msg->to_be_stored = to_be_stored;
 }
 
 const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {
