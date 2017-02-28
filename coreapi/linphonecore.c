@@ -2754,6 +2754,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 	if (lc->network_reachable_to_be_notified) {
 		lc->network_reachable_to_be_notified=FALSE;
 		linphone_core_notify_network_reachable(lc,lc->sip_network_reachable);
+		if (lc->sip_network_reachable) {
+			linphone_core_resolve_stun_server(lc);
+		}
 	}
 	if (linphone_core_get_global_state(lc) == LinphoneGlobalStartup) {
 		if (sal_get_root_ca(lc->sal)) {
@@ -5598,8 +5601,6 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 		sal_reset_transports(lc->sal);
 		/*mark all calls as broken, so that they can be either dropped immediately or restaured when network will be back*/
 		bctbx_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
-	}else{
-		linphone_core_resolve_stun_server(lc);
 	}
 #ifdef BUILD_UPNP
 	if(lc->upnp == NULL) {
