@@ -29,7 +29,7 @@ set(LINPHONECSH_SOURCE_FILES
 	shell.c
 )
 
-apply_compile_flags(LINPHONEC_SOURCE_FILES "CPP" "C")
+bc_apply_compile_flags(LINPHONEC_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 if(MSVC)
 	get_source_file_property(COMMANDS_C_COMPILE_FLAGS commands.c COMPILE_FLAGS)
 	set(COMMANDS_C_COMPILE_FLAGS "${COMMANDS_C_COMPILE_FLAGS} /wd4996") # Disable "was declared deprecated" warnings

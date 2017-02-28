@@ -84,8 +84,8 @@ if (APPLE)
 	list(APPEND OBJC_FILES mac.m)
 endif()
 
-apply_compile_flags(OBJC_FILES "CPP" "OBJC")
-apply_compile_flags(SOURCE_FILES "CPP" "C")
+bc_apply_compile_flags(OBJC_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_OBJC)
+bc_apply_compile_flags(SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 
 if(WIN32)
 	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})

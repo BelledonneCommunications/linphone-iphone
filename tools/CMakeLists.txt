@@ -44,31 +44,31 @@ set(LP_GEN_WRAPPERS_LIBS
 	${XML2_LIBRARIES}
 )
 
-apply_compile_flags(LP_GEN_WRAPPERS_SOURCE_FILES "CPP" "CXX")
+bc_apply_compile_flags(LP_GEN_WRAPPERS_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
 add_executable(lp-gen-wrappers ${USE_BUNDLE} ${LP_GEN_WRAPPERS_SOURCE_FILES})
 target_link_libraries(lp-gen-wrappers ${LP_GEN_WRAPPERS_LIBS})
 set_target_properties(lp-gen-wrappers PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(LP_AUTO_ANSWER_SOURCE_FILES	auto_answer.c)
-apply_compile_flags(LP_AUTO_ANSWER_SOURCE_FILES "CPP" "C")
+bc_apply_compile_flags(LP_AUTO_ANSWER_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 add_executable(lp-auto-answer ${USE_BUNDLE} ${LP_AUTO_ANSWER_SOURCE_FILES})
 target_link_libraries(lp-auto-answer ${LINPHONE_LIBS_FOR_TOOLS} ${MEDIASTREAMER2_LIBRARIES})
 set_target_properties(lp-auto-answer PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(LP_SENDMSG_SOURCE_FILES lpsendmsg.c)
-apply_compile_flags(LP_SENDMSG_SOURCE_FILES "CPP" "C")
+bc_apply_compile_flags(LP_SENDMSG_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 add_executable(lp-sendmsg ${USE_BUNDLE} ${LP_SENDMSG_SOURCE_FILES})
 target_link_libraries(lp-sendmsg ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
 set_target_properties(lp-sendmsg PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(LP_LPC2XML_TEST_SOURCE_FILES lpc2xml_test.c)
-apply_compile_flags(LP_LPC2XML_TEST_SOURCE_FILES "CPP" "C")
+bc_apply_compile_flags(LP_LPC2XML_TEST_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 add_executable(lpc2xml_test ${USE_BUNDLE} ${LP_LPC2XML_TEST_SOURCE_FILES})
 target_link_libraries(lpc2xml_test ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
 set_target_properties(lpc2xml_test PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(LP_XML2LPC_TEST_SOURCE_FILES xml2lpc_test.c)
-apply_compile_flags(LP_XML2LPC_TEST_SOURCE_FILES "CPP" "C")
+bc_apply_compile_flags(LP_XML2LPC_TEST_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 add_executable(xml2lpc_test ${USE_BUNDLE} ${LP_XML2LPC_TEST_SOURCE_FILES})
 target_link_libraries(xml2lpc_test ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
 set_target_properties(xml2lpc_test PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
