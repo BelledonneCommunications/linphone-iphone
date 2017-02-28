@@ -249,6 +249,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_sounds.vibrate = kSystemSoundID_Vibrate;
 
 		_logs = [[NSMutableArray alloc] init];
+		_pushDict = [[NSMutableDictionary alloc] init];
 		_database = NULL;
 		_speakerEnabled = FALSE;
 		_bluetoothEnabled = FALSE;
@@ -664,13 +665,23 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	if (state == LinphoneCallIncomingReceived) {
 		// TESTING !!
 		// linphone_call_accept_early_media(call);
-		if (pushBgTask) {
+		LinphoneCallLog *callLog = linphone_call_get_call_log(call);
+		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
+		int index = [(NSNumber *)[_pushDict objectForKey:callId] intValue] - 1;
+		[_pushDict setValue:[NSNumber numberWithInt:index] forKey:callId];
+		BOOL need_bg_task = FALSE;
+		for (NSString *key in [_pushDict allKeys]) {
+			int value = [(NSNumber *)[_pushDict objectForKey:key] intValue];
+			if (value > 0) {
+				need_bg_task = TRUE;
+				break;
+			}
+		}
+		if (pushBgTask && !need_bg_task) {
 			LOGI(@"Call received, stopping background task");
 			[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
 			pushBgTask = 0;
 		}
-		LinphoneCallLog *callLog = linphone_call_get_call_log(call);
-		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 		/*first step is to re-enable ctcall center*/
 		CTCallCenter *lCTCallCenter = [[CTCallCenter alloc] init];
 
@@ -883,7 +894,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 				[self.providerDelegate.uuids removeObjectForKey:callId2];
 				[self.providerDelegate.calls removeObjectForKey:uuid];
-
 				CXEndCallAction *act = [[CXEndCallAction alloc] initWithCallUUID:uuid];
 				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
 				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
@@ -1180,147 +1190,159 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
 	ms_free(c_address);
-	if (pushBgTask) {
+	int index = [(NSNumber *)[_pushDict objectForKey:callID] intValue] - 1;
+	[_pushDict setValue:[NSNumber numberWithInt:index] forKey:callID];
+	BOOL need_bg_task = FALSE;
+	for (NSString *key in [_pushDict allKeys]) {
+		int value = [(NSNumber *)[_pushDict objectForKey:key] intValue];
+		if (value > 0) {
+			need_bg_task = TRUE;
+			break;
+		}
+	}
+	if (pushBgTask && !need_bg_task) {
 		LOGI(@"Message received, stopping background task");
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
 		pushBgTask = 0;
 	}
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
-		((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) &&
-		 ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) ||
-		(PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription &&
-		 room != PhoneMainView.instance.currentRoom)) {
-		// Create a new notification
-		if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-			NSArray *actions;
+	if (linphone_chat_message_is_file_transfer(msg) || linphone_chat_message_is_text(msg)) {
+		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+			((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) &&
+			 ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) ||
+			(PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription &&
+			 room != PhoneMainView.instance.currentRoom)) {
+			// Create a new notification
+			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+				NSArray *actions;
 
-			if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
-				[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
+				if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
+					[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
 
-				UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
-				reply.identifier = @"reply";
-				reply.title = NSLocalizedString(@"Reply", nil);
-				reply.activationMode = UIUserNotificationActivationModeForeground;
-				reply.destructive = NO;
-				reply.authenticationRequired = YES;
+					UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
+					reply.identifier = @"reply";
+					reply.title = NSLocalizedString(@"Reply", nil);
+					reply.activationMode = UIUserNotificationActivationModeForeground;
+					reply.destructive = NO;
+					reply.authenticationRequired = YES;
 
-				UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
-				mark_read.identifier = @"mark_read";
-				mark_read.title = NSLocalizedString(@"Mark Read", nil);
-				mark_read.activationMode = UIUserNotificationActivationModeBackground;
-				mark_read.destructive = NO;
-				mark_read.authenticationRequired = NO;
+					UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
+					mark_read.identifier = @"mark_read";
+					mark_read.title = NSLocalizedString(@"Mark Read", nil);
+					mark_read.activationMode = UIUserNotificationActivationModeBackground;
+					mark_read.destructive = NO;
+					mark_read.authenticationRequired = NO;
 
-				actions = @[ mark_read, reply ];
-			} else {
-				// iOS 9 allows for inline reply. We don't propose mark_read in this case
-				UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
+					actions = @[ mark_read, reply ];
+				} else {
+					// iOS 9 allows for inline reply. We don't propose mark_read in this case
+					UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
 
-				reply_inline.identifier = @"reply_inline";
-				reply_inline.title = NSLocalizedString(@"Reply", nil);
-				reply_inline.activationMode = UIUserNotificationActivationModeBackground;
-				reply_inline.destructive = NO;
-				reply_inline.authenticationRequired = NO;
-				reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
+					reply_inline.identifier = @"reply_inline";
+					reply_inline.title = NSLocalizedString(@"Reply", nil);
+					reply_inline.activationMode = UIUserNotificationActivationModeBackground;
+					reply_inline.destructive = NO;
+					reply_inline.authenticationRequired = NO;
+					reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
 
-				actions = @[ reply_inline ];
-			}
+					actions = @[ reply_inline ];
+				}
 
-			UIMutableUserNotificationCategory *msgcat = [[UIMutableUserNotificationCategory alloc] init];
-			msgcat.identifier = @"incoming_msg";
-			[msgcat setActions:actions forContext:UIUserNotificationActionContextDefault];
-			[msgcat setActions:actions forContext:UIUserNotificationActionContextMinimal];
+				UIMutableUserNotificationCategory *msgcat = [[UIMutableUserNotificationCategory alloc] init];
+				msgcat.identifier = @"incoming_msg";
+				[msgcat setActions:actions forContext:UIUserNotificationActionContextDefault];
+				[msgcat setActions:actions forContext:UIUserNotificationActionContextMinimal];
 
-			NSSet *categories = [NSSet setWithObjects:msgcat, nil];
+				NSSet *categories = [NSSet setWithObjects:msgcat, nil];
 
-			UIUserNotificationSettings *set =
-				[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeAlert |
-															  UIUserNotificationTypeBadge | UIUserNotificationTypeSound)
-												  categories:categories];
-			[[UIApplication sharedApplication] registerUserNotificationSettings:set];
+				UIUserNotificationSettings *set = [UIUserNotificationSettings
+					settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge |
+									  UIUserNotificationTypeSound)
+						  categories:categories];
+				[[UIApplication sharedApplication] registerUserNotificationSettings:set];
 
-			UILocalNotification *notif = [[UILocalNotification alloc] init];
-			if (notif) {
-				NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
-				notif.repeatInterval = 0;
-				if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+				UILocalNotification *notif = [[UILocalNotification alloc] init];
+				if (notif) {
+					NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
+					notif.repeatInterval = 0;
+					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 #pragma deploymate push "ignored-api-availability"
-                    notif.category = @"incoming_msg";
+						notif.category = @"incoming_msg";
 #pragma deploymate pop
-                }
-                if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-                    notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
-                } else {
-                    notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
-                }
-                notif.alertAction = NSLocalizedString(@"Show", nil);
-                notif.soundName = @"msg.caf";
-                notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
-				notif.accessibilityLabel = @"Message notif";
-				[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
-			}
-		} else {
-			// Msg category
-			UNTextInputNotificationAction *act_reply =
-				[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
-															  title:NSLocalizedString(@"Reply", nil)
-															options:UNNotificationActionOptionNone];
-			UNNotificationAction *act_seen =
-				[UNNotificationAction actionWithIdentifier:@"Seen"
-													 title:NSLocalizedString(@"Mark as seen", nil)
-												   options:UNNotificationActionOptionNone];
-			UNNotificationCategory *cat_msg =
-				[UNNotificationCategory categoryWithIdentifier:@"msg_cat"
-													   actions:[NSArray arrayWithObjects:act_reply, act_seen, nil]
-											 intentIdentifiers:[[NSMutableArray alloc] init]
-													   options:UNNotificationCategoryOptionCustomDismissAction];
-
-			[[UNUserNotificationCenter currentNotificationCenter]
-				requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
-												 UNAuthorizationOptionBadge)
-							  completionHandler:^(BOOL granted, NSError *_Nullable error) {
-								// Enable or disable features based on authorization.
-								if (error) {
-									LOGD(error.description);
-								}
-							  }];
-			NSSet *categories = [NSSet setWithObjects:cat_msg, nil];
-			[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
-			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-			content.title = NSLocalizedString(@"Message received", nil);
-			if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-				content.subtitle = from;
-				content.body = [UIChatBubbleTextCell TextMessageForChat:msg];
+					}
+					if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
+						notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
+					} else {
+						notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
+					}
+					notif.alertAction = NSLocalizedString(@"Show", nil);
+					notif.soundName = @"msg.caf";
+					notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
+					notif.accessibilityLabel = @"Message notif";
+					[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+				}
 			} else {
-				content.body = from;
-			}
-			content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
-			content.categoryIdentifier = @"msg_cat";
-			content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"CallId" : callID };
-			content.accessibilityLabel = @"Message notif";
-			UNNotificationRequest *req =
-				[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-			[[UNUserNotificationCenter currentNotificationCenter]
-				addNotificationRequest:req
-				 withCompletionHandler:^(NSError *_Nullable error) {
-				   // Enable or disable features based on authorization.
-				   if (error) {
-					   LOGD(@"Error while adding notification request :");
-					   LOGD(error.description);
-				   }
-				 }];
-		}
-	}
-	// Post event
-	NSDictionary *dict = @{
-		@"room" : [NSValue valueWithPointer:room],
-		@"from_address" : [NSValue valueWithPointer:linphone_chat_message_get_from_address(msg)],
-		@"message" : [NSValue valueWithPointer:msg],
-		@"call-id" : callID
-	};
+				// Msg category
+				UNTextInputNotificationAction *act_reply =
+					[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
+																  title:NSLocalizedString(@"Reply", nil)
+																options:UNNotificationActionOptionNone];
+				UNNotificationAction *act_seen =
+					[UNNotificationAction actionWithIdentifier:@"Seen"
+														 title:NSLocalizedString(@"Mark as seen", nil)
+													   options:UNNotificationActionOptionNone];
+				UNNotificationCategory *cat_msg =
+					[UNNotificationCategory categoryWithIdentifier:@"msg_cat"
+														   actions:[NSArray arrayWithObjects:act_reply, act_seen, nil]
+												 intentIdentifiers:[[NSMutableArray alloc] init]
+														   options:UNNotificationCategoryOptionCustomDismissAction];
 
-	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
+				[[UNUserNotificationCenter currentNotificationCenter]
+					requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
+													 UNAuthorizationOptionBadge)
+								  completionHandler:^(BOOL granted, NSError *_Nullable error) {
+									// Enable or disable features based on authorization.
+									if (error) {
+										LOGD(error.description);
+									}
+								  }];
+				NSSet *categories = [NSSet setWithObjects:cat_msg, nil];
+				[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
+				UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+				content.title = NSLocalizedString(@"Message received", nil);
+				if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
+					content.subtitle = from;
+					content.body = [UIChatBubbleTextCell TextMessageForChat:msg];
+				} else {
+					content.body = from;
+				}
+				content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
+				content.categoryIdentifier = @"msg_cat";
+				content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"CallId" : callID };
+				content.accessibilityLabel = @"Message notif";
+				UNNotificationRequest *req =
+					[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+				[[UNUserNotificationCenter currentNotificationCenter]
+					addNotificationRequest:req
+					 withCompletionHandler:^(NSError *_Nullable error) {
+					   // Enable or disable features based on authorization.
+					   if (error) {
+						   LOGD(@"Error while adding notification request :");
+						   LOGD(error.description);
+					   }
+					 }];
+			}
+		}
+		// Post event
+		NSDictionary *dict = @{
+			@"room" : [NSValue valueWithPointer:room],
+			@"from_address" : [NSValue valueWithPointer:linphone_chat_message_get_from_address(msg)],
+			@"message" : [NSValue valueWithPointer:msg],
+			@"call-id" : callID
+		};
+
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
+	}
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
@@ -1329,6 +1351,23 @@ static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom 
 
 static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room,
 															LinphoneChatMessage *message) {
+
+	NSString *msgId = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(message, "Call-ID")];
+	int index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:msgId] intValue] - 1;
+	[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:index] forKey:msgId];
+	BOOL need_bg_task = FALSE;
+	for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
+		int value = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:key] intValue];
+		if (value > 0) {
+			need_bg_task = TRUE;
+			break;
+		}
+	}
+	if (theLinphoneManager->pushBgTask && !need_bg_task) {
+		LOGI(@"Message received, stopping background task");
+		[[UIApplication sharedApplication] endBackgroundTask:theLinphoneManager->pushBgTask];
+		theLinphoneManager->pushBgTask = 0;
+	}
 	const LinphoneAddress *address = linphone_chat_message_get_peer_address(message);
 	NSString *strAddr = [FastAddressBook displayNameForAddress:address];
 	NSString *title = NSLocalizedString(@"LIME warning", nil);
@@ -2251,6 +2290,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 					 }
 				   }];
 		  }
+	  }
+	  for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
+		  [LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
 	  }
 	  [[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
 	  pushBgTask = 0;

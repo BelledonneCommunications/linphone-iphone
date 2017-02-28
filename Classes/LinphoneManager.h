@@ -221,5 +221,6 @@ typedef struct _LinphoneManagerSounds {
 @property(strong, nonatomic) NSMutableArray *fileTransferDelegates;
 @property BOOL nextCallIsTransfer;
 @property BOOL conf;
+@property NSDictionary *pushDict;
 
 @end

@@ -422,6 +422,7 @@
 	if (aps != nil) {
 		NSDictionary *alert = [aps objectForKey:@"alert"];
 		NSString *loc_key = [aps objectForKey:@"loc-key"];
+		NSString *callId = [aps objectForKey:@"call-id"];
 		if (alert != nil) {
 			loc_key = [alert objectForKey:@"loc-key"];
 			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
@@ -434,7 +435,7 @@
                 }
 				if (loc_key != nil) {
 
-					NSString *callId = [userInfo objectForKey:@"call-id"];
+					callId = [userInfo objectForKey:@"call-id"];
 					if (callId != nil) {
 						if ([callId isEqualToString:@""]){
 							//Present apn pusher notifications for info
@@ -467,12 +468,24 @@
 				}
 			}
 		}
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && loc_key) {
-			if ([loc_key isEqualToString:@"IC_MSG"]) {
-				[LinphoneManager.instance startPushLongRunningTask:FALSE];
-				[self fixRing];
-			} else if ([loc_key isEqualToString:@"IM_MSG"]) {
-				[LinphoneManager.instance startPushLongRunningTask:TRUE];
+
+		if (callId) {
+			int index = -1;
+			NSDictionary *dict = LinphoneManager.instance.pushDict;
+			if ([[dict allKeys] containsObject:callId]) {
+				index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:callId] intValue] + 1;
+			} else {
+				index = 1;
+			}
+			[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:index] forKey:callId];
+			if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && loc_key &&
+				index > 0) {
+				if ([loc_key isEqualToString:@"IC_MSG"]) {
+					[LinphoneManager.instance startPushLongRunningTask:FALSE];
+					[self fixRing];
+				} else if ([loc_key isEqualToString:@"IM_MSG"]) {
+					[LinphoneManager.instance startPushLongRunningTask:TRUE];
+				}
 			}
 		}
 	}
