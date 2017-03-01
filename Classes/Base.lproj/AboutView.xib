@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -17,6 +17,7 @@
                 <outlet property="libVersionLabel" destination="ZYk-v1-CYZ" id="E4g-U8-zyp"/>
                 <outlet property="licenceLabel" destination="gVK-Xc-S59" id="XPV-ct-oGP"/>
                 <outlet property="nameLabel" destination="dFa-fl-SAE" id="kIv-p3-ga8"/>
+                <outlet property="policyLabel" destination="5Nl-Fs-ggi" id="xXc-PS-Eda"/>
                 <outlet property="portraitView" destination="HJH-1o-RXN" id="Hoa-uk-q9s"/>
                 <outlet property="view" destination="HJH-1o-RXN" id="t5Y-ob-1WC"/>
             </connections>
@@ -132,8 +133,8 @@
                                         <outletCollection property="gestureRecognizers" destination="l7c-wq-pii" appends="YES" id="olo-CD-gM3"/>
                                     </connections>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="7" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="gVK-Xc-S59" userLabel="licenseLabel">
-                                    <rect key="frame" x="0.0" y="437" width="375" height="98"/>
+                                <label opaque="NO" userInteractionEnabled="NO" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="7" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="gVK-Xc-S59" userLabel="licenseLabel">
+                                    <rect key="frame" x="0.0" y="474" width="375" height="61"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <string key="text">GNU General Public License V2
 © 2010-2017 Belledonne Communications</string>

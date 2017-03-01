@@ -59,8 +59,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UITapGestureRecognizer *tapGestureRecognizerPolicy =
 		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onPolicyTap)];
 	tapGestureRecognizerPolicy.numberOfTapsRequired = 1;
-	[_licenceLabel addGestureRecognizer:tapGestureRecognizerPolicy];
-	_licenceLabel.userInteractionEnabled = YES;
+	[_policyLabel addGestureRecognizer:tapGestureRecognizerPolicy];
+	_policyLabel.userInteractionEnabled = YES;
 }
 
 #pragma mark - Action Functions
