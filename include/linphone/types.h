@@ -516,6 +516,9 @@ typedef struct _LinphoneLDAPContactProvider LinphoneLDAPContactProvider;
 
 typedef struct _LinphoneLDAPContactSearch LinphoneLDAPContactSearch;
 
+/**
+ * @ingroup network_parameters
+ */
 typedef enum _LinphoneLimeState {
 	LinphoneLimeDisabled, /**< Lime is not used at all */
 	LinphoneLimeMandatory, /**< Lime is always used */

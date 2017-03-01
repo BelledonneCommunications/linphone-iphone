@@ -1488,12 +1488,27 @@ LINPHONE_PUBLIC bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 
 /**
  * Tells to LinphoneCore to use Linphone Instant Messaging encryption
- *
+ * @param[in] lc LinphoneCore object
+ * @param[in] val The new lime state
+ * @ingroup network_parameters
  */
 LINPHONE_PUBLIC void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val);
 
+
+/**
+ * Returns the lime state
+ * @param[in] lc LinphoneCore object
+ * @return The current lime state
+ * @ingroup network_parameters
+**/
 LINPHONE_PUBLIC LinphoneLimeState linphone_core_lime_enabled(const LinphoneCore *lc);
 
+
+/**
+ * Tells if lime is available
+ * @param[in] lc LinphoneCore object
+ * @ingroup network_parameters
+**/
 LINPHONE_PUBLIC bool_t linphone_core_lime_available(const LinphoneCore *lc);
 
 /**
