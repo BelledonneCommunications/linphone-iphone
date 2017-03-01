@@ -1430,9 +1430,11 @@ void linphone_gtk_fill_soundcards(GtkWidget *pb){
 }
 
 void linphone_gtk_fill_webcams(GtkWidget *pb){
+#ifdef VIDEO_ENABLED
 	LinphoneCore *lc=linphone_gtk_get_core();
 	linphone_gtk_fill_combo_box(linphone_gtk_get_widget(pb,"webcams"),linphone_core_get_video_devices(lc),
 					linphone_core_get_video_device(lc),CAP_IGNORE);
+#endif
 }
 
 void linphone_gtk_fill_video_renderers(GtkWidget *pb){
@@ -1694,6 +1696,9 @@ void linphone_gtk_show_parameters(void){
 	linphone_gtk_fill_video_sizes(linphone_gtk_get_widget(pb,"video_size"));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"video_framerate")),
 				linphone_core_get_preferred_framerate(lc));
+#ifndef VIDEO_ENABLED
+	gtk_widget_set_visible(linphone_gtk_get_widget(pb, "camera_preview_button"),FALSE);
+#endif
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"echo_cancelation")),
 					linphone_core_echo_cancellation_enabled(lc));
 
