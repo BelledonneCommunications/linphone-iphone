@@ -392,7 +392,6 @@ LINPHONE_PUBLIC void linphone_chat_message_set_content_type(LinphoneChatMessage 
 
 /**
  * Return whether or not a chat message is a file tranfer.
- * This content type must match a content that is text representable, such as text/plain, text/html or image/svg+xml.
  * @param[in] message LinphoneChatMessage object
  * @return Whether or not the message is a file tranfer
  */
@@ -400,7 +399,6 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessag
 
 /**
  * Return whether or not a chat message is a text.
- * This content type must match a content that is text representable, such as text/plain, text/html or image/svg+xml.
  * @param[in] message LinphoneChatMessage object
  * @return Whether or not the message is a text
  */
