@@ -210,7 +210,7 @@ class CClass(CObject):
 		if name.startswith('get_') and len(f.arguments) == 1:
 			self.__addPropertyGetter(name[4:], f)
 		elif name.startswith('is_') and len(f.arguments) == 1 and f.returnArgument.ctype == 'bool_t':
-			self.__addPropertyGetter(name[3:], f)
+			self.__addPropertyGetter(name, f)
 		elif name.endswith('_enabled') and len(f.arguments) == 1 and f.returnArgument.ctype == 'bool_t':
 			self.__addPropertyGetter(name, f)
 		elif name.startswith('set_') and len(f.arguments) == 2:
