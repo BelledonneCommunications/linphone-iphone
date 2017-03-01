@@ -1375,6 +1375,8 @@ static void linphone_gtk_call_updated_by_remote(LinphoneCall *call){
 }
 
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg){
+	const LinphoneErrorInfo *ei;
+
 	switch(cs){
 		case LinphoneCallOutgoingInit:
 			linphone_gtk_create_in_call_view (call);
@@ -1392,7 +1394,12 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 			linphone_gtk_in_call_view_terminate (call,msg);
 		break;
 		case LinphoneCallEnd:
-			linphone_gtk_in_call_view_terminate(call,NULL);
+			ei = linphone_call_get_error_info(call);
+			if (ei && linphone_error_info_get_reason(ei) != LinphoneReasonNone) {
+				linphone_gtk_in_call_view_terminate(call, linphone_error_info_get_phrase(ei));
+			} else {
+				linphone_gtk_in_call_view_terminate(call, NULL);
+			}
 			linphone_gtk_status_icon_set_blinking(FALSE);
 		break;
 		case LinphoneCallIncomingReceived:

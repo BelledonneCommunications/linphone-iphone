@@ -4305,25 +4305,19 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	);
 }
 
-static void linphone_call_lost(LinphoneCall *call, LinphoneReason reason){
+static void linphone_call_lost(LinphoneCall *call){
 	LinphoneCore *lc = call->core;
 	char *temp = NULL;
-	char *from=NULL;
+	char *from = NULL;
 
 	from = linphone_call_get_remote_address_as_string(call);
-	switch(reason){
-		case LinphoneReasonIOError:
-			temp = ms_strdup_printf("Call with %s disconnected because of network, it is going to be closed.", from ? from : "?");
-		break;
-		default:
-			temp = ms_strdup_printf("Media connectivity with %s is lost, call is going to be closed.", from ? from : "?");
-		break;
-	}
+	temp = ms_strdup_printf("Media connectivity with %s is lost, call is going to be closed.", from ? from : "?");
 	if (from) ms_free(from);
-	ms_message("LinphoneCall [%p]: %s",call, temp);
+	ms_message("LinphoneCall [%p]: %s", call, temp);
 	linphone_core_notify_display_warning(lc, temp);
-	linphone_core_terminate_call(lc,call);
-	linphone_core_play_named_tone(lc,LinphoneToneCallLost);
+	sal_error_info_set(&call->non_op_error, SalReasonIOError, 503, "IO error", NULL);
+	linphone_core_terminate_call(lc, call);
+	linphone_core_play_named_tone(lc, LinphoneToneCallLost);
 	ms_free(temp);
 }
 
@@ -4585,10 +4579,10 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	linphone_call_handle_stream_events(call, call->main_text_stream_index);
 	if ((call->state == LinphoneCallStreamsRunning ||
 		call->state == LinphoneCallPausedByRemote) && one_second_elapsed && call->audiostream!=NULL
-		&& call->audiostream->ms.state==MSStreamStarted && disconnect_timeout>0 )
+		&& call->audiostream->ms.state==MSStreamStarted && disconnect_timeout>0 ) {
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
-	if (disconnected)
-		linphone_call_lost(call, LinphoneReasonUnknown);
+	}
+	if (disconnected) linphone_call_lost(call);
 }
 
 void linphone_call_log_completed(LinphoneCall *call){
