@@ -395,14 +395,14 @@ LINPHONE_PUBLIC void linphone_chat_message_set_content_type(LinphoneChatMessage 
  * @param[in] message LinphoneChatMessage object
  * @return Whether or not the message is a file tranfer
  */
-LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *message);
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer(const LinphoneChatMessage *message);
 
 /**
  * Return whether or not a chat message is a text.
  * @param[in] message LinphoneChatMessage object
  * @return Whether or not the message is a text
  */
-LINPHONE_PUBLIC bool_t linphone_chat_message_is_text(LinphoneChatMessage *message);
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_text(const LinphoneChatMessage *message);
 
 /**
  * Get if a chat message is to be stored.

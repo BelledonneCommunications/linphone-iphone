@@ -1514,11 +1514,11 @@ void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char
 	msg->content_type = content_type ? ms_strdup(content_type) : NULL;
 }
 
-bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *msg) {
+bool_t linphone_chat_message_is_file_transfer(const LinphoneChatMessage *msg) {
 	return is_file_transfer(msg->content_type);
 }
 
-bool_t linphone_chat_message_is_text(LinphoneChatMessage *msg) {
+bool_t linphone_chat_message_is_text(const LinphoneChatMessage *msg) {
 	return is_text(msg->content_type);
 }
 
