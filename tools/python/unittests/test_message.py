@@ -38,7 +38,7 @@ class TestMessage:
         direction = 'received'
         tofrom = 'from'
         address = msg.from_address
-        if msg.outgoing:
+        if msg.is_outgoing:
             direction = 'sent'
             tofrom = 'to'
             address = msg.to_address
@@ -64,7 +64,7 @@ class TestMessage:
     def file_transfer_recv(cls, msg, content, buf):
         receive_filepath = msg.user_data
         stats = msg.chat_room.core.user_data().stats
-        if buf.empty: # Transfer complete
+        if buf.is_empty: # Transfer complete
             stats.number_of_LinphoneFileTransferDownloadSuccessful += 1
         else: # Store content
             f = open(receive_filepath, 'ab')

@@ -347,7 +347,7 @@ class CoreManager:
 
         assert_equals(CoreManager.wait_for(callee_manager, caller_manager,
             lambda callee_manager, caller_manager: callee_manager.stats.number_of_LinphoneCallIncomingReceived == initial_callee_stats.number_of_LinphoneCallIncomingReceived + 1), True)
-        assert_equals(callee_manager.lc.incoming_invite_pending, True)
+        assert_equals(callee_manager.lc.is_incoming_invite_pending, True)
         assert_equals(caller_manager.stats.number_of_LinphoneCallOutgoingProgress, initial_caller_stats.number_of_LinphoneCallOutgoingProgress + 1)
 
         retry = 0
