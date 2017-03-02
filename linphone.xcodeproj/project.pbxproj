@@ -676,7 +676,6 @@
 		8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
-		9EC6C1E11DF96991006C2FD2 /* armv7-apple-darwin.ios in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E01DF96991006C2FD2 /* armv7-apple-darwin.ios */; };
 		9EC6C1E31DF969AA006C2FD2 /* libturbojpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */; };
 		9EC6C1E41DF969D1006C2FD2 /* libturbojpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
@@ -1840,7 +1839,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9EC6C1E31DF969AA006C2FD2 /* libturbojpeg.a in Frameworks */,
-				9EC6C1E11DF96991006C2FD2 /* armv7-apple-darwin.ios in Frameworks */,
 				8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */,
 				8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */,
 				8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */,
