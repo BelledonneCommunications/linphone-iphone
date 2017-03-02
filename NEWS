@@ -1,3 +1,6 @@
+linphone-3.11.1 -- March 2nd, 2017
+	* Bugfix in Autotools scripts
+
 linphone-3.11.0 -- February 24th, 2017
 	* Security vulnerability fix concering TLS. The common name of certificats
 	  delivered by SIP proxies were not compared with their hostname.

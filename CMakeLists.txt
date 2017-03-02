@@ -21,7 +21,7 @@
 ############################################################################
 
 cmake_minimum_required(VERSION 3.0)
-project(linphone VERSION 3.11.0 LANGUAGES C CXX)
+project(linphone VERSION 3.11.1 LANGUAGES C CXX)
 
 
 set(LINPHONE_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
@@ -358,3 +358,18 @@ install(FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfigVersion.cmake"
 	DESTINATION ${CONFIG_PACKAGE_LOCATION}
 )
+
+
+# CPack settings
+set(CPACK_PACKAGE_NAME "linphone")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_SOURCE_GENERATOR "TGZ")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+set(CPACK_SOURCE_IGNORE_FILES
+        "^${CMAKE_BINARY_DIR}"
+        "/\\\\..+"
+	"^${CMAKE_SOURCE_DIR}/mediastreamer2"
+	"^${CMAKE_SOURCE_DIR}/oRTP"
+)
+
+include(CPack)

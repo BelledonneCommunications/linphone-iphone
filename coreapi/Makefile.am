@@ -202,6 +202,8 @@ make_gitversion_h:
 			cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
 		fi ; \
 		rm -f $(builddir)/$(GITVERSION_FILE_TMP) ; \
+	else \
+		touch $(GITVERSION_FILE) ; \
 	fi
 
 $(GITVERSION_FILE): make_gitversion_h

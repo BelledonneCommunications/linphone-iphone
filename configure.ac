@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.11.0],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.11.1],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -823,7 +823,7 @@ AC_ARG_ENABLE(external-ortp,
 		no)	external_ortp=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-external-ortp) ;;
 	esac],
-	[external_ortp=false]
+	[external_ortp=$(if test -d oRTP; then printf false; else printf true; fi)]
 )
 
 if test "$external_ortp" = 'true'; then
@@ -851,7 +851,7 @@ AC_SUBST([ORTP_DIR])
 
 AC_ARG_ENABLE([external-mediastreamer],
 	[AS_HELP_STRING([--enable-external-mediastreamer],[Use external mediastreamer library])],,
-	[enable_external_mediastreamer=no]
+	[enable_external_mediastreamer=$(if test -d mediastreamer2; then printf no; else printf yes; fi)]
 )
 
 AS_CASE($enable_external_mediastreamer,
