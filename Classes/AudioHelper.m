@@ -7,8 +7,6 @@
 //
 
 #import "AudioHelper.h"
-#import <AVFoundation/AVAudioSession.h>
-#import <Foundation/Foundation.h>
 
 @implementation AudioHelper
 

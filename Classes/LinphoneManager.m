@@ -2564,17 +2564,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)setSpeakerEnabled:(BOOL)enable {
 	_speakerEnabled = enable;
-	UInt32 override = kAudioSessionUnspecifiedError;
 	NSError *err;
 
-	if (override != kAudioSessionNoError) {
-		if (enable && [self allowSpeaker]) {
-			[[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&err];
-			_bluetoothEnabled = FALSE;
-		} else {
-			AVAudioSessionPortDescription *builtinPort = [AudioHelper builtinAudioDevice];
-			[[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&err];
-		}
+	if (enable && [self allowSpeaker]) {
+		[[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&err];
+		_bluetoothEnabled = FALSE;
+	} else {
+		AVAudioSessionPortDescription *builtinPort = [AudioHelper builtinAudioDevice];
+		[[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&err];
 	}
 
 	if (err) {
@@ -2593,7 +2590,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			// if setting bluetooth failed, it must be because the device is not available
 			// anymore (disconnected), so deactivate bluetooth.
 			if (err) {
-				_bluetoothAvailable = _bluetoothEnabled = FALSE;
+				_bluetoothEnabled = FALSE;
 			} else {
 				_speakerEnabled = FALSE;
 				return;

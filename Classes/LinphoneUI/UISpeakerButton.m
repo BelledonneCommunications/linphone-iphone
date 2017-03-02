@@ -52,11 +52,11 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)onOn {
-	[LinphoneManager.instance setSpeakerEnabled:TRUE];
+	//[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (void)onOff {
-	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	//[LinphoneManager.instance setSpeakerEnabled:FALSE];
 }
 
 - (bool)onUpdate {

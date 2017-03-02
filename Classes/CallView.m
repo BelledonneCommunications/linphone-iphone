@@ -711,6 +711,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
@@ -722,6 +723,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 	[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 

@@ -94,6 +94,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
@@ -105,6 +106,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 	[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 

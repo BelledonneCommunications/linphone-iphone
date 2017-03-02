@@ -9,6 +9,9 @@
 #ifndef AudioHelper_h
 #define AudioHelper_h
 
+#import <AVFoundation/AVAudioSession.h>
+#import <Foundation/Foundation.h>
+
 @interface AudioHelper : NSObject
 
 + (NSArray *)bluetoothRoutes;
