@@ -31,8 +31,9 @@
 #import <SystemConfiguration/CaptiveNetwork.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
-#import "LinphoneManager.h"
 #import "LinphoneCoreSettingsStore.h"
+#import "LinphoneManager.h"
+#import "Utils/AudioHelper.h"
 #import "Utils/FileTransferDelegate.h"
 
 #include "linphone/linphonecore_utils.h"
@@ -2517,13 +2518,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		return true;
 
 	bool allow = true;
-	CFStringRef lNewRoute = CFSTR("Unknown");
-	UInt32 lNewRouteSize = sizeof(lNewRoute);
-	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
-	if (!lStatus && lNewRouteSize > 0) {
-		NSString *route = (__bridge NSString *)lNewRoute;
-		allow = ![route containsSubstring:@"Heads"] && ![route isEqualToString:@"Lineout"];
-		CFRelease(lNewRoute);
+	AVAudioSessionRouteDescription *newRoute = [AVAudioSession sharedInstance].currentRoute;
+	if (newRoute) {
+		NSString *route = newRoute.outputs[0].portType;
+		allow = !([route isEqualToString:AVAudioSessionPortLineOut] ||
+				  [route isEqualToString:AVAudioSessionPortHeadphones] ||
+				  [[AudioHelper bluetoothRoutes] containsObject:route]);
 	}
 	return allow;
 }
@@ -2541,17 +2541,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
 		_bluetoothAvailable = NO;
 	}
+	AVAudioSessionRouteDescription *newRoute = [AVAudioSession sharedInstance].currentRoute;
 
-	CFStringRef newRoute = CFSTR("Unknown");
-	UInt32 newRouteSize = sizeof(newRoute);
-
-	OSStatus status = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &newRouteSize, &newRoute);
-	if (!status && newRouteSize > 0) {
-		NSString *route = (__bridge NSString *)newRoute;
+	if (newRoute) {
+		NSString *route = newRoute.outputs[0].portType;
 		LOGI(@"Current audio route is [%s]", [route UTF8String]);
 
-		_speakerEnabled = [route isEqualToString:@"Speaker"] || [route isEqualToString:@"SpeakerAndMicrophone"];
-		if ([route isEqualToString:@"HeadsetBT"] && !_speakerEnabled) {
+		_speakerEnabled = [route isEqualToString:AVAudioSessionPortBuiltInSpeaker];
+		if (([[AudioHelper bluetoothRoutes] containsObject:route]) && !_speakerEnabled) {
 			_bluetoothAvailable = TRUE;
 			_bluetoothEnabled = TRUE;
 		} else {
@@ -2562,39 +2559,26 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
 														  object:self
 														userInfo:dict];
-		CFRelease(newRoute);
 	}
 }
 
 - (void)setSpeakerEnabled:(BOOL)enable {
-	OSStatus ret;
 	_speakerEnabled = enable;
 	UInt32 override = kAudioSessionUnspecifiedError;
-
-	if (!enable && _bluetoothAvailable) {
-		UInt32 bluetoothInputOverride = _bluetoothEnabled;
-		ret = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryEnableBluetoothInput,
-									  sizeof(bluetoothInputOverride), &bluetoothInputOverride);
-		// if setting bluetooth failed, it must be because the device is not available
-		// anymore (disconnected), so deactivate bluetooth.
-		if (ret != kAudioSessionNoError) {
-			_bluetoothAvailable = _bluetoothEnabled = FALSE;
-		}
-	}
+	NSError *err;
 
 	if (override != kAudioSessionNoError) {
 		if (enable && [self allowSpeaker]) {
-			override = kAudioSessionOverrideAudioRoute_Speaker;
-			ret = AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(override), &override);
+			[[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&err];
 			_bluetoothEnabled = FALSE;
 		} else {
-			override = kAudioSessionOverrideAudioRoute_None;
-			ret = AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(override), &override);
+			AVAudioSessionPortDescription *builtinPort = [AudioHelper builtinAudioDevice];
+			[[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&err];
 		}
 	}
 
-	if (ret != kAudioSessionNoError) {
-		LOGE(@"Failed to change audio route: err %d", ret);
+	if (err) {
+		LOGE(@"Failed to change audio route: err %d", err.localizedDescription);
 	}
 }
 
@@ -2602,8 +2586,21 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (_bluetoothAvailable) {
 		// The change of route will be done in setSpeakerEnabled
 		_bluetoothEnabled = enable;
-		[self setSpeakerEnabled:!_bluetoothEnabled && _speakerEnabled];
+		if (_bluetoothEnabled) {
+			NSError *err;
+			AVAudioSessionPortDescription *_bluetoothPort = [AudioHelper bluetoothAudioDevice];
+			[[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&err];
+			// if setting bluetooth failed, it must be because the device is not available
+			// anymore (disconnected), so deactivate bluetooth.
+			if (err) {
+				_bluetoothAvailable = _bluetoothEnabled = FALSE;
+			} else {
+				_speakerEnabled = FALSE;
+				return;
+			}
+		}
 	}
+	[self setSpeakerEnabled:_speakerEnabled];
 }
 
 #pragma mark - Call Functions
