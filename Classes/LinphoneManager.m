@@ -2578,7 +2578,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 
 	if (err) {
-		LOGE(@"Failed to change audio route: err %d", err.localizedDescription);
+		LOGE(@"Failed to change audio route: err %@", err.localizedDescription);
 	}
 }
 
