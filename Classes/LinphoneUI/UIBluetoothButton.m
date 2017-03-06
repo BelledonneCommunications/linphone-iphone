@@ -31,13 +31,11 @@
 	LOGE(@"UIBluetoothButton error for %s: ret=%ld", method, au)
 
 - (void)onOn {
-	// AVAudioSessionPortDescription *_bluetoothPort = [AudioHelper bluetoothAudioDevice];
-	//[[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:nil];
+	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (void)onOff {
-	// AVAudioSessionPortDescription *builtinPort = [AudioHelper builtinAudioDevice];
-	//[[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:nil];
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (bool)onUpdate {
