@@ -3868,6 +3868,13 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSUri(JNIEnv* 
 	if (jrlsUri) ReleaseStringUTFChars(env, jrlsUri, uri);
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneFriendListImpl_getRLSUri(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	const char *uri = linphone_friend_list_get_rls_uri((LinphoneFriendList*)ptr);
+	return uri ? env->NewStringUTF(uri) : NULL;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr

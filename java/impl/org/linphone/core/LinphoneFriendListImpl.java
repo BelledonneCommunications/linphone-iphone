@@ -21,12 +21,13 @@ package org.linphone.core;
 import java.io.Serializable;
 
 class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
-	
+
 	protected final long nativePtr;
 	private native void finalize(long nativePtr);
 	private native long newLinphoneFriendList(long corePtr);
 	private native void setRLSAddress(long nativePtr, long addrPtr);
 	private native void setRLSUri(long nativePtr, String uri);
+	private native String getRLSUri(long nativePtr);
 	private native void addFriend(long nativePtr, long friendPtr);
 	private native void addLocalFriend(long nativePtr, long friendPtr);
 	private native LinphoneFriend[] getFriendList(long nativePtr);
@@ -53,49 +54,56 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 			setRLSUri(nativePtr, uri);
 		}
 	}
-	
+
 	@Override
-	public void addFriend(LinphoneFriend friend) {	
+	public String getRLSUri() {
+		synchronized(getSyncObject()){
+			return getRLSUri(nativePtr);
+		}
+	}
+
+	@Override
+	public void addFriend(LinphoneFriend friend) {
 		synchronized(getSyncObject()){
 			addFriend(nativePtr, friend.getNativePtr());
 		}
 	}
-	
+
 	@Override
-	public void addLocalFriend(LinphoneFriend friend) {	
+	public void addLocalFriend(LinphoneFriend friend) {
 		synchronized(getSyncObject()){
 			addLocalFriend(nativePtr, friend.getNativePtr());
 		}
 	}
-	
+
 	@Override
 	public LinphoneFriend[] getFriendList() {
 		synchronized(getSyncObject()){
 			return getFriendList(nativePtr);
 		}
 	}
-	
+
 	@Override
 	public void updateSubscriptions() {
 		synchronized(getSyncObject()){
 			updateSubscriptions(nativePtr);
 		}
 	}
-	
+
 	@Override
 	public void enableSubscriptions(boolean enable) {
 		synchronized(getSyncObject()) {
 			enableSubscriptions(nativePtr, enable);
 		}
 	}
-	
+
 	@Override
 	public LinphoneFriend findFriendByUri(String uri) {
 		synchronized(getSyncObject()){
 			return findFriendByUri(nativePtr,uri);
 		}
 	}
-	
+
 	private native void setUri(long nativePtr, String uri);
 	@Override
 	public void setUri(String uri) {
@@ -103,7 +111,7 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 			setUri(nativePtr, uri);
 		}
 	}
-	
+
 	private native void synchronizeFriendsFromServer(long nativePtr);
 	@Override
 	public void synchronizeFriendsFromServer() {
@@ -111,30 +119,30 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 			synchronizeFriendsFromServer(nativePtr);
 		}
 	}
-	
+
 	private native int importFriendsFromVCardFile(long nativePtr, String file);
 	@Override
 	public int importFriendsFromVCardFile(String file) {
 		return importFriendsFromVCardFile(nativePtr, file);
 	}
-	
+
 	private native int importFriendsFromVCardBuffer(long nativePtr, String buffer);
 	@Override
 	public int importFriendsFromVCardBuffer(String buffer) {
 		return importFriendsFromVCardBuffer(nativePtr, buffer);
 	}
-	
+
 	private native void exportFriendsToVCardFile(long nativePtr, String file);
 	@Override
 	public void exportFriendsToVCardFile(String file) {
 		exportFriendsToVCardFile(nativePtr, file);
 	}
-	
+
 	@Override
 	public void setListener(LinphoneFriendListListener listener) {
 		setListener(nativePtr, listener);
 	}
-	
+
 
 	/*reserved for JNI */
 	protected LinphoneFriendListImpl(long aNativePtr)  {
@@ -154,6 +162,6 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	}
 	private Object getSyncObject(){
 		 return this;
-	}	
+	}
 }
 
