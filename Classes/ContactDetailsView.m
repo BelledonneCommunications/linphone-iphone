@@ -222,7 +222,9 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
+	if (_tableController && _tableController.tableView && [_tableController.tableView observationInfo]) {
+		[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
+	}
 	[super viewWillDisappear:animated];
 	PhoneMainView.instance.currentName = NULL;
 	if (self.tmpContact) {
