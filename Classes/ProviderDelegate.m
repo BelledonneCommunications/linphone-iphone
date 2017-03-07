@@ -131,7 +131,7 @@
 		NSString *callID = [self.calls objectForKey:uuid];
 		LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 		if (call) {
-			linphone_core_terminate_call(LC, (LinphoneCall *)call);
+			linphone_call_terminate((LinphoneCall *)call);
 		}
 	}
 }
@@ -167,7 +167,7 @@
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 	if (call) {
 		if (action.isOnHold) {
-			linphone_core_pause_call(LC, (LinphoneCall *)call);
+			linphone_call_pause((LinphoneCall *)call);
 		} else {
 			[self configAudioSession:[AVAudioSession sharedInstance]];
 			if (linphone_core_get_conference(LC)) {
@@ -200,7 +200,7 @@
 				[LinphoneManager.instance acceptCall:(LinphoneCall *)_pendingCall evenWithVideo:_pendingCallVideo];
 				break;
 			case LinphoneCallPaused:
-				linphone_core_resume_call(LC, (LinphoneCall *)_pendingCall);
+				linphone_call_resume((LinphoneCall *)_pendingCall);
 				break;
 			case LinphoneCallStreamsRunning:
 				// May happen when multiple calls

@@ -694,7 +694,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				LOGI(@"Mobile call ongoing... rejecting call from [%s]", tmp);
 				ms_free(tmp);
 			}
-			linphone_core_decline_call(theLinphoneCore, call, LinphoneReasonBusy);
+			linphone_call_decline(call, LinphoneReasonBusy);
 			return;
 		}
 
@@ -2453,7 +2453,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LinphoneCall *c = linphone_core_get_current_call(theLinphoneCore);
 	LOGI(@"Sound interruption detected!");
 	if (c && linphone_call_get_state(c) == LinphoneCallStreamsRunning) {
-		linphone_core_pause_call(theLinphoneCore, c);
+		linphone_call_pause(c);
 	}
 }
 
@@ -2618,7 +2618,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	linphone_call_params_enable_video(lcallParams, video);
 
-	linphone_core_accept_call_with_params(theLinphoneCore, call, lcallParams);
+	linphone_call_accept_with_params(call, lcallParams);
 }
 
 - (void)call:(const LinphoneAddress *)iaddr {
@@ -2712,7 +2712,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (LinphoneManager.instance.nextCallIsTransfer) {
 		char *caddr = linphone_address_as_string(addr);
 		call = linphone_core_get_current_call(theLinphoneCore);
-		linphone_core_transfer_call(theLinphoneCore, call, caddr);
+		linphone_call_transfer(call, caddr);
 		LinphoneManager.instance.nextCallIsTransfer = NO;
 		ms_free(caddr);
 	} else {
@@ -3043,7 +3043,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		if ([ct currentCalls] != nil) {
 			if (call) {
 				LOGI(@"Pausing SIP call because GSM call");
-				linphone_core_pause_call(theLinphoneCore, call);
+				linphone_call_pause(call);
 				[self startCallPausedLongRunningTask];
 			} else if (linphone_core_is_in_conference(theLinphoneCore)) {
 				LOGI(@"Leaving conference call because GSM call");

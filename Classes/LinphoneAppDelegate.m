@@ -117,7 +117,7 @@
 			}
 			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
-					linphone_core_accept_call(LC, call);
+					linphone_call_accept(call);
 					[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 				} else {
 					[PhoneMainView.instance displayIncomingCall:call];
@@ -724,9 +724,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	if ([response.actionIdentifier isEqual:@"Answer"]) {
 		// use the standard handler
 		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-		linphone_core_accept_call(LC, call);
+		linphone_call_accept(call);
 	} else if ([response.actionIdentifier isEqual:@"Decline"]) {
-		linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+		linphone_call_decline(call, LinphoneReasonDeclined);
 	} else if ([response.actionIdentifier isEqual:@"Reply"]) {
 		LinphoneCore *lc = [LinphoneManager getLc];
 		NSString *replyText = [(UNTextInputNotificationResponse *)response userText];
@@ -760,7 +760,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		LOGI(@"User declined video proposal");
 		if (call == linphone_core_get_current_call(LC)) {
 			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-			linphone_core_accept_call_update(LC, call, params);
+			linphone_call_accept_update(call, params);
 			linphone_call_params_destroy(params);
 		}
 	} else if ([response.actionIdentifier isEqual:@"Accept"]) {
@@ -770,7 +770,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 			linphone_call_params_enable_video(params, TRUE);
-			linphone_core_accept_call_update(LC, call, params);
+			linphone_call_accept_update(call, params);
 			linphone_call_params_destroy(params);
 		}
 	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
@@ -800,7 +800,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 					  LOGI(@"User declined video proposal");
 					  if (call == linphone_core_get_current_call(LC)) {
 						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-						  linphone_core_accept_call_update(LC, call, params);
+						  linphone_call_accept_update(call, params);
 						  linphone_call_params_destroy(params);
 						  [videoDismissTimer invalidate];
 					  }
@@ -810,7 +810,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 					  if (call == linphone_core_get_current_call(LC)) {
 						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 						  linphone_call_params_enable_video(params, TRUE);
-						  linphone_core_accept_call_update(LC, call, params);
+						  linphone_call_accept_update(call, params);
 						  linphone_call_params_destroy(params);
 						  [videoDismissTimer invalidate];
 					  }
@@ -886,11 +886,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			if ([identifier isEqualToString:@"answer"]) {
 				// use the standard handler
 				[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-				linphone_core_accept_call(LC, call);
+				linphone_call_accept(call);
 			} else if ([identifier isEqualToString:@"decline"]) {
 				LinphoneCall *call = linphone_core_get_current_call(LC);
 				if (call)
-					linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+					linphone_call_decline(call, LinphoneReasonDeclined);
 			}
 		} else if ([notification.category isEqualToString:@"incoming_msg"]) {
 			if ([identifier isEqualToString:@"reply"]) {
@@ -930,11 +930,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if ([identifier isEqualToString:@"answer"]) {
 			// use the standard handler
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-			linphone_core_accept_call(LC, call);
+			linphone_call_accept(call);
 		} else if ([identifier isEqualToString:@"decline"]) {
 			LinphoneCall *call = linphone_core_get_current_call(LC);
 			if (call)
-				linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+				linphone_call_decline(call, LinphoneReasonDeclined);
 		}
 	} else if ([notification.category isEqualToString:@"incoming_msg"] &&
 			   [identifier isEqualToString:@"reply_inline"]) {

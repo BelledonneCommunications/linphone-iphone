@@ -389,7 +389,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[self popCurrentView];
 				}
 			} else {
-				linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
+				linphone_call_resume((LinphoneCall *)calls->data);
 				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
@@ -795,7 +795,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)incomingCallDeclined:(LinphoneCall *)call {
-	linphone_core_terminate_call(LC, call);
+	linphone_call_terminate(call);
 }
 
 @end
