@@ -884,9 +884,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  ofType:[UITextField class]])
 						  .text = @"";
 					  linphone_account_creator_set_activation_code(account_creator, "");
-					  NSDictionary *country =
-						  [CountryListView countryWithIso:[NSString stringWithUTF8String:dialplan.iso_country_code]];
-					  [self didSelectCountry:country];
+					  if (dialplan.iso_country_code) {
+						  NSDictionary *country = [CountryListView
+							  countryWithIso:[NSString stringWithUTF8String:dialplan.iso_country_code]];
+						  [self didSelectCountry:country];
+					  }
 					  // Reset phone number in account_creator to be sure to let the user retry
 					  if (nationnal_significant_number) {
 						  linphone_account_creator_set_phone_number(account_creator, nationnal_significant_number,
