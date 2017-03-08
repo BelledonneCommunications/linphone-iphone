@@ -1576,7 +1576,7 @@ static void video_config_read(LinphoneCore *lc){
 
 	linphone_core_set_preferred_framerate(lc,lp_config_get_float(lc->config,"video","framerate",0));
 
-#if defined(ANDROID) || defined(__ios)
+#if defined(__ANDROID__) || defined(__ios)
 	automatic_video=0;
 #endif
 	capture=lp_config_get_int(lc->config,"video","capture",1);
@@ -4846,18 +4846,18 @@ int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
 }
 
 static MSVideoSizeDef supported_resolutions[]={
-#if !ANDROID && !TARGET_OS_IPHONE
+#if !defined(__ANDROID__) && !TARGET_OS_IPHONE
 	{	{ MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }	,	"1080p"	},
 #endif
-#if !ANDROID && !TARGET_OS_MAC /*limit to most common sizes because mac video API cannot list supported resolutions*/
+#if !defined(__ANDROID__) && !TARGET_OS_MAC /*limit to most common sizes because mac video API cannot list supported resolutions*/
 	{	{ MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }	,	"uxga"	},
 	{	{ MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }	,	"sxga-"	},
 #endif
 	{	{ MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }	,	"720p"	},
-#if !ANDROID && !TARGET_OS_MAC
+#if !defined(__ANDROID__) && !TARGET_OS_MAC
 	{	{ MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }	,	"xga"	},
 #endif
-#if !ANDROID && !TARGET_OS_IPHONE
+#if !defined(__ANDROID__) && !TARGET_OS_IPHONE
 	{	{ MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H }	,	"svga"	},
 	{	{ MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H }	,	"4cif"	},
 #endif
@@ -6330,7 +6330,7 @@ const char * linphone_core_get_video_preset(const LinphoneCore *lc) {
 	return lp_config_get_string(lc->config, "video", "preset", NULL);
 }
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 static int linphone_core_call_void_method(jobject obj, jmethodID id) {
 	JNIEnv *env=ms_get_jni_env();
 	if (env && obj) {

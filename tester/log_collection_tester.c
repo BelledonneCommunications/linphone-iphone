@@ -30,7 +30,7 @@
 
 
 /*getline is POSIX 2008, not available on many systems.*/
-#if (defined(ANDROID) && !defined(__LP64__)) || defined(_WIN32) || defined(__QNX__)
+#if (defined(__ANDROID__) && !defined(__LP64__)) || defined(_WIN32) || defined(__QNX__)
 /* This code is public domain -- Will Hartung 4/9/09 */
 static ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
 	char *bufptr = NULL;

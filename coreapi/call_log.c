@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 #ifndef _WIN32
-#if !defined(ANDROID) && !defined(__QNXNTO__)
+#if !defined(__ANDROID__) && !defined(__QNXNTO__)
 #	include <langinfo.h>
 #	include <iconv.h>
 #	include <string.h>

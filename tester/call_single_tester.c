@@ -36,7 +36,7 @@
 static void srtp_call(void);
 
 // prototype definition for call_recording()
-#ifdef ANDROID
+#ifdef __ANDROID__
 #ifdef HAVE_OPENH264
 extern void libmsopenh264_init(MSFactory *factory);
 #endif
@@ -829,7 +829,7 @@ static void call_with_specified_codec_bitrate(void) {
 
 #ifdef __arm__
 	if (ms_factory_get_cpu_count(marie->lc->factory) <2) { /*2 opus codec channel + resampler is too much for a single core*/
-#ifndef ANDROID
+#ifndef __ANDROID__
 		codec = "speex";
 		rate = 8000;
 		min_bw=20;
@@ -2151,7 +2151,7 @@ static void call_with_mkv_file_player(void) {
 	char *hellowav;
 	char *recordpath;
 	bool_t call_ok;
-#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(__ANDROID__)
 	double similar=0.0;
 	const double threshold = 0.9;
 #define DO_AUDIO_CMP
@@ -3039,7 +3039,7 @@ void record_call(const char *filename, bool_t enableVideo, const char *video_cod
 		disable_all_video_codecs_except_one(marie->lc,"h264");
 	}
 
-#if defined(HAVE_OPENH264) && defined(ANDROID)
+#if defined(HAVE_OPENH264) && defined(__ANDROID__)
 	libmsopenh264_init(linphone_core_get_ms_factory(marie->lc));
 	linphone_core_reload_ms_plugins(marie->lc, NULL);
 	libmsopenh264_init(linphone_core_get_ms_factory(pauline->lc));
@@ -3558,7 +3558,7 @@ static void unsucessfull_call_with_transport_change_after_released(void) {
 	call_with_transport_change_base(FALSE);
 }
 
-#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(__ANDROID__)
 static void completion_cb(void *user_data, int percentage){
 	fprintf(stdout,"%i %% completed\r",percentage);
 	fflush(stdout);
@@ -3610,7 +3610,7 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	if (clock_rate!=48000) {
 		ms_warning("Similarity checking not implemented for files not having the same sampling rate");
 	}else{
-#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(__ANDROID__)
 		double similar;
 		double min_threshold = .75f; /*should be above 0.8 in best conditions*/
 		double max_threshold = 1.f;

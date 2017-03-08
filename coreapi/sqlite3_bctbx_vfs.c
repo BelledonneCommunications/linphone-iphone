@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 #ifndef _WIN32
-#if !defined(__QNXNTO__)
+#if !defined(__QNXNTO__) && !(defined(__ANDROID__) && defined(__LP64__))
 #	include <langinfo.h>
 #	include <locale.h>
 #	include <iconv.h>
@@ -281,7 +281,7 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	}
 	bctbx_free(wideFilename);
 	return convertedFilename;
-#elif defined(__QNXNTO__) || (defined(ANDROID) && defined(__LP64__))
+#elif defined(__QNXNTO__) || (defined(__ANDROID__) && defined(__LP64__))
 	return bctbx_strdup(fName);
 #else
 	#define MAX_PATH_SIZE 1024

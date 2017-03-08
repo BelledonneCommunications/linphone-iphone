@@ -42,7 +42,7 @@
 
 static FILE * log_file = NULL;
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 
 #include <android/log.h>
 #include <jni.h>
@@ -148,7 +148,7 @@ JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_keepAccounts(JNIEnv *env,
 JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_clearAccounts(JNIEnv *env, jclass c) {
 	liblinphone_tester_clear_accounts();
 }
-#endif /* ANDROID */
+#endif /* __ANDROID__ */
 
 static void log_handler(int lev, const char *fmt, va_list args) {
 #ifdef _WIN32
@@ -157,7 +157,7 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 #else
 	va_list cap;
 	va_copy(cap,args);
-#ifdef ANDROID
+#ifdef __ANDROID__
 	/* IMPORTANT: needed by liblinphone tester to retrieve suite list...*/
 	bcunit_android_trace_handler(lev == ORTP_ERROR, fmt, cap);
 #else
@@ -174,7 +174,7 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args)) {
 	if (! log_file) {
-#if defined(ANDROID)
+#if defined(__ANDROID__)
 		linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
 		bctbx_set_log_handler(liblinphone_android_bctbx_log_handler);
 #endif

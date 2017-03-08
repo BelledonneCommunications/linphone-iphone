@@ -88,7 +88,7 @@
 #define ngettext(singular, plural, number)	(((number)==1)?(singular):(plural))
 #endif
 #endif
-#ifdef ANDROID
+#ifdef __ANDROID__
 #include <jni.h>
 #endif
 
@@ -1074,7 +1074,7 @@ struct _LinphoneCore
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreCbs *current_cbs; // the latest LinphoneCoreCbs object to call a callback, see linphone_core_get_current_cbs()
 	LinphoneRingtonePlayer *ringtoneplayer;
-#ifdef ANDROID
+#ifdef __ANDROID__
 	jobject wifi_lock;
 	jclass wifi_lock_class;
 	jmethodID wifi_lock_acquire_id;
@@ -1692,7 +1692,7 @@ void linphone_content_set_key(LinphoneContent *content, const char *key, const s
  */
 void ** linphone_content_get_cryptoContext_address(LinphoneContent *content);
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
 void linphone_core_wifi_lock_release(LinphoneCore *lc);
 void linphone_core_multicast_lock_acquire(LinphoneCore *lc);

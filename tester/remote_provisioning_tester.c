@@ -108,7 +108,7 @@ static void remote_provisioning_file(void) {
 #if TARGET_OS_IPHONE
 	ms_message("Skipping remote provisioning from file on iOS");
 	return;
-#elif defined(ANDROID)
+#elif defined(__ANDROID__)
 	marie = linphone_core_manager_new2("marie_remote_localfile_android_rc", FALSE);
 #elif defined(LINPHONE_WINDOWS_UNIVERSAL)
 	marie = linphone_core_manager_new2("marie_remote_localfile_win10_rc", FALSE);

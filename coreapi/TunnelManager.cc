@@ -18,7 +18,7 @@
 #include "linphone/core_utils.h"
 #include "private.h"
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 #include <android/log.h>
 #endif
 
@@ -429,7 +429,7 @@ void TunnelManager::sOnIterate(TunnelManager *zis){
 	zis->onIterate();
 }
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 extern void linphone_android_log_handler(int prio, char *str);
 static void linphone_android_tunnel_log_handler(int lev, const char *fmt, va_list args) {
 	char str[4096];
@@ -447,7 +447,7 @@ static void linphone_android_tunnel_log_handler(int lev, const char *fmt, va_lis
 	}
 	linphone_android_log_handler(prio, str);
 }
-#endif /*ANDROID*/
+#endif /* __ANDROID__ */
 
 void TunnelManager::enableLogs(bool value) {
 	enableLogs(value,NULL);
@@ -455,7 +455,7 @@ void TunnelManager::enableLogs(bool value) {
 
 void TunnelManager::enableLogs(bool isEnabled,LogHandler logHandler) {
 	if (logHandler != NULL)	SetLogHandler(logHandler);
-#ifdef ANDROID
+#ifdef __ANDROID__
 	else SetLogHandler(linphone_android_tunnel_log_handler);
 #else
 	else SetLogHandler(tunnel_default_log_handler);

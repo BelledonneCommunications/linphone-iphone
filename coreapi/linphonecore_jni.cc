@@ -41,11 +41,10 @@ extern "C" {
 
 #include "linphone/lpconfig.h"
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 #include <android/log.h>
-
 #include <belle-sip/wakelock.h>
-#endif /*ANDROID*/
+#endif /* __ANDROID__ */
 
 #define RETURN_USER_DATA_OBJECT(javaclass, funcprefix, cobj) \
 	{ \
@@ -75,7 +74,7 @@ static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *bu
 static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv *env, jobject jbuffer);
 static jobject getTunnelConfig(JNIEnv *env, LinphoneTunnelConfig *cfg);
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 void linphone_android_log_handler(int prio, char *str) {
 	char *current;
 	char *next;
@@ -159,15 +158,14 @@ extern "C" void setMediastreamerAndroidContext(JNIEnv *env, void *context) {
 	jmethodID set_context = env->GetStaticMethodID(ms_class, "setContext", "(Ljava/lang/Object;)V");
 	env->CallStaticVoidMethod(ms_class, set_context, (jobject)context);
 }
-#endif /*ANDROID*/
+#endif /* __ANDROID__ */
 
 
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
-#ifdef ANDROID
+#ifdef __ANDROID__
 	ms_set_jvm(ajvm);
-
-#endif /*ANDROID*/
+#endif /* __ANDROID__ */
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
 }
@@ -5750,7 +5748,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioDscp(JNIEnv* env
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidPowerManager(JNIEnv *env, jclass cls, jobject pm) {
-#ifdef ANDROID
+#ifdef __ANDROID__
 	if(pm != NULL) belle_sip_wake_lock_init(env, pm);
 	else belle_sip_wake_lock_uninit(env);
 #endif
@@ -5758,7 +5756,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidPowerManager(J
 
 /*released in Java_org_linphone_core_LinphoneCoreImpl_delete*/
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidWifiLock(JNIEnv *env, jobject thiz, jlong ptr, jobject wifi_lock) {
-#ifdef ANDROID
+#ifdef __ANDROID__
 	LinphoneCore *lc=(LinphoneCore*)ptr;
 	if (lc->wifi_lock) {
 		env->DeleteGlobalRef(lc->wifi_lock);
@@ -5778,7 +5776,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidWifiLock(JNIEn
 }
 /*released in Java_org_linphone_core_LinphoneCoreImpl_delete*/
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidMulticastLock(JNIEnv *env, jobject thiz, jlong ptr, jobject multicast_lock) {
-#ifdef ANDROID
+#ifdef __ANDROID__
 	LinphoneCore *lc=(LinphoneCore*)ptr;
 	if (lc->multicast_lock) {
 		env->DeleteGlobalRef(lc->multicast_lock);

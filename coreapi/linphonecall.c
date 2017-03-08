@@ -1719,7 +1719,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		switch (cstate) {
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallIncomingReceived:
-#ifdef ANDROID
+#ifdef __ANDROID__
 			ms_message("Call [%p] acquires both wifi and multicast lock",call);
 			linphone_core_wifi_lock_acquire(call->core);
 			linphone_core_multicast_lock_acquire(call->core); /*does no affect battery more than regular rtp traffic*/
@@ -1744,7 +1744,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->log->connected_date_time = ms_time(NULL);
 			break;
 		case LinphoneCallReleased:
-#ifdef ANDROID
+#ifdef __ANDROID__
 			ms_message("Call [%p] releases wifi/multicast lock",call);
 			linphone_core_wifi_lock_release(call->core);
 			linphone_core_multicast_lock_release(call->core);
