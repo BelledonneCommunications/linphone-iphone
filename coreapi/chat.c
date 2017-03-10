@@ -728,9 +728,15 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	} else if (is_im_iscomposing(msg->content_type)) {
 		linphone_chat_room_notify_is_composing(cr, msg->message);
 		linphone_chat_message_set_to_be_stored(msg, FALSE);
+		if(lp_config_get_int(cr->lc->config, "sip", "deliver_imdn", 0) != 1) {
+			goto end;
+		}
 	} else if (is_imdn(msg->content_type)) {
 		linphone_chat_room_notify_imdn(cr, msg->message);
 		linphone_chat_message_set_to_be_stored(msg, FALSE);
+		if(lp_config_get_int(cr->lc->config, "sip", "deliver_imdn", 0) != 1) {
+			goto end;
+		}
 	} else if (is_text(msg->content_type)) {
 		linphone_chat_message_set_to_be_stored(msg, TRUE);
 	}
