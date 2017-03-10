@@ -225,7 +225,7 @@ public:
 	int updateCallId(LinphoneCall *call);
 	int updateProxyId(LinphoneProxyConfig *proxy);
 	inline int maxProxyId() { return mProxyIds; }
-	inline int maxAuthInfoId()  { return bctbx_list_size(linphone_core_get_auth_info_list(mLc)); }
+	inline int maxAuthInfoId()  { return (int)bctbx_list_size(linphone_core_get_auth_info_list(mLc)); }
 	int updateAudioStreamId(AudioStream *audio_stream);
 	void dumpCommandsHelp();
 	void dumpCommandsHelpHtml();

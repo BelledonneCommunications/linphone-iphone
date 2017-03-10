@@ -47,6 +47,10 @@
 #endif
 
 #undef PARAMS
+
+#define INT_TO_VOIDPTR(i) ((void*)(intptr_t)(i))
+#define VOIDPTR_TO_INT(p) ((int)(intptr_t)(p))
+
 /**************************************************************************
  *
  * Compile-time defines
@@ -123,7 +127,7 @@ void linphonec_set_autoanswer(bool_t enabled);
 bool_t linphonec_get_autoanswer(void);
 void linphonec_command_finished(void);
 void linphonec_set_caller(const char *caller);
-LinphoneCall *linphonec_get_call(long id);
+LinphoneCall *linphonec_get_call(int id);
 void linphonec_call_identify(LinphoneCall* call);
 
 extern bool_t linphonec_camera_enabled;

@@ -286,7 +286,7 @@ bool_t lp_spawn_command_line_sync(const char *command, char **result,int *comman
 	if (f!=NULL){
 		int err;
 		*result=ms_malloc(4096);
-		err=fread(*result,1,4096-1,f);
+		err=(int)fread(*result,1,4096-1,f);
 		if (err<0){
 			ms_warning("Error reading command output:%s",strerror(errno));
 			ms_free(result);

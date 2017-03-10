@@ -174,16 +174,16 @@ bool_t linphonec_camera_enabled=TRUE;
 
 
 void linphonec_call_identify(LinphoneCall* call){
-	static long callid=1;
-	linphone_call_set_user_pointer (call,(void*)callid);
+	static int callid=1;
+	linphone_call_set_user_pointer (call,INT_TO_VOIDPTR(callid));
 	callid++;
 }
 
-LinphoneCall *linphonec_get_call(long id){
+LinphoneCall *linphonec_get_call(int id){
 	const MSList *elem=linphone_core_get_calls(linphonec);
 	for (;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (linphone_call_get_user_pointer (call)==(void*)id){
+		if (VOIDPTR_TO_INT(linphone_call_get_user_pointer(call))==id){
 			return call;
 		}
 	}
@@ -278,8 +278,8 @@ linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 {
 	char *remote=linphone_call_get_remote_address_as_string(call);
 	if (new_call_state==LinphoneCallConnected){
-		linphonec_out("The distant endpoint %s of call %li has been transfered, you can safely close the call.\n",
-		              remote,(long)linphone_call_get_user_pointer (call));
+		linphonec_out("The distant endpoint %s of call %i has been transfered, you can safely close the call.\n",
+		              remote,VOIDPTR_TO_INT(linphone_call_get_user_pointer(call)));
 	}
 	ms_free(remote);
 }
@@ -322,7 +322,7 @@ static void linphonec_call_updated(LinphoneCall *call){
 }
 
 static void linphonec_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t encrypted, const char *auth_token) {
-	long id=(long)linphone_call_get_user_pointer (call);
+	int id=VOIDPTR_TO_INT(linphone_call_get_user_pointer(call));
 	if (!encrypted) {
 		linphonec_out("Call %i is not fully encrypted and auth token is %s.\n", id,
 				(auth_token != NULL) ? auth_token : "absent");
@@ -334,7 +334,7 @@ static void linphonec_call_encryption_changed(LinphoneCore *lc, LinphoneCall *ca
 
 static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState st, const char *msg){
 	char *from=linphone_call_get_remote_address_as_string(call);
-	long id=(long)linphone_call_get_user_pointer (call);
+	int id=VOIDPTR_TO_INT(linphone_call_get_user_pointer(call));
 	switch(st){
 		case LinphoneCallEnd:
 			linphonec_out("Call %i with %s ended (%s).\n", id, from, linphone_reason_to_string(linphone_call_get_reason(call)));
@@ -357,7 +357,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		case LinphoneCallIncomingReceived:
 			linphonec_call_identify(call);
 			linphone_call_enable_camera (call,linphonec_camera_enabled);
-			id=(long)linphone_call_get_user_pointer (call);
+			id=VOIDPTR_TO_INT(linphone_call_get_user_pointer(call));
 			linphonec_set_caller(from);
 			linphonec_out("Receiving new incoming call from %s, assigned id %i\n", from,id);
 			if ( auto_answer)  {
@@ -373,7 +373,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 		break;
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
-			id=(long)linphone_call_get_user_pointer (call);
+			id=VOIDPTR_TO_INT(linphone_call_get_user_pointer(call));
 			linphonec_out("Establishing call id to %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallUpdatedByRemote:
@@ -576,7 +576,7 @@ void linphonec_out(const char *fmt,...){
 	fflush(stdout);
 #if !defined(_WIN32_WCE)
 	if (client_sock!=ORTP_PIPE_INVALID){
-		if (ortp_pipe_write(client_sock,(uint8_t*)res,strlen(res))==-1){
+		if (ortp_pipe_write(client_sock,(uint8_t*)res,(int)strlen(res))==-1){
 			fprintf(stderr,"Fail to send output via pipe: %s",strerror(errno));
 		}
 	}
@@ -1289,7 +1289,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 			arg_num++;
 			if (arg_num < argc) {
 				char *tmp;
-				window_id = (void *)strtol( argv[arg_num], &tmp, 0 );
+				window_id = INT_TO_VOIDPTR((int)strtol( argv[arg_num], &tmp, 0 ));
 				lpc_video_params.wid = window_id;
 			}
 		}

@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
 		ReadFile(hin, buf, sizeof(buf), &read, NULL);
 		if (read > 2) {
 			buf[read - 2] = '\0'; // Remove ending '\r\n'
-			if (ortp_pipe_write(fd, (uint8_t *)buf, strlen(buf)) < 0) {
+			if (ortp_pipe_write(fd, (uint8_t *)buf, (int)strlen(buf)) < 0) {
 				running = 0;
 			} else {
 				read = ortp_pipe_read(fd, (uint8_t *)buf, sizeof(buf));

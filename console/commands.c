@@ -463,7 +463,7 @@ linphonec_command_generator(const char *text, int state)
 	{
 		index=0;
 		adv=0;
-		len=strlen(text);
+		len=(int)strlen(text);
 	}
 	/*
  	 * Return the next name which partially matches
@@ -784,7 +784,7 @@ static int
 lpc_cmd_answer(LinphoneCore *lc, char *args){
 	if (!args)
 	{
-		int nb=bctbx_list_size(linphone_core_get_calls(lc));
+		int nb=(int)bctbx_list_size(linphone_core_get_calls(lc));
 		if (nb==1){
 			//if just one call is present answer the only one in passing NULL to the linphone_core_accept_call ...
 			if ( -1 == linphone_core_accept_call(lc, NULL) )
@@ -1485,7 +1485,7 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 	else
 	{
 		const bctbx_list_t *calls = linphone_core_get_calls(lc);
-		int nbcalls=bctbx_list_size(calls);
+		int nbcalls=(int)bctbx_list_size(calls);
 		if( nbcalls == 1)
 		{
 			if(linphone_core_resume_call(lc,calls->data) < 0)
@@ -2491,7 +2491,7 @@ static void lpc_display_call_states(LinphoneCore *lc){
 			tmp=linphone_call_get_remote_address_as_string (call);
 			flag=in_conference ? "conferencing" : "";
 			flag=linphone_call_has_transfer_pending(call) ? "transfer pending" : flag;
-			linphonec_out("%-2i | %-35s | %-15s | %s\n",(int)(long)linphone_call_get_user_pointer(call),
+			linphonec_out("%-2i | %-35s | %-15s | %s\n",VOIDPTR_TO_INT(linphone_call_get_user_pointer(call)),
 						  tmp,linphone_call_state_to_string(linphone_call_get_state(call))+strlen("LinphoneCall"),flag);
 			ms_free(tmp);
 		}

@@ -83,6 +83,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include "private.h"
 using namespace std;
 
+#define INT_TO_VOIDPTR(i) ((void*)(intptr_t)(i))
+#define VOIDPTR_TO_INT(p) ((int)(intptr_t)(p))
+
 #ifndef WIN32
 #else
 #include <windows.h>
@@ -340,7 +343,7 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 		listen(mServerFd, 2);
 		fprintf(stdout, "Server unix socket created, name=%s fd=%i\n", pipe_name, (int)mServerFd);
 #else
-		fprintf(stdout, "Named pipe  created, name=%s fd=%i\n", pipe_name, (int)mServerFd);
+		fprintf(stdout, "Named pipe  created, name=%s fd=%p\n", pipe_name, mServerFd);
 #endif
 	}
 
@@ -382,9 +385,9 @@ LinphoneSoundDaemon *Daemon::getLSD() {
 }
 
 int Daemon::updateCallId(LinphoneCall *call) {
-	int val = (int) (long) linphone_call_get_user_pointer(call);
+	int val = VOIDPTR_TO_INT(linphone_call_get_user_pointer(call));
 	if (val == 0) {
-		linphone_call_set_user_pointer(call, (void*) (long) ++mCallIds);
+		linphone_call_set_user_pointer(call, INT_TO_VOIDPTR(++mCallIds));
 		return mCallIds;
 	}
 	return val;
@@ -394,16 +397,16 @@ LinphoneCall *Daemon::findCall(int id) {
 	const bctbx_list_t *elem = linphone_core_get_calls(mLc);
 	for (; elem != NULL; elem = elem->next) {
 		LinphoneCall *call = (LinphoneCall *) elem->data;
-		if (linphone_call_get_user_pointer(call) == (void*) (long) id)
+		if (VOIDPTR_TO_INT(linphone_call_get_user_pointer(call)) == id)
 			return call;
 	}
 	return NULL;
 }
 
 int Daemon::updateProxyId(LinphoneProxyConfig *cfg) {
-	int val = (int) (long) linphone_proxy_config_get_user_data(cfg);
+	int val = VOIDPTR_TO_INT(linphone_proxy_config_get_user_data(cfg));
 	if (val == 0) {
-		linphone_proxy_config_set_user_data(cfg, (void*) (long) ++mProxyIds);
+		linphone_proxy_config_set_user_data(cfg, INT_TO_VOIDPTR(++mProxyIds));
 		return mProxyIds;
 	}
 	return val;
@@ -413,7 +416,7 @@ LinphoneProxyConfig *Daemon::findProxy(int id) {
 	const bctbx_list_t *elem = linphone_core_get_proxy_config_list(mLc);
 	for (; elem != NULL; elem = elem->next) {
 		LinphoneProxyConfig *proxy = (LinphoneProxyConfig *) elem->data;
-		if (linphone_proxy_config_get_user_data(proxy) == (void*) (long) id)
+		if (VOIDPTR_TO_INT(linphone_proxy_config_get_user_data(proxy)) == id)
 			return proxy;
 	}
 	return NULL;
@@ -620,7 +623,7 @@ void Daemon::execCommand(const string &command) {
 void Daemon::sendResponse(const Response &resp) {
 	string buf = resp.toBuf();
 	if (mChildFd != (ortp_pipe_t)-1) {
-		if (ortp_pipe_write(mChildFd, (uint8_t *)buf.c_str(), buf.size()) == -1) {
+		if (ortp_pipe_write(mChildFd, (uint8_t *)buf.c_str(), (int)buf.size()) == -1) {
 			ms_error("Fail to write to pipe: %s", strerror(errno));
 		}
 	} else {
