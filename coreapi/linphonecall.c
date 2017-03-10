@@ -4156,10 +4156,15 @@ float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->sent_rtcp->b_cont != NULL)
 		msgpullup(stats->sent_rtcp, -1);
-	if (rtcp_is_SR(stats->sent_rtcp))
-		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
-	else if (rtcp_is_RR(stats->sent_rtcp))
-		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
+	
+	do{
+		if (rtcp_is_SR(stats->sent_rtcp))
+			srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
+		else if (rtcp_is_RR(stats->sent_rtcp))
+			srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
+		if (srb) break;
+	}while (rtcp_next_packet(stats->sent_rtcp));
+	rtcp_rewind(stats->sent_rtcp);
 	if (!srb)
 		return 0.0;
 	return 100.0f * report_block_get_fraction_lost(srb) / 256.0f;
@@ -4173,10 +4178,15 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->received_rtcp->b_cont != NULL)
 		msgpullup(stats->received_rtcp, -1);
-	if (rtcp_is_RR(stats->received_rtcp))
-		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
-	else if (rtcp_is_SR(stats->received_rtcp))
-		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
+	
+	do{
+		if (rtcp_is_RR(stats->received_rtcp))
+			rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
+		else if (rtcp_is_SR(stats->received_rtcp))
+			rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
+		if (rrb) break;
+	}while (rtcp_next_packet(stats->sent_rtcp));
+	rtcp_rewind(stats->sent_rtcp);
 	if (!rrb)
 		return 0.0;
 	return 100.0f * report_block_get_fraction_lost(rrb) / 256.0f;
