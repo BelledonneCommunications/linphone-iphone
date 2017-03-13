@@ -4,6 +4,7 @@ project(LinphoneCxx VERSION @LINPHONE_VERSION@)
 
 include(GNUInstallDirs)
 
+find_package(BcToolbox REQUIRED)
 find_package(BelleSIP REQUIRED)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -35,16 +36,17 @@ set(HEADERS
 add_definitions("-DLINPHONECXX_EXPORTS")
 add_library(linphone++ SHARED ${SOURCES})
 if(WIN32)
-	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/${CMAKE_BUILD_TYPE}/linphone.lib ${BELLESIP_LIBRARIES})
+	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/${CMAKE_BUILD_TYPE}/linphone.lib ${BCTOOLBOX_CORE_LIBRARIES} ${BELLESIP_LIBRARIES})
 elseif(APPLE)
-	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.@LINPHONE_SO_VERSION@.dylib ${BELLESIP_LIBRARIES})
+	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.@LINPHONE_SO_VERSION@.dylib ${BCTOOLBOX_CORE_LIBRARIES} ${BELLESIP_LIBRARIES})
 else()
-	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.so.@LINPHONE_SO_VERSION@ ${BELLESIP_LIBRARIES})
+	target_link_libraries(linphone++ PRIVATE @PROJECT_BINARY_DIR@/coreapi/liblinphone.so.@LINPHONE_SO_VERSION@ ${BCTOOLBOX_CORE_LIBRARIES} ${BELLESIP_LIBRARIES})
 endif()
 target_include_directories(linphone++
-	PUBLIC include
+	PRIVATE include
 	PRIVATE @PROJECT_SOURCE_DIR@/include
-	PRIVATE @BELLESIP_INCLUDE_DIRS@
+	PRIVATE ${BCTOOLBOX_INCLUDE_DIRS}
+	PRIVATE ${BELLESIP_INCLUDE_DIRS}
 )
 set_target_properties(linphone++
 	PROPERTIES SOVERSION @LINPHONE_SO_VERSION@
