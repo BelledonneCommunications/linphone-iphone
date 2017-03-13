@@ -30,25 +30,6 @@ if (IOS)
 	set(USE_BUNDLE MACOSX_BUNDLE)
 endif()
 
-set(LP_GEN_WRAPPERS_SOURCE_FILES
-	generator.cc
-	generator.hh
-	genwrappers.cc
-	software-desc.cc
-	software-desc.hh
-)
-
-set(LP_GEN_WRAPPERS_LIBS
-	${LIBGCC}
-	${LIBMINGWEX}
-	${XML2_LIBRARIES}
-)
-
-bc_apply_compile_flags(LP_GEN_WRAPPERS_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
-add_executable(lp-gen-wrappers ${USE_BUNDLE} ${LP_GEN_WRAPPERS_SOURCE_FILES})
-target_link_libraries(lp-gen-wrappers ${LP_GEN_WRAPPERS_LIBS})
-set_target_properties(lp-gen-wrappers PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
-
 set(LP_AUTO_ANSWER_SOURCE_FILES	auto_answer.c)
 bc_apply_compile_flags(LP_AUTO_ANSWER_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 add_executable(lp-auto-answer ${USE_BUNDLE} ${LP_AUTO_ANSWER_SOURCE_FILES})
@@ -74,7 +55,7 @@ target_link_libraries(xml2lpc_test ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} 
 set_target_properties(xml2lpc_test PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 if (NOT IOS)
-	install(TARGETS lp-gen-wrappers lp-auto-answer lp-sendmsg lpc2xml_test xml2lpc_test
+	install(TARGETS lp-auto-answer lp-sendmsg lpc2xml_test xml2lpc_test
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
