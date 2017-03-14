@@ -144,8 +144,9 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	/* do not invoke callbacks on orphan messages */
 	if (state != msg->state && msg->chat_room != NULL) {
-		if ((msg->state == LinphoneChatMessageStateDisplayed) && (state == LinphoneChatMessageStateDeliveredToUser)) {
-			/* If the message has been displayed we must not go back to the delivered to user state. */
+		if (((msg->state == LinphoneChatMessageStateDisplayed) || (msg->state == LinphoneChatMessageStateDeliveredToUser))
+			&& ((state == LinphoneChatMessageStateDeliveredToUser) || (state == LinphoneChatMessageStateDelivered) || (state == LinphoneChatMessageStateNotDelivered))) {
+			/* If the message has been displayed or delivered to user we must not go back to the delivered or not delivered state. */
 			return;
 		}
 		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state),
