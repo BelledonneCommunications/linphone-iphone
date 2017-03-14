@@ -612,7 +612,7 @@ LINPHONE_PUBLIC LinphoneCoreCbs *linphone_core_get_current_callbacks(const Linph
  * @param[in] cbs A #LinphoneCoreCbs.
  * @param[in] cb The callback.
  */
-LINPHONE_PUBLIC void linphone_core_cbs_set_global_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreGlobalStateChangedCb cb);
+LINPHONE_PUBLIC void linphone_core_cbs_set_global_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsGlobalStateChangedCb cb);
 
 /**
  * Set the #LinphoneCoreCbsRegistrationStateChangedCb callback.
