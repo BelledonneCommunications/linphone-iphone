@@ -608,6 +608,13 @@ LINPHONE_PUBLIC void *linphone_core_cbs_get_user_data(const LinphoneCoreCbs *cbs
 LINPHONE_PUBLIC LinphoneCoreCbs *linphone_core_get_current_callbacks(const LinphoneCore *lc);
 
 /**
+ * Set the #LinphoneCoreGlobalStateChangedCb callback.
+ * @param[in] cbs A #LinphoneCoreCbs.
+ * @param[in] cb The callback.
+ */
+LINPHONE_PUBLIC void linphone_core_cbs_set_global_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreGlobalStateChangedCb cb);
+
+/**
  * Set the #LinphoneCoreCbsRegistrationStateChangedCb callback.
  * @param[in] cbs A #LinphoneCoreCbs.
  * @param[in] cb The callback.

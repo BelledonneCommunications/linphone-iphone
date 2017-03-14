@@ -173,6 +173,10 @@ LinphoneCoreCbs *linphone_core_get_current_callbacks(const LinphoneCore *lc) {
 	return lc->current_cbs;
 }
 
+void linphone_core_cbs_set_global_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreGlobalStateChangedCb cb) {
+	cbs->vtable->global_state_changed = cb;
+}
+
 void linphone_core_cbs_set_registration_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsRegistrationStateChangedCb cb) {
 	cbs->vtable->registration_state_changed = cb;
 }
@@ -276,7 +280,6 @@ void linphone_core_cbs_set_friend_list_created(LinphoneCoreCbs *cbs, LinphoneCor
 void linphone_core_cbs_set_friend_list_removed(LinphoneCoreCbs *cbs, LinphoneCoreCbsFriendListRemovedCb cb) {
 	cbs->vtable->friend_list_removed = cb;
 }
-
 
 typedef belle_sip_object_t_vptr_t LinphoneCore_vptr_t;
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCore);
