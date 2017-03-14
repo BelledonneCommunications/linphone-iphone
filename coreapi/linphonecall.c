@@ -4185,8 +4185,8 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 		else if (rtcp_is_SR(stats->received_rtcp))
 			rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
 		if (rrb) break;
-	}while (rtcp_next_packet(stats->sent_rtcp));
-	rtcp_rewind(stats->sent_rtcp);
+	}while (rtcp_next_packet(stats->received_rtcp));
+	rtcp_rewind(stats->received_rtcp);
 	if (!rrb)
 		return 0.0;
 	return 100.0f * report_block_get_fraction_lost(rrb) / 256.0f;
