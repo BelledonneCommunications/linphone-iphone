@@ -20,12 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 int sal_send_info(SalOp *op, const char *from, const char *to, const SalBodyHandler *body_handler){
-	if (op->dialog){
+	if (op->dialog && belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_CONFIRMED){
 		belle_sip_request_t *req;
 		belle_sip_dialog_enable_pending_trans_checking(op->dialog,op->base.root->pending_trans_checking);
 		req=belle_sip_dialog_create_queued_request(op->dialog,"INFO");
 		belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(body_handler));
 		return sal_op_send_request(op,req);
+	}else{
+		ms_error("Cannot send INFO message on op [%p] because dialog is not in confirmed state yet.", op);
 	}
 	return -1;
 }

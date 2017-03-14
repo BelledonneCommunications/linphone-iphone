@@ -140,7 +140,7 @@ static char * create_resource_list_xml(const LinphoneFriendList *list) {
 	xmlTextWriterPtr writer;
 	int err;
 
-	if (bctbx_list_size(list->friends) <= 0) return NULL;
+	if (list->friends == NULL) return NULL;
 
 	buf = xmlBufferCreate();
 	if (buf == NULL) {
