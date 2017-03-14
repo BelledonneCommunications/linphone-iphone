@@ -173,7 +173,7 @@ LinphoneCoreCbs *linphone_core_get_current_callbacks(const LinphoneCore *lc) {
 	return lc->current_cbs;
 }
 
-void linphone_core_cbs_set_global_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreGlobalStateChangedCb cb) {
+void linphone_core_cbs_set_global_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsGlobalStateChangedCb cb) {
 	cbs->vtable->global_state_changed = cb;
 }
 
