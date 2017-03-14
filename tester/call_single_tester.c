@@ -2404,7 +2404,7 @@ end:
 static void early_media_call_with_ice(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCall *marie_call;
+	LinphoneCall *marie_call, *pauline_call;
 	bctbx_list_t *lcs = NULL;
 
 	lcs = bctbx_list_append(lcs, marie->lc);
@@ -2414,11 +2414,12 @@ static void early_media_call_with_ice(void) {
 	 * We want to check that ICE processing is not disturbing early media*/
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
 
-	linphone_core_invite_address(pauline->lc, marie->identity);
+	pauline_call = linphone_core_invite_address(pauline->lc, marie->identity);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,1000));
+	BC_ASSERT_TRUE(pauline_call->all_muted);
 
 	wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
 
@@ -2431,6 +2432,7 @@ static void early_media_call_with_ice(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+	BC_ASSERT_FALSE(pauline_call->all_muted);
 
 	end_call(marie, pauline);
 end:
@@ -2439,7 +2441,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void early_media_call_with_ringing(void){
+static void early_media_call_with_ringing_base(bool_t network_change){
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 	bctbx_list_t* lcs = NULL;
@@ -2464,13 +2466,19 @@ static void early_media_call_with_ringing(void){
 
 	if (linphone_core_inc_invite_pending(pauline->lc)) {
 		/* send a 183 to initiate the early media */
-
 		linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
 		BC_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
 		BC_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
+		BC_ASSERT_TRUE(marie_call->all_muted);
 
 		liblinphone_tester_check_rtcp(marie, pauline);
+		
+		/* this is a hack to simulate an incoming OK with a different IP address
+		 * in the 'c' SDP field. */
+		if (network_change) {
+			marie_call->localdesc_changed |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+		}
 
 		linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
@@ -2479,6 +2487,7 @@ static void early_media_call_with_ringing(void){
 		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
 
 		BC_ASSERT_PTR_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_FALSE(marie_call->all_muted);
 
 		liblinphone_tester_check_rtcp(marie, pauline);
 		/*just to have a call duration !=0*/
@@ -2492,6 +2501,14 @@ static void early_media_call_with_ringing(void){
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void early_media_call_with_ringing(void) {
+	early_media_call_with_ringing_base(FALSE);
+}
+
+static void early_media_call_with_ringing_and_network_changing(void) {
+	early_media_call_with_ringing_base(TRUE);
 }
 
 static void early_media_call_with_update_base(bool_t media_change){
@@ -2522,6 +2539,7 @@ static void early_media_call_with_update_base(bool_t media_change){
 	linphone_core_accept_early_media(pauline->lc, pauline_call);
 	BC_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,1000) );
 	BC_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,5000) );
+	BC_ASSERT_TRUE(marie_call->all_muted);
 
 
 	pauline_params = linphone_call_params_copy(linphone_call_get_current_params(pauline_call));
@@ -2539,6 +2557,7 @@ static void early_media_call_with_update_base(bool_t media_change){
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEarlyUpdatedByRemote,1,2000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000));
+	BC_ASSERT_TRUE(marie_call->all_muted);
 
 	/*just to wait 2s*/
 	liblinphone_tester_check_rtcp(marie, pauline);
@@ -2552,6 +2571,7 @@ static void early_media_call_with_update_base(bool_t media_change){
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected, 1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+	BC_ASSERT_FALSE(marie_call->all_muted);
 
 	liblinphone_tester_check_rtcp(marie, pauline);
 
@@ -5454,6 +5474,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Early-media call", early_media_call),
 	TEST_ONE_TAG("Early-media call with ICE", early_media_call_with_ice, "ICE"),
 	TEST_NO_TAG("Early-media call with ringing", early_media_call_with_ringing),
+	TEST_NO_TAG("Early-media call with ringing and network changing", early_media_call_with_ringing_and_network_changing),
 	TEST_NO_TAG("Early-media call with updated media session", early_media_call_with_session_update),
 	TEST_NO_TAG("Early-media call with updated codec", early_media_call_with_codec_update),
 	TEST_NO_TAG("Call terminated by caller", call_terminated_by_caller),
