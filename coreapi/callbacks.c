@@ -154,18 +154,18 @@ void linphone_call_update_streams(LinphoneCall *call, SalMediaDescription *new_m
 			} else if (call->playing_ringbacktone) {
 				ms_message("Playing ringback tone, will restart the streams.");
 			} else {
-				if (md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) {
-					if (call->all_muted) {
-						ms_message("Early media finished, unmuting inputs...");
-						/* We were in early media, now we want to enable real media */
-						call->all_muted = FALSE;
-						if (call->audiostream) linphone_core_enable_mic(lc, linphone_core_mic_enabled(lc));
+				if (call->all_muted && target_state == LinphoneCallStreamsRunning) {
+					ms_message("Early media finished, unmuting inputs...");
+					/* We were in early media, now we want to enable real media */
+					call->all_muted = FALSE;
+					if (call->audiostream) linphone_core_enable_mic(lc, linphone_core_mic_enabled(lc));
 #ifdef VIDEO_ENABLED
-						if (call->videostream && call->camera_enabled) {
-							linphone_call_enable_camera(call, linphone_call_camera_enabled(call));
-						}
-#endif
+					if (call->videostream && call->camera_enabled) {
+						linphone_call_enable_camera(call, linphone_call_camera_enabled(call));
 					}
+#endif
+				}
+				if (md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) {
 					/*FIXME ZRTP, might be restarted in any cases ? */
 					ms_message("No need to restart streams, SDP is unchanged.");
 					goto end;
