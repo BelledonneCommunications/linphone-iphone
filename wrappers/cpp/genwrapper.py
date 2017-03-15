@@ -22,6 +22,7 @@ import re
 import argparse
 import os
 import sys
+import errno
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
 print(sys.path)
 import genapixml as CApi
@@ -625,21 +626,9 @@ class MainHeader(object):
 
 
 class ClassImpl(object):
-	def __init__(self, parsedClass, translatedClass):
-		self._class = translatedClass
-		self.filename = parsedClass.name.to_snake_case() + '.cc'
-		self.internalIncludes = []
-		self.internalIncludes.append({'name': parsedClass.name.to_snake_case() + '.hh'})
-		self.internalIncludes.append({'name': 'coreapi/linphonecore.h'})
-		
-		namespace = parsedClass.find_first_ancestor_by_type(AbsApi.Namespace)
-		self.namespace = namespace.name.concatenate(fullName=True) if namespace is not None else None
-
-class CMakeLists(object):
 	def __init__(self):
 		self.classes = []
-		self.interfaces = []
-
+		self.namespace = 'linphone'
 
 def render(renderer, item, path):
 	tmppath = path + '.tmp'
@@ -658,11 +647,22 @@ def main():
 	argparser.add_argument('-o --output', type=str, help='the directory where to generate the source files', dest='outputdir', default='.')
 	args = argparser.parse_args()
 	
-	entries = os.listdir(args.outputdir)
-	if 'include' not in entries:
-		os.mkdir(args.outputdir + '/include')
-	if 'src' not in entries:
-		os.mkdir(args.outputdir + '/src')
+	includedir = args.outputdir + '/include/linphone++'
+	srcdir = args.outputdir + '/src'
+	
+	try:
+		os.mkdir(includedir)
+	except OSError as e:
+		if e.errno != errno.EEXIST:
+			print("Cannot create '{0}' dircetory: {1}".format(includedir, e.strerror))
+			sys.exit(1)
+	
+	try:
+		os.mkdir(srcdir)
+	except OSError as e:
+		if e.errno != errno.EEXIST:
+			print("Cannot create '{0}' dircetory: {1}".format(srcdir, e.strerror))
+			sys.exit(1)
 	
 	project = CApi.Project()
 	project.initFromDir(args.xmldir)
@@ -680,37 +680,27 @@ def main():
 		else:
 			print('warning: {0} enum won\'t be translated because of parsing errors'.format(item[0]))
 	
-	render(renderer, header, args.outputdir + '/include/enums.hh')
+	render(renderer, header, includedir + '/enums.hh')
 	
 	mainHeader = MainHeader()
-	cmakelists = CMakeLists()
+	impl = ClassImpl()
 	
 	for _class in parser.classesIndex.values() + parser.interfacesIndex.values():
 		if _class is not None:
 			try:
 				header = ClassHeader(_class, translator)
-				impl = ClassImpl(_class, header._class)
-				
 				headerName = _class.name.to_snake_case() + '.hh'
-				sourceName = _class.name.to_snake_case() + '.cc'
 				mainHeader.add_include(headerName)
+				render(renderer, header, includedir + '/' + header.filename)
 				
-				if type(_class) is AbsApi.Class:
-					cmakelists.classes.append({'header': headerName, 'source': sourceName})
-				else:
-					cmakelists.interfaces.append({'header': headerName})
-				
-				render(renderer, header, args.outputdir + '/include/' + header.filename)
-				
-				if type(_class) is AbsApi.Class:
-					render(renderer, impl, args.outputdir + '/src/' + impl.filename)
+				if type(_class) is not AbsApi.Interface:
+					impl.classes.append(header._class)
 				
 			except AbsApi.Error as e:
 				print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
 	
-	render(renderer, mainHeader, args.outputdir + '/include/linphone.hh')
-	
-	render(renderer, cmakelists, args.outputdir + '/CMakeLists.txt')
+	render(renderer, mainHeader, includedir + '/linphone.hh')
+	render(renderer, impl, srcdir + '/linphone++.cc')
 
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace {{{namespace}}};
 
-{{#_class}}
+{{#classes}}
 
 {{#isNotListener}}
 {{{namespace}}}::{{{className}}}::{{{className}}}(::belle_sip_object_t *ptr, bool takeRef): {{{parentClassName}}}(ptr, takeRef) {
@@ -151,4 +151,4 @@ std::shared_ptr<belcard::BelCard> &Vcard::getVcard() {
 }
 {{/wrapperCbs}}
 
-{{/_class}}
+{{/classes}}
