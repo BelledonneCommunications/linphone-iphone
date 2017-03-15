@@ -913,7 +913,7 @@ LINPHONE_PUBLIC void linphone_core_cbs_set_network_reachable(LinphoneCoreCbs *cb
  * @param[in] cbs A #LinphoneCoreCbs.
  * @return The callback.
  */
-LINPHONE_PUBLIC LinphoneCoreCbsNetworkReachableCb linphone_core_cbs_get_set_network_reachable(LinphoneCoreCbs *cbs);
+LINPHONE_PUBLIC LinphoneCoreCbsNetworkReachableCb linphone_core_cbs_get_network_reachable(LinphoneCoreCbs *cbs);
 
 /**
  * Set the #LinphoneCoreCbsLogCollectionUploadStateChangedCb callback.
