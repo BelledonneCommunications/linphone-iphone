@@ -1951,6 +1951,16 @@ LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_
 **/
 LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_text_codecs(const LinphoneCore *lc);
 
+/**
+ * Sets the list of text codecs.
+ * @param[in] lc The LinphoneCore object
+ * @param[in] codecs \bctbx_list{LinphonePayloadType}
+ * @return 0
+ *
+ * The list is taken by the LinphoneCore thus the application should not free it.
+ * This list is made of struct PayloadType describing the codec parameters.
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC int linphone_core_set_text_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
 
 /**
