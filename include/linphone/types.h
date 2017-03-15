@@ -28,64 +28,127 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 /**
- * The LinphoneAccountCreator object used to create an account on a server via XML-RPC.
- * @ingroup misc
+ * The LinphoneAccountCreator object used to configure an account on a server via XML-RPC.
+ * @ingroup account_creator
 **/
 typedef struct _LinphoneAccountCreator LinphoneAccountCreator;
 
 /**
- * An object to handle the callbacks for handling the LinphoneAccountCreator operations.
- * @ingroup misc
+ * An object to handle the requests callbacks for handling the LinphoneAccountCreator server requests.
+ * @ingroup account_creator
 **/
-typedef struct _LinphoneAccountCreatorCbs LinphoneAccountCreatorCbs;
+typedef struct _LinphoneAccountCreatorRequestCbs LinphoneAccountCreatorRequestCbs;
 
 /**
-* Enum describing the status of a LinphoneAccountCreator operation.
-* @ingroup misc
+ * An object to handle the responses callbacks for handling the LinphoneAccountCreator operations.
+ * @ingroup account_creator
 **/
-typedef enum _LinphoneAccountCreatorStatus {
-	LinphoneAccountCreatorOK,
-	LinphoneAccountCreatorReqFailed,
+typedef struct _LinphoneAccountCreatorResponseCbs LinphoneAccountCreatorResponseCbs;
 
-	LinphoneAccountCreatorAccountCreated,
-	LinphoneAccountCreatorAccountNotCreated,
+/**
+ * Enum describing Phone number checking.
+ * @ingroup account_creator_checking
+**/
+typedef enum _LinphonePhoneNumberCheck {
+	LinphonePhoneNumberOk = 0x1, /**< Phone number ok */
+	LinphonePhoneNumberTooShort = 0x2, /**< Phone number too short */
+	LinphonePhoneNumberTooLong = 0x4, /**< Phone number too long */
+	LinphonePhoneNumberCountryCodeInvalid = 0x8, /**< Country code invalid */
+	LinphonePhoneNumberInvalid = 0x10, /**< Phone number invalid */
+} LinphonePhoneNumberCheck;
 
-	LinphoneAccountCreatorAccountExist,
-	LinphoneAccountCreatorAccountExistWithAlias,
-	LinphoneAccountCreatorAccountNotExist,
+/**
+ * A mask of #LinphonePhoneNumberCheck values
+ * @ingroup account_creator_checking
+ */
+typedef unsigned int LinphonePhoneNumberMask;
 
-	LinphoneAccountCreatorAccountActivated,
-	LinphoneAccountCreatorAccountAlreadyActivated,
-	LinphoneAccountCreatorAccountNotActivated,
+/**
+ * Enum describing Username checking.
+ * @ingroup account_creator_checking
+**/
+typedef enum _LinphoneUsernameCheck {
+	LinphoneUsernameOk, /**< Username ok */
+	LinphoneUsernameTooShort, /**< Username too short */
+	LinphoneUsernameTooLong,  /**< Username too long */
+	LinphoneUsernameInvalidCharacters, /**< Contain invalid characters */
+	LinphoneUsernameInvalid, /**< Invalid username */
+} LinphoneUsernameCheck;
 
-	LinphoneAccountCreatorAccountLinked,
-	LinphoneAccountCreatorAccountNotLinked,
+/**
+ * Enum describing Email checking.
+ * @ingroup account_creator_checking
+**/
+typedef enum _LinphoneEmailCheck {
+	LinphoneEmailOk, /**< Email ok */
+	LinphoneEmailMalformed, /**< Email malformed */
+	LinphoneEmailInvalidCharacters, /**< Contain invalid characters */
+} LinphoneEmailCheck;
 
-	LinphoneAccountCreatorEmailInvalid,
+/**
+ * Enum describing Password checking.
+ * @ingroup account_creator_checking
+**/
+typedef enum _LinphonePasswordCheck {
+	LinphonePasswordOk, /**< Password ok */
+	LinphonePasswordTooShort, /**< Password too short */
+	LinphonePasswordTooLong,  /**< Password too long */
+	LinphonePasswordInvalidCharacters, /**< Contain invalid characters */
+	LinphonePasswordMissingCharacters, /**< Missing specific characters */
+} LinphonePasswordCheck;
 
-	LinphoneAccountCreatorUsernameInvalid,
-	LinphoneAccountCreatorUsernameTooShort,
-	LinphoneAccountCreatorUsernameTooLong,
-	LinphoneAccountCreatorUsernameInvalidSize,
+/**
+ * Enum describing language checking.
+ * @ingroup account_creator_checking
+**/
+typedef enum _LinphoneLanguageCheck {
+	LinphoneLanguageOk, /**< Language ok */
+} LinphoneLanguageCheck;
 
-	LinphoneAccountCreatorPhoneNumberInvalid,
-	LinphoneAccountCreatorPhoneNumberTooShort,
-	LinphoneAccountCreatorPhoneNumberTooLong,
-	LinphoneAccountCreatorPhoneNumberUsedAccount,
-	LinphoneAccountCreatorPhoneNumberUsedAlias,
-	LinphoneAccountCreatorPhoneNumberNotUsed,
+/**
+ * Enum describing Activation code checking.
+ * @ingroup account_creator_checking
+**/
+typedef enum _LinphoneActivationCodeCheck {
+	LinphoneActivationCodeOk, /**< Activation code ok */
+	LinphoneActivationCodeTooShort, /**< Activation code too short */
+	LinphoneActivationCodeTooLong, /**< Activation code too long */
+	LinphoneActivationCodeInvalidCharacters, /**< Contain invalid characters */
+} LinphoneActivationCodeCheck;
 
-	LinphoneAccountCreatorPasswordTooShort,
-	LinphoneAccountCreatorPasswordTooLong,
+/**
+ * Enum describing the status of server request.
+ * @ingroup account_creator_request
+**/
+typedef enum _LinphoneRequestStatus {
+	/** Request status **/
+	LinphoneRequestOk, /**< Request passed */
+	LinphoneRequestFailed, /**< Request failed */
+	LinphoneRequestMissingArguments, /**< Request failed due to missing argument(s) */
+	LinphoneRequestMissingCallbacks, /**< Request failed due to missing callback(s) */
 
-	LinphoneAccountCreatorDomainInvalid,
-	LinphoneAccountCreatorRouteInvalid,
-	LinphoneAccountCreatorDisplayNameInvalid,
-	LinphoneAccountCreatorTransportNotSupported,
-	LinphoneAccountCreatorCountryCodeInvalid,
+	/** Account status **/
+	/* Creation */
+	LinphoneRequestAccountCreated, /**< Account created */
+	LinphoneRequestAccountNotCreated, /**< Account not created */
+	/* Existence */
+	LinphoneRequestAccountExist, /**< Account exist */
+	LinphoneRequestAccountExistWithAlias, /**< Account exist with alias */
+	LinphoneRequestAccountNotExist, /**< Account not exist */
+	LinphoneRequestAliasIsAccount, /**< Account was created with Alias */
+	LinphoneRequestAliasExist, /**< Alias exist */
+	LinphoneRequestAliasNotExist, /**< Alias not exist */
+	/* Activation */
+	LinphoneRequestAccountActivated, /**< Account activated */
+	LinphoneRequestAccountAlreadyActivated, /**< Account already activated */
+	LinphoneRequestAccountNotActivated, /**< Account not activated */
+	/* Linking */
+	LinphoneRequestAccountLinked, /**< Account linked */
+	LinphoneRequestAccountNotLinked, /**< Account not linked */
 
-	LinphoneAccountCreatorErrorServer,
-} LinphoneAccountCreatorStatus;
+	/** Server **/
+	LinphoneRequestErrorServer, /**< Error server */
+} LinphoneRequestStatus;
 
 struct SalAddress;
 

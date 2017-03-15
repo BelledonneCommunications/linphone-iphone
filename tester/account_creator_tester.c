@@ -19,10 +19,8 @@
 #include "liblinphone_tester.h"
 
 static const char XMLRPC_URL[] = "https://sip2.linphone.org:446/xmlrpc.php";
-static const char DOMAIN_URL[] = "sip.accounttest.org";
-static const char ROUTE_URL[] = "sip2.linphone.org:5072";
 
-static const int TIMEOUT_REQUEST = 100000;
+static const int TIMEOUT_REQUEST = 10000;
 
 /////////// LOCAL TESTS ///////////
 
@@ -33,8 +31,8 @@ static void local_username_too_short(void) {
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_set_username(creator, ""),
-		LinphoneAccountCreatorUsernameTooShort,
-		LinphoneAccountCreatorStatus,
+		LinphoneUsernameTooShort,
+		LinphoneUsernameCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -46,38 +44,24 @@ static void local_username_too_long(void) {
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_username(creator, "usernametoolong"),
-		LinphoneAccountCreatorUsernameTooLong,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_set_username(creator, "usernametoolongforyou"),
+		LinphoneUsernameTooLong,
+		LinphoneUsernameCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
 	linphone_core_manager_destroy(marie);
 }
 
-static void local_username_invalid(void) {
+static void local_username_invalid_character(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
 			linphone_account_creator_set_username(creator, "use!"),
-			LinphoneAccountCreatorUsernameInvalid,
-			LinphoneAccountCreatorStatus,
+			LinphoneUsernameInvalidCharacters,
+			LinphoneUsernameCheck,
 			"%i");
-
-	linphone_account_creator_unref(creator);
-	linphone_core_manager_destroy(marie);
-}
-
-static void local_username_invalid_size(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
-	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
-
-	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_username(creator, "sizeinv"),
-		LinphoneAccountCreatorUsernameInvalidSize,
-		LinphoneAccountCreatorStatus,
-		"%i");
 
 	linphone_account_creator_unref(creator);
 	linphone_core_manager_destroy(marie);
@@ -89,8 +73,8 @@ static void local_username_ok(void) {
 
 	BC_ASSERT_EQUAL(
 			linphone_account_creator_set_username(creator, "user"),
-			LinphoneAccountCreatorOK,
-			LinphoneAccountCreatorStatus,
+			LinphoneUsernameOk,
+			LinphoneUsernameCheck,
 			"%i");
 
 	linphone_account_creator_unref(creator);
@@ -105,8 +89,8 @@ static void local_password_too_short(void) {
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_set_password(creator, ""),
-		LinphoneAccountCreatorPasswordTooShort,
-		LinphoneAccountCreatorStatus,
+		LinphonePasswordTooShort,
+		LinphonePasswordCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -119,8 +103,8 @@ static void local_password_too_long(void) {
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_set_password(creator, "passwordtoolong"),
-		LinphoneAccountCreatorPasswordTooLong,
-		LinphoneAccountCreatorStatus,
+		LinphonePasswordTooLong,
+		LinphonePasswordCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -132,9 +116,9 @@ static void local_password_ok(void) {
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_username(creator, "pass"),
-		LinphoneAccountCreatorOK,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_set_password(creator, "pass"),
+		LinphonePasswordOk,
+		LinphonePasswordCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -143,14 +127,52 @@ static void local_password_ok(void) {
 
 ////// EMAIL //////
 
-static void local_email_invalid(void) {
+static void local_email_malformed(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_set_email(creator, "test.linphone.org"),
-		LinphoneAccountCreatorEmailInvalid,
-		LinphoneAccountCreatorStatus,
+		LinphoneEmailMalformed,
+		LinphoneEmailCheck,
+		"%i");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_set_email(creator, "test@linphone"),
+		LinphoneEmailMalformed,
+		LinphoneEmailCheck,
+		"%i");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_set_email(creator, "@linphone.org"),
+		LinphoneEmailMalformed,
+		LinphoneEmailCheck,
+		"%i");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_set_email(creator, "linphone@.org"),
+		LinphoneEmailMalformed,
+		LinphoneEmailCheck,
+		"%i");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_set_email(creator, ".linphone@.org"),
+		LinphoneEmailMalformed,
+		LinphoneEmailCheck,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void local_email_invalid_character(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_set_email(creator, "test@linphone.org$"),
+		LinphoneEmailInvalidCharacters,
+		LinphoneEmailCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -163,8 +185,20 @@ static void local_email_ok(void) {
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_set_email(creator, "test@linphone.org"),
-		LinphoneAccountCreatorOK,
-		LinphoneAccountCreatorStatus,
+		LinphoneEmailOk,
+		LinphoneEmailCheck,
+		"%i");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_set_email(creator, "test02@linphone5252.org"),
+		LinphoneEmailOk,
+		LinphoneEmailCheck,
+		"%i");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_set_email(creator, "9053test@50255linphone.org"),
+		LinphoneEmailOk,
+		LinphoneEmailCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -178,9 +212,9 @@ static void local_phone_number_too_short(void) {
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_phone_number(creator, "0123", "33"),
-		LinphoneAccountCreatorPhoneNumberTooShort,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_set_phone_number(creator, "0123", "33")&LinphonePhoneNumberTooShort,
+		LinphonePhoneNumberTooShort,
+		LinphonePhoneNumberCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -192,9 +226,9 @@ static void local_phone_number_too_long(void) {
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_phone_number(creator, "01234567891011", "33"),
-		LinphoneAccountCreatorPhoneNumberTooLong,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_set_phone_number(creator, "01234567891011", "33")&LinphonePhoneNumberTooLong,
+		LinphonePhoneNumberTooLong,
+		LinphonePhoneNumberCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -206,9 +240,9 @@ static void local_phone_number_invalid(void) {
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_phone_number(creator, NULL, "33"),
-		LinphoneAccountCreatorPhoneNumberInvalid,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_set_phone_number(creator, NULL, "33")&LinphonePhoneNumberInvalid,
+		LinphonePhoneNumberInvalid,
+		LinphonePhoneNumberCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -220,68 +254,23 @@ static void local_country_code_invalid(void) {
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_phone_number(creator, "0123", ""),
-		LinphoneAccountCreatorCountryCodeInvalid,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_set_phone_number(creator, "0123", "")&LinphonePhoneNumberCountryCodeInvalid,
+		LinphonePhoneNumberCountryCodeInvalid,
+		LinphonePhoneNumberCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
 	linphone_core_manager_destroy(marie);
 }
 
-////// TRANSPORT //////
-
-static void local_transport_not_supported(void) {
+static void local_phone_number_ok(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_transport(creator, (LinphoneTransportType)4),
-		LinphoneAccountCreatorTransportNotSupported,
-		LinphoneAccountCreatorStatus,
-		"%i");
-
-	linphone_account_creator_unref(creator);
-	linphone_core_manager_destroy(marie);
-}
-
-static void local_transport_ok(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
-	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
-
-	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_transport(creator, LinphoneTransportTcp),
-		LinphoneAccountCreatorOK,
-		LinphoneAccountCreatorStatus,
-		"%i");
-
-	linphone_account_creator_unref(creator);
-	linphone_core_manager_destroy(marie);
-}
-
-////// DOMAIN //////
-
-// Not implemented
-/*static void local_domain_invalid(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
-	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
-	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_domain(creator, "sop2.linphone.org"),
-		LinphoneAccountCreatorDomainInvalid,
-		LinphoneAccountCreatorStatus,
-		"%i");
-	linphone_account_creator_unref(creator);
-	linphone_core_manager_destroy(marie);
-}*/
-
-static void local_domain_ok(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
-	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, "");
-
-	BC_ASSERT_EQUAL(
-		linphone_account_creator_set_domain(creator, "sip2.linphone.org"),
-		LinphoneAccountCreatorOK,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_set_phone_number(creator, "0123456789", "33")&LinphonePhoneNumberOk,
+		LinphonePhoneNumberOk,
+		LinphonePhoneNumberCheck,
 		"%i");
 
 	linphone_account_creator_unref(creator);
@@ -299,8 +288,8 @@ static LinphoneAccountCreatorStats* new_linphone_account_creator_stats(void) {
 	return stats;
 }
 
-static void account_creator_set_cb_done(LinphoneAccountCreatorCbs *cbs) {
-	LinphoneAccountCreatorStats *stats = (LinphoneAccountCreatorStats*) linphone_account_creator_cbs_get_user_data(cbs);
+static void account_creator_set_cb_done(LinphoneAccountCreatorResponseCbs *cbs) {
+	LinphoneAccountCreatorStats *stats = (LinphoneAccountCreatorStats*) linphone_account_creator_responses_cbs_get_user_data(cbs);
 	stats->cb_done++;
 	BC_ASSERT_TRUE(stats->cb_done);
 }
@@ -311,34 +300,36 @@ static void account_creator_set_cb_done(LinphoneAccountCreatorCbs *cbs) {
 	BC_ASSERT_FALSE(stats->cb_done);
 }*/
 
-static void account_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp) {
-	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
-	LinphoneAccountCreatorStatus expected_status = (LinphoneAccountCreatorStatus)linphone_account_creator_get_user_data(creator);
+static void account_creator_cb(LinphoneAccountCreator *creator, LinphoneRequestStatus status, const char* resp) {
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneRequestStatus expected_status = (LinphoneRequestStatus)linphone_account_creator_requests_cbs_get_user_data(
+		linphone_account_creator_get_requests_cbs(creator));
 	BC_ASSERT_EQUAL(
 		status,
 		expected_status,
-		LinphoneAccountCreatorStatus,
+		LinphoneRequestStatus,
 		"%i");
 	account_creator_set_cb_done(cbs);
 }
 
+/****************** Start Is Account Exist ************************/
 static void server_account_doesnt_exist(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
-	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
 	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
 
-	linphone_account_creator_cbs_set_user_data(cbs, stats);
-	linphone_account_creator_set_user_data(creator, (void*)LinphoneAccountCreatorAccountNotExist);
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestAccountNotExist);
 	linphone_account_creator_set_username(creator, "user_not_exist");
-	linphone_account_creator_set_route(creator, ROUTE_URL);
-	linphone_account_creator_set_domain(creator, DOMAIN_URL);
-	linphone_account_creator_cbs_set_is_account_used(cbs, account_existence_cb);
+	linphone_account_creator_responses_cbs_set_is_account_exist_cb(cbs, account_creator_cb);
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_is_account_used(creator),
-		LinphoneAccountCreatorOK,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_is_account_exist(creator),
+		LinphoneRequestOk,
+		LinphoneRequestStatus,
 		"%i");
 
 	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
@@ -351,20 +342,20 @@ static void server_account_doesnt_exist(void) {
 static void server_account_exist(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
 	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
-	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
 	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
 
-	linphone_account_creator_cbs_set_user_data(cbs, stats);
-	linphone_account_creator_set_user_data(creator, (void*)LinphoneAccountCreatorAccountExist);
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestAccountNotExist);
 	linphone_account_creator_set_username(creator, "user_exist");
-	linphone_account_creator_set_route(creator, ROUTE_URL);
-	linphone_account_creator_set_domain(creator, DOMAIN_URL);
-	linphone_account_creator_cbs_set_is_account_used(cbs, account_existence_cb);
+	linphone_account_creator_responses_cbs_set_is_account_exist_cb(cbs, account_creator_cb);
 
 	BC_ASSERT_EQUAL(
-		linphone_account_creator_is_account_used(creator),
-		LinphoneAccountCreatorOK,
-		LinphoneAccountCreatorStatus,
+		linphone_account_creator_is_account_exist(creator),
+		LinphoneRequestOk,
+		LinphoneRequestStatus,
 		"%i");
 
 	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
@@ -374,27 +365,1008 @@ static void server_account_exist(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void server_is_account_exist_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_account_exist(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_is_account_exist_arg_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_is_account_exist_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_account_exist(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Is Account Exist ************************/
+
+/****************** Start Create Account ************************/
+static void server_account_created_with_email(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestAccountCreated);
+	linphone_account_creator_set_username(creator, "user_1");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+	linphone_account_creator_set_password(creator, "password");
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestOk,
+		LinphoneRequestStatus,
+		"%i");
+
+	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_already_create_with_email(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestAccountNotExist);
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_email(creator, "test@bc.com");
+	linphone_account_creator_set_password(creator, "password");
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestOk,
+		LinphoneRequestStatus,
+		"%i");
+
+	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_account_created_with_phone_number(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestAccountNotExist);
+	linphone_account_creator_set_username(creator, "user_1");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+	linphone_account_creator_set_password(creator, "password");
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestOk,
+		LinphoneRequestStatus,
+		"%i");
+
+	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_already_create_as_account_with_phone_number(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestAccountNotExist);
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_email(creator, "test@bc.com");
+	linphone_account_creator_set_phone_number(creator, "01234567","33");
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestOk,
+		LinphoneRequestStatus,
+		"%i");
+
+	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_already_create_as_alias_with_phone_number(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestAccountNotExist);
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_email(creator, "test@bc.com");
+	linphone_account_creator_set_phone_number(creator, "01234567","33");
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestOk,
+		LinphoneRequestStatus,
+		"%i");
+
+	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+	linphone_account_creator_set_password(creator, "password");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_with_email_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_with_email_arg_email_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_with_email_arg_password_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_with_phone_number_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_create_account_with_phone_number_arg_phone_number_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_create_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Create Account ************************/
+
+/****************** Start Is Account Activated ************************/
+static void server_is_account_activated_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_activation_code(creator, "123456789");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_account_activated(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_is_account_activated_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_is_account_activated_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_account_activated(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Is Account Activated ************************/
+
+/****************** Start Activate Account ************************/
+static void server_activate_account_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_account(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_account_with_email_activated_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_activation_code(creator, "123456789");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_account_with_email_activated_arg_activation_code_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_account_with_phone_number_activated_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_activation_code(creator, "123456789");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_account_with_phone_number_activated_arg_activation_code_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Activate Account ************************/
+
+/****************** Start Link Account ************************/
+static void server_link_account_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_link_account(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_link_account_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_link_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_link_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_link_account_arg_phone_number_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_link_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_link_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Link Account ************************/
+
+/****************** Start Activate Alias ************************/
+static void server_activate_alias_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_activation_code(creator, "12345679");
+	linphone_account_creator_set_password(creator, "password");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_alias(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_alias_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_activation_code(creator, "12345679");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_alias_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_alias(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_alias_arg_activation_code_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_alias_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_alias(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_alias_arg_password_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_activation_code(creator, "12345679");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_alias_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_alias(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_activate_alias_arg_phone_number_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_activation_code(creator, "12345679");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_activate_alias_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_activate_alias(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Activate Alias ************************/
+
+/****************** Start Is Alias Used ************************/
+static void server_is_alias_used_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_alias_used(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_is_alias_used_arg_phone_number_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_is_alias_used_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_alias_used(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Is Alias Used ************************/
+
+/****************** Start Is Account Linked ************************/
+static void server_is_account_linked_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_account_linked(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_is_account_linked_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_is_account_linked_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_is_account_linked(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Is Account Linked ************************/
+
+/****************** Start Recover Account ************************/
+static void server_recover_account_with_phone_number_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_recover_account(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_recover_account_with_phone_number_arg_phone_number_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+	linphone_account_creator_responses_cbs_set_recover_account_cb(cbs, account_creator_cb);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_recover_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Recover Account ************************/
+
+/****************** Start Update Account ************************/
+static void server_update_account_password_cb_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_password(creator, "password");
+	linphone_account_creator_set_user_data(creator, "newpassword");
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_update_account(creator),
+		LinphoneRequestMissingCallbacks,
+		LinphoneRequestStatus,
+		"%i");
+
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_update_account_password_arg_username_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_password(creator, "password");
+	linphone_account_creator_set_user_data(creator, "newpassword");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_responses_cbs_set_update_account_cb(cbs, account_creator_cb);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_update_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_update_account_password_arg_phone_number_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_password(creator, "password");
+	linphone_account_creator_set_user_data(creator, "newpassword");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_responses_cbs_set_update_account_cb(cbs, account_creator_cb);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_update_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_update_account_password_arg_password_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_user_data(creator, "newpassword");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_responses_cbs_set_update_account_cb(cbs, account_creator_cb);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_update_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+
+static void server_update_account_password_arg_new_password_missing(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("account_creator_rc", 0);
+	LinphoneAccountCreator *creator = linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorStats *stats = new_linphone_account_creator_stats();
+
+	linphone_account_creator_set_username(creator, "user_exist");
+	linphone_account_creator_set_phone_number(creator, "0123456", "33");
+	linphone_account_creator_set_password(creator, "password");
+
+	linphone_account_creator_responses_cbs_set_user_data(cbs, stats);
+	linphone_account_creator_responses_cbs_set_update_account_cb(cbs, account_creator_cb);
+	linphone_account_creator_requests_cbs_set_user_data(
+		linphone_account_creator_get_requests_cbs(creator),
+		(void*)LinphoneRequestMissingArguments);
+
+	BC_ASSERT_EQUAL(
+		linphone_account_creator_update_account(creator),
+		LinphoneRequestMissingArguments,
+		LinphoneRequestStatus,
+		"%i");
+
+	ms_free(stats);
+	linphone_account_creator_unref(creator);
+	linphone_core_manager_destroy(marie);
+}
+/****************** End Update Account ************************/
+
 test_t account_creator_tests[] = {
-	TEST_NO_TAG("Local - Username too short", local_username_too_short),
-	TEST_NO_TAG("Local - Username too long", local_username_too_long),
-	TEST_NO_TAG("Local - Username invalid", local_username_invalid),
-	TEST_NO_TAG("Local - Username invalid size", local_username_invalid_size),
-	TEST_NO_TAG("Local - Username Ok", local_username_ok),
-	TEST_NO_TAG("Local - Password too short", local_password_too_short),
-	TEST_NO_TAG("Local - Password too long", local_password_too_long),
-	TEST_NO_TAG("Local - Password Ok", local_password_ok),
-	TEST_NO_TAG("Local - Email invalid", local_email_invalid),
-	TEST_NO_TAG("Local - Email Ok", local_email_ok),
-	TEST_NO_TAG("Local - Phone number too short", local_phone_number_too_short),
-	TEST_NO_TAG("Local - Phone number too long", local_phone_number_too_long),
-	TEST_NO_TAG("Local - Phone number invalid", local_phone_number_invalid),
-	TEST_NO_TAG("Local - Country code invalid", local_country_code_invalid),
-	TEST_NO_TAG("Local - Transport not supported", local_transport_not_supported),
-	TEST_NO_TAG("Local - Transport Ok", local_transport_ok),
-	//TEST_NO_TAG("Local - Domain invalid", local_domain_invalid), Not implemented
-	TEST_NO_TAG("Local - Domain ok", local_domain_ok),
-	TEST_NO_TAG("Server - Account doesn\'t exist", server_account_doesnt_exist),
-	TEST_NO_TAG("Server - Account exist", server_account_exist),
+	TEST_ONE_TAG("Local - Username too short", local_username_too_short, "Local"),
+	TEST_ONE_TAG("Local - Username too long", local_username_too_long, "Local"),
+	TEST_ONE_TAG("Local - Username invalid character", local_username_invalid_character, "Local"),
+	TEST_ONE_TAG("Local - Username Ok", local_username_ok, "Local"),
+	TEST_ONE_TAG("Local - Password too short", local_password_too_short, "Local"),
+	TEST_ONE_TAG("Local - Password too long", local_password_too_long, "Local"),
+	TEST_ONE_TAG("Local - Password Ok", local_password_ok, "Local"),
+	TEST_ONE_TAG("Local - Email malformed", local_email_malformed, "Local"),
+	TEST_ONE_TAG("Local - Email invalid character",local_email_invalid_character, "Local"),
+	TEST_ONE_TAG("Local - Email Ok", local_email_ok, "Local"),
+	TEST_ONE_TAG("Local - Phone number too short", local_phone_number_too_short, "Local"),
+	TEST_ONE_TAG("Local - Phone number too long", local_phone_number_too_long, "Local"),
+	TEST_ONE_TAG("Local - Phone number invalid", local_phone_number_invalid, "Local"),
+	TEST_ONE_TAG("Local - Country code invalid", local_country_code_invalid, "Local"),
+	TEST_ONE_TAG("Local - Phone number ok", local_phone_number_ok, "Local"),
+
+	TEST_ONE_TAG("Server - Account doesn\'t exist", server_account_doesnt_exist, "Server"),
+	TEST_ONE_TAG("Server - Account exist", server_account_exist, "Server"),
+	TEST_ONE_TAG("Local - Is account exist callback missing", server_is_account_exist_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Is account exist arguments missing", server_is_account_exist_arg_missing, "Local"),
+	TEST_ONE_TAG("Server - Account created with email", server_account_created_with_email, "Server"),
+	TEST_ONE_TAG("Server - Account already create with email", server_create_account_already_create_with_email, "Server"),
+	TEST_ONE_TAG("Server - Account created with phone number", server_account_created_with_phone_number, "Server"),
+	TEST_ONE_TAG("Server - Account already created with phone number as account", server_create_account_already_create_as_account_with_phone_number, "Server"),
+	TEST_ONE_TAG("Server - Account already created with phone number as alias", server_create_account_already_create_as_alias_with_phone_number, "Server"),
+	TEST_ONE_TAG("Local - Create Account callback missing", server_create_account_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Create Account with email arguments username missing", server_create_account_with_email_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Create Account with email arguments email missing", server_create_account_with_email_arg_email_missing, "Local"),
+	TEST_ONE_TAG("Local - Create Account with email arguments password missing", server_create_account_with_email_arg_password_missing, "Local"),
+	TEST_ONE_TAG("Local - Create Account with phone number arguments username missing", server_create_account_with_phone_number_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Create Account with phone number arguments phone number missing", server_create_account_with_phone_number_arg_phone_number_missing, "Local"),
+	TEST_ONE_TAG("Local - Is account activated callbacks missing", server_is_account_activated_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Is account activated arguments username missing", server_is_account_activated_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate account callbacks missing", server_activate_account_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate account with email arguments username missing", server_activate_account_with_email_activated_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate account with email arguments activation code missing", server_activate_account_with_email_activated_arg_activation_code_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate account with phone number arguments username missing", server_activate_account_with_phone_number_activated_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate account with phone number arguments activation code missing", server_activate_account_with_phone_number_activated_arg_activation_code_missing, "Local"),
+	TEST_ONE_TAG("Local - Link account callbacks missing", server_link_account_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Link account arguments username missing", server_link_account_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Link account arguments phone number missing", server_link_account_arg_phone_number_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate alias callbacks missing", server_activate_alias_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate alias arguments username missing", server_activate_alias_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate alias arguments phone number missing", server_activate_alias_arg_phone_number_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate alias arguments activation code missing", server_activate_alias_arg_activation_code_missing, "Local"),
+	TEST_ONE_TAG("Local - Activate alias arguments password missing", server_activate_alias_arg_password_missing, "Local"),
+	TEST_ONE_TAG("Local - Is alias used callbacks missing", server_is_alias_used_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Is alias used arguments phone number missing", server_is_alias_used_arg_phone_number_missing, "Local"),
+	TEST_ONE_TAG("Local - Is account link callbacks missing", server_is_account_linked_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Is account link arguments username missing", server_is_account_linked_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Recover account with phone number callbacks missing", server_recover_account_with_phone_number_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Recover account with phone number arguments phone number missing", server_recover_account_with_phone_number_arg_phone_number_missing, "Local"),
+	TEST_ONE_TAG("Local - Update account password callbacks missing", server_update_account_password_cb_missing, "Local"),
+	TEST_ONE_TAG("Local - Update account password arguments username missing", server_update_account_password_arg_username_missing, "Local"),
+	TEST_ONE_TAG("Local - Update account password arguments phone number missing", server_update_account_password_arg_phone_number_missing, "Local"),
+	TEST_ONE_TAG("Local - Update account password arguments password missing", server_update_account_password_arg_password_missing, "Local"),
+	TEST_ONE_TAG("Local - Update account password arguments new password missing", server_update_account_password_arg_new_password_missing, "Local"),
 };
 
 test_suite_t account_creator_test_suite = {"Account creator", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

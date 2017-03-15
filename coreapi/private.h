@@ -1389,43 +1389,73 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneXmlRpcSession);
  * Account creator interface                                                 *
  ****************************************************************************/
 
-struct _LinphoneAccountCreatorCbs {
+struct _LinphoneAccountCreatorRequestCbs {
 	belle_sip_object_t base;
 	void *user_data;
-	LinphoneAccountCreatorCbsStatusCb is_account_used;
-	LinphoneAccountCreatorCbsStatusCb create_account;
-	LinphoneAccountCreatorCbsStatusCb activate_account;
-	LinphoneAccountCreatorCbsStatusCb is_account_activated;
-	LinphoneAccountCreatorCbsStatusCb is_phone_number_used;
-	LinphoneAccountCreatorCbsStatusCb link_phone_number_with_account;
-	LinphoneAccountCreatorCbsStatusCb activate_phone_number_link;
-	LinphoneAccountCreatorCbsStatusCb recover_phone_account;
-	LinphoneAccountCreatorCbsStatusCb is_account_linked;
-	LinphoneAccountCreatorCbsStatusCb update_hash;
+
+	LinphoneAccountCreatorRequestFunc create_account_request_cb; /**< Request to create account */
+	LinphoneAccountCreatorRequestFunc is_account_exist_request_cb; /**< Request to know if account exist */
+
+	LinphoneAccountCreatorRequestFunc activate_account_request_cb; /**< Request to activate account */
+	LinphoneAccountCreatorRequestFunc is_account_activated_request_cb; /**< Request to know if account is activated */
+
+	LinphoneAccountCreatorRequestFunc link_account_request_cb; /**< Request to link account with an alias */
+	LinphoneAccountCreatorRequestFunc activate_alias_request_cb; /**< Request to activate the link of alias */
+	LinphoneAccountCreatorRequestFunc is_alias_used_request_cb; /**< Request to know if alias is used */
+	LinphoneAccountCreatorRequestFunc is_account_linked_request_cb; /**< Request to know if account is linked with an alias */
+
+	LinphoneAccountCreatorRequestFunc recover_account_request_cb; /**< Request to recover account */
+	LinphoneAccountCreatorRequestFunc update_account_request_cb; /**< Request to update account */
 };
 
-BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreatorCbs);
+BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorRequestCbs);
+
+struct _LinphoneAccountCreatorResponseCbs {
+	belle_sip_object_t base;
+	void *user_data;
+
+	LinphoneAccountCreatorResponseFunc create_account_response_cb; /**< Response of create_account request */
+	LinphoneAccountCreatorResponseFunc is_account_exist_response_cb; /**< Response of is_account_exist request */
+
+	LinphoneAccountCreatorResponseFunc activate_account_response_cb; /**< Response of activate_account request */
+	LinphoneAccountCreatorResponseFunc is_account_activated_response_cb; /**< Response of is_account_activated request */
+
+	LinphoneAccountCreatorResponseFunc link_account_response_cb; /**< Response of link_account request */
+	LinphoneAccountCreatorResponseFunc activate_alias_response_cb; /**< Response of activation alias */
+	LinphoneAccountCreatorResponseFunc is_alias_used_response_cb; /**< Response of is_alias_used request */
+	LinphoneAccountCreatorResponseFunc is_account_linked_response_cb; /**< Response of is_account_linked request */
+
+	LinphoneAccountCreatorResponseFunc recover_account_response_cb; /**< Response of recover_account request */
+	LinphoneAccountCreatorResponseFunc update_account_response_cb; /**< Response of update_account request */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorResponseCbs);
 
 struct _LinphoneAccountCreator {
 	belle_sip_object_t base;
 	void *user_data;
-	LinphoneAccountCreatorCbs *callbacks;
-	LinphoneXmlRpcSession *xmlrpc_session;
 	LinphoneCore *core;
-	char *xmlrpc_url;
-	char *username;
-	char *phone_number;
-	char *password;
-	char *domain;
-	char *route;
-	char *email;
-	bool_t subscribe_to_newsletter;
-	char *display_name;
-	LinphoneTransportType transport;
-	char *activation_code;
-	char *ha1;
-	char *phone_country_code;
-	char *language;
+
+	/* AccountCreator */
+	LinphoneAccountCreatorRequestCbs *requests_cbs; /**< Account creator requests cbs */
+	LinphoneAccountCreatorResponseCbs *responses_cbs; /**< Account creator responses cbs */
+	LinphoneXmlRpcSession *xmlrpc_session; /**< XML-RPC session */
+	LinphoneProxyConfig *proxy_cfg; /**< Default proxy config */
+
+	/* User */
+	char *username; /**< Username */
+	char *display_name; /**< Display name */
+	/* Password */
+	char *password; /**< Plain text password */
+	char *ha1; /**< Hash password */
+	/* Phone Number(Alias) */
+	char *phone_number; /**< User phone number*/
+	char *phone_country_code; /**< User phone number country code */
+	/* Email(Alias) */
+	char *email; /**< User email */
+	/* Misc */
+	char *language; /**< User language */
+	char *activation_code; /**< Account validation code */
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreator);
@@ -1576,7 +1606,8 @@ LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(Li
 
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
 BELLE_SIP_TYPE_ID(LinphoneAccountCreator),
-BELLE_SIP_TYPE_ID(LinphoneAccountCreatorCbs),
+BELLE_SIP_TYPE_ID(LinphoneAccountCreatorRequestCbs),
+BELLE_SIP_TYPE_ID(LinphoneAccountCreatorResponseCbs),
 BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
