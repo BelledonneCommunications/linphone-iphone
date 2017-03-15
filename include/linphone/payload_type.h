@@ -67,7 +67,7 @@ LINPHONE_PUBLIC int linphone_payload_type_get_channels(const LinphonePayloadType
  * @param[in] pt LinphonePayloadType object
  * @return The number of the payload type
 **/
-LINPHONE_PUBLIC int linphone_payload_type_get_number(const PayloadType *pt);
+LINPHONE_PUBLIC int linphone_payload_type_get_number(const LinphonePayloadType *pt);
 
 /**
  * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically. THis function is to be used mainly for tests, in order
@@ -75,7 +75,7 @@ LINPHONE_PUBLIC int linphone_payload_type_get_number(const PayloadType *pt);
  * @param[in] pt LinphonePayloadType object
  * @param[in] number The number to assign to the payload type
 **/
-LINPHONE_PUBLIC void linphone_payload_type_set_number(PayloadType *pt, int number);
+LINPHONE_PUBLIC void linphone_payload_type_set_number(LinphonePayloadType *pt, int number);
 
 /**
  * Tells whether the specified payload type represents a variable bitrate codec.

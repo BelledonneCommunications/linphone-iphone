@@ -93,7 +93,7 @@ int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *p
 	return linphone_payload_type_get_number(pt);
 }
 
-int linphone_payload_type_get_number(const PayloadType *pt) {
+int linphone_payload_type_get_number(const LinphonePayloadType *pt) {
 	return payload_type_get_number(pt);
 }
 
@@ -101,7 +101,7 @@ void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, in
 	linphone_payload_type_set_number(pt, number);
 }
 
-void linphone_payload_type_set_number(PayloadType *pt, int number) {
+void linphone_payload_type_set_number(LinphonePayloadType *pt, int number) {
 	payload_type_set_number(pt, number);
 }
 
