@@ -293,8 +293,8 @@ class CppTranslator(object):
 		elif type(exprtype) is AbsApi.ListType:
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				cExpr = 'StringBctbxListWrapper({0}).c_list()'.format(cppExpr)
-			elif type(exprtype.containedTypeDesc) is AbsApi.Class:
-				ptrType = CppTranslator.translate_class_type(exprtype, namespace=usedNamespace)
+			elif type(exprtype.containedTypeDesc) is AbsApi.ClassType:
+				ptrType = CppTranslator.translate_class_type(self, exprtype.containedTypeDesc, namespace=usedNamespace)
 				ptrType = CppTranslator.sharedPtrTypeExtractor.match(ptrType).group(2)
 				cExpr = 'ObjectBctbxListWrapper<{0}>({1}).c_list()'.format(ptrType, cppExpr)
 			else:
