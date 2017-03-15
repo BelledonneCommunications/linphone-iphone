@@ -1963,15 +1963,10 @@ static BOOL libStarted = FALSE;
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	}
 
-	// Disable notify policy
+	// Enable notify policy for all
 	LinphoneImNotifPolicy *im_notif_policy;
 	im_notif_policy = linphone_core_get_im_notif_policy(theLinphoneCore);
-	if (im_notif_policy != NULL) {
-		/* The IM notification policy can be NULL at this point in case of remote provisioning. */
-		linphone_im_notif_policy_clear(im_notif_policy);
-		linphone_im_notif_policy_set_send_is_composing(im_notif_policy, TRUE);
-		linphone_im_notif_policy_set_recv_is_composing(im_notif_policy, TRUE);
-	}
+	linphone_im_notif_policy_enable_all(im_notif_policy);
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 		// go directly to bg mode

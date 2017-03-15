@@ -37,6 +37,8 @@
 @property(strong, nonatomic) IBOutlet UIView *bubbleView;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *resendRecognizer;
 @property(weak, nonatomic) IBOutlet UIImageView *LIMEKO;
+@property(weak, nonatomic) IBOutlet UIImageView *imdmIcon;
+@property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 
@@ -46,6 +48,7 @@
 - (IBAction)onResendClick:(id)event;
 - (void)update;
 
+- (void)displayImdmStatus:(LinphoneChatMessageState)state;
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message;
 + (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
