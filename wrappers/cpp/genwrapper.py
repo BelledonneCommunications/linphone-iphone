@@ -651,14 +651,14 @@ def main():
 	srcdir = args.outputdir + '/src'
 	
 	try:
-		os.mkdir(includedir)
+		os.makedirs(includedir)
 	except OSError as e:
 		if e.errno != errno.EEXIST:
 			print("Cannot create '{0}' dircetory: {1}".format(includedir, e.strerror))
 			sys.exit(1)
 	
 	try:
-		os.mkdir(srcdir)
+		os.makedirs(srcdir)
 	except OSError as e:
 		if e.errno != errno.EEXIST:
 			print("Cannot create '{0}' dircetory: {1}".format(srcdir, e.strerror))
