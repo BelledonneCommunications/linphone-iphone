@@ -173,108 +173,216 @@ LinphoneCoreCbs *linphone_core_get_current_callbacks(const LinphoneCore *lc) {
 	return lc->current_cbs;
 }
 
+LinphoneCoreCbsGlobalStateChangedCb linphone_core_cbs_get_global_state_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->global_state_changed;
+}
+
 void linphone_core_cbs_set_global_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsGlobalStateChangedCb cb) {
 	cbs->vtable->global_state_changed = cb;
+}
+
+LinphoneCoreCbsRegistrationStateChangedCb linphone_core_cbs_get_registration_state_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->registration_state_changed;
 }
 
 void linphone_core_cbs_set_registration_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsRegistrationStateChangedCb cb) {
 	cbs->vtable->registration_state_changed = cb;
 }
 
+LinphoneCoreCbsCallStateChangedCb linphone_core_cbs_get_call_state_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->call_state_changed;
+}
+
 void linphone_core_cbs_set_call_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsCallStateChangedCb cb) {
 	cbs->vtable->call_state_changed = cb;
+}
+
+LinphoneCoreCbsNotifyPresenceReceivedCb linphone_core_cbs_get_notify_presence_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->notify_presence_received;
 }
 
 void linphone_core_cbs_set_notify_presence_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsNotifyPresenceReceivedCb cb) {
 	cbs->vtable->notify_presence_received = cb;
 }
 
+LinphoneCoreCbsNotifyPresenceReceivedForUriOrTelCb linphone_core_cbs_get_notify_presence_received_for_uri_or_tel(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->notify_presence_received_for_uri_or_tel;
+}
+
 void linphone_core_cbs_set_notify_presence_received_for_uri_or_tel(LinphoneCoreCbs *cbs, LinphoneCoreCbsNotifyPresenceReceivedForUriOrTelCb cb) {
 	cbs->vtable->notify_presence_received_for_uri_or_tel = cb;
+}
+
+LinphoneCoreCbsNewSubscriptionRequestedCb linphone_core_cbs_get_new_subscription_requested(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->new_subscription_requested;
 }
 
 void linphone_core_cbs_set_new_subscription_requested(LinphoneCoreCbs *cbs, LinphoneCoreCbsNewSubscriptionRequestedCb cb) {
 	cbs->vtable->new_subscription_requested = cb;
 }
 
+LinphoneCoreCbsAuthenticationRequestedCb linphone_core_cbs_get_authentication_requested(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->authentication_requested;
+}
+
 void linphone_core_cbs_set_authentication_requested(LinphoneCoreCbs *cbs, LinphoneCoreCbsAuthenticationRequestedCb cb) {
 	cbs->vtable->authentication_requested = cb;
+}
+
+LinphoneCoreCbsCallLogUpdatedCb linphone_core_cbs_get_call_log_updated(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->call_log_updated;
 }
 
 void linphone_core_cbs_set_call_log_updated(LinphoneCoreCbs *cbs, LinphoneCoreCbsCallLogUpdatedCb cb) {
 	cbs->vtable->call_log_updated = cb;
 }
 
+LinphoneCoreCbsMessageReceivedCb linphone_core_cbs_get_message_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->message_received;
+}
+
 void linphone_core_cbs_set_message_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsMessageReceivedCb cb) {
 	cbs->vtable->message_received = cb;
+}
+
+LinphoneCoreCbsMessageReceivedUnableDecryptCb linphone_core_cbs_get_message_received_unable_decrypt(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->message_received_unable_decrypt;
 }
 
 void linphone_core_cbs_set_message_received_unable_decrypt(LinphoneCoreCbs *cbs, LinphoneCoreCbsMessageReceivedUnableDecryptCb cb) {
 	cbs->vtable->message_received_unable_decrypt = cb;
 }
 
+LinphoneCoreCbsIsComposingReceivedCb linphone_core_cbs_get_is_composing_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->is_composing_received;
+}
+
 void linphone_core_cbs_set_is_composing_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsIsComposingReceivedCb cb) {
 	cbs->vtable->is_composing_received = cb;
+}
+
+LinphoneCoreCbsDtmfReceivedCb linphone_core_cbs_get_dtmf_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->dtmf_received;
 }
 
 void linphone_core_cbs_set_dtmf_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsDtmfReceivedCb cb) {
 	cbs->vtable->dtmf_received = cb;
 }
 
+LinphoneCoreCbsReferReceivedCb linphone_core_cbs_get_refer_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->refer_received;
+}
+
 void linphone_core_cbs_set_refer_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsReferReceivedCb cb) {
 	cbs->vtable->refer_received = cb;
+}
+
+LinphoneCoreCbsCallEncryptionChangedCb linphone_core_cbs_get_call_encryption_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->call_encryption_changed;
 }
 
 void linphone_core_cbs_set_call_encryption_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsCallEncryptionChangedCb cb) {
 	cbs->vtable->call_encryption_changed = cb;
 }
 
+LinphoneCoreCbsTransferStateChangedCb linphone_core_cbs_get_transfer_state_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->transfer_state_changed;
+}
+
 void linphone_core_cbs_set_transfer_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsTransferStateChangedCb cb) {
 	cbs->vtable->transfer_state_changed = cb;
+}
+
+LinphoneCoreCbsBuddyInfoUpdatedCb linphone_core_cbs_get_buddy_info_updated(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->buddy_info_updated;
 }
 
 void linphone_core_cbs_set_buddy_info_updated(LinphoneCoreCbs *cbs, LinphoneCoreCbsBuddyInfoUpdatedCb cb) {
 	cbs->vtable->buddy_info_updated = cb;
 }
 
+LinphoneCoreCbsCallStatsUpdatedCb linphone_core_cbs_get_call_stats_updated(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->call_stats_updated;
+}
+
 void linphone_core_cbs_set_call_stats_updated(LinphoneCoreCbs *cbs, LinphoneCoreCbsCallStatsUpdatedCb cb) {
 	cbs->vtable->call_stats_updated = cb;
+}
+
+LinphoneCoreCbsInfoReceivedCb linphone_core_cbs_get_info_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->info_received;
 }
 
 void linphone_core_cbs_set_info_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsInfoReceivedCb cb) {
 	cbs->vtable->info_received = cb;
 }
 
+LinphoneCoreCbsSubscriptionStateChangedCb linphone_core_cbs_get_subscription_state_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->subscription_state_changed;
+}
+
 void linphone_core_cbs_set_subscription_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsSubscriptionStateChangedCb cb) {
 	cbs->vtable->subscription_state_changed = cb;
+}
+
+LinphoneCoreCbsNotifyReceivedCb linphone_core_cbs_get_notify_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->notify_received;
 }
 
 void linphone_core_cbs_set_notify_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsNotifyReceivedCb cb) {
 	cbs->vtable->notify_received = cb;
 }
 
+LinphoneCoreCbsPublishStateChangedCb linphone_core_cbs_get_rpublish_state_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->publish_state_changed;
+}
+
 void linphone_core_cbs_set_publish_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsPublishStateChangedCb cb) {
 	cbs->vtable->publish_state_changed = cb;
+}
+
+LinphoneCoreCbsConfiguringStatusCb linphone_core_cbs_get_configuring_status(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->configuring_status;
 }
 
 void linphone_core_cbs_set_configuring_status(LinphoneCoreCbs *cbs, LinphoneCoreCbsConfiguringStatusCb cb) {
 	cbs->vtable->configuring_status = cb;
 }
 
+LinphoneCoreCbsNetworkReachableCb linphone_core_cbs_get_network_reachable(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->network_reachable;
+}
+
 void linphone_core_cbs_set_network_reachable(LinphoneCoreCbs *cbs, LinphoneCoreCbsNetworkReachableCb cb) {
 	cbs->vtable->network_reachable = cb;
+}
+
+LinphoneCoreCbsLogCollectionUploadStateChangedCb linphone_core_cbs_log_collection_upload_state_changed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->log_collection_upload_state_changed;
 }
 
 void linphone_core_cbs_set_log_collection_upload_state_changed(LinphoneCoreCbs *cbs, LinphoneCoreCbsLogCollectionUploadStateChangedCb cb) {
 	cbs->vtable->log_collection_upload_state_changed = cb;
 }
 
+LinphoneCoreCbsLogCollectionUploadProgressIndicationCb linphone_core_cbs_get_rlog_collection_upload_progress_indication(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->log_collection_upload_progress_indication;
+}
+
 void linphone_core_cbs_set_log_collection_upload_progress_indication(LinphoneCoreCbs *cbs, LinphoneCoreCbsLogCollectionUploadProgressIndicationCb cb) {
 	cbs->vtable->log_collection_upload_progress_indication = cb;
 }
 
+LinphoneCoreCbsFriendListCreatedCb linphone_core_cbs_get_friend_list_created(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->friend_list_created;
+}
+
 void linphone_core_cbs_set_friend_list_created(LinphoneCoreCbs *cbs, LinphoneCoreCbsFriendListCreatedCb cb) {
 	cbs->vtable->friend_list_created = cb;
+}
+
+LinphoneCoreCbsFriendListRemovedCb linphone_core_cbs_get_friend_list_removed(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->friend_list_removed;
 }
 
 void linphone_core_cbs_set_friend_list_removed(LinphoneCoreCbs *cbs, LinphoneCoreCbsFriendListRemovedCb cb) {
