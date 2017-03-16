@@ -35,22 +35,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "config.hh"
 {{/isfactory}}{{/_class}}
 
-#include "linphone/linphonecore.h"
-#include "linphone/linphone_tunnel.h"
-#include "linphone/linphonecore_utils.h"
-#include "linphone/wrapper_utils.h"
-
-#ifndef LINPHONECXX_PUBLIC
-#if defined(_MSC_VER)
-#ifdef LINPHONECXX_EXPORTS
-#define LINPHONECXX_PUBLIC	__declspec(dllexport)
-#else
-#define LINPHONECXX_PUBLIC	__declspec(dllimport)
-#endif
-#else
-#define LINPHONECXX_PUBLIC
-#endif
-#endif
 
 namespace linphone {
 
@@ -66,7 +50,7 @@ namespace linphone {
 	
 		public:
 			{{#isNotListener}}
-			{{{className}}}(::belle_sip_object_t *ptr, bool takeRef=true);
+			{{{className}}}(void *ptr, bool takeRef=true);
 			{{/isNotListener}}
 			
 			{{#ismonolistenable}}
@@ -96,22 +80,16 @@ namespace linphone {
 			{{{prototype}}}
 			
 			{{/staticMethods}}
-		
+
 		{{#ismultilistenable}}
 		private:
-			static {{{cListenerName}}} *createCallbacks(void *userData);
+			static void *createCallbacks(void *userData);
 		{{/ismultilistenable}}
 		
-		{{#islistenable}}
-		private:
-			{{#wrapperCbs}}
-			{{decl}}
-			{{/wrapperCbs}}
-		{{/islistenable}}
 		
 		{{#ismultilistenable}}
 		private:
-			{{{cListenerName}}} *mCallbacks;
+			void *mCallbacks;
 		{{/ismultilistenable}}
 			
 	};

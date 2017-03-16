@@ -8,6 +8,7 @@ add_custom_command(OUTPUT include/linphone++/linphone.hh src/linphone++.cc
 
 add_library(linphone++ SHARED
 	object.cc
+	tools.cc
 	${CMAKE_CURRENT_BINARY_DIR}/src/linphone++.cc
 )
 target_link_libraries(linphone++

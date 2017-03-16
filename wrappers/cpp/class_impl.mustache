@@ -16,17 +16,41 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include <belle-sip/object.h>
+#include <linphone/linphonecore.h>
+#include <linphone/linphone_tunnel.h>
+#include <linphone/linphonecore_utils.h>
+#include <linphone/wrapper_utils.h>
 #include "linphone++/linphone.hh"
+#include "tools.hh"
 
 using namespace {{{namespace}}};
 
 {{#classes}}
 
-{{#isNotListener}}
-{{{namespace}}}::{{{className}}}::{{{className}}}(::belle_sip_object_t *ptr, bool takeRef): {{{parentClassName}}}(ptr, takeRef) {
+{{#wrapperCbs}}
+static {{{returnType}}} {{{cbName}}}({{{declArgs}}}) {
+	{{#ismonolistenable}}
+	std::shared_ptr<{{{cppListenerName}}}> listener = std::static_pointer_cast<{{{cppListenerName}}},Listener>(ListenableObject::getListenerFromObject((::belle_sip_object_t *){{{firstArgName}}}));
+	{{#hasReturnValue}}return {{/hasReturnValue}}{{{cppMethodCallingLine}}};
+	{{/ismonolistenable}}
+	
 	{{#ismultilistenable}}
-	mCallbacks = createCallbacks(&getListeners());
-	{{{callbacksAdder}}}(({{{cClassName}}} *)mPrivPtr, mCallbacks);
+	{{{cListenerName}}} *cbs = {{{currentCallbacksGetter}}}({{{firstArgName}}});
+	std::list<std::shared_ptr<Listener> > &listeners = *(std::list<std::shared_ptr<Listener> > *){{{userDataGetter}}}(cbs);
+	for(auto it=listeners.begin(); it!=listeners.end(); it++) {
+		std::shared_ptr<{{{cppListenerName}}}> listener = std::static_pointer_cast<{{{cppListenerName}}},Listener>(*it);
+		{{{cppMethodCallingLine}}};
+	}
+	{{/ismultilistenable}}
+}
+{{/wrapperCbs}}
+
+{{#isNotListener}}
+{{{namespace}}}::{{{className}}}::{{{className}}}(void *ptr, bool takeRef): {{{parentClassName}}}(ptr, takeRef) {
+	{{#ismultilistenable}}
+	mCallbacks = ({{{cListenerName}}} *)createCallbacks(&getListeners());
+	{{{callbacksAdder}}}(({{{cClassName}}} *)mPrivPtr, ({{{cListenerName}}} *)mCallbacks);
 	{{/ismultilistenable}}
 }
 {{/isNotListener}}
@@ -49,7 +73,7 @@ void {{{namespace}}}::{{{className}}}::setListener(const std::shared_ptr<{{{list
 
 {{#ismultilistenable}}
 {{{className}}}::~{{{className}}}() {
-	{{{callbacksRemover}}}(({{{cClassName}}} *)mPrivPtr, mCallbacks);
+	{{{callbacksRemover}}}(({{{cClassName}}} *)mPrivPtr, ({{{cListenerName}}} *)mCallbacks);
 	belle_sip_object_unref(mCallbacks);
 }
 
@@ -61,7 +85,7 @@ void {{{className}}}::removeListener(const std::shared_ptr<{{{listenerClassName}
 	MultiListenableObject::removeListener(std::static_pointer_cast<Listener,{{{listenerClassName}}}>(listener));
 }
 
-{{{cListenerName}}} *{{{className}}}::createCallbacks(void *userData) {
+void *{{{className}}}::createCallbacks(void *userData) {
 	{{{cListenerName}}} *cbs = {{{listenerCreator}}}(linphone_factory_get());
 	{{#wrapperCbs}}
 	{{{callbackSetter}}}(cbs, {{{cbName}}});
@@ -77,11 +101,11 @@ std::shared_ptr<Core> Factory::createCore(const std::shared_ptr<CoreListener> & 
 	std::list<std::shared_ptr<Listener> > listeners;
 	if (listener != nullptr) {
 		listeners.push_back(std::static_pointer_cast<Listener,CoreListener>(listener));
-		cbs = Core::createCallbacks(&listeners);
+		cbs = (::LinphoneCoreCbs *)Core::createCallbacks(&listeners);
 	}
 	
 	::LinphoneFactory *factory = linphone_factory_get();
-	::LinphoneCore *core_ptr = linphone_factory_create_core(factory, cbs, cppStringToC(configPath), cppStringToC(factoryConfigPath));
+	::LinphoneCore *core_ptr = linphone_factory_create_core(factory, cbs, StringUtilities::cppStringToC(configPath), StringUtilities::cppStringToC(factoryConfigPath));
 	
 	if (cbs != NULL) {
 		linphone_core_remove_callbacks(core_ptr, cbs);
@@ -98,7 +122,7 @@ std::shared_ptr<Core> Factory::createCoreWithConfig(const std::shared_ptr<CoreLi
 	std::list<std::shared_ptr<Listener> > listeners;
 	if (listener != nullptr) {
 		listeners.push_back(std::static_pointer_cast<Listener,CoreListener>(listener));
-		cbs = Core::createCallbacks(&listeners);
+		cbs = (::LinphoneCoreCbs *)Core::createCallbacks(&listeners);
 	}
 	
 	::LinphoneFactory *factory = linphone_factory_get();
@@ -132,23 +156,5 @@ std::shared_ptr<belcard::BelCard> &Vcard::getVcard() {
 	{{{sourceCode}}}
 }
 {{/staticMethods}}
-
-{{#wrapperCbs}}
-{{{returnType}}} {{{className}}}::{{{cbName}}}({{{declArgs}}}) {
-	{{#ismonolistenable}}
-	std::shared_ptr<{{{cppListenerName}}}> listener = std::static_pointer_cast<{{{cppListenerName}}},Listener>(getListenerFromObject((::belle_sip_object_t *){{{firstArgName}}}));
-	{{#hasReturnValue}}return {{/hasReturnValue}}{{{cppMethodCallingLine}}};
-	{{/ismonolistenable}}
-	
-	{{#ismultilistenable}}
-	{{{cListenerName}}} *cbs = {{{currentCallbacksGetter}}}({{{firstArgName}}});
-	std::list<std::shared_ptr<Listener> > &listeners = *(std::list<std::shared_ptr<Listener> > *){{{userDataGetter}}}(cbs);
-	for(auto it=listeners.begin(); it!=listeners.end(); it++) {
-		std::shared_ptr<{{{cppListenerName}}}> listener = std::static_pointer_cast<{{{cppListenerName}}},Listener>(*it);
-		{{{cppMethodCallingLine}}};
-	}
-	{{/ismultilistenable}}
-}
-{{/wrapperCbs}}
 
 {{/classes}}
