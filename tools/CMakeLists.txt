@@ -33,7 +33,7 @@ endif()
 set(LP_AUTO_ANSWER_SOURCE_FILES	auto_answer.c)
 bc_apply_compile_flags(LP_AUTO_ANSWER_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 add_executable(lp-auto-answer ${USE_BUNDLE} ${LP_AUTO_ANSWER_SOURCE_FILES})
-target_link_libraries(lp-auto-answer ${LINPHONE_LIBS_FOR_TOOLS} ${MEDIASTREAMER2_LIBRARIES})
+target_link_libraries(lp-auto-answer ${LINPHONE_LIBS_FOR_TOOLS} ${MEDIASTREAMER2_LIBRARIES} ${ORTP_LIBRARIES} ${BCTOOLBOX_LIBRARIES})
 set_target_properties(lp-auto-answer PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(LP_SENDMSG_SOURCE_FILES lpsendmsg.c)
