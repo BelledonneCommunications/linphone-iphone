@@ -80,8 +80,8 @@
                                             <rect key="frame" x="10" y="0.0" width="238" height="2"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         </progressView>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="N75-gL-R6t" userLabel="downloadButton" customClass="UIRoundBorderedButton">
-                                            <rect key="frame" x="66" y="4" width="124" height="27"/>
+                                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="N75-gL-R6t" userLabel="downloadButton" customClass="UIRoundBorderedButton">
+                                            <rect key="frame" x="66" y="4" width="115" height="27"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Download"/>
                                             <state key="normal" title="DOWNLOAD" backgroundImage="color_G.png">
@@ -92,8 +92,8 @@
                                                 <action selector="onDownloadClick:" destination="-1" eventType="touchUpInside" id="8BO-9E-iOX"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
-                                            <rect key="frame" x="66" y="4" width="124" height="27"/>
+                                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
+                                            <rect key="frame" x="66" y="4" width="115" height="27"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Cancel"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>

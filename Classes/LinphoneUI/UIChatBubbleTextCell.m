@@ -299,7 +299,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 }
 
 static const CGFloat CELL_MIN_HEIGHT = 60.0f;
-static const CGFloat CELL_MIN_WIDTH = 150.0f;
+static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
