@@ -11,6 +11,7 @@ add_library(linphone++ SHARED
 	tools.cc
 	${CMAKE_CURRENT_BINARY_DIR}/src/linphone++.cc
 )
+target_compile_definitions(linphone++ PRIVATE "-DLINPHONECXX_EXPORTS")
 target_link_libraries(linphone++
 	PRIVATE ${BCTOOLBOX_CORE_LIBRARIES} ${BELLESIP_LIBRARIES} linphone
 )
