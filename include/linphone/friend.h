@@ -210,6 +210,13 @@ LINPHONE_PUBLIC LinphoneSubscriptionState linphone_friend_get_subscription_state
 LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model(const LinphoneFriend *lf);
 
 /**
+ * Get the consolidated presence of a friend.
+ * @param[in] lf LinphoneFriend object
+ * @return The consolidated presence of the friend
+ */
+LINPHONE_PUBLIC LinphoneConsolidatedPresence linphone_friend_get_consolidated_presence(const LinphoneFriend *lf);
+
+/**
  * Get the presence model for a specific SIP URI or phone number of a friend
  * @param[in] lf A #LinphoneFriend object
  * @param[in] uri_or_tel The SIP URI or phone number for which to get the presence model

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		targetNamespace="http://www.linphone.org/xsds/pidfonline.xsd" 
+		xmlns:tns="http://www.linphone.org/xsds/pidfonline.xsd" 
+		elementFormDefault="qualified">
+
+	<xs:element name="online" type="empty"></xs:element>
+
+</xs:schema>

@@ -92,6 +92,7 @@ int main(int argc, char *argv[]){
 	char* password=NULL;
 
 	LinphoneFriend* my_friend=NULL;
+	LinphonePresenceModel *model;
 
 	/* takes   sip uri  identity from the command line arguments */
 	if (argc>1){
@@ -173,7 +174,10 @@ int main(int argc, char *argv[]){
 	}
 
 	/*set my status to online*/
-	linphone_core_set_presence_model(lc, linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL));
+	model = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusOpen);
+	linphone_core_set_presence_model(lc, model);
+	linphone_presence_model_unref(model);
 
 	/* main loop for receiving notifications and doing background linphone core work: */
 	while(running){
@@ -182,7 +186,10 @@ int main(int argc, char *argv[]){
 	}
 
 	/* change my presence status to offline*/
-	linphone_core_set_presence_model(lc, linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL));
+	model = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusClosed);
+	linphone_core_set_presence_model(lc, model);
+	linphone_presence_model_unref(model);
 	linphone_core_iterate(lc); /* just to make sure new status is initiate message is issued */
 
 	linphone_friend_edit(my_friend); /* start editing friend */

@@ -504,7 +504,8 @@ void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 	while (iterator) {
 		LinphoneFriendPresence *lfp = (LinphoneFriendPresence *)bctbx_list_get_data(iterator);
 		linphone_presence_model_unref(lfp->presence);
-		lfp->presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, "unknown activity");
+		lfp->presence = linphone_presence_model_new();
+		linphone_presence_model_set_basic_status(lfp->presence, LinphonePresenceBasicStatusClosed);
 		linphone_core_notify_notify_presence_received_for_uri_or_tel(lc, lf, lfp->uri_or_tel, lfp->presence);
 		iterator = bctbx_list_next(iterator);
 	}
@@ -649,13 +650,6 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 				case LinphonePresenceActivityUnknown:
 					/* Rely on the basic status information. */
 					break;
-				case LinphonePresenceActivityOnline:
-					/* Should not happen! */
-					/*ms_warning("LinphonePresenceActivityOnline should not happen here!");*/
-					break;
-				case LinphonePresenceActivityOffline:
-					online_status = LinphoneStatusOffline;
-					break;
 			}
 		}
 	}
@@ -686,6 +680,12 @@ const LinphonePresenceModel * linphone_friend_get_presence_model(const LinphoneF
 	}
 	bctbx_list_free(phones);
 	return presence;
+}
+
+LinphoneConsolidatedPresence linphone_friend_get_consolidated_presence(const LinphoneFriend *lf) {
+	const LinphonePresenceModel *model = linphone_friend_get_presence_model(lf);
+	if (!model) return LinphoneConsolidatedPresenceOffline;
+	return linphone_presence_model_get_consolidated_presence(model);
 }
 
 const LinphonePresenceModel * linphone_friend_get_presence_model_for_uri_or_tel(const LinphoneFriend *lf, const char *uri_or_tel) {

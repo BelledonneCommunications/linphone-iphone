@@ -4814,6 +4814,20 @@ LINPHONE_PUBLIC LinphoneOnlineStatus linphone_core_get_presence_info(const Linph
 LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc);
 
 /**
+ * Get my consolidated presence
+ * @param[in] lc LinphoneCore object
+ * @return My consolidated presence
+ */
+LINPHONE_PUBLIC LinphoneConsolidatedPresence linphone_core_get_consolidated_presence(const LinphoneCore *lc);
+
+/**
+ * Set my consolidated presence
+ * @param[in] lc LinphoneCore object
+ * @param[in] presence LinphoneConsolidatedPresence value
+ */
+LINPHONE_PUBLIC void linphone_core_set_consolidated_presence(LinphoneCore *lc, LinphoneConsolidatedPresence presence);
+
+/**
  * @deprecated Use linphone_core_interpret_url() instead
  */
 LINPHONE_PUBLIC void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);

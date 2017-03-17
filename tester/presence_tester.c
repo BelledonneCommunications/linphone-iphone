@@ -72,10 +72,6 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 		for (i=0;counters->last_received_presence&&i<linphone_presence_model_get_nb_activities(counters->last_received_presence); i++) {
 			LinphonePresenceActivity *activity = linphone_presence_model_get_nth_activity(counters->last_received_presence, i);
 			switch (linphone_presence_activity_get_type(activity)) {
-				case LinphonePresenceActivityOffline:
-					counters->number_of_LinphonePresenceActivityOffline++; break;
-				case LinphonePresenceActivityOnline:
-					counters->number_of_LinphonePresenceActivityOnline++; break;
 				case LinphonePresenceActivityAppointment:
 					counters->number_of_LinphonePresenceActivityAppointment++; break;
 				case LinphonePresenceActivityAway:
@@ -167,8 +163,10 @@ static void simple_publish_with_expire(int expires) {
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishProgress,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishOk,1));
 
-	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline,NULL);
+	presence = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusClosed);
 	linphone_core_set_presence_model(marie->lc,presence);
+	linphone_presence_model_unref(presence);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishProgress,2));
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishOk,2));
@@ -401,6 +399,7 @@ static void presence_information(void) {
 	/* Presence activity without description. */
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityDinner,1);
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityDinner, 1, int, "%d");
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
@@ -412,6 +411,7 @@ static void presence_information(void) {
 	/* Presence activity with description. */
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivitySteering, bike_description);
 	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivitySteering,1);
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivitySteering, 1, int, "%d");
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
@@ -424,6 +424,7 @@ static void presence_information(void) {
 	/* Presence activity with description and note. */
 	presence = linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityVacation, NULL, vacation_note, vacation_lang);
 	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityVacation,1);
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityVacation, 1, int, "%d");
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
@@ -445,6 +446,7 @@ static void presence_information(void) {
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
 	linphone_presence_model_set_contact(presence, contact);
 	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnThePhone,1);
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityOnThePhone, 1, int, "%d");
 	contact2 = linphone_presence_model_get_contact(presence);
@@ -462,6 +464,7 @@ static void presence_information(void) {
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityShopping, 1, int, "%d");
 	presence_timestamp = linphone_presence_model_get_timestamp(presence);
 	BC_ASSERT_GREATER((unsigned)presence_timestamp , (unsigned)current_timestamp, unsigned, "%u");
+	linphone_presence_model_unref(presence);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

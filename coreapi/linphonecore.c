@@ -1934,7 +1934,8 @@ static void linphone_core_start(LinphoneCore * lc) {
 	sip_config_read(lc);
 	video_config_read(lc);
 	//autoreplier_config_init(&lc->autoreplier_conf);
-	lc->presence_model=linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL);
+	lc->presence_model=linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(lc->presence_model, LinphonePresenceBasicStatusOpen);
 	misc_config_read(lc);
 	ui_config_read(lc);
 #ifdef TUNNEL_ENABLED
@@ -3628,18 +3629,20 @@ void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds){
 
 void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const char *contact, LinphoneOnlineStatus os) {
 	LinphonePresenceModel *presence = NULL;
+	LinphonePresenceActivity *activity = NULL;
 	char *description = NULL;
 	LinphonePresenceActivityType acttype = LinphonePresenceActivityUnknown;
 
 	if (minutes_away>0) lc->minutes_away=minutes_away;
 
+	presence = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusOpen);
 	switch (os) {
 		case LinphoneStatusOffline:
-			acttype = LinphonePresenceActivityOffline;
-			break;
+			linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusClosed);
+			goto end;
 		case LinphoneStatusOnline:
-			acttype = LinphonePresenceActivityOnline;
-			break;
+			goto end;
 		case LinphoneStatusBusy:
 			acttype = LinphonePresenceActivityBusy;
 			break;
@@ -3658,6 +3661,7 @@ void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const c
 		case LinphoneStatusDoNotDisturb:
 			acttype = LinphonePresenceActivityBusy;
 			description = "Do not disturb";
+			linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusClosed);
 			break;
 		case LinphoneStatusMoved:
 			acttype = LinphonePresenceActivityPermanentAbsence;
@@ -3677,9 +3681,14 @@ void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const c
 			ms_warning("Invalid status LinphoneStatusEnd");
 			return;
 	}
-	presence = linphone_presence_model_new_with_activity(acttype, description);
+	activity = linphone_presence_activity_new(acttype, description);
+	linphone_presence_model_add_activity(presence, activity);
+	linphone_presence_activity_unref(activity);
+
+end:
 	linphone_presence_model_set_contact(presence, contact);
 	linphone_core_set_presence_model(lc, presence);
+	linphone_presence_model_unref(presence);
 }
 
 void linphone_core_send_presence(LinphoneCore *lc, LinphonePresenceModel *presence){
@@ -3688,12 +3697,10 @@ void linphone_core_send_presence(LinphoneCore *lc, LinphonePresenceModel *presen
 }
 
 void linphone_core_set_presence_model(LinphoneCore *lc, LinphonePresenceModel *presence) {
-	linphone_core_send_presence(lc,presence);
-
-	if ((lc->presence_model != NULL) && (lc->presence_model != presence)) {
-		linphone_presence_model_unref(lc->presence_model);
-		lc->presence_model = presence;
-	}
+	linphone_presence_model_ref(presence);
+	linphone_core_send_presence(lc, presence);
+	if (lc->presence_model != NULL) linphone_presence_model_unref(lc->presence_model);
+	lc->presence_model = presence;
 }
 
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc){
@@ -3704,10 +3711,6 @@ LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc){
 	if (activity) {
 		description = linphone_presence_activity_get_description(activity);
 		switch (linphone_presence_activity_get_type(activity)) {
-			case LinphonePresenceActivityOffline:
-				return LinphoneStatusOffline;
-			case LinphonePresenceActivityOnline:
-				return LinphoneStatusOnline;
 			case LinphonePresenceActivityBusy:
 				if (description != NULL) {
 					if (strcmp(description, "Do not disturb") == 0)
@@ -3755,6 +3758,53 @@ LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc){
 
 LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc) {
 	return lc->presence_model;
+}
+
+LinphoneConsolidatedPresence linphone_core_get_consolidated_presence(const LinphoneCore *lc) {
+	LinphoneProxyConfig *cfg = lc->default_proxy;
+	if ((cfg != NULL) && !linphone_proxy_config_publish_enabled(cfg)) return LinphoneConsolidatedPresenceOffline;
+	return linphone_presence_model_get_consolidated_presence(linphone_core_get_presence_model(lc));
+}
+
+void linphone_core_set_consolidated_presence(LinphoneCore *lc, LinphoneConsolidatedPresence presence) {
+	LinphoneProxyConfig *cfg;
+	LinphonePresenceModel *model;
+	LinphonePresenceActivity *activity = NULL;
+
+	cfg = linphone_core_get_default_proxy_config(lc);
+	if ((cfg != NULL) && (presence == LinphoneConsolidatedPresenceOffline) && linphone_proxy_config_publish_enabled(cfg)) {
+		/* Unpublish when going offline before changing the presence model. */
+		linphone_proxy_config_edit(cfg);
+		linphone_proxy_config_enable_publish(cfg, FALSE);
+		linphone_proxy_config_done(cfg);
+	}
+	model = linphone_presence_model_new();
+	switch (presence) {
+		case LinphoneConsolidatedPresenceOnline:
+			linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusOpen);
+			break;
+		case LinphoneConsolidatedPresenceBusy:
+			linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusOpen);
+			activity = linphone_presence_activity_new(LinphonePresenceActivityAway, NULL);
+			break;
+		case LinphoneConsolidatedPresenceDoNotDisturb:
+			linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusClosed);
+			activity = linphone_presence_activity_new(LinphonePresenceActivityAway, NULL);
+			break;
+		case LinphoneConsolidatedPresenceOffline:
+		default:
+			linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusClosed);
+			break;
+	}
+	if (activity != NULL) linphone_presence_model_add_activity(model, activity);
+	linphone_core_set_presence_model(lc, model);
+	linphone_presence_model_unref(model);
+	if ((cfg != NULL) && (presence != LinphoneConsolidatedPresenceOffline) && !linphone_proxy_config_publish_enabled(cfg)) {
+		/* When going online or busy, publish after changing the presence model. */
+		linphone_proxy_config_edit(cfg);
+		linphone_proxy_config_enable_publish(cfg, TRUE);
+		linphone_proxy_config_done(cfg);
+	}
 }
 
 int linphone_core_get_play_level(LinphoneCore *lc) {

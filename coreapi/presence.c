@@ -85,6 +85,7 @@ struct _LinphonePresenceModel {
 	bctbx_list_t *services;	/**< A list of _LinphonePresenceService structures. Also named tuples in the RFC. */
 	bctbx_list_t *persons;	/**< A list of _LinphonePresencePerson structures. */
 	bctbx_list_t *notes;		/**< A list of _LinphonePresenceNote structures. */
+	bool_t is_online;
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePresenceModel);
@@ -114,16 +115,6 @@ static char * generate_presence_id(void) {
 	id[6] = '\0';
 
 	return ms_strdup(id);
-}
-
-static const char * presence_basic_status_to_string(LinphonePresenceBasicStatus basic_status) {
-	switch (basic_status) {
-		case LinphonePresenceBasicStatusOpen:
-			return "open";
-		case LinphonePresenceBasicStatusClosed:
-		default:
-			return "closed";
-	}
 }
 
 static void presence_note_uninit(LinphonePresenceNote *note) {
@@ -280,6 +271,7 @@ static void presence_model_uninit(LinphonePresenceModel *model) {
 LinphonePresenceModel * linphone_presence_model_new_with_activity(LinphonePresenceActivityType acttype, const char *description) {
 	LinphonePresenceModel *model = linphone_presence_model_new();
 	if (model != NULL) {
+		linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusOpen);
 		linphone_presence_model_set_activity(model, acttype, description);
 	}
 	return model;
@@ -288,6 +280,7 @@ LinphonePresenceModel * linphone_presence_model_new_with_activity(LinphonePresen
 LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityType acttype, const char *description, const char *note, const char *lang) {
 	LinphonePresenceModel *model = linphone_presence_model_new();
 	if (model != NULL) {
+		linphone_presence_model_set_basic_status(model, LinphonePresenceBasicStatusOpen);
 		linphone_presence_model_set_activity(model, acttype, description);
 		linphone_presence_model_add_note(model, note, lang);
 	}
@@ -393,26 +386,11 @@ LinphonePresenceActivity * linphone_presence_model_get_activity(const LinphonePr
 }
 
 int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
-	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusOpen;
 	LinphonePresenceActivity *activity;
 	int err = 0;
 
 	if (model == NULL) return -1;
 
-	switch (acttype) {
-		case LinphonePresenceActivityAppointment:
-		case LinphonePresenceActivityBusy:
-		case LinphonePresenceActivityMeeting:
-		case LinphonePresenceActivityPermanentAbsence:
-		case LinphonePresenceActivityOffline:
-		case LinphonePresenceActivityWorship:
-			basic_status = LinphonePresenceBasicStatusClosed;
-			break;
-		default:
-			basic_status = LinphonePresenceBasicStatusOpen;
-			break;
-	}
-	if (linphone_presence_model_set_basic_status(model, basic_status) < 0) return -1;
 	linphone_presence_model_clear_activities(model);
 	activity = linphone_presence_activity_new(acttype, description);
 	if (activity == NULL) return -1;
@@ -704,6 +682,19 @@ const LinphoneAddress * linphone_presence_model_get_presentity(const LinphonePre
 	return model->presentity;
 }
 
+LinphoneConsolidatedPresence linphone_presence_model_get_consolidated_presence(const LinphonePresenceModel *model) {
+	LinphonePresenceBasicStatus basic_status;
+
+	if (linphone_presence_model_is_online(model)) return LinphoneConsolidatedPresenceOnline;
+	basic_status = linphone_presence_model_get_basic_status(model);
+	if (basic_status == LinphonePresenceBasicStatusClosed) {
+		unsigned int nb_activities = linphone_presence_model_get_nb_activities(model);
+		if (nb_activities == 0) return LinphoneConsolidatedPresenceOffline;
+		else return LinphoneConsolidatedPresenceDoNotDisturb;
+	}
+	return LinphoneConsolidatedPresenceBusy;
+}
+
 BELLE_SIP_INSTANCIATE_VPTR(
 	LinphonePresenceModel,
 	belle_sip_object_t,
@@ -716,6 +707,16 @@ BELLE_SIP_INSTANCIATE_VPTR(
 /*****************************************************************************
  * PRESENCE SERVICE FUNCTIONS TO GET ACCESS TO ALL FUNCTIONALITIES           *
  ****************************************************************************/
+
+char * linphone_presence_basic_status_to_string(LinphonePresenceBasicStatus basic_status) {
+	switch (basic_status) {
+		case LinphonePresenceBasicStatusOpen:
+			return ms_strdup("open");
+		case LinphonePresenceBasicStatusClosed:
+		default:
+			return ms_strdup("closed");
+	}
+}
 
 LinphonePresenceService * linphone_presence_service_new(const char *id, LinphonePresenceBasicStatus basic_status, const char *contact) {
 	LinphonePresenceService *service;
@@ -993,23 +994,13 @@ LinphonePresenceActivity * linphone_presence_activity_new(LinphonePresenceActivi
 char * linphone_presence_activity_to_string(const LinphonePresenceActivity *activity) {
 	LinphonePresenceActivityType acttype = linphone_presence_activity_get_type(activity);
 	const char *description = linphone_presence_activity_get_description(activity);
-	const char *acttype_str;
-
-	if (acttype == LinphonePresenceActivityOffline)
-		acttype_str = "offline";
-	else if (acttype == LinphonePresenceActivityOnline)
-		acttype_str = "online";
-	else
-		acttype_str = presence_activity_type_to_string(acttype);
-
+	const char *acttype_str = acttype_str = presence_activity_type_to_string(acttype);
 	return ms_strdup_printf("%s%s%s", acttype_str,
 				(description == NULL) ? "" : ": ",
 				(description == NULL) ? "" : description);
 }
 
 LinphonePresenceActivityType linphone_presence_activity_get_type(const LinphonePresenceActivity *activity) {
-	if (activity == NULL)
-		return LinphonePresenceActivityOffline;
 	return activity->type;
 }
 
@@ -1264,6 +1255,11 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 				return -1;
 			}
 
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:status/pidfonline:online", service_prefix, i);
+			if (linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str) != NULL) {
+				model->is_online = TRUE;
+			}
+
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:timestamp", service_prefix, i);
 			timestamp_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 
@@ -1480,6 +1476,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"pidf", (const xmlChar *)"urn:ietf:params:xml:ns:pidf");
 	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"dm", (const xmlChar *)"urn:ietf:params:xml:ns:pidf:data-model");
 	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"rpid", (const xmlChar *)"urn:ietf:params:xml:ns:pidf:rpid");
+	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"pidfonline", (const xmlChar *)"http://www.linphone.org/xsds/pidfonline.xsd");
 	err = process_pidf_xml_presence_services(xml_ctx, model);
 	if (err == 0) {
 		err = process_pidf_xml_presence_persons(xml_ctx, model);
@@ -1525,8 +1522,13 @@ void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){
 }
 
 void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence){
+	char *activity_str;
 	LinphonePresenceActivity *activity = linphone_presence_model_get_activity(presence);
-	char *activity_str = linphone_presence_activity_to_string(activity);
+	if (activity == NULL) {
+		activity_str = linphone_presence_basic_status_to_string(linphone_presence_model_get_basic_status(presence));
+	} else {
+		activity_str = linphone_presence_activity_to_string(activity);
+	}
 	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(lc);
 	ms_message("Notifying all friends that we are [%s]", activity_str);
 	if (activity_str != NULL) ms_free(activity_str);
@@ -1612,6 +1614,7 @@ void linphone_notify_parse_presence(const char *content_type, const char *conten
 struct _presence_service_obj_st {
 	xmlTextWriterPtr writer;
 	const char *contact;
+	bool_t online;
 	int *err;
 };
 
@@ -1663,7 +1666,7 @@ static int write_xml_presence_timestamp(xmlTextWriterPtr writer, time_t timestam
 	return err;
 }
 
-static int write_xml_presence_service(xmlTextWriterPtr writer, LinphonePresenceService *service, const char *contact) {
+static int write_xml_presence_service(xmlTextWriterPtr writer, LinphonePresenceService *service, const char *contact, bool_t online) {
 	int err = xmlTextWriterStartElement(writer, (const xmlChar *)"tuple");
 	if (err >= 0) {
 		if ((service == NULL) || (service->id == NULL)) {
@@ -1678,9 +1681,20 @@ static int write_xml_presence_service(xmlTextWriterPtr writer, LinphonePresenceS
 		err = xmlTextWriterStartElement(writer, (const xmlChar *)"status");
 	}
 	if (err >= 0) {
+		char *basic_status_str;
 		LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusClosed;
 		if (service != NULL) basic_status = service->status;
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"basic", (const xmlChar *)presence_basic_status_to_string(basic_status));
+		basic_status_str = linphone_presence_basic_status_to_string(basic_status);
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"basic", (const xmlChar *)basic_status_str);
+		ms_free(basic_status_str);
+	}
+	if (online) {
+		if (err >= 0) {
+			err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"pidfonline", (const xmlChar *)"online", NULL);
+		}
+		if (err >= 0) {
+			err = xmlTextWriterEndElement(writer);
+		}
 	}
 	if (err >= 0) {
 		/* Close the "status" element. */
@@ -1724,16 +1738,8 @@ static int write_xml_presence_service(xmlTextWriterPtr writer, LinphonePresenceS
 	return err;
 }
 
-static bool_t is_valid_activity(LinphonePresenceActivity *activity) {
-	if ((activity->type == LinphonePresenceActivityOffline) || (activity->type == LinphonePresenceActivityOnline))
-		return FALSE;
-	return TRUE;
-}
-
 static int write_xml_presence_activity(xmlTextWriterPtr writer, LinphonePresenceActivity *activity) {
 	int err;
-
-	if (is_valid_activity(activity) == FALSE) return 0;
 
 	err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"rpid",
 					      (const xmlChar *)presence_activity_type_to_string(activity->type), NULL);
@@ -1751,20 +1757,8 @@ static void write_xml_presence_activity_obj(LinphonePresenceActivity *activity, 
 	if (err < 0) *st->err = err;
 }
 
-static void person_has_valid_activity(LinphonePresenceActivity *activity, bool_t *has_valid_activities) {
-	if (is_valid_activity(activity) == TRUE) *has_valid_activities = TRUE;
-}
-
-static bool_t person_has_valid_activities(LinphonePresencePerson *person) {
-	bool_t has_valid_activities = FALSE;
-	bctbx_list_for_each2(person->activities, (MSIterate2Func)person_has_valid_activity, &has_valid_activities);
-	return has_valid_activities;
-}
-
 static int write_xml_presence_person(xmlTextWriterPtr writer, LinphonePresencePerson *person) {
 	int err;
-
-	if ((person_has_valid_activities(person) == FALSE) && (person->notes == NULL)) return 0;
 
 	err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"dm", (const xmlChar *)"person", NULL);
 	if (err >= 0) {
@@ -1776,7 +1770,7 @@ static int write_xml_presence_person(xmlTextWriterPtr writer, LinphonePresencePe
 			err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"id", (const xmlChar *)person->id);
 		}
 	}
-	if ((err >= 0) && ((person->activities_notes != NULL) || (person_has_valid_activities(person) == TRUE))) {
+	if ((err >= 0) && ((person->activities_notes != NULL) || (person->activities != NULL))) {
 		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"rpid", (const xmlChar *)"activities", NULL);
 		if ((err >= 0) && (person->activities_notes != NULL)) {
 			struct _presence_note_obj_st st;
@@ -1814,13 +1808,21 @@ static int write_xml_presence_person(xmlTextWriterPtr writer, LinphonePresencePe
 }
 
 static void write_xml_presence_service_obj(LinphonePresenceService *service, struct _presence_service_obj_st *st) {
-	int err = write_xml_presence_service(st->writer, service, st->contact);
+	int err = write_xml_presence_service(st->writer, service, st->contact, st->online);
 	if (err < 0) *st->err = err;
 }
 
 static void write_xml_presence_person_obj(LinphonePresencePerson *person, struct _presence_person_obj_st *st) {
 	int err = write_xml_presence_person(st->writer, person);
 	if (err < 0) *st->err = err;
+}
+
+bool_t linphone_presence_model_is_online(const LinphonePresenceModel *model) {
+	if ((model->is_online == TRUE)
+		|| ((linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen)
+			&& (linphone_presence_model_get_nb_activities(model) == 0)))
+		return TRUE;
+	return FALSE;
 }
 
 char *linphone_presence_model_to_xml(LinphonePresenceModel *model) {
@@ -1855,22 +1857,27 @@ char *linphone_presence_model_to_xml(LinphonePresenceModel *model) {
 	}
 	if (err >= 0) {
 		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"dm",
-						    NULL, (const xmlChar *)"urn:ietf:params:xml:ns:pidf:data-model");
+			NULL, (const xmlChar *)"urn:ietf:params:xml:ns:pidf:data-model");
 	}
 	if (err >= 0) {
 		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"rpid",
-						    NULL, (const xmlChar *)"urn:ietf:params:xml:ns:pidf:rpid");
+			NULL, (const xmlChar *)"urn:ietf:params:xml:ns:pidf:rpid");
+	}
+	if ((err >= 0) && linphone_presence_model_is_online(model)) {
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"pidfonline",
+			NULL, (const xmlChar *)"http://www.linphone.org/xsds/pidfonline.xsd");
 	}
 	if (err >= 0) {
 		err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"entity", (const xmlChar *)contact);
 	}
 	if (err >= 0) {
 		if ((model == NULL) || (model->services == NULL)) {
-			err = write_xml_presence_service(writer, NULL, contact);
+			err = write_xml_presence_service(writer, NULL, contact, FALSE);
 		} else {
 			struct _presence_service_obj_st st={0};
 			st.writer = writer;
 			st.contact = contact; /*default value*/
+			st.online = linphone_presence_model_is_online(model);
 			st.err = &err;
 			bctbx_list_for_each2(model->services, (MSIterate2Func)write_xml_presence_service_obj, &st);
 		}
@@ -1911,7 +1918,14 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	char *tmp;
 	LinphoneFriend *lf = NULL;
 	const LinphoneAddress *friend=NULL;
-	LinphonePresenceModel *presence = model ? (LinphonePresenceModel *)model:linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL);
+	LinphonePresenceModel *presence;
+	
+	if (model != NULL) {
+		presence = (LinphonePresenceModel *)model;
+	} else {
+		presence = linphone_presence_model_new();
+		linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusClosed);
+	}
 
 	if (linphone_core_get_default_friend_list(lc) != NULL)
 		lf=linphone_core_find_friend_by_out_subscribe(lc, op);
@@ -1926,7 +1940,11 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		friend=linphone_friend_get_address(lf);
 		if (friend != NULL) {
 			tmp=linphone_address_as_string(friend);
-			activity_str = linphone_presence_activity_to_string(activity);
+			if (activity == NULL) {
+				activity_str = linphone_presence_basic_status_to_string(linphone_presence_model_get_basic_status(presence));
+			} else {
+				activity_str = linphone_presence_activity_to_string(activity);
+			}
 			ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
 			if (activity_str != NULL) ms_free(activity_str);
 			ms_free(tmp);

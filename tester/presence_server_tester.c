@@ -65,6 +65,7 @@ static void simple(void) {
 	linphone_core_add_friend(marie->lc, f);
 
 	linphone_core_set_presence_model(pauline->lc, pauline_presence);
+	linphone_presence_model_unref(pauline_presence);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityDinner,1));
 	activity = linphone_presence_model_get_activity(linphone_friend_get_presence_model(f));
@@ -103,10 +104,13 @@ static void fast_activity_change(void) {
 	/* pauline_Presence activity without description. */
 	pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	linphone_core_set_presence_model(pauline->lc, pauline_presence);
+	linphone_presence_model_unref(pauline_presence);
 	pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityTV, NULL);
 	linphone_core_set_presence_model(pauline->lc, pauline_presence);
+	linphone_presence_unref(pauline_presence);
 	pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityAway, NULL);
 	linphone_core_set_presence_model(pauline->lc, pauline_presence);
+	linphone_presence_unref(pauline_presence);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityDinner,1));
 	activity = linphone_presence_model_get_activity(linphone_friend_get_presence_model(f));
@@ -166,6 +170,7 @@ static void subscriber_no_longer_reachable(void){
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(pauline1->lc,presence);
+	linphone_presence_model_unref(presence);
 
 	previous_number_of_LinphonePresenceActivityOnline=marie->stat.number_of_LinphonePresenceActivityOnline;
 
@@ -185,8 +190,10 @@ static void subscriber_no_longer_reachable(void){
 	 * The client handles this subscription terminated event.
 	 * It will not resubmit a new SUBSCRIBE until expiration of the current one.
 	 */
-	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline,NULL);
+	presence =linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusOpen);
 	linphone_core_set_presence_model(pauline1->lc,presence);
+	linphone_presence_model_unref(presence);
 
 	/*because subscription is not restarted, the online status shall not be notified again.*/
 	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,previous_number_of_LinphonePresenceActivityOnline+1, 8000));
@@ -225,6 +232,7 @@ static void subscribe_with_late_publish(void) {
 	/*enable publish*/
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityPresentation,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
+	linphone_presence_model_unref(presence);
 	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);
 
@@ -237,6 +245,7 @@ static void subscribe_with_late_publish(void) {
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
+	linphone_presence_model_unref(presence);
 
 	/*wait for new status*/
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphonePresenceActivityBusy,1,2000));
@@ -258,9 +267,15 @@ static void subscribe_with_late_publish(void) {
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphonePresenceActivityBusy,3,5000));/*re- schedule marie to clean up things*/
 
 	/*simulate a rapid presence change to make sure only first and last are transmited*/
-	linphone_core_set_presence_model(marie->lc,linphone_presence_model_new_with_activity(LinphonePresenceActivityAway,NULL));
-	linphone_core_set_presence_model(marie->lc,linphone_presence_model_new_with_activity(LinphonePresenceActivityBreakfast,NULL));
-	linphone_core_set_presence_model(marie->lc,linphone_presence_model_new_with_activity(LinphonePresenceActivityAppointment,NULL));
+	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityAway,NULL);
+	linphone_core_set_presence_model(marie->lc, presence);
+	linphone_presence_model_unref(presence);
+	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityBreakfast,NULL);
+	linphone_core_set_presence_model(marie->lc, presence);
+	linphone_presence_model_unref(presence);
+	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityAppointment,NULL);
+	linphone_core_set_presence_model(marie->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphonePresenceActivityAppointment,1,5000));
 
@@ -324,6 +339,7 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
+	linphone_presence_model_unref(presence);
 
 	/*wait for new status*/
 	wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityBusy,1,3000);
@@ -332,6 +348,7 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	presence =linphone_presence_model_new_with_activity(  LinphonePresenceActivityMeeting,NULL);
 	linphone_core_set_presence_model(marie2->lc,presence);
+	linphone_presence_model_unref(presence);
 	/*wait for new status*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityMeeting,1,3000));
 
@@ -353,6 +370,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	const char *marie_identity;
 	const char *pauline_identity;
 	bctbx_list_t* lcs = NULL;
+	LinphonePresenceModel *presence;
 
 	laure_identity = get_identity(laure);
 	marie_identity = get_identity(marie);
@@ -364,8 +382,12 @@ static void test_presence_list_base(bool_t enable_compression) {
 	enable_deflate_content_encoding(pauline, enable_compression);
 	enable_deflate_content_encoding(laure, enable_compression);
 
-	linphone_core_set_presence_model(marie->lc, linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityBusy, NULL));
-	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL));
+	presence = linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityBusy, NULL);
+	linphone_core_set_presence_model(marie->lc, presence);
+	linphone_presence_model_unref(presence);
+	presence = linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	lfl = linphone_core_create_friend_list(laure->lc);
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
@@ -381,7 +403,10 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
-	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
+	presence = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusOpen);
+	linphone_core_set_presence_model(laure->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	lcs = bctbx_list_append(lcs, laure->lc);
 	lcs = bctbx_list_append(lcs, marie->lc);
@@ -434,7 +459,9 @@ static void test_presence_list_base(bool_t enable_compression) {
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusBusy, int, "%d");
 	if (!BC_ASSERT_TRUE(lf->presence_received)) goto end;
 
-	linphone_core_set_presence_model(marie->lc, linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityOnThePhone, NULL));
+	presence = linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityOnThePhone, NULL);
+	linphone_core_set_presence_model(marie->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	wait_for_list(lcs, &laure->stat.number_of_NotifyPresenceReceived, 4, 4000);
 	/* The number of PresenceReceived events can be 3 or 4 here. TODO: ideally it should always be 3. */
@@ -513,10 +540,13 @@ static void test_presence_list_subscribe_before_publish(void) {
 	const char *pauline_identity;
 	bctbx_list_t* lcs = NULL;
 	int dummy = 0;
+	LinphonePresenceModel *presence;
 
 	pauline_identity = get_identity(pauline);
 
-	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL));
+	presence = linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_unref(presence);
 
 	lfl = linphone_core_create_friend_list(laure->lc);
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
@@ -527,7 +557,10 @@ static void test_presence_list_subscribe_before_publish(void) {
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
-	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
+	presence = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusOpen);
+	linphone_core_set_presence_model(laure->lc, presence);
+	linphone_presence_model_unref(presence);
 	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(laure->lc), NULL, FALSE);
 
 	lcs = bctbx_list_append(lcs, laure->lc);
@@ -586,12 +619,14 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	const char *pauline_identity;
 	bctbx_list_t* lcs = NULL;
 	int dummy = 0;
+	LinphonePresenceModel *presence;
+
 	lp_config_set_int(laure->lc->config, "sip", "rls_presence_expires", 5);
-
-
 	pauline_identity = get_identity(pauline);
 
-	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL));
+	presence = linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	lfl = linphone_core_create_friend_list(laure->lc);
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
@@ -604,7 +639,10 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
-	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
+	presence = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusOpen);
+	linphone_core_set_presence_model(laure->lc, presence);
+	linphone_presence_model_unref(presence);
 	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(laure->lc));
 	lcs = bctbx_list_append(lcs, laure->lc);
 	lcs = bctbx_list_append(lcs, pauline->lc);
@@ -640,7 +678,9 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 
 	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityVacation, 3, 9000)); /* give time for subscription to recover to avoid to receive 491 Request pending*/
 
-	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityAway, NULL));
+	presence = linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityAway, NULL);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityAway, 1, 6000));
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);
@@ -667,12 +707,14 @@ static void presence_list_subscribe_network_changes(void) {
 	const char *pauline_identity;
 	bctbx_list_t* lcs = NULL;
 	int dummy = 0;
+	LinphonePresenceModel *presence;
+
 	lp_config_set_int(laure->lc->config, "sip", "rls_presence_expires", 5);
-
-
 	pauline_identity = get_identity(pauline);
 
-	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL));
+	presence = linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	lfl = linphone_core_create_friend_list(laure->lc);
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
@@ -685,7 +727,10 @@ static void presence_list_subscribe_network_changes(void) {
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
-	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
+	presence = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(presence, LinphonePresenceBasicStatusOpen);
+	linphone_core_set_presence_model(laure->lc, presence);
+	linphone_presence_model_unref(presence);
 	linphone_friend_list_update_subscriptions(linphone_core_get_default_friend_list(laure->lc));
 	lcs = bctbx_list_append(lcs, laure->lc);
 	lcs = bctbx_list_append(lcs, pauline->lc);
@@ -715,7 +760,9 @@ static void presence_list_subscribe_network_changes(void) {
 	/*a new subscribe should be sent */
 	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityVacation, 3, 9000)); /* give time for subscription to recover to avoid to receive 491 Request pending*/
 
-	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityAway, NULL));
+	presence = linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityAway, NULL);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	linphone_presence_model_unref(presence);
 
 	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityAway, 1, 6000));
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);

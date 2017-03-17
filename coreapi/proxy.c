@@ -853,7 +853,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 		}
 
 		if (!(presence_body = linphone_presence_model_to_xml(presence))) {
-			ms_error("Cannot publish presence model [%p] for proxy config [%p] because of xml serilization error",presence,proxy);
+			ms_error("Cannot publish presence model [%p] for proxy config [%p] because of xml serialization error",presence,proxy);
 			return -1;
 		}
 
