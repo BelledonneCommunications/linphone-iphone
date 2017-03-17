@@ -150,7 +150,7 @@
 		[_messageText setAccessibilityLabel:@"Outgoing message"];
 	} else {
 		[_messageText setAccessibilityLabel:@"Incoming message"];
-		linphone_chat_room_mark_as_read(linphone_chat_message_get_chat_room(_message));
+		VIEW(ChatConversationView).markAsRead;
 	}
 
 	if (outgoing &&

@@ -138,6 +138,15 @@ static void chatTable_free_chatrooms(void *data) {
 	}
 }
 
+- (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
+	int idx = bctbx_list_index(data, VIEW(ChatConversationView).chatRoom);
+	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+	if (IPAD) {
+		UIChatCell *cell = (UIChatCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+		[cell updateUnreadBadge];
+	}
+}
+
 #pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

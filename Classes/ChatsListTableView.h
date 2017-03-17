@@ -24,4 +24,5 @@
 @interface ChatsListTableView : UICheckBoxTableView
 
 - (void)loadData;
+- (void)markCellAsRead:(LinphoneChatRoom *)chatRoom;
 @end

@@ -190,6 +190,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_backToCallButton.hidden = !_callButton.hidden;
 }
 
+- (void)markAsRead {
+	linphone_chat_room_mark_as_read(_chatRoom);
+	if (IPAD) {
+		if (IPAD) {
+			ChatsListView *listView = VIEW(ChatsListView);
+			[listView.tableController markCellAsRead:_chatRoom];
+		}
+	}
+}
+
 - (void)update {
 	if (_chatRoom == NULL) {
 		LOGW(@"Cannot update chat room header: null contact");
