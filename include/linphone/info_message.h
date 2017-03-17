@@ -65,9 +65,20 @@ LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im, 
 LINPHONE_PUBLIC const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMessage *im);
 
 /**
- * Destroy a LinphoneInfoMessage
+ * Take a reference on a #LinphoneInfoMessage.
+ */
+LINPHONE_PUBLIC LinphoneInfoMessage *linphone_info_message_ref(LinphoneInfoMessage *im);
+
+/**
+ * Release a reference on a #LinphoneInfoMessage.
+ */
+LINPHONE_PUBLIC void linphone_info_message_unref(LinphoneInfoMessage *im);
+
+/**
+ * Destroy a LinphoneInfoMessage.
+ * @deprecated Use linphone_info_message_unref() instead.
 **/
-LINPHONE_PUBLIC void linphone_info_message_destroy(LinphoneInfoMessage *im);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_info_message_destroy(LinphoneInfoMessage *im);
 
 LINPHONE_PUBLIC LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig);
 

@@ -29,28 +29,51 @@
 
 
 struct _LinphoneInfoMessage{
+	belle_sip_object_t base;
 	LinphoneContent *content;
 	SalCustomHeader *headers;
 };
 
+static void _linphone_info_message_uninit(LinphoneInfoMessage *im);
+static void _linphone_info_message_copy(LinphoneInfoMessage *im, const LinphoneInfoMessage *orig);
 
-void linphone_info_message_destroy(LinphoneInfoMessage *im){
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneInfoMessage);
+BELLE_SIP_DECLARE_VPTR(LinphoneInfoMessage);
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneInfoMessage, belle_sip_object_t,
+	_linphone_info_message_uninit, // uninit
+	_linphone_info_message_copy, // clone
+	NULL, // marshal
+	FALSE
+);
+
+static void _linphone_info_message_uninit(LinphoneInfoMessage *im) {
 	if (im->content) linphone_content_unref(im->content);
 	if (im->headers) sal_custom_header_free(im->headers);
-	ms_free(im);
 }
 
+LinphoneInfoMessage *linphone_info_message_ref(LinphoneInfoMessage *im) {
+	return (LinphoneInfoMessage *)belle_sip_object_ref(im);
+}
 
-LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig){
-	LinphoneInfoMessage *im=ms_new0(LinphoneInfoMessage,1);
+void linphone_info_message_unref(LinphoneInfoMessage *im) {
+	belle_sip_object_unref(im);
+}
+
+void linphone_info_message_destroy(LinphoneInfoMessage *im){
+	linphone_info_message_unref(im);
+}
+
+static void _linphone_info_message_copy(LinphoneInfoMessage *im, const LinphoneInfoMessage *orig) {
 	if (orig->content) im->content=linphone_content_copy(orig->content);
 	if (orig->headers) im->headers=sal_custom_header_clone(orig->headers);
-	return im;
+}
+
+LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig){
+	return (LinphoneInfoMessage *)belle_sip_object_clone((const belle_sip_object_t *)orig);
 }
 
 LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
-	LinphoneInfoMessage *im=ms_new0(LinphoneInfoMessage,1);
-	return im;
+	return belle_sip_object_new(LinphoneInfoMessage);
 }
 
 int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info) {
@@ -82,6 +105,6 @@ void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandle
 		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
 		if (body_handler) info->content=linphone_content_from_sal_body_handler(body_handler);
 		linphone_core_notify_info_received(lc,call,info);
-		linphone_info_message_destroy(info);
+		linphone_info_message_unref(info);
 	}
 }

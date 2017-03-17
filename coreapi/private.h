@@ -1608,7 +1608,8 @@ BELLE_SIP_TYPE_ID(LinphonePresenceActivity),
 BELLE_SIP_TYPE_ID(LinphonePresenceNote),
 BELLE_SIP_TYPE_ID(LinphoneTunnel),
 BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
-BELLE_SIP_TYPE_ID(LinphoneConference)
+BELLE_SIP_TYPE_ID(LinphoneConference),
+BELLE_SIP_TYPE_ID(LinphoneInfoMessage)
 BELLE_SIP_DECLARE_TYPES_END
 
 
