@@ -378,7 +378,8 @@ void linphone_account_creator_responses_cbs_set_update_account_cb(LinphoneAccoun
 
 /************************** Start Account Creator data **************************/
 static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
-	linphone_xml_rpc_session_release(creator->xmlrpc_session); /*this will drop all pending requests if any*/
+	/*this will drop all pending requests if any*/
+	if (creator->xmlrpc_session) linphone_xml_rpc_session_release(creator->xmlrpc_session);
 	linphone_account_creator_requests_cbs_unref(creator->requests_cbs);
 	linphone_account_creator_responses_cbs_unref(creator->responses_cbs);
 	linphone_proxy_config_destroy(creator->proxy_cfg);
@@ -408,7 +409,7 @@ LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const 
 	creator->requests_cbs = linphone_account_creator_requests_cbs_new();
 	creator->responses_cbs = linphone_account_creator_reponses_cbs_new();
 	creator->core = core;
-	creator->xmlrpc_session = linphone_xml_rpc_session_new(core, xmlrpc_url);
+	creator->xmlrpc_session = (xmlrpc_url) ? linphone_xml_rpc_session_new(core, xmlrpc_url) : NULL;
 	creator->proxy_cfg = linphone_core_create_proxy_config(core);
 	linphone_account_creator_set_linphone_impl(creator);
 	return creator;
@@ -1005,7 +1006,7 @@ static void _activate_phone_number_link_cb_custom(LinphoneXmlRpcRequest *request
 		LinphoneRequestStatus status = LinphoneRequestFailed;
 		const char* resp = linphone_xml_rpc_request_get_string_response(request);
 		if (linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk) {
-			status = (strstr(resp, "ERROR_") == resp) ? LinphoneRequestAccountNotActivated : LinphoneRequestOk;
+			status = (strstr(resp, "ERROR_") == resp) ? LinphoneRequestAccountNotActivated : LinphoneRequestAccountActivated;
 		}
 		creator->responses_cbs->activate_alias_response_cb(creator, status, resp);
 	}

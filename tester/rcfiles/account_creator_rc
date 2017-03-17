@@ -6,7 +6,7 @@ username_length=4
 username_max_length=14
 username_min_length=3
 username_regex=^[a-z0-9_.\-]*$
-xmlrpc_url=https://sip2.linphone.org:445/wizard.php
+xmlrpc_url=https://sip2.linphone.org:446/wizard.php
 
 [proxy_default_values]
 reg_proxy=<sip:sip2.linphone.org:5072>
