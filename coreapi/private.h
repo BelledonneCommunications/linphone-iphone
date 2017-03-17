@@ -1119,7 +1119,6 @@ struct _LinphoneEvent{
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneEvent);
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
-void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
 void linphone_tunnel_configure(LinphoneTunnel *tunnel);
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler);
 
@@ -1606,7 +1605,8 @@ BELLE_SIP_TYPE_ID(LinphonePresenceModel),
 BELLE_SIP_TYPE_ID(LinphonePresenceService),
 BELLE_SIP_TYPE_ID(LinphonePresencePerson),
 BELLE_SIP_TYPE_ID(LinphonePresenceActivity),
-BELLE_SIP_TYPE_ID(LinphonePresenceNote)
+BELLE_SIP_TYPE_ID(LinphonePresenceNote),
+BELLE_SIP_TYPE_ID(LinphoneTunnel)
 BELLE_SIP_DECLARE_TYPES_END
 
 

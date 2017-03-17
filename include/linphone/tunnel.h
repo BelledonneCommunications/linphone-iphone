@@ -81,6 +81,8 @@
 	\endcode
 **/
 
+#define LINPHONE_TUNNEL(obj) BELLE_SIP_CAST(obj, LinphoneTunnel)
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -90,6 +92,19 @@ extern "C"
  * Create a new tunnel configuration
  */
 LINPHONE_PUBLIC LinphoneTunnelConfig *linphone_tunnel_config_new(void);
+
+/**
+ * Take a reference on a #LinphoneTunnel.
+ * @param[in] tunnel The #LinphoneTunnel whose the ref counter will be increased.
+ * @return Pointer on the freshly refed #LinphoneTunnel.
+ */
+LINPHONE_PUBLIC LinphoneTunnel *linphone_tunnel_ref(LinphoneTunnel *tunnel);
+
+/**
+ * Release a reference on a #LinphoneTunnel.
+ * @param[in] tunnel The #LinphoneTunnel whose the ref counter will be decreased.
+ */
+LINPHONE_PUBLIC void linphone_tunnel_unref(LinphoneTunnel *tunnel);
 
 /**
  * Set the IP address or hostname of the tunnel server.
@@ -194,7 +209,7 @@ LINPHONE_PUBLIC void linphone_tunnel_config_unref(LinphoneTunnelConfig *cfg);
  * @param tunnel LinphoneTunnelConfig object
  * @deprecated use linphone_tunnel_config_unref().
  */
-LINPHONE_PUBLIC void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
 
 /**
  * Store a user data in the tunnel config object
@@ -345,7 +360,7 @@ LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tun
  * The TunnelManager takes care of refreshing SIP registration when switching on or off the tunneled mode.
  * @deprecated Replaced by linphone_tunnel_set_mode()
 **/
-LINPHONE_PUBLIC void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled);
 
 /**
  * Check whether tunnel is enabled
@@ -353,7 +368,7 @@ LINPHONE_PUBLIC void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabl
  * @return Returns a boolean indicating whether tunneled operation is enabled.
  * @deprecated Replaced by linphone_tunnel_get_mode()
 **/
-LINPHONE_PUBLIC bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel);
 
 /**
  * Start tunnel need detection.
@@ -363,7 +378,7 @@ LINPHONE_PUBLIC bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel);
  * <br> Call this method each time to run the auto detection algorithm
  * @deprecated Replaced by linphone_tunnel_set_mode(LinphoneTunnelModeAuto)
  */
-LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
 
 /**
  * Tell whether tunnel auto detection is enabled.
@@ -371,7 +386,7 @@ LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
  * @return TRUE if auto detection is enabled, FALSE otherwise.
  * @deprecated Replaced by linphone_tunnel_get_mode()
  */
-LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
 
 LINPHONE_PUBLIC void linphone_tunnel_simulate_udp_loss(LinphoneTunnel *tunnel, bool_t enabled);
 

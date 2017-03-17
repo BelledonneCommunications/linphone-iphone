@@ -34,14 +34,31 @@ LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 }
 
 struct _LinphoneTunnel {
+	::belle_sip_object_t *base;
 	belledonnecomm::TunnelManager *manager;
 	bctbx_list_t *config_list;
 };
 
+static void _linphone_tunnel_uninit(LinphoneTunnel *tunnel);
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneTunnel);
+BELLE_SIP_DECLARE_VPTR(LinphoneTunnel);
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneTunnel, belle_sip_object_t,
+	_linphone_tunnel_uninit, // uninit
+	NULL, // clone
+	NULL, // marshal
+	FALSE // unowned
+)
+
 extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
-	LinphoneTunnel* tunnel = ms_new0(LinphoneTunnel, 1);
+	LinphoneTunnel* tunnel = belle_sip_object_new(LinphoneTunnel);
 	tunnel->manager = new belledonnecomm::TunnelManager(lc);
 	return tunnel;
+}
+
+static void _linphone_tunnel_uninit(LinphoneTunnel *tunnel) {
+	delete tunnel->manager;
+	bctbx_list_free_with_data(tunnel->config_list, (bctbx_list_free_func)linphone_tunnel_config_unref);
 }
 
 belledonnecomm::TunnelManager *bcTunnel(const LinphoneTunnel *tunnel){
@@ -52,12 +69,12 @@ static inline _LpConfig *config(const LinphoneTunnel *tunnel){
 	return tunnel->manager->getLinphoneCore()->config;
 }
 
-void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
-	delete tunnel->manager;
+LinphoneTunnel *linphone_tunnel_ref(LinphoneTunnel *tunnel) {
+	return (LinphoneTunnel *)belle_sip_object_ref(tunnel);
+}
 
-	bctbx_list_free_with_data(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy);
-
-	ms_free(tunnel);
+void linphone_tunnel_unref(LinphoneTunnel *tunnel) {
+	belle_sip_object_unref(tunnel);
 }
 
 static char *linphone_tunnel_config_to_string(const LinphoneTunnelConfig *tunnel_config) {
