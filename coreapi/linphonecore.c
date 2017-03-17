@@ -6586,7 +6586,7 @@ LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {
 
 static int _linphone_core_delayed_conference_destriction_cb(void *user_data, unsigned int event) {
 	LinphoneConference *conf = (LinphoneConference *)user_data;
-	linphone_conference_free(conf);
+	linphone_conference_unref(conf);
 	return 0;
 }
 
@@ -6658,7 +6658,7 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
 		return -1;
 	}
 	linphone_conference_terminate(lc->conf_ctx);
-	linphone_conference_free(lc->conf_ctx);
+	linphone_conference_unref(lc->conf_ctx);
 	lc->conf_ctx = NULL;
 	return 0;
 }

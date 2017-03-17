@@ -74,7 +74,7 @@ LinphoneConference *linphone_local_conference_new(LinphoneCore *core);
 LinphoneConference *linphone_local_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params);
 LinphoneConference *linphone_remote_conference_new(LinphoneCore *core);
 LinphoneConference *linphone_remote_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params);
-void linphone_conference_free(LinphoneConference *obj);
+
 /**
  * Get the state of a conference
  */

@@ -45,10 +45,24 @@ extern "C" {
 LINPHONE_PUBLIC LinphoneConferenceParams *linphone_conference_params_new(const LinphoneCore *core);
 
 /**
+ * Take a reference on a #LinphoneConferencParams.
+ * @param[in] params The #LinphoneConferenceParams to ref.
+ * @return The freshly refed #LinphoneConferenceParams.
+ */
+LINPHONE_PUBLIC LinphoneConferenceParams *linphone_conference_params_ref(LinphoneConferenceParams *params);
+
+/**
+ * Release a #LinphoneConferenceParams.
+ * @param[in] params The #LinphoneConferenceParams to release.
+ */ 
+LINPHONE_PUBLIC void linphone_conference_params_unref(LinphoneConferenceParams *params);
+
+/**
  * Free a #LinphoneConferenceParams
  * @param params #LinphoneConferenceParams to free
+ * @deprecated Use linphone_conference_params_unref() instead.
  */
-LINPHONE_PUBLIC void linphone_conference_params_free(LinphoneConferenceParams *params);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_conference_params_free(LinphoneConferenceParams *params);
 
 /**
  * Clone a #LinphoneConferenceParams
@@ -70,6 +84,19 @@ LINPHONE_PUBLIC void linphone_conference_params_enable_video(LinphoneConferenceP
  */
 LINPHONE_PUBLIC bool_t linphone_conference_params_video_requested(const LinphoneConferenceParams *params);
 
+
+/**
+ * Take a reference on a #LinphoneConference.
+ * @param[in] conf The #LinphoneConference to ref.
+ * @return The freshly refed #LinphoneConference.
+ */
+LINPHONE_PUBLIC LinphoneConference *linphone_conference_ref(LinphoneConference *conf);
+
+/**
+ * Release a #LinphoneConference.
+ * @param[in] conf The #LinphoneConference to release.
+ */
+LINPHONE_PUBLIC void linphone_conference_unref(LinphoneConference *conf);
 
 /**
  * Remove a participant from a conference
