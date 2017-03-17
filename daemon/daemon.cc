@@ -251,7 +251,7 @@ PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, const PayloadType *
 	if (payloadType != NULL) {
 		if (index >= 0)
 			ostr << prefix << "Index: " << index << "\n";
-		ostr << prefix << "Payload-type-number: " << linphone_core_get_payload_type_number(core, payloadType) << "\n";
+		ostr << prefix << "Payload-type-number: " << linphone_payload_type_get_number(payloadType) << "\n";
 		ostr << prefix << "Clock-rate: " << payloadType->clock_rate << "\n";
 		ostr << prefix << "Bitrate: " << payloadType->normal_bitrate << "\n";
 		ostr << prefix << "Mime: " << payloadType->mime_type << "\n";
@@ -284,7 +284,7 @@ PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type
 	}else if (number!=-1){
 		const bctbx_list_t *elem;
 		for(elem=linphone_core_get_audio_codecs(core);elem!=NULL;elem=elem->next){
-			if (number==linphone_core_get_payload_type_number(core,(PayloadType*)elem->data)){
+			if (number==linphone_payload_type_get_number((PayloadType*)elem->data)){
 				mPayloadType=(PayloadType*)elem->data;
 				break;
 			}

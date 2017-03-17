@@ -942,7 +942,7 @@ static void accept_incoming_call(LinphoneCall *call){
 	LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 	gchar *record_file=linphone_gtk_get_record_path(linphone_call_get_remote_address(call),FALSE);
 	linphone_call_params_set_record_file(params,record_file);
-	linphone_core_accept_call_with_params(lc,call,params);
+	linphone_call_accept_with_params(call,params);
 	linphone_call_params_unref(params);
 }
 
@@ -992,7 +992,7 @@ void linphone_gtk_terminate_call(GtkWidget *button){
 	gboolean is_conf;
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(&is_conf);
 	if (call){
-		linphone_core_terminate_call(linphone_gtk_get_core(),call);
+		linphone_call_terminate(call);
 	}else if (is_conf){
 		linphone_core_terminate_conference(linphone_gtk_get_core());
 	}
@@ -1001,7 +1001,7 @@ void linphone_gtk_terminate_call(GtkWidget *button){
 void linphone_gtk_decline_clicked(GtkWidget *button){
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
 	if (call)
-		linphone_core_terminate_call(linphone_gtk_get_core(),call);
+		linphone_call_terminate(call);
 }
 
 void linphone_gtk_answer_clicked(GtkWidget *button){
@@ -1333,7 +1333,7 @@ static void on_call_updated_response(GtkWidget *dialog, gint responseid, gpointe
 		LinphoneCore *lc=linphone_call_get_core(call);
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 		linphone_call_params_enable_video(params,responseid==GTK_RESPONSE_YES);
-		linphone_core_accept_call_update(lc,call,params);
+		linphone_call_accept_update(call,params);
 		linphone_call_params_unref(params);
 	}
 	g_source_remove_by_user_data(dialog);
@@ -1354,7 +1354,7 @@ static void linphone_gtk_call_updated_by_remote(LinphoneCall *call){
 	g_message("Video used=%i, video requested=%i, automatically_accept=%i",
 			  video_used,video_requested,pol->automatically_accept);
 	if (!video_used && video_requested && !pol->automatically_accept){
-		linphone_core_defer_call_update(lc,call);
+		linphone_call_defer_update(call);
 		{
 			const LinphoneAddress *addr=linphone_call_get_remote_address(call);
 			GtkWidget *dialog;

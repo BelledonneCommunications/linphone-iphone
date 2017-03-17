@@ -389,7 +389,7 @@ int LocalConference::addParticipant(LinphoneCall *call) {
 	if (call->state==LinphoneCallPaused){
 		call->params->in_conference=TRUE;
 		call->params->has_video=FALSE;
-		linphone_core_resume_call(m_core,call);
+		linphone_call_resume(call);
 	}else if (call->state==LinphoneCallStreamsRunning){
 		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
 		params->in_conference=TRUE;
@@ -404,7 +404,7 @@ int LocalConference::addParticipant(LinphoneCall *call) {
 		}
 		/*this will trigger a reINVITE that will later redraw the streams */
 		/*FIXME probably a bit too much to just redraw streams !*/
-		linphone_core_update_call(m_core,call,params);
+		linphone_call_update(call,params);
 		linphone_call_params_unref(params);
 		addLocalEndpoint();
 	}else{
@@ -441,7 +441,7 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 			leave();
 		}
 		ms_message("Updating call to actually remove from conference");
-		err=linphone_core_update_call(m_core,call,params);
+		err=linphone_call_update(call,params);
 		linphone_call_params_unref(params);
 	} else{
 		ms_message("Pausing call to actually remove from conference");
@@ -514,7 +514,7 @@ int LocalConference::terminate() {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		calls=calls->next;
 		if (call->current_params->in_conference) {
-			linphone_core_terminate_call(m_core, call);
+			linphone_call_terminate(call);
 		}
 	}
 	
@@ -725,7 +725,7 @@ int RemoteConference::terminate() {
 	switch(m_state) {
 		case LinphoneConferenceRunning:
 		case LinphoneConferenceStarting:
-			linphone_core_terminate_call(m_core, m_focusCall);
+			linphone_call_terminate(m_focusCall);
 			break;
 			
 		default: break;
@@ -742,7 +742,7 @@ int RemoteConference::enter() {
 	switch(callState) {
 		case LinphoneCallStreamsRunning: break;
 		case LinphoneCallPaused:
-			linphone_core_resume_call(m_core, m_focusCall);
+			linphone_call_resume(m_focusCall);
 			break;
 		default:
 			ms_error("Could not join the conference: bad focus call state (%s)", linphone_call_state_to_string(callState));
@@ -760,7 +760,7 @@ int RemoteConference::leave() {
 	switch(callState) {
 		case LinphoneCallPaused: break;
 		case LinphoneCallStreamsRunning:
-			linphone_core_pause_call(m_core, m_focusCall);
+			linphone_call_pause(m_focusCall);
 			break;
 		default:
 			ms_error("Could not leave the conference: bad focus call state (%s)", linphone_call_state_to_string(callState));
@@ -783,7 +783,7 @@ bool RemoteConference::focusIsReady() const {
 }
 
 bool RemoteConference::transferToFocus(LinphoneCall *call) {
-	if(linphone_core_transfer_call(m_core, call, m_focusContact) == 0) {
+	if(linphone_call_transfer(call, m_focusContact) == 0) {
 		m_transferingCalls.push_back(call);
 		return true;
 	} else {
@@ -847,7 +847,7 @@ void RemoteConference::onPendingCallStateChanged(LinphoneCall *call, LinphoneCal
 				if(m_state == LinphoneConferenceRunning) {
 					m_pendingCalls.remove(call);
 					m_transferingCalls.push_back(call);
-					linphone_core_transfer_call(m_core, call, m_focusContact);
+					linphone_call_transfer(call, m_focusContact);
 				}
 				break;
 				

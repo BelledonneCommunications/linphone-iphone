@@ -49,7 +49,7 @@ void AnswerCommand::exec(Daemon *app, const string& args) {
 			call = (LinphoneCall*)elem->data;
 			LinphoneCallState cstate = linphone_call_get_state(call);
 			if (cstate == LinphoneCallIncomingReceived || cstate == LinphoneCallIncomingEarlyMedia) {
-				if (linphone_core_accept_call(lc, call) == 0) {
+				if (linphone_call_accept(call) == 0) {
 					app->sendResponse(Response());
 					return;
 				}
@@ -64,7 +64,7 @@ void AnswerCommand::exec(Daemon *app, const string& args) {
 
 		LinphoneCallState cstate = linphone_call_get_state(call);
 		if (cstate == LinphoneCallIncomingReceived || cstate == LinphoneCallIncomingEarlyMedia) {
-			if (linphone_core_accept_call(lc, call) == 0) {
+			if (linphone_call_accept(call) == 0) {
 				app->sendResponse(Response());
 				return;
 			}

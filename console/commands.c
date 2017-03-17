@@ -677,13 +677,13 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 				linphonec_out("No active call, please specify a call id among the ones listed by 'calls' command.\n");
 				return 0;
 			}
-			linphone_core_transfer_call(lc, call, refer_to);
+			linphone_call_transfer(call, refer_to);
 		}else if (n==2){
 			long id=atoi(arg1);
 			refer_to=args+strlen(arg1)+1;
 			call=linphonec_get_call(id);
 			if (call==NULL) return 0;
-			linphone_core_transfer_call(lc, call, refer_to);
+			linphone_call_transfer(call, refer_to);
 		}else if (n==3){
 			long id=atoi(arg1);
 			call=linphonec_get_call(id);
@@ -693,7 +693,7 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 				return 0;
 			}
 			linphonec_out("Performing attended transfer of call %i to call %i",id,id2);
-			linphone_core_transfer_call_to_another (lc,call,call2);
+			linphone_call_transfer_to_another(call,call2);
 		}else return 0;
 	}else{
 		linphonec_out("Transfer command requires at least one argument\n");
@@ -726,7 +726,7 @@ lpc_cmd_terminate(LinphoneCore *lc, char *args)
 		long id=atoi(args);
 		LinphoneCall *call=linphonec_get_call(id);
 		if (call){
-			if (linphone_core_terminate_call(lc,call)==-1){
+			if (linphone_call_terminate(call)==-1){
 				linphonec_out("Could not stop the call with id %li\n",id);
 			}
 		}else return 0;
@@ -749,7 +749,7 @@ lpc_cmd_redirect(LinphoneCore *lc, char *args){
 		while(elem!=NULL){
 			LinphoneCall *call=(LinphoneCall*)elem->data;
 			if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
-				if (linphone_core_redirect_call(lc,call,args+4) != 0) {
+				if (linphone_call_redirect(call,args+4) != 0) {
 					linphonec_out("Could not redirect call.\n");
 					elem=elem->next;
 				} else {
@@ -771,7 +771,7 @@ lpc_cmd_redirect(LinphoneCore *lc, char *args){
 			if ( call != NULL ) {
 				if (linphone_call_get_state(call)!=LinphoneCallIncomingReceived) {
 					linphonec_out("The state of the call is not incoming, can't be redirected.\n");
-				} else if (linphone_core_redirect_call(lc,call,args+charRead) != 0) {
+				} else if (linphone_call_redirect(call,args+charRead) != 0) {
 					linphonec_out("Could not redirect call.\n");
 				}
 			}
@@ -802,7 +802,7 @@ lpc_cmd_answer(LinphoneCore *lc, char *args){
 		long id;
 		if (sscanf(args,"%li",&id)==1){
 			LinphoneCall *call=linphonec_get_call (id);
-			if (linphone_core_accept_call (lc,call)==-1){
+			if (linphone_call_accept(call)==-1){
 				linphonec_out("Fail to accept call %i\n",id);
 			}
 		}else return 0;
@@ -1454,7 +1454,7 @@ static int lpc_cmd_pause(LinphoneCore *lc, char *args){
 
 	if(linphone_core_in_call(lc))
 	{
-		linphone_core_pause_call(lc,linphone_core_get_current_call(lc));
+		linphone_call_pause(linphone_core_get_current_call(lc));
 		return 1;
 	}
 	linphonec_out("you can only pause when a call is in process\n");
@@ -1475,7 +1475,7 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 		if (n == 1){
 			LinphoneCall *call=linphonec_get_call (id);
 			if (call){
-				if(linphone_core_resume_call(lc,call)==-1){
+				if(linphone_call_resume(call)==-1){
 					linphonec_out("There was a problem to resume the call check the remote address you gave %s\n",args);
 				}
 			}
@@ -1488,7 +1488,7 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 		int nbcalls=(int)bctbx_list_size(calls);
 		if( nbcalls == 1)
 		{
-			if(linphone_core_resume_call(lc,calls->data) < 0)
+			if(linphone_call_resume(calls->data) < 0)
 			{
 				linphonec_out("There was a problem to resume the unique call.\n");
 			}
@@ -2573,7 +2573,7 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 					/*update the call to add the video stream*/
 					LinphoneCallParams *ncp=linphone_call_params_copy(cp);
 					linphone_call_params_enable_video(ncp,TRUE);
-					linphone_core_update_call(lc,call,ncp);
+					linphone_call_update(call,ncp);
 					linphone_call_params_unref (ncp);
 					linphonec_out("Trying to bring up video stream...\n");
 				}

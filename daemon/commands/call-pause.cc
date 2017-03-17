@@ -62,7 +62,7 @@ void CallPauseCommand::exec(Daemon* app, const string& args)
 		}
 	}
 
-	if (linphone_core_pause_call(lc, call) == 0) {
+	if (linphone_call_pause(call) == 0) {
 		app->sendResponse(Response(current ? "Current call was paused" : "Call was paused", Response::Ok));
 	} else {
 		app->sendResponse(Response("Error pausing call"));

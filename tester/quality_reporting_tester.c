@@ -310,7 +310,7 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 		linphone_call_params_unref(pauline_params);
 		pauline_params=linphone_core_create_call_params(pauline->lc, call_pauline);
 		linphone_call_params_enable_video(pauline_params,FALSE);
-		linphone_core_update_call(pauline->lc,call_pauline,pauline_params);
+		linphone_call_update(call_pauline,pauline_params);
 		linphone_call_params_unref(pauline_params);
 
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,10000));

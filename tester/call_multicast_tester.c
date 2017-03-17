@@ -149,7 +149,7 @@ static void early_media_with_multicast_base(bool_t video) {
 			/*check video path*/
 			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(pauline->lc),linphone_call_iframe_decoded_cb,pauline->lc);
 		}
-		linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
+		linphone_call_accept_early_media(linphone_core_get_current_call(pauline->lc));
 
 		BC_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
 		BC_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
@@ -160,7 +160,7 @@ static void early_media_with_multicast_base(bool_t video) {
 					/*check video path*/
 					linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(pauline2->lc),linphone_call_iframe_decoded_cb,pauline2->lc);
 				}
-				linphone_core_accept_early_media(pauline2->lc, linphone_core_get_current_call(pauline2->lc));
+				linphone_call_accept_early_media(linphone_core_get_current_call(pauline2->lc));
 
 				BC_ASSERT_TRUE( wait_for_list(lcs, &pauline2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
 		}
@@ -185,7 +185,7 @@ static void early_media_with_multicast_base(bool_t video) {
 			BC_ASSERT_TRUE( wait_for_list(lcs,&pauline2->stat.number_of_IframeDecoded,1,2000));
 		}
 
-		linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
+		linphone_call_accept(linphone_core_get_current_call(pauline->lc));
 
 		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
@@ -206,9 +206,7 @@ static void early_media_with_multicast_base(bool_t video) {
 		linphone_core_enable_video_capture(marie->lc, TRUE);
 		linphone_core_enable_video_display(marie->lc, TRUE);
 
-		linphone_core_update_call(	pauline->lc
-									, linphone_core_get_current_call(pauline->lc)
-									, params);
+		linphone_call_update(linphone_core_get_current_call(pauline->lc), params);
 		linphone_call_params_unref(params);
 
 		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2,1000));

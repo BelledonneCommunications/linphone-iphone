@@ -367,7 +367,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 				linphonec_out("Sending early media using real hardware\n");
 				linphone_call_params_enable_early_media_sending(callparams, TRUE);
 				if (vcap_enabled) linphone_call_params_enable_video(callparams, TRUE);
-				linphone_core_accept_early_media_with_params(lc, call, callparams);
+				linphone_call_accept_early_media_with_params(call, callparams);
 				linphone_call_params_unref(callparams);
 			}
 		break;

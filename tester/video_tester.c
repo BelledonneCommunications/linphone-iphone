@@ -133,7 +133,7 @@ static void early_media_video_call_state_changed(LinphoneCore *lc, LinphoneCall 
 			linphone_call_params_enable_video(params, TRUE);
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendOnly);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
-			linphone_core_accept_early_media_with_params(lc, call, params);
+			linphone_call_accept_early_media_with_params(call, params);
 			linphone_call_params_unref(params);
 			break;
 		default:
@@ -151,7 +151,7 @@ static void early_media_video_call_state_changed_with_inactive_audio(LinphoneCor
 			linphone_call_params_enable_video(params, TRUE);
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionInactive);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
-			linphone_core_accept_early_media_with_params(lc, call, params);
+			linphone_call_accept_early_media_with_params(call, params);
 			linphone_call_params_unref(params);
 			break;
 		default:
@@ -201,7 +201,7 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 	}
 
 	if (automatically_accept == TRUE) {
-		linphone_core_accept_call_with_params(callee_mgr->lc, linphone_core_get_current_call(callee_mgr->lc), callee_params);
+		linphone_call_accept_with_params(linphone_core_get_current_call(callee_mgr->lc), callee_params);
 
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
@@ -341,7 +341,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 			LinphoneCallParams *params = linphone_call_params_copy(linphone_call_get_current_params(call));
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendRecv);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendRecv);
-			linphone_core_accept_call_with_params(marie->lc, call, params);
+			linphone_call_accept_with_params(call, params);
 			linphone_call_params_unref(params);
 
 			/* Wait for 5s. */
@@ -484,7 +484,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 		BC_ASSERT_GREATER(marie2->stat.number_of_IframeDecoded, 1, int, "%i");
 
 		linphone_call_params_set_audio_direction(marie1_params, LinphoneMediaDirectionSendRecv);
-		linphone_core_accept_call_with_params(marie1->lc, linphone_core_get_current_call(marie1->lc), marie1_params);
+		linphone_call_accept_with_params(linphone_core_get_current_call(marie1->lc), marie1_params);
 		BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
 		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
 
@@ -540,7 +540,7 @@ static void enable_disable_camera_after_camera_switches(void) {
 		ms_message("Switching from [%s] to [%s]", currentCamId, newCamId);
 		linphone_core_set_video_device(marie->lc, newCamId);
 		if(call != NULL) {
-			linphone_core_update_call(marie->lc, call, NULL);
+			linphone_call_update(call, NULL);
 		}
 		BC_ASSERT_STRING_EQUAL(newCamId,ms_web_cam_get_string_id(linphone_call_get_video_device(call)));
 		linphone_call_enable_camera(call,FALSE);

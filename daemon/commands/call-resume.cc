@@ -60,7 +60,7 @@ void CallResumeCommand::exec(Daemon* app, const string& args)
 		}
 	}
 
-	if (linphone_core_resume_call(lc, call) == 0) {
+	if (linphone_call_resume(call) == 0) {
 		app->sendResponse(Response(current ? "Current call was resumed" : "Call was resumed", Response::Ok));
 	} else {
 		app->sendResponse(Response("Error pausing call"));

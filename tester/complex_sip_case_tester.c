@@ -132,7 +132,7 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
-		linphone_core_accept_call(mgr->lc, linphone_core_get_current_call(mgr->lc));
+		linphone_call_accept(linphone_core_get_current_call(mgr->lc));
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 2));
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
 		pclose(sipp_out);
@@ -165,7 +165,7 @@ static void call_with_audio_mline_before_video_in_sdp(void) {
 		call = linphone_core_get_current_call(mgr->lc);
 		BC_ASSERT_PTR_NOT_NULL(call);
 		if (call) {
-			linphone_core_accept_call(mgr->lc, call);
+			linphone_call_accept(call);
 			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
 			BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
 			BC_ASSERT_EQUAL(call->main_video_stream_index, 1, int, "%d");
@@ -206,7 +206,7 @@ static void call_with_video_mline_before_audio_in_sdp(void) {
 		call = linphone_core_get_current_call(mgr->lc);
 		BC_ASSERT_PTR_NOT_NULL(call);
 		if (call) {
-			linphone_core_accept_call(mgr->lc, call);
+			linphone_call_accept(call);
 			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
 			BC_ASSERT_EQUAL(call->main_audio_stream_index, 1, int, "%d");
 			BC_ASSERT_EQUAL(call->main_video_stream_index, 0, int, "%d");
@@ -247,7 +247,7 @@ static void call_with_multiple_audio_mline_in_sdp(void) {
 		call = linphone_core_get_current_call(mgr->lc);
 		BC_ASSERT_PTR_NOT_NULL(call);
 		if (call) {
-			linphone_core_accept_call(mgr->lc, call);
+			linphone_call_accept(call);
 			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
 			BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
 			BC_ASSERT_EQUAL(call->main_video_stream_index, 2, int, "%d");
@@ -288,7 +288,7 @@ static void call_with_multiple_video_mline_in_sdp(void) {
 		call = linphone_core_get_current_call(mgr->lc);
 		BC_ASSERT_PTR_NOT_NULL(call);
 		if (call) {
-			linphone_core_accept_call(mgr->lc, call);
+			linphone_call_accept(call);
 			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
 			BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
 			BC_ASSERT_EQUAL(call->main_video_stream_index, 1, int, "%d");
@@ -335,7 +335,7 @@ static void call_invite_200ok_without_contact_header(void) {
 		BC_ASSERT_FALSE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallConnected, 1));
 		BC_ASSERT_EQUAL(mgr->stat.number_of_LinphoneCallEnd, 0, int, "%d");
 		BC_ASSERT_EQUAL(mgr->stat.number_of_LinphoneCallError, 0, int, "%d");
-		linphone_core_terminate_call(mgr->lc, call);
+		linphone_call_terminate(call);
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallReleased, 1));
 		pclose(sipp_out);

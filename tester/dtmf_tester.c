@@ -145,7 +145,7 @@ static void send_dtmfs_sequence_call_state_changed(void) {
 		/*very long DTMF(around 4 sec to be sent)*/
 		linphone_call_send_dtmfs(marie_call, "123456789123456789");
 		/*just after, change call state, and expect DTMF to be canceled*/
-		linphone_core_pause_call(marie_call->core,marie_call);
+		linphone_call_pause(marie_call);
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPausing,1));
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,1));
 

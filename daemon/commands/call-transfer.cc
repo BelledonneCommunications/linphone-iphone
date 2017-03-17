@@ -43,7 +43,6 @@ CallTransferCommand::CallTransferCommand() :
 
 void CallTransferCommand::exec(Daemon* app, const string& args)
 {
-	LinphoneCore *lc = app->getCore();
 	LinphoneCall *call_to_transfer = NULL;
 	LinphoneCall *call_to_transfer_to = NULL;
 	istringstream ist(args);
@@ -85,7 +84,7 @@ void CallTransferCommand::exec(Daemon* app, const string& args)
 			app->sendResponse(Response("No call with such id."));
 			return;
 		}
-		if (linphone_core_transfer_call_to_another(lc, call_to_transfer, call_to_transfer_to) == 0) {
+		if (linphone_call_transfer_to_another(call_to_transfer, call_to_transfer_to) == 0) {
 			std::ostringstream ostr;
 			ostr << "Call ID: " << call_to_transfer_id << "\n";
 			ostr << "Transfer to: " << call_to_transfer_to_id << "\n";
@@ -93,7 +92,7 @@ void CallTransferCommand::exec(Daemon* app, const string& args)
 			return;
 		}
 	} else {
-		if (linphone_core_transfer_call(lc, call_to_transfer, sip_uri_to_transfer_to.c_str()) == 0) {
+		if (linphone_call_transfer(call_to_transfer, sip_uri_to_transfer_to.c_str()) == 0) {
 			std::ostringstream ostr;
 			ostr << "Call ID: " << call_to_transfer_id << "\n";
 			ostr << "Transfer to: " << sip_uri_to_transfer_to << "\n";

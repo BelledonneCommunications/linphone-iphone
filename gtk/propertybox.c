@@ -471,7 +471,7 @@ void linphone_gtk_cam_changed(GtkWidget *w){
 		if (strcmp(sel, linphone_core_get_video_device(lc)) != 0){
 			linphone_core_set_video_device(lc,sel);
 			if ((call = linphone_core_get_current_call(lc)) != NULL) {
-				linphone_core_update_call(lc, call, NULL);
+				linphone_call_update(call, NULL);
 			}
 		}
 	}

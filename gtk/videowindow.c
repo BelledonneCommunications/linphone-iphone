@@ -183,7 +183,7 @@ static void on_controls_response(GtkWidget *dialog, int response_id, GtkWidget *
 		case GTK_RESPONSE_REJECT:
 		{
 			LinphoneCall *call=(LinphoneCall*)g_object_get_data(G_OBJECT(video_window),"call");
-			linphone_core_terminate_call(linphone_gtk_get_core(),call);
+			linphone_call_terminate(call);
 		}
 		break;
 		case GTK_RESPONSE_APPLY:

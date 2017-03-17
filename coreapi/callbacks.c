@@ -663,7 +663,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 	if (call->defer_update == FALSE){
 		if (call->state == LinphoneCallUpdatedByRemote){
-			linphone_core_accept_call_update(lc,call,NULL);
+			linphone_call_accept_update(call, NULL);
 		}else{
 			/*otherwise it means that the app responded by linphone_core_accept_call_update
 			 * within the callback, so job is already done.*/
@@ -848,7 +848,7 @@ static int resume_call_after_failed_transfer(LinphoneCall *call){
 
 	if (call->was_automatically_paused && call->state==LinphoneCallPaused){
 		if (sal_op_is_idle(call->op)){
-			linphone_core_resume_call(call->core,call);
+			linphone_call_resume(call);
 		}else {
 			ms_message("resume_call_after_failed_transfer(), salop was busy");
 			return BELLE_SIP_CONTINUE;
@@ -1286,7 +1286,6 @@ static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
 }
 
 static void notify_refer(SalOp *op, SalReferStatus status){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);
 	LinphoneCallState cstate;
 	if (call==NULL) {
@@ -1309,7 +1308,7 @@ static void notify_refer(SalOp *op, SalReferStatus status){
 	linphone_call_set_transfer_state(call, cstate);
 	if (cstate==LinphoneCallConnected){
 		/*automatically terminate the call as the transfer is complete.*/
-		linphone_core_terminate_call(lc,call);
+		linphone_call_terminate(call);
 	}
 }
 

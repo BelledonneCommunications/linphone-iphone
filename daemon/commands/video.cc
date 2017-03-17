@@ -71,8 +71,8 @@ void Video::exec(Daemon* app, const string& args)
 		activate = !linphone_call_params_video_enabled(new_params);
 
 		linphone_call_params_enable_video(new_params, activate);
-		linphone_core_update_call(lc, call, new_params);
-		linphone_call_params_destroy(new_params);
+		linphone_call_update(call, new_params);
+		linphone_call_params_unref(new_params);
 
 	} else {
 		app->sendResponse(Response("No streams running: can't [de]activate video"));

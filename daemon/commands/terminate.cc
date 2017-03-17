@@ -56,6 +56,6 @@ void TerminateCommand::exec(Daemon *app, const string& args) {
 		app->sendResponse(Response("No active call."));
 		return;
 	}
-	linphone_core_terminate_call(app->getCore(), call);
+	linphone_call_terminate(call);
 	app->sendResponse(Response());
 }

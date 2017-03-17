@@ -126,7 +126,7 @@ static void linphone_gtk_in_call_set_animation_spinner(GtkWidget *callview){
 
 static void linphone_gtk_transfer_call(LinphoneCall *dest_call){
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
-	if (call) linphone_core_transfer_call_to_another(linphone_gtk_get_core(),call,dest_call);
+	if (call) linphone_call_transfer_to_another(call,dest_call);
 }
 
 void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
@@ -464,7 +464,7 @@ static void video_button_clicked(GtkWidget *button, LinphoneCall *call){
 	LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 	gtk_widget_set_sensitive(button,FALSE);
 	linphone_call_params_enable_video(params, adding);
-	linphone_core_update_call(lc,call,params);
+	linphone_call_update(call,params);
 	linphone_call_params_unref(params);
 }
 
@@ -949,11 +949,11 @@ void linphone_gtk_hold_clicked(GtkButton *button){
 	if (!call) return;
 	if(!active)
 	{
-		linphone_core_pause_call(linphone_gtk_get_core(),call);
+		linphone_call_pause(call);
 	}
 	else
 	{
-		linphone_core_resume_call(linphone_gtk_get_core(),call);
+		linphone_call_resume(call);
 	}
 }
 

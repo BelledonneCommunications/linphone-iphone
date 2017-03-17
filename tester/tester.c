@@ -819,7 +819,7 @@ static void linphone_conference_server_call_state_changed(LinphoneCore *lc, Linp
 
 	switch(cstate) {
 		case LinphoneCallIncomingReceived:
-			linphone_core_accept_call(lc, call);
+			linphone_call_accept(call);
 			break;
 
 		case LinphoneCallStreamsRunning:
@@ -855,7 +855,7 @@ static void linphone_conference_server_refer_received(LinphoneCore *core, const 
 		linphone_address_clean(refer_to_addr);
 		uri = linphone_address_as_string_uri_only(refer_to_addr);
 		call = linphone_core_find_call_from_uri(core, uri);
-		if(call) linphone_core_terminate_call(core, call);
+		if(call) linphone_call_terminate(call);
 		ms_free(uri);
 	}
 	linphone_address_unref(refer_to_addr);

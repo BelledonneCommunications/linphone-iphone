@@ -59,13 +59,13 @@ static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2,
 	const PayloadType *pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_EQUAL(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt),expected_number, int, "%d");
+		BC_ASSERT_EQUAL(linphone_payload_type_get_number(pt),expected_number, int, "%d");
 	}
 	params=linphone_call_get_current_params(call2);
 	pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_EQUAL(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt),expected_number, int, "%d");
+		BC_ASSERT_EQUAL(linphone_payload_type_get_number(pt),expected_number, int, "%d");
 	}
 }
 
@@ -81,9 +81,7 @@ static void simple_call_with_different_codec_mappings(void) {
 	disable_all_audio_codecs_except_one(pauline->lc,"pcmu",-1);
 
 	/*marie set a fantasy number to PCMU*/
-	linphone_core_set_payload_type_number(marie->lc,
-		linphone_core_find_payload_type(marie->lc, "PCMU", 8000, -1),
-		104);
+	linphone_payload_type_set_number(linphone_core_find_payload_type(marie->lc, "PCMU", 8000, -1), 104);
 
 	BC_ASSERT_TRUE(call(marie,pauline));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
@@ -92,7 +90,7 @@ static void simple_call_with_different_codec_mappings(void) {
 		LinphoneCallParams *params;
 		check_payload_type_numbers(linphone_core_get_current_call(marie->lc), pauline_call, 104);
 		/*make a reinvite in the other direction*/
-		linphone_core_update_call(pauline->lc, pauline_call,
+		linphone_call_update(pauline_call,
 			params=linphone_core_create_call_params(pauline->lc, pauline_call));
 		linphone_call_params_unref(params);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));

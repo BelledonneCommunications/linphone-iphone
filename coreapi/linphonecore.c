@@ -2980,7 +2980,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				decline_reason = (lc->current_call != call) ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
 				sal_error_info_set(&call->non_op_error,SalReasonRequestTimeout,408,"Not answered",NULL);
-				linphone_core_decline_call(lc,call,decline_reason);
+				linphone_call_decline(call, decline_reason);
 			}
 		}
 		if ( (lc->sip_conf.in_call_timeout > 0)
@@ -2988,7 +2988,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			 && ((current_real_time - call->log->connected_date_time) > lc->sip_conf.in_call_timeout))
 		{
 			ms_message("in call timeout (%i)",lc->sip_conf.in_call_timeout);
-			linphone_core_terminate_call(lc,call);
+			linphone_call_terminate(call);
 		}
 	}
 
@@ -3429,11 +3429,11 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 		linphone_call_set_contact_op(call);
 
 		if (propose_early_media){
-			linphone_core_accept_early_media(lc,call);
+			linphone_call_accept_early_media(call);
 		}else sal_call_notify_ringing(call->op,FALSE);
 
 		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
-			linphone_core_accept_call(lc,call);
+			linphone_call_accept(call);
 		}
 	}
 	linphone_call_unref(call);
@@ -3505,7 +3505,7 @@ int linphone_core_terminate_all_calls(LinphoneCore *lc){
 	while(calls) {
 		LinphoneCall *c=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		linphone_core_terminate_call(lc,c);
+		linphone_call_terminate(c);
 	}
 	return 0;
 }
@@ -5631,7 +5631,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	while(lc->calls) {
 		LinphoneCall *the_call = lc->calls->data;
-		linphone_core_terminate_call(lc,the_call);
+		linphone_call_terminate(the_call);
 		linphone_core_iterate(lc);
 		ms_usleep(10000);
 	}

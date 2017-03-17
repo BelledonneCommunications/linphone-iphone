@@ -26,7 +26,7 @@ static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, Linpho
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 		linphone_call_params_enable_video(params, TRUE);
 		ms_message (" New state LinphoneCallUpdatedByRemote on call [%p], accepting with video on",call);
-		BC_ASSERT_NOT_EQUAL(linphone_core_accept_call_update(lc, call, params), 0, int, "%i");
+		BC_ASSERT_NOT_EQUAL(linphone_call_accept_update(call, params), 0, int, "%i");
 		linphone_call_params_unref(params);
 	}
 }
@@ -73,11 +73,11 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 		LinphoneCallParams *params = linphone_core_create_call_params(pauline->lc, call_pauline);
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendOnly);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
-		linphone_core_update_call(pauline->lc, call_pauline, params);
+		linphone_call_update(call_pauline, params);
 		linphone_call_params_unref(params);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
 	} else {
-		linphone_core_pause_call(pauline->lc,call_pauline);
+		linphone_call_pause(call_pauline);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
 	}
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
@@ -108,7 +108,7 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 		LinphoneCallParams *params = linphone_core_create_call_params(pauline->lc, call_pauline);
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendOnly);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
-		linphone_core_update_call(pauline->lc,call_pauline,params);
+		linphone_call_update(call_pauline,params);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
@@ -117,11 +117,11 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 		if (with_call_accept) {
 			linphone_core_add_listener(marie->lc, vtable);
 		}
-		linphone_core_update_call(pauline->lc,call_pauline,params);
+		linphone_call_update(call_pauline,params);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,4));
 		linphone_call_params_unref(params);
 	} else {
-		linphone_core_resume_call(pauline->lc, call_pauline);
+		linphone_call_resume(call_pauline);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallResuming,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	}
@@ -168,7 +168,7 @@ static void call_state_changed_callback_to_accept_video(LinphoneCore *lc, Linpho
 	if (state == LinphoneCallUpdatedByRemote){		
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 		linphone_call_params_enable_video(params, TRUE);
-		linphone_core_accept_call_update(lc, call, params);
+		linphone_call_accept_update(call, params);
 		linphone_call_params_unref(params);
 	}
 	ms_message("video acceptance listener about to be dropped");
@@ -208,7 +208,7 @@ static LinphoneCall* _request_video(LinphoneCoreManager* caller,LinphoneCoreMana
 		callee_params = linphone_core_create_call_params(callee->lc, call_obj);
 		/*add video*/
 		linphone_call_params_enable_video(callee_params,TRUE);
-		linphone_core_update_call(callee->lc,call_obj,callee_params);
+		linphone_call_update(call_obj,callee_params);
 		linphone_call_params_unref(callee_params);
 	}
 	return call_obj;
@@ -309,7 +309,7 @@ static bool_t remove_video(LinphoneCoreManager *caller, LinphoneCoreManager *cal
 		callee_params = linphone_core_create_call_params(callee->lc, call_obj);
 		/* Remove video. */
 		linphone_call_params_enable_video(callee_params, FALSE);
-		linphone_core_update_call(callee->lc, call_obj, callee_params);
+		linphone_call_update(call_obj, callee_params);
 		linphone_call_params_unref(callee_params);
 
 		BC_ASSERT_TRUE(wait_for(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallUpdatedByRemote, initial_caller_stat.number_of_LinphoneCallUpdatedByRemote + 1));
@@ -969,7 +969,7 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(marie_remote_params) == caller_policy.automatically_initiate);
 	}
 	
-	linphone_core_accept_call(marie->lc, linphone_core_get_current_call(marie->lc));
+	linphone_call_accept(linphone_core_get_current_call(marie->lc));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1)
 		&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	
@@ -1179,7 +1179,7 @@ static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	pauline_call = linphone_core_get_current_call(pauline->lc);
 	if (!pauline_call) goto end;
 
-	linphone_core_accept_early_media(pauline->lc, pauline_call);
+	linphone_call_accept_early_media(pauline_call);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia, 1));
@@ -1189,7 +1189,7 @@ static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(out_call)));
 	BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(pauline_call)));
 
-	linphone_core_accept_call(pauline->lc, pauline_call);
+	linphone_call_accept(pauline_call);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
@@ -1275,7 +1275,7 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 		params=linphone_core_create_call_params(marie->lc, NULL);
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendOnly);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendOnly);
-		linphone_core_accept_call_with_params(marie->lc,call,params);
+		linphone_call_accept_with_params(call,params);
 		linphone_call_params_unref(params);
 
 		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning,1,DEFAULT_WAIT_FOR));
@@ -1426,7 +1426,7 @@ static void multiple_early_media(void) {
 		BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie1), 70, int, "%i");
 		BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie2), 70, int, "%i");
 
-		linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
+		linphone_call_accept(linphone_core_get_current_call(marie1->lc));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,3000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,3000));
 
@@ -1482,7 +1482,7 @@ static void audio_call_with_ice_with_video_policy_enabled(void){
 
 	linphone_core_invite_address(pauline->lc, marie->identity);
 	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
-	linphone_core_accept_call(marie->lc, linphone_core_get_current_call(marie->lc));
+	linphone_call_accept(linphone_core_get_current_call(marie->lc));
 	/*
 	LinphoneCallParams *params;
 	params = linphone_core_create_call_params(marie->lc, linphone_core_get_current_call(marie->lc));
@@ -1494,7 +1494,7 @@ static void audio_call_with_ice_with_video_policy_enabled(void){
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
 
-	linphone_core_pause_call(marie->lc, linphone_core_get_current_call(marie->lc));
+	linphone_call_pause(linphone_core_get_current_call(marie->lc));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
 
@@ -1564,7 +1564,7 @@ static void classic_video_entry_phone_setup(void) {
 	early_media_params = linphone_core_create_call_params(callee_mgr->lc, callee_call);
 	linphone_call_params_set_audio_direction(early_media_params, LinphoneMediaDirectionInactive);
 	linphone_call_params_set_video_direction(early_media_params, LinphoneMediaDirectionRecvOnly);
-	linphone_core_accept_early_media_with_params(callee_mgr->lc, callee_call, early_media_params);
+	linphone_call_accept_early_media_with_params(callee_call, early_media_params);
 	linphone_call_params_unref(early_media_params);
 
 	while ((caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia != 1) && (retry++ < 100)) {
@@ -1580,7 +1580,7 @@ static void classic_video_entry_phone_setup(void) {
 	in_call_params = linphone_core_create_call_params(callee_mgr->lc, callee_call);
 	linphone_call_params_set_audio_direction(in_call_params, LinphoneMediaDirectionSendRecv);
 	linphone_call_params_set_video_direction(in_call_params, LinphoneMediaDirectionSendRecv);
-	linphone_core_accept_call_with_params(callee_mgr->lc, callee_call, in_call_params);
+	linphone_call_accept_with_params(callee_call, in_call_params);
 	linphone_call_params_unref(in_call_params);
 
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallConnected, 1));
@@ -1596,7 +1596,7 @@ static void classic_video_entry_phone_setup(void) {
 	in_call_params = linphone_core_create_call_params(callee_mgr->lc, callee_call);
 	linphone_call_params_set_audio_direction(in_call_params, LinphoneMediaDirectionRecvOnly);
 	linphone_call_params_set_video_direction(in_call_params, LinphoneMediaDirectionSendOnly);
-	linphone_core_update_call(callee_mgr->lc, callee_call, in_call_params);
+	linphone_call_update(callee_call, in_call_params);
 	linphone_call_params_unref(in_call_params);
 
 	ok = wait_for_until(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 2, 2000)
@@ -1693,7 +1693,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionInactive);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
 
-		linphone_core_update_call(marie->lc, linphone_core_get_current_call(marie->lc),params);
+		linphone_call_update(linphone_core_get_current_call(marie->lc),params);
 		linphone_call_params_unref(params);
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
@@ -1710,7 +1710,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 		params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendRecv);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendRecv);
-		linphone_core_update_call(marie->lc,linphone_core_get_current_call(marie->lc),params);
+		linphone_call_update(linphone_core_get_current_call(marie->lc),params);
 		linphone_call_params_unref(params);
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));

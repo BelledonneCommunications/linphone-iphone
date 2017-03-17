@@ -4326,7 +4326,7 @@ static void linphone_call_lost(LinphoneCall *call){
 	ms_message("LinphoneCall [%p]: %s", call, temp);
 	linphone_core_notify_display_warning(lc, temp);
 	sal_error_info_set(&call->non_op_error, SalReasonIOError, 503, "IO error", NULL);
-	linphone_core_terminate_call(lc, call);
+	linphone_call_terminate(call);
 	linphone_core_play_named_tone(lc, LinphoneToneCallLost);
 	ms_free(temp);
 }
@@ -4360,7 +4360,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 					if (ice_session_role(call->ice_session) == IR_Controlling && current_param->update_call_when_ice_completed ) {
 						LinphoneCallParams *params = linphone_core_create_call_params(call->core, call);
 						params->internal_call_update = TRUE;
-						linphone_core_update_call(call->core, call, params);
+						linphone_call_update(call, params);
 						linphone_call_params_unref(params);
 					}
 					start_dtls_on_all_streams(call);
@@ -4402,7 +4402,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		}
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {
 		ice_session_restart(call->ice_session, IR_Controlling);
-		linphone_core_update_call(call->core, call, call->current_params);
+		linphone_call_update(call, call->current_params);
 	}
 }
 
@@ -5695,7 +5695,7 @@ void linphone_call_reinvite_to_recover_from_connection_loss(LinphoneCall *call) 
 		ice_session_reset(call->ice_session, IR_Controlling);
 	}
 	params = linphone_core_create_call_params(call->core, call);
-	linphone_core_update_call(call->core, call, params);
+	linphone_call_update(call, params);
 	linphone_call_params_unref(params);
 }
 
