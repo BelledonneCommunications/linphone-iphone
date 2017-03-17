@@ -62,6 +62,16 @@ LINPHONE_PUBLIC LinphoneAuthInfo *linphone_auth_info_new(const char *username, c
 LINPHONE_PUBLIC LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo* source);
 
 /**
+ * Take a reference on a #LinphoneAuthInfo.
+ */
+LINPHONE_PUBLIC LinphoneAuthInfo *linphone_auth_info_ref(LinphoneAuthInfo *info);
+
+/**
+ * Release a #LinphoneAuthInfo.
+ */
+LINPHONE_PUBLIC void linphone_auth_info_unref(LinphoneAuthInfo *info);
+
+/**
  * Sets the password.
  * @param[in] info The #LinphoneAuthInfo object
  * @param[in] passwd The password.
@@ -204,7 +214,7 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_tls_cert_path(const LinphoneA
 LINPHONE_PUBLIC const char *linphone_auth_info_get_tls_key_path(const LinphoneAuthInfo *info);
 
 /* you don't need those function*/
-LINPHONE_PUBLIC void linphone_auth_info_destroy(LinphoneAuthInfo *info);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_auth_info_destroy(LinphoneAuthInfo *info);
 
 /**
  * @}
