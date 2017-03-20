@@ -487,14 +487,10 @@
 		if (cfg && (linphone_proxy_config_get_dial_escape_plus(cfg))) {
 			if (linphone_proxy_config_is_phone_number(cfg, normvalue)) {
 				linphone_address_set_username(addr, normvalue);
-			} else {
-				linphone_address_set_display_name(addr, normvalue);
 			}
 		} else {
 			if (linphone_proxy_config_is_phone_number(cfg, value.UTF8String)) {
 				linphone_address_set_username(addr, value.UTF8String);
-			} else {
-				linphone_address_set_display_name(addr, value.UTF8String);
 			}
 		}
 	}
