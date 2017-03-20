@@ -4742,12 +4742,28 @@ LinphonePlayer *linphone_call_get_player(LinphoneCall *call){
 	return call->player;
 }
 
-void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params){
+	
+void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *params){
+	if ( call->state == LinphoneCallOutgoingInit || call->state == LinphoneCallIncomingReceived){
+		_linphone_call_set_new_params(call, params);
+	}
+	else {
+		ms_error("linphone_call_set_params() invalid state %s to call this function", linphone_call_state_to_string(call->state));
+	}
+}
+
+	
+void _linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params){
 	LinphoneCallParams *cp=NULL;
 	if (params) cp=linphone_call_params_copy(params);
 	if (call->params) linphone_call_params_unref(call->params);
 	call->params=cp;
 }
+
+const LinphoneCallParams * linphone_call_get_params(LinphoneCall *call){
+	return call->params;
+}
+
 
 static int send_dtmf_handler(void *data, unsigned int revents){
 	LinphoneCall *call = (LinphoneCall*)data;
@@ -5174,7 +5190,7 @@ int linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParam
 	/* Try to be best-effort in giving real local or routable contact address */
 	linphone_call_set_contact_op(call);
 	if (params) {
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 		linphone_call_prepare_ice(call, TRUE);
 		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op, call->localdesc);
@@ -5230,7 +5246,7 @@ int linphone_call_accept_early_media_with_params(LinphoneCall *call, const Linph
 
 	/* If parameters are passed, update the media description */
 	if (params) {
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op, call->localdesc);
 		sal_op_set_sent_custom_header(call->op, params->custom_headers);
@@ -5303,7 +5319,7 @@ int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
 			}
 		}
 #endif /* defined(VIDEO_ENABLED) && defined(BUILD_UPNP) */
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 		err = linphone_call_prepare_ice(call, FALSE);
 		if (err == 1) {
 			ms_message("Defer call update to gather ICE candidates");
@@ -5451,7 +5467,7 @@ int _linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *p
 			linphone_call_params_enable_video_multicast(call->params, FALSE);
 		}
 	} else {
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 	}
 
 	if (call->params->has_video && !linphone_core_video_enabled(lc)) {

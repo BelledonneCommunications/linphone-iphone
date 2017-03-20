@@ -748,7 +748,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 		if (rmd == NULL && lp_config_get_int(call->core->config,"sip","sdp_200_ack_follow_video_policy",0)) {
 			LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
 			ms_message("Applying default policy for offering SDP on call [%p]",call);
-			linphone_call_set_new_params(call, p);
+			_linphone_call_set_new_params(call, p);
 			linphone_call_params_unref(p);
 		}
 		linphone_call_make_local_media_description(call);
