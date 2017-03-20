@@ -94,7 +94,7 @@ public:
 		friend class Conference;
 	};
 	
-	Conference(LinphoneCore *core, const Params *params = NULL);
+	Conference(LinphoneCore *core, LinphoneConference *conf, const Params *params = NULL);
 	virtual ~Conference() {};
 	
 	const Params &getCurrentParams() const {return m_currentParams;}
@@ -138,11 +138,12 @@ protected:
 	std::list<Participant *> m_participants;
 	Params m_currentParams;
 	LinphoneConferenceState m_state;
+	LinphoneConference *m_conference;
 };
 
 class LocalConference: public Conference {
 public:
-	LocalConference(LinphoneCore *core, const Params *params = NULL);
+	LocalConference(LinphoneCore *core, LinphoneConference *conf, const Params *params = NULL);
 	virtual ~LocalConference();
 	
 	virtual int addParticipant(LinphoneCall *call);
@@ -179,7 +180,7 @@ private:
 
 class RemoteConference: public Conference {
 public:
-	RemoteConference(LinphoneCore *core, const Params *params = NULL);
+	RemoteConference(LinphoneCore *core, LinphoneConference *conf, const Params *params = NULL);
 	virtual ~RemoteConference();
 	
 	virtual int addParticipant(LinphoneCall *call);
@@ -221,19 +222,20 @@ using namespace Linphone;
 using namespace std;
 
 
-Conference::Conference(LinphoneCore *core, const Conference::Params *params):
+Conference::Conference(LinphoneCore *core, LinphoneConference *conf, const Conference::Params *params):
 	m_core(core),
 	m_localParticipantStream(NULL),
 	m_isMuted(false),
 	m_currentParams(),
-	m_state(LinphoneConferenceStopped) {
+	m_state(LinphoneConferenceStopped),
+	m_conference(conf) {
 	if(params) m_currentParams = *params;
 }
 
 int Conference::addParticipant(LinphoneCall *call) {
 	Participant *p =new Participant(call);
 	m_participants.push_back(p);
-	call->conf_ref = (LinphoneConference *)this;
+	call->conf_ref = m_conference;
 	return 0;
 }
 
@@ -302,7 +304,7 @@ void Conference::setState(LinphoneConferenceState state) {
 		ms_message("Switching conference [%p] into state '%s'", this, stateToString(state));
 		m_state = state;
 		if(m_currentParams.m_stateChangedCb) {
-			m_currentParams.m_stateChangedCb((LinphoneConference *)this, state, m_currentParams.m_userData);
+			m_currentParams.m_stateChangedCb(m_conference, state, m_currentParams.m_userData);
 		}
 	}
 }
@@ -324,8 +326,8 @@ Conference::Participant *Conference::findParticipant(const LinphoneAddress *uri)
 
 
 
-LocalConference::LocalConference(LinphoneCore *core, const Conference::Params *params):
-	Conference(core, params),
+LocalConference::LocalConference(LinphoneCore *core, LinphoneConference *conf, const Conference::Params *params):
+	Conference(core, conf, params),
 	m_conf(NULL),
 	m_localEndpoint(NULL),
 	m_recordEndpoint(NULL),
@@ -622,7 +624,7 @@ void LocalConference::onCallTerminating(LinphoneCall *call) {
 
 
 
-RemoteConference::RemoteConference(LinphoneCore *core, const Conference::Params *params): Conference(core, params) {
+RemoteConference::RemoteConference(LinphoneCore *core, LinphoneConference *conf, const Conference::Params *params): Conference(core, conf, params) {
 	m_focusAddr = NULL;
 	m_focusContact = NULL;
 	m_focusCall = NULL;
@@ -991,25 +993,25 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneConference, belle_sip_object_t,
 
 LinphoneConference *linphone_local_conference_new(LinphoneCore *core) {
 	LinphoneConference *conf = belle_sip_object_new(LinphoneConference);
-	conf->conf = new LocalConference(core);
+	conf->conf = new LocalConference(core, conf);
 	return conf;
 }
 
 LinphoneConference *linphone_local_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params) {
 	LinphoneConference *conf = belle_sip_object_new(LinphoneConference);
-	conf->conf = new LocalConference(core, params->params);
+	conf->conf = new LocalConference(core, conf, params->params);
 	return conf;
 }
 
 LinphoneConference *linphone_remote_conference_new(LinphoneCore *core) {
 	LinphoneConference *conf = belle_sip_object_new(LinphoneConference);
-	conf->conf = new RemoteConference(core);
+	conf->conf = new RemoteConference(core, conf);
 	return conf;
 }
 
 LinphoneConference *linphone_remote_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params) {
 	LinphoneConference *conf = belle_sip_object_new(LinphoneConference);
-	conf->conf = new RemoteConference(core, params->params);
+	conf->conf = new RemoteConference(core, conf, params->params);
 	return conf;
 }
 

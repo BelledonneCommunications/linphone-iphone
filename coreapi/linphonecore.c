@@ -6584,7 +6584,7 @@ LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {
 	return lc->ringtoneplayer;
 }
 
-static int _linphone_core_delayed_conference_destriction_cb(void *user_data, unsigned int event) {
+static int _linphone_core_delayed_conference_destruction_cb(void *user_data, unsigned int event) {
 	LinphoneConference *conf = (LinphoneConference *)user_data;
 	linphone_conference_unref(conf);
 	return 0;
@@ -6593,7 +6593,7 @@ static int _linphone_core_delayed_conference_destriction_cb(void *user_data, uns
 static void _linphone_core_conference_state_changed(LinphoneConference *conf, LinphoneConferenceState cstate, void *user_data) {
 	LinphoneCore *lc = (LinphoneCore *)user_data;
 	if(cstate == LinphoneConferenceStartingFailed || cstate == LinphoneConferenceStopped) {
-		linphone_core_queue_task(lc, _linphone_core_delayed_conference_destriction_cb, conf, "Conference destruction task");
+		linphone_core_queue_task(lc, _linphone_core_delayed_conference_destruction_cb, conf, "Conference destruction task");
 		lc->conf_ctx = NULL;
 	}
 }
@@ -6658,7 +6658,6 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
 		return -1;
 	}
 	linphone_conference_terminate(lc->conf_ctx);
-	linphone_conference_unref(lc->conf_ctx);
 	lc->conf_ctx = NULL;
 	return 0;
 }
