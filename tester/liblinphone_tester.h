@@ -276,7 +276,7 @@ typedef struct _LinphoneCoreManager {
 typedef struct _LinphoneConferenceServer {
 	LinphoneCoreManager base;
 	LinphoneCall *first_call;
-	LinphoneCoreVTable *vtable;
+	LinphoneCoreCbs *cbs;
 	LinphoneRegistrationState reg_state;
 } LinphoneConferenceServer;
 

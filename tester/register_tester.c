@@ -22,13 +22,6 @@
 #include "liblinphone_tester.h"
 
 
-static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
-	LinphoneAuthInfo *info;
-	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,realm,domain);
-	linphone_core_add_auth_info(lc,info);
-	linphone_auth_info_destroy(info);
-}
-
 static void authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
 	linphone_auth_info_set_passwd(auth_info, test_password);
 	linphone_core_add_auth_info(lc, auth_info); /*add authentication info to LinphoneCore*/
@@ -38,9 +31,10 @@ static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
 	LinphoneCoreManager* lcm = linphone_core_manager_new(NULL);
 
 	if (with_auth) {
-		LinphoneCoreVTable* vtable = linphone_core_v_table_new();
-		vtable->authentication_requested = authentication_requested;
-		linphone_core_add_listener(lcm->lc, vtable);
+		LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+		linphone_core_cbs_set_authentication_requested(cbs, authentication_requested);
+		linphone_core_add_callbacks(lcm->lc, cbs);
+		linphone_core_cbs_unref(cbs);
 	}
 
 	/*to allow testing with 127.0.0.1*/
@@ -68,7 +62,6 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 		default:
 			BC_FAIL("unexpected event");break;
 		}
-
 }
 
 static void register_with_refresh_base_3(LinphoneCore* lc
@@ -122,7 +115,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 				BC_ASSERT_EQUAL(linphone_proxy_config_get_error(proxy_cfg),LinphoneReasonUnauthorized, int, "%d");
 				info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 				linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
-				linphone_auth_info_destroy(info);
+				linphone_auth_info_unref(info);
 			}
 		}
 		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials
@@ -171,7 +164,7 @@ static void register_with_refresh_with_send_error(void) {
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-	linphone_auth_info_destroy(info);
+	linphone_auth_info_unref(info);
 	register_with_refresh_base(lcm->lc,TRUE,auth_domain,route);
 	/*simultate a network error*/
 	sal_set_send_error(lcm->lc->sal, -1);
@@ -313,7 +306,7 @@ static void simple_authenticated_register(void){
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-	linphone_auth_info_destroy(info);
+	linphone_auth_info_unref(info);
 	counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,auth_domain,route);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
@@ -330,7 +323,7 @@ static void ha1_authenticated_register(void){
 	info=linphone_auth_info_new(test_username,NULL,NULL,ha1,auth_domain,NULL); /*create authentication structure from identity*/
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-	linphone_auth_info_destroy(info);
+	linphone_auth_info_unref(info);
 	counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,auth_domain,route);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
@@ -339,7 +332,7 @@ static void ha1_authenticated_register(void){
 
 static void authenticated_register_with_no_initial_credentials(void){
 	LinphoneCoreManager *lcm;
-	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	stats* counters;
 	char route[256];
 
@@ -347,8 +340,9 @@ static void authenticated_register_with_no_initial_credentials(void){
 
 	lcm = linphone_core_manager_new(NULL);
 
-	vtable->auth_info_requested=auth_info_requested;
-	linphone_core_add_listener(lcm->lc,vtable);
+	linphone_core_cbs_set_authentication_requested(cbs, authentication_requested);
+	linphone_core_add_callbacks(lcm->lc, cbs);
+	linphone_core_cbs_unref(cbs);
 
 	counters= get_stats(lcm->lc);
 	counters->number_of_auth_info_requested=0;
@@ -402,7 +396,7 @@ static void authenticated_register_with_provided_credentials(void){
 
 	ai = linphone_auth_info_new(test_username, NULL, test_password, NULL, NULL, NULL);
 	linphone_core_add_auth_info(lcm->lc, ai);
-	linphone_auth_info_destroy(ai);
+	linphone_auth_info_unref(ai);
 	linphone_core_add_proxy_config(lcm->lc, cfg);
 
 	BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
@@ -452,7 +446,7 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 		linphone_core_set_user_agent(lcm->lc,user_agent,NULL);
 	}
 	linphone_core_add_auth_info(lcm->lc,info); /*add wrong authentication info to LinphoneCore*/
-	linphone_auth_info_destroy(info);
+	linphone_auth_info_unref(info);
 	counters = get_stats(lcm->lc);
 	register_with_refresh_base_3(lcm->lc,TRUE,auth_domain,route,FALSE,transport,LinphoneRegistrationFailed);
 	//BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,3, int, "%d"); register_with_refresh_base_3 does not alow to precisely check number of number_of_auth_info_requested
@@ -639,7 +633,7 @@ static void proxy_transport_change(void){
 	char* addr_as_string;
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-	linphone_auth_info_destroy(info);
+	linphone_auth_info_unref(info);
 	register_with_refresh_base(lcm->lc,FALSE,auth_domain,NULL);
 
 	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
@@ -676,7 +670,7 @@ static void proxy_transport_change_with_wrong_port(void) {
 	sprintf(route,"sip:%s",test_route);
 
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-	linphone_auth_info_destroy(info);
+	linphone_auth_info_unref(info);
 	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
 
 	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
@@ -707,7 +701,7 @@ static void proxy_transport_change_with_wrong_port_givin_up(void) {
 	sprintf(route,"sip:%s",test_route);
 
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
-	linphone_auth_info_destroy(info);
+	linphone_auth_info_unref(info);
 	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
 
 	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
@@ -1097,13 +1091,14 @@ static void authentication_requested_2(LinphoneCore *lc, LinphoneAuthInfo *auth_
 static void tls_auth_info_client_cert_cb(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager *lcm;
-		LinphoneCoreVTable* vtable = linphone_core_v_table_new();
+		LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 		stats* counters;
 
 		lcm = linphone_core_manager_new(NULL);
 
-		vtable->authentication_requested=authentication_requested_2;
-		linphone_core_add_listener(lcm->lc,vtable);
+		linphone_core_cbs_set_authentication_requested(cbs, authentication_requested_2);
+		linphone_core_add_callbacks(lcm->lc, cbs);
+		linphone_core_cbs_unref(cbs);
 
 		counters= get_stats(lcm->lc);
 		counters->number_of_auth_info_requested=0;
@@ -1131,13 +1126,14 @@ static void authentication_requested_3(LinphoneCore *lc, LinphoneAuthInfo *auth_
 static void tls_auth_info_client_cert_cb_2(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager *lcm;
-		LinphoneCoreVTable* vtable = linphone_core_v_table_new();
+		LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 		stats* counters;
 
 		lcm = linphone_core_manager_new(NULL);
 
-		vtable->authentication_requested=authentication_requested_3;
-		linphone_core_add_listener(lcm->lc,vtable);
+		linphone_core_cbs_set_authentication_requested(cbs, authentication_requested_3);
+		linphone_core_add_callbacks(lcm->lc, cbs);
+		linphone_core_cbs_unref(cbs);
 
 		counters= get_stats(lcm->lc);
 		counters->number_of_auth_info_requested=0;

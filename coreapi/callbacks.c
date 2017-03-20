@@ -1039,7 +1039,7 @@ static void auth_failure(SalOp *op, SalAuthInfo* info) {
 			ms_message("%s/%s/%s/%s authentication fails.", info->realm, info->username, info->domain, info->mode == SalAuthModeHttpDigest ? "HttpDigest" : "Tls");
 			/*ask again for password if auth info was already supplied but apparently not working*/
 			linphone_core_notify_authentication_requested(lc, auth_info, method);
-			linphone_auth_info_destroy(auth_info);
+			linphone_auth_info_unref(auth_info);
 			// Deprecated
 			linphone_core_notify_auth_info_requested(lc, info->realm, info->username, info->domain);
 		}
@@ -1275,7 +1275,7 @@ static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
 		LinphoneAuthMethod method = sai->mode == SalAuthModeHttpDigest ? LinphoneAuthHttpDigest : LinphoneAuthTls;
 		LinphoneAuthInfo *ai = linphone_core_create_auth_info(lc, sai->username, NULL, NULL, NULL, sai->realm, sai->domain);
 		linphone_core_notify_authentication_requested(lc, ai, method);
-		linphone_auth_info_destroy(ai);
+		linphone_auth_info_unref(ai);
 		// Deprecated
 		linphone_core_notify_auth_info_requested(lc, sai->realm, sai->username, sai->domain);
 		if (fill_auth_info(lc, sai)) {

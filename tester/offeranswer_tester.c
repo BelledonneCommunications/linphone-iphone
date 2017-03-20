@@ -35,8 +35,7 @@ static int get_codec_position(const MSList *l, const char *mime_type, int rate){
 
 /*check basic things about codecs at startup: order and enablement*/
 static void start_with_no_config(void){
-	LinphoneCoreVTable vtable={0};
-	LinphoneCore *lc=linphone_core_new(&vtable, NULL, NULL, NULL);
+	LinphoneCore *lc=linphone_factory_create_core(linphone_factory_get(), NULL, NULL, NULL);
 	const MSList *codecs=linphone_core_get_audio_codecs(lc);
 	int opus_codec_pos;
 	int speex_codec_pos=get_codec_position(codecs, "speex", 8000);
@@ -51,7 +50,7 @@ static void start_with_no_config(void){
 	if (pt) {
 		BC_ASSERT_TRUE(linphone_core_payload_type_enabled(lc, pt));
 	}
-	linphone_core_destroy(lc);
+	linphone_core_unref(lc);
 }
 
 static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2, int expected_number){

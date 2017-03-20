@@ -43,7 +43,7 @@ void linphone_carddav_context_destroy(LinphoneCardDavContext *cdc) {
 			cdc->friend_list = NULL;
 		}
 		if (cdc->auth_info) {
-			linphone_auth_info_destroy(cdc->auth_info);
+			linphone_auth_info_unref(cdc->auth_info);
 			cdc->auth_info = NULL;
 		}
 		ms_free(cdc);

@@ -1246,13 +1246,14 @@ static void tls_authentication_requested_bad(LinphoneCore *lc, LinphoneAuthInfo 
 
 static void tls_client_auth_try_register(const char *identity, bool_t with_good_cert, bool_t must_work){
 	LinphoneCoreManager *lcm;
-	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	LinphoneProxyConfig *cfg;
 
 	lcm = linphone_core_manager_new(NULL);
 
-	vtable->authentication_requested= with_good_cert ? tls_authentication_requested_good : tls_authentication_requested_bad;
-	linphone_core_add_listener(lcm->lc,vtable);
+	linphone_core_cbs_set_authentication_requested(cbs, with_good_cert ? tls_authentication_requested_good : tls_authentication_requested_bad);
+	linphone_core_add_callbacks(lcm->lc, cbs);
+	linphone_core_cbs_unref(cbs);
 	cfg = linphone_core_create_proxy_config(lcm->lc);
 	
 	linphone_proxy_config_set_server_addr(cfg, "sip:sip2.linphone.org:5063;transport=tls");
@@ -1274,7 +1275,6 @@ static void tls_client_auth_try_register(const char *identity, bool_t with_good_
 	
 	linphone_proxy_config_unref(cfg);
 	linphone_core_manager_destroy(lcm);
-	linphone_core_v_table_destroy(vtable);
 }
 
 void tls_client_auth_bad_certificate_cn(void) {

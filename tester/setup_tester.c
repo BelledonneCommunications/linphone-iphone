@@ -30,14 +30,12 @@ static void linphone_version_test(void){
 }
 
 static void core_init_test(void) {
-	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
-	memset (&v_table,0,sizeof(v_table));
-	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
+	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
 	/* until we have good certificates on our test server... */
 	linphone_core_verify_server_certificates(lc,FALSE);
 	if (BC_ASSERT_PTR_NOT_NULL(lc)) {
-		linphone_core_destroy(lc);
+		linphone_core_unref(lc);
 	}
 }
 
@@ -48,11 +46,9 @@ static void linphone_address_test(void) {
 }
 
 static void core_sip_transport_test(void) {
-	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
 	LCSipTransports tr;
-	memset (&v_table,0,sizeof(v_table));
-	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
+	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
 	if (!BC_ASSERT_PTR_NOT_NULL(lc)) return;
 	linphone_core_get_sip_transports(lc,&tr);
 	BC_ASSERT_EQUAL(tr.udp_port,5060, int, "%d"); /*default config*/
@@ -72,19 +68,16 @@ static void core_sip_transport_test(void) {
 	BC_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_tcp_port",-2),LC_SIP_TRANSPORT_RANDOM, int, "%d");
 	BC_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_tls_port",-2),LC_SIP_TRANSPORT_RANDOM, int, "%d");
 
-	linphone_core_destroy(lc);
+	linphone_core_unref(lc);
 }
 
-static void linphone_interpret_url_test(void)
-{
-	LinphoneCoreVTable v_table;
+static void linphone_interpret_url_test(void) {
 	LinphoneCore* lc;
 	const char* sips_address = "sips:margaux@sip.linphone.org";
 	LinphoneAddress* address;
 	LinphoneProxyConfig *proxy_config;
 	char *tmp;
-	memset ( &v_table,0,sizeof ( v_table ) );
-	lc = linphone_core_new ( &v_table,NULL,NULL,NULL );
+	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
 	if (!BC_ASSERT_PTR_NOT_NULL( lc )) return;
 
 	proxy_config =linphone_core_create_proxy_config(lc);
@@ -125,7 +118,7 @@ static void linphone_interpret_url_test(void)
 	linphone_address_unref(address);
 	ms_free(tmp);
 
-	linphone_core_destroy (lc);
+	linphone_core_unref(lc);
 }
 
 static void linphone_lpconfig_from_buffer(void){
@@ -276,13 +269,11 @@ void linphone_proxy_config_is_server_config_changed_test(void) {
 }
 
 static void chat_room_test(void) {
-	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
-	memset (&v_table,0,sizeof(v_table));
-	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
+	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
 	if (!BC_ASSERT_PTR_NOT_NULL(lc)) return;
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room_from_uri(lc,"sip:toto@titi.com"));
-	linphone_core_destroy(lc);
+	linphone_core_unref(lc);
 }
 
 static void devices_reload_test(void) {

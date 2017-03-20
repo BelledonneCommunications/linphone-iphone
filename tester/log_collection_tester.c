@@ -293,9 +293,10 @@ static void upload_collected_traces(void)  {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = setup(LinphoneLogCollectionEnabled);
 		int waiting = 100;
-		LinphoneCoreVTable *v_table = linphone_core_v_table_new();
-		v_table->log_collection_upload_state_changed = logCollectionUploadStateChangedCb;
-		linphone_core_add_listener(marie->lc, v_table);
+		LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+		linphone_core_cbs_set_log_collection_upload_state_changed(cbs, logCollectionUploadStateChangedCb);
+		linphone_core_add_callbacks(marie->lc, cbs);
+		linphone_core_cbs_unref(cbs);
 
 		linphone_core_set_log_collection_max_file_size(5000);
 		linphone_core_set_log_collection_upload_server_url(marie->lc,"https://www.linphone.org:444/lft.php");

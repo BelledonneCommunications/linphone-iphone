@@ -101,7 +101,7 @@ const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMess
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandler *body_handler){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (call){
-		LinphoneInfoMessage *info=ms_new0(LinphoneInfoMessage,1);
+		LinphoneInfoMessage *info=linphone_core_create_info_message(lc);
 		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
 		if (body_handler) info->content=linphone_content_from_sal_body_handler(body_handler);
 		linphone_core_notify_info_received(lc,call,info);

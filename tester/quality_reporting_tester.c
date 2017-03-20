@@ -343,9 +343,10 @@ static void quality_reporting_sent_using_custom_route(void) {
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
-	LinphoneCoreVTable publish_vtable = {0};
-	publish_vtable.publish_state_changed = publish_report_with_route_state_changed;
-	linphone_core_add_listener(marie->lc, &publish_vtable);
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_publish_state_changed(cbs, publish_report_with_route_state_changed);
+	linphone_core_add_callbacks(marie->lc, cbs);
+	linphone_core_cbs_unref(cbs);
 
 	//INVALID collector: sip.linphone.org do not collect reports, so it will throw a 404 Not Found error
 	linphone_proxy_config_set_quality_reporting_collector(linphone_core_get_default_proxy_config(marie->lc), "sip:sip.linphone.org");

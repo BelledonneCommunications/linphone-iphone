@@ -114,7 +114,7 @@ static void configure_nat_policy(LinphoneCore *lc, bool_t turn_enabled) {
 	linphone_core_set_nat_policy(lc, nat_policy);
 	linphone_core_add_auth_info(lc, auth_info);
 	linphone_nat_policy_unref(nat_policy);
-	linphone_auth_info_destroy(auth_info);
+	linphone_auth_info_unref(auth_info);
 }
 
 static void check_turn_context_statistics(MSTurnContext *turn_context, bool_t forced_relay) {

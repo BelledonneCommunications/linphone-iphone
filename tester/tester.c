@@ -112,7 +112,7 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 
 void reset_counters( stats* counters) {
 	if (counters->last_received_chat_message) linphone_chat_message_unref(counters->last_received_chat_message);
-	if (counters->last_received_info_message) linphone_info_message_destroy(counters->last_received_info_message);
+	if (counters->last_received_info_message) linphone_info_message_unref(counters->last_received_info_message);
 	memset(counters,0,sizeof(stats));
 }
 
@@ -446,7 +446,7 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 				unlink(record_file);
 			}
 		}
-		linphone_core_destroy(mgr->lc);
+		linphone_core_unref(mgr->lc);
 		if (chatdb) {
 			if (ortp_file_exist(chatdb)==0) {
 				if (unlink(chatdb) != 0){
@@ -468,7 +468,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->stat.last_received_chat_message) {
 		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	}
-	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
+	if (mgr->stat.last_received_info_message) linphone_info_message_unref(mgr->stat.last_received_info_message);
 	if (mgr->identity) {
 		linphone_address_unref(mgr->identity);
 	}
@@ -814,8 +814,8 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 }
 
 static void linphone_conference_server_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
-	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(lc);
-	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)vtable->user_data;
+	LinphoneCoreCbs *cbs = linphone_core_get_current_callbacks(lc);
+	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)linphone_core_cbs_get_user_data(cbs);
 
 	switch(cstate) {
 		case LinphoneCallIncomingReceived:
@@ -865,8 +865,8 @@ static void linphone_conference_server_registration_state_changed(LinphoneCore *
 																  LinphoneProxyConfig *cfg,
 																  LinphoneRegistrationState cstate,
 																  const char *message) {
-	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(core);
-	LinphoneConferenceServer *m = (LinphoneConferenceServer *)linphone_core_v_table_get_user_data(vtable);
+	LinphoneCoreCbs *cbs = linphone_core_get_current_callbacks(core);
+	LinphoneConferenceServer *m = (LinphoneConferenceServer *)linphone_core_cbs_get_user_data(cbs);
 	if(cfg == linphone_core_get_default_proxy_config(core)) {
 		m->reg_state = cstate;
 	}
@@ -876,11 +876,11 @@ LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bo
 	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)ms_new0(LinphoneConferenceServer, 1);
 	LinphoneCoreManager *lm = (LinphoneCoreManager *)conf_srv;
 	LinphoneProxyConfig *proxy;
-	conf_srv->vtable = linphone_core_v_table_new();
-	conf_srv->vtable->call_state_changed = linphone_conference_server_call_state_changed;
-	conf_srv->vtable->refer_received = linphone_conference_server_refer_received;
-	conf_srv->vtable->registration_state_changed = linphone_conference_server_registration_state_changed;
-	conf_srv->vtable->user_data = conf_srv;
+	conf_srv->cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(conf_srv->cbs, linphone_conference_server_call_state_changed);
+	linphone_core_cbs_set_refer_received(conf_srv->cbs, linphone_conference_server_refer_received);
+	linphone_core_cbs_set_registration_state_changed(conf_srv->cbs, linphone_conference_server_registration_state_changed);
+	linphone_core_cbs_set_user_data(conf_srv->cbs, conf_srv);
 	conf_srv->reg_state = LinphoneRegistrationNone;
 	linphone_core_manager_init(lm, rc_file,NULL);
 	if (!do_registration) {
@@ -889,7 +889,7 @@ LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bo
 		linphone_proxy_config_enable_register(proxy,FALSE);
 		linphone_proxy_config_done(proxy);
 	}
-	linphone_core_add_listener(lm->lc, conf_srv->vtable);
+	linphone_core_add_callbacks(lm->lc, conf_srv->cbs);
 	linphone_core_manager_start(lm, do_registration);
 	return conf_srv;
 }

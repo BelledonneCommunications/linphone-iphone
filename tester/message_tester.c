@@ -800,7 +800,7 @@ void info_message_received(LinphoneCore *lc, LinphoneCall* call, const LinphoneI
 	stats* counters = get_stats(lc);
 
 	if (counters->last_received_info_message) {
-		linphone_info_message_destroy(counters->last_received_info_message);
+		linphone_info_message_unref(counters->last_received_info_message);
 	}
 	counters->last_received_info_message=linphone_info_message_copy(msg);
 	counters->number_of_inforeceived++;
@@ -827,7 +827,7 @@ void info_message_base(bool_t with_content) {
 		linphone_content_unref(ct);
 	}
 	linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),info);
-	linphone_info_message_destroy(info);
+	linphone_info_message_unref(info);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_inforeceived,1));
 

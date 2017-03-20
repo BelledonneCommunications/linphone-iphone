@@ -350,8 +350,10 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		ms_message("Created default call params with video=%i", linphone_call_params_video_enabled(default_params));
 		linphone_call_accept_with_params(callee_call,default_params);
 		linphone_call_params_unref(default_params);
-	}else{
+	}else if (callee_call) {
 		linphone_call_accept(callee_call);
+	} else {
+		linphone_call_accept(linphone_core_get_current_call(callee_mgr->lc));
 	}
 
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
@@ -2600,6 +2602,8 @@ static void check_call_state(LinphoneCoreManager* mgr,LinphoneCallState state) {
 static void call_established_with_rejected_info(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneInfoMessage *im1;
+	LinphoneInfoMessage *im2;
 	int dummy=0;
 	bool_t call_ok=FALSE;
 
@@ -2607,15 +2611,19 @@ static void call_established_with_rejected_info(void) {
 	if (call_ok){
 
 		sal_enable_unconditional_answer(marie->lc->sal,TRUE);
-		linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),linphone_core_create_info_message(pauline->lc));
+		im1 = linphone_core_create_info_message(pauline->lc);
+		linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),im1);
 
 		wait_for_until(marie->lc,pauline->lc,&dummy,1,1000); /*just to sleep while iterating 1s*/
+		linphone_info_message_unref(im1);
 
 		sal_enable_unconditional_answer(marie->lc->sal,FALSE);
 
-		linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),linphone_core_create_info_message(pauline->lc));
+		im2 = linphone_core_create_info_message(pauline->lc);
+		linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),im2);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_inforeceived,1));
 		BC_ASSERT_EQUAL(marie->stat.number_of_inforeceived,1, int, "%d");
+		linphone_info_message_unref(im2);
 
 		check_call_state(pauline,LinphoneCallStreamsRunning);
 		check_call_state(marie,LinphoneCallStreamsRunning);
@@ -2926,8 +2934,8 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 	/*to make sure unregister will work*/
 	linphone_core_clear_all_auth_info(marie->lc);
 	linphone_core_add_auth_info(marie->lc,good_auth_info);
-	linphone_auth_info_destroy(good_auth_info);
-	linphone_auth_info_destroy(wrong_auth_info);
+	linphone_auth_info_unref(good_auth_info);
+	linphone_auth_info_unref(wrong_auth_info);
 	linphone_core_manager_destroy(marie);
 }
 

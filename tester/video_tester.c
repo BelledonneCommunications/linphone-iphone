@@ -211,11 +211,12 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 	return result;
 }
 
-static LinphoneCallParams * _configure_for_video(LinphoneCoreManager *manager, LinphoneCoreCallStateChangedCb cb) {
+static LinphoneCallParams * _configure_for_video(LinphoneCoreManager *manager, LinphoneCoreCbsCallStateChangedCb cb) {
 	LinphoneCallParams *params;
-	LinphoneCoreVTable *vtable = linphone_core_v_table_new();
-	vtable->call_state_changed = cb;
-	linphone_core_add_listener(manager->lc, vtable);
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(cbs, cb);
+	linphone_core_add_callbacks(manager->lc, cbs);
+	linphone_core_cbs_unref(cbs);
 	linphone_core_set_video_device(manager->lc, "StaticImage: Static picture");
 	linphone_core_enable_video_capture(manager->lc, TRUE);
 	linphone_core_enable_video_display(manager->lc, TRUE);

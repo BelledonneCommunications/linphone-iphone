@@ -1982,7 +1982,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,passwd,NULL,NULL,linphone_address_get_username(from));
 			linphone_core_add_auth_info(lc,info);
 			linphone_address_unref(from);
-			linphone_auth_info_destroy(info);
+			linphone_auth_info_unref(info);
 		}
 	}
 	elem=linphone_core_get_proxy_config_list(lc);

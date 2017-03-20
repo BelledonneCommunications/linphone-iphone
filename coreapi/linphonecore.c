@@ -1316,7 +1316,7 @@ static void sip_config_read(LinphoneCore *lc) {
 		LinphoneAuthInfo *ai=linphone_auth_info_new_from_config_file(lc->config,i);
 		if (ai!=NULL){
 			linphone_core_add_auth_info(lc,ai);
-			linphone_auth_info_destroy(ai);
+			linphone_auth_info_unref(ai);
 		}else{
 			break;
 		}
@@ -5461,7 +5461,7 @@ void sip_config_uninit(LinphoneCore *lc)
 
 	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
 
-	lc->auth_info=bctbx_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
+	lc->auth_info=bctbx_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_unref);
 
 	if (lc->vcard_context) {
 		linphone_vcard_context_destroy(lc->vcard_context);
@@ -6610,10 +6610,10 @@ LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc
 			lc->conf_ctx = linphone_remote_conference_new_with_params(lc, params2);
 		} else {
 			ms_error("'%s' is not a valid conference method", conf_method_name);
-			linphone_conference_params_free(params2);
+			linphone_conference_params_unref(params2);
 			return NULL;
 		}
-		linphone_conference_params_free(params2);
+		linphone_conference_params_unref(params2);
 	} else {
 		ms_error("Could not create a conference: a conference instance already exists");
 		return NULL;
@@ -6626,7 +6626,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 	if(conference == NULL) {
 		LinphoneConferenceParams *params = linphone_conference_params_new(lc);
 		conference = linphone_core_create_conference_with_params(lc, params);
-		linphone_conference_params_free(params);
+		linphone_conference_params_unref(params);
 	}
 	if(conference) return linphone_conference_add_participant(lc->conf_ctx, call);
 	else return -1;

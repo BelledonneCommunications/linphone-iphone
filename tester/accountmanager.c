@@ -183,7 +183,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 				NULL,
 				account->password,NULL,NULL,linphone_address_get_domain(account->modified_identity));
 	linphone_core_add_auth_info(lc,ai);
-	linphone_auth_info_destroy(ai);
+	linphone_auth_info_unref(ai);
 
 	if (wait_for_until(lc,NULL,&account->registered,1,3000)==FALSE){
 		ms_fatal("Account for %s is not working on server.", linphone_proxy_config_get_identity(refcfg));
@@ -193,7 +193,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	if (wait_for_until(lc,NULL,&account->done,1,3000)==FALSE){
 		ms_error("Account creation could not clean the registration context.");
 	}
-	linphone_core_destroy(lc);
+	linphone_core_unref(lc);
 	unlink(chatdb);
 	ms_free(chatdb);
 }
@@ -240,7 +240,7 @@ static LinphoneAddress *account_manager_check_account(AccountManager *m, Linphon
 				NULL,
 				account->password,NULL,NULL,linphone_address_get_domain(account->modified_identity));
 	linphone_core_add_auth_info(lc,ai);
-	linphone_auth_info_destroy(ai);
+	linphone_auth_info_unref(ai);
 
 	linphone_address_unref(id_addr);
 	return account->modified_identity;

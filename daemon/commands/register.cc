@@ -72,7 +72,7 @@ void RegisterCommand::exec(Daemon *app, const string& args) {
 			LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(from), cuserid, cpassword, NULL, crealm, NULL);
 			linphone_core_add_auth_info(lc, info); /* Add authentication info to LinphoneCore */
 			linphone_address_unref(from);
-			linphone_auth_info_destroy(info);
+			linphone_auth_info_unref(info);
 		}
 	}
 	linphone_proxy_config_set_identity(cfg, cidentity);
