@@ -272,4 +272,10 @@ class LinphoneCallImpl implements LinphoneCall {
         }
     }
 
+	private native boolean askedToAutoAnswer(long nativePtr);
+	@Override
+	public boolean askedToAutoAnswer(){
+		return askedToAutoAnswer(nativePtr);
+	}
+
 }

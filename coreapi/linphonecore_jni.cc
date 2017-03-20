@@ -5522,6 +5522,12 @@ extern "C" jobject Java_org_linphone_core_LinphoneCallImpl_getConference(JNIEnv 
 	return NULL;
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_askedToAutoAnswer(JNIEnv*  env,jobject thiz,jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *) ptr;
+	return (jboolean)linphone_call_asked_to_autoanswer(call);
+}
+
+
 extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getPlayVolume(JNIEnv* env, jobject thiz, jlong ptr) {
 	LinphoneCall *call = (LinphoneCall *) ptr;
 	return (jfloat)linphone_call_get_play_volume(call);

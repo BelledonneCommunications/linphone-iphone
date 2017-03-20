@@ -393,4 +393,10 @@ public interface LinphoneCall {
 	 * Set the callbacks associated with the LinphoneCall.
 	 */
 	void setListener(LinphoneCall.LinphoneCallListener listener);
+
+	/**
+	 * Indicates if remote party requested automatic answering to be performed.
+	 * This is an indication - the application remains responsible for answering the call.
+	**/
+	boolean askedToAutoAnswer();
 }
