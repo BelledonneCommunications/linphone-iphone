@@ -27,6 +27,7 @@ LOCAL_CPP_EXTENSION := .cc
 
 LOCAL_SRC_FILES := \
 	account_creator.c \
+	account_creator_request_engine.c \
 	address.c \
 	authentication.c \
 	bellesip_sal/sal_address_impl.c \
@@ -192,10 +193,10 @@ endif
 
 ifneq ($(BUILD_WEBRTC_AECM),0)
 LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_aecm 
+	libwebrtc_aecm
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
 LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_aecm_neon 
+	libwebrtc_aecm_neon
 endif
 endif
 
@@ -211,7 +212,7 @@ endif
 
 ifneq ($(BUILD_ILBC),0)
 LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_ilbc 
+	libwebrtc_ilbc
 endif
 
 
@@ -323,4 +324,3 @@ LOCAL_CFLAGS += -Wdeclaration-after-statement
 LOCAL_LDFLAGS := -Wl,-soname,$(LOCAL_MODULE_FILENAME).so
 
 $(call import-module,android/cpufeatures)
-

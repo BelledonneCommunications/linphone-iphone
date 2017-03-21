@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/sipsetup.h"
 
 #include "linphone/account_creator.h"
+#include "linphone/account_creator_request_engine.h"
 #include "linphone/address.h"
 #include "linphone/auth_info.h"
 #include "linphone/buffer.h"
@@ -2234,6 +2235,20 @@ LINPHONE_PUBLIC void linphone_core_abort_authentication(LinphoneCore *lc, Linpho
  * Clear all authentication information.
 **/
 LINPHONE_PUBLIC	void linphone_core_clear_all_auth_info(LinphoneCore *lc);
+
+/**
+ * Sets an default account creator request cbs in the core
+ * @param lc LinphoneCore object
+ * @param cbs LinphoneAccountCreatorRequestCbs object
+**/
+LINPHONE_PUBLIC void linphone_core_set_account_creator_request_engine_cbs(LinphoneCore *lc, LinphoneAccountCreatorRequestCbs *cbs);
+
+/**
+ * Get default account creator request cbs from the core
+ * @param lc LinphoneCore object
+ * @return LinphoneAccountCreatorRequestCbs object
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorRequestCbs* linphone_core_get_account_creator_request_engine_cbs(LinphoneCore *lc);
 
 /**
  * Enable or disable the audio adaptive jitter compensation.

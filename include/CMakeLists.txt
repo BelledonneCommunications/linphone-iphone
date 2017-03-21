@@ -22,6 +22,7 @@
 
 set(HEADER_FILES
 	account_creator.h
+	account_creator_request_engine.h
 	address.h
 	auth_info.h
 	buffer.h

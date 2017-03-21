@@ -31,12 +31,6 @@ extern "C" {
  * @{
  */
 
- /**
-  * Function to set custom server request.
-  * @param[in] creator LinphoneAccountCreator object
-  */
- typedef LinphoneRequestStatus (*LinphoneAccountCreatorRequestFunc)(LinphoneAccountCreator *creator);
-
 /**
  * Callback to notify a response of server.
  * @param[in] creator LinphoneAccountCreator object
@@ -55,76 +49,70 @@ typedef void (*LinphoneAccountCreatorResponseFunc)(LinphoneAccountCreator *creat
 LINPHONE_PUBLIC LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url);
 
 /**
- * Set Linphone functions to LinphoneAccountCreator.
- * @param[in] creator LinphoneAccountCreator object
-**/
-LINPHONE_PUBLIC void linphone_account_creator_set_linphone_impl(LinphoneAccountCreator *creator);
-
-/**
- * Send a XML-RPC request to know the existence of account on server.
+ * Send a request to know the existence of account on server.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_is_account_exist(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to create an account on server.
+ * Send a request to create an account on server.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_create_account(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to know if an account is activated on server.
+ * Send a request to know if an account is activated on server.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_is_account_activated(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to activate an account on server.
+ * Send a request to activate an account on server.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_activate_account(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to link an account to an alias.
+ * Send a request to link an account to an alias.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_link_account(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to activate an alias.
+ * Send a request to activate an alias.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_activate_alias(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to know if an alias is used.
+ * Send a request to know if an alias is used.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_is_alias_used(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to know if an account is linked.
+ * Send a request to know if an account is linked.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_is_account_linked(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to recover an account.
+ * Send a request to recover an account.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_recover_account(LinphoneAccountCreator *creator);
 
 /**
- * Send a XML-RPC request to update an account.
+ * Send a request to update an account.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
 **/
@@ -365,181 +353,9 @@ LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_is_account_linked
  * @param[in] new_pwd const char * : new password for the account creator
  * @return LinphoneRequestOk if everything is OK, or a specific error otherwise.
 **/
-// TODO viré new_pwd qui sera remplacé par le get_user_data de creator
-LINPHONE_PUBLIC /*TODO*/ LinphoneRequestStatus linphone_account_creator_update_password_custom(LinphoneAccountCreator *creator);
+LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_update_password_custom(LinphoneAccountCreator *creator);
 
 /************************** End Account Creator Linphone **************************/
-
-/************************** Start Account Creator Requests **************************/
-
-/**
- * Acquire a reference to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The same LinphoneAccountCreatorRequestCbs object.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestCbs * linphone_account_creator_requests_cbs_ref(LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Release a reference to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_unref(LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Retrieve the user pointer associated with a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The user pointer associated with the LinphoneAccountCreatorRequestCbs object.
-**/
-LINPHONE_PUBLIC void *linphone_account_creator_requests_cbs_get_user_data(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorRequestCbs object.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_user_data(LinphoneAccountCreatorRequestCbs *requests_cbs, void *ud);
-
-/**
- * Get the create account request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current create account request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_create_account_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The create account request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_create_account_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the is account exist request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current is account exist request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_is_account_exist_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The is account exist request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_is_account_exist_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the activate account request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current activate account request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_activate_account_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The activate account request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_activate_account_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the is account activated request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current is account activated request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_is_account_activated_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The is account activated request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_is_account_activated_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the link account request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current link account request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_link_account_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The link account request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_link_account_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the activate alias request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current link account request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_activate_alias_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The activate alias request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_activate_alias_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the is alias used request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current is alias used request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_is_alias_used_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The is alias used request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_is_alias_used_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the is account linked request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current is account linked request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_is_account_linked_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The is account linked request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_is_account_linked_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the recover account request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current recover account request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_recover_account_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The recover account request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_recover_account_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/**
- * Get the update account request.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @return The current update account request.
-**/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_update_account_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs);
-
-/**
- * Assign a user pointer to a LinphoneAccountCreatorRequestCbs object.
- * @param[in] requests_cbs LinphoneAccountCreatorRequestCbs object.
- * @param[in] func The update account request to be used.
-**/
-LINPHONE_PUBLIC void linphone_account_creator_requests_cbs_set_update_account_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func);
-
-/************************** End Account Creator Requests **************************/
 
 /************************** Start Account Creator Cbs **************************/
 

@@ -61,9 +61,7 @@ static void linphone_gtk_test_account_validation_cb(LinphoneAccountCreator *crea
 
 static void check_account_validation(GtkWidget *assistant) {
 	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(assistant);
-	(linphone_account_creator_requests_cbs_get_is_account_activated_cb(
-		linphone_account_creator_get_requests_cbs(creator))
-	)(creator);
+	linphone_account_creator_is_account_activated(creator);
 }
 
 void linphone_gtk_assistant_closed(GtkWidget *w) {
@@ -237,9 +235,7 @@ static gboolean check_username_availability(GtkWidget *assistant) {
 	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(assistant);
 	GtkWidget *page = gtk_assistant_get_nth_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant)));
 	g_object_set_data(G_OBJECT(page), "usernameAvailabilityTimerID", GUINT_TO_POINTER(0));
-	(linphone_account_creator_requests_cbs_get_is_account_exist_cb(
-		linphone_account_creator_get_requests_cbs(creator))
-	)(creator);
+	linphone_account_creator_is_account_exist(creator);
 	return FALSE;
 }
 
