@@ -190,6 +190,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_backToCallButton.hidden = !_callButton.hidden;
 }
 
+- (void)markAsRead {
+	linphone_chat_room_mark_as_read(_chatRoom);
+	if (IPAD) {
+		if (IPAD) {
+			ChatsListView *listView = VIEW(ChatsListView);
+			[listView.tableController markCellAsRead:_chatRoom];
+		}
+	}
+}
+
 - (void)update {
 	if (_chatRoom == NULL) {
 		LOGW(@"Cannot update chat room header: null contact");
@@ -240,6 +250,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_chat_message_unref(msg);
 
 	[_tableController scrollToBottom:true];
+
+	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(_chatRoom)) {
+		[LinphoneManager.instance alertLIME:_chatRoom];
+	}
 
 	return TRUE;
 }

@@ -146,7 +146,7 @@
 
 		linphone_proxy_config_unref(testProxy);
 		linphone_auth_info_destroy(testAuth);
-		linphone_address_destroy(testAddr);
+		linphone_address_unref(testAddr);
 
 		linphone_core_set_file_transfer_server(lc, "https://www.linphone.org:444/lft.php");
 

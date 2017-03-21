@@ -873,21 +873,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 					  UIView *usernameView =
 						  [self findView:ViewElement_UsernameFormView inView:self.contentView ofType:UIView.class];
 					  usernameView.hidden = !usernameSwitch.isOn;
-					  ((UITextField *)[self findView:ViewElement_Phone
-											  inView:_linphoneLoginView
-											  ofType:[UIAssistantTextField class]])
-						  .text = [NSString stringWithUTF8String:nationnal_significant_number];
+					  if (nationnal_significant_number) {
+						  ((UITextField *)[self findView:ViewElement_Phone
+												  inView:_linphoneLoginView
+												  ofType:[UIAssistantTextField class]])
+							  .text = [NSString stringWithUTF8String:nationnal_significant_number];
+					  }
 					  ((UITextField *)[self findView:ViewElement_SMSCode
 											  inView:_createAccountActivateSMSView
 											  ofType:[UITextField class]])
 						  .text = @"";
 					  linphone_account_creator_set_activation_code(account_creator, "");
-					  NSDictionary *country =
-						  [CountryListView countryWithIso:[NSString stringWithUTF8String:dialplan.iso_country_code]];
-					  [self didSelectCountry:country];
+					  if (dialplan.iso_country_code) {
+						  NSDictionary *country = [CountryListView
+							  countryWithIso:[NSString stringWithUTF8String:dialplan.iso_country_code]];
+						  [self didSelectCountry:country];
+					  }
 					  // Reset phone number in account_creator to be sure to let the user retry
-					  linphone_account_creator_set_phone_number(account_creator, nationnal_significant_number,
-																dialplan.ccc);
+					  if (nationnal_significant_number) {
+						  linphone_account_creator_set_phone_number(account_creator, nationnal_significant_number,
+																	dialplan.ccc);
+					  }
 					}];
 
 		defaultAction.accessibilityLabel = @"PopUpResp";

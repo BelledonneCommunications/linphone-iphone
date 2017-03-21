@@ -109,6 +109,7 @@ typedef struct _LinphoneManagerSounds {
 	Connectivity connectivity;
 	UIBackgroundTaskIdentifier pausedCallBgTask;
 	UIBackgroundTaskIdentifier incallBgTask;
+	UIBackgroundTaskIdentifier pushBgTask;
 	CTCallCenter* mCallCenter;
     NSDate *mLastKeepAliveDate;
 @public
@@ -140,7 +141,8 @@ typedef struct _LinphoneManagerSounds {
 - (void)acceptCallForCallId:(NSString*)callid;
 - (LinphoneCall *)callByCallId:(NSString *)call_id;
 - (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
-
+- (void)alertLIME:(LinphoneChatRoom *)room;
+- (void)startPushLongRunningTask:(BOOL)msg;
 + (BOOL)langageDirectionIsRTL;
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
@@ -157,7 +159,8 @@ typedef struct _LinphoneManagerSounds {
 + (NSString*)cacheDirectory;
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
-- (BOOL)call:(const LinphoneAddress *)address;
+- (void)call:(const LinphoneAddress *)address;
+- (BOOL)doCall:(const LinphoneAddress *)iaddr;
 
 +(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 +(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
@@ -218,5 +221,6 @@ typedef struct _LinphoneManagerSounds {
 @property(strong, nonatomic) NSMutableArray *fileTransferDelegates;
 @property BOOL nextCallIsTransfer;
 @property BOOL conf;
+@property NSDictionary *pushDict;
 
 @end

@@ -114,8 +114,20 @@ void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const cha
 			case ORTP_LOGLEV_END:
 				return;
 		}
-		os_log_with_type(log, type, "%{public}s/%{public}s", domain,
-						 [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"].UTF8String);
+		if ([formatedString containsString:@"\n"]) {
+			NSArray *myWords = [[formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]
+				componentsSeparatedByString:@"\n"];
+			for (int i = 0; i < myWords.count; i++) {
+				NSString *tab = i > 0 ? @"\t" : @"";
+				if (((NSString *)myWords[i]).length > 0) {
+					os_log_with_type(log, type, "%{public}s%{public}s", tab.UTF8String,
+									 ((NSString *)myWords[i]).UTF8String);
+				}
+			}
+		} else {
+			os_log_with_type(log, type, "%{public}s/%{public}s", domain,
+							 [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"].UTF8String);
+		}
 	} else {
 		int lvl = ASL_LEVEL_NOTICE;
 		switch (lev) {

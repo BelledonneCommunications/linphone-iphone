@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIChatBubbleTextCell">
             <connections>
+                <outlet property="LIMEKO" destination="PqI-MR-8GC" id="tHK-Bp-80H"/>
                 <outlet property="avatarImage" destination="P1c-sD-eOv" id="h5P-hl-jbX"/>
                 <outlet property="backgroundColorImage" destination="ZIO-Cb-28G" id="asA-a1-Rko"/>
                 <outlet property="bottomBarColor" destination="mlr-pl-B6T" id="4Lk-Vn-E8h"/>
                 <outlet property="bubbleView" destination="ucH-2r-rar" id="XWU-yi-1z8"/>
                 <outlet property="contactDateLabel" destination="GRe-ur-aSb" id="DQA-v4-IjX"/>
+                <outlet property="imdmIcon" destination="WlS-fU-Aut" id="bYC-jb-Amo"/>
+                <outlet property="imdmLabel" destination="yKD-pC-Nhu" id="ge9-Yl-qsr"/>
                 <outlet property="messageText" destination="CYa-If-oB4" id="7xm-UF-1qB"/>
                 <outlet property="resendRecognizer" destination="OA2-9R-81Z" id="zVJ-IY-3yO"/>
                 <outlet property="statusErrorImage" destination="nLy-JO-TyL" id="ZkB-dR-cx2"/>
@@ -24,23 +31,21 @@
                 <action selector="onResendClick:" destination="-1" id="l6k-1D-O4U"/>
             </connections>
         </tapGestureRecognizer>
-        <view contentMode="scaleToFill" id="ucH-2r-rar">
-            <rect key="frame" x="0.0" y="0.0" width="334" height="60"/>
+        <view contentMode="scaleToFill" misplaced="YES" id="ucH-2r-rar">
+            <rect key="frame" x="0.0" y="0.0" width="334" height="67"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view clipsSubviews="YES" contentMode="scaleToFill" id="vdk-RV-QRU" userLabel="innerView">
-                    <rect key="frame" x="6" y="5" width="322" height="50"/>
+                    <rect key="frame" x="6" y="5" width="322" height="57"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="ZIO-Cb-28G" userLabel="backgroundColorImage">
-                            <rect key="frame" x="0.0" y="0.0" width="322" height="50"/>
+                            <rect key="frame" x="0.0" y="0.0" width="322" height="57"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <animations/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="P1c-sD-eOv" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="7" y="7" width="40" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <animations/>
                             <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                 <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
                                 <bool key="isElement" value="YES"/>
@@ -49,52 +54,70 @@
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="11:35 John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="GRe-ur-aSb" userLabel="contactDateLabel">
                             <rect key="frame" x="55" y="8" width="246" height="14"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <animations/>
                             <accessibility key="accessibilityConfiguration" label="Contact name"/>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_not_delivered.png" id="nLy-JO-TyL" userLabel="statusErrorImage">
                             <rect key="frame" x="302" y="0.0" width="20" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <animations/>
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" id="4Z8-PE-uPe" userLabel="statusInprogressSpinner">
                             <rect key="frame" x="302" y="0.0" width="20" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <animations/>
                         </activityIndicatorView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
-                            <rect key="frame" x="0.0" y="49" width="322" height="1"/>
+                            <rect key="frame" x="0.0" y="56" width="322" height="1"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                            <animations/>
                         </imageView>
-                        <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
-                            <rect key="frame" x="50" y="15" width="279" height="54"/>
+                        <textView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
+                            <rect key="frame" x="50" y="15" width="279" height="50"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <animations/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             <dataDetectorType key="dataDetectorTypes" link="YES"/>
                         </textView>
+                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="lime_ko.png" id="PqI-MR-8GC" userLabel="LIMEKO">
+                            <rect key="frame" x="307" y="4" width="10" height="14"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Delivered" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yKD-pC-Nhu" userLabel="imdmLabel">
+                            <rect key="frame" x="240" y="40" width="64" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="valid_default.png" id="WlS-fU-Aut" userLabel="imdmIcon">
+                            <rect key="frame" x="306" y="42" width="13" height="13"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
+                        </imageView>
                     </subviews>
-                    <animations/>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="OA2-9R-81Z" appends="YES" id="Phx-YZ-cwz"/>
                     </connections>
                 </view>
             </subviews>
-            <animations/>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="26" y="55.5"/>
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="255" height="255"/>
-        <image name="chat_message_not_delivered.png" width="11" height="9"/>
+        <image name="avatar.png" width="259" height="259"/>
+        <image name="chat_message_not_delivered.png" width="11" height="10"/>
         <image name="color_A.png" width="2" height="2"/>
+        <image name="lime_ko.png" width="14" height="18"/>
+        <image name="valid_default.png" width="28" height="19"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
+    </simulatedMetricsContainer>
 </document>

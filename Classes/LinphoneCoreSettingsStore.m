@@ -324,6 +324,12 @@
 			   forKey:@"repeat_call_notification_preference"];
 	}
 
+	// chat section
+	{
+		[self setInteger:linphone_core_lime_enabled(LC) forKey:@"use_lime_preference"];
+		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
+	}
+
 	// network section
 	{
 		[self setBool:[lm lpConfigBoolForKey:@"edge_opt_preference" withDefault:NO] forKey:@"edge_opt_preference"];
@@ -401,6 +407,7 @@
 		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];
+		[self setBool:[lm lpConfigBoolForKey:@"use_rls_presence" withDefault:YES] forKey:@"use_rls_presence"];
 		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference"]
 			   forKey:@"enable_first_login_view_preference"];
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(LC);
@@ -409,7 +416,6 @@
 			[self setCString:linphone_address_get_username(parsed) forKey:@"primary_username_preference"];
 			linphone_address_destroy(parsed);
 		}
-		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
 	}
 
 	changedDict = [[NSMutableDictionary alloc] init];
@@ -572,7 +578,12 @@
 		}
 
 		LinphoneAuthInfo *proxyAi = (LinphoneAuthInfo *)linphone_proxy_config_find_auth_info(proxyCfg);
-
+		char *realm;
+		if (proxyAi) {
+			realm = ms_strdup(linphone_auth_info_get_realm(proxyAi));
+		} else {
+			realm = NULL;
+		}
 		// setup new proxycfg
 		linphone_proxy_config_done(proxyCfg);
 
@@ -588,12 +599,21 @@
 		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
-			LinphoneAuthInfo *info = linphone_auth_info_new(
-				linphone_address_get_username(from), userid_str, password ? password : NULL, password ? NULL : ha1,
-				linphone_proxy_config_get_realm(proxyCfg), linphone_proxy_config_get_domain(proxyCfg));
+			LinphoneAuthInfo *info;
+			if (password) {
+				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, password, NULL,
+											  linphone_proxy_config_get_realm(proxyCfg),
+											  linphone_proxy_config_get_domain(proxyCfg));
+			} else {
+				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, NULL, ha1,
+											  realm ? realm : linphone_proxy_config_get_realm(proxyCfg),
+											  linphone_proxy_config_get_domain(proxyCfg));
+			}
+
 			linphone_address_destroy(from);
 			linphone_core_add_auth_info(LC, info);
 			linphone_auth_info_destroy(info);
+			ms_free(realm);
 		}
 
 	bad_proxy:
@@ -656,36 +676,36 @@
 
 		bool enableAutoAnswer = [self boolForKey:@"enable_auto_answer_preference"];
 		[LinphoneManager.instance lpConfigSetBool:enableAutoAnswer forKey:@"auto_answer"];
+	}
+
+	// audio section
+	{
+		[self synchronizeCodecs:linphone_core_get_audio_codecs(LC)];
+
+		float playback_gain = [self floatForKey:@"playback_gain_preference"];
+		linphone_core_set_playback_gain_db(LC, playback_gain);
+
+		float mic_gain = [self floatForKey:@"microphone_gain_preference"];
+		linphone_core_set_mic_gain_db(LC, mic_gain);
+
+		[lm lpConfigSetInt:[self integerForKey:@"audio_codec_bitrate_limit_preference"]
+					forKey:@"codec_bitrate_limit"
+				 inSection:@"audio"];
+
+		BOOL voice_processing = [self boolForKey:@"voiceproc_preference"];
+		[lm lpConfigSetInt:voice_processing forKey:@"voiceproc_preference"];
+
+		BOOL equalizer = [self boolForKey:@"eq_active"];
+		[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
+
+		[LinphoneManager.instance configureVbrCodecs];
+
+		NSString *au_device = @"AU: Audio Unit Receiver";
+		if (!voice_processing) {
+			au_device = @"AU: Audio Unit NoVoiceProc";
 		}
-
-		// audio section
-		{
-			[self synchronizeCodecs:linphone_core_get_audio_codecs(LC)];
-
-			float playback_gain = [self floatForKey:@"playback_gain_preference"];
-			linphone_core_set_playback_gain_db(LC, playback_gain);
-
-			float mic_gain = [self floatForKey:@"microphone_gain_preference"];
-			linphone_core_set_mic_gain_db(LC, mic_gain);
-
-			[lm lpConfigSetInt:[self integerForKey:@"audio_codec_bitrate_limit_preference"]
-						forKey:@"codec_bitrate_limit"
-					 inSection:@"audio"];
-
-			BOOL voice_processing = [self boolForKey:@"voiceproc_preference"];
-			[lm lpConfigSetInt:voice_processing forKey:@"voiceproc_preference"];
-
-			BOOL equalizer = [self boolForKey:@"eq_active"];
-			[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
-
-			[LinphoneManager.instance configureVbrCodecs];
-
-			NSString *au_device = @"AU: Audio Unit Receiver";
-			if (!voice_processing) {
-				au_device = @"AU: Audio Unit NoVoiceProc";
-			}
-			linphone_core_set_capture_device(LC, [au_device UTF8String]);
-			linphone_core_set_playback_device(LC, [au_device UTF8String]);
+		linphone_core_set_capture_device(LC, [au_device UTF8String]);
+		linphone_core_set_playback_device(LC, [au_device UTF8String]);
 		}
 
 		// video section
@@ -741,6 +761,34 @@
 			[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
 			[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"]
 						 forKey:@"repeat_call_notification"];
+		}
+
+		// chat section
+		{
+			int val = [self integerForKey:@"use_lime_preference"];
+			linphone_core_enable_lime(LC, val);
+			if (val == LinphoneLimeMandatory &&
+				(linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP)) {
+				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
+				[self setCString:"ZRTP" forKey:@"media_encryption_preference"];
+				UIAlertController *errView = [UIAlertController
+					alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)
+									 message:
+										 NSLocalizedString(
+											 @"LIME requires ZRTP encryption.\n"
+											 @"By activating LIME you automatically activate ZRTP media encryption.",
+											 nil)
+							  preferredStyle:UIAlertControllerStyleAlert];
+
+				UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																		style:UIAlertActionStyleDefault
+																	  handler:^(UIAlertAction *action){
+																	  }];
+				[errView addAction:defaultAction];
+				[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+			}
+			linphone_core_set_file_transfer_server(
+				LC, [[self stringForKey:@"file_transfer_server_url_preference"] UTF8String]);
 		}
 
 		// network section
@@ -861,6 +909,36 @@
 						forKey:@"autoanswer_notif_preference"];
 			[lm lpConfigSetInt:[self integerForKey:@"show_msg_in_notif"] forKey:@"show_msg_in_notif"];
 
+			if ([self integerForKey:@"use_rls_presence"]) {
+				[self setInteger:0 forKey:@"use_rls_presence"];
+				NSString *rls_uri =
+					[lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
+				LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
+				const char *rls_domain = linphone_address_get_domain(rls_addr);
+				const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+				if (!proxies) {
+					// Enable it if no proxy config for first launch of app
+					[self setInteger:1 forKey:@"use_rls_presence"];
+				} else {
+					while (proxies) {
+						const char *proxy_domain = linphone_proxy_config_get_domain(proxies->data);
+						if (strcmp(rls_domain, proxy_domain) == 0) {
+							[self setInteger:1 forKey:@"use_rls_presence"];
+							break;
+						}
+						proxies = proxies->next;
+					}
+				}
+				linphone_address_unref(rls_addr);
+			}
+			[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
+
+			const MSList *lists = linphone_core_get_friends_lists(LC);
+			while (lists) {
+				linphone_friend_list_enable_subscriptions(lists->data, [self integerForKey:@"use_rls_presence"]);
+				lists = lists->next;
+			}
+
 			BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
 			[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];
 
@@ -878,9 +956,6 @@
 
 			[lm lpConfigSetInt:[self integerForKey:@"account_mandatory_advanced_preference"]
 						forKey:@"account_mandatory_advanced_preference"];
-
-			linphone_core_set_file_transfer_server(
-				LC, [[self stringForKey:@"file_transfer_server_url_preference"] UTF8String]);
 		}
 
 		changedDict = [[NSMutableDictionary alloc] init];

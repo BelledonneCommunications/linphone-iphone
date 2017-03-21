@@ -19,7 +19,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioServices.h>
-
 #import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 
@@ -335,7 +334,18 @@ static RootViewManager *rootViewManagerInstance = nil;
 			break;
 		}
 		case LinphoneCallPausedByRemote:
-		case LinphoneCallConnected:
+		case LinphoneCallConnected: {
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
+				NSString *callId =
+					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
+				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:callId];
+				if (uuid) {
+					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
+																		   startedConnectingAtDate:nil];
+				}
+			}
+			break;
+		}
 		case LinphoneCallStreamsRunning: {
 			[self changeCurrentView:CallView.compositeViewDescription];
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
@@ -343,6 +353,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
 				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:callId];
 				if (uuid) {
+					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
+																				   connectedAtDate:nil];
 					NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
 					CXCallUpdate *update = [[CXCallUpdate alloc] init];
 					update.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
@@ -366,6 +378,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		}
 		case LinphoneCallError: {
 			[self displayCallError:call message:message];
+			break;
 		}
 		case LinphoneCallEnd: {
 			const MSList *calls = linphone_core_get_calls(LC);
@@ -376,23 +389,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[self popCurrentView];
 				}
 			} else {
-				if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-					NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
-						objectForKey:[NSString
-										 stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(
-																  (LinphoneCall *)calls->data))]];
-					if (!uuid) {
-						linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
-						return;
-					}
-					CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
-					CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-					[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																				  completion:^(NSError *err){
-																				  }];
-				} else {
-					linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
-				}
+				linphone_call_resume((LinphoneCall *)calls->data);
 				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
@@ -400,51 +397,45 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallEarlyUpdatedByRemote:
 		case LinphoneCallEarlyUpdating:
 		case LinphoneCallIdle:
+			break;
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingProgress: {
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call &&
 				(linphone_core_get_calls_nb(LC) < 2)) {
-				// Create CallKit Call
+				// Link call ID to UUID
 				NSString *callId =
 					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-				NSUUID *uuid = [NSUUID UUID];
-				[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
-				[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
-				NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
-				CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
-				CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:uuid handle:handle];
+				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:@""];
+				if (uuid) {
+					[LinphoneManager.instance.providerDelegate.uuids removeObjectForKey:@""];
+					[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
+					[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
+				}
+			}
+			break;
+		}
+		case LinphoneCallOutgoingRinging:
+		case LinphoneCallPaused:
+		case LinphoneCallPausing:
+		case LinphoneCallRefered:
+		case LinphoneCallReleased:
+			break;
+		case LinphoneCallResuming: {
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
+				NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids
+					objectForKey:[NSString stringWithUTF8String:linphone_call_log_get_call_id(
+																	linphone_call_get_call_log(call))]];
+				if (!uuid) {
+					return;
+				}
+				CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
 				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
 				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
 																			  completion:^(NSError *err){
 																			  }];
 			}
+			break;
 		}
-		case LinphoneCallOutgoingRinging: {
-			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call) {
-				NSString *callId =
-					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-				NSUUID *uuid = [LinphoneManager.instance.providerDelegate.uuids objectForKey:callId];
-				if (uuid) {
-					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
-																		   startedConnectingAtDate:nil];
-					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid
-																				   connectedAtDate:nil];
-					NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
-					CXCallUpdate *update = [[CXCallUpdate alloc] init];
-					update.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
-					update.supportsGrouping = TRUE;
-					update.supportsDTMF = TRUE;
-					update.supportsHolding = TRUE;
-					update.supportsUngrouping = TRUE;
-					[LinphoneManager.instance.providerDelegate.provider reportCallWithUUID:uuid updated:update];
-				}
-			}
-		}
-		case LinphoneCallPaused:
-		case LinphoneCallPausing:
-		case LinphoneCallRefered:
-		case LinphoneCallReleased:
-		case LinphoneCallResuming:
 		case LinphoneCallUpdating:
 			break;
 	}
@@ -804,7 +795,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)incomingCallDeclined:(LinphoneCall *)call {
-	linphone_core_terminate_call(LC, call);
+	linphone_call_terminate(call);
 }
 
 @end

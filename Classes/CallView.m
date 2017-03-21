@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#import <AVFoundation/AVAudioSession.h>
 #import <AddressBook/AddressBook.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <OpenGLES/EAGL.h>
@@ -629,7 +630,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			  LOGI(@"User declined video proposal");
 			  if (call == linphone_core_get_current_call(LC)) {
 				  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-				  linphone_core_accept_call_update(LC, call, params);
+				  linphone_call_accept_update(call, params);
 				  linphone_call_params_destroy(params);
 				  [videoDismissTimer invalidate];
 				  videoDismissTimer = nil;
@@ -640,7 +641,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			  if (call == linphone_core_get_current_call(LC)) {
 				  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 				  linphone_call_params_enable_video(params, TRUE);
-				  linphone_core_accept_call_update(LC, call, params);
+				  linphone_call_accept_update(call, params);
 				  linphone_call_params_destroy(params);
 				  [videoDismissTimer invalidate];
 				  videoDismissTimer = nil;
@@ -710,6 +711,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
@@ -721,6 +723,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 	[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 

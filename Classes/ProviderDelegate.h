@@ -18,9 +18,14 @@
 @property CXCallController *controller;
 @property NSMutableDictionary *calls;
 @property NSMutableDictionary *uuids;
+@property LinphoneCall *pendingCall;
+@property LinphoneAddress *pendingAddr;
+@property BOOL pendingCallVideo;
+@property int callKitCalls;
 
 - (void)reportIncomingCallwithUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video;
 - (void)config;
+- (void)configAudioSession:(AVAudioSession *)audioSession;
 @end
 
 #endif /* ProviderDelegate_h */

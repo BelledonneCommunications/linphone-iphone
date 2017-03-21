@@ -53,14 +53,21 @@
 																assistant_activate_phone_number_link);
 
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	if (cfg && strcmp("sip.linphone.org", linphone_proxy_config_get_domain(cfg)) == 0) {
+	if (cfg &&
+		strcmp([LinphoneManager.instance lpConfigStringForKey:@"domain_name"
+													inSection:@"app"
+												  withDefault:@"sip.linphone.org"]
+				   .UTF8String,
+			   linphone_proxy_config_get_domain(cfg)) == 0) {
 		linphone_account_creator_set_username(
 			account_creator, linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg)));
 		const LinphoneAuthInfo *info = linphone_proxy_config_find_auth_info(cfg);
-		if (linphone_auth_info_get_passwd(info))
-			linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(info));
-		else
-			linphone_account_creator_set_ha1(account_creator, linphone_auth_info_get_ha1(info));
+		if (info) {
+			if (linphone_auth_info_get_passwd(info))
+				linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(info));
+			else
+				linphone_account_creator_set_ha1(account_creator, linphone_auth_info_get_ha1(info));
+		}
 		linphone_account_creator_set_domain(account_creator, linphone_proxy_config_get_domain(cfg));
 	} else {
 		LOGW(@"Default proxy is NOT a sip.linphone.org, aborting");

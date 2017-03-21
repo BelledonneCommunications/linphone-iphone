@@ -97,11 +97,11 @@
 		LinphoneManager.instance.conf = TRUE;
 		linphone_core_terminate_conference(LC);
 	} else if (currentcall != NULL) {
-		linphone_core_terminate_call(LC, currentcall);
+		linphone_call_terminate(currentcall);
 	} else {
 		const MSList *calls = linphone_core_get_calls(LC);
 		if (bctbx_list_size(calls) == 1) { // Only one call
-			linphone_core_terminate_call(LC, (LinphoneCall *)(calls->data));
+			linphone_call_terminate((LinphoneCall *)(calls->data));
 		}
 	}
 }

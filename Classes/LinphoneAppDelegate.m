@@ -110,9 +110,14 @@
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
+			LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+			if (data && data->timer) {
+				[data->timer invalidate];
+				data->timer = nil;
+			}
 			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
-					linphone_core_accept_call(LC, call);
+					linphone_call_accept(call);
 					[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 				} else {
 					[PhoneMainView.instance displayIncomingCall:call];
@@ -271,7 +276,6 @@
 												   actions:[NSArray arrayWithObjects:act_confirm, act_deny, nil]
 										 intentIdentifiers:[[NSMutableArray alloc] init]
 												   options:UNNotificationCategoryOptionCustomDismissAction];
-
 		[UNUserNotificationCenter currentNotificationCenter].delegate = self;
 		[[UNUserNotificationCenter currentNotificationCenter]
 			requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
@@ -417,8 +421,10 @@
 
 	if (aps != nil) {
 		NSDictionary *alert = [aps objectForKey:@"alert"];
+		NSString *loc_key = [aps objectForKey:@"loc-key"];
+		NSString *callId = [aps objectForKey:@"call-id"];
 		if (alert != nil) {
-			NSString *loc_key = [alert objectForKey:@"loc-key"];
+			loc_key = [alert objectForKey:@"loc-key"];
 			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
@@ -429,7 +435,7 @@
                 }
 				if (loc_key != nil) {
 
-					NSString *callId = [userInfo objectForKey:@"call-id"];
+					callId = [userInfo objectForKey:@"call-id"];
 					if (callId != nil) {
 						if ([callId isEqualToString:@""]){
 							//Present apn pusher notifications for info
@@ -459,10 +465,26 @@
 					} else  if ([callId  isEqual: @""]) {
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
+				}
+			}
+		}
 
-					if ([loc_key isEqualToString:@"IC_MSG"]) {
-						[self fixRing];
-					}
+		if (callId) {
+			int index = -1;
+			NSDictionary *dict = LinphoneManager.instance.pushDict;
+			if ([[dict allKeys] containsObject:callId]) {
+				index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:callId] intValue] + 1;
+			} else {
+				index = 1;
+			}
+			[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:index] forKey:callId];
+			if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && loc_key &&
+				index > 0) {
+				if ([loc_key isEqualToString:@"IC_MSG"]) {
+					[LinphoneManager.instance startPushLongRunningTask:FALSE];
+					[self fixRing];
+				} else if ([loc_key isEqualToString:@"IM_MSG"]) {
+					[LinphoneManager.instance startPushLongRunningTask:TRUE];
 				}
 			}
 		}
@@ -665,11 +687,13 @@ didInvalidatePushTokenForType:(NSString *)type {
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
-    didUpdatePushCredentials:(PKPushCredentials *)credentials
-             forType:(NSString *)type {
-    LOGI(@"PushKit credentials updated");
-    LOGI(@"voip token: %@", (credentials.token));
-    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:credentials.token];});
+	didUpdatePushCredentials:(PKPushCredentials *)credentials
+					 forType:(PKPushType)type {
+	LOGI(@"PushKit credentials updated");
+	LOGI(@"voip token: %@", (credentials.token));
+	dispatch_async(dispatch_get_main_queue(), ^{
+	  [LinphoneManager.instance setPushNotificationToken:credentials.token];
+	});
 }
 
 #pragma mark - UNUserNotifications Framework
@@ -681,10 +705,13 @@ didInvalidatePushTokenForType:(NSString *)type {
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)())completionHandler {
-    LOGD(@"UN : response recieved");
-    LOGD(response.description);
+	LOGD(@"UN : response received");
+	LOGD(response.description);
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
+	if (!callId) {
+		return;
+	}
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
 	if (call) {
 		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
@@ -697,9 +724,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	if ([response.actionIdentifier isEqual:@"Answer"]) {
 		// use the standard handler
 		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-		linphone_core_accept_call(LC, call);
+		linphone_call_accept(call);
 	} else if ([response.actionIdentifier isEqual:@"Decline"]) {
-		linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+		linphone_call_decline(call, LinphoneReasonDeclined);
 	} else if ([response.actionIdentifier isEqual:@"Reply"]) {
 		LinphoneCore *lc = [LinphoneManager getLc];
 		NSString *replyText = [(UNTextInputNotificationResponse *)response userText];
@@ -708,6 +735,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if (room) {
 			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 			linphone_chat_room_send_chat_message(room, msg);
+
+			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
+				[LinphoneManager.instance alertLIME:room];
+			}
 			linphone_chat_room_mark_as_read(room);
 			TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 				getCachedController:NSStringFromClass(TabBarView.class)];
@@ -729,7 +760,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		LOGI(@"User declined video proposal");
 		if (call == linphone_core_get_current_call(LC)) {
 			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-			linphone_core_accept_call_update(LC, call, params);
+			linphone_call_accept_update(call, params);
 			linphone_call_params_destroy(params);
 		}
 	} else if ([response.actionIdentifier isEqual:@"Accept"]) {
@@ -739,7 +770,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 			linphone_call_params_enable_video(params, TRUE);
-			linphone_core_accept_call_update(LC, call, params);
+			linphone_call_accept_update(call, params);
 			linphone_call_params_destroy(params);
 		}
 	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
@@ -750,6 +781,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if (linphone_core_get_current_call(LC) == call) {
 			linphone_call_set_authentication_token_verified(call, NO);
 		}
+	} else if ([response.actionIdentifier isEqual:@"Call"]) {
+
 	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
 		if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
 			[PhoneMainView.instance displayIncomingCall:call];
@@ -767,7 +800,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 					  LOGI(@"User declined video proposal");
 					  if (call == linphone_core_get_current_call(LC)) {
 						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-						  linphone_core_accept_call_update(LC, call, params);
+						  linphone_call_accept_update(call, params);
 						  linphone_call_params_destroy(params);
 						  [videoDismissTimer invalidate];
 					  }
@@ -777,7 +810,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 					  if (call == linphone_core_get_current_call(LC)) {
 						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 						  linphone_call_params_enable_video(params, TRUE);
-						  linphone_core_accept_call_update(LC, call, params);
+						  linphone_call_accept_update(call, params);
 						  linphone_call_params_destroy(params);
 						  [videoDismissTimer invalidate];
 					  }
@@ -790,10 +823,22 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 															   userInfo:sheet
 																repeats:NO];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"zrtp_request"]) {
-			[UIConfirmationDialog
-				ShowWithMessage:[NSString stringWithFormat:NSLocalizedString(
-															   @"Confirm the following SAS with peer:\n%s", nil),
-														   linphone_call_get_authentication_token(call)]
+			NSString *code = [NSString stringWithUTF8String:linphone_call_get_authentication_token(call)];
+			NSString *myCode;
+			NSString *correspondantCode;
+			if (linphone_call_get_dir(call) == LinphoneCallIncoming) {
+				myCode = [code substringToIndex:2];
+				correspondantCode = [code substringFromIndex:2];
+			} else {
+				correspondantCode = [code substringToIndex:2];
+				myCode = [code substringFromIndex:2];
+			}
+			NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n"
+																			 @"Say : %@\n"
+																			 @"Your correspondant should say : %@",
+																			 nil),
+														   myCode, correspondantCode];
+			[UIConfirmationDialog ShowWithMessage:message
 				cancelMessage:NSLocalizedString(@"DENY", nil)
 				confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 				onCancelClick:^() {
@@ -806,6 +851,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 					  linphone_call_set_authentication_token_verified(call, YES);
 				  }
 				}];
+		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"lime"]) {
+			return;
 		} else { // Missed call
 			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
 		}
@@ -839,11 +886,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			if ([identifier isEqualToString:@"answer"]) {
 				// use the standard handler
 				[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-				linphone_core_accept_call(LC, call);
+				linphone_call_accept(call);
 			} else if ([identifier isEqualToString:@"decline"]) {
 				LinphoneCall *call = linphone_core_get_current_call(LC);
 				if (call)
-					linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+					linphone_call_decline(call, LinphoneReasonDeclined);
 			}
 		} else if ([notification.category isEqualToString:@"incoming_msg"]) {
 			if ([identifier isEqualToString:@"reply"]) {
@@ -883,11 +930,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if ([identifier isEqualToString:@"answer"]) {
 			// use the standard handler
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-			linphone_core_accept_call(LC, call);
+			linphone_call_accept(call);
 		} else if ([identifier isEqualToString:@"decline"]) {
 			LinphoneCall *call = linphone_core_get_current_call(LC);
 			if (call)
-				linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
+				linphone_call_decline(call, LinphoneReasonDeclined);
 		}
 	} else if ([notification.category isEqualToString:@"incoming_msg"] &&
 			   [identifier isEqualToString:@"reply_inline"]) {
@@ -898,6 +945,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		if (room) {
 			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 			linphone_chat_room_send_chat_message(room, msg);
+
+			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
+				[LinphoneManager.instance alertLIME:room];
+			}
+
 			linphone_chat_room_mark_as_read(room);
 			[PhoneMainView.instance updateApplicationBadgeNumber];
 		}

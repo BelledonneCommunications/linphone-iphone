@@ -27,9 +27,10 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
 
 + (void)initialize {
 	// turn off ALL logs because xcodebuild has problems with it
-	linphone_core_enable_logs_with_cb(dummy_logger);
-
-	for (int i = 0; i < bc_tester_nb_suites(); i++) {
+	// linphone_core_enable_logs_with_cb(dummy_logger);
+	bc_tester_start(NULL);
+	bc_tester_uninit();
+	/*for (int i = 0; i < bc_tester_nb_suites(); i++) {
 		const char *suite = bc_tester_suite_name(i);
 		LOGE(@"suite = %s", suite);
 		int test_count = bc_tester_nb_tests(suite);
@@ -53,7 +54,7 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
 				}
 			}
 		}
-	}
+	}*/
 }
 
 - (void)testForSuite:(NSString *)suite andTest:(NSString *)test {

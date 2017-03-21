@@ -115,6 +115,16 @@
 			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Key</key>
+			<string>message_menu</string>
+			<key>Title</key>
+			<string>Chat</string>
+			<key>File</key>
+			<string>Chat</string>
+		</dict>
+		<dict>
 			<key>Key</key>
 			<string>network_menu</string>
 			<key>File</key>

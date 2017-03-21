@@ -102,6 +102,7 @@
 	[self.tableView reloadData];
 	size_t count = bctbx_list_size(messageList);
 	if (count) {
+		[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]];
 		[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
 							  atScrollPosition:UITableViewScrollPositionBottom
 									  animated:YES];

@@ -44,7 +44,9 @@
 #pragma mark -
 
 - (void)onAddressBookUpdate:(NSNotification *)k {
-	if (!inhibUpdate && ![_tableController isEditing]) {
+	if (!inhibUpdate && ![_tableController isEditing] &&
+		(PhoneMainView.instance.currentView == self.compositeViewDescription) &&
+		(_nameLabel.text == PhoneMainView.instance.currentName)) {
 		[self resetData];
 	}
 }
@@ -220,7 +222,9 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
+	if (_tableController && _tableController.tableView && [_tableController.tableView observationInfo]) {
+		[_tableController.tableView removeObserver:self forKeyPath:@"contentSize"];
+	}
 	[super viewWillDisappear:animated];
 	PhoneMainView.instance.currentName = NULL;
 	if (self.tmpContact) {
@@ -257,6 +261,24 @@
 		}
 		self.tmpContact = NULL;
 		[self saveData];
+	}
+	BOOL rm = TRUE;
+	for (NSString *sip in _contact.sipAddresses) {
+		if (![sip isEqualToString:@""]) {
+			rm = FALSE;
+			break;
+		}
+	}
+	if (rm) {
+		for (NSString *phone in _contact.phoneNumbers) {
+			if (![phone isEqualToString:@""]) {
+				rm = FALSE;
+				break;
+			}
+		}
+	}
+	if (rm) {
+		[LinphoneManager.instance.fastAddressBook removeContact:_contact];
 	}
 }
 
@@ -382,6 +404,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		[self saveData];
 		[self.tableController.tableView reloadData];
+	} else {
+		BOOL rm = TRUE;
+		for (NSString *sip in _contact.sipAddresses) {
+			if (![sip isEqualToString:@""]) {
+				rm = FALSE;
+				break;
+			}
+		}
+		if (rm) {
+			for (NSString *phone in _contact.phoneNumbers) {
+				if (![phone isEqualToString:@""]) {
+					rm = FALSE;
+					break;
+				}
+			}
+		}
+		if (rm) {
+			[LinphoneManager.instance.fastAddressBook removeContact:_contact];
+		}
 	}
 	
 	[self setEditing:FALSE];
