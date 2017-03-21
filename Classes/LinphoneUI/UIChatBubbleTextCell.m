@@ -252,19 +252,20 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
 	if (state == LinphoneChatMessageStateDeliveredToUser) {
-		[_imdmIcon setImage:[UIImage imageNamed:@"valid_disabled"]];
+		[_imdmIcon setImage:[UIImage imageNamed:@"chat_delivered"]];
 		[_imdmLabel setText:NSLocalizedString(@"Delivered", nil)];
-		[_imdmLabel setTextColor:[UIColor orangeColor]];
+		[_imdmLabel setTextColor:[UIColor grayColor]];
 		[_imdmIcon setHidden:FALSE];
 		[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateDisplayed) {
-		[_imdmIcon setImage:[UIImage imageNamed:@"valid_default"]];
+		[_imdmIcon setImage:[UIImage imageNamed:@"chat_read"]];
 		[_imdmLabel setText:NSLocalizedString(@"Displayed", nil)];
-		[_imdmLabel setTextColor:[UIColor orangeColor]];
+		[_imdmLabel
+			setTextColor:([UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0])];
 		[_imdmIcon setHidden:FALSE];
 		[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
-		[_imdmIcon setImage:[UIImage imageNamed:@"chat_message_not_delivered"]];
+		[_imdmIcon setImage:[UIImage imageNamed:@"chat_error"]];
 		[_imdmLabel setText:NSLocalizedString(@"Resend", nil)];
 		[_imdmLabel setTextColor:[UIColor redColor]];
 		[_imdmIcon setHidden:FALSE];
