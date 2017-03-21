@@ -56,16 +56,16 @@ LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_cons
 	return requests_cbs->account_creator_request_constructor_cb;
 }
 
-void linphone_account_creator_requests_cbs_set_constructor_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func) {
-	requests_cbs->account_creator_request_constructor_cb = func;
+void linphone_account_creator_requests_cbs_set_constructor_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc cb) {
+	requests_cbs->account_creator_request_constructor_cb = cb;
 }
 
 LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_destructor_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs) {
 	return requests_cbs->account_creator_request_destructor_cb;
 }
 
-void linphone_account_creator_requests_cbs_set_destructor_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func) {
-	requests_cbs->account_creator_request_destructor_cb = func;
+void linphone_account_creator_requests_cbs_set_destructor_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc cb) {
+	requests_cbs->account_creator_request_destructor_cb = cb;
 }
 
 LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_create_account_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs) {
@@ -105,11 +105,11 @@ void linphone_account_creator_requests_cbs_set_link_account_cb(LinphoneAccountCr
 }
 
 LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_activate_alias_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs) {
-	return request_cbs->activate_alias_request_cb;
+	return requests_cbs->activate_alias_request_cb;
 }
 
-void linphone_account_creator_requests_cbs_set_activate_alias_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc func) {
-	request_cbs->activate_alias_request_cb = cb;
+void linphone_account_creator_requests_cbs_set_activate_alias_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc cb) {
+	requests_cbs->activate_alias_request_cb = cb;
 }
 
 LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_is_alias_used_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs) {
