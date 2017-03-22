@@ -465,7 +465,7 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 			BC_ASSERT_PTR_NOT_NULL(phrase);
 			if (phrase) BC_ASSERT_STRING_EQUAL(phrase,"Forbidden");
 			BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),403, int, "%d");
-			BC_ASSERT_PTR_NULL(linphone_error_info_get_details(ei));
+			BC_ASSERT_PTR_NULL(linphone_error_info_get_warnings(ei));
 		}
 
 	}

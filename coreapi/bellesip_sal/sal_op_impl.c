@@ -580,17 +580,22 @@ void sal_error_info_reset(SalErrorInfo *ei){
 		ms_free(ei->full_string);
 		ei->full_string=NULL;
 	}
+	if (ei->protocol){
+		ms_free(ei->protocol);
+		ei->protocol = NULL;
+	}
 	ei->protocol_code=0;
 	ei->reason=SalReasonNone;
 }
 
-void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning){
+void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol, int code, const char *status_string, const char *warning){
 	sal_error_info_reset(ei);
-	if (reason==SalReasonUnknown) ei->reason=_sal_reason_from_sip_code(code);
+	if (reason==SalReasonUnknown && strcmp(protocol, "SIP") == 0) ei->reason=_sal_reason_from_sip_code(code);
 	else ei->reason=reason;
 	ei->protocol_code=code;
 	ei->status_string=status_string ? ms_strdup(status_string) : NULL;
 	ei->warnings=warning ? ms_strdup(warning) : NULL;
+	ei->protocol = protocol ? ms_strdup(protocol) : NULL;
 	if (ei->status_string){
 		if (ei->warnings)
 			ei->full_string=ms_strdup_printf("%s %s",ei->status_string,ei->warnings);
@@ -598,22 +603,34 @@ void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char
 	}
 }
 
+void sal_op_set_reason_error_info(SalOp *op, belle_sip_message_t *msg){
+	belle_sip_header_reason_t* reason_header = belle_sip_message_get_header_by_type(msg,belle_sip_header_reason_t);
+	if (reason_header){
+		SalErrorInfo *ei=&op->reason_error_info;
+		const char *protocol = belle_sip_header_reason_get_protocol(reason_header);
+		int code = belle_sip_header_reason_get_cause(reason_header);
+		const char *text = belle_sip_header_reason_get_text(reason_header);
+		sal_error_info_set(ei, SalReasonUnknown, protocol, code, text, NULL);
+	}
+}
+
 void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *response){
 	int code = belle_sip_response_get_status_code(response);
 	const char *reason_phrase=belle_sip_response_get_reason_phrase(response);
-	/*Remark: the reason header is to be used mainly in SIP requests, thus the use and prototype of this function should be changed.*/
-	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
 	belle_sip_header_t *warning=belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Warning");
 	SalErrorInfo *ei=&op->error_info;
 	const char *warnings;
 
 	warnings=warning ? belle_sip_header_get_unparsed_value(warning) : NULL;
-	if (warnings==NULL) warnings=reason_header ? belle_sip_header_get_unparsed_value(reason_header) : NULL;
-	sal_error_info_set(ei,SalReasonUnknown,code,reason_phrase,warnings);
+	sal_error_info_set(ei,SalReasonUnknown,"SIP", code,reason_phrase,warnings);
 }
 
 const SalErrorInfo *sal_op_get_error_info(const SalOp *op){
 	return &op->error_info;
+}
+
+const SalErrorInfo * sal_op_get_reason_error_info(const SalOp *op){
+	return &op->reason_error_info;
 }
 
 static void unlink_op_with_dialog(SalOp *op, belle_sip_dialog_t* dialog){

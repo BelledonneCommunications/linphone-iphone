@@ -52,7 +52,7 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 		if (status_code == 503) { /*refresher returns 503 for IO error*/
 			reason = SalReasonIOError;
 		}
-		sal_error_info_set(&op->error_info,reason,status_code,reason_phrase,NULL);
+		sal_error_info_set(&op->error_info, reason, "SIP", status_code,reason_phrase,NULL);
 		op->base.root->callbacks.subscribe_response(op,sss, will_retry);
 	}else if (status_code==0){
 		op->base.root->callbacks.on_expire(op);
@@ -72,7 +72,7 @@ static void subscribe_process_io_error(void *user_ctx, const belle_sip_io_error_
 			/*this is handling outgoing out-of-dialog notifies*/
 			if (strcmp(method,"NOTIFY")==0){
 				SalErrorInfo *ei=&op->error_info;
-				sal_error_info_set(ei,SalReasonIOError,0,NULL,NULL);
+				sal_error_info_set(ei,SalReasonIOError, "SIP", 0,NULL,NULL);
 				op->base.root->callbacks.on_notify_response(op);
 			}
 		}
@@ -131,7 +131,7 @@ static void subscribe_process_timeout(void *user_ctx, const belle_sip_timeout_ev
 		/*this is handling outgoing out-of-dialog notifies*/
 		if (strcmp(method,"NOTIFY")==0){
 			SalErrorInfo *ei=&op->error_info;
-			sal_error_info_set(ei,SalReasonRequestTimeout,0,NULL,NULL);
+			sal_error_info_set(ei,SalReasonRequestTimeout, "SIP", 0,NULL,NULL);
 			op->base.root->callbacks.on_notify_response(op);
 		}
 	}

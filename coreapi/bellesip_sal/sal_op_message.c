@@ -34,12 +34,12 @@ static void process_error( SalOp* op) {
 
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	SalOp* op = (SalOp*)user_ctx;
-	sal_error_info_set(&op->error_info,SalReasonIOError,503,"IO Error",NULL);
+	sal_error_info_set(&op->error_info,SalReasonIOError, "SIP", 503,"IO Error",NULL);
 	process_error(op);
 }
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	SalOp* op=(SalOp*)user_ctx;
-	sal_error_info_set(&op->error_info,SalReasonRequestTimeout,408,"Request timeout",NULL);
+	sal_error_info_set(&op->error_info,SalReasonRequestTimeout, "SIP", 408,"Request timeout",NULL);
 	process_error(op);
 
 }

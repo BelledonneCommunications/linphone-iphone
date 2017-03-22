@@ -463,7 +463,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		}
 
 		if (retval > 0) {
-			sal_error_info_set((SalErrorInfo *)sal_op_get_error_info(op), SalReasonNotAcceptable, retval, "Unable to encrypt IM", NULL);
+			sal_error_info_set((SalErrorInfo *)sal_op_get_error_info(op), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", NULL);
 			store_or_update_chat_message(msg);
 			linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
 			linphone_chat_message_unref(msg);
@@ -1656,6 +1656,8 @@ void linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 static void _linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 	if (msg->op)
 		sal_op_release(msg->op);
+	if (msg->ei)
+		linphone_error_info_unref(msg->ei);
 	if (msg->message)
 		ms_free(msg->message);
 	if (msg->external_body_url)
@@ -1706,7 +1708,9 @@ static void linphone_chat_message_release(LinphoneChatMessage *msg) {
 }
 
 const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg) {
-	return linphone_error_info_from_sal_op(msg->op);
+	if (!msg->ei) ((LinphoneChatMessage*)msg)->ei = linphone_error_info_new(); /*let's do it mutable*/
+	linphone_error_info_from_sal_op(msg->ei, msg->op);
+	return msg->ei;
 }
 
 LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {

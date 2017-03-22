@@ -32,6 +32,30 @@ extern "C" {
  */
 
 /**
+ * Create an empty LinphoneErrorInfo object.
+ * The LinphoneErrorInfo object carries these fields:
+ * - a LinphoneReason enum member giving overall signification of the error reported.
+ * - the "protocol" name in which the protocol reason code has meaning, for example SIP or Q.850
+ * - the "protocol code", an integer referencing the kind of error reported
+ * - the "phrase", a text phrase describing the error
+ * - the "warning", the content of warning headers if any
+ * - a sub "LinphoneErrorInfo" may be provided if a SIP response includes a Reason header (RFC3326).
+**/
+LINPHONE_PUBLIC LinphoneErrorInfo *linphone_error_info_new(void);
+
+/**
+ * Increment refcount.
+ * @param[in] ei ErrorInfo object
+**/
+LINPHONE_PUBLIC LinphoneErrorInfo *linphone_error_info_ref(LinphoneErrorInfo *ei);
+
+/**
+ * Decrement refcount and possibly free the object.
+ * @param[in] ei ErrorInfo object
+**/
+LINPHONE_PUBLIC void linphone_error_info_unref(LinphoneErrorInfo *ei);
+
+/**
  * Get reason code from the error info.
  * @param[in] ei ErrorInfo object
  * @return A #LinphoneReason
@@ -48,11 +72,12 @@ LINPHONE_PUBLIC const char * linphone_error_info_get_phrase(const LinphoneErrorI
 
 /**
  * Provides additional information regarding the failure.
- * With SIP protocol, the "Reason" and "Warning" headers are returned.
+ * With SIP protocol, the content of "Warning" headers are returned.
  * @param[in] ei ErrorInfo object
  * @return More details about the failure
 **/
-LINPHONE_PUBLIC const char * linphone_error_info_get_details(const LinphoneErrorInfo *ei);
+LINPHONE_PUBLIC const char * linphone_error_info_get_warnings(const LinphoneErrorInfo *ei);
+
 
 /**
  * Get the status code from the low level protocol (ex a SIP status code).
@@ -60,6 +85,14 @@ LINPHONE_PUBLIC const char * linphone_error_info_get_details(const LinphoneError
  * @return The status code
 **/
 LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei);
+
+/**
+ * Assign information to a LinphoneErrorInfo object.
+ * @param[in] ei ErrorInfo object
+ */
+LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, LinphoneReason reason, int code, const char *status_string, const char *warning);
+
+LINPHONE_PUBLIC void linphone_error_info_set_reason(LinphoneErrorInfo *ei, LinphoneReason reason);
 
 /**
  * @}

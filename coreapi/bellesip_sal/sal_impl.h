@@ -87,6 +87,7 @@ struct SalOp{
 	SalOpBase base;
 	const belle_sip_listener_callbacks_t *callbacks;
 	SalErrorInfo error_info;
+	SalErrorInfo reason_error_info;
 	belle_sip_client_transaction_t *pending_auth_transaction;
 	belle_sip_server_transaction_t* pending_server_trans;
 	belle_sip_server_transaction_t* pending_update_server_trans;

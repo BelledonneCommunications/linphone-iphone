@@ -1000,6 +1000,7 @@ static void port_config_set(LinphoneCall *call, int stream_index, int min_port, 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int min_port, max_port;
 	ms_message("New LinphoneCall [%p] initialized (LinphoneCore version: %s)",call,linphone_core_get_version());
+	call->ei = linphone_error_info_new();
 	call->core->send_call_stats_periodical_updates = lp_config_get_int(call->core->config, "misc", "send_call_stats_periodical_updates", 0);
 	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
 	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
@@ -1544,9 +1545,8 @@ static void linphone_call_free_media_resources(LinphoneCall *call){
 static void linphone_call_set_released(LinphoneCall *call){
 	if (call->op!=NULL) {
 		/*transfer the last error so that it can be obtained even in Released state*/
-		if (call->non_op_error.reason==SalReasonNone){
-			const SalErrorInfo *ei=sal_op_get_error_info(call->op);
-			sal_error_info_set(&call->non_op_error,ei->reason,ei->protocol_code,ei->status_string,ei->warnings);
+		if (!call->non_op_error){
+			linphone_error_info_from_sal_op(call->ei, call->op);
 		}
 		/* so that we cannot have anymore upcalls for SAL
 			concerning this call*/
@@ -1857,7 +1857,7 @@ static void linphone_call_destroy(LinphoneCall *obj){
 	}
 	if (obj->onhold_file) ms_free(obj->onhold_file);
 
-	sal_error_info_reset(&obj->non_op_error);
+	if (obj->ei) linphone_error_info_unref(obj->ei);
 }
 
 LinphoneCall * linphone_call_ref(LinphoneCall *obj){
@@ -2046,9 +2046,10 @@ LinphoneReason linphone_call_get_reason(const LinphoneCall *call){
 }
 
 const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call){
-	if (call->non_op_error.reason!=SalReasonNone){
-		return (const LinphoneErrorInfo*)&call->non_op_error;
-	}else return linphone_error_info_from_sal_op(call->op);
+	if (!call->non_op_error){
+		linphone_error_info_from_sal_op(call->ei, call->op);
+	}
+	return call->ei;
 }
 
 void *linphone_call_get_user_data(const LinphoneCall *call)
@@ -4325,7 +4326,8 @@ static void linphone_call_lost(LinphoneCall *call){
 	if (from) ms_free(from);
 	ms_message("LinphoneCall [%p]: %s", call, temp);
 	linphone_core_notify_display_warning(lc, temp);
-	sal_error_info_set(&call->non_op_error, SalReasonIOError, 503, "IO error", NULL);
+	call->non_op_error = TRUE;
+	linphone_error_info_set(call->ei, LinphoneReasonIOError, 503, "Media lost", NULL);
 	linphone_call_terminate(call);
 	linphone_core_play_named_tone(lc, LinphoneToneCallLost);
 	ms_free(temp);
@@ -5029,8 +5031,10 @@ int linphone_call_resume(LinphoneCall *call) {
 static void terminate_call(LinphoneCall *call) {
 	LinphoneCore *lc = linphone_call_get_core(call);
 
-	if ((call->state == LinphoneCallIncomingReceived) && (call->non_op_error.reason != SalReasonRequestTimeout))
-		call->non_op_error.reason=SalReasonDeclined;
+	if ((call->state == LinphoneCallIncomingReceived) && (linphone_error_info_get_reason(call->ei) != LinphoneReasonNotAnswered)){
+		linphone_error_info_set_reason(call->ei, LinphoneReasonDeclined);
+		call->non_op_error = TRUE;
+	}
 
 	/* Stop ringing */
 	linphone_core_stop_ringing(lc);
@@ -5089,7 +5093,8 @@ int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	real_url = linphone_address_as_string(real_parsed_url);
 	sal_call_decline(call->op, SalReasonRedirect, real_url);
 	ms_free(real_url);
-	sal_error_info_set(&call->non_op_error, SalReasonRedirect, 603, "Call redirected", NULL);
+	linphone_error_info_set(call->ei, LinphoneReasonMovedPermanently, 302, "Call redirected", NULL);
+	call->non_op_error = TRUE;
 	terminate_call(call);
 	linphone_address_unref(real_parsed_url);
 	return 0;
