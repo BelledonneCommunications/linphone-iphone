@@ -276,7 +276,7 @@ void linphone_account_creator_responses_cbs_set_update_account_cb(LinphoneAccoun
 static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	/*this will drop all pending requests if any*/
 	if (creator->xmlrpc_session) linphone_xml_rpc_session_release(creator->xmlrpc_session);
-	if (linphone_account_creator_requests_cbs_get_destructor_cb(creator->requests_cbs) != NULL)
+	if (creator->requests_cbs != NULL && linphone_account_creator_requests_cbs_get_destructor_cb(creator->requests_cbs) != NULL)
 		linphone_account_creator_requests_cbs_get_destructor_cb(creator->requests_cbs)(creator);
 	linphone_account_creator_responses_cbs_unref(creator->responses_cbs);
 	linphone_proxy_config_destroy(creator->proxy_cfg);
@@ -308,7 +308,7 @@ LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const 
 	creator->core = core;
 	creator->xmlrpc_session = (xmlrpc_url) ? linphone_xml_rpc_session_new(core, xmlrpc_url) : NULL;
 	creator->proxy_cfg = linphone_core_create_proxy_config(core);
-	if (linphone_account_creator_requests_cbs_get_constructor_cb(creator->requests_cbs) != NULL)
+	if (creator->requests_cbs != NULL && linphone_account_creator_requests_cbs_get_constructor_cb(creator->requests_cbs) != NULL)
 		linphone_account_creator_requests_cbs_get_constructor_cb(creator->requests_cbs)(creator);
 	return creator;
 }
