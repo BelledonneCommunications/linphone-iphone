@@ -1610,7 +1610,7 @@ BELLE_SIP_TYPE_ID(LinphonePresenceService),
 BELLE_SIP_TYPE_ID(LinphonePresencePerson),
 BELLE_SIP_TYPE_ID(LinphonePresenceActivity),
 BELLE_SIP_TYPE_ID(LinphonePresenceNote),
-BELLE_SIP_TYPE_ID(LinphoneErrorInfo)
+BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
 BELLE_SIP_TYPE_ID(LinphoneConference),
 BELLE_SIP_TYPE_ID(LinphoneInfoMessage)
