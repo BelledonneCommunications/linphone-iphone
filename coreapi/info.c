@@ -38,7 +38,7 @@ static void _linphone_info_message_uninit(LinphoneInfoMessage *im);
 static void _linphone_info_message_copy(LinphoneInfoMessage *im, const LinphoneInfoMessage *orig);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneInfoMessage);
-BELLE_SIP_DECLARE_VPTR(LinphoneInfoMessage);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneInfoMessage);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneInfoMessage, belle_sip_object_t,
 	_linphone_info_message_uninit, // uninit
 	_linphone_info_message_copy, // clone
