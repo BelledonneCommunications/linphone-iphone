@@ -827,6 +827,71 @@ static void video_call_using_policy_AVPF_implicit_caller_and_callee(void) {
 	linphone_core_manager_destroy(caller);
 }
 
+static void video_call_established_by_reinvite_with_implicit_avpf(void) {
+	LinphoneCoreManager *callee = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneVideoPolicy policy;
+	LinphoneCall * caller_call, *callee_call;
+	LinphoneCallParams *params;
+
+	policy.automatically_initiate=FALSE;
+	policy.automatically_accept=FALSE;
+
+	linphone_core_set_video_policy(callee->lc,&policy);
+	
+	policy.automatically_initiate=TRUE;
+	policy.automatically_accept=TRUE;
+	linphone_core_set_video_policy(caller->lc,&policy);
+
+	linphone_core_enable_video_display(callee->lc, TRUE);
+	linphone_core_enable_video_capture(callee->lc, TRUE);
+	linphone_proxy_config_set_avpf_mode(linphone_core_get_default_proxy_config(callee->lc), LinphoneAVPFEnabled);
+
+	linphone_core_enable_video_display(caller->lc, TRUE);
+	linphone_core_enable_video_capture(caller->lc, TRUE);
+	
+	linphone_core_set_video_device(caller->lc,liblinphone_tester_mire_id);
+	linphone_core_set_video_device(callee->lc,liblinphone_tester_mire_id);
+	
+	caller_call = linphone_core_invite_address(caller->lc, callee->identity);
+	if (BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_LinphoneCallIncomingReceived,1))){
+		callee_call = linphone_core_get_current_call(callee->lc);
+		
+		linphone_core_accept_call(callee->lc, linphone_core_get_current_call(callee->lc));
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_LinphoneCallStreamsRunning,1));
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_LinphoneCallStreamsRunning,1));
+		
+		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(callee_call)));
+		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(caller_call)));
+		
+		/*then callee adds video*/
+		params = linphone_core_create_call_params(callee->lc, callee_call);
+		linphone_call_params_enable_video(params, TRUE);
+		linphone_call_update(callee_call, params);
+		linphone_call_params_unref(params);
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_LinphoneCallUpdating,1));
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_LinphoneCallUpdatedByRemote,1));
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_LinphoneCallStreamsRunning,2));
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_LinphoneCallStreamsRunning,2));
+		
+		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(callee_call)));
+		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(caller_call)));
+		
+		linphone_call_set_next_video_frame_decoded_callback(caller_call,linphone_call_iframe_decoded_cb,caller->lc);
+		linphone_call_set_next_video_frame_decoded_callback(callee_call,linphone_call_iframe_decoded_cb,callee->lc);
+		
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
+		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
+		
+		BC_ASSERT_TRUE(media_stream_avpf_enabled((MediaStream*)caller_call->videostream));
+		BC_ASSERT_TRUE(media_stream_avpf_enabled((MediaStream*)callee_call->videostream));
+	}
+	
+	end_call(caller, callee);
+	linphone_core_manager_destroy(callee);
+	linphone_core_manager_destroy(caller);
+}
+
 static void video_call_base_avpf(LinphoneCoreManager *caller, LinphoneCoreManager *callee, bool_t using_policy, LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
 	linphone_core_set_avpf_mode(caller->lc, LinphoneAVPFEnabled);
 	linphone_core_set_avpf_mode(callee->lc, LinphoneAVPFEnabled);
@@ -1951,6 +2016,7 @@ test_t call_video_tests[] = {
 	TEST_NO_TAG("Simple video call disable implicit AVPF on caller", video_call_disable_implicit_AVPF_on_caller),
 	TEST_NO_TAG("Simple video call AVPF to implicit AVPF", video_call_AVPF_to_implicit_AVPF),
 	TEST_NO_TAG("Simple video call implicit AVPF to AVPF", video_call_implicit_AVPF_to_AVPF),
+	TEST_NO_TAG("Video added by reINVITE, with implicit AVPF", video_call_established_by_reinvite_with_implicit_avpf),
 	TEST_NO_TAG("Simple video call", video_call),
 	TEST_NO_TAG("Simple video call without rtcp",video_call_without_rtcp),
 	TEST_NO_TAG("Simple ZRTP video call", video_call_zrtp),

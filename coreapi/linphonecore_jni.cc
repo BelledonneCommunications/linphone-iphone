@@ -5058,7 +5058,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteParams(JNIEnv 
 	return (jlong) linphone_call_params_copy(linphone_call_get_remote_params((LinphoneCall*)lc));
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParamsCopy(JNIEnv *env, jobject thiz, jlong lc){
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv *env, jobject thiz, jlong lc){
 	return (jlong) linphone_call_params_copy(linphone_call_get_current_params((LinphoneCall*)lc));
 }
 

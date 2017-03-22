@@ -201,6 +201,16 @@ public interface LinphoneCall {
 	**/
 	LinphoneCallParams getRemoteParams();
 
+	/**
+	 * Get call's effective parameters, resulting from SDP offer/answer.
+	**/
+	LinphoneCallParams getCurrentParams();
+
+	/**
+	 * 
+	 * Same as getCurrentParams(), but deprecated.
+	**/
+	@deprecated
 	LinphoneCallParams getCurrentParamsCopy();
 	
 	void enableCamera(boolean enabled);
