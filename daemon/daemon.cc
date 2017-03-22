@@ -679,7 +679,7 @@ string Daemon::readPipe() {
 					close(childfd);
 				} else {
 					mChildFd = (ortp_pipe_t)childfd;
-					return NULL;
+					return "";
 				}
 			}
 		}
@@ -692,7 +692,7 @@ string Daemon::readPipe() {
 					ms_message("Client disconnected");
 					ortp_server_pipe_close_client(mChildFd);
 					mChildFd = (ortp_pipe_t)-1;
-					return NULL;
+					return "";
 				}
 				buffer[ret] = '\0';
 				return buffer;
@@ -700,7 +700,7 @@ string Daemon::readPipe() {
 		}
 	}
 #endif
-	return NULL;
+	return "";
 }
 
 void Daemon::dumpCommandsHelp() {
