@@ -23,68 +23,263 @@ import org.linphone.core.LinphoneAddress.TransportType;
 
 public interface LinphoneAccountCreator {
 	interface LinphoneAccountCreatorListener {
-		void onAccountCreatorIsAccountUsed(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorAccountCreated(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorAccountActivated(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorAccountLinkedWithPhoneNumber(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorPhoneNumberLinkActivated(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorIsAccountActivated(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorPhoneAccountRecovered(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorIsAccountLinked(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorIsPhoneNumberUsed(LinphoneAccountCreator accountCreator, Status status);
-		void onAccountCreatorPasswordUpdated(LinphoneAccountCreator accountCreator, Status status);
+		void onAccountCreatorIsAccountUsed(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorAccountCreated(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorAccountActivated(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorAccountLinkedWithPhoneNumber(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorPhoneNumberLinkActivated(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorIsAccountActivated(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorPhoneAccountRecovered(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorIsAccountLinked(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorIsPhoneNumberUsed(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
+		void onAccountCreatorPasswordUpdated(LinphoneAccountCreator accountCreator, RequestStatus RequestStatus);
 	}
 
-	public static class Status {
-		static private Vector<Status> values = new Vector<Status>();
+	public static class UsernameCheck {
+		static private Vector<UsernameCheck> values = new Vector<UsernameCheck>();
 		private final int mValue;
 		private final String mStringValue;
 		public final int value() { return mValue; }
 
-		public final static Status Ok = new Status(0, "Ok");
-		public final static Status Failed = new Status(1, "Failed");
-		public final static Status AccountCreated = new Status(2, "AccountCreated");
-		public final static Status AccountNotCreated = new Status(3, "AccountNotCreated");
-		public final static Status AccountExist = new Status(4, "AccountExist");
-		public final static Status AccountExistWithAlias = new Status(5, "AccountExistWithAlias");
-		public final static Status AccountNotExist = new Status(6, "AccountNotExist");
-		public final static Status AccountActivated = new Status(7, "AccountActivated");
-		public final static Status AccountAlreadyActivated = new Status(8, "AccountAlreadyActivated");
-		public final static Status AccountNotActivated = new Status(9, "AccountNotActivated");
-		public final static Status AccountLinked = new Status(10, "AccountLinked");
-		public final static Status AccountNotLinked = new Status(11, "AccountNotLinked");
-		public final static Status EmailInvalid = new Status(12, "EmailInvalid");
-		public final static Status UsernameInvalid = new Status(13, "UsernameInvalid");
-		public final static Status UsernameTooShort = new Status(14, "UsernameTooShort");
-		public final static Status UsernameTooLong = new Status(15, "UsernameTooLong");
-		public final static Status UsernameInvalidSize = new Status(16, "UsernameInvalidSize");
-		public final static Status PhoneNumberInvalid = new Status(17, "PhoneNumberInvalid");
-		public final static Status PhoneNumberTooShort = new Status(18, "PhoneNumberTooShort");
-		public final static Status PhoneNumberTooLong = new Status(19, "PhoneNumberTooLong");
-		public final static Status PhoneNumberUsedAccount = new Status(20, "PhoneNumberUsed");
-		public final static Status PhoneNumberUsedAlias = new Status(21, "PhoneNumberUsed");
-		public final static Status PhoneNumberNotUsed = new Status(22, "PhoneNumberNotUsed");
-		public final static Status PasswordTooShort = new Status(23, "PasswordTooShort");
-		public final static Status PasswordTooLong = new Status(24, "PasswordTooLong");
-		public final static Status DomainInvalid = new Status(25, "DomainInvalid");
-		public final static Status RouteInvalid = new Status(26, "RouteInvalid");
-		public final static Status DisplayNameInvalid = new Status(27, "DisplayNameInvalid");
-		public final static Status TransportNotSupported = new Status(28, "TransportNotSupported");
-		public final static Status CountryCodeInvalid = new Status(29, "CountryCodeInvalid");
-		public final static Status ErrorServer = new Status(30, "ErrorServer");
+		public final static UsernameCheck Ok = new UsernameCheck(0, "Ok");
+		public final static UsernameCheck TooShort = new UsernameCheck(1, "TooShort");
+		public final static UsernameCheck TooLong = new UsernameCheck(2, "TooLong");
+		public final static UsernameCheck InvalidCharacters = new UsernameCheck(3, "InvalidCharacters");
+		public final static UsernameCheck Invalid = new UsernameCheck(4, "Invalid");
 
-		private Status(int value, String stringValue) {
+		private UsernameCheck(int value, String stringValue) {
 			mValue = value;
 			values.addElement(this);
 			mStringValue = stringValue;
 		}
 
-		public static Status fromInt(int value) {
+		public static UsernameCheck fromInt(int value) {
 			for (int i=0; i < values.size(); i++) {
-				Status state = (Status) values.elementAt(i);
+				UsernameCheck state = (UsernameCheck) values.elementAt(i);
 				if (state.mValue == value) return state;
 			}
-			throw new RuntimeException("Status not found [" + value + "]");
+			throw new RuntimeException("UsernameCheck not found [" + value + "]");
+		}
+
+		public String toString() {
+			return mStringValue;
+		}
+
+		public int toInt() {
+			return mValue;
+		}
+	}
+
+	public static class PhoneNumberCheck {
+		static private Vector<PhoneNumberCheck> values = new Vector<PhoneNumberCheck>();
+		private final int mValue;
+		private final String mStringValue;
+		public final int value() { return mValue; }
+
+		public final static PhoneNumberCheck Ok = new PhoneNumberCheck(0x1, "Ok");
+		public final static PhoneNumberCheck TooShort = new PhoneNumberCheck(0x2, "TooShort");
+		public final static PhoneNumberCheck TooLong = new PhoneNumberCheck(0x4, "TooLong");
+		public final static PhoneNumberCheck CountryCodeInvalid = new PhoneNumberCheck(0x8, "CountryCodeInvalid");
+		public final static PhoneNumberCheck Invalid = new PhoneNumberCheck(0x10, "Invalid");
+
+		private PhoneNumberCheck(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+
+		public static PhoneNumberCheck fromInt(int value) {
+			for (int i=0; i < values.size(); i++) {
+				PhoneNumberCheck state = (PhoneNumberCheck) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("UsernameCheck not found [" + value + "]");
+		}
+
+		public String toString() {
+			return mStringValue;
+		}
+
+		public int toInt() {
+			return mValue;
+		}
+	}
+
+	public static class EmailCheck {
+		static private Vector<EmailCheck> values = new Vector<EmailCheck>();
+		private final int mValue;
+		private final String mStringValue;
+		public final int value() { return mValue; }
+
+		public final static EmailCheck Ok = new EmailCheck(0, "Ok");
+		public final static EmailCheck Malformed = new EmailCheck(1, "Malformed");
+		public final static EmailCheck InvalidCharacters = new EmailCheck(2, "InvalidCharacters");
+
+		private EmailCheck(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+
+		public static EmailCheck fromInt(int value) {
+			for (int i=0; i < values.size(); i++) {
+				EmailCheck state = (EmailCheck) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("EmailCheck not found [" + value + "]");
+		}
+
+		public String toString() {
+			return mStringValue;
+		}
+
+		public int toInt() {
+			return mValue;
+		}
+	}
+
+	public static class PasswordCheck {
+		static private Vector<PasswordCheck> values = new Vector<PasswordCheck>();
+		private final int mValue;
+		private final String mStringValue;
+		public final int value() { return mValue; }
+
+		public final static PasswordCheck Ok = new PasswordCheck(0, "Ok");
+		public final static PasswordCheck TooShort = new PasswordCheck(1, "TooShort");
+		public final static PasswordCheck TooLong = new PasswordCheck(2, "TooLong");
+		public final static PasswordCheck InvalidCharacters = new PasswordCheck(3, "InvalidCharacters");
+		public final static PasswordCheck MissingCharacters = new PasswordCheck(4, "MissingCharacters");
+
+		private PasswordCheck(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+
+		public static PasswordCheck fromInt(int value) {
+			for (int i=0; i < values.size(); i++) {
+				PasswordCheck state = (PasswordCheck) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("PasswordCheck not found [" + value + "]");
+		}
+
+		public String toString() {
+			return mStringValue;
+		}
+
+		public int toInt() {
+			return mValue;
+		}
+	}
+
+	public static class LanguageCheck {
+		static private Vector<LanguageCheck> values = new Vector<LanguageCheck>();
+		private final int mValue;
+		private final String mStringValue;
+		public final int value() { return mValue; }
+
+		public final static LanguageCheck Ok = new LanguageCheck(0, "Ok");
+
+		private LanguageCheck(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+
+		public static LanguageCheck fromInt(int value) {
+			for (int i=0; i < values.size(); i++) {
+				LanguageCheck state = (LanguageCheck) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("LanguageCheck not found [" + value + "]");
+		}
+
+		public String toString() {
+			return mStringValue;
+		}
+
+		public int toInt() {
+			return mValue;
+		}
+	}
+
+	public static class ActivationCodeCheck {
+		static private Vector<ActivationCodeCheck> values = new Vector<ActivationCodeCheck>();
+		private final int mValue;
+		private final String mStringValue;
+		public final int value() { return mValue; }
+
+		public final static ActivationCodeCheck Ok = new ActivationCodeCheck(0, "Ok");
+		public final static ActivationCodeCheck TooShort = new ActivationCodeCheck(1, "TooShort");
+		public final static ActivationCodeCheck TooLong = new ActivationCodeCheck(2, "TooLong");
+		public final static ActivationCodeCheck InvalidCharacters = new ActivationCodeCheck(3, "InvalidCharacters");
+
+		private ActivationCodeCheck(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+
+		public static ActivationCodeCheck fromInt(int value) {
+			for (int i=0; i < values.size(); i++) {
+				ActivationCodeCheck state = (ActivationCodeCheck) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("ActivationCodeCheck not found [" + value + "]");
+		}
+
+		public String toString() {
+			return mStringValue;
+		}
+
+		public int toInt() {
+			return mValue;
+		}
+	}
+
+	public static class RequestStatus {
+		static private Vector<RequestStatus> values = new Vector<RequestStatus>();
+		private final int mValue;
+		private final String mStringValue;
+		public final int value() { return mValue; }
+
+		public final static RequestStatus Ok = new RequestStatus(0, "Ok");
+		public final static RequestStatus Failed = new RequestStatus(1, "Failed");
+		public final static RequestStatus MissingArguments = new RequestStatus(2, "MissingArguments");
+		public final static RequestStatus MissingCallbacks = new RequestStatus(3, "MissingCallbacks");
+
+		public final static RequestStatus AccountCreated = new RequestStatus(4, "AccountCreated");
+		public final static RequestStatus AccountNotCreated = new RequestStatus(5, "AccountNotCreated");
+
+		public final static RequestStatus AccountExist = new RequestStatus(6, "AccountExist");
+		public final static RequestStatus AccountExistWithAlias = new RequestStatus(7, "AccountExistWithAlias");
+		public final static RequestStatus AccountNotExist = new RequestStatus(8, "AccountNotExist");
+		public final static RequestStatus AliasIsAccount = new RequestStatus(9, "AliasIsAccount");
+		public final static RequestStatus AliasExist = new RequestStatus(10, "AliasExist");
+		public final static RequestStatus AliasNotExist = new RequestStatus(11, "AliasNotExist");
+
+		public final static RequestStatus AccountActivated = new RequestStatus(12, "AccountActivated");
+		public final static RequestStatus AccountAlreadyActivated = new RequestStatus(13, "AccountAlreadyActivated");
+		public final static RequestStatus AccountNotActivated = new RequestStatus(14, "AccountNotActivated");
+
+		public final static RequestStatus AccountLinked = new RequestStatus(15, "AccountLinked");
+		public final static RequestStatus AccountNotLinked = new RequestStatus(16, "AccountNotLinked");
+
+		public final static RequestStatus ErrorServer = new RequestStatus(17, "ErrorServer");
+
+		private RequestStatus(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+
+		public static RequestStatus fromInt(int value) {
+			for (int i=0; i < values.size(); i++) {
+				RequestStatus state = (RequestStatus) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("RequestStatus not found [" + value + "]");
 		}
 
 		public String toString() {
@@ -98,67 +293,53 @@ public interface LinphoneAccountCreator {
 
 	void setListener(LinphoneAccountCreatorListener listener);
 
-	Status setUsername(String username);
+	UsernameCheck setUsername(String username);
 
 	String getUsername();
 
-	Status setPhoneNumber(String phoneNumber, String countryCode);
+	int setPhoneNumber(String phoneNumber, String countryCode);
 
 	String getPhoneNumber();
 
-	Status setPassword(String password);
+	PasswordCheck setPassword(String password);
 
 	String getPassword();
 
-	Status setHa1(String ha1);
+	PasswordCheck setHa1(String ha1);
 
 	String getHa1();
 
-	Status setActivationCode(String activationCode);
+	ActivationCodeCheck setActivationCode(String activationCode);
 
-	Status setLanguage(String lang);
+	LanguageCheck setLanguage(String lang);
 
-	Status setTransport(TransportType transport);
-
-	TransportType getTransport();
-
-	Status setDomain(String domain);
-
-	String getDomain();
-
-	Status setRoute(String route);
-
-	String getRoute();
-
-	Status setDisplayName(String displayName);
+	UsernameCheck setDisplayName(String displayName);
 
 	String getDisplayName();
 
-	Status setEmail(String email);
+	EmailCheck setEmail(String email);
 
 	String getEmail();
 
 	String getPrefix(String phone);
 
-	Status isAccountUsed();
+	RequestStatus isAccountUsed();
 
-	Status createAccount();
+	RequestStatus createAccount();
 
-	Status activateAccount();
+	RequestStatus activateAccount();
 
-	Status isAccountActivated();
+	RequestStatus isAccountActivated();
 
-	Status linkPhoneNumberWithAccount();
+	RequestStatus linkPhoneNumberWithAccount();
 
-	Status activatePhoneNumberLink();
+	RequestStatus activatePhoneNumberLink();
 
-	Status isAccountLinked();
+	RequestStatus isAccountLinked();
 
-	Status isPhoneNumberUsed();
+	RequestStatus isPhoneNumberUsed();
 
-	Status recoverPhoneAccount();
+	RequestStatus recoverPhoneAccount();
 
-	Status updatePassword(String newPassword);
-
-	LinphoneProxyConfig configure();
+	RequestStatus updatePassword(String newPassword);
 }
