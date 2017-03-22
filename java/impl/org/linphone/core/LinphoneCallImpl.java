@@ -21,8 +21,10 @@ package org.linphone.core;
 class LinphoneCallImpl implements LinphoneCall {
  
 	protected final long nativePtr;
+
 	boolean ownPtr = false;
 	Object userData;
+	LinphoneCore mCore;
 
 	native private void finalize(long nativePtr);
 	native private long  getCallLog(long nativePtr);
@@ -45,12 +47,14 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native void setListener(long ptr, LinphoneCallListener listener);
 	native private long getDiversionAddress(long nativePtr);
 	native private Object getStats(long nativePtr, int stream_type);
+	native private LinphoneCore getCore(long nativePtr);
 	
 	/*
 	 * This method must always be called from JNI, nothing else.
 	 */
 	private LinphoneCallImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
+		mCore = getCore(nativePtr);
 	}
 	protected void finalize() throws Throwable {
 		finalize(nativePtr);
@@ -65,10 +69,14 @@ class LinphoneCallImpl implements LinphoneCall {
 	}
 	
 	public LinphoneCallStats getAudioStats() {
-		return (LinphoneCallStats)getStats(nativePtr, 0);
+		synchronized(mCore){
+			return (LinphoneCallStats)getStats(nativePtr, 0);
+		}
 	}
 	public LinphoneCallStats getVideoStats() {
-		return (LinphoneCallStats)getStats(nativePtr, 1);
+		synchronized(mCore){
+			return (LinphoneCallStats)getStats(nativePtr, 1);
+		}
 	}
 	public CallDirection getDirection() {
 		return isIncoming(nativePtr)?CallDirection.Incoming:CallDirection.Outgoing;

@@ -1282,7 +1282,7 @@ public:
 		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
-		statsobj = env->NewObject(ljb->callStatsClass, ljb->callStatsId, (jlong)call, (jlong)stats);
+		statsobj = env->NewObject(ljb->callStatsClass, ljb->callStatsId, (jlong)stats);
 		callobj = getCall(env, call);
 		env->CallVoidMethod(lcData->listener, ljb->callStatsUpdatedId, lcData->core, callobj, statsobj);
 		handle_possible_java_exception(env, lcData->listener);
@@ -3478,6 +3478,14 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getStats(JNIEn
 	return stats ? env->NewObject(ljb->callStatsClass, ljb->callStatsId, (jlong)stats) : NULL;
 }
 
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getCore(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneCall *call=(LinphoneCall*)ptr;
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *) linphone_core_get_user_data(linphone_call_get_core(call));
+	return ljb->getCore();
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCallLog(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -5059,7 +5067,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteParams(JNIEnv 
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCurrentParams(JNIEnv *env, jobject thiz, jlong lc){
-	return (jlong) linphone_call_params_copy(linphone_call_get_current_params((LinphoneCall*)lc));
+	return (jlong) linphone_call_params_ref((LinphoneCallParams*)linphone_call_get_current_params((LinphoneCall*)lc));
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableCamera(JNIEnv *env, jobject thiz, jlong lc, jboolean b){

@@ -209,8 +209,8 @@ public interface LinphoneCall {
 	/**
 	 * 
 	 * Same as getCurrentParams(), but deprecated.
+	 * @deprecated
 	**/
-	@deprecated
 	LinphoneCallParams getCurrentParamsCopy();
 	
 	void enableCamera(boolean enabled);
