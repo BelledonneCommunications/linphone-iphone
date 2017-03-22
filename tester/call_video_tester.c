@@ -1441,6 +1441,7 @@ static void multiple_early_media(void) {
 		/*send an INFO in reverse side to check that dialogs are properly established*/
 		info=linphone_core_create_info_message(marie1->lc);
 		linphone_call_send_info_message(marie1_call,info);
+		linphone_info_message_unref(info);
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_inforeceived,1,3000));
 	}
 
