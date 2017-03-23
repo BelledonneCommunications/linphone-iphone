@@ -1625,8 +1625,6 @@ void linphone_core_notify_display_status(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_message(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url);
-void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
-void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
 void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 void linphone_core_notify_authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method);
