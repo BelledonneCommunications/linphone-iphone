@@ -150,7 +150,7 @@ static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event
 
 	if (op->pending_client_trans && (belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_INIT)) {
 		
-		sal_error_info_set(&op->error_info, SalReasonIOError, 503, "IO error", NULL);
+		sal_error_info_set(&op->error_info, SalReasonIOError, "SIP", 503, "IO error", NULL);
 		op->base.root->callbacks.call_failure(op);
 		
 		if (!op->dialog || belle_sip_dialog_get_state(op->dialog) != BELLE_SIP_DIALOG_CONFIRMED){
@@ -386,7 +386,7 @@ static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t
 
 	if (!op->dialog)  {
 		/*call terminated very early*/
-		sal_error_info_set(&op->error_info,SalReasonRequestTimeout,408,"Request timeout",NULL);
+		sal_error_info_set(&op->error_info, SalReasonRequestTimeout, "SIP", 408, "Request timeout", NULL);
 		op->base.root->callbacks.call_failure(op);
 		op->state = SalOpStateTerminating;
 		call_set_released(op);
@@ -421,7 +421,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 		release_call=TRUE;
 	}else if (op->state == SalOpStateEarly && code < 200){
 		/*call terminated early*/
-		sal_error_info_set(&op->error_info,SalReasonIOError,503,"I/O error",NULL);
+		sal_error_info_set(&op->error_info, SalReasonIOError, "SIP", 503, "I/O error", NULL);
 		op->state = SalOpStateTerminating;
 		op->base.root->callbacks.call_failure(op);
 		release_call=TRUE;
@@ -1004,9 +1004,9 @@ int sal_call_update(SalOp *op, const char *subject, bool_t no_user_consent){
 	}
 	/*it failed why ?*/
 	if (belle_sip_dialog_request_pending(op->dialog))
-		sal_error_info_set(&op->error_info,SalReasonRequestPending,491,NULL,NULL);
+		sal_error_info_set(&op->error_info,SalReasonRequestPending, "SIP", 491,NULL,NULL);
 	else
-		sal_error_info_set(&op->error_info,SalReasonUnknown,500,NULL,NULL);
+		sal_error_info_set(&op->error_info,SalReasonUnknown, "SIP", 500,NULL,NULL);
 	return -1;
 }
 

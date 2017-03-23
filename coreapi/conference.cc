@@ -924,7 +924,7 @@ static void _linphone_conference_params_uninit(LinphoneConferenceParams *params)
 static void _linphone_conference_params_clone(LinphoneConferenceParams *params, const LinphoneConferenceParams *orig);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneConferenceParams);
-BELLE_SIP_DECLARE_VPTR(LinphoneConferenceParams);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneConferenceParams);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneConferenceParams, belle_sip_object_t,
 	_linphone_conference_params_uninit, // uninit
 	_linphone_conference_params_clone, // clone
@@ -983,7 +983,7 @@ struct _LinphoneConference {
 static void _linphone_conference_uninit(LinphoneConference *conf);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneConference);
-BELLE_SIP_DECLARE_VPTR(LinphoneConference);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneConference);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneConference, belle_sip_object_t,
 	_linphone_conference_uninit, // uninit
 	NULL, // clone

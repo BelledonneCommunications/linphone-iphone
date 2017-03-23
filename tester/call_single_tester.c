@@ -2893,6 +2893,7 @@ static void call_established_with_complex_rejected_operation(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	bool_t call_ok=FALSE;
 	LinphoneCallParams *params;
+	LinphoneInfoMessage *info;
 
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (call_ok){
@@ -2906,7 +2907,9 @@ static void call_established_with_complex_rejected_operation(void) {
 		linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMA",8000,1),TRUE); /*enable PCMA*/
 
 		/*just to authenticate marie*/
-		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),linphone_core_create_info_message(marie->lc));
+		info = linphone_core_create_info_message(marie->lc);
+		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc), info);
+		linphone_info_message_unref(info);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_inforeceived,1));
 		BC_ASSERT_EQUAL(pauline->stat.number_of_inforeceived,1, int, "%d");
 		/*to give time for 200ok to arrive*/
@@ -2926,8 +2929,9 @@ static void call_established_with_complex_rejected_operation(void) {
 		check_call_state(marie,LinphoneCallStreamsRunning);
 
 		linphone_call_update(linphone_core_get_current_call(pauline->lc),linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
-
-		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),linphone_core_create_info_message(marie->lc));
+		info = linphone_core_create_info_message(marie->lc);
+		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc), info);
+		linphone_info_message_unref(info);
 
 		params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
 		sal_enable_pending_trans_checking(marie->lc->sal,FALSE); /*to allow // transactions*/
@@ -2958,7 +2962,7 @@ static void call_established_with_rejected_info_during_reinvite(void) {
 
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (call_ok){
-
+		LinphoneInfoMessage *info;
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,1));
 
@@ -2968,15 +2972,18 @@ static void call_established_with_rejected_info_during_reinvite(void) {
 		linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMA",8000,1),TRUE); /*enable PCMA*/
 
 		/*just to authenticate marie*/
-		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),linphone_core_create_info_message(marie->lc));
+		info = linphone_core_create_info_message(marie->lc);
+		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc), info);
+		linphone_info_message_unref(info);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_inforeceived,1));
 		BC_ASSERT_EQUAL(pauline->stat.number_of_inforeceived,1, int, "%d");
 		/*to give time for 200ok to arrive*/
 		wait_for_until(marie->lc,pauline->lc,NULL,0,1000);
 
 		//sal_enable_pending_trans_checking(marie->lc->sal,FALSE); /*to allow // transactions*/
-
-		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),linphone_core_create_info_message(marie->lc));
+		info =  linphone_core_create_info_message(marie->lc);
+		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),info);
+		linphone_info_message_unref(info);
 
 		//sal_set_send_error(marie->lc->sal, -1); /*to avoid 491 pending to be sent*/
 
@@ -3116,6 +3123,7 @@ static void call_established_with_rejected_reinvite_with_error_base(bool_t trans
 		if (trans_pending) {
 			LinphoneInfoMessage * info = linphone_core_create_info_message(pauline->lc);
 			linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),info);
+			linphone_info_message_unref(info);
 
 		} else
 			sal_enable_unconditional_answer(marie->lc->sal,TRUE);
@@ -5154,8 +5162,9 @@ static void call_logs_sqlite_storage(void) {
 	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
 	if (BC_ASSERT_TRUE(bctbx_list_size(logs) == 1)) {
 		const char *call_id;
-		const char *ref_key = linphone_call_log_get_ref_key(call_log);
-		call_log = logs->data;
+		const char *ref_key;
+		call_log = (LinphoneCallLog *)bctbx_list_get_data(logs);
+		ref_key = linphone_call_log_get_ref_key(call_log);
 		BC_ASSERT_EQUAL(linphone_call_log_get_dir(call_log), LinphoneCallOutgoing, int, "%d");
 		BC_ASSERT_LOWER(linphone_call_log_get_duration(call_log), 2, int, "%d");
 		BC_ASSERT_TRUE(linphone_address_equal(

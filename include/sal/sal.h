@@ -410,6 +410,7 @@ typedef struct SalErrorInfo{
 	char *status_string;
 	int protocol_code;
 	char *warnings;
+	char *protocol;
 	char *full_string; /*concatenation of status_string + warnings*/
 }SalErrorInfo;
 
@@ -726,8 +727,9 @@ bool_t sal_op_is_idle(SalOp *op);
 
 const SalErrorInfo *sal_error_info_none(void);
 LINPHONE_PUBLIC const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
+const SalErrorInfo *sal_op_get_reason_error_info(const SalOp *op);
 void sal_error_info_reset(SalErrorInfo *ei);
-void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning);
+void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol, int code, const char *status_string, const char *warning);
 
 /*entity tag used for publish (see RFC 3903)*/
 const char *sal_op_get_entity_tag(const SalOp* op);

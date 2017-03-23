@@ -21,15 +21,17 @@ package org.linphone.core;
 class LinphoneCallImpl implements LinphoneCall {
  
 	protected final long nativePtr;
+
 	boolean ownPtr = false;
 	Object userData;
+	LinphoneCore mCore;
 
 	native private void finalize(long nativePtr);
 	native private long  getCallLog(long nativePtr);
 	private native boolean isIncoming(long nativePtr);
 	native private long getRemoteAddress(long nativePtr);
 	native private int getState(long nativePtr);
-	private native long getCurrentParamsCopy(long nativePtr);
+	private native long getCurrentParams(long nativePtr);
 	private native long getRemoteParams(long nativePtr);
 	private native void enableCamera(long nativePtr, boolean enabled);
 	private native boolean cameraEnabled(long nativePtr);
@@ -45,12 +47,14 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native void setListener(long ptr, LinphoneCallListener listener);
 	native private long getDiversionAddress(long nativePtr);
 	native private Object getStats(long nativePtr, int stream_type);
+	native private LinphoneCore getCore(long nativePtr);
 	
 	/*
 	 * This method must always be called from JNI, nothing else.
 	 */
 	private LinphoneCallImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
+		mCore = getCore(nativePtr);
 	}
 	protected void finalize() throws Throwable {
 		finalize(nativePtr);
@@ -65,10 +69,14 @@ class LinphoneCallImpl implements LinphoneCall {
 	}
 	
 	public LinphoneCallStats getAudioStats() {
-		return (LinphoneCallStats)getStats(nativePtr, 0);
+		synchronized(mCore){
+			return (LinphoneCallStats)getStats(nativePtr, 0);
+		}
 	}
 	public LinphoneCallStats getVideoStats() {
-		return (LinphoneCallStats)getStats(nativePtr, 1);
+		synchronized(mCore){
+			return (LinphoneCallStats)getStats(nativePtr, 1);
+		}
 	}
 	public CallDirection getDirection() {
 		return isIncoming(nativePtr)?CallDirection.Incoming:CallDirection.Outgoing;
@@ -84,8 +92,11 @@ class LinphoneCallImpl implements LinphoneCall {
 	public State getState() {
 		return LinphoneCall.State.fromInt(getState(nativePtr));
 	}
-	public LinphoneCallParams getCurrentParamsCopy() {
-		return new LinphoneCallParamsImpl(getCurrentParamsCopy(nativePtr));
+	public LinphoneCallParams getCurrentParams() {
+		return new LinphoneCallParamsImpl(getCurrentParams(nativePtr));
+	}
+	public LinphoneCallParams getCurrentParamsCopy(){
+		return getCurrentParams();
 	}
 	public LinphoneCallParams getRemoteParams() {
 		long remoteParamsPtr = getRemoteParams(nativePtr);

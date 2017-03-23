@@ -156,7 +156,9 @@ LinphonePublishState linphone_event_get_publish_state(const LinphoneEvent *lev){
 }
 
 const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev){
-	return linphone_error_info_from_sal_op(lev->op);
+	if (!lev->ei) ((LinphoneEvent*)lev)->ei = linphone_error_info_new();
+	linphone_error_info_from_sal_op(lev->ei, lev->op);
+	return lev->ei;
 }
 
 LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev){
@@ -393,6 +395,7 @@ LinphoneEvent *linphone_event_ref(LinphoneEvent *lev){
 }
 
 static void linphone_event_destroy(LinphoneEvent *lev){
+	if (lev->ei) linphone_error_info_unref(lev->ei);
 	if (lev->op) sal_op_release(lev->op);
 	if (lev->send_custom_headers) sal_custom_header_free(lev->send_custom_headers);
 	ms_free(lev->name);

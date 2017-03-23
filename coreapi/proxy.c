@@ -225,6 +225,9 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->nat_policy != NULL) {
 		linphone_nat_policy_unref(cfg->nat_policy);
 	}
+	if (cfg->ei){
+		linphone_error_info_unref(cfg->ei);
+	}
 	_linphone_proxy_config_release_ops(cfg);
 }
 
@@ -1334,7 +1337,9 @@ LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg) {
 }
 
 const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProxyConfig *cfg){
-	return linphone_error_info_from_sal_op(cfg->op);
+	if (!cfg->ei) ((LinphoneProxyConfig*)cfg)->ei = linphone_error_info_new();
+	linphone_error_info_from_sal_op(cfg->ei, cfg->op);
+	return cfg->ei;
 }
 
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
