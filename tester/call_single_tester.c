@@ -4908,8 +4908,9 @@ static void call_logs_sqlite_storage(void) {
 	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
 	if (BC_ASSERT_TRUE(bctbx_list_size(logs) == 1)) {
 		const char *call_id;
-		const char *ref_key = linphone_call_log_get_ref_key(call_log);
-		call_log = logs->data;
+		const char *ref_key;
+		call_log = (LinphoneCallLog *)bctbx_list_get_data(logs);
+		ref_key = linphone_call_log_get_ref_key(call_log);
 		BC_ASSERT_EQUAL(linphone_call_log_get_dir(call_log), LinphoneCallOutgoing, int, "%d");
 		BC_ASSERT_LOWER(linphone_call_log_get_duration(call_log), 2, int, "%d");
 		BC_ASSERT_TRUE(linphone_address_equal(
