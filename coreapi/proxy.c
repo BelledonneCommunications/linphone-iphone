@@ -64,7 +64,7 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_confi
 	LinphoneAddress *current_proxy=cfg->reg_proxy?linphone_address_new(cfg->reg_proxy):NULL;
 	LinphoneProxyConfigAddressComparisonResult result_identity;
 	LinphoneProxyConfigAddressComparisonResult result;
-	
+
 	result = linphone_proxy_config_address_equal(cfg->saved_identity,cfg->identity_address);
 	if (result == LinphoneProxyConfigAddressDifferent) goto end;
 	result_identity = result;
@@ -629,7 +629,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 	LinphoneDialPlan dialplan = {0};
 	char * nationnal_significant_number = NULL;
 	int ccc = -1;
-	
+
 	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
 		char * flatten=flatten_number(username);
 		ms_debug("Flattened number is '%s' for '%s'",flatten, username);
@@ -739,13 +739,13 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 			}
 		}
 
-		if (proxy!=NULL){
+		if (proxy!=NULL && linphone_proxy_config_get_identity_address(proxy)!=NULL){
 			/* append the proxy domain suffix but remove any custom parameters/headers */
 			LinphoneAddress *uri=linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
-			linphone_address_clean(uri);
 			if (uri==NULL){
 				return NULL;
 			} else {
+				linphone_address_clean(uri);
 				linphone_address_set_display_name(uri,NULL);
 				linphone_address_set_username(uri,username);
 				return _linphone_core_destroy_addr_if_not_sip(uri);
@@ -798,7 +798,7 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 	if (cfg->commit){
 		linphone_proxy_config_pause_register(cfg);
 	}
-	
+
 	if (linphone_proxy_config_compute_publish_params_hash(cfg)) {
 		ms_message("Publish params have changed on proxy config [%p]",cfg);
 		if (cfg->long_term_event) {
@@ -818,7 +818,7 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 	} else {
 		ms_message("Publish params have not changed on proxy config [%p]",cfg);
 	}
-	
+
 	linphone_proxy_config_write_all_to_config_file(cfg->lc);
 	return 0;
 }
