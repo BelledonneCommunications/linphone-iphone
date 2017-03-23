@@ -141,11 +141,10 @@ int main(int argc, char *argv[]){
 	linphone_core_enable_echo_cancellation(lc, FALSE); /*no need for local echo cancellation when playing files*/
 	if (!media_file){
 		LinphoneFactory *factory = linphone_factory_get();
-		char *sound_resources_dir = linphone_factory_get_sound_resources_dir(factory);
+		const char *sound_resources_dir = linphone_factory_get_sound_resources_dir(factory);
 		char *play_file = bctbx_strdup_printf("%s/hello16000.wav", sound_resources_dir);
 		linphone_core_set_play_file(lc, play_file);
 		bctbx_free(play_file);
-		bctbx_free(sound_resources_dir);
 		linphone_core_set_preferred_framerate(lc,5);
 	}else{
 		PayloadType *pt = linphone_core_find_payload_type(lc, "opus", 48000, -1);
