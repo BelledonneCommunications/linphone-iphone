@@ -32,6 +32,13 @@
 if(NOT LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
 	include("${CMAKE_CURRENT_LIST_DIR}/LinphoneTargets.cmake")
 endif()
+if(LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
+        include("${EP_ms2_CONFIG_DIR}/Mediastreamer2Config.cmake")
+        include("${EP_bellesip_CONFIG_DIR}/BelleSIPConfig.cmake")
+else()
+	find_package(Mediastreamer2 REQUIRED)
+	find_package(BelleSIP REQUIRED)
+endif()
 
 if(@ENABLE_SHARED@)
 	set(LINPHONE_TARGETNAME linphone)
