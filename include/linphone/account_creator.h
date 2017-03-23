@@ -267,6 +267,36 @@ LINPHONE_PUBLIC LinphoneEmailCheck linphone_account_creator_set_email(LinphoneAc
 LINPHONE_PUBLIC const char * linphone_account_creator_get_email(const LinphoneAccountCreator *creator);
 
 /**
+ * Set the domain.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] domain The domain to set
+ * @return LinphoneRequestOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain);
+
+/**
+ * Get the domain.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return The domain of the LinphoneAccountCreator
+**/
+LINPHONE_DEPRECATED LINPHONE_PUBLIC const char * linphone_account_creator_get_domain(const LinphoneAccountCreator *creator);
+
+/**
+ * Set the route.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] route The route to set
+ * @return LinphoneRequestOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_set_route(LinphoneAccountCreator *creator, const char *route);
+
+/**
+ * Get the route.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return The route of the LinphoneAccountCreator
+**/
+LINPHONE_DEPRECATED LINPHONE_PUBLIC const char * linphone_account_creator_get_route(const LinphoneAccountCreator *creator);
+
+/**
  * Get the LinphoneAccountCreatorResponseCbs object associated with a LinphoneAccountCreator.
  * @param[in] creator LinphoneAccountCreator object
  * @return The LinphoneAccountCreatorResponseCbs object associated with the LinphoneAccountCreator.
@@ -283,6 +313,13 @@ LINPHONE_PUBLIC LinphoneAccountCreatorRequestCbs * linphone_account_creator_get_
 /************************** End Account Creator data **************************/
 
 /************************** Start Account Creator Linphone **************************/
+
+/**
+ * Account creator custom to set Linphone default values
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneRequestOk if the request has been sent, LinphoneRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_constructor_custom(LinphoneAccountCreator *creator);
 
 /**
  * Send an XML-RPC request to test the existence of a Linphone account.

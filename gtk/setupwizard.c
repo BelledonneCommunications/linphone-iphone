@@ -79,7 +79,9 @@ void linphone_gtk_assistant_prepare(GtkWidget *assistant) {
 			check_account_validation(assistant);
 			break;
 		case 9:
-			linphone_gtk_load_identities();
+			if (linphone_account_creator_configure(linphone_gtk_assistant_get_creator(assistant)) != NULL) {
+				linphone_gtk_load_identities();
+			}
 			gtk_assistant_commit(GTK_ASSISTANT(assistant));
 			break;
 		default:
@@ -126,8 +128,12 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data) {
 		case 2:
 		{
 			GtkEntry *username_entry = GTK_ENTRY(linphone_gtk_get_widget(w, "p2_entry_username"));
+			GtkEntry *domain_entry = GTK_ENTRY(linphone_gtk_get_widget(w, "p2_entry_domain"));
+			GtkEntry *proxy_entry = GTK_ENTRY(linphone_gtk_get_widget(w, "p2_entry_proxy"));
 			GtkEntry *password_entry = GTK_ENTRY(linphone_gtk_get_widget(w, "p2_entry_password"));
 			linphone_account_creator_set_username(creator, gtk_entry_get_text(username_entry));
+			linphone_account_creator_set_domain(creator, gtk_entry_get_text(domain_entry));
+			linphone_account_creator_set_route(creator, gtk_entry_get_text(proxy_entry));
 			linphone_account_creator_set_password(creator, gtk_entry_get_text(password_entry));
 			curpage = 9; // Go to page_9_finish
 			break;
@@ -137,6 +143,8 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data) {
 			GtkEntry *username_entry = GTK_ENTRY(linphone_gtk_get_widget(w, "p3_entry_username"));
 			GtkEntry *password_entry = GTK_ENTRY(linphone_gtk_get_widget(w, "p3_entry_password"));
 			linphone_account_creator_set_username(creator, gtk_entry_get_text(username_entry));
+			linphone_account_creator_set_domain(creator, "sip.linphone.org");
+			linphone_account_creator_set_route(creator, "sip.linphone.org");
 			linphone_account_creator_set_password(creator, gtk_entry_get_text(password_entry));
 			curpage = 9; // Go to page_9_finish
 			break;
@@ -249,6 +257,8 @@ void linphone_gtk_account_creation_username_changed(GtkEntry *entry) {
 
 	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(assistant);
 	linphone_account_creator_set_username(creator, gtk_entry_get_text(username));
+	linphone_account_creator_set_domain(creator, "sip.linphone.org");
+	linphone_account_creator_set_route(creator, "sip.linphone.org");
 
 	if (check_username_validity(gtk_entry_get_text(username))) {
 		guint timerID = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(page), "usernameAvailabilityTimerID"));

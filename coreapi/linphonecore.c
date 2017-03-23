@@ -2074,7 +2074,7 @@ static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, 
 
 static void _linphone_core_init_account_creator_request_cbs(LinphoneCore *lc) {
 	LinphoneAccountCreatorRequestCbs *cbs = linphone_account_creator_requests_cbs_new();
-	cbs->account_creator_request_constructor_cb = NULL;
+	cbs->account_creator_request_constructor_cb = linphone_account_creator_constructor_custom;
 	cbs->account_creator_request_destructor_cb = NULL;
 	cbs->create_account_request_cb = linphone_account_creator_create_account_custom;
 	cbs->is_account_exist_request_cb = linphone_account_creator_is_account_exist_custom;
@@ -2103,6 +2103,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->ringstream_autorelease=TRUE;
 
 	linphone_task_list_init(&lc->hooks);
+
+	_linphone_core_init_account_creator_request_cbs(lc);
 
 	linphone_core_cbs_set_notify_received(internal_cbs, linphone_core_internal_notify_received);
 	linphone_core_cbs_set_subscription_state_changed(internal_cbs, linphone_core_internal_subscription_state_changed);
@@ -2169,8 +2171,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
 	lc->bw_controller = ms_bandwidth_controller_new();
-
-	_linphone_core_init_account_creator_request_cbs(lc);
 }
 
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata) {

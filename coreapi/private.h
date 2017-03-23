@@ -1460,6 +1460,10 @@ struct _LinphoneAccountCreator {
 	/* Misc */
 	char *language; /**< User language */
 	char *activation_code; /**< Account validation code */
+
+	/* Deprecated */
+	char *domain;
+	char *route;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreator);
