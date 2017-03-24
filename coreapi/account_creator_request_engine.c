@@ -72,6 +72,10 @@ LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_crea
 	return requests_cbs->create_account_request_cb;
 }
 
+void linphone_account_creator_requests_cbs_set_create_account_cb(LinphoneAccountCreatorRequestCbs *requests_cbs, LinphoneAccountCreatorRequestFunc cb) {
+	requests_cbs->create_account_request_cb = cb;
+}
+
 LinphoneAccountCreatorRequestFunc linphone_account_creator_requests_cbs_get_is_account_exist_cb(const LinphoneAccountCreatorRequestCbs *requests_cbs) {
 	return requests_cbs->is_account_exist_request_cb;
 }
