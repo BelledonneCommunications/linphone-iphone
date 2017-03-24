@@ -1037,7 +1037,7 @@ LinphoneRequestStatus linphone_account_creator_update_password_custom(LinphoneAc
 	char *identity = _get_identity(creator);
 	const char* new_pwd = (const char*)linphone_account_creator_get_user_data(creator);
 	if (!identity ||
-			(!creator->username || !creator->phone_number
+			((!creator->username && !creator->phone_number)
 				|| !linphone_proxy_config_get_domain(creator->proxy_cfg)
 				|| (!creator->password && !creator->ha1) || !new_pwd
 			)
