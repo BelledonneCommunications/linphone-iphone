@@ -178,7 +178,7 @@ class ArgName(Name):
 		return Name.to_snake_case(self)
 
 
-class PropertyName(Name):
+class PropertyName(ArgName):
 	pass
 
 
@@ -357,6 +357,7 @@ class Property(DocumentableObject):
 		DocumentableObject.__init__(self, name)
 		self._setter = None
 		self._getter = None
+		self._type = None
 	
 	def set_setter(self, setter):
 		self._setter = setter
@@ -367,6 +368,8 @@ class Property(DocumentableObject):
 	
 	def set_getter(self, getter):
 		self._getter = getter
+		if self._type is None:
+			self._type = getter.returnType
 		getter.parent = self
 	
 	def get_getter(self):
@@ -384,6 +387,7 @@ class Class(DocumentableObject):
 		self.classMethods = []
 		self._listenerInterface = None
 		self.multilistener = False
+		self.refcountable = False
 	
 	def add_property(self, property):
 		self.properties.append(property)
@@ -482,13 +486,21 @@ class CParser(object):
 					   'linphone_friend_new', # was deprecated when the wrapper generator was made
 					   'linphone_friend_new_with_address', # was deprecated when the wrapper generator was made
 					   'linphone_core_get_sound_source', # was deprecated when the wrapper generator was made
-					   'linphone_core_set_sound_source'] # was deprecated when the wrapper generator was made
+					   'linphone_core_set_sound_source', # was deprecated when the wrapper generator was made
+					   'linphone_core_get_sip_transports', # not wrappable
+					   'linphone_core_get_sip_transports_used'] # not wrappable
 
 		self.classBl = ['LinphoneImEncryptionEngine',
 					   'LinphoneImEncryptionEngineCbs',
 					   'LinphoneImNotifPolicy',
 					   'LpConfig',
-					   'LinphoneCallStats']  # temporarly blacklisted
+					   'LinphoneErrorInfo',
+					   'LinphonePayloadType',
+					   'LinphonePlayer']  # temporarly blacklisted
+		
+		# list of classes that must be concidered as refcountable even if
+		# they are no ref()/unref() methods
+		self.forcedRefcountableClasses = ['LinphoneFactory']
 		
 		self.cProject = cProject
 		
@@ -531,7 +543,18 @@ class CParser(object):
 				pass
 			except Error as e:
 				print('Could not parse \'{0}\' class: {1}'.format(_class.name, e.args[0]))
+				
 		CParser._fix_all_types(self)
+	
+	
+	def _class_is_refcountable(self, _class):
+		if _class.name in self.forcedRefcountableClasses:
+			return True
+		
+		for method in _class.instanceMethods:
+			if method.startswith(_class.cFunctionPrefix) and method[len(_class.cFunctionPrefix):] == 'ref':
+				return True
+		return False
 	
 	def _fix_all_types(self):
 		for _class in self.classesIndex.values() + self.interfacesIndex.values():
@@ -563,24 +586,24 @@ class CParser(object):
 		except Error as e:
 			print('warning: some types could not be fixed in {0}() function: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
 		
-	def _fix_type(self, type):
-		if isinstance(type, EnumType) and type.desc is None:
-			type.desc = self.enumsIndex[type.name]
-		elif isinstance(type, ClassType) and type.desc is None:
-			if type.name in self.classesIndex:
-				type.desc = self.classesIndex[type.name]
+	def _fix_type(self, _type):
+		if isinstance(_type, EnumType) and _type.desc is None:
+			_type.desc = self.enumsIndex[_type.name]
+		elif isinstance(_type, ClassType) and _type.desc is None:
+			if _type.name in self.classesIndex:
+				_type.desc = self.classesIndex[_type.name]
 			else:
-				type.desc = self.interfacesIndex[type.name]
-		elif isinstance(type, ListType) and type.containedTypeDesc is None:
-			if type.containedTypeName in self.classesIndex:
-				type.containedTypeDesc = ClassType(type.containedTypeName, classDesc=self.classesIndex[type.containedTypeName])
-			elif type.containedTypeName in self.interfacesIndex:
-				type.containedTypeDesc = ClassType(type.containedTypeName, classDesc=self.interfacesIndex[type.containedTypeName])
-			elif type.containedTypeName in self.enumsIndex:
-				type.containedTypeDesc = EnumType(type.containedTypeName, enumDesc=self.enumsIndex[type.containedTypeName])
+				_type.desc = self.interfacesIndex[_type.name]
+		elif isinstance(_type, ListType) and _type.containedTypeDesc is None:
+			if _type.containedTypeName in self.classesIndex:
+				_type.containedTypeDesc = ClassType(_type.containedTypeName, classDesc=self.classesIndex[_type.containedTypeName])
+			elif _type.containedTypeName in self.interfacesIndex:
+				_type.containedTypeDesc = ClassType(_type.containedTypeName, classDesc=self.interfacesIndex[_type.containedTypeName])
+			elif _type.containedTypeName in self.enumsIndex:
+				_type.containedTypeDesc = EnumType(_type.containedTypeName, enumDesc=self.enumsIndex[_type.containedTypeName])
 			else:
-				if type.containedTypeName is not None:
-					type.containedTypeDesc = CParser.parse_c_base_type(self, type.containedTypeName)
+				if _type.containedTypeName is not None:
+					_type.containedTypeDesc = CParser.parse_c_base_type(self, _type.containedTypeName)
 				else:
 					raise Error('bctbx_list_t type without specified contained type')
 	
@@ -621,6 +644,7 @@ class CParser(object):
 		name = ClassName()
 		name.from_camel_case(cclass.name, namespace=self.namespace.name)
 		_class = Class(name)
+		_class.refcountable = CParser._class_is_refcountable(self, cclass)
 		
 		for cproperty in cclass.properties.values():
 			try:
@@ -755,10 +779,8 @@ class CParser(object):
 		elif cType.ctype in self.enumsIndex:
 			absType = EnumType(cType.ctype, enumDesc=self.enumsIndex[cType.ctype])
 		elif cType.ctype in self.classesIndex or cType.ctype in self.interfacesIndex:
-			#params = {'classDesc': self.classesIndex[cType.ctype]}
-			#if 'const' in cType.completeType.split(' '):
-				#params['isconst'] = True
 			absType = ClassType(cType.ctype)
+			absType.isconst = cType.completeType.startswith('const ')
 		elif cType.ctype == self.cListType:
 			absType = ListType(cType.containedType)
 		else:

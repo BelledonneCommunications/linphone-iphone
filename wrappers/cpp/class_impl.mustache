@@ -47,12 +47,33 @@ static {{{returnType}}} {{{cbName}}}({{{declArgs}}}) {
 {{/wrapperCbs}}
 
 {{#isNotListener}}
+{{#isrefcountable}}
 {{{namespace}}}::{{{className}}}::{{{className}}}(void *ptr, bool takeRef): {{{parentClassName}}}(ptr, takeRef) {
 	{{#ismultilistenable}}
 	mCallbacks = ({{{cListenerName}}} *)createCallbacks(&getListeners());
 	{{{callbacksAdder}}}(({{{cClassName}}} *)mPrivPtr, ({{{cListenerName}}} *)mCallbacks);
 	{{/ismultilistenable}}
 }
+{{/isrefcountable}}
+
+{{#isnotrefcountable}}
+{{{namespace}}}::{{{className}}}::{{{className}}}() {
+	mPrivPtr = new {{{cClassName}}};
+	memset(mPrivPtr, 0, sizeof({{{cClassName}}}));
+}
+
+{{{namespace}}}::{{{className}}}::{{{className}}}(const {{{className}}} &src) {
+	mPrivPtr = new {{{cClassName}}}(*({{{cClassName}}} *)src.mPrivPtr);
+}
+
+{{{namespace}}}::{{{className}}}::{{{className}}}(const void *src) {
+	mPrivPtr = new {{{cClassName}}}(*({{{cClassName}}} *)src);
+}
+
+{{{namespace}}}::{{{className}}}::~{{{className}}}() {
+	delete ({{{cClassName}}} *)mPrivPtr;
+}
+{{/isnotrefcountable}}
 {{/isNotListener}}
 
 {{#ismonolistenable}}

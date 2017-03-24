@@ -72,7 +72,7 @@ std::map<std::string,void *> &Object::getUserData() const {
 	return *userData;
 }
 
-Object *Object::getBackPtrFromCPtr(void *ptr) {
+linphone::Object *linphone::Object::getBackPtrFromCPtr(const void *ptr) {
 	return (Object *)belle_sip_object_data_get((::belle_sip_object_t *)ptr, "cpp_object");
 }
 

@@ -43,14 +43,23 @@ namespace linphone {
 	{{/priorDeclarations}}
 
 	{{#_class}}
-	class {{className}}: public {{{parentClassName}}} {
+	class {{className}}{{#parentClassName}}: public {{{parentClassName}}}{{/parentClassName}} {
 		{{#friendClasses}}
 		friend class {{name}};
 		{{/friendClasses}}
 	
 		public:
 			{{#isNotListener}}
+			{{#isrefcountable}}
 			{{{className}}}(void *ptr, bool takeRef=true);
+			{{/isrefcountable}}
+			{{#isnotrefcountable}}
+			LINPHONECXX_PUBLIC {{{className}}}();
+			LINPHONECXX_PUBLIC {{{className}}}(const {{{className}}} &src);
+			{{{className}}}(const void *src);
+			LINPHONECXX_PUBLIC ~{{{className}}}();
+			LINPHONECXX_PUBLIC const void *c_struct() const {return mPrivPtr;}
+			{{/isnotrefcountable}}
 			{{/isNotListener}}
 			
 			{{#ismonolistenable}}
@@ -71,6 +80,7 @@ namespace linphone {
 			{{#isVcard}}
 			LINPHONECXX_PUBLIC std::shared_ptr<belcard::BelCard> &getVcard();
 			{{/isVcard}}
+			
 		
 			{{#methods}}
 			{{{prototype}}}
@@ -91,7 +101,11 @@ namespace linphone {
 		private:
 			void *mCallbacks;
 		{{/ismultilistenable}}
-			
+		
+		{{#isnotrefcountable}}
+		private:
+			void *mPrivPtr;
+		{{/isnotrefcountable}}
 	};
 	{{/_class}}
 
