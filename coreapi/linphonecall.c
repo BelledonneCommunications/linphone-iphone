@@ -4149,6 +4149,10 @@ bool_t linphone_call_media_in_progress(LinphoneCall *call){
 	return ret;
 }
 
+LinphoneStreamType linphone_call_stats_get_type(const LinphoneCallStats *stats) {
+	return stats->type;
+}
+
 float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 	const report_block_t *srb = NULL;
 
@@ -4253,6 +4257,14 @@ LinphoneIceState linphone_call_stats_get_ice_state(const LinphoneCallStats *stat
 
 LinphoneUpnpState linphone_call_stats_get_upnp_state(const LinphoneCallStats *stats) {
 	return stats->upnp_state;
+}
+
+LinphoneAddressFamily linphone_call_stats_get_ip_family_of_remote(const LinphoneCallStats *stats) {
+	return (LinphoneAddressFamily)stats->rtp_remote_family;
+}
+
+float linphone_call_stats_get_jitter_buffer_size_ms(const LinphoneCallStats *stats) {
+	return stats->jitter_stats.jitter_buffer_size_ms;
 }
 
 void linphone_call_start_recording(LinphoneCall *call){
