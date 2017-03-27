@@ -69,6 +69,13 @@ LINPHONE_PUBLIC LinphoneReason linphone_error_info_get_reason(const LinphoneErro
  * @return The error phrase
 **/
 LINPHONE_PUBLIC const char * linphone_error_info_get_phrase(const LinphoneErrorInfo *ei);
+	
+/**
+ * Get protocol from the error info.
+ * @param[in]  ei ErrorInfo object
+ * @return    The protocol 
+ */
+LINPHONE_PUBLIC const char *linphone_error_info_get_protocol(const LinphoneErrorInfo *ei);
 
 /**
  * Provides additional information regarding the failure.
@@ -88,10 +95,20 @@ LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInf
 
 /**
  * Assign information to a LinphoneErrorInfo object.
- * @param[in] ei ErrorInfo object
+ * @param[in] ei 			ErrorInfo object
+ * @param[in] protocol      protocol name
+ * @param[in] reason        reason  from LinphoneReason enum
+ * @param[in] code          protocol code
+ * @param[in] status_string description of the reason
+ * @param[in] warning       warning message
  */
-LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, LinphoneReason reason, int code, const char *status_string, const char *warning);
+LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning);
 
+/**
+ * Assign reason LinphoneReason to a LinphoneErrorUnfo object.
+ * @param[in] ei     ErrorInfo object
+ * @param[in] reason reason  from LinphoneReason enum
+ */
 LINPHONE_PUBLIC void linphone_error_info_set_reason(LinphoneErrorInfo *ei, LinphoneReason reason);
 
 /**

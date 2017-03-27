@@ -375,8 +375,15 @@ LINPHONE_PUBLIC int linphone_call_resume(LinphoneCall *call);
  * Terminates a call.
  * @param[in] call LinphoneCall object
  * @return 0 on success, -1 on failure
+**/LINPHONE_PUBLIC int linphone_call_terminate(LinphoneCall *call);
+
+	
+/**
+ * Terminates a call.
+ * @param[in] call LinphoneCall object
+ * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_terminate(LinphoneCall *call);
+LINPHONE_PUBLIC int linphone_call_terminate_with_error(LinphoneCall *call, const LinphoneErrorInfo *ei);
 
 /**
  * Redirect the specified call to the given redirect URI.

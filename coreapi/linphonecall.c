@@ -4327,7 +4327,7 @@ static void linphone_call_lost(LinphoneCall *call){
 	ms_message("LinphoneCall [%p]: %s", call, temp);
 	linphone_core_notify_display_warning(lc, temp);
 	call->non_op_error = TRUE;
-	linphone_error_info_set(call->ei, LinphoneReasonIOError, 503, "Media lost", NULL);
+	linphone_error_info_set(call->ei,NULL, LinphoneReasonIOError, 503, "Media lost", NULL);
 	linphone_call_terminate(call);
 	linphone_core_play_named_tone(lc, LinphoneToneCallLost);
 	ms_free(temp);
@@ -5088,6 +5088,44 @@ int linphone_call_terminate(LinphoneCall *call) {
 	return 0;
 }
 
+static void linphone_call_error_info_to_sal_op(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
+	
+	sei->reason = linphone_error_info_get_reason(ei);
+	sei->status_string = ms_strdup_safe(ei->phrase);
+	sei->full_string = ms_strdup_safe(ei->full_string);
+	sei->warnings = ms_strdup_safe(ei->warnings);
+	sei->protocol_code = ei->protocol_code;
+	sei->protocol = ms_strdup_safe(ei->protocol);
+}
+	
+int linphone_call_terminate_with_error(LinphoneCall *call , const LinphoneErrorInfo *ei){
+	SalErrorInfo sei;
+	linphone_call_error_info_to_sal_op(ei, &sei);
+	
+	ms_message("Terminate call [%p] which is currently in state %s", call, linphone_call_state_to_string(call->state));
+	switch (call->state) {
+		case LinphoneCallReleased:
+		case LinphoneCallEnd:
+		case LinphoneCallError:
+			ms_warning("No need to terminate a call [%p] in state [%s]", call, linphone_call_state_to_string(call->state));
+			return -1;
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+			return linphone_call_decline(call, LinphoneReasonDeclined);
+		case LinphoneCallOutgoingInit:
+			/* In state OutgoingInit, op has to be destroyed */
+			sal_op_release(call->op);
+			call->op = NULL;
+			break;
+		default:
+			sal_call_terminate_with_error(call->op, &sei);
+			break;
+	}
+	terminate_call(call);
+	return 0;
+	
+}
+
 int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	char *real_url = NULL;
 	LinphoneCore *lc;
@@ -5109,7 +5147,7 @@ int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	real_url = linphone_address_as_string(real_parsed_url);
 	sal_call_decline(call->op, SalReasonRedirect, real_url);
 	ms_free(real_url);
-	linphone_error_info_set(call->ei, LinphoneReasonMovedPermanently, 302, "Call redirected", NULL);
+	linphone_error_info_set(call->ei, NULL, LinphoneReasonMovedPermanently, 302, "Call redirected", NULL);
 	call->non_op_error = TRUE;
 	terminate_call(call);
 	linphone_address_unref(real_parsed_url);

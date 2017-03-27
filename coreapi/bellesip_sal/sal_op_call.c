@@ -1039,7 +1039,8 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 	return 0;
 }
 
-int sal_call_terminate(SalOp *op){
+
+int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
 	if (op->state==SalOpStateTerminating || op->state==SalOpStateTerminated) {
 		ms_error("Cannot terminate op [%p] in state [%s]",op,sal_op_state_to_string(op->state));
@@ -1047,10 +1048,19 @@ int sal_call_terminate(SalOp *op){
 	}
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_CONFIRMED: {
-			sal_op_send_request(op,belle_sip_dialog_create_request(op->dialog,"BYE"));
+			belle_sip_request_t * req = belle_sip_dialog_create_request(op->dialog,"BYE");
+			if (info != NULL){
+				belle_sip_header_reason_t* reason = BELLE_SIP_HEADER_REASON(belle_sip_header_reason_new());
+				belle_sip_header_reason_set_text(reason, info->status_string);
+				belle_sip_header_reason_set_protocol(reason,info->protocol);
+				belle_sip_header_reason_set_cause(reason,info->protocol_code);
+				belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(reason));
+			}
+			sal_op_send_request(op,req);
 			op->state=SalOpStateTerminating;
 			break;
 		}
+
 		case BELLE_SIP_DIALOG_NULL: {
 			if (op->dir == SalOpDirIncoming) {
 				sal_call_decline(op, SalReasonDeclined,NULL);
@@ -1084,6 +1094,12 @@ int sal_call_terminate(SalOp *op){
 	}
 	return 0;
 }
+
+
+int sal_call_terminate(SalOp *op){
+	return sal_call_terminate_with_error(op, NULL);
+}
+
 
 bool_t sal_call_autoanswer_asked(SalOp *op){
 	return op->auto_answer_asked;

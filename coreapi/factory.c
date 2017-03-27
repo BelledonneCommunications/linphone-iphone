@@ -169,3 +169,9 @@ void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *pa
 	if (factory->msplugins_dir) bctbx_free(factory->msplugins_dir);
 	factory->msplugins_dir = bctbx_strdup(path);
 }
+
+LinphoneErrorInfo *linphone_factory_create_error_info(void){
+	
+	return linphone_error_info_new();
+	
+}

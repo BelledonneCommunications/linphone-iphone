@@ -757,6 +757,7 @@ int sal_call_set_referer(SalOp *h, SalOp *refered_call);
 SalOp *sal_call_get_replaces(SalOp *h);
 int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
+int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info);
 bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);

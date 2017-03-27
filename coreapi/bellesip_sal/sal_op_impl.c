@@ -606,7 +606,7 @@ void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol
 void sal_op_set_reason_error_info(SalOp *op, belle_sip_message_t *msg){
 	belle_sip_header_reason_t* reason_header = belle_sip_message_get_header_by_type(msg,belle_sip_header_reason_t);
 	if (reason_header){
-		SalErrorInfo *ei=&op->reason_error_info;
+		SalErrorInfo *ei=&op->reason_error_info; // ?//
 		const char *protocol = belle_sip_header_reason_get_protocol(reason_header);
 		int code = belle_sip_header_reason_get_cause(reason_header);
 		const char *text = belle_sip_header_reason_get_text(reason_header);
@@ -632,6 +632,9 @@ const SalErrorInfo *sal_op_get_error_info(const SalOp *op){
 const SalErrorInfo * sal_op_get_reason_error_info(const SalOp *op){
 	return &op->reason_error_info;
 }
+
+
+
 
 static void unlink_op_with_dialog(SalOp *op, belle_sip_dialog_t* dialog){
 	belle_sip_dialog_set_application_data(dialog,NULL);

@@ -204,6 +204,11 @@ LINPHONE_PUBLIC char * linphone_factory_get_msplugins_dir(const LinphoneFactory 
 LINPHONE_PUBLIC void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *path);
 
 /**
+ * Creates an object LinphoneErrorInfo.
+ * @return  LinphoneErrorInfo object.
+ */
+LINPHONE_PUBLIC  LinphoneErrorInfo *linphone_factory_create_error_info(void);
+/**
  * @}
  */
 

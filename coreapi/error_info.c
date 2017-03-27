@@ -216,12 +216,20 @@ void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op){
 	}
 }
 
-void linphone_error_info_set(LinphoneErrorInfo *ei, LinphoneReason reason, int code, const char *status_string, const char *warning){
+void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning){
 	linphone_error_info_reset(ei);
 	ei->reason = reason;
 	ei->protocol_code = code;
-	ei->phrase = ms_strdup_safe(status_string);
-	ei->warnings = ms_strdup_safe(warning);
+	if (protocol != NULL){
+		ei->protocol = bctbx_strdup(protocol);
+	}
+	else{
+		const char* prot = "SIP";
+		ei->protocol = bctbx_strdup(prot);
+	}
+
+	ei->phrase = bctbx_strdup(status_string);
+	ei->warnings = bctbx_strdup(warning);
 }
 
 
