@@ -227,8 +227,8 @@ typedef enum _LinphoneCallState{
 	LinphoneCallIncomingEarlyMedia, /**< We are proposing early media to an incoming call */
 	LinphoneCallUpdating, /**< A call update has been initiated by us */
 	LinphoneCallReleased, /**< The call object is no more retained by the core */
-	LinphoneCallEarlyUpdatedByRemote, /*< The call is updated by remote while not yet answered (early dialog SIP UPDATE received) */
-	LinphoneCallEarlyUpdating /*< We are updating the call while not yet answered (early dialog SIP UPDATE sent) */
+	LinphoneCallEarlyUpdatedByRemote, /**< The call is updated by remote while not yet answered (early dialog SIP UPDATE received) */
+	LinphoneCallEarlyUpdating /**< We are updating the call while not yet answered (early dialog SIP UPDATE sent) */
 } LinphoneCallState;
 
 /**
@@ -362,8 +362,9 @@ typedef unsigned int LinphoneContactSearchID;
 /**
  * Old name of LinphoneContactSearchID
  * @deprecated
+ * @donotwrap
  */
-typedef LinphoneContactSearchID ContactSearchID;
+LINPHONE_DEPRECATED typedef LinphoneContactSearchID ContactSearchID;
 
 /**
  * The LinphoneContent object holds data that can be embedded in a signaling message.
@@ -428,6 +429,7 @@ typedef struct _LinphoneFactory LinphoneFactory;
  * Policy to use to pass through firewalls.
  * @ingroup network_parameters
  * @deprecated Use #LinphoneNatPolicy instead.
+ * @donotwrap
 **/
 typedef enum _LinphoneFirewallPolicy {
 	LinphonePolicyNoFirewall, /**< Do not use any mechanism to pass through firewalls */
@@ -590,6 +592,7 @@ typedef struct _LinphoneNatPolicy LinphoneNatPolicy;
 /**
  * Enum describing remote friend status
  * @deprecated Use #LinphonePresenceModel and #LinphonePresenceActivity instead
+ * @donotwrap
  */
 typedef enum _LinphoneOnlineStatus{
 	LinphoneStatusOffline, /**< Offline */
@@ -912,8 +915,9 @@ typedef struct _LinphoneSipTransports {
 /**
  * Old name of LinphoneSipTransports
  * @deprecated
+ * @donotwrap
  */
-typedef struct _LinphoneSipTransports LCSipTransports;
+LINPHONE_DEPRECATED typedef struct _LinphoneSipTransports LCSipTransports;
 
 typedef struct _LinphoneSoundDaemon LinphoneSoundDaemon;
 

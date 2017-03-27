@@ -113,8 +113,9 @@ LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
  * Return humain readable presence status
  * @param ss
  * @deprecated Use #LinphonePresenceModel, #LinphonePresenceActivity and linphone_presence_activity_to_string() instead.
+ * @donotwrap
  */
-LINPHONE_PUBLIC const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
 
 /**
  * Convert a string into LinphoneTunnelMode enum

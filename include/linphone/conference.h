@@ -61,6 +61,7 @@ LINPHONE_PUBLIC void linphone_conference_params_unref(LinphoneConferenceParams *
  * Free a #LinphoneConferenceParams
  * @param params #LinphoneConferenceParams to free
  * @deprecated Use linphone_conference_params_unref() instead.
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_conference_params_free(LinphoneConferenceParams *params);
 

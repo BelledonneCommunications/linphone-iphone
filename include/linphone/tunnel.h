@@ -208,6 +208,7 @@ LINPHONE_PUBLIC void linphone_tunnel_config_unref(LinphoneTunnelConfig *cfg);
  * Destroy a tunnel configuration
  * @param tunnel LinphoneTunnelConfig object
  * @deprecated use linphone_tunnel_config_unref().
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
 
@@ -342,6 +343,7 @@ LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, cons
  * @param port http proxy port
  * @param username Optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
  * @param passwd Optional http proxy password. Use NULL if not needed.
+ * @donotwrap
  **/
 LINPHONE_PUBLIC void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd);
 
@@ -359,6 +361,7 @@ LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tun
  * @param enabled If true enter in tunneled mode, if false exits from tunneled mode.
  * The TunnelManager takes care of refreshing SIP registration when switching on or off the tunneled mode.
  * @deprecated Replaced by linphone_tunnel_set_mode()
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled);
 
@@ -367,6 +370,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_enable(LinphoneTunnel *
  * @param tunnel Tunnel object
  * @return Returns a boolean indicating whether tunneled operation is enabled.
  * @deprecated Replaced by linphone_tunnel_get_mode()
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel);
 
@@ -377,6 +381,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_tunnel_enabled(const Linphon
  * <br>In case of success, the tunnel is automatically turned off. Otherwise, if no udp communication is feasible, tunnel mode is turned on.
  * <br> Call this method each time to run the auto detection algorithm
  * @deprecated Replaced by linphone_tunnel_set_mode(LinphoneTunnelModeAuto)
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
 
@@ -385,6 +390,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_tunnel_auto_detect(LinphoneTun
  * @param[in] tunnel LinphoneTunnel object.
  * @return TRUE if auto detection is enabled, FALSE otherwise.
  * @deprecated Replaced by linphone_tunnel_get_mode()
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
 

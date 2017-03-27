@@ -35,6 +35,7 @@ extern "C" {
  * Contructor
  * @return a new empty #LinphoneFriend
  * @deprecated use #linphone_core_create_friend instead
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneFriend * linphone_friend_new(void);
 
@@ -43,6 +44,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneFriend * linphone_friend_new(void);
  * @param addr a buddy address, must be a sip uri like sip:joe@sip.linphone.org
  * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
  * @deprecated use #linphone_core_create_friend_with_address instead
+ * @donotwrap
  */
 LINPHONE_PUBLIC	LINPHONE_DEPRECATED LinphoneFriend *linphone_friend_new_with_address(const char *addr);
 
@@ -56,8 +58,9 @@ LINPHONE_PUBLIC	LINPHONE_DEPRECATED LinphoneFriend *linphone_friend_new_with_add
  * Destroy a LinphoneFriend.
  * @param lf LinphoneFriend object
  * @deprecated Use linphone_friend_unref() instead.
+ * @donotwrap
  */
-LINPHONE_PUBLIC void linphone_friend_destroy(LinphoneFriend *lf);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_friend_destroy(LinphoneFriend *lf);
 
 /**
  * Set #LinphoneAddress for this friend
@@ -191,8 +194,9 @@ LINPHONE_PUBLIC	void linphone_friend_done(LinphoneFriend *fr);
  * @param[in] lf A #LinphoneFriend object
  * @return #LinphoneOnlineStatus
  * @deprecated Use linphone_friend_get_presence_model() instead
+ * @donotwrap
  */
-LINPHONE_PUBLIC LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
 
 /**
  * Get subscription state of a friend

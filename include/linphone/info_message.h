@@ -77,6 +77,7 @@ LINPHONE_PUBLIC void linphone_info_message_unref(LinphoneInfoMessage *im);
 /**
  * Destroy a LinphoneInfoMessage.
  * @deprecated Use linphone_info_message_unref() instead.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_info_message_destroy(LinphoneInfoMessage *im);
 

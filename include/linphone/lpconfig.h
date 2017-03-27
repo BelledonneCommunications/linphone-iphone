@@ -276,6 +276,7 @@ LINPHONE_PUBLIC void linphone_config_write_relative_file(const LinphoneConfig *l
  * @param data Buffer where read string will be stored
  * @param max_length Length of the buffer
  * @return 0 on success, -1 on failure
+ * @donotwrap
  */
 LINPHONE_PUBLIC int linphone_config_read_relative_file(const LinphoneConfig *lpconfig, const char *filename, char *data, size_t max_length);
 

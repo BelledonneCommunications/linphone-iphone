@@ -441,6 +441,7 @@ LINPHONE_PUBLIC void linphone_call_params_clear_custom_sdp_media_attributes(Linp
  * Destroy a LinphoneCallParams object.
  * @param[in] cp LinphoneCallParams object
  * @deprecated Use linphone_call_params_unref() instead.
+ * @donotwrap
 **/
 LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_call_params_destroy(LinphoneCallParams *cp);
 
