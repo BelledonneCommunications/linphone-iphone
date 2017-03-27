@@ -8591,7 +8591,7 @@ extern "C" jstring Java_org_linphone_core_LinphoneAccountCreatorImpl_getEmail(JN
 
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_isAccountUsed(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
-	return (jint) linphone_account_creator_is_account_linked(account_creator);
+	return (jint) linphone_account_creator_is_account_exist(account_creator);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_createAccount(JNIEnv *env, jobject thiz, jlong ptr) {
