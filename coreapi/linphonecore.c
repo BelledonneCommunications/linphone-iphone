@@ -1186,6 +1186,7 @@ static void sound_config_read(LinphoneCore *lc)
 #endif
 	tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
 	linphone_core_enable_echo_cancellation(lc,tmp);
+	linphone_core_set_echo_canceller_filter_name(lc, linphone_core_get_echo_canceller_filter_name(lc));
 	linphone_core_enable_echo_limiter(lc,
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
 	linphone_core_enable_agc(lc,
@@ -1204,7 +1205,7 @@ static void sound_config_read(LinphoneCore *lc)
 
 static void certificates_config_read(LinphoneCore *lc) {
 	LinphoneFactory *factory = linphone_factory_get();
-	char *data_dir = linphone_factory_get_data_resources_dir(factory);
+	const char *data_dir = linphone_factory_get_data_resources_dir(factory);
 	char *root_ca_path = bctbx_strdup_printf("%s/rootca.pem", data_dir);
 	const char *rootca = lp_config_get_string(lc->config,"sip","root_ca", NULL);
 	// If rootca is not existing anymore, we reset it to the default value
@@ -1225,7 +1226,6 @@ static void certificates_config_read(LinphoneCore *lc) {
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	bctbx_free(root_ca_path);
-	bctbx_free(data_dir);
 }
 
 static void sip_config_read(LinphoneCore *lc) {
@@ -2076,8 +2076,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	const char *remote_provisioning_uri = NULL;
 	LinphoneFactory *lfactory = linphone_factory_get();
 	LinphoneCoreCbs *internal_cbs = _linphone_core_cbs_new();
-	char *msplugins_dir;
-	char *image_resources_dir;
+	const char *msplugins_dir;
+	const char *image_resources_dir;
 
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
@@ -2109,8 +2109,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
 	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
 	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
-	if (msplugins_dir) bctbx_free(msplugins_dir);
-	bctbx_free(image_resources_dir);
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
 	/* Get the mediastreamer2 event queue */

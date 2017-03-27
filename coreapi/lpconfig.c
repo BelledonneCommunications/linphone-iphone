@@ -481,9 +481,11 @@ int linphone_config_read_file(LpConfig *lpconfig, const char *filename){
 }
 
 void lp_item_set_value(LpItem *item, const char *value){
-	char *prev_value=item->value;
-	item->value=ortp_strdup(value);
-	ortp_free(prev_value);
+	if (item->value != value) {
+		char *prev_value=item->value;
+		item->value=ortp_strdup(value);
+		ortp_free(prev_value);
+	}
 }
 
 

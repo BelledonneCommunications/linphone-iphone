@@ -43,14 +43,12 @@ namespace linphone {
 	class ObjectBctbxListWrapper: public AbstractBctbxListWrapper {
 	public:
 		ObjectBctbxListWrapper(const std::list<std::shared_ptr<T> > &cppList) {
-			for(auto it=cppList.cbegin(); it!=cppList.cend(); it++) {
-				::belle_sip_object_t *cPtr = (::belle_sip_object_t *)Object::sharedPtrToCPtr(std::static_pointer_cast<Object,T>(*it));
-				if (cPtr != NULL) belle_sip_object_ref(cPtr);
-				mCList = bctbx_list_append(mCList, cPtr);
-			}
+			mCList = cppListToBctbxList(cppList);
 		}
 		virtual ~ObjectBctbxListWrapper() {
-			mCList = bctbx_list_free_with_data(mCList, unrefData);
+			if (mCList != NULL) {
+				bctbx_list_free_with_data(mCList, unrefData);
+			}
 		}
 		static std::list<std::shared_ptr<T> > bctbxListToCppList(const ::bctbx_list_t *bctbxList) {
 			std::list<std::shared_ptr<T> > cppList;
@@ -59,6 +57,15 @@ namespace linphone {
 				cppList.push_back(newObj);
 			}
 			return cppList;
+		}
+		static ::bctbx_list_t *cppListToBctbxList(const std::list<std::shared_ptr<T> > &cppList) {
+			bctbx_list_t *cList = NULL;
+			for(auto it=cppList.cbegin(); it!=cppList.cend(); it++) {
+				::belle_sip_object_t *cPtr = (::belle_sip_object_t *)Object::sharedPtrToCPtr(std::static_pointer_cast<Object,T>(*it));
+				if (cPtr != NULL) belle_sip_object_ref(cPtr);
+				cList = bctbx_list_append(cList, cPtr);
+			}
+			return cList;
 		}
 	
 	private:
@@ -73,6 +80,35 @@ namespace linphone {
 		StringBctbxListWrapper(const std::list<std::string> &cppList);
 		virtual ~StringBctbxListWrapper();
 		static std::list<std::string> bctbxListToCppList(const ::bctbx_list_t *bctbxList);
+	};
+	
+	
+	template <class T, class U>
+	class StructBctbxListWrapper: public AbstractBctbxListWrapper {
+	public:
+		StructBctbxListWrapper(const std::list<T> &cppList): AbstractBctbxListWrapper() {
+			mCList = cppListToBctbxList(cppList);
+		}
+		virtual ~StructBctbxListWrapper() {
+			bctbx_list_free_with_data(mCList, (bctbx_list_free_func)deleteCStruct);
+		}
+		static std::list<T> bctbxListToCppList(const ::bctbx_list_t *bctbxList) {
+			std::list<T> cppList;
+			for(const bctbx_list_t *it = bctbx_list_first_elem(bctbxList); it != NULL; it = bctbx_list_next(it)) {
+				cppList->push_back(T(it->data));
+			}
+			return cppList;
+		}
+		static bctbx_list_t *cppListToBctbxList(const std::list<T> &cppList) {
+			bctbx_list_t *cList = NULL;
+			for(auto it=cppList.cbegin(); it!=cppList.cend(); it++) {
+				cList = bctbx_list_append(cList, new U(it->c_struct()));
+			}
+			return cList;
+		}
+	
+	private:
+		static void deleteCStruct(U *cStruct) {delete cStruct;}
 	};
 	
 	class StringUtilities {

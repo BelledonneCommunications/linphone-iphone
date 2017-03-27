@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-if (ENABLE_DOC)
+if (ENABLE_DOC OR CXX_WRAPPER)
 	find_package(Doxygen)
 	if(DOXYGEN_FOUND)
 		if(DOXYGEN_DOT_FOUND)
@@ -39,7 +39,11 @@ if (ENABLE_DOC)
 			install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc/html" "${CMAKE_CURRENT_BINARY_DIR}/doc/xml"
 				DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
 		else()
-			message(WARNING "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
+			if (CXX_WRAPPER) 
+				message(FATAL_ERROR "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
+			else()
+				message(WARNING "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
+			endif()
 		endif()
 	endif()
 endif()

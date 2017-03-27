@@ -22,22 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneErrorInfo);
 
-#define STRING_RESET(field)	if (field) ms_free(field); field = NULL;
 
 
+static void linphone_error_info_reset(LinphoneErrorInfo *ei);
 
 static void error_info_destroy(LinphoneErrorInfo *ei){
-	if (ei->protocol) ms_free(ei->protocol);
-	if (ei->phrase) ms_free(ei->phrase);
-	if (ei->warnings) ms_free(ei->phrase);
-	if (ei->full_string) ms_free(ei->full_string);
+	linphone_error_info_reset(ei);
 }
 
 static void error_info_clone(LinphoneErrorInfo *ei, const LinphoneErrorInfo *other){
-	ei->protocol = ms_strdup_safe(other->protocol);
-	ei->phrase = ms_strdup_safe(other->phrase);
-	ei->warnings = ms_strdup_safe(other->phrase);
-	ei->full_string = ms_strdup_safe(other->full_string);
+	ei->protocol = bctbx_strdup(other->protocol);
+	ei->phrase = bctbx_strdup(other->phrase);
+	ei->warnings = bctbx_strdup(other->warnings);
+	ei->full_string = bctbx_strdup(other->full_string);
 }
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneErrorInfo, belle_sip_object_t,
@@ -155,7 +152,7 @@ int linphone_reason_to_error_code(LinphoneReason reason) {
 	return 400;
 }
 
-void linphone_error_info_reset(LinphoneErrorInfo *ei){
+static void linphone_error_info_reset(LinphoneErrorInfo *ei){
 	ei->reason = LinphoneReasonNone;
 	STRING_RESET(ei->protocol);
 	STRING_RESET(ei->phrase);
@@ -170,11 +167,11 @@ void linphone_error_info_reset(LinphoneErrorInfo *ei){
 
 void linphone_error_info_from_sal(LinphoneErrorInfo *ei, const SalErrorInfo *sei){
 	ei->reason = linphone_reason_from_sal(sei->reason);
-	ei->phrase = ms_strdup_safe(sei->status_string);
-	ei->full_string = ms_strdup_safe(sei->full_string);
-	ei->warnings = ms_strdup_safe(sei->warnings);
+	ei->phrase = bctbx_strdup(sei->status_string);
+	ei->full_string = bctbx_strdup(sei->full_string);
+	ei->warnings = bctbx_strdup(sei->warnings);
 	ei->protocol_code = sei->protocol_code;
-	ei->protocol = ms_strdup_safe(sei->protocol);
+	ei->protocol = bctbx_strdup(sei->protocol);
 }
 
 /* If a reason header is provided (in reason_ei), then create a sub LinphoneErrorInfo attached to the first one, unless the reason header

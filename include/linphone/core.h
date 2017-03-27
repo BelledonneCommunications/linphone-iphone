@@ -4145,6 +4145,23 @@ LINPHONE_PUBLIC const char *linphone_core_get_video_display_filter(LinphoneCore 
 **/
 LINPHONE_PUBLIC void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filtername);
 
+/**
+ * Get the name of the mediastreamer2 filter used for echo cancelling.
+ * @param[in] lc LinphoneCore object
+ * @return The name of the mediastreamer2 filter used for echo cancelling
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC const char * linphone_core_get_echo_canceller_filter_name(const LinphoneCore *lc);
+
+/**
+ * Set the name of the mediastreamer2 filter to be used for echo cancelling.
+ * This is for advanced users of the library.
+ * @param[in] lc LinphoneCore object
+ * @param[in] filtername The name of the mediastreamer2 filter to be used for echo cancelling
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_echo_canceller_filter_name(LinphoneCore *lc, const char *filtername);
+
 /** Contact Providers
   */
 

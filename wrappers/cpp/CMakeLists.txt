@@ -38,6 +38,7 @@ target_link_libraries(linphone++
 target_include_directories(linphone++
 	PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include
 	PRIVATE ${CMAKE_BINARY_DIR}/include
+	PRIVATE ${CMAKE_SOURCE_DIR}/include
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 	PRIVATE ${BCTOOLBOX_INCLUDE_DIRS}
 	PRIVATE ${BELLESIP_INCLUDE_DIRS}

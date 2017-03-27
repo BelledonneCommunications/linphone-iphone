@@ -124,8 +124,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
-#define ms_strdup_safe(str)	((str) ? ms_strdup(str) : NULL)
+
+
+#define STRING_RESET(field)	if (field) bctbx_free(field); (field) = NULL
+#define STRING_SET(field, value)	do{ if (field){bctbx_free(field);field=NULL;}; field=bctbx_strdup(value); }while(0)
+#define STRING_TRANSFER(field, newvalue)	do{ if (field){bctbx_free(field);field=NULL;}; field=newvalue; }while(0)
 
 struct _LinphoneCallParams{
 	belle_sip_object_t base;

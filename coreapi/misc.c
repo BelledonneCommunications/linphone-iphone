@@ -1270,6 +1270,17 @@ const char *linphone_core_get_video_display_filter(LinphoneCore *lc){
 	return lp_config_get_string(lc->config,"video","displaytype",NULL);
 }
 
+void linphone_core_set_echo_canceller_filter_name(LinphoneCore *lc, const char *filtername) {
+	lp_config_set_string(lc->config, "sound", "ec_filter", filtername);
+	if (filtername != NULL) {
+		ms_factory_set_echo_canceller_filter_name(lc->factory, filtername);
+	}
+}
+
+const char * linphone_core_get_echo_canceller_filter_name(const LinphoneCore *lc) {
+	return lp_config_get_string(lc->config, "sound", "ec_filter", NULL);
+}
+
 /**
  * Queue a task into the main loop. The data pointer must remain valid until the task is completed.
  * task_fun must return BELLE_SIP_STOP when job is finished.

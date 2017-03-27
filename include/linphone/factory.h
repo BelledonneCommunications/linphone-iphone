@@ -123,7 +123,7 @@ LINPHONE_PUBLIC LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *fa
  * @param[in] factory LinphoneFactory object
  * @return The path to the top directory where the resources are located
  */
-LINPHONE_PUBLIC char * linphone_factory_get_top_resources_dir(const LinphoneFactory *factory);
+LINPHONE_PUBLIC const char * linphone_factory_get_top_resources_dir(const LinphoneFactory *factory);
 
 /**
  * Set the top directory where the resources are located.
@@ -138,7 +138,7 @@ LINPHONE_PUBLIC void linphone_factory_set_top_resources_dir(LinphoneFactory *fac
  * @param[in] factory LinphoneFactory object
  * @return The path to the directory where the data resources are located
  */
-LINPHONE_PUBLIC char * linphone_factory_get_data_resources_dir(const LinphoneFactory *factory);
+LINPHONE_PUBLIC const char * linphone_factory_get_data_resources_dir(LinphoneFactory *factory);
 
 /**
  * Set the directory where the data resources are located.
@@ -152,7 +152,7 @@ LINPHONE_PUBLIC void linphone_factory_set_data_resources_dir(LinphoneFactory *fa
  * @param[in] factory LinphoneFactory object
  * @return The path to the directory where the sound resources are located
  */
-LINPHONE_PUBLIC char * linphone_factory_get_sound_resources_dir(const LinphoneFactory *factory);
+LINPHONE_PUBLIC const char * linphone_factory_get_sound_resources_dir(LinphoneFactory *factory);
 
 /**
  * Set the directory where the sound resources are located.
@@ -166,7 +166,7 @@ LINPHONE_PUBLIC void linphone_factory_set_sound_resources_dir(LinphoneFactory *f
  * @param[in] factory LinphoneFactory object
  * @return The path to the directory where the ring resources are located
  */
-LINPHONE_PUBLIC char * linphone_factory_get_ring_resources_dir(const LinphoneFactory *factory);
+LINPHONE_PUBLIC const char * linphone_factory_get_ring_resources_dir(LinphoneFactory *factory);
 
 /**
  * Set the directory where the ring resources are located.
@@ -180,7 +180,7 @@ LINPHONE_PUBLIC void linphone_factory_set_ring_resources_dir(LinphoneFactory *fa
  * @param[in] factory LinphoneFactory object
  * @return The path to the directory where the image resources are located
  */
-LINPHONE_PUBLIC char * linphone_factory_get_image_resources_dir(const LinphoneFactory *factory);
+LINPHONE_PUBLIC const char * linphone_factory_get_image_resources_dir(LinphoneFactory *factory);
 
 /**
  * Set the directory where the image resources are located.
@@ -194,7 +194,7 @@ LINPHONE_PUBLIC void linphone_factory_set_image_resources_dir(LinphoneFactory *f
  * @param[in] factory LinphoneFactory object
  * @return The path to the directory where the mediastreamer2 plugins are located, or NULL if it has not been set
  */
-LINPHONE_PUBLIC char * linphone_factory_get_msplugins_dir(const LinphoneFactory *factory);
+LINPHONE_PUBLIC const char * linphone_factory_get_msplugins_dir(LinphoneFactory *factory);
 
 /**
  * Set the directory where the mediastreamer2 plugins are located.

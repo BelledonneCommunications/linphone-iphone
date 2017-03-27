@@ -66,22 +66,24 @@ class CppTranslator(object):
 		ismonolistenable = (islistenable and not _class.multilistener)
 		ismultilistenable = (islistenable and _class.multilistener)
 		
-		classDict = {}
-		classDict['islistenable'] = islistenable
-		classDict['isnotlistenable'] = not islistenable
-		classDict['ismonolistenable'] = ismonolistenable
-		classDict['ismultilistenable'] = ismultilistenable
-		classDict['isNotListener'] = True
-		classDict['isfactory'] = (_class.name.to_c() == 'LinphoneFactory')
-		classDict['isVcard'] = (_class.name.to_c() == 'LinphoneVcard')
-		classDict['parentClassName'] = None
-		classDict['className'] = CppTranslator.translate_class_name(_class.name)
-		classDict['cClassName'] = '::' + _class.name.to_c()
-		classDict['parentClassName'] = 'Object'
-		classDict['methods'] = []
-		classDict['staticMethods'] = []
-		classDict['wrapperCbs'] = []
-		classDict['friendClasses'] = []
+		classDict = {
+			'islistenable'        : islistenable,
+			'isnotlistenable'     : not islistenable,
+			'ismonolistenable'    : ismonolistenable,
+			'ismultilistenable'   : ismultilistenable,
+			'isrefcountable'      : _class.refcountable,
+			'isnotrefcountable'   : not _class.refcountable,
+			'isNotListener'       : True,
+			'isfactory'           : (_class.name.to_c() == 'LinphoneFactory'),
+			'isVcard'             : (_class.name.to_c() == 'LinphoneVcard'),
+			'className'           : CppTranslator.translate_class_name(_class.name),
+			'cClassName'          : '::' + _class.name.to_c(),
+			'parentClassName'     : 'Object' if _class.refcountable else None,
+			'methods'             : [],
+			'staticMethods'       : [],
+			'wrapperCbs'          : [],
+			'friendClasses'       : []
+		}
 		
 		if _class.name.to_c() == 'LinphoneCore':
 			classDict['friendClasses'].append({'name': 'Factory'});
@@ -279,20 +281,33 @@ class CppTranslator(object):
 		elif type(exprtype) is AbsApi.EnumType:
 			cExpr = '(::{0}){1}'.format(exprtype.desc.name.to_c(), cppExpr)
 		elif type(exprtype) is AbsApi.ClassType:
-			param = {}
-			param['ptrType'] = CppTranslator.translate_class_type(self, exprtype, namespace=usedNamespace)
-			param['ptrType'] = CppTranslator.sharedPtrTypeExtractor.match(param['ptrType']).group(2)
-			param['cPtrType'] = exprtype.desc.name.to_c()
-			param['cppExpr'] = cppExpr
-			param['object'] = 'const Object' if exprtype.isconst else 'Object'
-			cExpr = '(::{cPtrType} *)Object::sharedPtrToCPtr(std::static_pointer_cast<{object},{ptrType}>({cppExpr}))'.format(**param)
+			cPtrType = exprtype.desc.name.to_c()
+			if exprtype.desc.refcountable:
+				ptrType = CppTranslator.translate_class_type(self, exprtype, namespace=usedNamespace)
+				ptrType = CppTranslator.sharedPtrTypeExtractor.match(ptrType).group(2)
+				param = {
+					'ptrType' : ptrType,
+					'cPtrType': cPtrType,
+					'cppExpr' : cppExpr,
+					'object'  : 'const Object' if exprtype.isconst else 'Object'
+				}
+				cExpr = '(::{cPtrType} *)Object::sharedPtrToCPtr(std::static_pointer_cast<{object},{ptrType}>({cppExpr}))'.format(**param)
+			else:
+				cExpr = '(const ::{_type} *)({expr}).c_struct()'.format(_type=cPtrType, expr=cppExpr)
 		elif type(exprtype) is AbsApi.ListType:
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				cExpr = 'StringBctbxListWrapper({0}).c_list()'.format(cppExpr)
 			elif type(exprtype.containedTypeDesc) is AbsApi.ClassType:
 				ptrType = CppTranslator.translate_class_type(self, exprtype.containedTypeDesc, namespace=usedNamespace)
-				ptrType = CppTranslator.sharedPtrTypeExtractor.match(ptrType).group(2)
-				cExpr = 'ObjectBctbxListWrapper<{0}>({1}).c_list()'.format(ptrType, cppExpr)
+				if exprtype.containedTypeDesc.desc.refcountable:
+					ptrType = CppTranslator.sharedPtrTypeExtractor.match(ptrType).group(2)
+					cExpr = 'ObjectBctbxListWrapper<{0}>({1}).c_list()'.format(ptrType, cppExpr)
+				else:
+					cType = exprtype.containedTypeDesc.desc.name.to_c()
+					if exprtype.isconst:
+						cExpr = 'StructBctbxListWrapper<{0},{1}>({2}).c_list()'.format(ptrType, cType, cppExpr)
+					else:
+						cExpr = 'StructBctbxListWrapper<{0},{1}>::cppListToBctbxList({2})'.format(ptrType, cType, cppExpr)
 			else:
 				raise AbsApi.Error('translation of bctbx_list_t of enums or basic C types is not supported')
 		
@@ -315,19 +330,26 @@ class CppTranslator(object):
 			return '({0}){1}'.format(cppEnumName, cExpr)
 		elif type(exprtype) is AbsApi.ClassType:
 			cppReturnType = CppTranslator.translate_class_type(self, exprtype, namespace=usedNamespace)
-			cppReturnType = CppTranslator.sharedPtrTypeExtractor.match(cppReturnType).group(2)
-			
-			if type(exprtype.parent) is AbsApi.Method and len(exprtype.parent.name.words) >=1 and (exprtype.parent.name.words == ['new'] or exprtype.parent.name.words[0] == 'create'):
-				return 'Object::cPtrToSharedPtr<{0}>((::belle_sip_object_t *){1}, false)'.format(cppReturnType, cExpr)
+			if exprtype.desc.refcountable:
+				cppReturnType = CppTranslator.sharedPtrTypeExtractor.match(cppReturnType).group(2)
+				
+				if type(exprtype.parent) is AbsApi.Method and len(exprtype.parent.name.words) >=1 and (exprtype.parent.name.words == ['new'] or exprtype.parent.name.words[0] == 'create'):
+					return 'Object::cPtrToSharedPtr<{0}>({1}, false)'.format(cppReturnType, cExpr)
+				else:
+					return 'Object::cPtrToSharedPtr<{0}>({1})'.format(cppReturnType, cExpr)
 			else:
-				return 'Object::cPtrToSharedPtr<{0}>((::belle_sip_object_t *){1})'.format(cppReturnType, cExpr)
+				return '{0}({1})'.format(exprtype.desc.name.to_camel_case(), cExpr);
 		elif type(exprtype) is AbsApi.ListType:
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				return 'StringBctbxListWrapper::bctbxListToCppList({0})'.format(cExpr)
 			elif type(exprtype.containedTypeDesc) is AbsApi.ClassType:
 				cppReturnType = CppTranslator.translate_class_type(self, exprtype.containedTypeDesc, namespace=usedNamespace)
-				cppReturnType = CppTranslator.sharedPtrTypeExtractor.match(cppReturnType).group(2)
-				return 'ObjectBctbxListWrapper<{0}>::bctbxListToCppList({1})'.format(cppReturnType, cExpr)
+				if exprtype.containedTypeDesc.desc.refcountable:
+					cppReturnType = CppTranslator.sharedPtrTypeExtractor.match(cppReturnType).group(2)
+					return 'ObjectBctbxListWrapper<{0}>::bctbxListToCppList({1})'.format(cppReturnType, cExpr)
+				else:
+					cType = exprtype.containedTypeDesc.desc.name.to_c()
+					return 'StructBctbxListWrapper<{0},{1}>::bctbxListToCppList({2})'.format(cppReturnType, cType, cExpr)
 			else:
 				raise AbsApi.Error('translation of bctbx_list_t of enums or basic C types is not supported')
 		else:
@@ -429,13 +451,18 @@ class CppTranslator(object):
 		
 		res = CppTranslator.translate_class_name(_type.desc.name, recursive=True, topAncestor=nsName)
 		
-		if _type.isconst:
-			res = 'const ' + res
-		
-		if type(_type.parent) is AbsApi.Argument:
-			return 'const std::shared_ptr<{0}> &'.format(res)
+		if _type.desc.refcountable:
+			if _type.isconst:
+				res = 'const ' + res
+			if type(_type.parent) is AbsApi.Argument:
+				return 'const std::shared_ptr<{0}> &'.format(res)
+			else:
+				return 'std::shared_ptr<{0}>'.format(res)
 		else:
-			return 'std::shared_ptr<{0}>'.format(res)
+			if type(_type.parent) is AbsApi.Argument:
+				return 'const {0} &'.format(res)
+			else:
+				return '{0}'.format(res)
 	
 	def translate_list_type(self, _type, **params):
 		if _type.containedTypeDesc is None:
@@ -679,6 +706,8 @@ def main():
 	render(renderer, header, includedir + '/enums.hh')
 	
 	mainHeader = MainHeader()
+	mainHeader.add_include('enums.hh')
+	
 	impl = ClassImpl()
 	
 	for _class in parser.classesIndex.values() + parser.interfacesIndex.values():

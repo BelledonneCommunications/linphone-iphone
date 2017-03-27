@@ -341,13 +341,12 @@ static int get_ui_file(const char *name, char *path, int pathsize){
 	snprintf(path,pathsize,"%s/%s.ui",BUILD_TREE_XML_DIR,name);
 	if (bctbx_file_exist(path)!=0){
 		LinphoneFactory *factory = linphone_factory_get();
-		char *data_dir = linphone_factory_get_data_resources_dir(factory);
+		const char *data_dir = linphone_factory_get_data_resources_dir(factory);
 		snprintf(path,pathsize,"%s/%s.ui",data_dir,name);
 		if (bctbx_file_exist(path)!=0){
 			g_error("Could not locate neither %s/%s.ui nor %s/%s.ui",BUILD_TREE_XML_DIR,name,data_dir,name);
 			return -1;
 		}
-		bctbx_free(data_dir);
 	}
 	return 0;
 }
@@ -486,7 +485,7 @@ static void about_url_clicked(GtkAboutDialog *dialog, const char *url, gpointer 
 
 void linphone_gtk_show_about(void){
 	struct stat filestat;
-	char *data_dir;
+	const char *data_dir;
 	char *license_file;
 	GtkWidget *about;
 	const char *tmp;
@@ -501,7 +500,6 @@ void linphone_gtk_show_about(void){
 
 	data_dir = linphone_factory_get_data_resources_dir(factory);
 	license_file = bctbx_strdup_printf("%s/COPYING", data_dir);
-	bctbx_free(data_dir);
 	memset(&filestat,0,sizeof(filestat));
 	if (stat(license_file,&filestat)!=0){
 		license_file="COPYING";
@@ -2136,7 +2134,7 @@ static void populate_xdg_data_dirs_envvar(void) {
 	int i;
 	gchar *value;
 	gchar **paths;
-	char *data_dir;
+	const char *data_dir;
 	LinphoneFactory *factory = linphone_factory_get();
 
 	if(g_getenv("XDG_DATA_DIRS") == NULL) {
@@ -2152,7 +2150,6 @@ static void populate_xdg_data_dirs_envvar(void) {
 		g_setenv("XDG_DATA_DIRS", new_value, TRUE);
 		g_free(new_value);
 	}
-	bctbx_free(data_dir);
 	g_strfreev(paths);
 #endif
 }
@@ -2168,7 +2165,7 @@ int main(int argc, char *argv[]){
 	char *chat_messages_db_file, *call_logs_db_file, *friends_db_file;
 	GError *error=NULL;
 	const char *tmp;
-	char *resources_dir;
+	const char *resources_dir;
 	char *pixmaps_dir;
 	LinphoneFactory *factory;
 
@@ -2271,7 +2268,6 @@ int main(int argc, char *argv[]){
 	pixmaps_dir = bctbx_strdup_printf("%s/pixmaps/linphone", resources_dir);
 	add_pixmap_directory(pixmaps_dir);
 	bctbx_free(pixmaps_dir);
-	bctbx_free(resources_dir);
 
 	/* Now, look for the factory configuration file, we do it this late
 		 since we want to have had time to change directory and to parse

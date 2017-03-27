@@ -193,7 +193,7 @@ void linphone_gtk_set_ui_config(const char *key , const char * val){
 const char *linphone_gtk_get_sound_path(const char *name){
 	static char *ret=NULL;
 	const char *file;
-	char *sound_dir;
+	const char *sound_dir;
 	LinphoneFactory *factory = linphone_factory_get();
 
 	file=linphone_gtk_get_ui_config(name,NULL);
@@ -212,7 +212,6 @@ const char *linphone_gtk_get_sound_path(const char *name){
 	}
 	sound_dir = linphone_factory_get_sound_resources_dir(factory);
 	ret=g_build_filename(sound_dir,name,NULL);
-	bctbx_free(sound_dir);
 	return ret;
 }
 
