@@ -490,11 +490,7 @@ class CParser(object):
 					   'linphone_core_get_sip_transports', # not wrappable
 					   'linphone_core_get_sip_transports_used'] # not wrappable
 
-		self.classBl = ['LinphoneImEncryptionEngine',
-					   'LinphoneImEncryptionEngineCbs',
-					   'LinphoneImNotifPolicy',
-					   'LpConfig',
-					   'LinphoneErrorInfo',
+		self.classBl = ['LpConfig',
 					   'LinphonePayloadType',
 					   'LinphonePlayer']  # temporarly blacklisted
 		

@@ -274,8 +274,6 @@ class CppTranslator(object):
 		if type(exprtype) is AbsApi.BaseType:
 			if exprtype.name == 'string':
 				cExpr = 'StringUtilities::cppStringToC({0})'.format(cppExpr);
-			elif exprtype.name not in ['void', 'string', 'string_array'] and exprtype.isref:
-				cExpr = '&' + cppExpr
 			else:
 				cExpr = cppExpr
 		elif type(exprtype) is AbsApi.EnumType:
@@ -315,9 +313,7 @@ class CppTranslator(object):
 	
 	def _wrap_c_expression_to_cpp(self, cExpr, exprtype, usedNamespace=None):
 		if type(exprtype) is AbsApi.BaseType:
-			if exprtype.name == 'void' and not exprtype.isref:
-				return cExpr
-			elif exprtype.name == 'string':
+			if exprtype.name == 'string':
 				return 'StringUtilities::cStringToCpp({0})'.format(cExpr)
 			elif exprtype.name == 'string_array':
 				return 'StringUtilities::cStringArrayToCppList({0})'.format(cExpr)
@@ -391,6 +387,7 @@ class CppTranslator(object):
 				res = _type.size
 			else:
 				res = 'int{0}_t'.format(_type.size)
+				
 		elif _type.name == 'floatant':
 			if _type.size is not None and _type.size == 'double':
 				res = 'double'
@@ -418,7 +415,7 @@ class CppTranslator(object):
 				res = 'const ' + res
 		
 		if _type.isref:
-			res += ' &'
+			res += ' *'
 		return res
 	
 	def translate_enum_type(self, _type, **params):
