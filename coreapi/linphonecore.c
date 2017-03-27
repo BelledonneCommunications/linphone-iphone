@@ -1186,6 +1186,7 @@ static void sound_config_read(LinphoneCore *lc)
 #endif
 	tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
 	linphone_core_enable_echo_cancellation(lc,tmp);
+	linphone_core_set_echo_canceller_filter_name(lc, linphone_core_get_echo_canceller_filter_name(lc));
 	linphone_core_enable_echo_limiter(lc,
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
 	linphone_core_enable_agc(lc,
