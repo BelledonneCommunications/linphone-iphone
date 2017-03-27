@@ -633,7 +633,6 @@
 		63CFEE041B9EDD74007EA5BD /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		63CFEE051B9EDD74007EA5BD /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFB13D7125500B30535 /* libx264.a */; };
 		63CFEE061B9EDD88007EA5BD /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
-		63CFEE071B9EDD88007EA5BD /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
 		63CFEE091B9EDD88007EA5BD /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821E18EEF26100765332 /* libmsopenh264.a */; };
 		63CFEE0A1B9EDD88007EA5BD /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
 		63CFEE0B1B9EDD88007EA5BD /* libmswebrtc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63EA4C941B50189D00922857 /* libmswebrtc.a */; };
@@ -678,6 +677,7 @@
 		8C2595E11DEDDC67007A6424 /* callkit_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2595E01DEDDC67007A6424 /* callkit_logo.png */; };
 		8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D981E40E0CC00728EF3 /* lime_ko.png */; };
 		8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */; };
+		8C5CADEB1E89160300F9DE91 /* libbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CFEDE41B9EDD36007EA5BD /* libbcg729.a */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
 		9EC6C1E31DF969AA006C2FD2 /* libturbojpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC6C1E21DF969AA006C2FD2 /* libturbojpeg.a */; };
@@ -780,7 +780,6 @@
 		F0BB8C1A1936245300974404 /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 045B5CB218D72E9A0088350C /* libbzrtp.a */; };
 		F0BB8C1B1936245300974404 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
 		F0BB8C1D1936245300974404 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
-		F0BB8C1E1936245300974404 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
 		F0BB8C201936245300974404 /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
 		F0BB8C221936245300974404 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
 		F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
@@ -1877,7 +1876,6 @@
 				63CFEDF41B9EDD74007EA5BD /* libmediastreamer_base.a in Frameworks */,
 				63CFEDF51B9EDD74007EA5BD /* libmediastreamer_voip.a in Frameworks */,
 				63CFEE061B9EDD88007EA5BD /* libmsamr.a in Frameworks */,
-				63CFEE071B9EDD88007EA5BD /* libmsbcg729.a in Frameworks */,
 				63CFEE091B9EDD88007EA5BD /* libmsopenh264.a in Frameworks */,
 				63CFEE0A1B9EDD88007EA5BD /* libmssilk.a in Frameworks */,
 				63CFEE0B1B9EDD88007EA5BD /* libmswebrtc.a in Frameworks */,
@@ -1934,6 +1932,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C5CADEB1E89160300F9DE91 /* libbcg729.a in Frameworks */,
 				9EC6C1E41DF969D1006C2FD2 /* libturbojpeg.a in Frameworks */,
 				636920671D253DF700D44CAC /* libbcunit.a in Frameworks */,
 				63BB26A31D006F4B00DA1F83 /* libbv16.a in Frameworks */,
@@ -1970,7 +1969,6 @@
 				F0BB8C141936242400974404 /* libmediastreamer_base.a in Frameworks */,
 				F0BB8C151936242400974404 /* libmediastreamer_voip.a in Frameworks */,
 				F0BB8C1D1936245300974404 /* libmsamr.a in Frameworks */,
-				F0BB8C1E1936245300974404 /* libmsbcg729.a in Frameworks */,
 				F0BB8C201936245300974404 /* libmssilk.a in Frameworks */,
 				F0BB8C221936245300974404 /* libopencore-amrnb.a in Frameworks */,
 				F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */,
