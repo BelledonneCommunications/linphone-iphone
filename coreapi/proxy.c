@@ -688,7 +688,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 			ms_free(flatten);
 		}
 	}
-	if (proxy==NULL) linphone_proxy_config_destroy(tmpproxy);
+	if (proxy==NULL) linphone_proxy_config_unref(tmpproxy);
 	return result;
 }
 

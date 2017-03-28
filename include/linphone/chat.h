@@ -41,7 +41,7 @@ extern "C" {
  * @deprecated Use LinphoneChatMessageCbsMsgStateChangedCb instead.
  * @donotwrap
  */
-LINPHONE_DEPRECATED typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 
 /**
  * Call back used to notify message delivery status

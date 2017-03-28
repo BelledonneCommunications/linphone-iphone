@@ -1231,7 +1231,7 @@ static void certificates_config_read(LinphoneCore *lc) {
 static void sip_config_read(LinphoneCore *lc) {
 	char *contact;
 	const char *tmpstr;
-	LCSipTransports tr;
+	LinphoneSipTransports tr;
 	int i,tmp;
 	int ipv6_default = TRUE;
 
@@ -2557,7 +2557,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 }
 
 int linphone_core_get_sip_port(LinphoneCore *lc){
-	LCSipTransports tr;
+	LinphoneSipTransports tr;
 	linphone_core_get_sip_transports_used(lc,&tr);
 	return tr.udp_port>0 ? tr.udp_port : (tr.tcp_port > 0 ? tr.tcp_port : tr.tls_port);
 }
@@ -2592,7 +2592,7 @@ static void transport_error(LinphoneCore *lc, const char* transport, int port){
 	ms_free(msg);
 }
 
-static bool_t transports_unchanged(const LCSipTransports * tr1, const LCSipTransports * tr2){
+static bool_t transports_unchanged(const LinphoneSipTransports * tr1, const LinphoneSipTransports * tr2){
 	return
 		tr2->udp_port==tr1->udp_port &&
 		tr2->tcp_port==tr1->tcp_port &&
@@ -2614,7 +2614,7 @@ static void __linphone_core_invalidate_registers(LinphoneCore* lc){
 int _linphone_core_apply_transports(LinphoneCore *lc){
 	Sal *sal=lc->sal;
 	const char *anyaddr;
-	LCSipTransports *tr=&lc->sip_conf.transports;
+	LinphoneSipTransports *tr=&lc->sip_conf.transports;
 	const char* listening_address;
 	/*first of all invalidate all current registrations so that we can register again with new transports*/
 	__linphone_core_invalidate_registers(lc);
@@ -2662,7 +2662,7 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 }
 
 int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr_config /*config to be saved*/){
-	LCSipTransports tr=*tr_config;
+	LinphoneSipTransports tr=*tr_config;
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
 		/*legacy random mode*/
@@ -2707,7 +2707,7 @@ void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTranspor
 }
 
 void linphone_core_set_sip_port(LinphoneCore *lc,int port) {
-	LCSipTransports tr;
+	LinphoneSipTransports tr;
 	memset(&tr,0,sizeof(tr));
 	tr.udp_port=port;
 	linphone_core_set_sip_transports (lc,&tr);

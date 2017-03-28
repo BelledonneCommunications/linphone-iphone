@@ -1291,7 +1291,7 @@ void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun
 }
 
 static int get_unique_transport(LinphoneCore *lc, LinphoneTransportType *type, int *port){
-	LCSipTransports tp;
+	LinphoneSipTransports tp;
 	linphone_core_get_sip_transports(lc,&tp);
 	if (tp.tcp_port==0 && tp.tls_port==0 && tp.udp_port!=0){
 		*type=LinphoneTransportUdp;
@@ -1341,7 +1341,7 @@ int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
 		LinphoneTransportType tpt;
 		int port;
 		if (get_unique_transport(lc,&tpt,&port)==0){
-			LCSipTransports newtp={0};
+			LinphoneSipTransports newtp={0};
 			if (lp_config_get_int(lc->config,"sip","sip_random_port",0))
 				port=-1;
 			ms_message("Core is using a single SIP transport, migrating proxy config and enabling multi-transport.");
