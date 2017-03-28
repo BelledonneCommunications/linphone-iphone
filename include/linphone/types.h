@@ -1104,4 +1104,14 @@ typedef enum _LinphoneXmlRpcStatus {
 typedef struct _LsdPlayer LsdPlayer;
 
 
+/**
+ * Structure describing a range of integers
+ * @ingroup misc
+ */
+typedef struct _LinphoneIntRange {
+	int min; /**< Minimum value */
+	int max; /**< Maximum value */
+} LinphoneIntRange;
+
+
 #endif /* LINPHONE_TYPES_H_ */

@@ -65,6 +65,30 @@ LINPHONE_PUBLIC void linphone_chat_message_resend(LinphoneChatMessage *msg);
  */
 LINPHONE_PUBLIC void *linphone_vcard_get_belcard(LinphoneVcard *vcard);
 
+
+
+/* Functions to mainpulate the LinphoneIntRange structure */
+
+/**
+ * Get the minimum value of a #LinphoneIntRange.
+ */
+LINPHONE_PUBLIC int linphone_int_range_get_min(const LinphoneIntRange *range);
+
+/**
+ * Get the maximum value of a #LinphoneIntRange.
+ */
+LINPHONE_PUBLIC int linphone_int_range_get_max(const LinphoneIntRange *range);
+
+/**
+ * Set the minimum value of a #LinphoneIntRange.
+ */
+LINPHONE_PUBLIC void linphone_int_range_set_min(LinphoneIntRange *range, int min);
+
+/**
+ * Set the maximum value of a #LinphoneIntRange.
+ */
+LINPHONE_PUBLIC void linphone_int_range_set_max(LinphoneIntRange *range, int max);
+
 /**
  * @}
  */

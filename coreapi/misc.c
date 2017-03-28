@@ -1884,3 +1884,22 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 		linphone_call_set_symmetric_rtp(call, linphone_core_symmetric_rtp_enabled(linphone_call_get_core(call)));
 	}
 }
+
+
+/* Functions to mainpulate the LinphoneIntRange structure */
+
+int linphone_int_range_get_min(const LinphoneIntRange *range) {
+	return range->min;
+}
+
+int linphone_int_range_get_max(const LinphoneIntRange *range) {
+	return range->max;
+}
+
+void linphone_int_range_set_min(LinphoneIntRange *range, int min) {
+	range->min = min;
+}
+
+void linphone_int_range_set_max(LinphoneIntRange *range, int max) {
+	range->max = max;
+}

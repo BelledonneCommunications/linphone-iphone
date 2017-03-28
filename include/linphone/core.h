@@ -2313,8 +2313,15 @@ LINPHONE_PUBLIC int linphone_core_get_audio_port(const LinphoneCore *lc);
  * @param[out] min_port The lower bound of the audio port range being used
  * @param[out] max_port The upper bound of the audio port range being used
  * @ingroup network_parameters
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
+/**
+ * Overload of linphone_core_get_audio_port_range().
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc);
 
 /**
  * Gets the UDP port used for video streaming.
@@ -2330,8 +2337,15 @@ LINPHONE_PUBLIC int linphone_core_get_video_port(const LinphoneCore *lc);
  * @param[out] min_port The lower bound of the video port range being used
  * @param[out] max_port The upper bound of the video port range being used
  * @ingroup network_parameters
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
+/**
+ * Overload of linphone_core_get_video_port_range().
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc);
 
 /**
  * Gets the UDP port used for text streaming.
@@ -2347,8 +2361,15 @@ LINPHONE_PUBLIC int linphone_core_get_text_port(const LinphoneCore *lc);
  * @param[out] min_port The lower bound of the text port range being used
  * @param[out] max_port The upper bound of the text port range being used
  * @ingroup network_parameters
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
+/**
+ * Overload of linphone_core_get_text_port_range().
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc);
 
 /**
  * Gets the value of the no-rtp timeout.
