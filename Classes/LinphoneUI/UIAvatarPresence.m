@@ -57,11 +57,10 @@ INIT_WITH_COMMON_CF {
 		_friend ? linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(_friend))
 				: LinphonePresenceBasicStatusClosed;
 	const LinphonePresenceModel *model = _friend ? linphone_friend_get_presence_model(_friend) : NULL;
-	LinphonePresenceActivity *activity =
-		model ? linphone_presence_model_get_activity(model) ?: LinphonePresenceActivityOffline : NULL;
+	LinphonePresenceActivity *activity = model ? linphone_presence_model_get_activity(model):NULL;
 
 	LOGE(@"Friend %s status is now %s/%s since %@", _friend ? linphone_friend_get_name(_friend) : "NULL",
-		 basic == LinphonePresenceBasicStatusOpen ? "open" : "closed", linphone_presence_activity_to_string(activity),
+		 basic == LinphonePresenceBasicStatusOpen ? "open" : "closed", activity? linphone_presence_activity_to_string(activity):"Unknown",
 		 [NSDate dateWithTimeIntervalSince1970:linphone_presence_model_get_timestamp(model)]);
 
 	NSString *imageName;
