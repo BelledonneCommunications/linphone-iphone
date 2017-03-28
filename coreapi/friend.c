@@ -115,7 +115,11 @@ static LinphoneFriendPresence * find_presence_model_for_uri_or_tel(const Linphon
 		ms_warning("Cannot find uri of tel [%s] from friend [%p] because not associated to any Linphone core object",uri_or_tel,lf);
 		return NULL;
 	}
-	iterator = lf->presence_models;
+	if ((iterator = lf->presence_models) == NULL) {
+		/*no need to move forward, just reutn to avoid useless uri parsing*/
+		return NULL;
+	};
+	
 	uri_or_tel_addr = linphone_core_interpret_url(lf->lc, uri_or_tel);
 
 	while (uri_or_tel_addr && iterator) {
