@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 SalAddress * sal_address_new(const char *uri){
 	belle_sip_header_address_t*  result;
 	if (uri) {
-		result=belle_sip_header_address_parse (uri);
+		result=belle_sip_header_address_fast_parse (uri);
 		/*may return NULL*/
 	} else {
 		result = belle_sip_header_address_new();
