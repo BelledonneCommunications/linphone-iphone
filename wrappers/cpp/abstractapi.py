@@ -726,6 +726,7 @@ class CParser(object):
 		elif cType.ctype in self.classesIndex or cType.ctype in self.interfacesIndex:
 			absType = ClassType(cType.ctype)
 			absType.isconst = cType.completeType.startswith('const ')
+			absType.isref = cType.completeType.endswith('*')
 		elif cType.ctype == self.cListType:
 			absType = ListType(cType.containedType)
 		else:

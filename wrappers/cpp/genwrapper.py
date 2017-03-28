@@ -334,7 +334,13 @@ class CppTranslator(object):
 				else:
 					return 'Object::cPtrToSharedPtr<{0}>({1})'.format(cppReturnType, cExpr)
 			else:
-				return '{0}({1})'.format(exprtype.desc.name.to_camel_case(), cExpr);
+				if exprtype.isref:
+					return '{0}({1})'.format(exprtype.desc.name.to_camel_case(), cExpr)
+				else:
+					return '{0}(StructWrapper<::{1}>({2}).ptr())'.format(
+						exprtype.desc.name.to_camel_case(),
+						exprtype.desc.name.to_c(),
+						cExpr)
 		elif type(exprtype) is AbsApi.ListType:
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				return 'StringBctbxListWrapper::bctbxListToCppList({0})'.format(cExpr)
