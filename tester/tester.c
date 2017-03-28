@@ -895,5 +895,6 @@ LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bo
 }
 
 void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv) {
+	linphone_core_cbs_unref(conf_srv->cbs);
 	linphone_core_manager_destroy((LinphoneCoreManager *)conf_srv);
 }
