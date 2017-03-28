@@ -312,10 +312,9 @@ else()
 	set(EXPORT_TARGETS_NAME "Linphone")
 endif()
 
-
+add_subdirectory(include)
 add_subdirectory(java)
 add_subdirectory(coreapi)
-add_subdirectory(include)
 add_subdirectory(share)
 if(ENABLE_CONSOLE_UI)
 	add_subdirectory(console)
