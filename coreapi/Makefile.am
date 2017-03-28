@@ -34,6 +34,7 @@ liblinphone_la_SOURCES=\
 	carddav.h \
 	call_log.c \
 	call_params.c \
+	carddav.c \
 	chat.c \
 	chat_file_transfer.c \
 	conference.cc conference_private.h \
@@ -46,6 +47,7 @@ liblinphone_la_SOURCES=\
 	enum.c enum.h \
 	error_info.c \
 	event.c \
+	factory.c \
 	friend.c \
 	friendlist.c \
 	im_notif_policy.c \
@@ -63,25 +65,24 @@ liblinphone_la_SOURCES=\
 	misc.c  \
 	nat_policy.c \
 	offeranswer.c offeranswer.h\
+	payload_type.c \
 	player.c \
 	presence.c \
 	private.h \
 	proxy.c \
 	quality_reporting.c quality_reporting.h\
 	remote_provisioning.c \
+	ringtoneplayer.c \
 	sal.c \
 	siplogin.c \
 	sipsetup.c \
+	sqlite3_bctbx_vfs.c sqlite3_bctbx_vfs.h\
 	vcard_private.h \
+	vtables.c \
+	video_definition.c \
 	xml2lpc.c xml2lpc.h \
 	xml.c \
 	xmlrpc.c \
-	vtables.c \
-	carddav.c \
-	ringtoneplayer.c \
-	sqlite3_bctbx_vfs.c sqlite3_bctbx_vfs.h\
-	factory.c \
-	payload_type.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP

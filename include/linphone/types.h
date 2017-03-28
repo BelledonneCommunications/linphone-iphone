@@ -1106,6 +1106,12 @@ typedef enum _LinphoneUpnpState {
 typedef struct _LinphoneVcard LinphoneVcard;
 
 /**
+ * The LinphoneVideoDefinition object represents a video definition, eg. its width and its height.
+ * @ingroup media_parameters
+ */
+typedef struct _LinphoneVideoDefinition LinphoneVideoDefinition;
+
+/**
  * Structure describing policy regarding video streams establishments.
  * @ingroup media_parameters
 **/

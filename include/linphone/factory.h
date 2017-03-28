@@ -126,6 +126,30 @@ LINPHONE_PUBLIC LinphoneCallCbs * linphone_factory_create_call_cbs(const Linphon
 LINPHONE_PUBLIC LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory);
 
 /**
+ * Create a LinphoneVideoDefinition from a given width and height
+ * @param[in] factory LinphoneFactory singleton object
+ * @param[in] width The width of the created video definition
+ * @param[in] height The height of the created video definition
+ * @return A new LinphoneVideoDefinition object
+ */
+LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_factory_create_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height);
+
+/**
+ * Create a LinphoneVideoDefinition from a given standard definition name
+ * @param[in] factory LinphoneFactory singleton object
+ * @param[in] name The standard definition name of the video definition to create
+ * @return A new LinphoneVideoDefinition object
+ */
+LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_factory_create_video_definition_from_name(const LinphoneFactory *factory, const char *name);
+
+/**
+ * Get the list of standard video definitions supported by Linphone.
+ * @param[in] factory LinphoneFactory singleton object
+ * @return \bctbx_list{LinphoneVideoDefinition}
+ */
+LINPHONE_PUBLIC const bctbx_list_t * linphone_factory_get_supported_video_definitions(const LinphoneFactory *factory);
+
+/**
  * Get the top directory where the resources are located.
  * @param[in] factory LinphoneFactory object
  * @return The path to the top directory where the resources are located

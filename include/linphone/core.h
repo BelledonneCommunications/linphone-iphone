@@ -62,6 +62,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/proxy_config.h"
 #include "linphone/ringtoneplayer.h"
 #include "linphone/vcard.h"
+#include "linphone/video_definition.h"
 #include "linphone/xmlrpc.h"
 
 
@@ -2816,7 +2817,7 @@ LINPHONE_PUBLIC void linphone_core_set_ring_during_incoming_early_media(Linphone
 /**
  * Tells whether the ring play is enabled during an incoming early media call.
  * @param[in] lc #LinphoneCore object
- * @ingroup media_paramaters
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc);
 
@@ -3118,8 +3119,18 @@ LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(const 
 /**
  * Returns the zero terminated table of supported video resolutions.
  * @ingroup media_parameters
+ * @deprecated Use linphone_factory_get_supported_video_definitions() instead
 **/
-LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
+
+/**
+ * Set the preferred video definition for the stream that is captured and sent to the remote party.
+ * All standard video definitions are accepted on the receive path.
+ * @param[in] lc LinphoneCore object
+ * @param[in] vdef LinphoneVideoDefinition object
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef);
 
 /**
  * Sets the preferred video size.
@@ -3127,8 +3138,20 @@ LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(Li
  * This applies only to the stream that is captured and sent to the remote party,
  * since we accept all standard video size on the receive path.
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_set_preferred_video_definition() instead
 **/
-LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+
+/**
+ * Set the video definition for the captured (preview) video.
+ * This method is for advanced usage where a video capture must be set independently of the definition of the stream actually sent through the call.
+ * This allows for example to have the preview window in High Definition  even if due to bandwidth constraint the sent video definition is small.
+ * Using this feature increases the CPU consumption, since a rescaling will be done internally.
+ * @param[in] lc LinphoneCore object
+ * @param[in] vdef LinphoneVideoDefinition object
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef);
 
 /**
  * Sets the video size for the captured (preview) video.
@@ -3138,16 +3161,27 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MS
  * @ingroup media_parameters
  * @param lc the linphone core
  * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
+ * @deprecated Use linphone_core_set_preview_video_definition() instead
 **/
-LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
 
 /**
  * Sets the preview video size by its name. See linphone_core_set_preview_video_size() for more information about this feature.
  *
  * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
  * @ingroup media_parameters
+ * @deprecated Use linphone_factory_create_video_definition_from_name() and linphone_core_set_preview_video_definition() instead
 **/
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
+
+/**
+ * Get the definition of the captured video.
+ * @param[in] lc LinphoneCore object
+ * @return The captured LinphoneVideoDefinition if it was previously set by linphone_core_set_preview_video_definition(), otherwise a 0x0 LinphoneVideoDefinition.
+ * @see linphone_core_set_preview_video_definition()
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_core_get_preview_video_definition(const LinphoneCore *lc);
 
 /**
  * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
@@ -3155,8 +3189,19 @@ LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *
  * @ingroup media_parameters
  * @param lc the core
  * @return a MSVideoSize
+ * @deprecated Use linphone_core_get_preview_video_definition() instead
 **/
-LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
+
+/**
+ * Get the effective video definition provided by the camera for the captured video.
+ * When preview is disabled or not yet started this function returns a 0x0 video definition.
+ * @param[in] lc LinphoneCore object
+ * @return The captured LinphoneVideoDefinition
+ * @ingroup media_parameters
+ * @see linphone_core_set_preview_video_definition()
+ */
+LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_core_get_current_preview_video_definition(const LinphoneCore *lc);
 
 /**
  * Returns the effective video size for the captured video as provided by the camera.
@@ -3165,20 +3210,30 @@ LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneC
  * @ingroup media_parameters
  * @param lc the core
  * @return a MSVideoSize
+ * @deprecated Use linphone_core_get_current_preview_video_definition() instead
 **/
-LINPHONE_PUBLIC MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc);
+
+/**
+ * Get the preferred video definition for the stream that is captured and sent to the remote party.
+ * @param[in] lc LinphoneCore object
+ * @return The preferred LinphoneVideoDefinition
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_core_get_preferred_video_definition(const LinphoneCore *lc);
 
 /**
  * Returns the current preferred video size for sending.
- *
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_get_preferred_video_definition() instead
 **/
-LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
 
 /**
  * Get the name of the current preferred video size for sending.
  * @param[in] lc #LinphoneCore object.
  * @return A string containing the name of the current preferred video size (to be freed with ms_free()).
+ * @deprecated Use linphone_core_get_preferred_video_defintion() and linphone_video_definition_get_name() instead
  */
 LINPHONE_PUBLIC char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc);
 
@@ -3189,6 +3244,7 @@ LINPHONE_PUBLIC char * linphone_core_get_preferred_video_size_name(const Linphon
  * that it takes the name of the video resolution as input.
  * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
  * @ingroup media_parameters
+ * @deprecated Use linphone_factory_create_video_definition_from_name() and linphone_core_set_preferred_video_definition() instead
 **/
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
 
@@ -4140,7 +4196,7 @@ LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneC
  * @see linphone_core_get_supported_file_formats
  * @param lc A #LinphoneCore object
  * @param fmt The format extension (wav, mkv).
- * @ingroup media_paramaters
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC bool_t linphone_core_file_format_supported(LinphoneCore *lc, const char *fmt);
 

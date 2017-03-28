@@ -193,6 +193,10 @@ MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParam
 	return cp->recv_vsize;
 }
 
+const LinphoneVideoDefinition * linphone_call_params_get_received_video_definition(const LinphoneCallParams *cp) {
+	return cp->recv_vdef;
+}
+
 const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp){
 	return cp->record_file;
 }
@@ -207,6 +211,10 @@ float linphone_call_params_get_sent_framerate(const LinphoneCallParams *cp){
 
 MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *cp) {
 	return cp->sent_vsize;
+}
+
+const LinphoneVideoDefinition * linphone_call_params_get_sent_video_definition(const LinphoneCallParams *cp) {
+	return cp->sent_vdef;
 }
 
 const char *linphone_call_params_get_session_name(const LinphoneCallParams *cp){
@@ -317,6 +325,8 @@ LinphoneCallParams * linphone_call_params_ref(LinphoneCallParams *cp) {
 }
 
 void linphone_call_params_unref(LinphoneCallParams *cp) {
+	if (cp->sent_vdef != NULL) linphone_video_definition_unref(cp->sent_vdef);
+	if (cp->recv_vdef != NULL) linphone_video_definition_unref(cp->recv_vdef);
 	belle_sip_object_unref(cp);
 }
 

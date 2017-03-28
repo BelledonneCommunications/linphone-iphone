@@ -113,6 +113,7 @@ set(LINPHONE_SOURCE_FILES_C
 	siplogin.c
 	sipsetup.c
 	sqlite3_bctbx_vfs.c
+	video_definition.c
 	xml2lpc.c
 	xml.c
 	xmlrpc.c

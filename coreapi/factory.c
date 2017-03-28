@@ -38,6 +38,9 @@ typedef belle_sip_object_t_vptr_t LinphoneFactory_vptr_t;
 
 struct _LinphoneFactory {
 	belle_sip_object_t base;
+
+	bctbx_list_t *supported_video_definitions;
+
 	/*these are the directories set by the application*/
 	char *top_resources_dir;
 	char *data_resources_dir;
@@ -56,6 +59,8 @@ struct _LinphoneFactory {
 };
 
 static void linphone_factory_uninit(LinphoneFactory *obj){
+	bctbx_list_free_with_data(obj->supported_video_definitions, (bctbx_list_free_func)linphone_video_definition_unref);
+
 	STRING_RESET(obj->top_resources_dir);
 	STRING_RESET(obj->data_resources_dir);
 	STRING_RESET(obj->sound_resources_dir);
@@ -87,9 +92,41 @@ static void _linphone_factory_destroying_cb(void) {
 	}
 }
 
+#define ADD_SUPPORTED_VIDEO_DEFINITION(factory, width, height, name) \
+	(factory)->supported_video_definitions = bctbx_list_append((factory)->supported_video_definitions, \
+		linphone_video_definition_ref(linphone_video_definition_new(width, height, name)))
+
+static void initialize_supported_video_definitions(LinphoneFactory *factory) {
+#if !defined(__ANDROID__) && !TARGET_OS_IPHONE
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H, "1080p");
+#endif
+#if !defined(__ANDROID__) && !TARGET_OS_MAC /*limit to most common sizes because mac video API cannot list supported resolutions*/
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H, "uxga");
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H, "sxga-");
+#endif
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H, "720p");
+#if !defined(__ANDROID__) && !TARGET_OS_MAC
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H, "xga");
+#endif
+#if !defined(__ANDROID__) && !TARGET_OS_IPHONE
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H, "svga");
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H, "4cif");
+#endif
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H, "vga");
+#if TARGET_OS_IPHONE
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_IOS_MEDIUM_H, MS_VIDEO_SIZE_IOS_MEDIUM_W, "ios-medium");
+#endif
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H, "cif");
+#if !TARGET_OS_MAC || TARGET_OS_IPHONE /* OS_MAC is 1 for iPhone, but we need QVGA */
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H, "qvga");
+#endif
+	ADD_SUPPORTED_VIDEO_DEFINITION(factory, MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H, "qcif");
+}
+
 static LinphoneFactory *linphone_factory_new(void){
 	LinphoneFactory *factory = belle_sip_object_new(LinphoneFactory);
 	factory->top_resources_dir = bctbx_strdup(PACKAGE_DATA_DIR);
+	initialize_supported_video_definitions(factory);
 	return factory;
 }
 
@@ -139,6 +176,54 @@ LinphoneCallCbs * linphone_factory_create_call_cbs(const LinphoneFactory *factor
 
 LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
 	return _linphone_vcard_new();
+}
+
+LinphoneVideoDefinition * linphone_factory_create_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height) {
+	return linphone_video_definition_ref(linphone_video_definition_new(width, height, NULL));
+}
+
+LinphoneVideoDefinition * linphone_factory_create_video_definition_from_name(const LinphoneFactory *factory, const char *name) {
+	unsigned int width = 0;
+	unsigned int height = 0;
+	LinphoneVideoDefinition *vdef = linphone_factory_find_supported_video_definition_by_name(factory, name);
+	if (vdef != NULL) return vdef;
+	if (sscanf(name, "%ux%u", &width, &height) == 2) {
+		return linphone_video_definition_new(width, height, NULL);
+	}
+	return linphone_video_definition_new(0, 0, NULL);
+}
+
+const bctbx_list_t * linphone_factory_get_supported_video_definitions(const LinphoneFactory *factory) {
+	return factory->supported_video_definitions;
+}
+
+LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height) {
+	const bctbx_list_t *item;
+	const bctbx_list_t *supported = linphone_factory_get_supported_video_definitions(factory);
+	LinphoneVideoDefinition *searched_vdef = linphone_video_definition_new(width, height, NULL);
+
+	for (item = supported; item != NULL; item = bctbx_list_next(item)) {
+		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
+		if (linphone_video_definition_equals(svdef, searched_vdef)) {
+			linphone_video_definition_unref(searched_vdef);
+			return svdef;
+		}
+	}
+
+	return searched_vdef;
+}
+
+LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_name(const LinphoneFactory *factory, const char *name) {
+	const bctbx_list_t *item;
+	const bctbx_list_t *supported = linphone_factory_get_supported_video_definitions(factory);
+
+	for (item = supported; item != NULL; item = bctbx_list_next(item)) {
+		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
+		if (strcmp(linphone_video_definition_get_name(svdef), name) == 0) {
+			return svdef;
+		}
+	}
+	return NULL;
 }
 
 const char * linphone_factory_get_top_resources_dir(const LinphoneFactory *factory) {

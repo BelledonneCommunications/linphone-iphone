@@ -1964,6 +1964,10 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	VideoStream *vstream;
 #endif
+	if (call->current_params->sent_vdef != NULL) linphone_video_definition_unref(call->current_params->sent_vdef);
+	call->current_params->sent_vdef = NULL;
+	if (call->current_params->recv_vdef != NULL) linphone_video_definition_unref(call->current_params->recv_vdef);
+	call->current_params->recv_vdef = NULL;
 	MS_VIDEO_SIZE_ASSIGN(call->current_params->sent_vsize, UNKNOWN);
 	MS_VIDEO_SIZE_ASSIGN(call->current_params->recv_vsize, UNKNOWN);
 #ifdef VIDEO_ENABLED
@@ -1971,6 +1975,10 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 	if (vstream != NULL) {
 		call->current_params->sent_vsize = video_stream_get_sent_video_size(vstream);
 		call->current_params->recv_vsize = video_stream_get_received_video_size(vstream);
+		call->current_params->sent_vdef = linphone_video_definition_ref(linphone_factory_find_supported_video_definition(
+			linphone_factory_get(), call->current_params->sent_vsize.width, call->current_params->sent_vsize.height));
+		call->current_params->recv_vdef = linphone_video_definition_ref(linphone_factory_find_supported_video_definition(
+			linphone_factory_get(), call->current_params->recv_vsize.width, call->current_params->recv_vsize.height));
 		call->current_params->sent_fps = video_stream_get_sent_framerate(vstream);
 		call->current_params->received_fps = video_stream_get_received_framerate(vstream);
 	}

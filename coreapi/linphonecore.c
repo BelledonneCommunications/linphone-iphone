@@ -5130,33 +5130,32 @@ int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
 	return -1;
 }
 
-static MSVideoSizeDef supported_resolutions[]={
+static MSVideoSizeDef supported_resolutions[] = {
 #if !defined(__ANDROID__) && !TARGET_OS_IPHONE
-	{	{ MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }	,	"1080p"	},
+	{ { MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }, "1080p" },
 #endif
 #if !defined(__ANDROID__) && !TARGET_OS_MAC /*limit to most common sizes because mac video API cannot list supported resolutions*/
-	{	{ MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }	,	"uxga"	},
-	{	{ MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }	,	"sxga-"	},
+	{ { MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }, "uxga" },
+	{ { MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }, "sxga-" },
 #endif
-	{	{ MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }	,	"720p"	},
+	{ { MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }, "720p" },
 #if !defined(__ANDROID__) && !TARGET_OS_MAC
-	{	{ MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }	,	"xga"	},
+	{ { MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }, "xga" },
 #endif
 #if !defined(__ANDROID__) && !TARGET_OS_IPHONE
-	{	{ MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H }	,	"svga"	},
-	{	{ MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H }	,	"4cif"	},
+	{ { MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H }, "svga" },
+	{ { MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H }, "4cif" },
 #endif
-
-	{	{ MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H }	,	"vga"	},
+	{ { MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H }, "vga" },
 #if TARGET_OS_IPHONE
-	{	{ MS_VIDEO_SIZE_IOS_MEDIUM_H, MS_VIDEO_SIZE_IOS_MEDIUM_W }	,	"ios-medium"	},
+	{ { MS_VIDEO_SIZE_IOS_MEDIUM_H, MS_VIDEO_SIZE_IOS_MEDIUM_W }, "ios-medium" },
 #endif
-	{	{ MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H }	,	"cif"	},
+	{ { MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H }, "cif" },
 #if !TARGET_OS_MAC || TARGET_OS_IPHONE /* OS_MAC is 1 for iPhone, but we need QVGA */
-	{	{ MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H }	,	"qvga"	},
+	{ { MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H } , "qvga" },
 #endif
-	{	{ MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H }	,	"qcif"	},
-	{	{ 0,0 }			,	NULL	}
+	{ { MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H }, "qcif" },
+	{ { 0, 0 }, NULL }
 };
 
 const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
@@ -5180,69 +5179,82 @@ static MSVideoSize video_size_get_by_name(const char *name){
 	return null_vsize;
 }
 
-/* warning: function not reentrant*/
-static const char *video_size_get_name(MSVideoSize vsize){
-	MSVideoSizeDef *pdef=supported_resolutions;
-	static char customsize[64]={0};
-	for(;pdef->name!=NULL;pdef++){
-		if (pdef->vsize.width==vsize.width && pdef->vsize.height==vsize.height){
-			return pdef->name;
-		}
+static bool_t video_definition_supported(const LinphoneVideoDefinition *vdef) {
+	const bctbx_list_t *item;
+	const bctbx_list_t *supported_definitions = linphone_factory_get_supported_video_definitions(linphone_factory_get());
+	for (item = supported_definitions; item != NULL; item = bctbx_list_next(item)) {
+		LinphoneVideoDefinition *supported_vdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
+		if (linphone_video_definition_equals(vdef, supported_vdef)) return TRUE;
 	}
-	if (vsize.width && vsize.height){
-		snprintf(customsize,sizeof(customsize)-1,"%ix%i",vsize.width,vsize.height);
-		return customsize;
-	}
-	return NULL;
-}
-
-static bool_t video_size_supported(MSVideoSize vsize){
-	if (video_size_get_name(vsize)) return TRUE;
-	ms_warning("Video resolution %ix%i is not supported in linphone.",vsize.width,vsize.height);
+	ms_warning("Video definition %ix%i is not supported", linphone_video_definition_get_width(vdef), linphone_video_definition_get_height(vdef));
 	return FALSE;
 }
 
-static void update_preview_size(LinphoneCore *lc, MSVideoSize oldvsize, MSVideoSize vsize){
-	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-		relaunch_video_preview(lc);
-	}
-}
-
-void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
-	if (video_size_supported(vsize)){
-		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
-
-		if (oldvsize.width==0){
-			oldvsize=lc->video_conf.vsize;
+void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef) {
+	if (video_definition_supported(vdef)) {
+		LinphoneVideoDefinition *oldvdef;
+		if ((lc->video_conf.vdef == NULL) || linphone_video_definition_is_undefined(lc->video_conf.preview_vdef)) {
+			oldvdef = lc->video_conf.vdef;
+		} else {
+			oldvdef = lc->video_conf.preview_vdef;
 		}
-		lc->video_conf.vsize=vsize;
-		update_preview_size(lc,oldvsize,vsize);
+		if ((oldvdef == NULL) || !linphone_video_definition_equals(oldvdef, vdef)) {
+			lc->video_conf.vdef = linphone_video_definition_ref(vdef);
+			if (oldvdef != NULL) linphone_video_definition_unref(oldvdef);
+			if (lc->previewstream != NULL) {
+				relaunch_video_preview(lc);
+			}
+		}
 
-		if (linphone_core_ready(lc))
-			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
+		if (linphone_core_ready(lc)) {
+			lp_config_set_string(lc->config, "video", "size", linphone_video_definition_get_name(vdef));
+		}
 	}
 }
 
-void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
-	MSVideoSize oldvsize;
-	if (vsize.width==0 && vsize.height==0){
-		/*special case to reset the forced preview size mode*/
-		lc->video_conf.preview_vsize=vsize;
-		if (linphone_core_ready(lc))
-			lp_config_set_string(lc->config,"video","preview_size",NULL);
+void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize) {
+	linphone_core_set_preferred_video_definition(lc,
+		linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height));
+}
+
+void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef) {
+	if (!vdef || linphone_video_definition_is_undefined(vdef)) {
+		/* Reset the forced preview video definition mode */
+		if (lc->video_conf.preview_vdef != NULL) linphone_video_definition_unref(lc->video_conf.preview_vdef);
+		lc->video_conf.preview_vdef = NULL;
+		if (linphone_core_ready(lc)) {
+			lp_config_set_string(lc->config, "video", "preview_size", NULL);
+		}
 		return;
 	}
-	oldvsize=lc->video_conf.preview_vsize;
-	lc->video_conf.preview_vsize=vsize;
-	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-		relaunch_video_preview(lc);
+
+	if (!linphone_video_definition_equals(lc->video_conf.preview_vdef, vdef)) {
+		LinphoneVideoDefinition *oldvdef = lc->video_conf.preview_vdef;
+		lc->video_conf.preview_vdef = linphone_video_definition_ref(vdef);
+		if (oldvdef != NULL) linphone_video_definition_unref(oldvdef);
+		if (lc->previewstream != NULL) {
+			relaunch_video_preview(lc);
+		}
 	}
-	if (linphone_core_ready(lc))
-		lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
+	if (linphone_core_ready(lc)) {
+		lp_config_set_string(lc->config, "video", "preview_size", linphone_video_definition_get_name(vdef));
+	}
 }
 
-MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
-	return lc->video_conf.preview_vsize;
+void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize) {
+	linphone_core_set_preview_video_definition(lc,
+		linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height));
+}
+
+const LinphoneVideoDefinition * linphone_core_get_preview_video_definition(const LinphoneCore *lc) {
+	return lc->video_conf.preview_vdef;
+}
+
+MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc) {
+	MSVideoSize vsize = { 0 };
+	vsize.width = linphone_video_definition_get_width(lc->video_conf.preview_vdef);
+	vsize.height = linphone_video_definition_get_height(lc->video_conf.preview_vdef);
+	return vsize;
 }
 
 MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc){
@@ -5257,9 +5269,31 @@ MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc)
 	return ret;
 }
 
+LinphoneVideoDefinition * linphone_core_get_current_preview_video_definition(const LinphoneCore *lc) {
+#ifdef VIDEO_ENABLED
+	MSVideoSize vsize;
+	if (lc->previewstream) {
+		vsize = video_preview_get_current_size(lc->previewstream);
+	}
+	return linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height);
+#else
+	ms_error("Video support is disabled");
+	return NULL;
+#endif
+}
+
 void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name){
 	MSVideoSize vsize=video_size_get_by_name(name);
 	linphone_core_set_preview_video_size(lc,vsize);
+}
+
+void linphone_core_set_preview_video_definition_by_name(LinphoneCore *lc, const char *name) {
+	LinphoneVideoDefinition *vdef = linphone_factory_find_supported_video_definition_by_name(linphone_factory_get(), name);
+	if (vdef == NULL) {
+		ms_error("Video definition '%s' is not supported", name);
+	} else {
+		linphone_core_set_preview_video_definition(lc, vdef);
+	}
 }
 
 void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name){
@@ -5269,12 +5303,28 @@ void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char
 	else linphone_core_set_preferred_video_size(lc,default_vsize);
 }
 
-MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc){
-	return lc->video_conf.vsize;
+void linphone_core_set_preferred_video_definition_by_name(LinphoneCore *lc, const char *name) {
+	LinphoneVideoDefinition *vdef = linphone_factory_find_supported_video_definition_by_name(linphone_factory_get(), name);
+	if (vdef == NULL) {
+		ms_error("Video definition '%s' is not supported", name);
+	} else {
+		linphone_core_set_preferred_video_definition(lc, vdef);
+	}
+}
+
+const LinphoneVideoDefinition * linphone_core_get_preferred_video_definition(const LinphoneCore *lc) {
+	return lc->video_conf.vdef;
+}
+
+MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc) {
+	MSVideoSize vsize = { 0 };
+	vsize.width = linphone_video_definition_get_width(lc->video_conf.vdef);
+	vsize.height = linphone_video_definition_get_height(lc->video_conf.vdef);
+	return vsize;
 }
 
 char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc) {
-	return ms_strdup(video_size_get_name(lc->video_conf.vsize));
+	return ms_strdup(linphone_video_definition_get_name(lc->video_conf.vdef));
 }
 
 void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps){
@@ -5669,11 +5719,13 @@ static void sound_config_uninit(LinphoneCore *lc)
 
 static void video_config_uninit(LinphoneCore *lc)
 {
-	lp_config_set_string(lc->config,"video","size",video_size_get_name(linphone_core_get_preferred_video_size(lc)));
+	lp_config_set_string(lc->config,"video","size",linphone_video_definition_get_name(linphone_core_get_preferred_video_definition(lc)));
 	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
 	if (lc->video_conf.cams)
 		ms_free((void *)lc->video_conf.cams);
+	if (lc->video_conf.vdef) linphone_video_definition_unref(lc->video_conf.vdef);
+	if (lc->video_conf.preview_vdef) linphone_video_definition_unref(lc->video_conf.preview_vdef);
 }
 
 void _linphone_core_codec_config_write(LinphoneCore *lc){

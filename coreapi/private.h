@@ -139,8 +139,10 @@ struct _LinphoneCallParams{
 	PayloadType *audio_codec; /*audio codec currently in use */
 	PayloadType *video_codec; /*video codec currently in use */
 	PayloadType *text_codec; /*text codec currently in use */
-	MSVideoSize sent_vsize; /* Size of the video currently being sent */
-	MSVideoSize recv_vsize; /* Size of the video currently being received */
+	MSVideoSize sent_vsize; /* DEPRECATED: Size of the video currently being sent */
+	MSVideoSize recv_vsize; /* DEPRECATED: Size of the video currently being received */
+	LinphoneVideoDefinition *sent_vdef; /* Definition of the video currently being sent */
+	LinphoneVideoDefinition *recv_vdef; /* Definition of the video currrently being received */
 	float received_fps,sent_fps;
 	int down_bw;
 	int up_bw;
@@ -929,6 +931,8 @@ typedef struct video_config{
 	const char **cams;
 	MSVideoSize vsize;
 	MSVideoSize preview_vsize; /*is 0,0 if no forced preview size is set, in which case vsize field above is used.*/
+	LinphoneVideoDefinition *vdef;
+	LinphoneVideoDefinition *preview_vdef;
 	float fps;
 	bool_t capture;
 	bool_t show_local;
@@ -1783,7 +1787,8 @@ BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
 BELLE_SIP_TYPE_ID(LinphoneConference),
 BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
 BELLE_SIP_TYPE_ID(LinphonePayloadType),
-BELLE_SIP_TYPE_ID(LinphoneRange)
+BELLE_SIP_TYPE_ID(LinphoneRange),
+BELLE_SIP_TYPE_ID(LinphoneVideoDefinition)
 BELLE_SIP_DECLARE_TYPES_END
 
 
@@ -1920,6 +1925,21 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneErrorInfo);
 
 void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
 void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to, LinphoneErrorInfo *ei);
+
+struct _LinphoneVideoDefinition {
+	belle_sip_object_t base;
+	void *user_data;
+	unsigned int width; /**< The width of the video */
+	unsigned int height; /**< The height of the video */
+	char *name; /** The name of the video definition */
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneVideoDefinition);
+
+LinphoneVideoDefinition * linphone_video_definition_new(unsigned int width, unsigned int height, const char *name);
+
+LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height);
+LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_name(const LinphoneFactory *factory, const char *name);
 
 #ifdef __cplusplus
 }

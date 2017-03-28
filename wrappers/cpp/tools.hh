@@ -100,7 +100,7 @@ namespace linphone {
 		static std::list<T> bctbxListToCppList(const ::bctbx_list_t *bctbxList) {
 			std::list<T> cppList;
 			for(const bctbx_list_t *it = bctbx_list_first_elem(bctbxList); it != NULL; it = bctbx_list_next(it)) {
-				cppList->push_back(T(it->data));
+				cppList.push_back(T(it->data));
 			}
 			return cppList;
 		}
