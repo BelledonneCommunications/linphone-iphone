@@ -661,7 +661,7 @@ LinphoneRequestStatus linphone_account_creator_is_account_exist_custom(LinphoneA
 		return LinphoneRequestMissingArguments;
 	}
 
-	request = linphone_xml_rpc_request_new_with_args("get_phone_number_for_account", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "get_phone_number_for_account",
 		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 		LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
 		LinphoneXmlRpcArgNone);
@@ -697,7 +697,7 @@ static LinphoneXmlRpcRequest * _create_account_with_phone_custom(LinphoneAccount
 	if (!creator->phone_number) {
 		return NULL;
 	}
-	request = linphone_xml_rpc_request_new_with_args("create_phone_account", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "create_phone_account",
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 		LinphoneXmlRpcArgString, creator->password ? ha1_for_passwd(creator->username ? creator->username : creator->phone_number, linphone_proxy_config_get_domain(creator->proxy_cfg), creator->password) : "",
@@ -713,7 +713,7 @@ static LinphoneXmlRpcRequest * _create_account_with_email_custom(LinphoneAccount
 	if (!creator->username || !creator->email || !creator->password) {
 		return NULL;
 	}
-	request = linphone_xml_rpc_request_new_with_args("create_email_account", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "create_email_account",
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, creator->email,
 		LinphoneXmlRpcArgString, ha1_for_passwd(creator->username ? creator->username : creator->phone_number, linphone_proxy_config_get_domain(creator->proxy_cfg), creator->password),
@@ -775,14 +775,14 @@ LinphoneRequestStatus linphone_account_creator_activate_account_custom(LinphoneA
 	}
 
 	if (creator->phone_number) {
-		request = linphone_xml_rpc_request_new_with_args("activate_phone_account", LinphoneXmlRpcArgString,
+		request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_phone_account",
 			LinphoneXmlRpcArgString, creator->phone_number,
 			LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 			LinphoneXmlRpcArgString, creator->activation_code,
 			linphone_proxy_config_get_domain(creator->proxy_cfg),
 			LinphoneXmlRpcArgNone);
 	} else {
-		request = linphone_xml_rpc_request_new_with_args("activate_email_account", LinphoneXmlRpcArgString,
+		request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_email_account",
 			LinphoneXmlRpcArgString, creator->username,
 			LinphoneXmlRpcArgString, creator->activation_code,
 			linphone_proxy_config_get_domain(creator->proxy_cfg),
@@ -819,7 +819,7 @@ LinphoneRequestStatus linphone_account_creator_is_account_activated_custom(Linph
 		}
 		return LinphoneRequestMissingArguments;
 	}
-	request = linphone_xml_rpc_request_new_with_args("is_account_activated", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "is_account_activated",
 		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 		LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
 		LinphoneXmlRpcArgNone);
@@ -857,7 +857,7 @@ LinphoneRequestStatus linphone_account_creator_is_phone_number_used_custom(Linph
 		}
 		return LinphoneRequestMissingArguments;
 	}
-	request = linphone_xml_rpc_request_new_with_args("is_phone_number_used", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "is_phone_number_used",
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
 		LinphoneXmlRpcArgNone);
@@ -892,7 +892,7 @@ LinphoneRequestStatus linphone_account_creator_link_phone_number_with_account_cu
 		}
 		return LinphoneRequestMissingArguments;
 	}
-	request = linphone_xml_rpc_request_new_with_args("link_phone_number_with_account", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "link_phone_number_with_account",
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
@@ -924,7 +924,7 @@ LinphoneRequestStatus linphone_account_creator_is_account_linked_custom(Linphone
     if (!creator->username || !linphone_proxy_config_get_domain(creator->proxy_cfg)) {
 		return LinphoneRequestMissingArguments;
     }
-    request = linphone_xml_rpc_request_new_with_args("get_phone_number_for_account",LinphoneXmlRpcArgString,
+    request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "get_phone_number_for_account",
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
 		LinphoneXmlRpcArgNone);
@@ -957,7 +957,7 @@ LinphoneRequestStatus linphone_account_creator_activate_phone_number_link_custom
 		}
 		return LinphoneRequestMissingArguments;
 	}
-	request = linphone_xml_rpc_request_new_with_args("activate_phone_number_link", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_phone_number_link",
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, creator->activation_code,
@@ -1000,7 +1000,7 @@ LinphoneRequestStatus linphone_account_creator_recover_phone_account_custom(Linp
 		}
 		return LinphoneRequestMissingArguments;
 	}
-	request = linphone_xml_rpc_request_new_with_args("recover_phone_account", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "recover_phone_account",
 		LinphoneXmlRpcArgString, creator->phone_number,
 		LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
 		LinphoneXmlRpcArgString, creator->language,
@@ -1052,7 +1052,7 @@ LinphoneRequestStatus linphone_account_creator_update_password_custom(LinphoneAc
 	const char * ha1 = ms_strdup(creator->ha1 ? creator->ha1 : ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), creator->password) );
 	const char * new_ha1 = ms_strdup(ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), new_pwd));
 
-	request = linphone_xml_rpc_request_new_with_args("update_hash", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "update_hash",
 		LinphoneXmlRpcArgString, username,
 		LinphoneXmlRpcArgString, ha1,
 		LinphoneXmlRpcArgString, new_ha1,

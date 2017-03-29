@@ -359,7 +359,7 @@ LinphoneRequestStatus get_activation_code_account_cb(LinphoneAccountCreator *cre
 		return LinphoneRequestMissingArguments;
 	}
 
-	request = linphone_xml_rpc_request_new_with_args("get_confirmation_key", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "get_confirmation_key",
 			LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 			LinphoneXmlRpcArgString, creator->password,
 			LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
@@ -397,7 +397,7 @@ LinphoneRequestStatus delete_account_cb(LinphoneAccountCreator *creator) {
 		return LinphoneRequestMissingArguments;
 	}
 
-	request = linphone_xml_rpc_request_new_with_args("delete_account", LinphoneXmlRpcArgString,
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "delete_account",
 			LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
 			LinphoneXmlRpcArgString, creator->password,
 			LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
