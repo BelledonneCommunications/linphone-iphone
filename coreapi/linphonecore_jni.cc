@@ -112,33 +112,34 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreFactoryImpl__1setLogHa
 }
 
 static void linphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
-	char str[4096];
-	const char *levname = "undef";
-	vsnprintf(str, sizeof(str) - 1, fmt, args);
-	str[sizeof(str) - 1] = '\0';
+	char* str = bctbx_strdup_vprintf(fmt, args);
+    const char *levname = "undef";
 
-	int prio;
-	switch(lev) {
-		case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	levname="debug"; break;
-		case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	levname="message"; break;
-		case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	levname="warning"; break;
-		case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	levname="error"; break;
-		case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	levname="fatal"; break;
-		default:			prio = ANDROID_LOG_DEFAULT;	break;
-	}
+    if (str == NULL) return;
 
-	if (handler_obj) {
-		JNIEnv *env = ms_get_jni_env();
-		jstring jdomain = env->NewStringUTF(LogDomain);
-		jstring jlevname = env->NewStringUTF(levname);
-		jstring jstr = env->NewStringUTF(str);
-		env->CallVoidMethod(handler_obj, loghandler_id, jdomain, (jint)lev, jlevname, jstr, NULL);
-		if (jdomain) env->DeleteLocalRef(jdomain);
-		if (jlevname) env->DeleteLocalRef(jlevname);
-		if (jstr) env->DeleteLocalRef(jstr);
-	} else {
-		linphone_android_log_handler(prio, str);
-	}
+    int prio;
+    switch(lev) {
+    	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	levname="debug"; break;
+    	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	levname="message"; break;
+    	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	levname="warning"; break;
+    	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	levname="error"; break;
+    	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	levname="fatal"; break;
+    	default:			prio = ANDROID_LOG_DEFAULT;	break;
+    }
+
+    if (handler_obj) {
+    	JNIEnv *env = ms_get_jni_env();
+    	jstring jdomain = env->NewStringUTF(LogDomain);
+    	jstring jlevname = env->NewStringUTF(levname);
+    	jstring jstr = env->NewStringUTF(str);
+    	env->CallVoidMethod(handler_obj, loghandler_id, jdomain, (jint)lev, jlevname, jstr, NULL);
+    	if (jdomain) env->DeleteLocalRef(jdomain);
+    	if (jlevname) env->DeleteLocalRef(jlevname);
+    	if (jstr) env->DeleteLocalRef(jstr);
+    } else {
+    	linphone_android_log_handler(prio, str);
+    }
+    bctbx_free(str);
 }
 
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
