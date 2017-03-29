@@ -1179,7 +1179,7 @@ static void sound_config_read(LinphoneCore *lc)
 	}
 
 	lc->sound_conf.latency=0;
-#ifndef __ios
+#if TARGET_OS_IPHONE
 	tmp=TRUE;
 #else
 	tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
@@ -1687,7 +1687,7 @@ static void video_config_read(LinphoneCore *lc){
 
 	linphone_core_set_preferred_framerate(lc,lp_config_get_float(lc->config,"video","framerate",0));
 
-#if defined(__ANDROID__) || defined(__ios)
+#if defined(__ANDROID__) || TARGET_OS_IPHONE
 	automatic_video=0;
 #endif
 	capture=lp_config_get_int(lc->config,"video","capture",1);
