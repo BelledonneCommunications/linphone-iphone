@@ -34,7 +34,10 @@ CERTIFICATE_CLIENT_FILES = certificates/client/cert.pem \
 CERTIFICATE_FILES = $(CERTIFICATE_ALT_FILES) $(CERTIFICATE_CN_FILES) $(CERTIFICATE_CLIENT_FILES)
 
 RCFILES = \
+					rcfiles/account_creator_rc\
+					rcfiles/carddav_rc\
 					rcfiles/empty_rc\
+					rcfiles/friends_rc\
 					rcfiles/laure_call_logs_rc\
 					rcfiles/laure_rc_udp\
 					rcfiles/marie_early_rc\
@@ -75,8 +78,7 @@ RCFILES = \
 					rcfiles/stun_rc\
 					rcfiles/upnp_rc\
 					rcfiles/zero_length_params_rc\
-					rcfiles/friends_rc\
-					rcfiles/carddav_rc
+
 
 IMAGE_FILES = images/linphone.svg images/nowebcamCIF.jpg images/nowebcamVGA.jpg
 
