@@ -300,6 +300,7 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC const char * linphone_account_creator_get_ro
  * Get the LinphoneAccountCreatorResponseCbs object associated with a LinphoneAccountCreator.
  * @param[in] creator LinphoneAccountCreator object
  * @return The LinphoneAccountCreatorResponseCbs object associated with the LinphoneAccountCreator.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseCbs * linphone_account_creator_get_responses_cbs(const LinphoneAccountCreator *creator);
 
@@ -307,6 +308,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseCbs * linphone_account_creator_get
  * Get the LinphoneAccountCreatorRequestCbs object associated with a LinphoneAccountCreator.
  * @param[in] creator LinphoneAccountCreator object
  * @return The LinphoneAccountCreatorRequestCbs object associated with the LinphoneAccountCreator.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorRequestCbs * linphone_account_creator_get_requests_cbs(const LinphoneAccountCreator *creator);
 
@@ -400,12 +402,14 @@ LINPHONE_PUBLIC LinphoneRequestStatus linphone_account_creator_update_password_c
  * Acquire a reference to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The same LinphoneAccountCreatorResponseCbs object.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseCbs * linphone_account_creator_responses_cbs_ref(LinphoneAccountCreatorResponseCbs *responses_cbs);
 
 /**
  * Release a reference to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_unref(LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -413,6 +417,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_unref(LinphoneAccoun
  * Retrieve the user pointer associated with a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The user pointer associated with the LinphoneAccountCreatorResponseCbs object.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void *linphone_account_creator_responses_cbs_get_user_data(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -420,6 +425,7 @@ LINPHONE_PUBLIC void *linphone_account_creator_responses_cbs_get_user_data(const
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorResponseCbs object.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_user_data(LinphoneAccountCreatorResponseCbs *responses_cbs, void *ud);
 
@@ -427,6 +433,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_user_data(Linpho
  * Get the create account request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current create account request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_create_account_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -434,6 +441,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The create account request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_create_account_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -441,6 +449,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_create_account_c
  * Get the is account exist request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current is account exist request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_is_account_exist_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -448,6 +457,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The is account exist request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_account_exist_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -455,6 +465,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_account_exist
  * Get the activate account request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current activate account request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_activate_account_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -462,6 +473,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The activate account request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_activate_account_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -469,6 +481,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_activate_account
  * Get the is account activated request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current is account activated request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_is_account_activated_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -476,6 +489,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The is account activated request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_account_activated_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -483,6 +497,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_account_activ
  * Get the link account request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current link account request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_link_account_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -490,6 +505,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The link account request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_link_account_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -497,6 +513,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_link_account_cb(
  * Get the activate alias request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current link account request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_activate_alias_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -504,6 +521,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The activate alias request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_activate_alias_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -511,6 +529,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_activate_alias_c
  * Get the is alias used request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current is alias used request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_is_alias_used_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -518,6 +537,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The is alias used request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_alias_used_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -525,6 +545,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_alias_used_cb
  * Get the is account linked request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current is account linked request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_is_account_linked_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -532,6 +553,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The is account linked request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_account_linked_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -539,6 +561,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_is_account_linke
  * Get the recover account request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current recover account request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_recover_account_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -546,6 +569,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The recover account request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_recover_account_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
@@ -553,6 +577,7 @@ LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_recover_account_
  * Get the update account request.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @return The current update account request.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_responses_cbs_get_update_account_cb(const LinphoneAccountCreatorResponseCbs *responses_cbs);
 
@@ -560,6 +585,7 @@ LINPHONE_PUBLIC LinphoneAccountCreatorResponseFunc linphone_account_creator_resp
  * Assign a user pointer to a LinphoneAccountCreatorResponseCbs object.
  * @param[in] responses_cbs LinphoneAccountCreatorResponseCbs object.
  * @param[in] cb The update account request to be used.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_account_creator_responses_cbs_set_update_account_cb(LinphoneAccountCreatorResponseCbs *responses_cbs, LinphoneAccountCreatorResponseFunc cb);
 
