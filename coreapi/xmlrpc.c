@@ -251,7 +251,7 @@ static void process_response_from_post_xml_rpc_request(void *data, const belle_h
 }
 
 
-static LinphoneXmlRpcRequest * _linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type) {
+static LinphoneXmlRpcRequest * _linphone_xml_rpc_request_new(LinphoneXmlRpcArgType return_type, const char *method) {
 	LinphoneXmlRpcRequest *request = belle_sip_object_new(LinphoneXmlRpcRequest);
 	request->callbacks = linphone_xml_rpc_request_cbs_new();
 	request->status = LinphoneXmlRpcStatusPending;
@@ -306,18 +306,18 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneXmlRpcSession, belle_sip_object_t,
 );
 
 
-LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type) {
-	LinphoneXmlRpcRequest *request = _linphone_xml_rpc_request_new(method, return_type);
+LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(LinphoneXmlRpcArgType return_type, const char *method) {
+	LinphoneXmlRpcRequest *request = _linphone_xml_rpc_request_new(return_type, method);
 	format_request(request);
 	return request;
 }
 
-LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *method, LinphoneXmlRpcArgType return_type, ...) {
+LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgType return_type, const char *method, ...) {
 	bool_t cont = TRUE;
 	va_list args;
 	LinphoneXmlRpcArgType arg_type;
-	LinphoneXmlRpcRequest *request = _linphone_xml_rpc_request_new(method, return_type);
-	va_start(args, return_type);
+	LinphoneXmlRpcRequest *request = _linphone_xml_rpc_request_new(return_type, method);
+	va_start(args, method);
 	while (cont) {
 		arg_type = va_arg(args, LinphoneXmlRpcArgType);
 		switch (arg_type) {

@@ -149,43 +149,11 @@ static ostream &printCallStatsHelper(ostream &ostr, const LinphoneCallStats *sta
 //	ostr << prefix << "MaxJitterTs: " << stats->jitter_stats.max_jitter_ts << "\n";
 	ostr << prefix << "JitterBufferSizeMs: " << stats->jitter_stats.jitter_buffer_size_ms << "\n";
 
-	const report_block_t *rrb = NULL;
-	if (stats->received_rtcp != NULL) {
-		if (stats->received_rtcp->b_cont != NULL)
-			msgpullup(stats->received_rtcp, -1);
-		if (rtcp_is_SR(stats->received_rtcp)) {
-			rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
-		} else if (rtcp_is_RR(stats->received_rtcp)) {
-			rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
-		}
-	}
-	if (rrb) {
-		unsigned int ij;
-		float flost;
-		ij = report_block_get_interarrival_jitter(rrb);
-		flost = (float) (100.0 * report_block_get_fraction_lost(rrb) / 256.0);
-		ostr << prefix << "Received-InterarrivalJitter: " << ij << "\n";
-		ostr << prefix << "Received-FractionLost: " << flost << "\n";
-	}
+	ostr << prefix << "Received-InterarrivalJitter: " << linphone_call_stats_get_receiver_interarrival_jitter(stats) << "\n";
+	ostr << prefix << "Received-FractionLost: " << linphone_call_stats_get_receiver_loss_rate(stats) << "\n";
 
-	const report_block_t *srb = NULL;
-	if (stats->sent_rtcp != NULL) {
-		if (stats->sent_rtcp->b_cont != NULL)
-			msgpullup(stats->sent_rtcp, -1);
-		if (rtcp_is_SR(stats->sent_rtcp)) {
-			srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
-		} else if (rtcp_is_RR(stats->sent_rtcp)) {
-			srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
-		}
-	}
-	if (srb) {
-		unsigned int ij;
-		float flost;
-		ij = report_block_get_interarrival_jitter(srb);
-		flost = (float) (100.0 * report_block_get_fraction_lost(srb) / 256.0);
-		ostr << prefix << "Sent-InterarrivalJitter: " << ij << "\n";
-		ostr << prefix << "Sent-FractionLost: " << flost << "\n";
-	}
+	ostr << prefix << "Sent-InterarrivalJitter: " << linphone_call_stats_get_sender_interarrival_jitter(stats) << "\n";
+	ostr << prefix << "Sent-FractionLost: " << linphone_call_stats_get_sender_loss_rate(stats) << "\n";
 	return ostr;
 }
 

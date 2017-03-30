@@ -22,7 +22,14 @@
 
 add_custom_command(OUTPUT include/linphone++/linphone.hh src/linphone++.cc
 	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/xml"
-	DEPENDS abstractapi.py genwrapper.py class_header.mustache class_impl.mustache enums_header.mustache main_header.mustache linphone-doc
+	DEPENDS ${PROJECT_SOURCE_DIR}/tools/genapixml.py
+	abstractapi.py
+	genwrapper.py
+	class_header.mustache
+	class_impl.mustache
+	enums_header.mustache
+	main_header.mustache
+	linphone-doc
 	"${PROJECT_BINARY_DIR}/coreapi/help/doc/xml/index.xml"
 )
 
@@ -37,8 +44,8 @@ target_link_libraries(linphone++
 )
 target_include_directories(linphone++
 	PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include
-	PRIVATE ${CMAKE_BINARY_DIR}/include
-	PRIVATE ${CMAKE_SOURCE_DIR}/include
+	PRIVATE ${PROJECT_BINARY_DIR}/include
+	PRIVATE ${PROJECT_SOURCE_DIR}/include
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 	PRIVATE ${BCTOOLBOX_INCLUDE_DIRS}
 	PRIVATE ${BELLESIP_INCLUDE_DIRS}

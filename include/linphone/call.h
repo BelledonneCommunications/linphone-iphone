@@ -303,6 +303,7 @@ LINPHONE_PUBLIC void linphone_call_cancel_dtmfs(LinphoneCall *call);
  * @param call #LinphoneCall
  * @return TRUE if part of a conference.
  * @deprecated Use linphone_call_get_conference() instead.
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_call_is_in_conference(const LinphoneCall *call);
 

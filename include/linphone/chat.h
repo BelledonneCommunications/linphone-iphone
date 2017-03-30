@@ -39,6 +39,7 @@ extern "C" {
  * @param status LinphoneChatMessageState
  * @param ud application user data
  * @deprecated Use LinphoneChatMessageCbsMsgStateChangedCb instead.
+ * @donotwrap
  */
 typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 
@@ -80,6 +81,7 @@ typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneC
  * Destroy a LinphoneChatRoom.
  * @param cr #LinphoneChatRoom object
  * @deprecated Use linphone_chat_room_unref() instead.
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 /**
@@ -150,6 +152,7 @@ LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_room_get_peer_address(Linph
  * @deprecated Use linphone_chat_room_send_chat_message() instead.
  * @param cr #LinphoneChatRoom object
  * @param msg message to be sent
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
 
@@ -162,6 +165,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message(Linphon
  * @deprecated Use linphone_chat_room_send_chat_message() instead.
  * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
  * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
 
@@ -172,6 +176,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message2(Linpho
  * The state of the message sending will be notified via the callbacks defined in the LinphoneChatMessageCbs object that can be obtained
  * by calling linphone_chat_message_get_callbacks().
  * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
@@ -244,6 +249,7 @@ LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoo
 /**
  * Returns back pointer to #LinphoneCore object.
  * @deprecated use linphone_chat_room_get_core()
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 
@@ -426,6 +432,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_to_be_stored(LinphoneChatMessage 
  * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
  * @param ud user data
  * @deprecated Use linphone_chat_message_download_file() instead.
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_message_start_file_download(LinphoneChatMessage* message, LinphoneChatMessageStateChangedCb status_cb, void* ud);
 
@@ -444,6 +451,7 @@ LINPHONE_PUBLIC void linphone_chat_message_cancel_file_transfer(LinphoneChatMess
 /**
  * Resend a chat message if it is in the 'not delivered' state for whatever reason.
  * @param[in] msg LinphoneChatMessage object
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_chat_message_resend(LinphoneChatMessage *msg);
 

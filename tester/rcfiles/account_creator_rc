@@ -1,0 +1,13 @@
+[assistant]
+domain=sip.accounttest.org
+password_max_length=12
+password_min_length=3
+username_max_length=14
+username_min_length=3
+username_regex=^[A-Za-z0-9_.\-]*$
+xmlrpc_url=https://sip2.linphone.org:446/wizard.php
+
+[proxy_default_values]
+reg_proxy=<sip:sip2.linphone.org:5072>
+realm=sip.accounttest.org
+reg_identity=sip:user@sip.accounttest.org

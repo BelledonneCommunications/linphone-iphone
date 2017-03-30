@@ -211,8 +211,9 @@ LINPHONE_PUBLIC void linphone_call_log_unref(LinphoneCallLog *cl);
  * Destroy a LinphoneCallLog.
  * @param cl LinphoneCallLog object
  * @deprecated Use linphone_call_log_unref() instead.
+ * @donotwrap
  */
-LINPHONE_PUBLIC void linphone_call_log_destroy(LinphoneCallLog *cl);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_call_log_destroy(LinphoneCallLog *cl);
 
 /**
  * @}

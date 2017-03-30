@@ -24,7 +24,7 @@
 
 struct _LinphoneContactSearch{
 	belle_sip_object_t base;
-	ContactSearchID id;
+	LinphoneContactSearchID id;
 	char* predicate;
 	ContactSearchCallback cb;
 	void* data;

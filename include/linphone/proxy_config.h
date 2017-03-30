@@ -33,8 +33,9 @@ extern "C" {
 /**
  * Creates an empty proxy config.
  * @deprecated, use #linphone_core_create_proxy_config instead
+ * @donotwrap
 **/
-LINPHONE_PUBLIC LinphoneProxyConfig *linphone_proxy_config_new(void);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneProxyConfig *linphone_proxy_config_new(void);
 
 /**
  * Acquire a reference to the proxy config.
@@ -75,8 +76,9 @@ LINPHONE_PUBLIC int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *c
 
 /**
  * @deprecated Use linphone_proxy_config_set_identity_address()
+ * @donotwrap
 **/
-LINPHONE_PUBLIC	int linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *identity);
+LINPHONE_PUBLIC	LINPHONE_DEPRECATED int linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *identity);
 
 /**
  * Sets the user identity as a SIP address.
@@ -228,8 +230,9 @@ LINPHONE_PUBLIC LinphoneRegistrationState linphone_proxy_config_get_state(const 
 /**
  * @return a boolean indicating that the user is sucessfully registered on the proxy.
  * @deprecated Use linphone_proxy_config_get_state() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *cfg);
 
 /**
  * Get the domain name of the given proxy config.
@@ -249,7 +252,6 @@ LINPHONE_PUBLIC const char *linphone_proxy_config_get_realm(const LinphoneProxyC
  * Set the realm of the given proxy config.
  * @param[in] cfg #LinphoneProxyConfig object.
  * @param[in] realm New realm value.
- * @return The realm of the proxy config.
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char * realm);
 
@@ -265,8 +267,9 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_proxy_config_get_identity_addres
 
 /**
  * @deprecated use linphone_proxy_config_get_identity_address()
+ * @donotwrap
 **/
-LINPHONE_PUBLIC const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *cfg);
 
 /**
  * @return TRUE if PUBLISH request is enabled for this proxy.
@@ -380,12 +383,12 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphonePr
 
 /**
  * Destroys a proxy config.
- * @deprecated
- *
  * @note: LinphoneProxyConfig that have been removed from LinphoneCore with
  * linphone_core_remove_proxy_config() must not be freed.
+ * @deprecated
+ * @donotwrap
 **/
-LINPHONE_PUBLIC void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 
 LINPHONE_PUBLIC void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 
@@ -409,6 +412,7 @@ LINPHONE_PUBLIC bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig
  * @param result_len the size of the normalized number \a result
  * @return TRUE if a phone number was recognized, FALSE otherwise.
  * @deprecated use linphone_proxy_config_normalize_phone_number()
+ * @donotwrap
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
 
@@ -456,6 +460,7 @@ LINPHONE_PUBLIC LinphonePrivacyMask linphone_proxy_config_get_privacy(const Linp
  * @param[in] cfg #LinphoneProxyConfig object.
  * @param server_url URL of the file server like https://file.linphone.org/upload.php
  * @warning That function isn't implemented yet.
+ * @donotwrap
  * */
 LINPHONE_PUBLIC void linphone_proxy_config_set_file_transfer_server(LinphoneProxyConfig *cfg, const char * server_url);
 
@@ -464,6 +469,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_file_transfer_server(LinphoneProx
  * @param[in] cfg #LinphoneProxyConfig object.
  * @return URL of the file server like https://file.linphone.org/upload.php
  * @warning That function isn't implemented yet.
+ * @donotwrap
  * */
 LINPHONE_PUBLIC const char* linphone_proxy_config_get_file_transfer_server(const LinphoneProxyConfig *cfg);
 
@@ -472,16 +478,18 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_file_transfer_server(const
  * @param[in] cfg #LinphoneProxyConfig object.
  * @param[in] enable True to enable AVPF/SAVF, false to disable it.
  * @deprecated use linphone_proxy_config_set_avpf_mode()
+ * @donotwrap
  */
-LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable);
 
 /**
  * Indicates whether AVPF/SAVPF is being used for calls using this proxy config.
  * @param[in] cfg #LinphoneProxyConfig object.
  * @return True if AVPF/SAVPF is enabled, false otherwise.
  * @deprecated use linphone_proxy_config_set_avpf_mode()
+ * @donotwrap
  */
-LINPHONE_PUBLIC bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg);
 
 /**
  * Set the interval between regular RTCP reports when using AVPF/SAVPF.

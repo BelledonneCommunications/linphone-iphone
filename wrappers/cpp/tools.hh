@@ -119,6 +119,20 @@ namespace linphone {
 		static std::list<std::string> cStringArrayToCppList(const char **cArray);
 	};
 	
+	template <class T>
+	class StructWrapper {
+	public:
+		StructWrapper(const T &s) {
+			mStruct = s;
+		}
+		const void *ptr() const {
+			return &mStruct;
+		}
+		
+	private:
+		T mStruct;
+	};
+
 };
 
 #endif // _TOOLS_HH

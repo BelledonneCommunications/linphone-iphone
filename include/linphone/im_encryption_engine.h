@@ -22,6 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @addtogroup misc
  * @{
@@ -241,5 +245,9 @@ LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_generate_file_transfe
 /**
  * @}
  */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LINPHONE_IM_ENCRYPTION_ENGINE_H */

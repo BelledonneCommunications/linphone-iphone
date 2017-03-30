@@ -77,6 +77,7 @@ set(CERTIFICATE_CLIENT_FILES
 set(CERTIFICATE_FILES ${CERTIFICATE_ALT_FILES} ${CERTIFICATE_CN_FILES} ${CERTIFICATE_CLIENT_FILES})
 
 set(RC_FILES
+	rcfiles/account_creator_rc
 	rcfiles/carddav_rc
 	rcfiles/conference_focus_rc
 	rcfiles/empty_rc
@@ -159,6 +160,7 @@ set(IOS_RESOURCES_FILES
 
 set(SOURCE_FILES_C
 	accountmanager.c
+	account_creator_tester.c
 	audio_bypass_tester.c
 	call_multicast_tester.c
 	call_multi_tester.c

@@ -304,6 +304,9 @@ class Project:
 			descriptionNode.tag = 'description'
 			descriptionNode.attrib = {}
 		return descriptionNode
+	
+	def __canBeWrapped(self, node):
+		return node.find('./detaileddescription//donotwrap') is None
 
 	def __discoverClasses(self):
 		for td in self.__typedefs:
@@ -491,6 +494,8 @@ class Project:
 			self.add(td)
 
 	def __parseCFunctionMemberdef(self, node):
+		if not Project.__canBeWrapped(self, node):
+			return None
 		internal = node.find("./detaileddescription/internal")
 		if internal is not None:
 			return None

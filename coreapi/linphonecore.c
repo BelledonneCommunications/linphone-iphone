@@ -1179,7 +1179,7 @@ static void sound_config_read(LinphoneCore *lc)
 	}
 
 	lc->sound_conf.latency=0;
-#ifndef __ios
+#if TARGET_OS_IPHONE
 	tmp=TRUE;
 #else
 	tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
@@ -1231,7 +1231,7 @@ static void certificates_config_read(LinphoneCore *lc) {
 static void sip_config_read(LinphoneCore *lc) {
 	char *contact;
 	const char *tmpstr;
-	LCSipTransports tr;
+	LinphoneSipTransports tr;
 	int i,tmp;
 	int ipv6_default = TRUE;
 
@@ -1687,7 +1687,7 @@ static void video_config_read(LinphoneCore *lc){
 
 	linphone_core_set_preferred_framerate(lc,lp_config_get_float(lc->config,"video","framerate",0));
 
-#if defined(__ANDROID__) || defined(__ios)
+#if defined(__ANDROID__) || TARGET_OS_IPHONE
 	automatic_video=0;
 #endif
 	capture=lp_config_get_int(lc->config,"video","capture",1);
@@ -2072,6 +2072,23 @@ static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, 
 	}
 }
 
+static void _linphone_core_init_account_creator_request_cbs(LinphoneCore *lc) {
+	LinphoneAccountCreatorRequestCbs *cbs = linphone_account_creator_requests_cbs_new();
+	cbs->account_creator_request_constructor_cb = linphone_account_creator_constructor_custom;
+	cbs->account_creator_request_destructor_cb = NULL;
+	cbs->create_account_request_cb = linphone_account_creator_create_account_custom;
+	cbs->is_account_exist_request_cb = linphone_account_creator_is_account_exist_custom;
+	cbs->activate_account_request_cb = linphone_account_creator_activate_account_custom;
+	cbs->is_account_activated_request_cb = linphone_account_creator_is_account_activated_custom;
+	cbs->link_account_request_cb = linphone_account_creator_link_phone_number_with_account_custom;
+	cbs->activate_alias_request_cb = linphone_account_creator_activate_phone_number_link_custom;
+	cbs->is_alias_used_request_cb = linphone_account_creator_is_phone_number_used_custom;
+	cbs->is_account_linked_request_cb = linphone_account_creator_is_account_linked_custom;
+	cbs->recover_account_request_cb = linphone_account_creator_recover_phone_account_custom;
+	cbs->update_account_request_cb = linphone_account_creator_update_password_custom;
+	linphone_core_set_account_creator_request_engine_cbs(lc, cbs);
+}
+
 static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig *config, void * userdata){
 	const char *remote_provisioning_uri = NULL;
 	LinphoneFactory *lfactory = linphone_factory_get();
@@ -2086,6 +2103,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->ringstream_autorelease=TRUE;
 
 	linphone_task_list_init(&lc->hooks);
+
+	_linphone_core_init_account_creator_request_cbs(lc);
 
 	linphone_core_cbs_set_notify_received(internal_cbs, linphone_core_internal_notify_received);
 	linphone_core_cbs_set_subscription_state_changed(internal_cbs, linphone_core_internal_subscription_state_changed);
@@ -2442,6 +2461,14 @@ void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, i
 	*max_port = lc->rtp_conf.audio_rtp_max_port;
 }
 
+LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc) {
+	LinphoneIntRange range = {
+		.min = lc->rtp_conf.audio_rtp_min_port,
+		.max = lc->rtp_conf.audio_rtp_max_port
+	};
+	return range;
+}
+
 int linphone_core_get_video_port(const LinphoneCore *lc){
 	return lc->rtp_conf.video_rtp_min_port;
 }
@@ -2451,6 +2478,14 @@ void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, i
 	*max_port = lc->rtp_conf.video_rtp_max_port;
 }
 
+LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc) {
+	LinphoneIntRange range = {
+		.min = lc->rtp_conf.video_rtp_min_port,
+		.max = lc->rtp_conf.video_rtp_max_port
+	};
+	return range;
+}
+
 int linphone_core_get_text_port(const LinphoneCore *lc) {
 	return lc->rtp_conf.text_rtp_min_port;
 }
@@ -2458,6 +2493,14 @@ int linphone_core_get_text_port(const LinphoneCore *lc) {
 void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, int *max_port) {
 	*min_port = lc->rtp_conf.text_rtp_min_port;
 	*max_port = lc->rtp_conf.text_rtp_max_port;
+}
+
+LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc) {
+	LinphoneIntRange range = {
+		.min = lc->rtp_conf.text_rtp_min_port,
+		.max = lc->rtp_conf.text_rtp_max_port
+	};
+	return range;
 }
 
 int linphone_core_get_nortp_timeout(const LinphoneCore *lc){
@@ -2557,7 +2600,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 }
 
 int linphone_core_get_sip_port(LinphoneCore *lc){
-	LCSipTransports tr;
+	LinphoneSipTransports tr;
 	linphone_core_get_sip_transports_used(lc,&tr);
 	return tr.udp_port>0 ? tr.udp_port : (tr.tcp_port > 0 ? tr.tcp_port : tr.tls_port);
 }
@@ -2592,7 +2635,7 @@ static void transport_error(LinphoneCore *lc, const char* transport, int port){
 	ms_free(msg);
 }
 
-static bool_t transports_unchanged(const LCSipTransports * tr1, const LCSipTransports * tr2){
+static bool_t transports_unchanged(const LinphoneSipTransports * tr1, const LinphoneSipTransports * tr2){
 	return
 		tr2->udp_port==tr1->udp_port &&
 		tr2->tcp_port==tr1->tcp_port &&
@@ -2614,7 +2657,7 @@ static void __linphone_core_invalidate_registers(LinphoneCore* lc){
 int _linphone_core_apply_transports(LinphoneCore *lc){
 	Sal *sal=lc->sal;
 	const char *anyaddr;
-	LCSipTransports *tr=&lc->sip_conf.transports;
+	LinphoneSipTransports *tr=&lc->sip_conf.transports;
 	const char* listening_address;
 	/*first of all invalidate all current registrations so that we can register again with new transports*/
 	__linphone_core_invalidate_registers(lc);
@@ -2662,7 +2705,7 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 }
 
 int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr_config /*config to be saved*/){
-	LCSipTransports tr=*tr_config;
+	LinphoneSipTransports tr=*tr_config;
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
 		/*legacy random mode*/
@@ -2707,7 +2750,7 @@ void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTranspor
 }
 
 void linphone_core_set_sip_port(LinphoneCore *lc,int port) {
-	LCSipTransports tr;
+	LinphoneSipTransports tr;
 	memset(&tr,0,sizeof(tr));
 	tr.udp_port=port;
 	linphone_core_set_sip_transports (lc,&tr);
@@ -5711,6 +5754,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 	if (lc->im_encryption_engine) {
 		linphone_im_encryption_engine_unref(lc->im_encryption_engine);
+	}
+	if (lc->default_ac_request_cbs) {
+		linphone_account_creator_requests_cbs_unref(lc->default_ac_request_cbs);
 	}
 
 	linphone_core_free_payload_types(lc);

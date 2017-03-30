@@ -69,6 +69,13 @@ struct _LinphoneCallStats {
 };
 
 /**
+ * Get the type of the stream the stats refer to.
+ * @param[in] stats LinphoneCallStats object
+ * @return The type of the stream the stats refer to
+ */
+LINPHONE_PUBLIC LinphoneStreamType linphone_call_stats_get_type(const LinphoneCallStats *stats);
+
+/**
  * Get the local loss rate since last report
  * @return The sender loss rate
 **/
@@ -130,6 +137,20 @@ LINPHONE_PUBLIC LinphoneIceState linphone_call_stats_get_ice_state(const Linphon
  * @return The state of uPnP processing.
  */
 LINPHONE_PUBLIC LinphoneUpnpState linphone_call_stats_get_upnp_state(const LinphoneCallStats *stats);
+
+/**
+ * Get the IP address family of the remote peer.
+ * @param[in] stats LinphoneCallStats object
+ * @return The IP address family of the remote peer.
+ */
+LINPHONE_PUBLIC LinphoneAddressFamily linphone_call_stats_get_ip_family_of_remote(const LinphoneCallStats *stats);
+
+/**
+ * Get the jitter buffer size in ms.
+ * @param[in] stats LinphoneCallStats object
+ * @return The jitter buffer size in ms.
+ */
+LINPHONE_PUBLIC float linphone_call_stats_get_jitter_buffer_size_ms(const LinphoneCallStats *stats);
 
 /**
  * @}

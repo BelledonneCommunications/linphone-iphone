@@ -419,7 +419,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 
 LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias) {
 	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
-	
+
 	linphone_core_manager_init(manager, rc_file, phone_alias);
 	linphone_core_manager_start(manager, check_for_proxies);
 	return manager;
@@ -560,6 +560,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&message_test_suite);
 	bc_tester_add_suite(&presence_test_suite);
 	bc_tester_add_suite(&presence_server_test_suite);
+	bc_tester_add_suite(&account_creator_test_suite);
 #ifdef UPNP
 	bc_tester_add_suite(&upnp_test_suite);
 #endif
@@ -895,5 +896,6 @@ LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bo
 }
 
 void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv) {
+	linphone_core_cbs_unref(conf_srv->cbs);
 	linphone_core_manager_destroy((LinphoneCoreManager *)conf_srv);
 }

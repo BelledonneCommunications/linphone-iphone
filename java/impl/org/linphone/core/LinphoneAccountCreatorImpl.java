@@ -17,8 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.linphone.core;
 
-import org.linphone.core.LinphoneAddress.TransportType;
-
 public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 	protected long nativePtr;
 
@@ -48,8 +46,8 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native int setUsername(long ptr, String username);
 	@Override
-	public Status setUsername(String username) {
-		return Status.fromInt(setUsername(nativePtr, username));
+	public UsernameCheck setUsername(String username) {
+		return UsernameCheck.fromInt(setUsername(nativePtr, username));
 	}
 
 	private native String getUsername(long ptr);
@@ -60,8 +58,8 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native int setPhoneNumber(long ptr, String phoneNumber, String countryCode);
 	@Override
-	public Status setPhoneNumber(String phoneNumber, String countryCode) {
-		return Status.fromInt(setPhoneNumber(nativePtr, phoneNumber, countryCode));
+	public int setPhoneNumber(String phoneNumber, String countryCode) {
+		return setPhoneNumber(nativePtr, phoneNumber, countryCode);
 	}
 
 	private native String getPhoneNumber(long ptr);
@@ -72,8 +70,8 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native int setPassword(long ptr, String password);
 	@Override
-	public Status setPassword(String password) {
-		return Status.fromInt(setPassword(nativePtr, password));
+	public PasswordCheck setPassword(String password) {
+		return PasswordCheck.fromInt(setPassword(nativePtr, password));
 	}
 
 	private native String getPassword(long ptr);
@@ -84,8 +82,8 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native int setHa1(long ptr, String ha1);
 	@Override
-	public Status setHa1(String ha1) {
-		return Status.fromInt(setHa1(nativePtr, ha1));
+	public PasswordCheck setHa1(String ha1) {
+		return PasswordCheck.fromInt(setHa1(nativePtr, ha1));
 	}
 
 	private native String getHa1(long ptr);
@@ -96,56 +94,20 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native int setActivationCode(long ptr, String activationCode);
 	@Override
-	public Status setActivationCode(String activationCode) {
-		return Status.fromInt(setActivationCode(nativePtr, activationCode));
+	public ActivationCodeCheck setActivationCode(String activationCode) {
+		return ActivationCodeCheck.fromInt(setActivationCode(nativePtr, activationCode));
 	}
 
 	private native int setLanguage(long ptr, String lang);
 	@Override
-	public Status setLanguage(String lang) {
-		return Status.fromInt(setLanguage(nativePtr, lang));
-	}
-
-	private native int setTransport(long ptr, int transport);
-	@Override
-	public Status setTransport(TransportType transport) {
-		return Status.fromInt(setTransport(nativePtr, transport.toInt()));
-	}
-
-	private native int getTransport(long ptr);
-	@Override
-	public TransportType getTransport() {
-		return TransportType.fromInt(getTransport(nativePtr));
-	}
-
-	private native int setDomain(long ptr, String domain);
-	@Override
-	public Status setDomain(String domain) {
-		return Status.fromInt(setDomain(nativePtr, domain));
-	}
-
-	private native String getDomain(long ptr);
-	@Override
-	public String getDomain() {
-		return getDomain(nativePtr);
-	}
-
-	private native int setRoute(long ptr, String route);
-	@Override
-	public Status setRoute(String route) {
-		return Status.fromInt(setRoute(nativePtr, route));
-	}
-
-	private native String getRoute(long ptr);
-	@Override
-	public String getRoute() {
-		return getRoute(nativePtr);
+	public LanguageCheck setLanguage(String lang) {
+		return LanguageCheck.fromInt(setLanguage(nativePtr, lang));
 	}
 
 	private native int setDisplayName(long ptr, String displayName);
 	@Override
-	public Status setDisplayName(String displayName) {
-		return Status.fromInt(setDisplayName(nativePtr, displayName));
+	public UsernameCheck setDisplayName(String displayName) {
+		return UsernameCheck.fromInt(setDisplayName(nativePtr, displayName));
 	}
 
 	private native String getDisplayName(long ptr);
@@ -156,8 +118,8 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native int setEmail(long ptr, String email);
 	@Override
-	public Status setEmail(String email) {
-		return Status.fromInt(setEmail(nativePtr, email));
+	public EmailCheck setEmail(String email) {
+		return EmailCheck.fromInt(setEmail(nativePtr, email));
 	}
 
 	private native String getEmail(long ptr);
@@ -174,67 +136,61 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native int isAccountUsed(long ptr);
 	@Override
-	public Status isAccountUsed() {
-		return Status.fromInt(isAccountUsed(nativePtr));
+	public RequestStatus isAccountUsed() {
+		return RequestStatus.fromInt(isAccountUsed(nativePtr));
 	}
 
 	private native int createAccount(long ptr);
 	@Override
-	public Status createAccount() {
-		return Status.fromInt(createAccount(nativePtr));
+	public RequestStatus createAccount() {
+		return RequestStatus.fromInt(createAccount(nativePtr));
 	}
 
 	private native int activateAccount(long ptr);
 	@Override
-	public Status activateAccount() {
-		return Status.fromInt(activateAccount(nativePtr));
+	public RequestStatus activateAccount() {
+		return RequestStatus.fromInt(activateAccount(nativePtr));
 	}
 
 	private native int isAccountLinked(long ptr);
 	@Override
-	public Status isAccountLinked() {
-		return Status.fromInt(isAccountLinked(nativePtr));
+	public RequestStatus isAccountLinked() {
+		return RequestStatus.fromInt(isAccountLinked(nativePtr));
 	}
 
 	private native int isPhoneNumberUsed(long ptr);
 	@Override
-	public Status isPhoneNumberUsed() {
-		return Status.fromInt(isPhoneNumberUsed(nativePtr));
+	public RequestStatus isPhoneNumberUsed() {
+		return RequestStatus.fromInt(isPhoneNumberUsed(nativePtr));
 	}
 
 	private native int isAccountActivated(long ptr);
 	@Override
-	public Status isAccountActivated() {
-		return Status.fromInt(isAccountActivated(nativePtr));
+	public RequestStatus isAccountActivated() {
+		return RequestStatus.fromInt(isAccountActivated(nativePtr));
 	}
 
 	private native int linkPhoneNumberWithAccount(long ptr);
 	@Override
-	public Status linkPhoneNumberWithAccount() {
-		return Status.fromInt(linkPhoneNumberWithAccount(nativePtr));
+	public RequestStatus linkPhoneNumberWithAccount() {
+		return RequestStatus.fromInt(linkPhoneNumberWithAccount(nativePtr));
 	}
 
 	private native int activatePhoneNumberLink(long ptr);
 	@Override
-	public Status activatePhoneNumberLink() {
-		return Status.fromInt(activatePhoneNumberLink(nativePtr));
+	public RequestStatus activatePhoneNumberLink() {
+		return RequestStatus.fromInt(activatePhoneNumberLink(nativePtr));
 	}
 
 	private native int recoverPhoneAccount(long ptr);
 	@Override
-	public Status recoverPhoneAccount() {
-		return Status.fromInt(recoverPhoneAccount(nativePtr));
+	public RequestStatus recoverPhoneAccount() {
+		return RequestStatus.fromInt(recoverPhoneAccount(nativePtr));
 	}
 
 	private native int updatePassword(long ptr, String newPassword);
 	@Override
-	public Status updatePassword(String newPassword) {
-		return Status.fromInt(updatePassword(nativePtr, newPassword));
-	}
-
-	private native LinphoneProxyConfig configure(long ptr);
-	@Override
-	public LinphoneProxyConfig configure() {
-		return configure(nativePtr);
+	public RequestStatus updatePassword(String newPassword) {
+		return RequestStatus.fromInt(updatePassword(nativePtr, newPassword));
 	}
 }

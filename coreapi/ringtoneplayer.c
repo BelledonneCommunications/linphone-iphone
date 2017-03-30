@@ -21,11 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "private.h"
 #include <mediastreamer2/msfactory.h>
 
+#if __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 int linphone_ringtoneplayer_start(MSFactory *factory, LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms) {
 	return linphone_ringtoneplayer_start_with_cb(factory, rp, card, ringtone, loop_pause_ms, NULL, NULL);
 }
 
-#ifdef __ios
+#if TARGET_OS_IPHONE
 
 #include "ringtoneplayer_ios.h"
 

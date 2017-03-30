@@ -61,6 +61,7 @@ extern test_suite_t video_test_suite;
 extern test_suite_t multicast_call_test_suite;
 extern test_suite_t multi_call_test_suite;
 extern test_suite_t proxy_config_test_suite;
+extern test_suite_t account_creator_test_suite;
 #ifdef VCARD_ENABLED
 extern test_suite_t vcard_test_suite;
 #endif

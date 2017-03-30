@@ -38,7 +38,7 @@ static void linphone_contact_search_destroy( LinphoneContactSearch* req) {
 	if( req->predicate ) ms_free(req->predicate);
 }
 
-ContactSearchID linphone_contact_search_get_id(LinphoneContactSearch* obj)
+LinphoneContactSearchID linphone_contact_search_get_id(LinphoneContactSearch* obj)
 {
 	return obj->id;
 }

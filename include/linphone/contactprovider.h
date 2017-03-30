@@ -28,7 +28,7 @@ extern "C" {
 /* LinphoneContactSearchRequest */
 
 void linphone_contact_search_init(LinphoneContactSearch *obj, const char *predicate, ContactSearchCallback cb, void *cb_data);
-ContactSearchID linphone_contact_search_get_id(LinphoneContactSearch *obj);
+LinphoneContactSearchID linphone_contact_search_get_id(LinphoneContactSearch *obj);
 const char* linphone_contact_search_get_predicate(LinphoneContactSearch *obj);
 void linphone_contact_search_invoke_cb(LinphoneContactSearch *req, MSList *friends);
 LINPHONE_PUBLIC LinphoneContactSearch* linphone_contact_search_ref(void *obj);

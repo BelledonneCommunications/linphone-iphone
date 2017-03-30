@@ -274,8 +274,6 @@ class CppTranslator(object):
 		if type(exprtype) is AbsApi.BaseType:
 			if exprtype.name == 'string':
 				cExpr = 'StringUtilities::cppStringToC({0})'.format(cppExpr);
-			elif exprtype.name not in ['void', 'string', 'string_array'] and exprtype.isref:
-				cExpr = '&' + cppExpr
 			else:
 				cExpr = cppExpr
 		elif type(exprtype) is AbsApi.EnumType:
@@ -293,7 +291,10 @@ class CppTranslator(object):
 				}
 				cExpr = '(::{cPtrType} *)Object::sharedPtrToCPtr(std::static_pointer_cast<{object},{ptrType}>({cppExpr}))'.format(**param)
 			else:
-				cExpr = '(const ::{_type} *)({expr}).c_struct()'.format(_type=cPtrType, expr=cppExpr)
+				if exprtype.isref:
+					cExpr = '(const ::{_type} *)({expr}).c_struct()'.format(_type=cPtrType, expr=cppExpr)
+				else:
+					cExpr = '*(const ::{_type} *)({expr}).c_struct()'.format(_type=cPtrType, expr=cppExpr)
 		elif type(exprtype) is AbsApi.ListType:
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				cExpr = 'StringBctbxListWrapper({0}).c_list()'.format(cppExpr)
@@ -315,9 +316,7 @@ class CppTranslator(object):
 	
 	def _wrap_c_expression_to_cpp(self, cExpr, exprtype, usedNamespace=None):
 		if type(exprtype) is AbsApi.BaseType:
-			if exprtype.name == 'void' and not exprtype.isref:
-				return cExpr
-			elif exprtype.name == 'string':
+			if exprtype.name == 'string':
 				return 'StringUtilities::cStringToCpp({0})'.format(cExpr)
 			elif exprtype.name == 'string_array':
 				return 'StringUtilities::cStringArrayToCppList({0})'.format(cExpr)
@@ -338,7 +337,13 @@ class CppTranslator(object):
 				else:
 					return 'Object::cPtrToSharedPtr<{0}>({1})'.format(cppReturnType, cExpr)
 			else:
-				return '{0}({1})'.format(exprtype.desc.name.to_camel_case(), cExpr);
+				if exprtype.isref:
+					return '{0}({1})'.format(exprtype.desc.name.to_camel_case(), cExpr)
+				else:
+					return '{0}(StructWrapper<::{1}>({2}).ptr())'.format(
+						exprtype.desc.name.to_camel_case(),
+						exprtype.desc.name.to_c(),
+						cExpr)
 		elif type(exprtype) is AbsApi.ListType:
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				return 'StringBctbxListWrapper::bctbxListToCppList({0})'.format(cExpr)
@@ -391,6 +396,7 @@ class CppTranslator(object):
 				res = _type.size
 			else:
 				res = 'int{0}_t'.format(_type.size)
+				
 		elif _type.name == 'floatant':
 			if _type.size is not None and _type.size == 'double':
 				res = 'double'
@@ -418,7 +424,7 @@ class CppTranslator(object):
 				res = 'const ' + res
 		
 		if _type.isref:
-			res += ' &'
+			res += ' *'
 		return res
 	
 	def translate_enum_type(self, _type, **params):
