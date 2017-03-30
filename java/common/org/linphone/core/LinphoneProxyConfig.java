@@ -364,7 +364,7 @@ public interface LinphoneProxyConfig {
 	 * refreshes are sent.
 	 * However, linphone_core_set_network_reachable(lc,TRUE) will always request the proxy configs to refresh their registrations.
 	 * The refreshing operations can be resumed with linphone_proxy_config_refresh_register().
-	 * @param[in] cfg #LinphoneProxyConfig object.
+	 * params cfg #LinphoneProxyConfig object.
 	 **/
 	public void pauseRegister();
 }

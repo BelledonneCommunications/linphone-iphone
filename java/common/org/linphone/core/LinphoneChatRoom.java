@@ -155,7 +155,6 @@ public interface LinphoneChatRoom {
 
 	/**
 	 * Return if lime is available in this room
-	 * @param cr: chat room
 	 * @return
      */
 	boolean islimeAvailable();
