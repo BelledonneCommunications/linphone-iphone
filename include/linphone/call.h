@@ -383,7 +383,7 @@ LINPHONE_PUBLIC int linphone_call_resume(LinphoneCall *call);
  * @param[in] call LinphoneCall object
  * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_terminate_with_error(LinphoneCall *call, const LinphoneErrorInfo *ei);
+LINPHONE_PUBLIC int linphone_call_terminate_with_error_info(LinphoneCall *call, const LinphoneErrorInfo *ei);
 
 /**
  * Redirect the specified call to the given redirect URI.

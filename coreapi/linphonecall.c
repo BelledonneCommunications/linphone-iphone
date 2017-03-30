@@ -5088,7 +5088,7 @@ int linphone_call_terminate(LinphoneCall *call) {
 	return 0;
 }
 
-static void linphone_call_error_info_to_sal_op(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
+static void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
 	
 	sei->reason = linphone_error_info_get_reason(ei);
 	sei->status_string = bctbx_strdup(ei->phrase);
@@ -5098,13 +5098,9 @@ static void linphone_call_error_info_to_sal_op(const LinphoneErrorInfo* ei, SalE
 	sei->protocol = bctbx_strdup(ei->protocol);
 }
 	
-int linphone_call_terminate_with_error(LinphoneCall *call , const LinphoneErrorInfo *ei){
+int linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneErrorInfo *ei){
 	SalErrorInfo sei;
-	if (ei != NULL)
-	{
-		linphone_call_error_info_to_sal_op(ei, &sei);
-	}
-	
+
 	ms_message("Terminate call [%p] which is currently in state %s", call, linphone_call_state_to_string(call->state));
 	switch (call->state) {
 		case LinphoneCallReleased:
@@ -5121,14 +5117,18 @@ int linphone_call_terminate_with_error(LinphoneCall *call , const LinphoneErrorI
 			call->op = NULL;
 			break;
 		default:
+			
 			if (ei == NULL){
 				sal_call_terminate(call->op);
 			}
 			else{
+				linphone_error_info_to_sal(ei, &sei);
 				sal_call_terminate_with_error(call->op, &sei);
+				sal_error_info_reset(&sei);
 			}
 			break;
 	}
+
 	terminate_call(call);
 	return 0;
 	

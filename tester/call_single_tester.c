@@ -981,14 +981,17 @@ static void simple_call_compatibility_mode(void) {
 }
 
 static void terminate_call_with_error(void) {
+	LinphoneCall* call_callee ;
+	LinphoneErrorInfo *ei  ;
+	const LinphoneErrorInfo *rei ;
 	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	
 	LinphoneCall* out_call = linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity);
-	LinphoneCall* call_callee ;
+
 
 	linphone_call_ref(out_call);
-	LinphoneErrorInfo *ei = linphone_error_info_new();
+	ei = linphone_error_info_new();
 	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 200, "Call completed elsewhere", NULL);
 
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
@@ -1006,9 +1009,9 @@ static void terminate_call_with_error(void) {
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
 	
 
-	const LinphoneErrorInfo *rei = ei;
+	rei = ei;
 	
-	linphone_call_terminate_with_error(out_call,rei);
+	linphone_call_terminate_with_error_info(out_call,rei);
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
 
 	BC_ASSERT_PTR_NOT_NULL(rei);
