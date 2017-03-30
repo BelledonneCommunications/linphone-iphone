@@ -32,37 +32,6 @@ extern "C" {
 **/
 
 /**
- * Callback prototype for notifying the application about notification received from the network.
-**/
-typedef void (*LinphoneCoreCbsNotifyReceivedCb)(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body);
-
-/**
- * Old name of #LinphoneCoreCbsNotifyReceivedCb.
- */
-typedef LinphoneCoreCbsNotifyReceivedCb LinphoneCoreNotifyReceivedCb;
-
-/**
- * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
-**/
-typedef void (*LinphoneCoreCbsSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
-
-/**
- * Old name of #LinphoneCoreCbsSubscriptionStateChangedCb.
- */
-typedef LinphoneCoreCbsSubscriptionStateChangedCb LinphoneCoreSubscriptionStateChangedCb;
-
-/**
- * Callback prototype for notifying the application about changes of publish states.
-**/
-typedef void (*LinphoneCoreCbsPublishStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
-
-/**
- * Old name of LinphoneCoreCbsPublishStateChangedCb.
- */
-typedef LinphoneCoreCbsPublishStateChangedCb LinphoneCorePublishStateChangedCb;
-
-
-/**
  * Send a subscription previously created by linphone_core_create_subscribe().
  * @param ev the LinphoneEvent
  * @param body optional content to attach with the subscription.

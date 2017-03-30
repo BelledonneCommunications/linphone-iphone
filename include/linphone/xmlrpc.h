@@ -35,13 +35,6 @@ extern "C" {
  */
 
 /**
- * Callback used to notify the response to an XML-RPC request.
- * @param[in] request LinphoneXmlRpcRequest object
-**/
-typedef void (*LinphoneXmlRpcRequestCbsResponseCb)(LinphoneXmlRpcRequest *request);
-
-
-/**
  * Create a new LinphoneXmlRpcRequest object.
  * @param[in] return_type The expected XML-RPC response type.
  * @param[in] method The XML-RPC method to call.

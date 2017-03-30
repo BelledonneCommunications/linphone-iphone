@@ -524,6 +524,118 @@ LINPHONE_PUBLIC int linphone_call_transfer(LinphoneCall *call, const char *refer
 **/
 LINPHONE_PUBLIC int linphone_call_transfer_to_another(LinphoneCall *call, LinphoneCall *dest);
 
+
+/**
+ * Acquire a reference to the LinphoneCallCbs object.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The same LinphoneCallCbs object.
+ */
+LINPHONE_PUBLIC LinphoneCallCbs *linphone_call_cbs_ref(LinphoneCallCbs *cbs);
+
+/**
+ * Release reference to the LinphoneCallCbs object.
+ * @param[in] cbs LinphoneCallCbs object.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_unref(LinphoneCallCbs *cbs);
+
+/**
+ * Retrieve the user pointer associated with the LinphoneCallCbs object.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The user pointer associated with the LinphoneCallCbs object.
+ */
+LINPHONE_PUBLIC void *linphone_call_cbs_get_user_data(const LinphoneCallCbs *cbs);
+
+/**
+ * Assign a user pointer to the LinphoneCallCbs object.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] ud The user pointer to associate with the LinphoneCallCbs object.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_user_data(LinphoneCallCbs *cbs, void *user_data);
+
+/**
+ * Get the dtmf received callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current dtmf received callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsDtmfReceivedCb linphone_call_cbs_get_dtmf_received(LinphoneCallCbs *cbs);
+
+/**
+ * Set the dtmf received callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The dtmf received callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_dtmf_received(LinphoneCallCbs *cbs, LinphoneCallCbsDtmfReceivedCb cb);
+
+/**
+ * Get the encryption changed callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current encryption changed callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsEncryptionChangedCb linphone_call_cbs_get_encryption_changed(LinphoneCallCbs *cbs);
+
+/**
+ * Set the encryption changed callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The encryption changed callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_encryption_changed(LinphoneCallCbs *cbs, LinphoneCallCbsEncryptionChangedCb cb);
+
+/**
+ * Get the info message received callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current info message received callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsInfoMessageReceivedCb linphone_call_cbs_get_info_message_received(LinphoneCallCbs *cbs);
+
+/**
+ * Set the info message received callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The info message received callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_info_message_received(LinphoneCallCbs *cbs, LinphoneCallCbsInfoMessageReceivedCb cb);
+
+/**
+ * Get the state changed callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current state changed callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsStateChangedCb linphone_call_cbs_get_state_changed(LinphoneCallCbs *cbs);
+
+/**
+ * Set the state changed callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The state changed callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_state_changed(LinphoneCallCbs *cbs, LinphoneCallCbsStateChangedCb cb);
+
+/**
+ * Get the stats updated callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current stats updated callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsStatsUpdatedCb linphone_call_cbs_get_stats_updated(LinphoneCallCbs *cbs);
+
+/**
+ * Set the stats updated callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The stats updated callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_stats_updated(LinphoneCallCbs *cbs, LinphoneCallCbsStatsUpdatedCb cb);
+
+/**
+ * Get the transfer state changed callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current transfer state changed callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsTransferStateChangedCb linphone_call_cbs_get_transfer_state_changed(LinphoneCallCbs *cbs);
+
+/**
+ * Set the transfer state changed callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The transfer state changed callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_transfer_state_changed(LinphoneCallCbs *cbs, LinphoneCallCbsTransferStateChangedCb cb);
+
 /**
  * @}
  */
@@ -715,6 +827,29 @@ LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneC
 
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call);
 
+/**
+ * Add a listener in order to be notified of LinphoneCall events. Once an event is received, registred LinphoneCallCbs are
+ * invoked sequencially.
+ * @param[in] call LinphoneCall object to monitor.
+ * @param[in] cbs A LinphoneCallCbs object holding the callbacks you need. A reference is taken by the LinphoneCall until you invoke linphone_call_remove_callbacks().
+ */
+LINPHONE_PUBLIC void linphone_call_add_callbacks(LinphoneCall *call, LinphoneCallCbs *cbs);
+
+/**
+ * Remove a listener from a LinphoneCall
+ * @param[in] call LinphoneCall object
+ * @param[in] cbs LinphoneCallCbs object to remove.
+ */
+LINPHONE_PUBLIC void linphone_call_remove_callbacks(LinphoneCall *call, LinphoneCallCbs *cbs);
+
+/**
+ * Gets the current LinphoneCallCbs.
+ * This is meant only to be called from a callback to be able to get the user_data associated with the LinphoneCallCbs that is calling the callback.
+ * @param[in] call LinphoneCall object
+ * @return The LinphoneCallCbs that has called the last callback
+ * @donotwrap
+ */
+LINPHONE_PUBLIC LinphoneCallCbs *linphone_call_get_current_callbacks(const LinphoneCall *call);
 
 /**
  * @}

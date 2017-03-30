@@ -104,7 +104,7 @@ void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandle
 		LinphoneInfoMessage *info=linphone_core_create_info_message(lc);
 		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
 		if (body_handler) info->content=linphone_content_from_sal_body_handler(body_handler);
-		linphone_core_notify_info_received(lc,call,info);
+		linphone_call_notify_info_message_received(call, info);
 		linphone_info_message_unref(info);
 	}
 }

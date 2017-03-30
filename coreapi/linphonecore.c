@@ -389,6 +389,14 @@ void linphone_core_cbs_set_friend_list_removed(LinphoneCoreCbs *cbs, LinphoneCor
 	cbs->vtable->friend_list_removed = cb;
 }
 
+LinphoneCoreCbsCallCreatedCb linphone_core_cbs_get_call_created(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->call_created;
+}
+
+void linphone_core_cbs_set_call_created(LinphoneCoreCbs *cbs, LinphoneCoreCbsCallCreatedCb cb) {
+	cbs->vtable->call_created = cb;
+}
+
 typedef belle_sip_object_t_vptr_t LinphoneCore_vptr_t;
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCore);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneCore, belle_sip_object_t,
@@ -5949,6 +5957,7 @@ int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call) {
 	if (linphone_core_can_we_add_call(lc)){
 		if (lc->calls==NULL) notify_soundcard_usage(lc,TRUE);
 		lc->calls = bctbx_list_append(lc->calls,call);
+		linphone_core_notify_call_created(lc, call);
 		return 0;
 	}
 	return -1;

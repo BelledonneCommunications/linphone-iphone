@@ -290,6 +290,19 @@ typedef struct _PortConfig{
 	int rtcp_port;
 }PortConfig;
 
+struct _LinphoneCallCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneCallCbsDtmfReceivedCb dtmf_received_cb;
+	LinphoneCallCbsEncryptionChangedCb encryption_changed_cb;
+	LinphoneCallCbsInfoMessageReceivedCb info_message_received_cb;
+	LinphoneCallCbsStateChangedCb state_changed_cb;
+	LinphoneCallCbsStatsUpdatedCb stats_updated_cb;
+	LinphoneCallCbsTransferStateChangedCb transfer_state_changed_cb;
+};
+
+LinphoneCallCbs * _linphone_call_cbs_new(void);
+
 struct _LinphoneCall{
 	belle_sip_object_t base;
 	void *user_data;
@@ -379,10 +392,20 @@ struct _LinphoneCall{
 	
 	bool_t reinvite_on_cancel_response_requested;
 	bool_t non_op_error; /*set when the LinphoneErrorInfo was set at higher level than sal*/
+
+	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
+	LinphoneCallCbs *current_cbs; /* The current LinphoneCallCbs object used to call a callback */
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCall);
 
+
+void linphone_call_notify_state_changed(LinphoneCall *call, LinphoneCallState cstate, const char *message);
+void linphone_call_notify_dtmf_received(LinphoneCall *call, int dtmf);
+void linphone_call_notify_encryption_changed(LinphoneCall *call, bool_t on, const char *authentication_token);
+void linphone_call_notify_transfer_state_changed(LinphoneCall *call, LinphoneCallState cstate);
+void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallStats *stats);
+void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
@@ -967,6 +990,7 @@ struct _LinphoneCoreCbs {
 	bool_t autorelease;
 };
 
+LinphoneCoreCbs * _linphone_core_cbs_new(void);
 void _linphone_core_cbs_set_v_table(LinphoneCoreCbs *cbs, LinphoneCoreVTable *vtable, bool_t autorelease);
 
 typedef struct _LCCallbackObj {
@@ -1620,6 +1644,7 @@ BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneCall),
+BELLE_SIP_TYPE_ID(LinphoneCallCbs),
 BELLE_SIP_TYPE_ID(LinphoneCallLog),
 BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
@@ -1701,6 +1726,7 @@ void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, 
 void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total);
 void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list);
+void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);

@@ -311,6 +311,11 @@ void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendLi
 	cleanup_dead_vtable_refs(lc);
 }
 
+void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call) {
+	NOTIFY_IF_EXIST(call_created, lc, call);
+	cleanup_dead_vtable_refs(lc);
+}
+
 static VTableReference * v_table_reference_new(LinphoneCoreCbs *cbs, bool_t internal){
 	VTableReference *ref=ms_new0(VTableReference,1);
 	ref->valid=TRUE;

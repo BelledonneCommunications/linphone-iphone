@@ -195,36 +195,6 @@ LINPHONE_PUBLIC void linphone_friend_list_set_uri(LinphoneFriendList *list, cons
 LINPHONE_PUBLIC void linphone_friend_list_update_revision(LinphoneFriendList *list, int rev);
 
 /**
- * Callback used to notify a new contact has been created on the CardDAV server and downloaded locally
- * @param list The LinphoneFriendList object the new contact is added to
- * @param lf The LinphoneFriend object that has been created
-**/
-typedef void (*LinphoneFriendListCbsContactCreatedCb)(LinphoneFriendList *list, LinphoneFriend *lf);
-
-/**
- * Callback used to notify a contact has been deleted on the CardDAV server
- * @param list The LinphoneFriendList object a contact has been removed from
- * @param lf The LinphoneFriend object that has been deleted
-**/
-typedef void (*LinphoneFriendListCbsContactDeletedCb)(LinphoneFriendList *list, LinphoneFriend *lf);
-
-/**
- * Callback used to notify a contact has been updated on the CardDAV server
- * @param list The LinphoneFriendList object in which a contact has been updated
- * @param new_friend The new LinphoneFriend object corresponding to the updated contact
- * @param old_friend The old LinphoneFriend object before update
-**/
-typedef void (*LinphoneFriendListCbsContactUpdatedCb)(LinphoneFriendList *list, LinphoneFriend *new_friend, LinphoneFriend *old_friend);
-
-/**
- * Callback used to notify the status of the synchronization has changed
- * @param list The LinphoneFriendList object for which the status has changed
- * @param status The new synchronisation status
- * @param msg An additional information on the status update
-**/
-typedef void (*LinphoneFriendListCbsSyncStateChangedCb)(LinphoneFriendList *list, LinphoneFriendListSyncStatus status, const char *msg);
-
-/**
  * Get the LinphoneFriendListCbs object associated with a LinphoneFriendList.
  * @param[in] list LinphoneFriendList object
  * @return The LinphoneFriendListCbs object associated with the LinphoneFriendList.

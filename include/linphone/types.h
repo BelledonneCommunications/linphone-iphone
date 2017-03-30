@@ -243,6 +243,16 @@ typedef struct _LinphoneBuffer LinphoneBuffer;
 typedef struct _LinphoneCall LinphoneCall;
 
 /**
+ * That class holds all the callbacks which are called by LinphoneCall objects.
+ *
+ * Use linphone_factory_create_call_cbs() to create an instance. Then, call the
+ * callback setters on the events you need to monitor and pass the object to
+ * a LinphoneCall instance through linphone_call_add_callbacks().
+ * @ingroup call_control
+ */
+typedef struct _LinphoneCallCbs LinphoneCallCbs;
+
+/**
  * Enum representing the direction of a call.
  * @ingroup call_logs
 **/
@@ -446,7 +456,7 @@ typedef struct _LinphoneCore LinphoneCore;
  *
  * Use linphone_factory_create_core_cbs() to create an instance. Then, call the
  * callback setters on the events you need to monitor and pass the object to
- * a #LinphoneCore instance through linphone_core_add_listener().
+ * a #LinphoneCore instance through linphone_core_add_callbacks().
  *
  * That class is inherited from belle_sip_object_t.
  * @ingroup initializing
