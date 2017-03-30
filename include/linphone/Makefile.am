@@ -2,7 +2,7 @@ linphone_includedir=$(includedir)/linphone
 
 linphone_include_HEADERS=\
 	account_creator.h \
-	account_creator_request_engine.h \
+	account_creator_service.h \
 	address.h \
 	auth_info.h \
 	buffer.h \

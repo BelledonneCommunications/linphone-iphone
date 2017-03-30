@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/sipsetup.h"
 
 #include "linphone/account_creator.h"
-#include "linphone/account_creator_request_engine.h"
+#include "linphone/account_creator_service.h"
 #include "linphone/address.h"
 #include "linphone/auth_info.h"
 #include "linphone/buffer.h"
@@ -1909,18 +1909,18 @@ LINPHONE_PUBLIC void linphone_core_abort_authentication(LinphoneCore *lc, Linpho
 LINPHONE_PUBLIC	void linphone_core_clear_all_auth_info(LinphoneCore *lc);
 
 /**
- * Sets an default account creator request cbs in the core
+ * Sets an default account creator service in the core
  * @param lc LinphoneCore object
- * @param cbs LinphoneAccountCreatorRequestCbs object
+ * @param cbs LinphoneAccountCreatorService object
 **/
-LINPHONE_PUBLIC void linphone_core_set_account_creator_request_engine_cbs(LinphoneCore *lc, LinphoneAccountCreatorRequestCbs *cbs);
+LINPHONE_PUBLIC void linphone_core_set_account_creator_service(LinphoneCore *lc, LinphoneAccountCreatorService *service);
 
 /**
- * Get default account creator request cbs from the core
+ * Get default account creator service from the core
  * @param lc LinphoneCore object
- * @return LinphoneAccountCreatorRequestCbs object
+ * @return LinphoneAccountCreatorService object
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorRequestCbs* linphone_core_get_account_creator_request_engine_cbs(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneAccountCreatorService * linphone_core_get_account_creator_service(LinphoneCore *lc);
 
 /**
  * Enable or disable the audio adaptive jitter compensation.

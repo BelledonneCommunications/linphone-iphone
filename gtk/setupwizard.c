@@ -31,9 +31,9 @@ static LinphoneAccountCreator * linphone_gtk_assistant_get_creator(GtkWidget *w)
 	return (LinphoneAccountCreator *)g_object_get_data(G_OBJECT(w), "creator");
 }
 
-static void linphone_gtk_create_account_cb(LinphoneAccountCreator *creator, LinphoneRequestStatus status, const char* resp) {
+static void linphone_gtk_create_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
-	if (status == LinphoneRequestAccountCreated) {
+	if (status == LinphoneAccountCreatorStatusAccountCreated) {
 		// Go to page_6_linphone_account_validation_wait
 		gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), 6);
 	} else { // Error when attempting to create the account
@@ -48,9 +48,9 @@ static void create_account(GtkWidget *assistant) {
 	linphone_account_creator_create_account(creator);
 }
 
-static void linphone_gtk_test_account_validation_cb(LinphoneAccountCreator *creator, LinphoneRequestStatus status, const char* resp) {
+static void linphone_gtk_test_account_validation_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
-	if (status == LinphoneRequestAccountActivated) {
+	if (status == LinphoneAccountCreatorStatusAccountActivated) {
 		// Go to page_9_finish
 		gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), 9);
 	} else {
@@ -215,11 +215,11 @@ static gboolean update_interface_with_username_availability(GtkWidget *page) {
 	GtkLabel* usernameError = GTK_LABEL(linphone_gtk_get_widget(assistant, "p4_label_error"));
 	int account_status = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(page), "is_username_used"));
 
-	if (account_status == LinphoneRequestAccountNotExist) {
+	if (account_status == LinphoneAccountCreatorStatusAccountNotExist) {
 		g_object_set_data(G_OBJECT(page), "is_username_available", GINT_TO_POINTER(1));
 		gtk_image_set_from_stock(isUsernameOk, GTK_STOCK_OK, GTK_ICON_SIZE_LARGE_TOOLBAR);
 		gtk_label_set_text(usernameError, "");
-	} else if (account_status == LinphoneRequestAccountExist) {
+	} else if (account_status == LinphoneAccountCreatorStatusAccountExist) {
 		gtk_label_set_text(usernameError, _("Username is already in use!"));
 		g_object_set_data(G_OBJECT(page), "is_username_available", GINT_TO_POINTER(0));
 		gtk_image_set_from_stock(isUsernameOk, GTK_STOCK_NO, GTK_ICON_SIZE_LARGE_TOOLBAR);
@@ -232,7 +232,7 @@ static gboolean update_interface_with_username_availability(GtkWidget *page) {
 	return FALSE;
 }
 
-static void linphone_gtk_test_account_existence_cb(LinphoneAccountCreator *creator, LinphoneRequestStatus status, const char* resp) {
+static void linphone_gtk_test_account_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char* resp) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
 	GtkWidget *page = gtk_assistant_get_nth_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant)));
 	g_object_set_data(G_OBJECT(page), "is_username_used", GINT_TO_POINTER(status));
@@ -324,11 +324,11 @@ void linphone_gtk_account_creation_password_changed(GtkEntry *entry) {
 
 static void linphone_gtk_assistant_init(GtkWidget *w) {
 	LinphoneAccountCreator *creator = linphone_account_creator_new(linphone_gtk_get_core(), "https://subscribe.linphone.org:444/wizard.php");
-	LinphoneAccountCreatorResponseCbs *cbs = linphone_account_creator_get_responses_cbs(creator);
+	LinphoneAccountCreatorCbs *cbs = linphone_account_creator_get_callbacks(creator);
 	linphone_account_creator_set_user_data(creator, w);
-	linphone_account_creator_responses_cbs_set_is_account_exist_cb(cbs, linphone_gtk_test_account_existence_cb);
-	linphone_account_creator_responses_cbs_set_is_account_activated_cb(cbs, linphone_gtk_test_account_validation_cb);
-	linphone_account_creator_responses_cbs_set_create_account_cb(cbs, linphone_gtk_create_account_cb);
+	linphone_account_creator_cbs_set_is_account_exist(cbs, linphone_gtk_test_account_existence_cb);
+	linphone_account_creator_cbs_set_is_account_activated(cbs, linphone_gtk_test_account_validation_cb);
+	linphone_account_creator_cbs_set_create_account(cbs, linphone_gtk_create_account_cb);
 	g_object_set_data(G_OBJECT(w), "creator", creator);
 
 	gtk_assistant_set_forward_page_func(GTK_ASSISTANT(w), linphone_gtk_assistant_forward, w, NULL);

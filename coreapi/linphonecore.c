@@ -2080,21 +2080,21 @@ static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, 
 	}
 }
 
-static void _linphone_core_init_account_creator_request_cbs(LinphoneCore *lc) {
-	LinphoneAccountCreatorRequestCbs *cbs = linphone_account_creator_requests_cbs_new();
-	cbs->account_creator_request_constructor_cb = linphone_account_creator_constructor_custom;
-	cbs->account_creator_request_destructor_cb = NULL;
-	cbs->create_account_request_cb = linphone_account_creator_create_account_custom;
-	cbs->is_account_exist_request_cb = linphone_account_creator_is_account_exist_custom;
-	cbs->activate_account_request_cb = linphone_account_creator_activate_account_custom;
-	cbs->is_account_activated_request_cb = linphone_account_creator_is_account_activated_custom;
-	cbs->link_account_request_cb = linphone_account_creator_link_phone_number_with_account_custom;
-	cbs->activate_alias_request_cb = linphone_account_creator_activate_phone_number_link_custom;
-	cbs->is_alias_used_request_cb = linphone_account_creator_is_phone_number_used_custom;
-	cbs->is_account_linked_request_cb = linphone_account_creator_is_account_linked_custom;
-	cbs->recover_account_request_cb = linphone_account_creator_recover_phone_account_custom;
-	cbs->update_account_request_cb = linphone_account_creator_update_password_custom;
-	linphone_core_set_account_creator_request_engine_cbs(lc, cbs);
+static void _linphone_core_init_account_creator_service(LinphoneCore *lc) {
+	LinphoneAccountCreatorService *service = linphone_account_creator_service_new();
+	service->account_creator_service_constructor_cb = linphone_account_creator_constructor_linphone;
+	service->account_creator_service_destructor_cb = NULL;
+	service->create_account_request_cb = linphone_account_creator_create_account_linphone;
+	service->is_account_exist_request_cb = linphone_account_creator_is_account_exist_linphone;
+	service->activate_account_request_cb = linphone_account_creator_activate_account_linphone;
+	service->is_account_activated_request_cb = linphone_account_creator_is_account_activated_linphone;
+	service->link_account_request_cb = linphone_account_creator_link_phone_number_with_account_linphone;
+	service->activate_alias_request_cb = linphone_account_creator_activate_phone_number_link_linphone;
+	service->is_alias_used_request_cb = linphone_account_creator_is_phone_number_used_linphone;
+	service->is_account_linked_request_cb = linphone_account_creator_is_account_linked_linphone;
+	service->recover_account_request_cb = linphone_account_creator_recover_phone_account_linphone;
+	service->update_account_request_cb = linphone_account_creator_update_password_linphone;
+	linphone_core_set_account_creator_service(lc, service);
 }
 
 static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig *config, void * userdata){
@@ -2112,7 +2112,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	linphone_task_list_init(&lc->hooks);
 
-	_linphone_core_init_account_creator_request_cbs(lc);
+	_linphone_core_init_account_creator_service(lc);
 
 	linphone_core_cbs_set_notify_received(internal_cbs, linphone_core_internal_notify_received);
 	linphone_core_cbs_set_subscription_state_changed(internal_cbs, linphone_core_internal_subscription_state_changed);
@@ -5763,8 +5763,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->im_encryption_engine) {
 		linphone_im_encryption_engine_unref(lc->im_encryption_engine);
 	}
-	if (lc->default_ac_request_cbs) {
-		linphone_account_creator_requests_cbs_unref(lc->default_ac_request_cbs);
+	if (lc->default_ac_service) {
+		linphone_account_creator_service_unref(lc->default_ac_service);
 	}
 
 	linphone_core_free_payload_types(lc);

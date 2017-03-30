@@ -24,7 +24,6 @@ import os
 import sys
 import errno
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
-print(sys.path)
 import genapixml as CApi
 import abstractapi as AbsApi
 
