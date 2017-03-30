@@ -38,6 +38,7 @@
 		244523AF1E8266CC0037A187 /* chat_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AC1E8266CC0037A187 /* chat_delivered.png */; };
 		244523B01E8266CC0037A187 /* chat_error.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AD1E8266CC0037A187 /* chat_error.png */; };
 		244523B11E8266CC0037A187 /* chat_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AE1E8266CC0037A187 /* chat_read.png */; };
+		244523BE1E8D3A6C0037A187 /* chat_unsecure.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523BC1E8D3A6C0037A187 /* chat_unsecure.png */; };
 		24A3459E1D95797700881A5C /* UIShopTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 24A3459D1D95797700881A5C /* UIShopTableCell.xib */; };
 		24A345A61D95798A00881A5C /* UIShopTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 24A345A51D95798A00881A5C /* UIShopTableCell.m */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
@@ -933,6 +934,7 @@
 		244523AC1E8266CC0037A187 /* chat_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_delivered.png; sourceTree = "<group>"; };
 		244523AD1E8266CC0037A187 /* chat_error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_error.png; sourceTree = "<group>"; };
 		244523AE1E8266CC0037A187 /* chat_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_read.png; sourceTree = "<group>"; };
+		244523BC1E8D3A6C0037A187 /* chat_unsecure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_unsecure.png; sourceTree = "<group>"; };
 		24A3459D1D95797700881A5C /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
 		24A345A51D95798A00881A5C /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		24A345A71D95799900881A5C /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
@@ -2453,6 +2455,7 @@
 				8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */,
 				8C2595E01DEDDC67007A6424 /* callkit_logo.png */,
 				633FEBE21D3CD5570014B822 /* add_field_default.png */,
+				244523BC1E8D3A6C0037A187 /* chat_unsecure.png */,
 				633FEBE31D3CD5570014B822 /* add_field_default@2x.png */,
 				633FEBE41D3CD5570014B822 /* add_field_over.png */,
 				633FEBE51D3CD5570014B822 /* add_field_over@2x.png */,
@@ -3543,6 +3546,7 @@
 				633FEDD61D3CD5590014B822 /* call_start_body_default.png in Resources */,
 				633FEEEC1D3CD55A0014B822 /* numpad_hash_default@2x.png in Resources */,
 				633FEE831D3CD5590014B822 /* led_disconnected@2x.png in Resources */,
+				244523BE1E8D3A6C0037A187 /* chat_unsecure.png in Resources */,
 				633FEE031D3CD5590014B822 /* cancel_edit_default@2x.png in Resources */,
 				633FEDE01D3CD5590014B822 /* call_start_body_over~ipad.png in Resources */,
 				D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */,

@@ -122,8 +122,8 @@
                             <rect key="frame" x="302" y="0.0" width="20" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         </activityIndicatorView>
-                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="lime_ko.png" id="IST-5o-DCu" userLabel="LIMEKO">
-                            <rect key="frame" x="307" y="6" width="10" height="14"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="chat_unsecure.png" id="IST-5o-DCu" userLabel="LIMEKO">
+                            <rect key="frame" x="308" y="6" width="8" height="12"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
@@ -164,11 +164,11 @@
     <resources>
         <image name="avatar.png" width="259" height="259"/>
         <image name="chat_message_not_delivered.png" width="11" height="10"/>
+        <image name="chat_unsecure.png" width="18" height="27"/>
         <image name="color_A.png" width="2" height="2"/>
         <image name="color_G.png" width="2" height="2"/>
         <image name="color_I.png" width="2" height="2"/>
         <image name="color_M.png" width="2" height="2"/>
-        <image name="lime_ko.png" width="14" height="18"/>
         <image name="linphone_logo.png" width="26" height="22"/>
         <image name="valid_default.png" width="28" height="19"/>
     </resources>

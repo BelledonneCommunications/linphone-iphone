@@ -79,8 +79,8 @@
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             <dataDetectorType key="dataDetectorTypes" link="YES"/>
                         </textView>
-                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="lime_ko.png" id="PqI-MR-8GC" userLabel="LIMEKO">
-                            <rect key="frame" x="307" y="4" width="10" height="14"/>
+                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="chat_unsecure.png" id="PqI-MR-8GC" userLabel="LIMEKO">
+                            <rect key="frame" x="308" y="4" width="8" height="12"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
@@ -112,8 +112,8 @@
         <image name="avatar.png" width="259" height="259"/>
         <image name="chat_message_not_delivered.png" width="11" height="10"/>
         <image name="chat_read.png" width="24" height="24"/>
+        <image name="chat_unsecure.png" width="18" height="27"/>
         <image name="color_A.png" width="2" height="2"/>
-        <image name="lime_ko.png" width="14" height="18"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
