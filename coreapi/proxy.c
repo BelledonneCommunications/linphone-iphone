@@ -651,12 +651,14 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 					//probably generic dialplan, preserving proxy dial prefix
 					strncpy(dialplan.ccc,tmpproxy->dial_prefix,sizeof(dialplan.ccc));
 				}
-			}
-			if (strstr(flatten,dialplan.icp)==flatten) {
-				char *e164 = replace_icp_with_plus(flatten,dialplan.icp);
-				result = linphone_proxy_config_normalize_phone_number(tmpproxy,e164);
-				ms_free(e164);
-				goto end;
+				/*it does not make sens to try replace icp with + if we are not sure from the country we are (I.E tmpproxy->dial_prefix==NULL)*/
+				if (strstr(flatten,dialplan.icp)==flatten) {
+					char *e164 = replace_icp_with_plus(flatten,dialplan.icp);
+					result = linphone_proxy_config_normalize_phone_number(tmpproxy,e164);
+					ms_free(e164);
+					goto end;
+				}
+
 			}
 			nationnal_significant_number=flatten;
 		}
