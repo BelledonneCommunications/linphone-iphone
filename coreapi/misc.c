@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "private.h"
 #include "linphone/lpconfig.h"
+#include "linphone/wrapper_utils.h"
 #include "mediastreamer2/mediastream.h"
 #include <stdlib.h>
 #include <stdio.h>

@@ -1436,7 +1436,7 @@ struct _LinphoneAccountCreatorService {
 	LinphoneAccountCreatorRequestFunc update_account_request_cb; /**< Request to update account */
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorService);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreatorService);
 
 struct _LinphoneAccountCreatorCbs {
 	belle_sip_object_t base;
@@ -1457,7 +1457,7 @@ struct _LinphoneAccountCreatorCbs {
 	LinphoneAccountCreatorCbsStatusCb update_account_response_cb; /**< Response of update_account request */
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreatorCbs);
 
 struct _LinphoneAccountCreator {
 	belle_sip_object_t base;

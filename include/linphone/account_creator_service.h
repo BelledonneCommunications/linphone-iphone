@@ -44,7 +44,7 @@ typedef LinphoneAccountCreatorStatus (*LinphoneAccountCreatorRequestFunc)(Linpho
  * @return a new LinphoneAccountCreatorService object.
  * @donotwrap
 **/
-LinphoneAccountCreatorService * linphone_account_creator_service_new(void);
+LINPHONE_PUBLIC LinphoneAccountCreatorService * linphone_account_creator_service_new(void);
 
 /**
  * Acquire a reference to a LinphoneAccountCreatorService object.
