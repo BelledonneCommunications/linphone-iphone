@@ -77,7 +77,7 @@ RCFILES = \
 					rcfiles/remote_zero_length_params_rc\
 					rcfiles/stun_rc\
 					rcfiles/upnp_rc\
-					rcfiles/zero_length_params_rc\
+					rcfiles/zero_length_params_rc
 
 
 IMAGE_FILES = images/linphone.svg images/nowebcamCIF.jpg images/nowebcamVGA.jpg
