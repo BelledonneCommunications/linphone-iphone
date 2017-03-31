@@ -440,7 +440,6 @@ class CParser(object):
 					   'linphone_vcard_get_belcard'] # manualy wrapped
 
 		self.classBl = ['LpConfig',
-					   'LinphonePayloadType',
 					   'LinphonePlayer']  # temporarly blacklisted
 		
 		# list of classes that must be concidered as refcountable even if

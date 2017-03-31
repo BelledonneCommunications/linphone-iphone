@@ -58,13 +58,13 @@ static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2,
 	const PayloadType *pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_EQUAL(linphone_payload_type_get_number(pt),expected_number, int, "%d");
+		BC_ASSERT_EQUAL(payload_type_get_number(pt),expected_number, int, "%d");
 	}
 	params=linphone_call_get_current_params(call2);
 	pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_EQUAL(linphone_payload_type_get_number(pt),expected_number, int, "%d");
+		BC_ASSERT_EQUAL(payload_type_get_number(pt),expected_number, int, "%d");
 	}
 }
 
@@ -80,7 +80,7 @@ static void simple_call_with_different_codec_mappings(void) {
 	disable_all_audio_codecs_except_one(pauline->lc,"pcmu",-1);
 
 	/*marie set a fantasy number to PCMU*/
-	linphone_payload_type_set_number(linphone_core_find_payload_type(marie->lc, "PCMU", 8000, -1), 104);
+	payload_type_set_number(linphone_core_find_payload_type(marie->lc, "PCMU", 8000, -1), 104);
 
 	BC_ASSERT_TRUE(call(marie,pauline));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
@@ -398,9 +398,9 @@ static void savpf_dtls_to_avpf_video_call(void) {
 #endif
 
 #ifdef VIDEO_ENABLED
-static LinphonePayloadType * configure_core_for_avpf_and_video(LinphoneCore *lc) {
+static OrtpPayloadType * configure_core_for_avpf_and_video(LinphoneCore *lc) {
 	LinphoneProxyConfig *lpc;
-	LinphonePayloadType *lpt;
+	OrtpPayloadType *pt;
 	LinphoneVideoPolicy policy = { 0 };
 
 	policy.automatically_initiate = TRUE;
@@ -412,13 +412,13 @@ static LinphonePayloadType * configure_core_for_avpf_and_video(LinphoneCore *lc)
 	linphone_core_enable_video_capture(lc, TRUE);
 	linphone_core_enable_video_display(lc, TRUE);
 	linphone_core_set_video_policy(lc, &policy);
-	lpt = linphone_core_find_payload_type(lc, "VP8", 90000, -1);
-	if (lpt == NULL) {
+	pt = linphone_core_find_payload_type(lc, "VP8", 90000, -1);
+	if (pt == NULL) {
 		ms_warning("VP8 codec not available.");
 	} else {
 		disable_all_video_codecs_except_one(lc, "VP8");
 	}
-	return lpt;
+	return pt;
 }
 
 static void check_avpf_features(LinphoneCore *lc, unsigned char expected_features) {
@@ -441,19 +441,20 @@ static void check_avpf_features(LinphoneCore *lc, unsigned char expected_feature
 static void compatible_avpf_features(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
-	LinphonePayloadType *lpt;
+	OrtpPayloadType *pt;
 	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
-	lpt = configure_core_for_avpf_and_video(pauline->lc);
+	
+	pt = configure_core_for_avpf_and_video(pauline->lc);
 
 	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
 	if (!call_ok) goto end;
 
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
-	check_avpf_features(marie->lc, lpt->avpf.features);
-	check_avpf_features(pauline->lc, lpt->avpf.features);
+	check_avpf_features(marie->lc, pt->avpf.features);
+	check_avpf_features(pauline->lc, pt->avpf.features);
 
 	end_call(marie,pauline);
 end:
@@ -464,12 +465,13 @@ end:
 static void incompatible_avpf_features(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
-	LinphonePayloadType *lpt;
+	OrtpPayloadType *pt;
 	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
-	lpt = configure_core_for_avpf_and_video(pauline->lc);
-	lpt->avpf.features = PAYLOAD_TYPE_AVPF_NONE;
+	
+	pt = configure_core_for_avpf_and_video(pauline->lc);
+	pt->avpf.features = PAYLOAD_TYPE_AVPF_NONE;
 
 	BC_ASSERT_TRUE(call_ok=call(marie, pauline));
 	if (!call_ok) goto end;

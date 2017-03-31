@@ -647,7 +647,7 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 }
 
 
-const char *get_codec_color(LinphoneCore *lc, PayloadType *pt){
+const char *get_codec_color(LinphoneCore *lc, OrtpPayloadType *pt){
 	const gchar *color;
 	if (linphone_core_check_payload_type_usability(lc,pt)) color="blue";
 		else color="red";
@@ -673,7 +673,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const bctbx_list_t *
 		const gchar *color;
 		const char *params="";
 
-		struct _PayloadType *pt=(struct _PayloadType *)elem->data;
+		OrtpPayloadType *pt=(OrtpPayloadType *)elem->data;
 
 		color=get_codec_color(linphone_gtk_get_core(),pt);
 		if (linphone_core_payload_type_enabled(linphone_gtk_get_core(),pt)) status=_("Enabled");

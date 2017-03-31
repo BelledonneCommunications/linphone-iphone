@@ -102,6 +102,7 @@ set(LINPHONE_SOURCE_FILES_C
 	misc.c
 	nat_policy.c
 	offeranswer.c
+	payload_type.c
 	player.c
 	presence.c
 	proxy.c

@@ -686,12 +686,6 @@ typedef enum _LinphoneOnlineStatus{
 } LinphoneOnlineStatus;
 
 /**
- * Object representing an RTP payload type.
- * @ingroup media_parameters
- */
-typedef PayloadType LinphonePayloadType;
-
-/**
  * Player interface.
  * @ingroup call_control
 **/
@@ -1176,6 +1170,12 @@ typedef enum _LinphoneXmlRpcStatus {
 } LinphoneXmlRpcStatus;
 
 typedef struct _LsdPlayer LsdPlayer;
+
+/**
+ * Object representing an RTP payload type.
+ * @ingroup media_parameters
+ */
+typedef struct _LinphonePayloadType LinphonePayloadType;
 
 
 /**

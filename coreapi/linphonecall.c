@@ -513,7 +513,7 @@ static bctbx_list_t *make_codec_list(LinphoneCore *lc, CodecConstraints * hints,
 					pt->mime_type,pt->clock_rate,hints->bandwidth_limit);
 			continue;
 		}
-		if (!linphone_core_check_payload_type_usability(lc,pt)){
+		if (!_linphone_core_check_payload_type_usability(lc, pt)) {
 			continue;
 		}
 		pt=payload_type_clone(pt);

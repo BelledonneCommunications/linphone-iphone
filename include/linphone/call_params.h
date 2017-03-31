@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 #include "linphone/types.h"
+#include "linphone/payload_type.h"
 
 
 #ifdef __cplusplus
@@ -175,25 +176,55 @@ LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_sent_video_size(const Linph
 LINPHONE_PUBLIC const char *linphone_call_params_get_session_name(const LinphoneCallParams *cp);
 
 /**
- * Get the audio codec used in the call, described as a LinphonePayloadType object.
- * @param[in] cp LinphoneCallParams object
- * @return The LinphonePayloadType object corresponding to the audio codec being used in the call.
+ * Get the audio payload type that has been selected by a call.
+ * @param[in] cp The call.
+ * @return The selected payload type. NULL is returned if no audio payload type has been seleced
+ * by the call. If a payload type is returned, it must be released with linphone_payload_type_unref() after use.
 **/
-LINPHONE_PUBLIC const LinphonePayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_audio_payload_type(const LinphoneCallParams *cp);
 
 /**
- * Get the video codec used in the call, described as a LinphonePayloadType structure.
- * @param[in] cp LinphoneCallParams object
- * @return The LinphonePayloadType object corresponding to the video codec being used in the call.
+ * Get the video payload type that has been selected by a call.
+ * @param[in] cp The call.
+ * @return The selected payload type. NULL is returned if no video payload type has been seleced
+ * by the call. If a payload type is returned, it must be released with linphone_payload_type_unref() after use.
 **/
-LINPHONE_PUBLIC const LinphonePayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_video_payload_type(const LinphoneCallParams *cp);
 
 /**
- * Get the text codec used in the call, described as a LinphonePayloadType structure.
- * @param[in] cp LinphoneCallParams object
- * @return The LinphonePayloadType object corresponding to the text codec being used in the call.
+ * Get the text payload type that has been selected by a call.
+ * @param[in] cp The call.
+ * @return The selected payload type. NULL is returned if no text payload type has been seleced
+ * by the call. If a payload type is returned, it must be released with linphone_payload_type_unref() after use.
 **/
-LINPHONE_PUBLIC const LinphonePayloadType* linphone_call_params_get_used_text_codec(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_text_payload_type(const LinphoneCallParams *cp);
+
+/**
+ * Get the audio payload type that has been selected by a call.
+ * @param[in] cp The call.
+ * @return The selected payload type. NULL is returned if no audio payload type has been seleced by the call.
+ * @deprecated Use linphone_call_params_get_used_audio_payload_type() instead.
+ * @donotwrap
+**/
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const OrtpPayloadType *linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
+
+/**
+ * Get the video payload type that has been selected by a call.
+ * @param[in] cp The call.
+ * @return The selected payload type. NULL is returned if no video payload type has been seleced by the call.
+ * @deprecated Use linphone_call_params_get_used_video_payload_type() instead.
+ * @donotwrap
+**/
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const OrtpPayloadType *linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
+
+/**
+ * Get the text payload type that has been selected by a call.
+ * @param[in] cp The call.
+ * @return The selected payload type. NULL is returned if no text payload type has been seleced by the call.
+ * @deprecated Use linphone_call_params_get_used_text_payload_type() instead.
+ * @donotwrap
+**/
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const OrtpPayloadType *linphone_call_params_get_used_text_codec(const LinphoneCallParams *cp);
 
 /**
  * Tell whether the call has been configured in low bandwidth mode or not.
