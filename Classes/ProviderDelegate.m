@@ -133,6 +133,8 @@
 		if (call) {
 			linphone_call_terminate((LinphoneCall *)call);
 		}
+		[self.uuids removeObjectForKey:callID];
+		[self.calls removeObjectForKey:uuid];
 	}
 }
 

@@ -892,8 +892,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 																				   connectedAtDate:nil];
 				}
 
-				[self.providerDelegate.uuids removeObjectForKey:callId2];
-				[self.providerDelegate.calls removeObjectForKey:uuid];
 				CXEndCallAction *act = [[CXEndCallAction alloc] initWithCallUUID:uuid];
 				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
 				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
@@ -2155,7 +2153,7 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 
 - (LinphoneCall *)callByCallId:(NSString *)call_id {
 	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
-	if (!calls) {
+	if (!calls || !call_id) {
 		return NULL;
 	}
 	bctbx_list_t *call_tmp = bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [call_id UTF8String]);
