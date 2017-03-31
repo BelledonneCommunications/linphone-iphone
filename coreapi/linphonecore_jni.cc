@@ -8110,7 +8110,7 @@ static void xml_request_response(LinphoneXmlRpcRequest *request) {
 
 extern "C" jlong Java_org_linphone_core_LinphoneXmlRpcRequestImpl_newLinphoneXmlRpcRequest(JNIEnv *env, jobject thiz, jstring jmethodname, jint returntype) {
 	const char *methodname = GetStringUTFChars(env, jmethodname);
-	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new(methodname, (LinphoneXmlRpcArgType)returntype);
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new((LinphoneXmlRpcArgType)returntype, methodname);
 	ReleaseStringUTFChars(env, jmethodname, methodname);
 	return (jlong) request;
 }
