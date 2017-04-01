@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include "sqlite3_bctbx_vfs.h"
+/* we need bzrtp.h to setup the zrtp cache only when SQLITE is enabled */
+#include "bzrtp/bzrtp.h"
 #endif
 
 #include <math.h>
@@ -104,6 +106,7 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t isReachable, time_
 static void set_media_network_reachable(LinphoneCore* lc,bool_t isReachable);
 static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_uninit(LinphoneCore *lc);
+static void linphone_core_zrtp_cache_close(LinphoneCore *lc);
 
 #include "enum.h"
 #include "contact_providers_priv.h"
@@ -5739,6 +5742,11 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}
+
+	if(lc->zrtp_cache_db_file != NULL) {
+		ms_free(lc->zrtp_cache_db_file);
+	}
+
 	if(lc->user_certificates_path != NULL) {
 		ms_free(lc->user_certificates_path);
 	}
@@ -5772,6 +5780,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
 	linphone_core_friends_storage_close(lc);
+	linphone_core_zrtp_cache_close(lc);
 
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
@@ -6157,6 +6166,72 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 
 const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
+}
+
+void *linphone_core_get_zrtp_cache_db(LinphoneCore *lc){
+#ifdef SQLITE_STORAGE_ENABLED
+	return (void *)lc->zrtp_cache_db;
+#else /* SQLITE_STORAGE_ENABLED */
+	return NULL;
+#endif /* SQLITE_STORAGE_ENABLED */
+}
+
+static void linphone_core_zrtp_cache_close(LinphoneCore *lc) {
+#ifdef SQLITE_STORAGE_ENABLED
+	if (lc->zrtp_cache_db) {
+		sqlite3_close(lc->zrtp_cache_db);
+		lc->zrtp_cache_db = NULL;
+	}
+#endif /* SQLITE_STORAGE_ENABLED */
+}
+
+#ifdef SQLITE_STORAGE_ENABLED
+static void linphone_core_zrtp_cache_db_init(LinphoneCore *lc) {
+	int ret;
+	const char *errmsg;
+	sqlite3 *db;
+
+	linphone_core_zrtp_cache_close(lc);
+
+	ret = _linphone_sqlite3_open(lc->zrtp_cache_db_file, &db);
+	if (ret != SQLITE_OK) {
+		errmsg = sqlite3_errmsg(db);
+		ms_error("Error in the opening zrtp_cache_db_file(%s): %s.\n", lc->zrtp_cache_db_file, errmsg);
+		sqlite3_close(db);
+		lc->zrtp_cache_db=NULL;
+		return;
+	}
+
+	ret = bzrtp_initCache((void *)db); /* this may perform an update, check return value */
+
+	if (ret == BZRTP_CACHE_SETUP || ret == BZRTP_CACHE_UPDATE) {
+		/* After updating schema, database need to be closed/reopenned */
+		sqlite3_close(db);
+		_linphone_sqlite3_open(lc->zrtp_cache_db_file, &db);
+	}
+
+	if (ret == BZRTP_CACHE_SETUP && lc->zrtp_secrets_cache != NULL) {
+		/* we just created the db and we have an old XML version of the cache : migrate */
+		/* TODO */
+	}
+
+	lc->zrtp_cache_db = db;
+}
+#else /* SQLITE_STORAGE_ENABLED */
+static void linphone_core_zrtp_cache_db_init(LinphoneCore *lc) {
+	ms_warning("Tried to open %s as zrtp_cache_db_file, but SQLITE_STORAGE is not enabled", lc->zrtp_cache_db_file);
+}
+#endif /* SQLITE_STORAGE_ENABLED */
+
+void linphone_core_set_zrtp_cache_database_path(LinphoneCore *lc, const char *path) {
+	if (lc->zrtp_cache_db_file){
+		ms_free(lc->zrtp_cache_db_file);
+		lc->zrtp_cache_db_file = NULL;
+	}
+	if (path) {
+		lc->zrtp_cache_db_file = ms_strdup(path);
+		linphone_core_zrtp_cache_db_init(lc);
+	}
 }
 
 void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){

@@ -2608,16 +2608,19 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 		/* init zrtp even if we didn't explicitely set it, just in case peer offers it */
 		if (linphone_core_media_encryption_supported(lc, LinphoneMediaEncryptionZRTP)) {
-			char *uri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
+			char *peerUri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
+			char *selfUri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->to : call->log->from);
 			MSZrtpParams params;
 			memset(&params,0,sizeof(MSZrtpParams));
 			/*call->current_params.media_encryption will be set later when zrtp is activated*/
-			params.zid_file=lc->zrtp_secrets_cache;
-			params.uri=uri;
+			params.zidCacheDB = linphone_core_get_zrtp_cache_db(lc);
+			params.peerUri=peerUri;
+			params.selfUri=selfUri;
 			params.limeKeyTimeSpan = bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")); /* get key lifespan from config file, default is 0:forever valid */
 			setZrtpCryptoTypesParameters(&params,call->core);
 			audio_stream_enable_zrtp(call->audiostream,&params);
-			if (uri != NULL) ms_free(uri);
+			if (peerUri != NULL) ms_free(peerUri);
+			if (selfUri != NULL) ms_free(selfUri);
 		}
 
 		media_stream_reclaim_sessions(&audiostream->ms, &call->sessions[call->main_audio_stream_index]);
