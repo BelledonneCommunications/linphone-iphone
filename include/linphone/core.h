@@ -1584,7 +1584,7 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_audio_payload_types(LinphoneCore
  * @param[in] lc The core.
  * @param[in] payload_types \bctbx_list{LinphonePayloadType} The new list of payload types. The core does not take
  * ownership on it.
- * @ingroup media_paremeters
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC void linphone_core_set_audio_payload_types(LinphoneCore *lc, const bctbx_list_t *payload_types);
 
