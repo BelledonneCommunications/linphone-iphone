@@ -561,9 +561,20 @@ const SalErrorInfo *sal_error_info_none(void){
 		"Ok",
 		200,
 		NULL,
-		NULL
+		NULL,
+		
 	};
 	return &none;
+}
+
+void sal_error_info_init_to_null(SalErrorInfo *sei){
+	sei->status_string = NULL;
+	sei->full_string = NULL;
+	sei->protocol = NULL;
+	sei->sub_sei = NULL;
+	sei->warnings = NULL;
+	sei->protocol_code=0;
+	sei->reason=SalReasonNone;
 }
 
 void sal_error_info_reset(SalErrorInfo *ei){
@@ -584,6 +595,10 @@ void sal_error_info_reset(SalErrorInfo *ei){
 		ms_free(ei->protocol);
 		ei->protocol = NULL;
 	}
+	if (ei->sub_sei){
+		ms_free(ei->sub_sei);
+		ei->sub_sei = NULL;
+	}
 	ei->protocol_code=0;
 	ei->reason=SalReasonNone;
 }
@@ -591,7 +606,12 @@ void sal_error_info_reset(SalErrorInfo *ei){
 void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol, int code, const char *status_string, const char *warning){
 	sal_error_info_reset(ei);
 	if (reason==SalReasonUnknown && strcmp(protocol, "SIP") == 0) ei->reason=_sal_reason_from_sip_code(code);
-	else ei->reason=reason;
+	else{
+		ei->reason=reason;
+		if (code == 0) {
+			code = sal_reason_to_sip_code(reason);
+		}
+	}
 	ei->protocol_code=code;
 	ei->status_string=status_string ? ms_strdup(status_string) : NULL;
 	ei->warnings=warning ? ms_strdup(warning) : NULL;

@@ -53,6 +53,7 @@ struct _LinphoneFactory {
 	char *cached_ring_resources_dir;
 	char *cached_image_resources_dir;
 	char *cached_msplugins_dir;
+	LinphoneErrorInfo* ei;
 };
 
 static void linphone_factory_uninit(LinphoneFactory *obj){
@@ -207,7 +208,7 @@ void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *pa
 	STRING_SET(factory->msplugins_dir, path);
 }
 
-LinphoneErrorInfo *linphone_factory_create_error_info(void){
+LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory){
 	
 	return linphone_error_info_new();
 	

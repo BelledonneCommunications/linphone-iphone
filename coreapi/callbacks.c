@@ -269,6 +269,7 @@ static void call_received(SalOp *h){
 	LinphoneAddress *from_address_to_search_if_me=NULL; /*address used to know if I'm the caller*/
 	SalMediaDescription *md;
 	const char * p_asserted_id;
+	SalErrorInfo sei;
 
 	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
 	replaced_call = look_for_broken_call_to_replace(h, lc);
@@ -284,6 +285,8 @@ static void call_received(SalOp *h){
 			case LinphonePresenceActivityPermanentAbsence:
 				alt_contact = linphone_presence_model_get_contact(lc->presence_model);
 				if (alt_contact != NULL) {
+					sal_error_info_set(&sei,SalReasonRedirect, "SIP", 0, NULL, NULL);
+					sal_call_decline_with_error_info(h, SalReasonRedirect,alt_contact);
 					sal_call_decline(h,SalReasonRedirect,alt_contact);
 					ms_free(alt_contact);
 					sal_op_release(h);
@@ -297,6 +300,7 @@ static void call_received(SalOp *h){
 	}
 
 	if (!linphone_core_can_we_add_call(lc)){/*busy*/
+		sal_error_info_set(&sei,SalReasonBusy, "SIP", 0, NULL, NULL);
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
 		return;
@@ -333,6 +337,7 @@ static void call_received(SalOp *h){
 	if (from_address_to_search_if_me && already_a_call_with_remote_address(lc,from_address_to_search_if_me)){
 		char *addr = linphone_address_as_string(from_addr);
 		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message.",addr);
+		sal_error_info_set(&sei,SalReasonBusy, "SIP", 0, NULL, NULL);
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
 		linphone_address_unref(from_addr);
@@ -351,6 +356,7 @@ static void call_received(SalOp *h){
 	md=sal_call_get_final_media_description(call->op);
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
+			sal_error_info_set(&sei,SalReasonNotAcceptable, "SIP", 0, NULL, NULL);
 			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
 			linphone_call_unref(call);
 			return;
@@ -678,6 +684,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
 
 /* this callback is called when an incoming re-INVITE/ SIP UPDATE modifies the session*/
 static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t is_update){
+	SalErrorInfo sei;
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
 
 	call->defer_update = lp_config_get_int(lc->config, "sip", "defer_update_default", FALSE);
@@ -715,6 +722,7 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallUpdating:
 		case LinphoneCallPausing:
 		case LinphoneCallResuming:
+			sal_error_info_set(&sei,SalReasonInternalError, "SIP", 0, NULL, NULL);
 			sal_call_decline(call->op,SalReasonInternalError,NULL);
 			/*no break*/
 		case LinphoneCallIdle:
@@ -737,7 +745,8 @@ static void call_updating(SalOp *op, bool_t is_update){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
-
+	SalErrorInfo sei;
+	
 	if (!call) {
 		ms_error("call_updating(): call doesn't exist anymore");
 		return ;
@@ -767,6 +776,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 
 		md=sal_call_get_final_media_description(call->op);
 		if (md && (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md))){
+			sal_error_info_set(&sei,SalReasonNotAcceptable, "SIP", 0, NULL, NULL);
 			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
 			return;
 		}
@@ -774,6 +784,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 			int diff=sal_media_description_equals(prev_result_desc,md);
 			if (diff & (SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED)){
 				ms_warning("Cannot accept this update, it is changing parameters that require user approval");
+				sal_error_info_set(&sei,SalReasonNotAcceptable, "SIP", 0, NULL, NULL);
 				sal_call_decline(call->op,SalReasonNotAcceptable,NULL); /*FIXME should send 504 Cannot change the session parameters without prompting the user"*/
 				return;
 			}

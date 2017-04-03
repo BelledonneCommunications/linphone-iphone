@@ -511,6 +511,7 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
 	int err=0;
 	SalReason reason;
+	SalErrorInfo sei;
 
 	if (extract_sdp(op,BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
@@ -527,6 +528,7 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	}else err=-1;
 
 	if (err==-1){
+		sal_error_info_set(&sei, reason,"SIP", 0, NULL, NULL);
 		sal_call_decline(op,reason,NULL);
 	}
 	return err;
@@ -942,6 +944,17 @@ int sal_call_accept(SalOp*h){
 	return 0;
 }
 
+static belle_sip_header_reason_t *sal_call_make_reason_header( const SalErrorInfo *info){
+	if (info != NULL){
+		belle_sip_header_reason_t* reason = BELLE_SIP_HEADER_REASON(belle_sip_header_reason_new());
+		belle_sip_header_reason_set_text(reason, info->status_string);
+		belle_sip_header_reason_set_protocol(reason,info->protocol);
+		belle_sip_header_reason_set_cause(reason,info->protocol_code);
+		return reason;
+	}
+	return NULL;
+}
+
 int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*optional*/){
 	belle_sip_response_t* response;
 	belle_sip_header_contact_t* contact=NULL;
@@ -966,6 +979,41 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 	}
 	response = sal_op_create_response_from_request(op,belle_sip_transaction_get_request(trans),status);
 	if (contact) belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact));
+	belle_sip_server_transaction_send_response(BELLE_SIP_SERVER_TRANSACTION(trans),response);
+	return 0;
+}
+
+int sal_call_decline_with_error_info(SalOp *op,  const SalErrorInfo *info, const char *redirection /*optional*/){
+	belle_sip_response_t* response;
+	belle_sip_header_contact_t* contact=NULL;
+	int status = info->protocol_code;
+	belle_sip_transaction_t *trans;
+	
+	if (info->reason==SalReasonRedirect){
+		if (redirection!=NULL) {
+			if (strstr(redirection,"sip:")!=0) status=302;
+			else status=380;
+			contact= belle_sip_header_contact_new();
+			belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact),belle_sip_uri_parse(redirection));
+		} else {
+			ms_error("Cannot redirect to null");
+		}
+	}
+	trans=(belle_sip_transaction_t*)op->pending_server_trans;
+	if (!trans) trans=(belle_sip_transaction_t*)op->pending_update_server_trans;
+	if (!trans){
+		ms_error("sal_call_decline(): no pending transaction to decline.");
+		return -1;
+	}
+	response = sal_op_create_response_from_request(op,belle_sip_transaction_get_request(trans),status);
+	belle_sip_header_reason_t* reason_header = sal_call_make_reason_header(info->sub_sei);
+	if (reason_header) {
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(reason_header));
+	}
+
+	if (contact) {
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact));
+	}
 	belle_sip_server_transaction_send_response(BELLE_SIP_SERVER_TRANSACTION(trans),response);
 	return 0;
 }
@@ -1041,6 +1089,7 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 
 
 int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
+//	SalErrorInfo sei;
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
 	if (op->state==SalOpStateTerminating || op->state==SalOpStateTerminated) {
 		ms_error("Cannot terminate op [%p] in state [%s]",op,sal_op_state_to_string(op->state));
@@ -1050,10 +1099,7 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			belle_sip_request_t * req = belle_sip_dialog_create_request(op->dialog,"BYE");
 			if (info != NULL){
-				belle_sip_header_reason_t* reason = BELLE_SIP_HEADER_REASON(belle_sip_header_reason_new());
-				belle_sip_header_reason_set_text(reason, info->status_string);
-				belle_sip_header_reason_set_protocol(reason,info->protocol);
-				belle_sip_header_reason_set_cause(reason,info->protocol_code);
+				belle_sip_header_reason_t* reason = sal_call_make_reason_header(info);
 				belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(reason));
 			}
 			sal_op_send_request(op,req);
@@ -1063,6 +1109,7 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 
 		case BELLE_SIP_DIALOG_NULL: {
 			if (op->dir == SalOpDirIncoming) {
+				//sal_error_info_set(&sei, SalReasonDeclined,"SIP", 0, NULL, NULL);
 				sal_call_decline(op, SalReasonDeclined,NULL);
 				op->state=SalOpStateTerminated;
 			} else if (op->pending_client_trans){
@@ -1080,6 +1127,7 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 		}
 		case BELLE_SIP_DIALOG_EARLY: {
 			if (op->dir == SalOpDirIncoming) {
+				//sal_error_info_set(&sei, SalReasonDeclined,"SIP", 0, NULL, NULL);
 				sal_call_decline(op, SalReasonDeclined,NULL);
 				op->state=SalOpStateTerminated;
 			} else  {

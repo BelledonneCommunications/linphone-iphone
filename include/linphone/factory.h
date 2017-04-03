@@ -205,9 +205,10 @@ LINPHONE_PUBLIC void linphone_factory_set_msplugins_dir(LinphoneFactory *factory
 
 /**
  * Creates an object LinphoneErrorInfo.
+ * @param[in] factory LinphoneFactory object
  * @return  LinphoneErrorInfo object.
  */
-LINPHONE_PUBLIC  LinphoneErrorInfo *linphone_factory_create_error_info(void);
+LINPHONE_PUBLIC  LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory);
 /**
  * @}
  */

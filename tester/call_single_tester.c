@@ -1189,6 +1189,48 @@ static void call_busy_when_calling_self(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void call_declined_with_error(void) {
+	LinphoneCoreManager* callee_mgr = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	
+	LinphoneCall* in_call;
+	LinphoneCall* out_call = linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity);
+	LinphoneFactory* factory = linphone_factory_get();
+	
+	LinphoneErrorInfo *ei = linphone_factory_create_error_info(factory);
+	LinphoneErrorInfo *reason_ei = linphone_factory_create_error_info(factory);
+
+	linphone_error_info_set(ei, "SIP", LinphoneReasonUnknown,  603, "Decline", NULL); //ordre des arguments à vérifier
+	linphone_error_info_set(reason_ei, "hardware", LinphoneReasonUnknown,  66, "J'ai plus de batterie", NULL);
+
+	linphone_error_info_set_sub_error_info(ei, reason_ei);
+	
+	linphone_call_ref(out_call);
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
+	BC_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(callee_mgr->lc));
+	if (in_call) {
+		linphone_call_ref(in_call);
+		linphone_call_decline_with_error(in_call, ei);
+	//	linphone_call_terminate(in_call);
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallReleased,1));
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallReleased,1));
+		BC_ASSERT_EQUAL(callee_mgr->stat.number_of_LinphoneCallEnd,1, int, "%d");
+		BC_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallEnd,1, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)),LinphoneCallDeclined, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(out_call)),LinphoneCallDeclined, int, "%d");
+		
+		
+		linphone_call_unref(in_call);
+	}
+	linphone_call_unref(out_call);
+	//linphone_error_info_unref(reason_ei);
+	linphone_error_info_unref(ei);
+
+	linphone_core_manager_destroy(callee_mgr);
+	linphone_core_manager_destroy(caller_mgr);
+}
 
 static void call_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -5736,6 +5778,7 @@ static void call_with_network_reachable_down_in_callback(void){
 test_t call_tests[] = {
 	TEST_NO_TAG("Early declined call", early_declined_call),
 	TEST_NO_TAG("Call declined", call_declined),
+	TEST_NO_TAG("Call declined with error", call_declined_with_error),
 	TEST_NO_TAG("Cancelled call", cancelled_call),
 	TEST_NO_TAG("Early cancelled call", early_cancelled_call),
 	TEST_NO_TAG("Call with DNS timeout", call_with_dns_time_out),

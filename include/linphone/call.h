@@ -401,6 +401,8 @@ LINPHONE_PUBLIC int linphone_call_redirect(LinphoneCall *call, const char *redir
  * @return 0 on success, -1 on failure
 **/
 LINPHONE_PUBLIC int linphone_call_decline(LinphoneCall * call, LinphoneReason reason);
+	
+LINPHONE_PUBLIC int linphone_call_decline_with_error(LinphoneCall * call, const LinphoneErrorInfo *ei);
 
 /**
  * Accept an incoming call.

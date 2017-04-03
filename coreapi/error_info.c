@@ -31,6 +31,7 @@ static void error_info_destroy(LinphoneErrorInfo *ei){
 }
 
 static void error_info_clone(LinphoneErrorInfo *ei, const LinphoneErrorInfo *other){
+	linphone_error_info_set_reason(ei, linphone_error_info_get_reason(other));
 	ei->protocol = bctbx_strdup(other->protocol);
 	ei->phrase = bctbx_strdup(other->phrase);
 	ei->warnings = bctbx_strdup(other->warnings);
@@ -210,6 +211,12 @@ void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op){
 		linphone_error_info_from_sal(ei, sei);
 		sei = sal_op_get_reason_error_info(op);
 		linphone_error_info_from_sal_reason_ei(ei, sei);
+	}
+}
+
+void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei){
+	if (appended_ei != NULL){
+		ei->sub_ei = appended_ei;
 	}
 }
 

@@ -103,6 +103,8 @@ LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInf
  * @param[in] warning       warning message
  */
 LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning);
+	
+LINPHONE_PUBLIC void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei);
 
 /**
  * Assign reason LinphoneReason to a LinphoneErrorUnfo object.
