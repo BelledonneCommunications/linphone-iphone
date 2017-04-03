@@ -1781,6 +1781,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 }
 
 
+
 /* Functions to mainpulate the LinphoneIntRange structure */
 
 int linphone_int_range_get_min(const LinphoneIntRange *range) {
@@ -1798,3 +1799,40 @@ void linphone_int_range_set_min(LinphoneIntRange *range, int min) {
 void linphone_int_range_set_max(LinphoneIntRange *range, int max) {
 	range->max = max;
 }
+
+void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
+	bool_t call_logs_sqlite_db_found = FALSE;
+
+#ifdef SQLITE_STORAGE_ENABLED
+	if (lc->logs_db) {
+		call_logs_sqlite_db_found = TRUE;
+		linphone_core_store_call_log(lc, call_log);
+	}
+#endif
+	if (!call_logs_sqlite_db_found) {
+		lc->call_logs=bctbx_list_prepend(lc->call_logs,linphone_call_log_ref(call_log));
+		if (bctbx_list_size(lc->call_logs)>(size_t)lc->max_call_logs){
+			bctbx_list_t *elem,*prevelem=NULL;
+			/*find the last element*/
+			for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
+				prevelem = elem;
+			}
+			elem = prevelem;
+			linphone_call_log_unref((LinphoneCallLog*)elem->data);
+			lc->call_logs = bctbx_list_erase_link(lc->call_logs,elem);
+		}
+		call_logs_write_to_config_file(lc);
+	}
+	
+	linphone_core_notify_call_log_updated(lc,call_log);
+}
+
+void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to, LinphoneErrorInfo *ei){
+	LinphoneCallLog *l = linphone_call_log_new(dir, from, to);
+	l->error_info = ei;
+	l->status = LinphoneCallEarlyAborted;
+	linphone_core_report_call_log(lc, l);
+	linphone_call_log_unref(l);
+}
+
+

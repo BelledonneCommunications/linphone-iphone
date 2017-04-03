@@ -486,10 +486,8 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(Linph
  * Indicates whether AVPF/SAVPF is being used for calls using this proxy config.
  * @param[in] cfg #LinphoneProxyConfig object.
  * @return True if AVPF/SAVPF is enabled, false otherwise.
- * @deprecated use linphone_proxy_config_set_avpf_mode()
- * @donotwrap
  */
-LINPHONE_DEPRECATED LINPHONE_PUBLIC bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg);
 
 /**
  * Set the interval between regular RTCP reports when using AVPF/SAVPF.

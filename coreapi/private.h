@@ -201,9 +201,10 @@ struct _LinphoneCallLog{
 	time_t connected_date_time; /**Connecting date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
+	unsigned int storage_id;
+	LinphoneErrorInfo *error_info;
 	bool_t video_enabled;
 	bool_t was_conference; /**<That call was a call with a conference server */
-	unsigned int storage_id;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallLog);
@@ -415,7 +416,7 @@ void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md);
 void linphone_call_set_symmetric_rtp(LinphoneCall *call, bool_t val);
 /* private: */
-LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *local, LinphoneAddress * remote);
+LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
 void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
@@ -1901,6 +1902,9 @@ struct _LinphoneErrorInfo{
 	struct _LinphoneErrorInfo *sub_ei;
 };
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneErrorInfo);
+
+void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
+void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to, LinphoneErrorInfo *ei);
 
 #ifdef __cplusplus
 }

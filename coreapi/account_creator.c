@@ -291,7 +291,7 @@ static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	if (creator->service != NULL && linphone_account_creator_service_get_destructor_cb(creator->service) != NULL)
 		linphone_account_creator_service_get_destructor_cb(creator->service)(creator);
 	linphone_account_creator_cbs_unref(creator->cbs);
-	linphone_proxy_config_destroy(creator->proxy_cfg);
+	linphone_proxy_config_unref(creator->proxy_cfg);
 	if (creator->username) ms_free(creator->username);
 	if (creator->display_name) ms_free(creator->display_name);
 	if (creator->password) ms_free(creator->password);
@@ -626,11 +626,13 @@ LinphoneAccountCreatorStatus linphone_account_creator_update_account(LinphoneAcc
 /************************** Start Account Creator Linphone **************************/
 
 LinphoneAccountCreatorStatus linphone_account_creator_constructor_linphone(LinphoneAccountCreator *creator) {
+	LinphoneAddress *addr;
 	linphone_proxy_config_set_realm(creator->proxy_cfg, "sip.linphone.org");
 	linphone_proxy_config_set_route(creator->proxy_cfg, "sip.linphone.org");
 	linphone_proxy_config_set_server_addr(creator->proxy_cfg, "sip.linphone.org");
-	linphone_proxy_config_set_identity(creator->proxy_cfg, "sip:username@sip.linphone.org");
-
+	addr = linphone_address_new("sip:username@sip.linphone.org");
+	linphone_proxy_config_set_identity_address(creator->proxy_cfg, addr);
+	linphone_address_unref(addr);
 	return LinphoneAccountCreatorStatusRequestOk;
 }
 

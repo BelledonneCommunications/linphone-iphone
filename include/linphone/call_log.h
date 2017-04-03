@@ -158,6 +158,13 @@ LINPHONE_PUBLIC char * linphone_call_log_to_str(LinphoneCallLog *cl);
  */
 LINPHONE_PUBLIC bool_t linphone_call_log_was_conference(LinphoneCallLog *cl);
 
+/**
+ * When the call was failed, return an object describing the failure.
+ * @param[in] cl #LinphoneCallLog object
+ * @return information about the error encountered by the call associated with this call log.
+**/
+LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_log_get_error_info(LinphoneCallLog *cl);
+
 
 /*******************************************************************************
  * Reference and user data handling functions                                  *

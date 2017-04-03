@@ -2759,7 +2759,7 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 	return sal_transport_available(lc->sal,(SalTransport)tp);
 }
 
-int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr_config /*config to be saved*/){
+int linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports * tr_config /*config to be saved*/){
 	LinphoneSipTransports tr=*tr_config;
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
@@ -3568,7 +3568,7 @@ static LinphoneCall * get_unique_call(LinphoneCore *lc) {
 }
 
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call) {
-	return linphone_core_accept_call_with_params(lc, call, NULL);
+	return linphone_call_accept_with_params(call, NULL);
 }
 
 int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
