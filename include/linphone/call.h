@@ -847,7 +847,6 @@ LINPHONE_PUBLIC void linphone_call_remove_callbacks(LinphoneCall *call, Linphone
  * This is meant only to be called from a callback to be able to get the user_data associated with the LinphoneCallCbs that is calling the callback.
  * @param[in] call LinphoneCall object
  * @return The LinphoneCallCbs that has called the last callback
- * @donotwrap
  */
 LINPHONE_PUBLIC LinphoneCallCbs *linphone_call_get_current_callbacks(const LinphoneCall *call);
 

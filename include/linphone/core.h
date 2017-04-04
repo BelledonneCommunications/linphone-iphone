@@ -268,7 +268,6 @@ LINPHONE_PUBLIC void *linphone_core_cbs_get_user_data(const LinphoneCoreCbs *cbs
  * This is meant only to be called from a callback to be able to get the user_data associated with the #LinphoneCoreCbs that is calling the callback.
  * @param lc the linphonecore
  * @return the #LinphoneCoreCbs that has called the last callback
- * @donotwrap
  */
 LINPHONE_PUBLIC LinphoneCoreCbs *linphone_core_get_current_callbacks(const LinphoneCore *lc);
 
