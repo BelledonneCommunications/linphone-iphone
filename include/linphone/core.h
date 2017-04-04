@@ -1571,66 +1571,130 @@ LINPHONE_PUBLIC bool_t linphone_core_dns_search_enabled(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx_list_t *servers);
 
 /**
+ * Return the list of the available audio payload types.
+ * @param[in] lc The core.
+ * @return \bctbx_list{LinphonePayloadType} A freshly allocated list of the available payload types. It must be released
+ * with bctbx_list_free_with_data() calling linphone_payload_type_unref() on each element.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_audio_payload_types(LinphoneCore *lc);
+
+/**
+ * Redefine the list of the available payload types.
+ * @param[in] lc The core.
+ * @param[in] payload_types \bctbx_list{LinphonePayloadType} The new list of payload types. The core does not take
+ * ownership on it.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_audio_payload_types(LinphoneCore *lc, const bctbx_list_t *payload_types);
+
+/**
  * Returns the list of available audio codecs.
  * @param[in] lc The LinphoneCore object
- * @return \bctbx_list{LinphonePayloadType}
+ * @return \bctbx_list{OrtpPayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
  * It is possible to make copy of the list with bctbx_list_copy() in order to modify it
  * (such as the order of codecs).
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_get_audio_payload_types() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_audio_codecs(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const bctbx_list_t *linphone_core_get_audio_codecs(const LinphoneCore *lc);
 
 /**
  * Sets the list of audio codecs.
  * @param[in] lc The LinphoneCore object
- * @param[in] codecs \bctbx_list{LinphonePayloadType}
+ * @param[in] codecs \bctbx_list{OrtpPayloadType}
  * @return 0
  * The list is taken by the LinphoneCore thus the application should not free it.
  * This list is made of struct PayloadType describing the codec parameters.
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_set_audio_payload_types() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
+
+/**
+ * Return the list of the available video payload types.
+ * @param[in] lc The core.
+ * @return \bctbx_list{LinphonePayloadType} A freshly allocated list of the available payload types. It must be released
+ * with bctbx_list_free_with_data() calling linphone_payload_type_unref() on each element.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_video_payload_types(LinphoneCore *lc);
+
+/**
+ * Redefine the list of the available video payload types.
+ * @param[in] lc The core.
+ * @param[in] payload_types \bctbx_list{LinphonePayloadType} The new list of codecs. The core does not take
+ * ownership on it.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_video_payload_types(LinphoneCore *lc, const bctbx_list_t *payload_types);
 
 /**
  * Returns the list of available video codecs.
  * @param[in] lc The LinphoneCore object
- * @return \bctbx_list{LinphonePayloadType}
+ * @return \bctbx_list{OrtpPayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
  * It is possible to make copy of the list with bctbx_list_copy() in order to modify it
  * (such as the order of codecs).
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_get_video_payload_types() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_video_codecs(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const bctbx_list_t *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
 /**
  * Sets the list of video codecs.
  * @param[in] lc The LinphoneCore object
- * @param[in] codecs \bctbx_list{LinphonePayloadType}
+ * @param[in] codecs \bctbx_list{OrtpPayloadType}
  * @return 0
  *
  * The list is taken by the LinphoneCore thus the application should not free it.
  * This list is made of struct PayloadType describing the codec parameters.
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_set_video_payload_types() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
+
+/**
+ * Return the list of the available text payload types.
+ * @param[in] lc The core.
+ * @return \bctbx_list{LinphonePayloadType} A freshly allocated list of the available payload types. It must be released
+ * with bctbx_list_free_with_data() calling linphone_payload_type_unref() on each element.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_text_payload_types(LinphoneCore *lc);
+
+/**
+ * Redefine the list of the available payload types.
+ * @param[in] lc The core.
+ * @param[in] payload_types \bctbx_list{LinphonePayloadType} The new list of payload types. The core does not take
+ * ownership on it.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_text_payload_types(LinphoneCore *lc, const bctbx_list_t *payload_types);
 
 /**
  * Returns the list of available text codecs.
  * @param[in] lc The LinphoneCore object
- * @return \bctbx_list{LinphonePayloadType}
+ * @return \bctbx_list{OrtpPayloadType}
  *
  * This list is unmodifiable. The ->data field of the bctbx_list_t points a PayloadType
  * structure holding the codec information.
  * It is possible to make copy of the list with bctbx_list_copy() in order to modify it
  * (such as the order of codecs).
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_get_text_payload_types() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_text_codecs(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const bctbx_list_t *linphone_core_get_text_codecs(const LinphoneCore *lc);
 
 /**
  * Sets the list of text codecs.
@@ -1641,8 +1705,10 @@ LINPHONE_PUBLIC const bctbx_list_t *linphone_core_get_text_codecs(const Linphone
  * The list is taken by the LinphoneCore thus the application should not free it.
  * This list is made of struct PayloadType describing the codec parameters.
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_set_text_payload_types() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC int linphone_core_set_text_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_set_text_codecs(LinphoneCore *lc, bctbx_list_t *codecs);
 
 /**
  * Enable RFC3389 generic comfort noise algorithm (CN payload type).
@@ -1679,50 +1745,58 @@ LINPHONE_PUBLIC bool_t linphone_core_generic_comfort_noise_enabled(const Linphon
 /**
  * Tells whether the specified payload type is enabled.
  * @param[in] lc #LinphoneCore object.
- * @param[in] pt The #LinphonePayloadType we want to know is enabled or not.
+ * @param[in] pt The payload type to check.
  * @return TRUE if the payload type is enabled, FALSE if disabled.
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_enabled() instead.
+ * @donotwrap
  */
-LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_core_payload_type_enabled(const LinphoneCore *lc, const OrtpPayloadType *pt);
 
 /**
  * Tells whether the specified payload type represents a variable bitrate codec.
  * @param[in] lc #LinphoneCore object.
- * @param[in] pt The #LinphonePayloadType we want to know
+ * @param[in] pt The payload type to check.
  * @return TRUE if the payload type represents a VBR codec, FALSE if disabled.
  * @ingroup media_parameters
- * @deprecated Use linphone_payload_type_is_vbr() instead
+ * @deprecated Use linphone_payload_type_is_vbr() instead.
  * @donotwrap
  */
-LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_core_payload_type_is_vbr(const LinphoneCore *lc, const OrtpPayloadType *pt);
 
 /**
  * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
  * @param[in] lc the #LinphoneCore object
- * @param[in] pt the #LinphonePayloadType to modify.
+ * @param[in] pt the payload type to modify.
  * @param[in] bitrate the IP bitrate in kbit/s.
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_set_normal_bitrate() instead.
+ * @donotwrap
 **/
-LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadType *pt, int bitrate);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, OrtpPayloadType *pt, int bitrate);
 
 /**
  * Get the bitrate explicitely set with linphone_core_set_payload_type_bitrate().
  * @param[in] lc the #LinphoneCore object
- * @param[in] pt the #LinphonePayloadType to modify.
+ * @param[in] pt the payload type to modify.
  * @return bitrate the IP bitrate in kbit/s, or -1 if an error occured.
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_get_bitrate().
+ * @donotwrap
 **/
-LINPHONE_PUBLIC int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const LinphonePayloadType *pt);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const OrtpPayloadType *pt);
 
 /**
  * Enable or disable the use of the specified payload type.
  * @param[in] lc #LinphoneCore object.
- * @param[in] pt The #LinphonePayloadType to enable or disable. It can be retrieved using #linphone_core_find_payload_type
+ * @param[in] pt The payload type to enable or disable. It can be retrieved using #linphone_core_find_payload_type
  * @param[in] enable TRUE to enable the payload type, FALSE to disable it.
  * @return 0 if successful, any other value otherwise.
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_enable().
+ * @donotwrap
  */
-LINPHONE_PUBLIC int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt, bool_t enable);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_enable_payload_type(LinphoneCore *lc, OrtpPayloadType *pt, bool_t enable);
 
 /**
  * Wildcard value used by #linphone_core_find_payload_type to ignore rate in search algorithm
@@ -1737,7 +1811,7 @@ LINPHONE_PUBLIC int linphone_core_enable_payload_type(LinphoneCore *lc, Linphone
 #define LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS -1
 
 /**
- * Get payload type from mime type and clock rate
+ * Get payload type from mime type and clock rate.
  * @ingroup media_parameters
  * This function searches in audio and video codecs for the given payload type name and clockrate.
  * @param lc #LinphoneCore object
@@ -1745,8 +1819,23 @@ LINPHONE_PUBLIC int linphone_core_enable_payload_type(LinphoneCore *lc, Linphone
  * @param rate can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
  * @param channels  number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
  * @return Returns NULL if not found.
+ * @deprecated Use linphone_core_get_payload_type() instead.
+ * @donotwrap
  */
-LINPHONE_PUBLIC LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED OrtpPayloadType *linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels);
+
+/**
+ * Get payload type from mime type and clock rate.
+ * @ingroup media_parameters
+ * This function searches in audio and video codecs for the given payload type name and clockrate.
+ * @param lc #LinphoneCore object
+ * @param type payload mime type (I.E SPEEX, PCMU, VP8)
+ * @param rate can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
+ * @param channels  number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
+ * @return Returns NULL if not found. If a #LinphonePayloadType is returned, it must be released with
+ * linphone_payload_type_unref() after using it.
+ */
+LINPHONE_PUBLIC LinphonePayloadType *linphone_core_get_payload_type(LinphoneCore *lc, const char *type, int rate, int channels);
 
 /**
  * Returns the payload type number assigned for this codec.
@@ -1754,7 +1843,7 @@ LINPHONE_PUBLIC LinphonePayloadType* linphone_core_find_payload_type(LinphoneCor
  * @deprecated Use linphone_payload_type_get_number() instead
  * @donotwrap
 **/
-LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_payload_type_number(LinphoneCore *lc, const OrtpPayloadType *pt);
 
 /**
  * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically. THis function is to be used mainly for tests, in order
@@ -1763,15 +1852,25 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_payload_type_number(Li
  * @deprecated Use linphone_payload_type_set_number() instead
  * @donotwrap
 **/
-LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_payload_type_number(LinphoneCore *lc, OrtpPayloadType *pt, int number);
 
-LINPHONE_PUBLIC const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
+/**
+ * Get a description of the encoder used to supply a payload type.
+ * @param[in] lc The core.
+ * @param[in] pt The payload type.
+ * @return The description of the encoder. Can be NULL if the format is not supported by Mediastreamer2.
+ * @deprecated Use linphone_payload_type_get_encoder_description() instead.
+ * @donotwrap
+ */
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_core_get_payload_type_description(LinphoneCore *lc, const OrtpPayloadType *pt);
 
 /**
  * Return TRUE if codec can be used with bandwidth, FALSE else
  * @ingroup media_parameters
+ * @deprecated Use linphone_payload_type_is_usable() instead.
+ * @donotwrap
  */
-LINPHONE_PUBLIC bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const OrtpPayloadType *pt);
 
 /**
  * @addtogroup proxies
@@ -2729,7 +2828,7 @@ LINPHONE_PUBLIC void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bo
  * @return A boolean value telling whether echo cancellation is enabled or disabled
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_echo_cancellation_enabled(const LinphoneCore *lc);
 
 /**
  * Enables or disable echo limiter.

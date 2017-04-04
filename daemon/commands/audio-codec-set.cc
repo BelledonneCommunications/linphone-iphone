@@ -71,7 +71,7 @@ static PayloadType *findPayload(LinphoneCore *lc, int payload_type, int *index){
 	for (const bctbx_list_t *node = linphone_core_get_audio_codecs(lc); node != NULL; node = bctbx_list_next(node)) {
 		PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 		if (index) (*index)++;
-		if (payload_type == linphone_payload_type_get_number(payload)) {
+		if (payload_type == payload_type_get_number(payload)) {
 			return payload;
 		}
 	}
@@ -127,7 +127,7 @@ void AudioCodecSetCommand::exec(Daemon *app, const string& args) {
 				if (conflict) {
 					app->sendResponse(Response("New payload type number is already used.", Response::Error));
 				} else {
-					linphone_payload_type_set_number(payload, idx);
+					payload_type_set_number(payload, idx);
 					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, parser.getPosition()));
 				}
 				return;

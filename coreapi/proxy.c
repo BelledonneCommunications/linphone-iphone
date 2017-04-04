@@ -1291,7 +1291,7 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 					linphone_registration_state_to_string(state),
 					cfg->lc);
 		if (linphone_core_should_subscribe_friends_only_when_registered(lc) && cfg->state!=state && state == LinphoneRegistrationOk){
-			ms_message("Updating friends for identity [%s] on core [%p]",linphone_proxy_config_get_identity(cfg),cfg->lc);
+			ms_message("Updating friends for identity [%s] on core [%p]",cfg->reg_identity,cfg->lc);
 			/* state must be updated before calling linphone_core_update_friends_subscriptions*/
 			cfg->state=state;
 			linphone_core_update_friends_subscriptions(lc);
@@ -1358,7 +1358,7 @@ const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) 
 	} else if(linphone_proxy_config_get_addr(cfg)) {
 		addr=linphone_proxy_config_get_addr(cfg);
 	} else {
-		ms_error("Cannot guess transport for proxy with identity [%s]",linphone_proxy_config_get_identity(cfg));
+		ms_error("Cannot guess transport for proxy with identity [%s]", cfg->reg_identity);
 		return NULL;
 	}
 

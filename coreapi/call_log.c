@@ -259,6 +259,10 @@ bool_t linphone_call_log_was_conference(LinphoneCallLog *cl) {
 	return cl->was_conference;
 }
 
+const LinphoneErrorInfo *linphone_call_log_get_error_info(LinphoneCallLog *cl){
+	return cl->error_info;
+}
+
 
 /*******************************************************************************
  * Reference and user data handling functions                                  *
@@ -293,6 +297,7 @@ static void _linphone_call_log_destroy(LinphoneCallLog *cl) {
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]);
+	if (cl->error_info) linphone_error_info_unref(cl->error_info);
 }
 
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to) {
@@ -312,6 +317,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 	cl->connected_date_time=0;
 	return cl;
 }
+
 
 /* DEPRECATED */
 void linphone_call_log_destroy(LinphoneCallLog *cl) {

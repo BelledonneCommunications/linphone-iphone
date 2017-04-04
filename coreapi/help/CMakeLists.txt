@@ -27,14 +27,14 @@ if (ENABLE_DOC OR CXX_WRAPPER)
 			set(top_srcdir "${CMAKE_CURRENT_LIST_DIR}/../../")
 			configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 			set(DOC_INPUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-				${LINPHONE_HEADER_FILES}
 				${CMAKE_CURRENT_SOURCE_DIR}/doxygen.dox
+				${LINPHONE_HEADER_FILES}
 			)
-			add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html"
+			add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html" "${CMAKE_CURRENT_BINARY_DIR}/doc/xml/index.xml"
 				COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 				DEPENDS ${DOC_INPUT_FILES}
 			)
-			add_custom_target(linphone-doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
+			add_custom_target(linphone-doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html" "${CMAKE_CURRENT_BINARY_DIR}/doc/xml/index.xml")
 			install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc/html" "${CMAKE_CURRENT_BINARY_DIR}/doc/xml"
 				DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
 		else()

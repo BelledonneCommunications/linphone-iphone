@@ -79,7 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING NEWS README TODO
+%doc AUTHORS ChangeLog COPYING NEWS README.md TODO
 %{_bindir}/linphone
 %{_bindir}/linphonec
 %{_bindir}/linphonecsh

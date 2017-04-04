@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/mediastream.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #ifdef HAVE_SIGHANDLER_T
 #include <signal.h>
 #endif /*HAVE_SIGHANDLER_T*/
@@ -61,78 +62,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define IP4_HDR_SZ 20   /*20 is the minimum, but there may be some options*/
 
 static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed);
-
-bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt){
-	if (bctbx_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || bctbx_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt) || bctbx_list_find(lc->codecs_conf.text_codecs, (PayloadType*)pt)){
-		return payload_type_enabled(pt);
-	}
-	ms_error("Getting enablement status of codec not in audio or video list of PayloadType !");
-	return FALSE;
-}
-
-bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt) {
-	return linphone_payload_type_is_vbr(pt);
-}
-
-bool_t linphone_payload_type_is_vbr(const LinphonePayloadType *pt) {
-	if (pt->type == PAYLOAD_VIDEO) return TRUE;
-	return !!(pt->flags & PAYLOAD_TYPE_IS_VBR);
-}
-
-int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt, bool_t enabled){
-	if (bctbx_list_find(lc->codecs_conf.audio_codecs,pt) || bctbx_list_find(lc->codecs_conf.video_codecs,pt) || bctbx_list_find(lc->codecs_conf.text_codecs,pt)){
-		payload_type_set_enable(pt,enabled);
-		_linphone_core_codec_config_write(lc);
-		linphone_core_update_allocated_audio_bandwidth(lc);
-		return 0;
-	}
-	ms_error("Enabling codec not in audio or video list of PayloadType !");
-	return -1;
-}
-
-int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt) {
-	return linphone_payload_type_get_number(pt);
-}
-
-int linphone_payload_type_get_number(const LinphonePayloadType *pt) {
-	return payload_type_get_number(pt);
-}
-
-void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number) {
-	linphone_payload_type_set_number(pt, number);
-}
-
-void linphone_payload_type_set_number(LinphonePayloadType *pt, int number) {
-	payload_type_set_number(pt, number);
-}
-
-const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
-	//if (ms_filter_codec_supported(pt->mime_type)){
-	if (ms_factory_codec_supported(lc->factory, pt->mime_type)){
-		MSFilterDesc *desc=ms_factory_get_encoder(lc->factory, pt->mime_type);
-#ifdef ENABLE_NLS
-		return dgettext("mediastreamer",desc->text);
-#else
-		return desc->text;
-#endif
-	}
-	return NULL;
-}
-
-void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadType *pt, int bitrate){
-	if (bctbx_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || bctbx_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt) || bctbx_list_find(lc->codecs_conf.text_codecs, (PayloadType*)pt)){
-		if (pt->type==PAYLOAD_VIDEO || pt->flags & PAYLOAD_TYPE_IS_VBR){
-			pt->normal_bitrate=bitrate*1000;
-			pt->flags|=PAYLOAD_TYPE_BITRATE_OVERRIDE;
-			linphone_core_update_allocated_audio_bandwidth(lc);
-		}else{
-			ms_error("Cannot set an explicit bitrate for codec %s/%i, because it is not VBR.",pt->mime_type,pt->clock_rate);
-			return;
-		}
-	} else {
-		ms_error("linphone_core_set_payload_type_bitrate() payload type not in audio or video list !");
-	}
-}
 
 
 /*
@@ -184,31 +113,14 @@ static int lookup_vbr_typical_bitrate(int maxbw, int clock_rate){
 	return 32;
 }
 
-static int get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt, int maxbw){
-	if (linphone_payload_type_is_vbr(pt)){
+int get_audio_payload_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int maxbw) {
+	if (payload_type_is_vbr(pt)) {
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
 			ms_debug("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
 			return pt->normal_bitrate/1000;
 		}
 		return lookup_vbr_typical_bitrate(maxbw,pt->clock_rate);
 	}else return (int)ceil(get_audio_payload_bandwidth_from_codec_bitrate(pt)/1000.0);/*rounding codec bandwidth should be avoid, specially for AMR*/
-}
-
-int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const LinphonePayloadType *pt){
-	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
-					linphone_core_get_upload_bandwidth(lc));
-	if (pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED){
-		return get_audio_payload_bandwidth(lc,pt,maxbw);
-	}else if (pt->type==PAYLOAD_VIDEO){
-		int video_bw;
-		if (maxbw<=0) {
-			video_bw=1500; /*default bitrate for video stream when no bandwidth limit is set, around 1.5 Mbit/s*/
-		}else{
-			video_bw=get_remaining_bandwidth_for_video(maxbw,lc->audio_bw);
-		}
-		return video_bw;
-	}
-	return 0;
 }
 
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt, int maxbw){
@@ -238,7 +150,7 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	}
 }
 
-bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit){
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit){
 	double codec_band;
 	const int video_enablement_limit = 99;
 	bool_t ret=FALSE;
@@ -259,24 +171,6 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 		case PAYLOAD_TEXT:
 			ret=TRUE;
 			break;
-	}
-	return ret;
-}
-
-bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt){
-	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
-					linphone_core_get_upload_bandwidth(lc));
-	bool_t ret=linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, maxbw);
-	if ((pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
-		&& lc->sound_conf.capt_sndcard
-		&& !(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)
-		&& linphone_core_echo_cancellation_enabled(lc)
-		&& (pt->clock_rate!=16000 && pt->clock_rate!=8000)
-		&& strcasecmp(pt->mime_type,"opus")!=0
-		&& ms_factory_lookup_filter_by_name(lc->factory, "MSWebRTCAEC")!=NULL){
-		ms_warning("Payload type %s/%i cannot be used because software echo cancellation is required but is unable to operate at this rate.",
-			   pt->mime_type,pt->clock_rate);
-		ret=FALSE;
 	}
 	return ret;
 }
@@ -1887,6 +1781,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 }
 
 
+
 /* Functions to mainpulate the LinphoneIntRange structure */
 
 int linphone_int_range_get_min(const LinphoneIntRange *range) {
@@ -1904,3 +1799,40 @@ void linphone_int_range_set_min(LinphoneIntRange *range, int min) {
 void linphone_int_range_set_max(LinphoneIntRange *range, int max) {
 	range->max = max;
 }
+
+void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
+	bool_t call_logs_sqlite_db_found = FALSE;
+
+#ifdef SQLITE_STORAGE_ENABLED
+	if (lc->logs_db) {
+		call_logs_sqlite_db_found = TRUE;
+		linphone_core_store_call_log(lc, call_log);
+	}
+#endif
+	if (!call_logs_sqlite_db_found) {
+		lc->call_logs=bctbx_list_prepend(lc->call_logs,linphone_call_log_ref(call_log));
+		if (bctbx_list_size(lc->call_logs)>(size_t)lc->max_call_logs){
+			bctbx_list_t *elem,*prevelem=NULL;
+			/*find the last element*/
+			for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
+				prevelem = elem;
+			}
+			elem = prevelem;
+			linphone_call_log_unref((LinphoneCallLog*)elem->data);
+			lc->call_logs = bctbx_list_erase_link(lc->call_logs,elem);
+		}
+		call_logs_write_to_config_file(lc);
+	}
+	
+	linphone_core_notify_call_log_updated(lc,call_log);
+}
+
+void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to, LinphoneErrorInfo *ei){
+	LinphoneCallLog *l = linphone_call_log_new(dir, from, to);
+	l->error_info = ei;
+	l->status = LinphoneCallEarlyAborted;
+	linphone_core_report_call_log(lc, l);
+	linphone_call_log_unref(l);
+}
+
+

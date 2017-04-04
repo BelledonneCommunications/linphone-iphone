@@ -92,7 +92,7 @@ void RegisterInfoCommand::exec(Daemon *app, const std::string& args) {
 	} else {
 		int id;
 		try {
-			id = std::stoi(param);
+			id = atoi(param.c_str());
 		} catch (std::invalid_argument) {
 			app->sendResponse(Response("Invalid ID.", Response::Error));
 			return;

@@ -507,10 +507,9 @@ static int is_media_description_acceptable(SalMediaDescription *md){
 	return TRUE;
 }
 
-static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
+static SalReason process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
-	int err=0;
-	SalReason reason;
+	SalReason reason = SalReasonNone;
 
 	if (extract_sdp(op,BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
@@ -519,17 +518,16 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 			sdp_to_media_description(sdp,op->base.remote_media);
 			/*make some sanity check about the SDP received*/
 			if (!is_media_description_acceptable(op->base.remote_media)){
-				err=-1;
 				reason=SalReasonNotAcceptable;
 			}
 			belle_sip_object_unref(sdp);
 		}else op->sdp_offering=TRUE; /*INVITE without SDP*/
-	}else err=-1;
+	}
 
-	if (err==-1){
+	if (reason != SalReasonNone){
 		sal_call_decline(op,reason,NULL);
 	}
-	return err;
+	return reason;
 }
 
 static void sal_op_reset_descriptions(SalOp *op) {
@@ -550,6 +548,7 @@ static bool_t is_a_pending_invite_incoming_transaction(belle_sip_transaction_t *
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
+	SalReason reason;
 	belle_sip_server_transaction_t* server_transaction=NULL;
 	belle_sdp_session_description_t* sdp;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
@@ -594,7 +593,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				ms_warning("replace header already set");
 			}
 
-			if (process_sdp_for_invite(op,req) == 0) {
+			if ( (reason = process_sdp_for_invite(op,req)) == SalReasonNone) {
 				if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
 					if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
 						op->auto_answer_asked=TRUE;
@@ -603,6 +602,8 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				}
 				op->base.root->callbacks.call_received(op);
 			}else{
+				sal_error_info_set(&op->error_info, reason, "SIP", 0, NULL, NULL);
+				op->base.root->callbacks.call_rejected(op);
 				/*the INVITE was declined by process_sdp_for_invite(). As we are not inside an established dialog, we can drop the op immediately*/
 				drop_op = TRUE;
 			}
@@ -631,7 +632,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else if (strcmp("UPDATE",method)==0) {
 			sal_op_reset_descriptions(op);
-			if (process_sdp_for_invite(op,req)==0)
+			if (process_sdp_for_invite(op,req)==SalReasonNone)
 				op->base.root->callbacks.call_updating(op,TRUE);
 		} else {
 			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY",belle_sip_request_get_method(req));
@@ -680,7 +681,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			} else {
 				/*re-invite*/
 				sal_op_reset_descriptions(op);
-				if (process_sdp_for_invite(op,req)==0)
+				if (process_sdp_for_invite(op,req)==SalReasonNone)
 					op->base.root->callbacks.call_updating(op,is_update);
 			}
 		} else if (strcmp("INFO",method)==0){

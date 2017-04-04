@@ -324,7 +324,8 @@ typedef enum _LinphoneCallStatus {
 	LinphoneCallSuccess, /**< The call was sucessful */
 	LinphoneCallAborted, /**< The call was aborted */
 	LinphoneCallMissed, /**< The call was missed (unanswered) */
-	LinphoneCallDeclined /**< The call was declined, either locally or by remote end */
+	LinphoneCallDeclined, /**< The call was declined, either locally or by remote end */
+	LinphoneCallEarlyAborted /**<The call was aborted before being advertised to the application - for protocol reasons*/
 } LinphoneCallStatus;
 
 /**
@@ -684,12 +685,6 @@ typedef enum _LinphoneOnlineStatus{
 
 	LinphoneStatusEnd
 } LinphoneOnlineStatus;
-
-/**
- * Object representing an RTP payload type.
- * @ingroup media_parameters
- */
-typedef PayloadType LinphonePayloadType;
 
 /**
  * Player interface.
@@ -1176,6 +1171,12 @@ typedef enum _LinphoneXmlRpcStatus {
 } LinphoneXmlRpcStatus;
 
 typedef struct _LsdPlayer LsdPlayer;
+
+/**
+ * Object representing an RTP payload type.
+ * @ingroup media_parameters
+ */
+typedef struct _LinphonePayloadType LinphonePayloadType;
 
 
 /**

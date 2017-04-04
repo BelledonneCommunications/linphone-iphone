@@ -513,7 +513,7 @@ static bctbx_list_t *make_codec_list(LinphoneCore *lc, CodecConstraints * hints,
 					pt->mime_type,pt->clock_rate,hints->bandwidth_limit);
 			continue;
 		}
-		if (!linphone_core_check_payload_type_usability(lc,pt)){
+		if (!_linphone_core_check_payload_type_usability(lc, pt)) {
 			continue;
 		}
 		pt=payload_type_clone(pt);
@@ -4693,9 +4693,9 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 
 void linphone_call_log_completed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
-	bool_t call_logs_sqlite_db_found = FALSE;
-
+	
 	call->log->duration=_linphone_call_get_duration(call); /*store duration since connected*/
+	call->log->error_info = linphone_error_info_ref((LinphoneErrorInfo*)linphone_call_get_error_info(call));
 
 	if (call->log->status==LinphoneCallMissed){
 		char *info;
@@ -4706,28 +4706,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 		linphone_core_notify_display_status(lc,info);
 		ms_free(info);
 	}
-
-#ifdef SQLITE_STORAGE_ENABLED
-	if (lc->logs_db) {
-		call_logs_sqlite_db_found = TRUE;
-		linphone_core_store_call_log(lc, call->log);
-	}
-#endif
-	if (!call_logs_sqlite_db_found) {
-		lc->call_logs=bctbx_list_prepend(lc->call_logs,linphone_call_log_ref(call->log));
-		if (bctbx_list_size(lc->call_logs)>(size_t)lc->max_call_logs){
-			bctbx_list_t *elem,*prevelem=NULL;
-			/*find the last element*/
-			for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
-				prevelem=elem;
-			}
-			elem=prevelem;
-			linphone_call_log_unref((LinphoneCallLog*)elem->data);
-			lc->call_logs=bctbx_list_erase_link(lc->call_logs,elem);
-		}
-		call_logs_write_to_config_file(lc);
-	}
-	linphone_core_notify_call_log_updated(lc,call->log);
+	linphone_core_report_call_log(lc, call->log);
 }
 
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call) {

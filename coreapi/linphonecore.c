@@ -2223,6 +2223,53 @@ void linphone_core_unref(LinphoneCore *lc) {
 	belle_sip_object_unref(BELLE_SIP_OBJECT(lc));
 }
 
+static bctbx_list_t *ortp_payloads_to_linphone_payloads(const bctbx_list_t *ortp_payloads, LinphoneCore *lc) {
+	bctbx_list_t *linphone_payloads = NULL;
+	for (; ortp_payloads!=NULL; ortp_payloads=bctbx_list_next(ortp_payloads)) {
+		LinphonePayloadType *pt = linphone_payload_type_new(lc, (OrtpPayloadType *)ortp_payloads->data);
+		linphone_payloads = bctbx_list_append(linphone_payloads, pt);
+	}
+	return linphone_payloads;
+}
+
+static void sort_ortp_pt_list(bctbx_list_t **ortp_pt_list, const bctbx_list_t *linphone_pt_list) {
+	bctbx_list_t *new_list = NULL;
+	const bctbx_list_t *it;
+	for (it=bctbx_list_first_elem(linphone_pt_list); it; it=bctbx_list_next(it)) {
+		OrtpPayloadType *ortp_pt = linphone_payload_type_get_ortp_pt((LinphonePayloadType *)it->data);
+		bctbx_list_t *elem = bctbx_list_find(*ortp_pt_list, ortp_pt);
+		if (elem) {
+			*ortp_pt_list = bctbx_list_unlink(*ortp_pt_list, elem);
+			new_list = bctbx_list_append_link(new_list, elem);
+		}
+	}
+	*ortp_pt_list = bctbx_list_prepend_link(*ortp_pt_list, new_list);
+}
+
+bctbx_list_t *linphone_core_get_audio_payload_types(LinphoneCore *lc) {
+	return ortp_payloads_to_linphone_payloads(lc->codecs_conf.audio_codecs, lc);
+}
+
+void linphone_core_set_audio_payload_types(LinphoneCore *lc, const bctbx_list_t *payload_types) {
+	sort_ortp_pt_list(&lc->codecs_conf.audio_codecs, payload_types);
+}
+
+bctbx_list_t *linphone_core_get_video_payload_types(LinphoneCore *lc) {
+	return ortp_payloads_to_linphone_payloads(lc->codecs_conf.video_codecs, lc);
+}
+
+void linphone_core_set_video_payload_types(LinphoneCore *lc, const bctbx_list_t *payload_types) {
+	sort_ortp_pt_list(&lc->codecs_conf.video_codecs, payload_types);
+}
+
+bctbx_list_t *linphone_core_get_text_payload_types(LinphoneCore *lc) {
+	return ortp_payloads_to_linphone_payloads(lc->codecs_conf.text_codecs, lc);
+}
+
+void linphone_core_set_text_payload_types(LinphoneCore *lc, const bctbx_list_t *payload_types) {
+	sort_ortp_pt_list(&lc->codecs_conf.text_codecs, payload_types);
+}
+
 const bctbx_list_t *linphone_core_get_audio_codecs(const LinphoneCore *lc) {
 	return lc->codecs_conf.audio_codecs;
 }
@@ -2715,7 +2762,7 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 	return sal_transport_available(lc->sal,(SalTransport)tp);
 }
 
-int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr_config /*config to be saved*/){
+int linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports * tr_config /*config to be saved*/){
 	LinphoneSipTransports tr=*tr_config;
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
@@ -3524,7 +3571,7 @@ static LinphoneCall * get_unique_call(LinphoneCore *lc) {
 }
 
 int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call) {
-	return linphone_core_accept_call_with_params(lc, call, NULL);
+	return linphone_call_accept_with_params(call, NULL);
 }
 
 int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
@@ -4196,7 +4243,7 @@ void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val){
 		lp_config_set_int(lc->config,"sound","echocancellation",val);
 }
 
-bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc){
+bool_t linphone_core_echo_cancellation_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.ec;
 }
 
@@ -5619,7 +5666,7 @@ void _linphone_core_codec_config_write(LinphoneCore *lc){
 			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
 			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
 			lp_config_set_int(lc->config,key,"channels",pt->channels);
-			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
+			lp_config_set_int(lc->config,key,"enabled",payload_type_enabled(pt));
 			index++;
 		}
 		sprintf(key,"audio_codec_%i",index);
@@ -5631,7 +5678,7 @@ void _linphone_core_codec_config_write(LinphoneCore *lc){
 			sprintf(key,"video_codec_%i",index);
 			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
 			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
-			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
+			lp_config_set_int(lc->config,key,"enabled",payload_type_enabled(pt));
 			lp_config_set_string(lc->config,key,"recv_fmtp",pt->recv_fmtp);
 			index++;
 		}
@@ -6012,8 +6059,8 @@ bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc
 	return (bool_t)lp_config_get_int(lc->config, "sound", "ring_during_incoming_early_media", 0);
 }
 
-LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
-	LinphonePayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
+static OrtpPayloadType* _linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
+	OrtpPayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
 	if (result)  {
 		return result;
 	} else {
@@ -6029,6 +6076,15 @@ LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const cha
 	}
 	/*not found*/
 	return NULL;
+}
+
+OrtpPayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
+	return _linphone_core_find_payload_type(lc, type, rate, channels);
+}
+
+LinphonePayloadType *linphone_core_get_payload_type(LinphoneCore *lc, const char *type, int rate, int channels) {
+	OrtpPayloadType *pt = _linphone_core_find_payload_type(lc, type, rate, channels);
+	return pt ? linphone_payload_type_new(lc, pt) : NULL;
 }
 
 const char* linphone_configuring_state_to_string(LinphoneConfiguringState cs){
@@ -6713,22 +6769,6 @@ int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc){
 
 void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval){
 	lp_config_set_int(lc->config,"rtp","avpf_rr_interval",interval);
-}
-
-int linphone_payload_type_get_type(const LinphonePayloadType *pt) {
-	return pt->type;
-}
-
-int linphone_payload_type_get_normal_bitrate(const LinphonePayloadType *pt) {
-	return pt->normal_bitrate;
-}
-
-const char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
-	return pt->mime_type;
-}
-
-int linphone_payload_type_get_channels(const LinphonePayloadType *pt) {
-	return pt->channels;
 }
 
 int linphone_core_set_audio_multicast_addr(LinphoneCore *lc, const char* ip) {

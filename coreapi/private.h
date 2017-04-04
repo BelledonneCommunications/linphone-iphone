@@ -201,9 +201,10 @@ struct _LinphoneCallLog{
 	time_t connected_date_time; /**Connecting date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
+	unsigned int storage_id;
+	LinphoneErrorInfo *error_info;
 	bool_t video_enabled;
 	bool_t was_conference; /**<That call was a call with a conference server */
-	unsigned int storage_id;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallLog);
@@ -415,7 +416,7 @@ void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md);
 void linphone_call_set_symmetric_rtp(LinphoneCall *call, bool_t val);
 /* private: */
-LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *local, LinphoneAddress * remote);
+LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
 void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
@@ -1178,7 +1179,7 @@ void linphone_call_increment_local_media_description(LinphoneCall *call);
 void linphone_call_fill_media_multicast_addr(LinphoneCall *call);
 void linphone_call_update_streams(LinphoneCall *call, SalMediaDescription *new_md, LinphoneCallState target_state);
 
-bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit);
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit);
 
 #define linphone_core_ready(lc) ((lc)->state==LinphoneGlobalOn || (lc)->state==LinphoneGlobalShutdown)
 void _linphone_core_configure_resolver(void);
@@ -1669,17 +1670,22 @@ char * linphone_timestamp_to_rfc3339_string(time_t timestamp);
 
 void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op);
 
-static MS2_INLINE void payload_type_set_enable(PayloadType *pt,int value)
+static MS2_INLINE void payload_type_set_enable(OrtpPayloadType *pt,int value)
 {
 	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
 	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
 }
 
-static MS2_INLINE bool_t payload_type_enabled(const PayloadType *pt) {
+static MS2_INLINE bool_t payload_type_enabled(const OrtpPayloadType *pt) {
 	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
 }
 
-bool_t is_payload_type_number_available(const MSList *l, int number, const PayloadType *ignore);
+bool_t is_payload_type_number_available(const MSList *l, int number, const OrtpPayloadType *ignore);
+int get_audio_payload_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int maxbw);
+LinphonePayloadType *linphone_payload_type_new(LinphoneCore *lc, OrtpPayloadType *ortp_pt);
+bool_t _linphone_core_check_payload_type_usability(const LinphoneCore *lc, const OrtpPayloadType *pt);
+OrtpPayloadType *linphone_payload_type_get_ortp_pt(const LinphonePayloadType *pt);
+
 
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
 MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreement_suites(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]);
@@ -1761,7 +1767,8 @@ BELLE_SIP_TYPE_ID(LinphonePresenceNote),
 BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
 BELLE_SIP_TYPE_ID(LinphoneConference),
-BELLE_SIP_TYPE_ID(LinphoneInfoMessage)
+BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
+BELLE_SIP_TYPE_ID(LinphonePayloadType)
 BELLE_SIP_DECLARE_TYPES_END
 
 
@@ -1897,6 +1904,9 @@ struct _LinphoneErrorInfo{
 	struct _LinphoneErrorInfo *sub_ei;
 };
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneErrorInfo);
+
+void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
+void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to, LinphoneErrorInfo *ei);
 
 #ifdef __cplusplus
 }
