@@ -248,7 +248,6 @@ public interface LinphoneChatMessage {
 
 	/**
 	 * Get if the message was encrypted when transfered
-	 * @param message LinphoneChatMessage obj
 	 * @return whether the message was encrypted when transfered or not
      */
 	boolean isSecured();

@@ -36,6 +36,7 @@ static void error_info_clone(LinphoneErrorInfo *ei, const LinphoneErrorInfo *oth
 	ei->phrase = bctbx_strdup(other->phrase);
 	ei->warnings = bctbx_strdup(other->warnings);
 	ei->full_string = bctbx_strdup(other->full_string);
+	ei->protocol_code = other->protocol_code;
 }
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneErrorInfo, belle_sip_object_t,

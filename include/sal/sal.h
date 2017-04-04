@@ -528,6 +528,7 @@ typedef void (*SalOnExpire)(SalOp *salop);
 
 typedef struct SalCallbacks{
 	SalOnCallReceived call_received;
+	SalOnCallReceived call_rejected;
 	SalOnCallRinging call_ringing;
 	SalOnCallAccepted call_accepted;
 	SalOnCallAck call_ack;

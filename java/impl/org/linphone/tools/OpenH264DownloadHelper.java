@@ -80,7 +80,7 @@ public class OpenH264DownloadHelper {
 
 	/**
      * @param index of object in UserData list
-     * @constraints (index >= 0 && index < userData.size())
+     * constraints (index superior or egal to 0 and index inferior to userData.size())
      * @return object if constraints are met
      */
     public Object getUserData(int index) {
@@ -101,7 +101,7 @@ public class OpenH264DownloadHelper {
 	/**
      * @param index
      * @param object
-     * @constraints (index >= 0 && index < userData.size())
+     * constraints (index superior or egal to 0 and index inferior to userData.size())
      */
     public void setUserData(int index, Object object) {
         if (index < 0 || index > userData.size()) return;

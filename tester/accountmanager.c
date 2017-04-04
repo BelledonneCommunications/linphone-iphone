@@ -131,7 +131,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	LinphoneAuthInfo *ai;
 	char *tmp;
 	LinphoneAddress *server_addr;
-	LCSipTransports tr;
+	LinphoneSipTransports tr;
 	char *chatdb;
 
 	vtable.registration_state_changed=account_created_on_server_cb;
@@ -204,7 +204,6 @@ static LinphoneAddress *account_manager_check_account(AccountManager *m, Linphon
 	LinphoneAddress *id_addr=linphone_address_new(identity);
 	Account *account=account_manager_get_account(m,id_addr);
 	LinphoneAuthInfo *ai;
-	char *tmp;
 	bool_t create_account=FALSE;
 	const LinphoneAuthInfo *original_ai = linphone_core_find_auth_info(lc
 																		,NULL
@@ -224,9 +223,7 @@ static LinphoneAddress *account_manager_check_account(AccountManager *m, Linphon
 	}
 	/*modify the username of the identity of the proxy config*/
 	linphone_address_set_username(id_addr, linphone_address_get_username(account->modified_identity));
-	tmp=linphone_address_as_string(id_addr);
-	linphone_proxy_config_set_identity(cfg,tmp);
-	ms_free(tmp);
+	linphone_proxy_config_set_identity_address(cfg, id_addr);
 
 	if (create_account){
 		account_create_on_server(account,cfg,phone_alias);

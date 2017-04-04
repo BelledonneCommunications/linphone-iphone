@@ -270,6 +270,7 @@ static void call_received(SalOp *h){
 	SalMediaDescription *md;
 	const char * p_asserted_id;
 	SalErrorInfo sei;
+	LinphoneErrorInfo *ei = NULL;
 
 	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
 	replaced_call = look_for_broken_call_to_replace(h, lc);
@@ -277,35 +278,7 @@ static void call_received(SalOp *h){
 		linphone_call_replace_op(replaced_call, h);
 		return;
 	}
-
-	/* first check if we can answer successfully to this invite */
-	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
-		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(lc->presence_model);
-		switch (linphone_presence_activity_get_type(activity)) {
-			case LinphonePresenceActivityPermanentAbsence:
-				alt_contact = linphone_presence_model_get_contact(lc->presence_model);
-				if (alt_contact != NULL) {
-					sal_error_info_init_to_null(&sei);
-					sal_error_info_set(&sei,SalReasonRedirect, "SIP", 0, NULL, NULL);
-					sal_call_decline_with_error_info(h, &sei,alt_contact);
-					ms_free(alt_contact);
-					sal_op_release(h);
-					return;
-				}
-				break;
-			default:
-				/*nothing special to be done*/
-				break;
-		}
-	}
-
-	if (!linphone_core_can_we_add_call(lc)){/*busy*/
-		sal_error_info_init_to_null(&sei);
-		sal_error_info_set(&sei,SalReasonBusy, "SIP", 0, NULL, NULL);
-		sal_call_decline_with_error_info(h, &sei,NULL);
-		sal_op_release(h);
-		return;
-	}
+	
 	p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
 	/*in some situation, better to trust the network rather than the UAC*/
 	if (lp_config_get_int(lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0)) {
@@ -327,6 +300,40 @@ static void call_received(SalOp *h){
 		from_addr=linphone_address_new(sal_op_get_from(h));
 	to_addr=linphone_address_new(sal_op_get_to(h));
 
+	/* first check if we can answer successfully to this invite */
+	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
+		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(lc->presence_model);
+		switch (linphone_presence_activity_get_type(activity)) {
+			case LinphonePresenceActivityPermanentAbsence:
+				alt_contact = linphone_presence_model_get_contact(lc->presence_model);
+				if (alt_contact != NULL) {
+					sal_error_info_init_to_null(&sei);
+					sal_error_info_set(&sei,SalReasonRedirect, "SIP", 0, NULL, NULL);
+					sal_call_decline_with_error_info(h, &sei,alt_contact);
+					ms_free(alt_contact);
+					ei = linphone_error_info_new();
+					linphone_error_info_set(ei, LinphoneReasonMovedPermanently, 302, "Moved permanently", NULL);
+					linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
+					sal_op_release(h);
+					return;
+				}
+				break;
+			default:
+				/*nothing special to be done*/
+				break;
+		}
+	}
+
+	if (!linphone_core_can_we_add_call(lc)){/*busy*/
+		sal_call_decline(h,SalReasonBusy,NULL);
+		ei = linphone_error_info_new();
+		linphone_error_info_set(ei, LinphoneReasonBusy, 486, "Busy - too many calls", NULL);
+		linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
+		sal_op_release(h);
+		return;
+	}
+	
+
 	if (sal_op_get_privacy(h) == SalPrivacyNone) {
 		from_address_to_search_if_me=linphone_address_clone(from_addr);
 	} else if (p_asserted_id) {
@@ -338,9 +345,10 @@ static void call_received(SalOp *h){
 	if (from_address_to_search_if_me && already_a_call_with_remote_address(lc,from_address_to_search_if_me)){
 		char *addr = linphone_address_as_string(from_addr);
 		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message.",addr);
-		sal_error_info_init_to_null(&sei);
-		sal_error_info_set(&sei,SalReasonBusy, "SIP", 0, NULL, NULL);
-		sal_call_decline_with_error_info(h, &sei,NULL);
+		sal_call_decline(h,SalReasonBusy,NULL);
+		ei = linphone_error_info_new();
+		linphone_error_info_set(ei, LinphoneReasonBusy, 486, "Busy - duplicated call", NULL);
+		linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 		sal_op_release(h);
 		linphone_address_unref(from_addr);
 		linphone_address_unref(to_addr);
@@ -358,9 +366,10 @@ static void call_received(SalOp *h){
 	md=sal_call_get_final_media_description(call->op);
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
-			sal_error_info_init_to_null(&sei);
-			sal_error_info_set(&sei,SalReasonNotAcceptable, "SIP", 0, NULL, NULL);
-			sal_call_decline_with_error_info(call->op, &sei,NULL);
+			ei = linphone_error_info_new();
+			linphone_error_info_set(ei, LinphoneReasonNotAcceptable, 488, "Not acceptable here", NULL);
+			linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, linphone_address_ref(from_addr), linphone_address_ref(to_addr), ei);
+			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
 			linphone_call_unref(call);
 			return;
 		}
@@ -386,6 +395,13 @@ static void call_received(SalOp *h){
 #endif //BUILD_UPNP
 
 	linphone_core_notify_incoming_call(lc,call);
+}
+
+static void call_rejected(SalOp *h){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
+	LinphoneErrorInfo *ei = linphone_error_info_new();
+	linphone_error_info_from_sal_op(ei, h);
+	linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, linphone_address_new(sal_op_get_from(h)), linphone_address_new(sal_op_get_to(h)), ei);
 }
 
 static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md){
@@ -1131,10 +1147,9 @@ static void vfu_request(SalOp *op){
 }
 
 static void dtmf_received(SalOp *op, char dtmf){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (!call) return;
-	linphone_core_notify_dtmf_received(lc, call, dtmf);
+	linphone_call_notify_dtmf_received(call, dtmf);
 }
 
 static void refer_received(Sal *sal, SalOp *op, const char *referto){
@@ -1475,6 +1490,7 @@ static void on_notify_response(SalOp *op){
 
 SalCallbacks linphone_sal_callbacks={
 	call_received,
+	call_rejected,
 	call_ringing,
 	call_accepted,
 	call_ack,

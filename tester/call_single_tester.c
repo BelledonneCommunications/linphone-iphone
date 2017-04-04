@@ -535,7 +535,7 @@ static void simple_call(void) {
 static void  simple_call_with_no_sip_transport(void){
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
-	LCSipTransports tr={0};
+	LinphoneSipTransports tr={0};
 	LinphoneCall *call;
 
 	marie = linphone_core_manager_new( "marie_rc");
@@ -657,7 +657,7 @@ static void direct_call_over_ipv6(void){
 	LinphoneCoreManager* pauline;
 
 	if (liblinphone_tester_ipv6_available()){
-		LCSipTransports pauline_transports;
+		LinphoneSipTransports pauline_transports;
 		LinphoneAddress* pauline_dest = linphone_address_new("sip:[::1];transport=tcp");
 		marie = linphone_core_manager_new( "marie_rc");
 		pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -930,7 +930,7 @@ static void simple_call_compatibility_mode(void) {
 	const LinphoneAddress* identity;
 	LinphoneAddress* proxy_address;
 	char*tmp;
-	LCSipTransports transport;
+	LinphoneSipTransports transport;
 
 	proxy = linphone_core_get_default_proxy_config(lc_marie);
 	BC_ASSERT_PTR_NOT_NULL (proxy);
@@ -1086,7 +1086,7 @@ void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
 
 static void call_with_dns_time_out(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2( "empty_rc", FALSE);
-	LCSipTransports transport = {9773,0,0,0};
+	LinphoneSipTransports transport = {9773,0,0,0};
 	int i;
 
 	linphone_core_set_sip_transports(marie->lc,&transport);
@@ -2165,6 +2165,8 @@ static void audio_call_with_ice_no_matching_audio_codecs(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall *out_call;
+	const bctbx_list_t *logs;
+	LinphoneCallLog *cl;
 
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMU", 8000, 1), FALSE); /* Disable PCMU */
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
@@ -2182,6 +2184,21 @@ static void audio_call_with_ice_no_matching_audio_codecs(void) {
 	BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallError, 1, 6000));
 	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+	
+	logs = linphone_core_get_call_logs(pauline->lc);
+	
+	BC_ASSERT_EQUAL(bctbx_list_size(logs), 1, int, "%d");
+	if (logs){
+		const LinphoneErrorInfo *ei;
+		cl = (LinphoneCallLog*)logs->data;
+		BC_ASSERT_EQUAL(linphone_call_log_get_status(cl), LinphoneCallEarlyAborted, int, "%d");
+		BC_ASSERT_TRUE(linphone_call_log_get_start_date(cl) != 0);
+		ei = linphone_call_log_get_error_info(cl);
+		BC_ASSERT_PTR_NOT_NULL(ei);
+		if (ei){
+			BC_ASSERT_EQUAL(linphone_error_info_get_reason(ei), LinphoneReasonNotAcceptable, int, "%d");
+		}
+	}
 
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
@@ -3538,7 +3555,7 @@ static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-	BC_ASSERT_STRING_EQUAL("PCMA",linphone_payload_type_get_mime_type(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))));
+	BC_ASSERT_STRING_EQUAL("PCMA",payload_type_get_mime(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))));
 	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
 	BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(marie),70,int,"%i");
 	BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline),70,int,"%i");
@@ -3631,6 +3648,8 @@ static void incoming_invite_with_invalid_sdp(void) {
 	LinphoneCoreManager* caller = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* callee = linphone_core_manager_new( "marie_rc");
 	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
+	LinphoneCallLog *cl;
+	const bctbx_list_t *logs;
 
 	callee_test_params.sdp_simulate_error = TRUE;
 	BC_ASSERT_FALSE(call_with_params2(caller,callee,&caller_test_params, &callee_test_params, FALSE));
@@ -3639,6 +3658,20 @@ static void incoming_invite_with_invalid_sdp(void) {
 	BC_ASSERT_EQUAL(caller->stat.number_of_LinphoneCallError,1, int, "%d");
 	/*call will be drop before presented to the application, because it is invalid*/
 	BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
+	
+	logs = linphone_core_get_call_logs(callee->lc);
+	BC_ASSERT_EQUAL(bctbx_list_size(logs), 1, int, "%i");
+	if (logs){
+		const LinphoneErrorInfo *ei;
+		cl = (LinphoneCallLog*)logs->data;
+		BC_ASSERT_EQUAL(linphone_call_log_get_status(cl), LinphoneCallEarlyAborted, int, "%d");
+		BC_ASSERT_TRUE(linphone_call_log_get_start_date(cl) != 0);
+		ei = linphone_call_log_get_error_info(cl);
+		BC_ASSERT_PTR_NOT_NULL(ei);
+		if (ei){
+			BC_ASSERT_EQUAL(linphone_error_info_get_reason(ei), LinphoneReasonNotAcceptable, int, "%d");
+		}
+	}
 
 	linphone_core_manager_destroy(callee);
 	linphone_core_manager_destroy(caller);
@@ -3846,7 +3879,7 @@ static void call_with_generic_cn(void) {
 }
 
 static void call_state_changed_2(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
-	LCSipTransports sip_tr;
+	LinphoneSipTransports sip_tr;
 	if (cstate==LinphoneCallReleased) {
 		/*to make sure transport is changed*/
 		sip_tr.udp_port = 0;
@@ -3870,7 +3903,7 @@ static void call_state_changed_3(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 }
 
 static void call_with_transport_change_base(bool_t succesfull_call) {
-	LCSipTransports sip_tr;
+	LinphoneSipTransports sip_tr;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCoreVTable * v_table;

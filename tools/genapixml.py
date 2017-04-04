@@ -370,6 +370,8 @@ class Project:
 		return ev
 
 	def __parseCEnumMemberdef(self, node):
+		if not Project.__canBeWrapped(self, node):
+			return None
 		e = CEnum(node.find('./name').text)
 		deprecatedNode = node.find(".//xrefsect[xreftitle='Deprecated']")
 		if deprecatedNode is not None:
@@ -420,6 +422,8 @@ class Project:
 			self.add(s)
 
 	def __parseCTypedefMemberdef(self, node):
+		if not Project.__canBeWrapped(self, node):
+			return None
 		name = node.find('./name').text
 		definition = node.find('./definition').text
 		if definition.startswith('typedef '):

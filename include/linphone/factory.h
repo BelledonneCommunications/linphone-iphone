@@ -112,6 +112,13 @@ LINPHONE_PUBLIC LinphoneAddress *linphone_factory_create_address(const LinphoneF
 LINPHONE_PUBLIC LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *factory, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain);
 
 /**
+ * Create a LinphoneCallCbs object that holds callbacks for events happening on a call.
+ * @param[in] factory LinphoneFactory singletion object
+ * @return A new LinphoneCallCbs object
+ */
+LINPHONE_PUBLIC LinphoneCallCbs * linphone_factory_create_call_cbs(const LinphoneFactory *factory);
+
+/**
  * Create an empty #LinphoneVcard.
  * @return a new #LinphoneVcard.
  * @ingroup initializing

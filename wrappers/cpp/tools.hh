@@ -58,6 +58,11 @@ namespace linphone {
 			}
 			return cppList;
 		}
+		static std::list<std::shared_ptr<T>> bctbxListToCppList(::bctbx_list_t *bctbxList) {
+			std::list<std::shared_ptr<T>> cppList = bctbxListToCppList((const ::bctbx_list_t *)bctbxList);
+			bctbx_list_free(bctbxList);
+			return cppList;
+		}
 		static ::bctbx_list_t *cppListToBctbxList(const std::list<std::shared_ptr<T> > &cppList) {
 			bctbx_list_t *cList = NULL;
 			for(auto it=cppList.cbegin(); it!=cppList.cend(); it++) {

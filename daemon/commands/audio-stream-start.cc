@@ -33,7 +33,7 @@ static PayloadType *getPayloadType(LinphoneCore *lc, const MSList *codecs, int n
 	const MSList *elem;
 	for (elem = codecs; elem != NULL; elem = elem->next) {
 		PayloadType *pt = (PayloadType*)elem->data;
-		if (linphone_payload_type_get_number(pt) == number)
+		if (payload_type_get_number(pt) == number)
 			return pt;
 	}
 	return NULL;

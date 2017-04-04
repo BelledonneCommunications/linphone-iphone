@@ -201,9 +201,10 @@ struct _LinphoneCallLog{
 	time_t connected_date_time; /**Connecting date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
+	unsigned int storage_id;
+	LinphoneErrorInfo *error_info;
 	bool_t video_enabled;
 	bool_t was_conference; /**<That call was a call with a conference server */
-	unsigned int storage_id;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallLog);
@@ -289,6 +290,19 @@ typedef struct _PortConfig{
 	int rtp_port;
 	int rtcp_port;
 }PortConfig;
+
+struct _LinphoneCallCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneCallCbsDtmfReceivedCb dtmf_received_cb;
+	LinphoneCallCbsEncryptionChangedCb encryption_changed_cb;
+	LinphoneCallCbsInfoMessageReceivedCb info_message_received_cb;
+	LinphoneCallCbsStateChangedCb state_changed_cb;
+	LinphoneCallCbsStatsUpdatedCb stats_updated_cb;
+	LinphoneCallCbsTransferStateChangedCb transfer_state_changed_cb;
+};
+
+LinphoneCallCbs * _linphone_call_cbs_new(void);
 
 struct _LinphoneCall{
 	belle_sip_object_t base;
@@ -379,10 +393,20 @@ struct _LinphoneCall{
 	
 	bool_t reinvite_on_cancel_response_requested;
 	bool_t non_op_error; /*set when the LinphoneErrorInfo was set at higher level than sal*/
+
+	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
+	LinphoneCallCbs *current_cbs; /* The current LinphoneCallCbs object used to call a callback */
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCall);
 
+
+void linphone_call_notify_state_changed(LinphoneCall *call, LinphoneCallState cstate, const char *message);
+void linphone_call_notify_dtmf_received(LinphoneCall *call, int dtmf);
+void linphone_call_notify_encryption_changed(LinphoneCall *call, bool_t on, const char *authentication_token);
+void linphone_call_notify_transfer_state_changed(LinphoneCall *call, LinphoneCallState cstate);
+void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallStats *stats);
+void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
@@ -394,7 +418,7 @@ void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md);
 void linphone_call_set_symmetric_rtp(LinphoneCall *call, bool_t val);
 /* private: */
-LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *local, LinphoneAddress * remote);
+LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
 void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
@@ -969,6 +993,7 @@ struct _LinphoneCoreCbs {
 	bool_t autorelease;
 };
 
+LinphoneCoreCbs * _linphone_core_cbs_new(void);
 void _linphone_core_cbs_set_v_table(LinphoneCoreCbs *cbs, LinphoneCoreVTable *vtable, bool_t autorelease);
 
 typedef struct _LCCallbackObj {
@@ -1106,7 +1131,7 @@ struct _LinphoneCore
 
 	LinphoneAddress *default_rls_addr; /*default resource list server*/
 	LinphoneImEncryptionEngine *im_encryption_engine;
-	struct _LinphoneAccountCreatorRequestCbs *default_ac_request_cbs;
+	struct _LinphoneAccountCreatorService *default_ac_service;
 	MSBandwidthController *bw_controller;
 };
 
@@ -1154,7 +1179,7 @@ void linphone_call_increment_local_media_description(LinphoneCall *call);
 void linphone_call_fill_media_multicast_addr(LinphoneCall *call);
 void linphone_call_update_streams(LinphoneCall *call, SalMediaDescription *new_md, LinphoneCallState target_state);
 
-bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit);
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit);
 
 #define linphone_core_ready(lc) ((lc)->state==LinphoneGlobalOn || (lc)->state==LinphoneGlobalShutdown)
 void _linphone_core_configure_resolver(void);
@@ -1392,12 +1417,12 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneXmlRpcSession);
  * Account creator interface                                                 *
  ****************************************************************************/
 
-struct _LinphoneAccountCreatorRequestCbs {
+struct _LinphoneAccountCreatorService {
 	belle_sip_object_t base;
 	void *user_data;
 
-	LinphoneAccountCreatorRequestFunc account_creator_request_constructor_cb; /**< Constructor */
-	LinphoneAccountCreatorRequestFunc account_creator_request_destructor_cb; /**< Destructor */
+	LinphoneAccountCreatorRequestFunc account_creator_service_constructor_cb; /**< Constructor */
+	LinphoneAccountCreatorRequestFunc account_creator_service_destructor_cb; /**< Destructor */
 
 	LinphoneAccountCreatorRequestFunc create_account_request_cb; /**< Request to create account */
 	LinphoneAccountCreatorRequestFunc is_account_exist_request_cb; /**< Request to know if account exist */
@@ -1414,28 +1439,28 @@ struct _LinphoneAccountCreatorRequestCbs {
 	LinphoneAccountCreatorRequestFunc update_account_request_cb; /**< Request to update account */
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorRequestCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreatorService);
 
-struct _LinphoneAccountCreatorResponseCbs {
+struct _LinphoneAccountCreatorCbs {
 	belle_sip_object_t base;
 	void *user_data;
 
-	LinphoneAccountCreatorResponseFunc create_account_response_cb; /**< Response of create_account request */
-	LinphoneAccountCreatorResponseFunc is_account_exist_response_cb; /**< Response of is_account_exist request */
+	LinphoneAccountCreatorCbsStatusCb create_account_response_cb; /**< Response of create_account request */
+	LinphoneAccountCreatorCbsStatusCb is_account_exist_response_cb; /**< Response of is_account_exist request */
 
-	LinphoneAccountCreatorResponseFunc activate_account_response_cb; /**< Response of activate_account request */
-	LinphoneAccountCreatorResponseFunc is_account_activated_response_cb; /**< Response of is_account_activated request */
+	LinphoneAccountCreatorCbsStatusCb activate_account_response_cb; /**< Response of activate_account request */
+	LinphoneAccountCreatorCbsStatusCb is_account_activated_response_cb; /**< Response of is_account_activated request */
 
-	LinphoneAccountCreatorResponseFunc link_account_response_cb; /**< Response of link_account request */
-	LinphoneAccountCreatorResponseFunc activate_alias_response_cb; /**< Response of activation alias */
-	LinphoneAccountCreatorResponseFunc is_alias_used_response_cb; /**< Response of is_alias_used request */
-	LinphoneAccountCreatorResponseFunc is_account_linked_response_cb; /**< Response of is_account_linked request */
+	LinphoneAccountCreatorCbsStatusCb link_account_response_cb; /**< Response of link_account request */
+	LinphoneAccountCreatorCbsStatusCb activate_alias_response_cb; /**< Response of activation alias */
+	LinphoneAccountCreatorCbsStatusCb is_alias_used_response_cb; /**< Response of is_alias_used request */
+	LinphoneAccountCreatorCbsStatusCb is_account_linked_response_cb; /**< Response of is_account_linked request */
 
-	LinphoneAccountCreatorResponseFunc recover_account_response_cb; /**< Response of recover_account request */
-	LinphoneAccountCreatorResponseFunc update_account_response_cb; /**< Response of update_account request */
+	LinphoneAccountCreatorCbsStatusCb recover_account_response_cb; /**< Response of recover_account request */
+	LinphoneAccountCreatorCbsStatusCb update_account_response_cb; /**< Response of update_account request */
 };
 
-BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorResponseCbs);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreatorCbs);
 
 struct _LinphoneAccountCreator {
 	belle_sip_object_t base;
@@ -1443,8 +1468,8 @@ struct _LinphoneAccountCreator {
 	LinphoneCore *core;
 
 	/* AccountCreator */
-	LinphoneAccountCreatorRequestCbs *requests_cbs; /**< Account creator requests cbs */
-	LinphoneAccountCreatorResponseCbs *responses_cbs; /**< Account creator responses cbs */
+	LinphoneAccountCreatorService *service; /**< Account creator service */
+	LinphoneAccountCreatorCbs *cbs; /**< Account creator cbs */
 	LinphoneXmlRpcSession *xmlrpc_session; /**< XML-RPC session */
 	LinphoneProxyConfig *proxy_cfg; /**< Default proxy config */
 
@@ -1469,6 +1494,85 @@ struct _LinphoneAccountCreator {
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneAccountCreator);
+
+/**
+ * Account creator custom to set Linphone default values
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_constructor_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to test the existence of a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account_exist_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to create a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_create_account_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to activate a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_activate_account_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to test the validation of a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account_activated_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to test the existence a phone number with a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_phone_number_used_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to link a phone number with a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_link_phone_number_with_account_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to activate the link of a phone number with a Linphone account.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to a Linphone account with the phone number.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_recover_phone_account_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to ask if an account is linked with a phone number
+ * @param[in] creator LinphoneAccountCreator object
+ * @return if this account is linked with a phone number
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account_linked_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to ask if an account is linked with a phone number
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] new_pwd const char * : new password for the account creator
+ * @return LinphoneAccountCreatorStatusRequestOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_update_password_linphone(LinphoneAccountCreator *creator);
+
 
 /*****************************************************************************
  * CardDAV interface                                                         *
@@ -1566,17 +1670,22 @@ char * linphone_timestamp_to_rfc3339_string(time_t timestamp);
 
 void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op);
 
-static MS2_INLINE void payload_type_set_enable(PayloadType *pt,int value)
+static MS2_INLINE void payload_type_set_enable(OrtpPayloadType *pt,int value)
 {
 	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
 	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
 }
 
-static MS2_INLINE bool_t payload_type_enabled(const PayloadType *pt) {
+static MS2_INLINE bool_t payload_type_enabled(const OrtpPayloadType *pt) {
 	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
 }
 
-bool_t is_payload_type_number_available(const MSList *l, int number, const PayloadType *ignore);
+bool_t is_payload_type_number_available(const MSList *l, int number, const OrtpPayloadType *ignore);
+int get_audio_payload_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int maxbw);
+LinphonePayloadType *linphone_payload_type_new(LinphoneCore *lc, OrtpPayloadType *ortp_pt);
+bool_t _linphone_core_check_payload_type_usability(const LinphoneCore *lc, const OrtpPayloadType *pt);
+OrtpPayloadType *linphone_payload_type_get_ortp_pt(const LinphonePayloadType *pt);
+
 
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
 MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreement_suites(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]);
@@ -1616,12 +1725,13 @@ LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(Li
 
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
 BELLE_SIP_TYPE_ID(LinphoneAccountCreator),
-BELLE_SIP_TYPE_ID(LinphoneAccountCreatorRequestCbs),
-BELLE_SIP_TYPE_ID(LinphoneAccountCreatorResponseCbs),
+BELLE_SIP_TYPE_ID(LinphoneAccountCreatorCbs),
+BELLE_SIP_TYPE_ID(LinphoneAccountCreatorService),
 BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneCall),
+BELLE_SIP_TYPE_ID(LinphoneCallCbs),
 BELLE_SIP_TYPE_ID(LinphoneCallLog),
 BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
@@ -1639,6 +1749,7 @@ BELLE_SIP_TYPE_ID(LinphoneFriendList),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
+BELLE_SIP_TYPE_ID(LinphoneTunnel),
 BELLE_SIP_TYPE_ID(LinphoneTunnelConfig),
 BELLE_SIP_TYPE_ID(LinphoneFriendListCbs),
 BELLE_SIP_TYPE_ID(LinphoneEvent),
@@ -1657,7 +1768,8 @@ BELLE_SIP_TYPE_ID(LinphonePresenceNote),
 BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
 BELLE_SIP_TYPE_ID(LinphoneConference),
-BELLE_SIP_TYPE_ID(LinphoneInfoMessage)
+BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
+BELLE_SIP_TYPE_ID(LinphonePayloadType)
 BELLE_SIP_DECLARE_TYPES_END
 
 
@@ -1701,6 +1813,7 @@ void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, 
 void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total);
 void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list);
+void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
@@ -1790,6 +1903,9 @@ struct _LinphoneErrorInfo{
 	struct _LinphoneErrorInfo *sub_ei;
 };
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneErrorInfo);
+
+void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
+void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to, LinphoneErrorInfo *ei);
 
 #ifdef __cplusplus
 }

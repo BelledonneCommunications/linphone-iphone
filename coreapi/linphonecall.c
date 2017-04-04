@@ -51,6 +51,85 @@ static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *ca
 void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index);
 
 
+typedef belle_sip_object_t_vptr_t LinphoneCallCbs_vptr_t;
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCallCbs);
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallCbs, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // Marshall
+	FALSE
+);
+
+LinphoneCallCbs *_linphone_call_cbs_new(void) {
+	LinphoneCallCbs *obj = belle_sip_object_new(LinphoneCallCbs);
+	return obj;
+}
+
+LinphoneCallCbs *linphone_call_cbs_ref(LinphoneCallCbs *cbs) {
+	return (LinphoneCallCbs *)belle_sip_object_ref(cbs);
+}
+
+void linphone_call_cbs_unref(LinphoneCallCbs *cbs) {
+	belle_sip_object_unref(cbs);
+}
+
+void *linphone_call_cbs_get_user_data(const LinphoneCallCbs *cbs) {
+	return cbs->user_data;
+}
+
+void linphone_call_cbs_set_user_data(LinphoneCallCbs *cbs, void *user_data) {
+	cbs->user_data = user_data;
+}
+
+LinphoneCallCbsDtmfReceivedCb linphone_call_cbs_get_dtmf_received(LinphoneCallCbs *cbs) {
+	return cbs->dtmf_received_cb;
+}
+
+void linphone_call_cbs_set_dtmf_received(LinphoneCallCbs *cbs, LinphoneCallCbsDtmfReceivedCb cb) {
+	cbs->dtmf_received_cb = cb;
+}
+
+LinphoneCallCbsEncryptionChangedCb linphone_call_cbs_get_encryption_changed(LinphoneCallCbs *cbs) {
+	return cbs->encryption_changed_cb;
+}
+
+void linphone_call_cbs_set_encryption_changed(LinphoneCallCbs *cbs, LinphoneCallCbsEncryptionChangedCb cb) {
+	cbs->encryption_changed_cb = cb;
+}
+
+LinphoneCallCbsInfoMessageReceivedCb linphone_call_cbs_get_info_message_received(LinphoneCallCbs *cbs) {
+	return cbs->info_message_received_cb;
+}
+
+void linphone_call_cbs_set_info_message_received(LinphoneCallCbs *cbs, LinphoneCallCbsInfoMessageReceivedCb cb) {
+	cbs->info_message_received_cb = cb;
+}
+
+LinphoneCallCbsStateChangedCb linphone_call_cbs_get_state_changed(LinphoneCallCbs *cbs) {
+	return cbs->state_changed_cb;
+}
+
+void linphone_call_cbs_set_state_changed(LinphoneCallCbs *cbs, LinphoneCallCbsStateChangedCb cb) {
+	cbs->state_changed_cb = cb;
+}
+
+LinphoneCallCbsStatsUpdatedCb linphone_call_cbs_get_stats_updated(LinphoneCallCbs *cbs) {
+	return cbs->stats_updated_cb;
+}
+
+void linphone_call_cbs_set_stats_updated(LinphoneCallCbs *cbs, LinphoneCallCbsStatsUpdatedCb cb) {
+	cbs->stats_updated_cb = cb;
+}
+
+LinphoneCallCbsTransferStateChangedCb linphone_call_cbs_get_transfer_state_changed(LinphoneCallCbs *cbs) {
+	return cbs->transfer_state_changed_cb;
+}
+
+void linphone_call_cbs_set_transfer_state_changed(LinphoneCallCbs *cbs, LinphoneCallCbsTransferStateChangedCb cb) {
+	cbs->transfer_state_changed_cb = cb;
+}
+
+
 bool_t linphone_call_state_is_early(LinphoneCallState state){
 	switch (state){
 		case LinphoneCallIdle:
@@ -207,7 +286,7 @@ static void propagate_encryption_changed(LinphoneCall *call){
 	if (!linphone_call_all_streams_encrypted(call)) {
 		ms_message("Some streams are not encrypted");
 		call->current_params->media_encryption=LinphoneMediaEncryptionNone;
-		linphone_core_notify_call_encryption_changed(call->core, call, FALSE, call->auth_token);
+		linphone_call_notify_encryption_changed(call, FALSE, call->auth_token);
 	} else {
 		if (call->auth_token) {/* ZRTP only is using auth_token */
 			call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
@@ -215,7 +294,7 @@ static void propagate_encryption_changed(LinphoneCall *call){
 			call->current_params->media_encryption=LinphoneMediaEncryptionDTLS;
 		}
 		ms_message("All streams are encrypted key exchanged using %s", call->current_params->media_encryption==LinphoneMediaEncryptionZRTP?"ZRTP":call->current_params->media_encryption==LinphoneMediaEncryptionDTLS?"DTLS":"Unknown mechanism");
-		linphone_core_notify_call_encryption_changed(call->core, call, TRUE, call->auth_token);
+		linphone_call_notify_encryption_changed(call, TRUE, call->auth_token);
 #ifdef VIDEO_ENABLED
 		if (linphone_call_encryption_mandatory(call) && call->videostream && media_stream_started((MediaStream *)call->videostream)) {
 			video_stream_send_vfu(call->videostream); /*nothing could have been sent yet so generating key frame*/
@@ -434,7 +513,7 @@ static bctbx_list_t *make_codec_list(LinphoneCore *lc, CodecConstraints * hints,
 					pt->mime_type,pt->clock_rate,hints->bandwidth_limit);
 			continue;
 		}
-		if (!linphone_core_check_payload_type_usability(lc,pt)){
+		if (!_linphone_core_check_payload_type_usability(lc, pt)) {
 			continue;
 		}
 		pt=payload_type_clone(pt);
@@ -1779,7 +1858,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 					, linphone_call_state_to_string(call->prevstate)
 					, linphone_call_state_to_string(call->state));
 		}
-		linphone_core_notify_call_state_changed(lc,call,cstate,message?message:"");
+		linphone_call_notify_state_changed(call, cstate, message ? message : "");
 		linphone_reporting_call_state_updated(call);
 		if (cstate==LinphoneCallReleased) {/*shall be performed after  app notification*/
 			linphone_call_set_released(call);
@@ -1789,6 +1868,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 static void linphone_call_destroy(LinphoneCall *obj){
 	ms_message("Call [%p] freed.",obj);
+	bctbx_list_free_with_data(obj->callbacks, (bctbx_list_free_func)linphone_call_cbs_unref);
 	if (obj->audiostream || obj->videostream){
 		linphone_call_free_media_resources(obj);
 	}
@@ -2754,7 +2834,7 @@ static void linphone_core_dtmf_received(LinphoneCall *call, int dtmf){
 		ms_warning("Bad dtmf value %i",dtmf);
 		return;
 	}
-	linphone_core_notify_dtmf_received(call->core, call, dtmf_tab[dtmf]);
+	linphone_call_notify_dtmf_received(call, dtmf_tab[dtmf]);
 }
 
 static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
@@ -4299,7 +4379,7 @@ static void report_bandwidth_for_stream(LinphoneCall *call, MediaStream *ms, Lin
 	if (call->core->send_call_stats_periodical_updates){
 		if (active) update_local_stats(stats, ms);
 		stats->updated |= LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, stats);
+		linphone_call_notify_stats_updated(call, stats);
 		stats->updated=0;
 	}
 }
@@ -4456,9 +4536,8 @@ void linphone_call_stats_uninit(LinphoneCallStats *stats){
 	}
 }
 
-void linphone_call_notify_stats_updated(LinphoneCall *call, int stream_index){
+void linphone_call_notify_stats_updated_with_stream_index(LinphoneCall *call, int stream_index){
 	LinphoneCallStats *stats = &call->stats[stream_index];
-	LinphoneCore *lc = call->core;
 	if (stats->updated){
 		switch(stats->updated) {
 			case LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE:
@@ -4468,7 +4547,7 @@ void linphone_call_notify_stats_updated(LinphoneCall *call, int stream_index){
 			default:
 				break;
 		}
-		linphone_core_notify_call_stats_updated(lc, call, stats);
+		linphone_call_notify_stats_updated(call, stats);
 		stats->updated = 0;
 	}
 }
@@ -4535,7 +4614,7 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		ms = linphone_call_get_media_stream(call, stream_index);
 
 		if (ms) linphone_call_stats_fill(&call->stats[stats_index],ms,ev);
-		linphone_call_notify_stats_updated(call,stats_index);
+		linphone_call_notify_stats_updated_with_stream_index(call,stats_index);
 
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
 			if (stream_index == call->main_audio_stream_index)
@@ -4611,9 +4690,9 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 
 void linphone_call_log_completed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
-	bool_t call_logs_sqlite_db_found = FALSE;
-
+	
 	call->log->duration=_linphone_call_get_duration(call); /*store duration since connected*/
+	call->log->error_info = linphone_error_info_ref((LinphoneErrorInfo*)linphone_call_get_error_info(call));
 
 	if (call->log->status==LinphoneCallMissed){
 		char *info;
@@ -4624,28 +4703,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 		linphone_core_notify_display_status(lc,info);
 		ms_free(info);
 	}
-
-#ifdef SQLITE_STORAGE_ENABLED
-	if (lc->logs_db) {
-		call_logs_sqlite_db_found = TRUE;
-		linphone_core_store_call_log(lc, call->log);
-	}
-#endif
-	if (!call_logs_sqlite_db_found) {
-		lc->call_logs=bctbx_list_prepend(lc->call_logs,linphone_call_log_ref(call->log));
-		if (bctbx_list_size(lc->call_logs)>(size_t)lc->max_call_logs){
-			bctbx_list_t *elem,*prevelem=NULL;
-			/*find the last element*/
-			for(elem=lc->call_logs;elem!=NULL;elem=elem->next){
-				prevelem=elem;
-			}
-			elem=prevelem;
-			linphone_call_log_unref((LinphoneCallLog*)elem->data);
-			lc->call_logs=bctbx_list_erase_link(lc->call_logs,elem);
-		}
-		call_logs_write_to_config_file(lc);
-	}
-	linphone_core_notify_call_log_updated(lc,call->log);
+	linphone_core_report_call_log(lc, call->log);
 }
 
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call) {
@@ -4654,12 +4712,11 @@ LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call) {
 
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state) {
 	if (state != call->transfer_state) {
-		LinphoneCore* lc = call->core;
 		ms_message("Transfer state for call [%p] changed  from [%s] to [%s]",call
 						,linphone_call_state_to_string(call->transfer_state)
 						,linphone_call_state_to_string(state));
 		call->transfer_state = state;
-		linphone_core_notify_transfer_state_changed(lc, call, state);
+		linphone_call_notify_transfer_state_changed(call, state);
 	}
 }
 
@@ -5937,4 +5994,56 @@ void linphone_call_ogl_render(LinphoneCall *call, bool_t is_preview) {
 
 	if (stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
 		ms_filter_call_method(stream->output2, MS_OGL_RENDER, NULL);
+}
+
+void linphone_call_add_callbacks(LinphoneCall *call, LinphoneCallCbs *cbs) {
+	call->callbacks = bctbx_list_append(call->callbacks, linphone_call_cbs_ref(cbs));
+}
+
+void linphone_call_remove_callbacks(LinphoneCall *call, LinphoneCallCbs *cbs) {
+	call->callbacks = bctbx_list_remove(call->callbacks, cbs);
+	linphone_call_cbs_unref(cbs);
+}
+
+LinphoneCallCbs *linphone_call_get_current_callbacks(const LinphoneCall *call) {
+	return call->current_cbs;
+}
+
+#define NOTIFY_IF_EXIST(function_name, ...) \
+	bctbx_list_t* iterator; \
+	for (iterator = call->callbacks; iterator != NULL; iterator = bctbx_list_next(iterator)) { \
+		call->current_cbs = (LinphoneCallCbs *)bctbx_list_get_data(iterator); \
+		if (call->current_cbs->function_name != NULL) { \
+			call->current_cbs->function_name(__VA_ARGS__); \
+		} \
+	}
+
+void linphone_call_notify_state_changed(LinphoneCall *call, LinphoneCallState cstate, const char *message) {
+	NOTIFY_IF_EXIST(state_changed_cb, call, cstate, message)
+	linphone_core_notify_call_state_changed(linphone_call_get_core(call), call, cstate, message);
+}
+
+void linphone_call_notify_dtmf_received(LinphoneCall *call, int dtmf) {
+	NOTIFY_IF_EXIST(dtmf_received_cb, call, dtmf)
+	linphone_core_notify_dtmf_received(linphone_call_get_core(call), call, dtmf);
+}
+
+void linphone_call_notify_encryption_changed(LinphoneCall *call, bool_t on, const char *authentication_token) {
+	NOTIFY_IF_EXIST(encryption_changed_cb, call, on, authentication_token)
+	linphone_core_notify_call_encryption_changed(linphone_call_get_core(call), call, on, authentication_token);
+}
+
+void linphone_call_notify_transfer_state_changed(LinphoneCall *call, LinphoneCallState cstate) {
+	NOTIFY_IF_EXIST(transfer_state_changed_cb, call, cstate)
+	linphone_core_notify_transfer_state_changed(linphone_call_get_core(call), call, cstate);
+}
+
+void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallStats *stats) {
+	NOTIFY_IF_EXIST(stats_updated_cb, call, stats)
+	linphone_core_notify_call_stats_updated(linphone_call_get_core(call), call, stats);
+}
+
+void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg) {
+	NOTIFY_IF_EXIST(info_message_received_cb, call, msg)
+	linphone_core_notify_info_received(linphone_call_get_core(call), call, msg);
 }

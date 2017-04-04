@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 extern LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata);
-extern LinphoneCoreCbs *_linphone_core_cbs_new(void);
 extern LinphoneAddress *_linphone_address_new(const char *addr);
 
 typedef belle_sip_object_t_vptr_t LinphoneFactory_vptr_t;
@@ -132,6 +131,10 @@ LinphoneAddress *linphone_factory_create_address(const LinphoneFactory *factory,
 
 LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *factory, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain) {
 	return linphone_auth_info_new(username, userid, passwd, ha1, realm, domain);
+}
+
+LinphoneCallCbs * linphone_factory_create_call_cbs(const LinphoneFactory *factory) {
+	return _linphone_call_cbs_new();
 }
 
 LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {

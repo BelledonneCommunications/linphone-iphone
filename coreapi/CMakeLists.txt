@@ -52,7 +52,7 @@ set(LINPHONE_PRIVATE_HEADER_FILES
 
 set(LINPHONE_SOURCE_FILES_C
 	account_creator.c
-	account_creator_request_engine.c
+	account_creator_service.c
 	address.c
 	authentication.c
 	bellesip_sal/sal_address_impl.c
@@ -102,6 +102,7 @@ set(LINPHONE_SOURCE_FILES_C
 	misc.c
 	nat_policy.c
 	offeranswer.c
+	payload_type.c
 	player.c
 	presence.c
 	proxy.c

@@ -34,121 +34,122 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 typedef struct _LinphoneAccountCreator LinphoneAccountCreator;
 
 /**
- * An object to handle the requests callbacks for handling the LinphoneAccountCreator server requests.
+ * An object to define a LinphoneAccountCreator service.
  * @ingroup account_creator
+ * @donotwrap
 **/
-typedef struct _LinphoneAccountCreatorRequestCbs LinphoneAccountCreatorRequestCbs;
+typedef struct _LinphoneAccountCreatorService LinphoneAccountCreatorService;
 
 /**
  * An object to handle the responses callbacks for handling the LinphoneAccountCreator operations.
  * @ingroup account_creator
 **/
-typedef struct _LinphoneAccountCreatorResponseCbs LinphoneAccountCreatorResponseCbs;
+typedef struct _LinphoneAccountCreatorCbs LinphoneAccountCreatorCbs;
 
 /**
  * Enum describing Phone number checking.
- * @ingroup account_creator_checking
+ * @ingroup account_creator
 **/
-typedef enum _LinphonePhoneNumberCheck {
-	LinphonePhoneNumberOk = 0x1, /**< Phone number ok */
-	LinphonePhoneNumberTooShort = 0x2, /**< Phone number too short */
-	LinphonePhoneNumberTooLong = 0x4, /**< Phone number too long */
-	LinphonePhoneNumberCountryCodeInvalid = 0x8, /**< Country code invalid */
-	LinphonePhoneNumberInvalid = 0x10, /**< Phone number invalid */
-} LinphonePhoneNumberCheck;
+typedef enum _LinphoneAccountCreatorPhoneNumberStatus {
+	LinphoneAccountCreatorPhoneNumberStatusOk = 0x1, /**< Phone number ok */
+	LinphoneAccountCreatorPhoneNumberStatusTooShort = 0x2, /**< Phone number too short */
+	LinphoneAccountCreatorPhoneNumberStatusTooLong = 0x4, /**< Phone number too long */
+	LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode = 0x8, /**< Country code invalid */
+	LinphoneAccountCreatorPhoneNumberStatusInvalid = 0x10 /**< Phone number invalid */
+} LinphoneAccountCreatorPhoneNumberStatus;
 
 /**
- * A mask of #LinphonePhoneNumberCheck values
- * @ingroup account_creator_checking
+ * A mask of #LinphoneAccountCreatorPhoneNumberStatus values
+ * @ingroup account_creator
  */
-typedef unsigned int LinphonePhoneNumberMask;
+typedef unsigned int LinphoneAccountCreatorPhoneNumberStatusMask;
 
 /**
  * Enum describing Username checking.
- * @ingroup account_creator_checking
+ * @ingroup account_creator
 **/
-typedef enum _LinphoneUsernameCheck {
-	LinphoneUsernameOk, /**< Username ok */
-	LinphoneUsernameTooShort, /**< Username too short */
-	LinphoneUsernameTooLong,  /**< Username too long */
-	LinphoneUsernameInvalidCharacters, /**< Contain invalid characters */
-	LinphoneUsernameInvalid, /**< Invalid username */
-} LinphoneUsernameCheck;
+typedef enum _LinphoneAccountCreatorUsernameStatus {
+	LinphoneAccountCreatorUsernameStatusOk, /**< Username ok */
+	LinphoneAccountCreatorUsernameStatusTooShort, /**< Username too short */
+	LinphoneAccountCreatorUsernameStatusTooLong,  /**< Username too long */
+	LinphoneAccountCreatorUsernameStatusInvalidCharacters, /**< Contain invalid characters */
+	LinphoneAccountCreatorUsernameStatusInvalid /**< Invalid username */
+} LinphoneAccountCreatorUsernameStatus;
 
 /**
  * Enum describing Email checking.
- * @ingroup account_creator_checking
+ * @ingroup account_creator
 **/
-typedef enum _LinphoneEmailCheck {
-	LinphoneEmailOk, /**< Email ok */
-	LinphoneEmailMalformed, /**< Email malformed */
-	LinphoneEmailInvalidCharacters, /**< Contain invalid characters */
-} LinphoneEmailCheck;
+typedef enum _LinphoneAccountCreatorEmailStatus {
+	LinphoneAccountCreatorEmailStatusOk, /**< Email ok */
+	LinphoneAccountCreatorEmailStatusMalformed, /**< Email malformed */
+	LinphoneAccountCreatorEmailStatusInvalidCharacters /**< Contain invalid characters */
+} LinphoneAccountCreatorEmailStatus;
 
 /**
  * Enum describing Password checking.
- * @ingroup account_creator_checking
+ * @ingroup account_creator
 **/
-typedef enum _LinphonePasswordCheck {
-	LinphonePasswordOk, /**< Password ok */
-	LinphonePasswordTooShort, /**< Password too short */
-	LinphonePasswordTooLong,  /**< Password too long */
-	LinphonePasswordInvalidCharacters, /**< Contain invalid characters */
-	LinphonePasswordMissingCharacters, /**< Missing specific characters */
-} LinphonePasswordCheck;
+typedef enum _LinphoneAccountCreatorPasswordStatus {
+	LinphoneAccountCreatorPasswordStatusOk, /**< Password ok */
+	LinphoneAccountCreatorPasswordStatusTooShort, /**< Password too short */
+	LinphoneAccountCreatorPasswordStatusTooLong,  /**< Password too long */
+	LinphoneAccountCreatorPasswordStatusInvalidCharacters, /**< Contain invalid characters */
+	LinphoneAccountCreatorPasswordStatusMissingCharacters /**< Missing specific characters */
+} LinphoneAccountCreatorPasswordStatus;
 
 /**
  * Enum describing language checking.
- * @ingroup account_creator_checking
+ * @ingroup account_creator
 **/
-typedef enum _LinphoneLanguageCheck {
-	LinphoneLanguageOk, /**< Language ok */
-} LinphoneLanguageCheck;
+typedef enum _LinphoneAccountCreatorLanguageStatus {
+	LinphoneAccountCreatorLanguageStatusOk /**< Language ok */
+} LinphoneAccountCreatorLanguageStatus;
 
 /**
  * Enum describing Activation code checking.
- * @ingroup account_creator_checking
+ * @ingroup account_creator
 **/
-typedef enum _LinphoneActivationCodeCheck {
-	LinphoneActivationCodeOk, /**< Activation code ok */
-	LinphoneActivationCodeTooShort, /**< Activation code too short */
-	LinphoneActivationCodeTooLong, /**< Activation code too long */
-	LinphoneActivationCodeInvalidCharacters, /**< Contain invalid characters */
-} LinphoneActivationCodeCheck;
+typedef enum _LinphoneAccountCreatorActivationCodeStatus {
+	LinphoneAccountCreatorActivationCodeStatusOk, /**< Activation code ok */
+	LinphoneAccountCreatorActivationCodeStatusTooShort, /**< Activation code too short */
+	LinphoneAccountCreatorActivationCodeStatusTooLong, /**< Activation code too long */
+	LinphoneAccountCreatorActivationCodeStatusInvalidCharacters /**< Contain invalid characters */
+} LinphoneAccountCreatorActivationCodeStatus;
 
 /**
  * Enum describing the status of server request.
  * @ingroup account_creator_request
 **/
-typedef enum _LinphoneRequestStatus {
+typedef enum _LinphoneAccountCreatorStatus {
 	/** Request status **/
-	LinphoneRequestOk, /**< Request passed */
-	LinphoneRequestFailed, /**< Request failed */
-	LinphoneRequestMissingArguments, /**< Request failed due to missing argument(s) */
-	LinphoneRequestMissingCallbacks, /**< Request failed due to missing callback(s) */
+	LinphoneAccountCreatorStatusRequestOk, /**< Request passed */
+	LinphoneAccountCreatorStatusRequestFailed, /**< Request failed */
+	LinphoneAccountCreatorStatusMissingArguments, /**< Request failed due to missing argument(s) */
+	LinphoneAccountCreatorStatusMissingCallbacks, /**< Request failed due to missing callback(s) */
 
 	/** Account status **/
 	/* Creation */
-	LinphoneRequestAccountCreated, /**< Account created */
-	LinphoneRequestAccountNotCreated, /**< Account not created */
+	LinphoneAccountCreatorStatusAccountCreated, /**< Account created */
+	LinphoneAccountCreatorStatusAccountNotCreated, /**< Account not created */
 	/* Existence */
-	LinphoneRequestAccountExist, /**< Account exist */
-	LinphoneRequestAccountExistWithAlias, /**< Account exist with alias */
-	LinphoneRequestAccountNotExist, /**< Account not exist */
-	LinphoneRequestAliasIsAccount, /**< Account was created with Alias */
-	LinphoneRequestAliasExist, /**< Alias exist */
-	LinphoneRequestAliasNotExist, /**< Alias not exist */
+	LinphoneAccountCreatorStatusAccountExist, /**< Account exist */
+	LinphoneAccountCreatorStatusAccountExistWithAlias, /**< Account exist with alias */
+	LinphoneAccountCreatorStatusAccountNotExist, /**< Account not exist */
+	LinphoneAccountCreatorStatusAliasIsAccount, /**< Account was created with Alias */
+	LinphoneAccountCreatorStatusAliasExist, /**< Alias exist */
+	LinphoneAccountCreatorStatusAliasNotExist, /**< Alias not exist */
 	/* Activation */
-	LinphoneRequestAccountActivated, /**< Account activated */
-	LinphoneRequestAccountAlreadyActivated, /**< Account already activated */
-	LinphoneRequestAccountNotActivated, /**< Account not activated */
+	LinphoneAccountCreatorStatusAccountActivated, /**< Account activated */
+	LinphoneAccountCreatorStatusAccountAlreadyActivated, /**< Account already activated */
+	LinphoneAccountCreatorStatusAccountNotActivated, /**< Account not activated */
 	/* Linking */
-	LinphoneRequestAccountLinked, /**< Account linked */
-	LinphoneRequestAccountNotLinked, /**< Account not linked */
+	LinphoneAccountCreatorStatusAccountLinked, /**< Account linked */
+	LinphoneAccountCreatorStatusAccountNotLinked, /**< Account not linked */
 
 	/** Server **/
-	LinphoneRequestErrorServer, /**< Error server */
-} LinphoneRequestStatus;
+	LinphoneAccountCreatorStatusServerError /**< Error server */
+} LinphoneAccountCreatorStatus;
 
 struct SalAddress;
 
@@ -243,6 +244,16 @@ typedef struct _LinphoneBuffer LinphoneBuffer;
 typedef struct _LinphoneCall LinphoneCall;
 
 /**
+ * That class holds all the callbacks which are called by LinphoneCall objects.
+ *
+ * Use linphone_factory_create_call_cbs() to create an instance. Then, call the
+ * callback setters on the events you need to monitor and pass the object to
+ * a LinphoneCall instance through linphone_call_add_callbacks().
+ * @ingroup call_control
+ */
+typedef struct _LinphoneCallCbs LinphoneCallCbs;
+
+/**
  * Enum representing the direction of a call.
  * @ingroup call_logs
 **/
@@ -313,7 +324,8 @@ typedef enum _LinphoneCallStatus {
 	LinphoneCallSuccess, /**< The call was sucessful */
 	LinphoneCallAborted, /**< The call was aborted */
 	LinphoneCallMissed, /**< The call was missed (unanswered) */
-	LinphoneCallDeclined /**< The call was declined, either locally or by remote end */
+	LinphoneCallDeclined, /**< The call was declined, either locally or by remote end */
+	LinphoneCallEarlyAborted /**<The call was aborted before being advertised to the application - for protocol reasons*/
 } LinphoneCallStatus;
 
 /**
@@ -446,7 +458,7 @@ typedef struct _LinphoneCore LinphoneCore;
  *
  * Use linphone_factory_create_core_cbs() to create an instance. Then, call the
  * callback setters on the events you need to monitor and pass the object to
- * a #LinphoneCore instance through linphone_core_add_listener().
+ * a #LinphoneCore instance through linphone_core_add_callbacks().
  *
  * That class is inherited from belle_sip_object_t.
  * @ingroup initializing
@@ -673,12 +685,6 @@ typedef enum _LinphoneOnlineStatus{
 
 	LinphoneStatusEnd
 } LinphoneOnlineStatus;
-
-/**
- * Object representing an RTP payload type.
- * @ingroup media_parameters
- */
-typedef PayloadType LinphonePayloadType;
 
 /**
  * Player interface.
@@ -1165,6 +1171,12 @@ typedef enum _LinphoneXmlRpcStatus {
 } LinphoneXmlRpcStatus;
 
 typedef struct _LsdPlayer LsdPlayer;
+
+/**
+ * Object representing an RTP payload type.
+ * @ingroup media_parameters
+ */
+typedef struct _LinphonePayloadType LinphonePayloadType;
 
 
 /**

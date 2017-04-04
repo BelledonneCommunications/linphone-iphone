@@ -213,15 +213,27 @@ const char *linphone_call_params_get_session_name(const LinphoneCallParams *cp){
 	return cp->session_name;
 }
 
-const LinphonePayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
+LinphonePayloadType *linphone_call_params_get_used_audio_payload_type(const LinphoneCallParams *cp) {
+	return cp->audio_codec ? linphone_payload_type_new(NULL, cp->audio_codec) : NULL;
+}
+
+LinphonePayloadType *linphone_call_params_get_used_video_payload_type(const LinphoneCallParams *cp) {
+	return cp->video_codec ? linphone_payload_type_new(NULL, cp->video_codec) : NULL;
+}
+
+LinphonePayloadType *linphone_call_params_get_used_text_payload_type(const LinphoneCallParams *cp) {
+	return cp->text_codec ? linphone_payload_type_new(NULL, cp->text_codec) : NULL;
+}
+
+const OrtpPayloadType *linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
 	return cp->audio_codec;
 }
 
-const LinphonePayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
+const OrtpPayloadType *linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
 	return cp->video_codec;
 }
 
-const LinphonePayloadType* linphone_call_params_get_used_text_codec(const LinphoneCallParams *cp) {
+const OrtpPayloadType *linphone_call_params_get_used_text_codec(const LinphoneCallParams *cp) {
 	return cp->text_codec;
 }
 

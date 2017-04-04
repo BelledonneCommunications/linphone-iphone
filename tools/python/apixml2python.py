@@ -27,6 +27,7 @@ from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandW
 
 
 blacklisted_classes = [
+	'LinphoneIntRange',
 	'LinphoneTunnel',
 	'LinphoneTunnelConfig'
 ]

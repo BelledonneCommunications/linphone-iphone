@@ -26,7 +26,7 @@ lib_LTLIBRARIES=liblinphone.la
 
 liblinphone_la_SOURCES=\
 	account_creator.c \
-	account_creator_request_engine.c \
+	account_creator_service.c \
 	address.c \
 	authentication.c \
 	buffer.c \
