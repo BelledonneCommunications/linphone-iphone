@@ -528,8 +528,10 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	}else err=-1;
 
 	if (err==-1){
+		sal_error_info_init_to_null(&sei);
 		sal_error_info_set(&sei, reason,"SIP", 0, NULL, NULL);
-		sal_call_decline(op,reason,NULL);
+		sal_call_decline_with_error_info(op, &sei,NULL);
+
 	}
 	return err;
 }
@@ -1002,7 +1004,7 @@ int sal_call_decline_with_error_info(SalOp *op,  const SalErrorInfo *info, const
 	trans=(belle_sip_transaction_t*)op->pending_server_trans;
 	if (!trans) trans=(belle_sip_transaction_t*)op->pending_update_server_trans;
 	if (!trans){
-		ms_error("sal_call_decline(): no pending transaction to decline.");
+		ms_error("sal_call_decline_with_error_info(): no pending transaction to decline.");
 		return -1;
 	}
 	response = sal_op_create_response_from_request(op,belle_sip_transaction_get_request(trans),status);
@@ -1089,7 +1091,16 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 
 
 int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
-//	SalErrorInfo sei;
+	SalErrorInfo sei;
+	const SalErrorInfo *p_sei;
+	if (info == NULL){
+		sal_error_info_init_to_null(&sei);
+		sal_error_info_set(&sei,SalReasonDeclined, "SIP", 0, NULL, NULL);
+		p_sei = &sei;
+	} else{
+		p_sei = info;
+	
+	}
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
 	if (op->state==SalOpStateTerminating || op->state==SalOpStateTerminated) {
 		ms_error("Cannot terminate op [%p] in state [%s]",op,sal_op_state_to_string(op->state));
@@ -1109,8 +1120,7 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 
 		case BELLE_SIP_DIALOG_NULL: {
 			if (op->dir == SalOpDirIncoming) {
-				//sal_error_info_set(&sei, SalReasonDeclined,"SIP", 0, NULL, NULL);
-				sal_call_decline(op, SalReasonDeclined,NULL);
+				sal_call_decline_with_error_info(op, p_sei, NULL);
 				op->state=SalOpStateTerminated;
 			} else if (op->pending_client_trans){
 				if (belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_PROCEEDING){
@@ -1127,8 +1137,7 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 		}
 		case BELLE_SIP_DIALOG_EARLY: {
 			if (op->dir == SalOpDirIncoming) {
-				//sal_error_info_set(&sei, SalReasonDeclined,"SIP", 0, NULL, NULL);
-				sal_call_decline(op, SalReasonDeclined,NULL);
+				sal_call_decline_with_error_info(op, p_sei,NULL);
 				op->state=SalOpStateTerminated;
 			} else  {
 				cancelling_invite(op);

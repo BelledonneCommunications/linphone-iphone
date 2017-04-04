@@ -605,7 +605,7 @@ void sal_error_info_reset(SalErrorInfo *ei){
 
 void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol, int code, const char *status_string, const char *warning){
 	sal_error_info_reset(ei);
-	if (reason==SalReasonUnknown && strcmp(protocol, "SIP") == 0) ei->reason=_sal_reason_from_sip_code(code);
+	if (reason==SalReasonUnknown && strcmp(protocol, "SIP") == 0 && code != 0) ei->reason=_sal_reason_from_sip_code(code);
 	else{
 		ei->reason=reason;
 		if (code == 0) {

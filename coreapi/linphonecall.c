@@ -5123,7 +5123,8 @@ static void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo
 int linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneErrorInfo *ei){
 	SalErrorInfo sei ;
 	sal_error_info_init_to_null(&sei);
-
+	LinphoneErrorInfo* p_ei = (LinphoneErrorInfo*) ei;
+	
 	ms_message("Terminate call [%p] which is currently in state %s", call, linphone_call_state_to_string(call->state));
 	switch (call->state) {
 		case LinphoneCallReleased:
@@ -5133,7 +5134,8 @@ int linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneE
 			return -1;
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
-			return linphone_call_decline(call, LinphoneReasonDeclined);
+			linphone_error_info_set_reason(p_ei, LinphoneReasonDeclined);
+			return linphone_call_decline_with_error(call, p_ei);
 		case LinphoneCallOutgoingInit:
 			/* In state OutgoingInit, op has to be destroyed */
 			sal_op_release(call->op);
@@ -5177,8 +5179,9 @@ int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	}
 
 	real_url = linphone_address_as_string(real_parsed_url);
+	sal_error_info_init_to_null(&sei);
 	sal_error_info_set(&sei,SalReasonRedirect, "SIP", 0, NULL, NULL);
-	sal_call_decline(call->op, SalReasonRedirect, real_url);
+	sal_call_decline_with_error_info(call->op, &sei, real_url);
 	ms_free(real_url);
 	linphone_error_info_set(call->ei, NULL, LinphoneReasonMovedPermanently, 302, "Call redirected", NULL);
 	call->non_op_error = TRUE;
@@ -5188,12 +5191,10 @@ int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 }
 
 int linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
-	SalErrorInfo sei;
 	if ((call->state != LinphoneCallIncomingReceived) && (call->state != LinphoneCallIncomingEarlyMedia)) {
 		ms_error("Cannot decline a call that is in state %s", linphone_call_state_to_string(call->state));
 		return -1;
 	}
-	sal_error_info_set(&sei, linphone_reason_to_sal(reason),"SIP", 0, NULL, NULL);
 	sal_call_decline(call->op, linphone_reason_to_sal(reason), NULL);
 	terminate_call(call);
 	return 0;
@@ -5216,10 +5217,6 @@ int linphone_call_decline_with_error(LinphoneCall * call, const LinphoneErrorInf
 		return -1;
 	}
 	linphone_error_info_to_sal(ei, &sei);
-	//linphone_error_info_to_sal(ei->sub_ei, &sub_sei);
-	//sei.sub_sei = &sub_sei;
-	// check if sub reason exists
-
 
 	sal_call_decline_with_error_info(call->op, &sei , NULL);
 	terminate_call(call);
@@ -5849,8 +5846,9 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 			break;
 		case LinphoneCallUpdatedByRemote:
 			if (sal_call_dialog_request_pending(call->op)) {
+				sal_error_info_init_to_null(&sei);
 				sal_error_info_set(&sei, SalReasonServiceUnavailable,"SIP", 0, NULL, NULL);
-				sal_call_decline(call->op, SalReasonServiceUnavailable, NULL);
+				sal_call_decline_with_error_info(call->op, &sei,NULL);
 			}
 			linphone_call_reinvite_to_recover_from_connection_loss(call);
 			break;

@@ -401,7 +401,13 @@ LINPHONE_PUBLIC int linphone_call_redirect(LinphoneCall *call, const char *redir
  * @return 0 on success, -1 on failure
 **/
 LINPHONE_PUBLIC int linphone_call_decline(LinphoneCall * call, LinphoneReason reason);
-	
+
+/**
+ * Decline a pending incoming call, with a LinphoneErrorInfo object.
+ * @param[in] call A LinphoneCall object that must be in the IncomingReceived state
+ * @param[in] ei LinphoneErrorInfo containing more information on the call rejection.
+ * @return 0 on success, -1 on failure
+ */
 LINPHONE_PUBLIC int linphone_call_decline_with_error(LinphoneCall * call, const LinphoneErrorInfo *ei);
 
 /**
