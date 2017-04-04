@@ -81,6 +81,7 @@ liblinphone_la_SOURCES=\
 	ringtoneplayer.c \
 	sqlite3_bctbx_vfs.c sqlite3_bctbx_vfs.h\
 	factory.c \
+	payload_type.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
