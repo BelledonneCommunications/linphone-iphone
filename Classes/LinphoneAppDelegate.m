@@ -17,12 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "PhoneMainView.h"
-#import "ContactsListView.h"
-#import "ContactDetailsView.h"
-#import "ShopView.h"
-#import "linphoneAppDelegate.h"
+#import "LinphoneAppDelegate.h"
 #import "AddressBook/ABPerson.h"
+#import "ContactDetailsView.h"
+#import "ContactsListView.h"
+#import "PhoneMainView.h"
+#import "ShopView.h"
 
 #import "CoreTelephony/CTCallCenter.h"
 #import "CoreTelephony/CTCall.h"
