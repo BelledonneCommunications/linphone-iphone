@@ -312,7 +312,7 @@ static void call_received(SalOp *h){
 					sal_call_decline_with_error_info(h, &sei,alt_contact);
 					ms_free(alt_contact);
 					ei = linphone_error_info_new();
-					linphone_error_info_set(ei, LinphoneReasonMovedPermanently, 302, "Moved permanently", NULL);
+					linphone_error_info_set(ei, NULL, LinphoneReasonMovedPermanently, 302, "Moved permanently", NULL);
 					linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 					sal_op_release(h);
 					return;
@@ -327,7 +327,7 @@ static void call_received(SalOp *h){
 	if (!linphone_core_can_we_add_call(lc)){/*busy*/
 		sal_call_decline(h,SalReasonBusy,NULL);
 		ei = linphone_error_info_new();
-		linphone_error_info_set(ei, LinphoneReasonBusy, 486, "Busy - too many calls", NULL);
+		linphone_error_info_set(ei, NULL, LinphoneReasonBusy, 486, "Busy - too many calls", NULL);
 		linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 		sal_op_release(h);
 		return;
@@ -347,7 +347,7 @@ static void call_received(SalOp *h){
 		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message.",addr);
 		sal_call_decline(h,SalReasonBusy,NULL);
 		ei = linphone_error_info_new();
-		linphone_error_info_set(ei, LinphoneReasonBusy, 486, "Busy - duplicated call", NULL);
+		linphone_error_info_set(ei, NULL, LinphoneReasonBusy, 486, "Busy - duplicated call", NULL);
 		linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 		sal_op_release(h);
 		linphone_address_unref(from_addr);
@@ -367,7 +367,7 @@ static void call_received(SalOp *h){
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
 			ei = linphone_error_info_new();
-			linphone_error_info_set(ei, LinphoneReasonNotAcceptable, 488, "Not acceptable here", NULL);
+			linphone_error_info_set(ei, NULL, LinphoneReasonNotAcceptable, 488, "Not acceptable here", NULL);
 			linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, linphone_address_ref(from_addr), linphone_address_ref(to_addr), ei);
 			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
 			linphone_call_unref(call);

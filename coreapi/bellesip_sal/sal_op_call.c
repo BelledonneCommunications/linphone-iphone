@@ -510,6 +510,7 @@ static int is_media_description_acceptable(SalMediaDescription *md){
 static SalReason process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
 	SalReason reason = SalReasonNone;
+	SalErrorInfo sei;
 
 	if (extract_sdp(op,BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
