@@ -157,6 +157,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)setChatRoom:(LinphoneChatRoom *)chatRoom {
+
 	_chatRoom = chatRoom;
 	[_messageField setText:@""];
 	[_tableController setChatRoom:_chatRoom];
@@ -357,10 +358,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (fromStr && cr_from_string) {
 		if (strcasecmp(cr_from_string, fromStr) == 0) {
-			if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+			if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+				  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive)) {
 				linphone_chat_room_mark_as_read(room);
-				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
 			}
+			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
 			[_tableController addChatEntry:chat];
 			[_tableController scrollToLastUnread:TRUE];
 		}

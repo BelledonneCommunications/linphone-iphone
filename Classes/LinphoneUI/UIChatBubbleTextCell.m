@@ -150,7 +150,10 @@
 		[_messageText setAccessibilityLabel:@"Outgoing message"];
 	} else {
 		[_messageText setAccessibilityLabel:@"Incoming message"];
-		VIEW(ChatConversationView).markAsRead;
+		if (!([UIApplication sharedApplication].applicationState != UIApplicationStateBackground ||
+			  [UIApplication sharedApplication].applicationState != UIApplicationStateInactive)) {
+			VIEW(ChatConversationView).markAsRead;
+		}
 	}
 
 	if (outgoing &&

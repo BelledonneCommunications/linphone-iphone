@@ -900,7 +900,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
 				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
 				if (room) {
-					linphone_chat_room_mark_as_read(room);
+					if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+						  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive))
+						linphone_chat_room_mark_as_read(room);
 					TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 						getCachedController:NSStringFromClass(TabBarView.class)];
 					[tab update:YES];
@@ -949,8 +951,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
 				[LinphoneManager.instance alertLIME:room];
 			}
-
-			linphone_chat_room_mark_as_read(room);
+			if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+				  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive)) {
+				linphone_chat_room_mark_as_read(room);
+			}
 			[PhoneMainView.instance updateApplicationBadgeNumber];
 		}
 	}
