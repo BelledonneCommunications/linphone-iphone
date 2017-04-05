@@ -36,7 +36,7 @@ class CppTranslator(object):
 		self.ambigousTypes = ['LinphonePayloadType']
 	
 	def is_ambigous_type(self, _type):
-		return _type.name in self.ambigousTypes or (_type.name == 'list' and CppTranslator.is_ambigous_type(self, _type.containedTypeDesc))
+		return _type.name in self.ambigousTypes or (_type.name == 'list' and self.is_ambigous_type(_type.containedTypeDesc))
 	
 	@staticmethod
 	def translate_enum(enum):
@@ -92,7 +92,7 @@ class CppTranslator(object):
 			classDict['cListenerName'] = _class.listenerInterface.name.to_c()
 			classDict['cppListenerName'] = CppTranslator.translate_class_name(_class.listenerInterface.name)
 			for method in _class.listenerInterface.methods:
-				classDict['wrapperCbs'].append(CppTranslator._generate_wrapper_callback(self, _class, method))
+				classDict['wrapperCbs'].append(self._generate_wrapper_callback(_class, method))
 		
 		if ismonolistenable:
 			classDict['cCbsGetter'] = _class.name.to_snake_case(fullName=True) + '_get_callbacks'
@@ -106,22 +106,22 @@ class CppTranslator(object):
 			classDict['userDataGetter'] = _class.listenerInterface.name.to_snake_case(fullName=True)[:-len('_listener')] + '_cbs_get_user_data'
 			classDict['currentCallbacksGetter'] = _class.name.to_snake_case(fullName=True) + '_get_current_callbacks'
 		
-		for property in _class.properties:
+		for _property in _class.properties:
 			try:
-				classDict['methods'] += CppTranslator.translate_property(self, property)
+				classDict['methods'] += self.translate_property(_property)
 			except AbsApi.Error as e:
-				print('error while translating {0} property: {1}'.format(property.name.to_snake_case(), e.args[0]))
+				print('error while translating {0} property: {1}'.format(_property.name.to_snake_case(), e.args[0]))
 		
 		for method in _class.instanceMethods:
 			try:
-				methodDict = CppTranslator.translate_method(self, method)
+				methodDict = self.translate_method(method)
 				classDict['methods'].append(methodDict)
 			except AbsApi.Error as e:
 				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
 				
 		for method in _class.classMethods:
 			try:
-				methodDict = CppTranslator.translate_method(self, method)
+				methodDict = self.translate_method(method)
 				classDict['staticMethods'].append(methodDict)
 			except AbsApi.Error as e:
 				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
@@ -138,7 +138,7 @@ class CppTranslator(object):
 		wrappedArgs = []
 		for arg in method.args:
 			args.append(arg.type.cname + ' ' + arg.name.to_c())
-			wrappedArgs.append(CppTranslator._wrap_c_expression_to_cpp(self, arg.name.to_c(), arg.type, usedNamespace=namespace))
+			wrappedArgs.append(self._wrap_c_expression_to_cpp(arg.name.to_c(), arg.type, usedNamespace=namespace))
 		params['params'] = ', '.join(args)
 		params['returnType'] = method.returnType.cname
 		
@@ -153,9 +153,7 @@ class CppTranslator(object):
 		wrapperCbDict['cppMethodCallingLine'] = 'listener->{methodName}({wrappedArgs})'.format(
 			methodName=method.name.to_camel_case(lower=True),
 			wrappedArgs=', '.join(wrappedArgs))
-		wrapperCbDict['cppMethodCallingLine'] = CppTranslator._wrap_cpp_expression_to_c(self,
-																				  wrapperCbDict['cppMethodCallingLine'],
-																				  method.returnType)
+		wrapperCbDict['cppMethodCallingLine'] = self._wrap_cpp_expression_to_c(wrapperCbDict['cppMethodCallingLine'], method.returnType)
 		return wrapperCbDict
 	
 	def translate_interface(self, interface):
@@ -171,19 +169,19 @@ class CppTranslator(object):
 		intDict['methods'] = []
 		for method in interface.methods:
 			try:
-				methodDict = CppTranslator.translate_method(self, method, genImpl=False)
+				methodDict = self.translate_method(method, genImpl=False)
 				intDict['methods'].append(methodDict)
 			except AbsApi.Error as e:
 				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
 		
 		return intDict
 	
-	def translate_property(self, property):
+	def translate_property(self, _property):
 		res = []
-		if property.getter is not None:
-			res.append(CppTranslator.translate_method(self, property.getter))
-		if property.setter is not None:
-			res.append(CppTranslator.translate_method(self, property.setter))
+		if _property.getter is not None:
+			res.append(self.translate_method(_property.getter))
+		if _property.setter is not None:
+			res.append(self.translate_method(_property.setter))
 		return res
 	
 	def translate_method(self, method, genImpl=True):
@@ -193,14 +191,14 @@ class CppTranslator(object):
 		namespace = method.find_first_ancestor_by_type(AbsApi.Namespace)
 		
 		methodElems = {}
-		methodElems['return'] = CppTranslator.translate_type(self, method.returnType)
+		methodElems['return'] = self.translate_type(method.returnType)
 		methodElems['name'] = CppTranslator.translate_method_name(method.name)
 		
 		methodElems['params'] = ''
 		for arg in method.args:
 			if arg is not method.args[0]:
 				methodElems['params'] += ', '
-			methodElems['params'] += CppTranslator.translate_argument(self, arg)
+			methodElems['params'] += self.translate_argument(arg)
 		
 		methodElems['const'] = ' const' if method.constMethod else ''
 		methodElems['semicolon'] = ';'
@@ -221,20 +219,20 @@ class CppTranslator(object):
 		methodDict['prototype'] = 'LINPHONECXX_PUBLIC {deprecated}{methodType}{return} {name}({params}){const}{semicolon}'.format(**methodElems)
 	
 		if genImpl:
-			if not CppTranslator.is_ambigous_type(self, method.returnType):
-				methodElems['implReturn'] = CppTranslator.translate_type(self, method.returnType, namespace=namespace)
+			if not self.is_ambigous_type(method.returnType):
+				methodElems['implReturn'] = self.translate_type(method.returnType, namespace=namespace)
 			else:
-				methodElems['implReturn'] = CppTranslator.translate_type(self, method.returnType, namespace=None)
+				methodElems['implReturn'] = self.translate_type(method.returnType, namespace=None)
 			
 			methodElems['longname'] = CppTranslator.translate_method_name(method.name, recursive=True)
 			methodElems['implParams'] = ''
 			for arg in method.args:
 				if arg is not method.args[0]:
 					methodElems['implParams'] += ', '
-				methodElems['implParams'] += CppTranslator.translate_argument(self, arg, namespace=namespace)
+				methodElems['implParams'] += self.translate_argument(arg, namespace=namespace)
 			
 			methodDict['implPrototype'] = '{implReturn} {longname}({implParams}){const}'.format(**methodElems)
-			methodDict['sourceCode' ] = CppTranslator._generate_source_code(self, method, usedNamespace=namespace)
+			methodDict['sourceCode' ] = self._generate_source_code(method, usedNamespace=namespace)
 		
 		return methodDict
 	
@@ -242,12 +240,12 @@ class CppTranslator(object):
 		nsName = usedNamespace.name if usedNamespace is not None else None
 		params = {
 			'functionName': method.name.to_c(),
-			'args': CppTranslator._generate_wrapped_arguments(self, method, usedNamespace=usedNamespace)
+			'args': self._generate_wrapped_arguments(method, usedNamespace=usedNamespace)
 		}
 		
 		if method.name.to_camel_case(lower=True) != 'setListener':
 			cExpr = '{functionName}({args})'.format(**params)
-			cppExpr = CppTranslator._wrap_c_expression_to_cpp(self, cExpr, method.returnType, usedNamespace=usedNamespace)
+			cppExpr = self._wrap_c_expression_to_cpp(cExpr, method.returnType, usedNamespace=usedNamespace)
 		else:
 			cppExpr = 'ListenableObject::setListener(std::static_pointer_cast<Listener>({0}))'.format(method.args[0].name.to_snake_case())
 		
@@ -265,7 +263,7 @@ class CppTranslator(object):
 		
 		for arg in method.args:
 			paramName = arg.name.to_camel_case(lower=True)
-			args.append(CppTranslator._wrap_cpp_expression_to_c(self, paramName, arg.type, usedNamespace=usedNamespace))
+			args.append(self._wrap_cpp_expression_to_c(paramName, arg.type, usedNamespace=usedNamespace))
 		
 		return ', '.join(args)
 	
@@ -280,7 +278,7 @@ class CppTranslator(object):
 		elif type(exprtype) is AbsApi.ClassType:
 			cPtrType = exprtype.desc.name.to_c()
 			if exprtype.desc.refcountable:
-				ptrType = CppTranslator.translate_class_type(self, exprtype, namespace=usedNamespace)
+				ptrType = self.translate_class_type(exprtype, namespace=usedNamespace)
 				ptrType = CppTranslator.sharedPtrTypeExtractor.match(ptrType).group(2)
 				param = {
 					'ptrType' : ptrType,
@@ -298,7 +296,7 @@ class CppTranslator(object):
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				cExpr = 'StringBctbxListWrapper({0}).c_list()'.format(cppExpr)
 			elif type(exprtype.containedTypeDesc) is AbsApi.ClassType:
-				ptrType = CppTranslator.translate_class_type(self, exprtype.containedTypeDesc, namespace=usedNamespace)
+				ptrType = self.translate_class_type(exprtype.containedTypeDesc, namespace=usedNamespace)
 				if exprtype.containedTypeDesc.desc.refcountable:
 					ptrType = CppTranslator.sharedPtrTypeExtractor.match(ptrType).group(2)
 					cExpr = 'ObjectBctbxListWrapper<{0}>({1}).c_list()'.format(ptrType, cppExpr)
@@ -324,10 +322,10 @@ class CppTranslator(object):
 			else:
 				return cExpr
 		elif type(exprtype) is AbsApi.EnumType:
-			cppEnumName = CppTranslator.translate_enum_type(self, exprtype, namespace=usedNamespace)
+			cppEnumName = self.translate_enum_type(exprtype, namespace=usedNamespace)
 			return '({0}){1}'.format(cppEnumName, cExpr)
 		elif type(exprtype) is AbsApi.ClassType:
-			cppReturnType = CppTranslator.translate_class_type(self, exprtype, namespace=usedNamespace)
+			cppReturnType = self.translate_class_type(exprtype, namespace=usedNamespace)
 			if exprtype.desc.refcountable:
 				cppReturnType = CppTranslator.sharedPtrTypeExtractor.match(cppReturnType).group(2)
 				
@@ -347,7 +345,7 @@ class CppTranslator(object):
 			if type(exprtype.containedTypeDesc) is AbsApi.BaseType and exprtype.containedTypeDesc.name == 'string':
 				return 'StringBctbxListWrapper::bctbxListToCppList({0})'.format(cExpr)
 			elif type(exprtype.containedTypeDesc) is AbsApi.ClassType:
-				cppReturnType = CppTranslator.translate_class_type(self, exprtype.containedTypeDesc, namespace=usedNamespace)
+				cppReturnType = self.translate_class_type(exprtype.containedTypeDesc, namespace=usedNamespace)
 				if exprtype.containedTypeDesc.desc.refcountable:
 					cppReturnType = CppTranslator.sharedPtrTypeExtractor.match(cppReturnType).group(2)
 					return 'ObjectBctbxListWrapper<{0}>::bctbxListToCppList({1})'.format(cppReturnType, cExpr)
@@ -360,17 +358,17 @@ class CppTranslator(object):
 			return cExpr
 	
 	def translate_argument(self, arg, **params):
-		return '{0} {1}'.format(CppTranslator.translate_type(self, arg.type, **params), CppTranslator.translate_argument_name(arg.name))
+		return '{0} {1}'.format(self.translate_type(arg.type, **params), CppTranslator.translate_argument_name(arg.name))
 	
 	def translate_type(self, aType, **params):
 		if type(aType) is AbsApi.BaseType:
-			return CppTranslator.translate_base_type(self, aType)
+			return self.translate_base_type(aType)
 		elif type(aType) is AbsApi.EnumType:
-			return CppTranslator.translate_enum_type(self, aType, **params)
+			return self.translate_enum_type(aType, **params)
 		elif type(aType) is AbsApi.ClassType:
-			return CppTranslator.translate_class_type(self, aType, **params)
+			return self.translate_class_type(aType, **params)
 		elif type(aType) is AbsApi.ListType:
-			return CppTranslator.translate_list_type(self, aType, **params)
+			return self.translate_list_type(aType, **params)
 		else:
 			CppTranslator.fail(aType)
 	
@@ -473,9 +471,9 @@ class CppTranslator(object):
 		if _type.containedTypeDesc is None:
 			raise AbsApi.Error('{0} has not been fixed'.format(_type.containedTypeName))
 		elif isinstance(_type.containedTypeDesc, AbsApi.BaseType):
-			res = CppTranslator.translate_type(self, _type.containedTypeDesc)
+			res = self.translate_type(_type.containedTypeDesc)
 		else:
-			res = CppTranslator.translate_type(self, _type.containedTypeDesc, **params)
+			res = self.translate_type(_type.containedTypeDesc, **params)
 			
 		if type(_type.parent) is AbsApi.Argument:
 			return 'const std::list<{0} > &'.format(res)
@@ -576,7 +574,7 @@ class ClassHeader(object):
 		self.private_type = _class.name.to_camel_case(fullName=True)
 		
 		self.includes = {'internal': [], 'external': []}
-		includes = ClassHeader.needed_includes(self, _class)
+		includes = self.needed_includes(_class)
 		for include in includes['internal']:
 			if _class.name.to_camel_case(fullName=True) == 'LinphoneCore' or (isinstance(_class, AbsApi.Interface) and _class.listenedClass is not None and include == _class.listenedClass.name.to_snake_case()):
 				if include == 'enums':
@@ -592,16 +590,16 @@ class ClassHeader(object):
 			self.includes['external'].append({'name': include})
 	
 	def needed_includes(self, _class):
-		includes = {'internal': set(), 'external': set()}
+		includes = {'internal': [], 'external': []}
 		
 		if type(_class) is AbsApi.Class:
-			includes['internal'].add('object')
+			self._add_include(includes, 'internal', 'object')
 			
-			for property in _class.properties:
-				if property.setter is not None:
-					ClassHeader._needed_includes_from_method(self, property.setter, includes)
-				if property.getter is not None:
-					ClassHeader._needed_includes_from_method(self, property.getter, includes)
+			for _property in _class.properties:
+				if _property.setter is not None:
+					self._needed_includes_from_method(_property.setter, includes)
+				if _property.getter is not None:
+					self._needed_includes_from_method(_property.getter, includes)
 		
 		if type(_class) is AbsApi.Class:
 			methods = _class.classMethods + _class.instanceMethods
@@ -609,12 +607,12 @@ class ClassHeader(object):
 			methods = _class.methods
 		
 		for method in methods:
-			ClassHeader._needed_includes_from_type(self, method.returnType, includes)
+			self._needed_includes_from_type(method.returnType, includes)
 			for arg in method.args:
-				ClassHeader._needed_includes_from_type(self, arg.type, includes)
+				self._needed_includes_from_type(arg.type, includes)
 		
 		if isinstance(_class, AbsApi.Class) and _class.listenerInterface is not None:
-			includes['internal'].add(_class.listenerInterface.name.to_snake_case())
+			self._add_include(includes, 'internal', _class.listenerInterface.name.to_snake_case())
 		
 		currentClassInclude = _class.name.to_snake_case()
 		if currentClassInclude in includes['internal']:
@@ -623,25 +621,29 @@ class ClassHeader(object):
 		return includes
 	
 	def _needed_includes_from_method(self, method, includes):
-		ClassHeader._needed_includes_from_type(self, method.returnType, includes)
+		self._needed_includes_from_type(method.returnType, includes)
 		for arg in method.args:
-			ClassHeader._needed_includes_from_type(self, arg.type, includes)
+			self._needed_includes_from_type(arg.type, includes)
 	
 	def _needed_includes_from_type(self, _type, includes):
 		if isinstance(_type, AbsApi.ClassType):
-			includes['external'].add('memory')
+			self._add_include(includes, 'external', 'memory')
 			if _type.desc is not None:
-				includes['internal'].add(_type.desc.name.to_snake_case())
+				self._add_include(includes, 'internal', _type.desc.name.to_snake_case())
 		elif isinstance(_type, AbsApi.EnumType):
-			includes['internal'].add('enums')
+			self._add_include(includes, 'internal', 'enums')
 		elif isinstance(_type, AbsApi.BaseType):
 			if _type.name == 'integer' and isinstance(_type.size, int):
-				includes['external'].add('cstdint')
+				self._add_include(includes, 'external', 'cstdint')
 			elif _type.name == 'string':
-				includes['external'].add('string')
+				self._add_include(includes, 'external', 'string')
 		elif isinstance(_type, AbsApi.ListType):
-			includes['external'].add('list')
-			ClassHeader._needed_includes_from_type(self, _type.containedTypeDesc, includes)
+			self._add_include(includes, 'external', 'list')
+			self._needed_includes_from_type(_type.containedTypeDesc, includes)
+	
+	def _add_include(self, includes, location, name):
+		if not name in includes[location]:
+			includes[location].append(name)
 
 
 class MainHeader(object):
@@ -658,16 +660,65 @@ class ClassImpl(object):
 		self.classes = []
 		self.namespace = 'linphone'
 
-def render(renderer, item, path):
-	tmppath = path + '.tmp'
-	content = ''
-	with open(tmppath, mode='w') as f:
-		f.write(renderer.render(item))
-	with open(tmppath, mode='rU') as f:
-		content = f.read()
-	with open(path, mode='w') as f:
-		f.write(content)
-	os.unlink(tmppath)
+class GenWrapper(object):
+	def __init__(self, includedir, srcdir, xmldir):
+		self.includedir = includedir
+		self.srcdir = srcdir
+
+		project = CApi.Project()
+		project.initFromDir(xmldir)
+		project.check()
+		
+		self.parser = AbsApi.CParser(project)
+		self.parser.parse_all()
+		self.translator = CppTranslator()
+		self.renderer = pystache.Renderer()	
+		self.mainHeader = MainHeader()
+		self.impl = ClassImpl()
+
+	def render_all(self):
+		header = EnumsHeader(self.translator)
+		for item in self.parser.enumsIndex.items():
+			if item[1] is not None:
+				header.add_enum(item[1])
+			else:
+				print('warning: {0} enum won\'t be translated because of parsing errors'.format(item[0]))
+		
+		self.render(header, self.includedir + '/enums.hh')
+		self.mainHeader.add_include('enums.hh')
+		
+		for _class in self.parser.interfacesIndex.values():
+			self.render_header(_class)
+		for _class in self.parser.classesIndex.values():
+			self.render_header(_class)
+		
+		self.render(self.mainHeader, self.includedir + '/linphone.hh')
+		self.render(self.impl, self.srcdir + '/linphone++.cc')
+
+	def render(self, item, path):
+		tmppath = path + '.tmp'
+		content = ''
+		with open(tmppath, mode='w') as f:
+			f.write(self.renderer.render(item))
+		with open(tmppath, mode='rU') as f:
+			content = f.read()
+		with open(path, mode='w') as f:
+			f.write(content)
+		os.unlink(tmppath)
+
+	def render_header(self, _class):
+		if _class is not None:
+			try:
+				header = ClassHeader(_class, self.translator)
+				headerName = _class.name.to_snake_case() + '.hh'
+				self.mainHeader.add_include(headerName)
+				self.render(header, self.includedir + '/' + header.filename)
+				
+				if type(_class) is not AbsApi.Interface:
+					self.impl.classes.append(header._class)
+				
+			except AbsApi.Error as e:
+				print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
 
 def main():
 	argparser = argparse.ArgumentParser(description='Generate source files for the C++ wrapper')
@@ -692,45 +743,8 @@ def main():
 			print("Cannot create '{0}' dircetory: {1}".format(srcdir, e.strerror))
 			sys.exit(1)
 	
-	project = CApi.Project()
-	project.initFromDir(args.xmldir)
-	project.check()
-	
-	parser = AbsApi.CParser(project)
-	parser.parse_all()
-	translator = CppTranslator()
-	renderer = pystache.Renderer()	
-	
-	header = EnumsHeader(translator)
-	for item in parser.enumsIndex.items():
-		if item[1] is not None:
-			header.add_enum(item[1])
-		else:
-			print('warning: {0} enum won\'t be translated because of parsing errors'.format(item[0]))
-	
-	render(renderer, header, includedir + '/enums.hh')
-	
-	mainHeader = MainHeader()
-	mainHeader.add_include('enums.hh')
-	
-	impl = ClassImpl()
-	
-	for _class in parser.classesIndex.values() + parser.interfacesIndex.values():
-		if _class is not None:
-			try:
-				header = ClassHeader(_class, translator)
-				headerName = _class.name.to_snake_case() + '.hh'
-				mainHeader.add_include(headerName)
-				render(renderer, header, includedir + '/' + header.filename)
-				
-				if type(_class) is not AbsApi.Interface:
-					impl.classes.append(header._class)
-				
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-	
-	render(renderer, mainHeader, includedir + '/linphone.hh')
-	render(renderer, impl, srcdir + '/linphone++.cc')
+	genwrapper = GenWrapper(includedir, srcdir, args.xmldir)
+	genwrapper.render_all()
 
 
 if __name__ == '__main__':

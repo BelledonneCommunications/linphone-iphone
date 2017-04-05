@@ -170,12 +170,12 @@ class MethodName(Name):
 	
 	def to_c(self):
 		suffix = ('_' + str(self.overloadRef)) if self.overloadRef > 0 else ''
-		return Name.to_snake_case(self, fullName=True) + suffix
+		return self.to_snake_case(fullName=True) + suffix
 
 
 class ArgName(Name):
 	def to_c(self):
-		return Name.to_snake_case(self)
+		return self.to_snake_case()
 
 
 class PropertyName(ArgName):
@@ -478,16 +478,16 @@ class CParser(object):
 		
 	def parse_all(self):
 		for enum in self.cProject.enums:
-			CParser.parse_enum(self, enum)
+			self.parse_enum(enum)
 		for _class in self.cProject.classes:
 			try:
-				CParser.parse_class(self, _class)
+				self.parse_class(_class)
 			except BlacklistedException:
 				pass
 			except Error as e:
 				print('Could not parse \'{0}\' class: {1}'.format(_class.name, e.args[0]))
 				
-		CParser._fix_all_types(self)
+		self._fix_all_types()
 	
 	
 	def _class_is_refcountable(self, _class):
@@ -499,33 +499,38 @@ class CParser(object):
 				return True
 		return False
 	
+	def _fix_all_types_in_class_or_interface(self, _class):
+		if _class is not None:
+			if type(_class) is Class:
+				self._fix_all_types_in_class(_class)
+			else:
+				self._fix_all_types_in_interface(_class)
+	
 	def _fix_all_types(self):
-		for _class in self.classesIndex.values() + self.interfacesIndex.values():
-			if _class is not None:
-				if type(_class) is Class:
-					CParser._fix_all_types_in_class(self, _class)
-				else:
-					CParser._fix_all_types_in_interface(self, _class)
+		for _class in self.interfacesIndex.values():
+			self._fix_all_types_in_class_or_interface(_class)
+		for _class in self.classesIndex.values():
+			self._fix_all_types_in_class_or_interface(_class)
 	
 	def _fix_all_types_in_class(self, _class):
 		for property in _class.properties:
 			if property.setter is not None:
-				CParser._fix_all_types_in_method(self, property.setter)
+				self._fix_all_types_in_method(property.setter)
 			if property.getter is not None:
-				CParser._fix_all_types_in_method(self, property.getter)
+				self._fix_all_types_in_method(property.getter)
 		
 		for method in (_class.instanceMethods + _class.classMethods):
-			CParser._fix_all_types_in_method(self, method)
+			self._fix_all_types_in_method(method)
 	
 	def _fix_all_types_in_interface(self, interface):
 		for method in interface.methods:
-			CParser._fix_all_types_in_method(self, method)
+			self._fix_all_types_in_method(method)
 	
 	def _fix_all_types_in_method(self, method):
 		try:
-			CParser._fix_type(self, method.returnType)
+			self._fix_type(method.returnType)
 			for arg in method.args:
-				CParser._fix_type(self, arg.type)
+				self._fix_type(arg.type)
 		except Error as e:
 			print('warning: some types could not be fixed in {0}() function: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
 		
@@ -546,7 +551,7 @@ class CParser(object):
 				_type.containedTypeDesc = EnumType(_type.containedTypeName, enumDesc=self.enumsIndex[_type.containedTypeName])
 			else:
 				if _type.containedTypeName is not None:
-					_type.containedTypeDesc = CParser.parse_c_base_type(self, _type.containedTypeName)
+					_type.containedTypeDesc = self.parse_c_base_type(_type.containedTypeName)
 				else:
 					raise Error('bctbx_list_t type without specified contained type')
 	
@@ -575,10 +580,10 @@ class CParser(object):
 			raise BlacklistedException('{0} is blacklisted'.format(cclass.name));
 		
 		if cclass.name.endswith('Cbs'):
-			_class = CParser._parse_listener(self, cclass)
+			_class = self._parse_listener(cclass)
 			self.interfacesIndex[cclass.name] = _class
 		else:
-			_class = CParser._parse_class(self, cclass)
+			_class = self._parse_class(cclass)
 			self.classesIndex[cclass.name] = _class
 		self.namespace.add_child(_class)
 		return _class
@@ -587,12 +592,12 @@ class CParser(object):
 		name = ClassName()
 		name.from_camel_case(cclass.name, namespace=self.namespace.name)
 		_class = Class(name)
-		_class.refcountable = CParser._class_is_refcountable(self, cclass)
+		_class.refcountable = self._class_is_refcountable(cclass)
 		
 		for cproperty in cclass.properties.values():
 			try:
 				if cproperty.name != 'callbacks':
-					absProperty = CParser._parse_property(self, cproperty, namespace=name)
+					absProperty = self._parse_property(cproperty, namespace=name)
 					_class.add_property(absProperty)
 				else:
 					_class.listenerInterface = self.interfacesIndex[cproperty.getter.returnArgument.ctype]
@@ -601,7 +606,7 @@ class CParser(object):
 		
 		for cMethod in cclass.instanceMethods.values():
 			try:
-				method = CParser.parse_method(self, cMethod, namespace=name)
+				method = self.parse_method(cMethod, namespace=name)
 				if method.name.to_snake_case() == 'add_callbacks' or method.name.to_snake_case() == 'remove_callbacks':
 					if _class.listenerInterface is None or not _class.multilistener:
 						_class.multilistener = True
@@ -618,7 +623,7 @@ class CParser(object):
 				
 		for cMethod in cclass.classMethods.values():
 			try:
-				method = CParser.parse_method(self, cMethod, type=Method.Type.Class, namespace=name)
+				method = self.parse_method(cMethod, type=Method.Type.Class, namespace=name)
 				_class.add_class_method(method)
 			except BlacklistedException:
 				pass
@@ -636,10 +641,10 @@ class CParser(object):
 			methodType = Method.Type.Instance
 		aproperty = Property(name)
 		if cproperty.setter is not None:
-			method = CParser.parse_method(self, cproperty.setter, namespace=namespace, type=methodType)
+			method = self.parse_method(cproperty.setter, namespace=namespace, type=methodType)
 			aproperty.setter = method
 		if cproperty.getter is not None:
-			method = CParser.parse_method(self, cproperty.getter, namespace=namespace, type=methodType)
+			method = self.parse_method(cproperty.getter, namespace=namespace, type=methodType)
 			aproperty.getter = method
 		return aproperty
 	
@@ -658,7 +663,7 @@ class CParser(object):
 		for property in cclass.properties.values():
 			if property.name != 'user_data':
 				try:
-					method = CParser._parse_listener_property(self, property, listener, cclass.events)
+					method = self._parse_listener_property(property, listener, cclass.events)
 					listener.add_method(method)
 				except Error as e:
 					print('Could not parse property \'{0}\' of listener \'{1}\': {2}'.format(property.name, cclass.name, e.args[0]))
@@ -684,11 +689,11 @@ class CParser(object):
 			raise Error('invalid event name \'{0}\''.format(eventName))
 		
 		method = Method(methodName)
-		method.returnType = CParser.parse_type(self, event.returnArgument)
+		method.returnType = self.parse_type(event.returnArgument)
 		for arg in event.arguments:
 			argName = ArgName()
 			argName.from_snake_case(arg.name)
-			argument = Argument(argName, CParser.parse_type(self, arg))
+			argument = Argument(argName, self.parse_type(arg))
 			method.add_arguments(argument)
 		
 		return method
@@ -697,18 +702,18 @@ class CParser(object):
 		name = MethodName()
 		name.from_snake_case(cfunction.name, namespace=namespace)
 		
-		if CParser._is_blacklisted(self, name):
+		if self._is_blacklisted(name):
 			raise BlacklistedException('{0} is blacklisted'.format(name.to_c()));
 		
 		method = Method(name, type=type)
 		method.deprecated = cfunction.deprecated
-		method.returnType = CParser.parse_type(self, cfunction.returnArgument)
+		method.returnType = self.parse_type(cfunction.returnArgument)
 		
 		for arg in cfunction.arguments:
 			if type == Method.Type.Instance and arg is cfunction.arguments[0]:
 				method.constMethod = ('const' in arg.completeType.split(' '))
 			else:
-				aType = CParser.parse_type(self, arg)
+				aType = self.parse_type(arg)
 				argName = ArgName()
 				argName.from_snake_case(arg.name)
 				absArg = Argument(argName, aType)
@@ -718,7 +723,7 @@ class CParser(object):
 	
 	def parse_type(self, cType):
 		if cType.ctype in self.cBaseType or re.match(self.regexFixedSizeInteger, cType.ctype):
-			absType = CParser.parse_c_base_type(self, cType.completeType)
+			absType = self.parse_c_base_type(cType.completeType)
 		elif cType.ctype in self.enumsIndex:
 			absType = EnumType(cType.ctype, enumDesc=self.enumsIndex[cType.ctype])
 		elif cType.ctype in self.classesIndex or cType.ctype in self.interfacesIndex:

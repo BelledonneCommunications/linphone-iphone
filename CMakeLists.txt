@@ -175,7 +175,6 @@ if(ENABLE_LIME)
 	set(HAVE_LIME 1)
 endif()
 if(ENABLE_CXX_WRAPPER)
-	set(Python_ADDITIONAL_VERSIONS 2)
 	find_package(PythonInterp REQUIRED)
 endif()
 
