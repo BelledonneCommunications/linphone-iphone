@@ -127,8 +127,10 @@
 	if (index == -1 && count > 0) {
 		index = (int)count - 1;
 	}
-
-	linphone_chat_room_mark_as_read(_chatRoom);
+	if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+		  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive)) {
+		linphone_chat_room_mark_as_read(_chatRoom);
+	}
 	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 		getCachedController:NSStringFromClass(TabBarView.class)];
 	[tab update:YES];
