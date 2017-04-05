@@ -347,8 +347,6 @@ static void call_received(SalOp *h){
 		linphone_error_info_set(ei, LinphoneReasonBusy, 486, "Busy - duplicated call", NULL);
 		linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 		sal_op_release(h);
-		linphone_address_unref(from_addr);
-		linphone_address_unref(to_addr);
 		linphone_address_unref(from_address_to_search_if_me);
 		ms_free(addr);
 		return;
