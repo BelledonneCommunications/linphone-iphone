@@ -627,10 +627,14 @@ LinphoneAccountCreatorStatus linphone_account_creator_update_account(LinphoneAcc
 
 LinphoneAccountCreatorStatus linphone_account_creator_constructor_linphone(LinphoneAccountCreator *creator) {
 	LinphoneAddress *addr;
-	linphone_proxy_config_set_realm(creator->proxy_cfg, "sip.linphone.org");
-	linphone_proxy_config_set_route(creator->proxy_cfg, "sip.linphone.org");
-	linphone_proxy_config_set_server_addr(creator->proxy_cfg, "sip.linphone.org");
-	addr = linphone_address_new("sip:username@sip.linphone.org");
+	const char *identity = lp_config_get_default_string(creator->core->config, "proxy", "reg_identity", NULL);
+	const char *proxy = lp_config_get_default_string(creator->core->config, "proxy", "reg_proxy", NULL);
+	const char *route = lp_config_get_default_string(creator->core->config, "proxy", "reg_route", NULL);
+	const char *realm = lp_config_get_default_string(creator->core->config, "proxy", "realm", NULL);
+	linphone_proxy_config_set_realm(creator->proxy_cfg, realm ? realm : "sip.linphone.org");
+	linphone_proxy_config_set_route(creator->proxy_cfg, route ? route : "sip.linphone.org");
+	linphone_proxy_config_set_server_addr(creator->proxy_cfg, proxy ? proxy : "sip.linphone.org");
+	addr = linphone_address_new(identity ? identity : "sip:username@sip.linphone.org");
 	linphone_proxy_config_set_identity_address(creator->proxy_cfg, addr);
 	linphone_address_unref(addr);
 	return LinphoneAccountCreatorStatusRequestOk;
