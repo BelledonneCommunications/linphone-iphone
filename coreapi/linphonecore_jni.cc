@@ -4575,6 +4575,12 @@ extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isSecured(JNI
 	return linphone_chat_message_is_secured((LinphoneChatMessage*)ptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_resend(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	linphone_chat_message_resend((LinphoneChatMessage*)ptr);
+}
+
 static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageState state) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);

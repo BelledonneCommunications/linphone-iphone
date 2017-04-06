@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cstring>
 
 
-using namespace::std;
-
 
 class Type{
 public:
@@ -50,7 +48,7 @@ public:
 		Array
 	};
 	static const char *sBasicTypeNames[];
-	static Type* addType(BasicType bt, const string &name){
+	static Type* addType(BasicType bt, const std::string &name){
 		Type* ret;
 		if ((ret=mTypes[name])==0){
 			//cout<<"Adding new "<<sBasicTypeNames[(int)bt]<<" type '"<<name<<"'"<<endl;
@@ -60,48 +58,48 @@ public:
 		}
 		return ret;
 	}
-	static Type *getType(const std::string &tname){
-		if (tname.find("(")!=string::npos) return NULL; //arrives when parsing function pointer declared inside function prototype
+	static Type *getType(const std::std::string &tname){
+		if (tname.find("(")!=std::string::npos) return NULL; //arrives when parsing function pointer declared inside function prototype
 		if (strstr(tname.c_str(),"char")!=0 && strchr(tname.c_str(),'*')!=0){
 			return &sStringType;
-		}else if (tname.find("int")!=string::npos){
+		}else if (tname.find("int")!=std::string::npos){
 			return &sIntegerType;
-		}else if (tname.find("size_t")!=string::npos){
+		}else if (tname.find("size_t")!=std::string::npos){
 			return &sIntegerType;
-		}else if (tname.find("float")!=string::npos){
+		}else if (tname.find("float")!=std::string::npos){
 			return &sFloatType;
-		}else if (tname.find("bool_t")!=string::npos){
+		}else if (tname.find("bool_t")!=std::string::npos){
 			return &sBooleanType;
-		}else if (tname.find("void")!=string::npos){
+		}else if (tname.find("void")!=std::string::npos){
 			return &sVoidType;
-		}else if (tname.find("enum")!=string::npos){
+		}else if (tname.find("enum")!=std::string::npos){
 			return addType(Enum,tname.c_str()+strlen("enum "));
-		}else if (tname.find("MSList")!=string::npos){
+		}else if (tname.find("MSList")!=std::string::npos){
 			return &sArrayType;
 		}else{/*an object?*/
 			
-			string tmp=tname;
+			std::string tmp=tname;
 			size_t pos;
 			
 			/*really ugly and slow*/
 			
 			pos=tmp.find('*');
-			if (pos!=string::npos)
+			if (pos!=std::string::npos)
 				tmp.erase(pos,1);
 			
 			pos=tmp.find("const");
-			if (pos!=string::npos)
+			if (pos!=std::string::npos)
 				tmp.erase(pos,strlen("const"));
 			
-			while ((pos=tmp.find(' '))!=string::npos){
+			while ((pos=tmp.find(' '))!=std::string::npos){
 				tmp.erase(pos,1);
 			}
 			return addType(Class,tmp);
 		}
-		cerr<<"Unhandled type name"<<tname<<endl;
+		std::cerr<<"Unhandled type name"<<tname<<std::endl;
 		return NULL;
 	}
-	const string &getName()const{
+	const std::string &getName()const{
 		return mName;
 	}
 	BasicType getBasicType()const{
@@ -109,7 +107,7 @@ public:
 	}
 private:
 	BasicType mBasic;
-	string mName;
+	std::string mName;
 	Type(BasicType basic, const std::string &tname="") : mBasic(basic), mName(tname){
 	}
 	static Type sStringType;
@@ -118,14 +116,14 @@ private:
 	static Type sBooleanType;
 	static Type sFloatType;
 	static Type sArrayType;
-	static std::map<string,Type*> mTypes;
+	static std::map<std::string,Type*> mTypes;
 };
 
 
 
 class Argument{
 public:
-	Argument(Type *type, const string &argname, bool isConst, bool isPointer) : mType(type), mName(argname), mConst(isConst), mPointer(isPointer){
+	Argument(Type *type, const std::string &argname, bool isConst, bool isPointer) : mType(type), mName(argname), mConst(isConst), mPointer(isPointer){
 		if (!isPointer) mConst=false;
 	}
 	Type *getType()const{
@@ -134,23 +132,23 @@ public:
 	bool isConst()const{
 		return mConst;
 	}
-	const string &getName()const{
+	const std::string &getName()const{
 		return mName;
 	}
 	bool isPointer()const{
 		return mPointer;
 	}
-	const string &getHelp()const{
+	const std::string &getHelp()const{
 		return mHelp;
 	}
-	void setHelp(const string &help){
+	void setHelp(const std::string &help){
 		mHelp=help;
 	}
 private:
 	
 	Type *mType;
-	string mName;
-	string mHelp;
+	std::string mName;
+	std::string mHelp;
 	bool mConst;
 	bool mPointer;
 };

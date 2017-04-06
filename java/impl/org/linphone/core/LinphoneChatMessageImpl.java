@@ -172,4 +172,10 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public boolean isSecured() {
 		return isSecured(nativePtr);
 	}
+
+	private native void reSend(long nativePtr);
+	@Override
+	public void reSend() {
+		reSend(nativePtr);
+	}
 }
