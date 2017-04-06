@@ -5257,10 +5257,6 @@ int linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
 	return 0;
 }
 	
-static const LinphoneErrorInfo* linphone_error_info_get_sub(const LinphoneErrorInfo *ei){
-		
-	return ei->sub_ei;
-}
 	
 int linphone_call_decline_with_error(LinphoneCall * call, const LinphoneErrorInfo *ei) {
 	SalErrorInfo sei;
