@@ -252,4 +252,8 @@ public interface LinphoneChatMessage {
      */
 	boolean isSecured();
 
+	/**
+	 * Resend the message
+	 */
+	void reSend();
 }
