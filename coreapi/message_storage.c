@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 #ifndef _WIN32
-#if !defined(__QNXNTO__) && !(defined(__ANDROID__) && defined(__LP64__))
+#if !defined(__QNXNTO__) && !defined(__ANDROID__)
 #include <ctype.h>
 #include <langinfo.h>
 #include <locale.h>
@@ -51,7 +51,7 @@ static char *utf8_convert(const char *filename){
 	wchar_t db_file_utf16[MAX_PATH_SIZE]={0};
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, filename, -1, db_file_utf16, MAX_PATH_SIZE);
 	WideCharToMultiByte(CP_UTF8, 0, db_file_utf16, -1, db_file_utf8, sizeof(db_file_utf8), NULL, NULL);
-#elif defined(__QNXNTO__) || (defined(__ANDROID__) && defined(__LP64__))
+#elif defined(__QNXNTO__) || defined(__ANDROID__)
 	strncpy(db_file_utf8, filename, MAX_PATH_SIZE - 1);
 #else
 	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
