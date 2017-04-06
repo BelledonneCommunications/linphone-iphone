@@ -215,6 +215,11 @@ void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op){
 	}
 }
 
+LinphoneErrorInfo* linphone_error_info_get_sub(const LinphoneErrorInfo *ei){
+		
+	return ei->sub_ei;
+}
+
 void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei){
 	if (appended_ei != NULL){
 		ei->sub_ei = appended_ei;

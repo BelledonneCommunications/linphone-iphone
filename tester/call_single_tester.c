@@ -1790,7 +1790,6 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 	
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
-	bool_t result=FALSE;
 	bool_t did_receive_call;
 	const LinphoneCallParams *caller_remote_params;
 	

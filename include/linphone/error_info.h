@@ -63,6 +63,13 @@ LINPHONE_PUBLIC void linphone_error_info_unref(LinphoneErrorInfo *ei);
 LINPHONE_PUBLIC LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei);
 
 /**
+ * Get pointer to chained LinphoneErrorInfo set in sub_ei. 
+ * @param  ei ErrorInfo object
+ * @return    LinphoneErrorInfo pointer defined in the ei object.
+ */
+LINPHONE_PUBLIC LinphoneErrorInfo* linphone_error_info_get_sub(const LinphoneErrorInfo *ei);
+
+/**
  * Get textual phrase from the error info.
  * This is the text that is provided by the peer in the protocol (SIP).
  * @param[in] ei ErrorInfo object
