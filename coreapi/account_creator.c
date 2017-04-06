@@ -314,7 +314,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneAccountCreator, belle_sip_object_t,
 	FALSE
 );
 
-LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
+LinphoneAccountCreator * _linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
 	LinphoneAccountCreator *creator;
 	const char* domain = lp_config_get_string(core->config, "assistant", "domain", NULL);
 	creator = belle_sip_object_new(LinphoneAccountCreator);
@@ -329,6 +329,14 @@ LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const 
 	if (creator->service != NULL && linphone_account_creator_service_get_constructor_cb(creator->service) != NULL)
 		linphone_account_creator_service_get_constructor_cb(creator->service)(creator);
 	return creator;
+}
+
+LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
+	return _linphone_account_creator_new(core, xmlrpc_url);
+}
+
+LinphoneAccountCreator * linphone_core_create_account_creator(LinphoneCore *core, const char *xmlrpc_url) {
+	return _linphone_account_creator_new(core, xmlrpc_url);
 }
 
 LinphoneAccountCreator * linphone_account_creator_ref(LinphoneAccountCreator *creator) {

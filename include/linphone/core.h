@@ -4890,6 +4890,16 @@ LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_create_nat_policy(LinphoneCore
 LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_create_nat_policy_from_config(LinphoneCore *lc, const char *ref);
 
 
+/**
+ * Create a LinphoneAccountCreator and set Linphone Request callbacks.
+ * @param[in] core The LinphoneCore used for the XML-RPC communication
+ * @param[in] xmlrpc_url The URL to the XML-RPC server. Must be NON NULL.
+ * @return The new LinphoneAccountCreator object.
+ * @ingroup account_creator
+**/
+LINPHONE_PUBLIC LinphoneAccountCreator * linphone_core_create_account_creator(LinphoneCore *core, const char *xmlrpc_url);
+
+
 #ifdef __cplusplus
 }
 #endif
