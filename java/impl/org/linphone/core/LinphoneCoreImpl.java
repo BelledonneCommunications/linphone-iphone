@@ -333,8 +333,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return new LinphoneCallLogImpl(callLog);
 	}
 	public synchronized void destroy() {
-		setAndroidPowerManager(null);
 		delete(nativePtr);
+		setAndroidPowerManager(null);
 		nativePtr=0;
 	}
 
