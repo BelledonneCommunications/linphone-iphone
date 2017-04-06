@@ -593,8 +593,6 @@ class ClassHeader(object):
 		includes = {'internal': [], 'external': []}
 		
 		if type(_class) is AbsApi.Class:
-			self._add_include(includes, 'internal', 'object')
-			
 			for _property in _class.properties:
 				if _property.setter is not None:
 					self._needed_includes_from_method(_property.setter, includes)
