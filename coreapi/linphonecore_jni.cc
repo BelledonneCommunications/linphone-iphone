@@ -4575,7 +4575,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isSecured(JNI
 	return linphone_chat_message_is_secured((LinphoneChatMessage*)ptr);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_resend(JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_reSend(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
 	linphone_chat_message_resend((LinphoneChatMessage*)ptr);
@@ -4605,7 +4605,7 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	env->CallVoidMethod(listener, method, jmessage, env->CallStaticObjectMethod(ljb->chatMessageStateClass, ljb->chatMessageStateFromIntId, (jint)state));
 
-	if (state == LinphoneChatMessageStateDisplayed || state == LinphoneChatMessageStateNotDelivered) {
+	if (state == LinphoneChatMessageStateDisplayed) {
 		env->DeleteGlobalRef(listener);
 		msg->message_state_changed_user_data = NULL;
 	}
@@ -4768,7 +4768,7 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 			jmessage,
 			env->CallStaticObjectMethod(ljb->chatMessageStateClass,ljb->chatMessageStateFromIntId,(jint)state));
 
-	if (state == LinphoneChatMessageStateDisplayed || state == LinphoneChatMessageStateNotDelivered) {
+	if (state == LinphoneChatMessageStateDisplayed ) {
 		env->DeleteGlobalRef(listener);
 		env->DeleteGlobalRef(jmessage);
 		linphone_chat_message_set_user_data(msg,NULL);
