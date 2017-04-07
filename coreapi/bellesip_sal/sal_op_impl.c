@@ -643,6 +643,7 @@ void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *respon
 
 	warnings=warning ? belle_sip_header_get_unparsed_value(warning) : NULL;
 	sal_error_info_set(ei,SalReasonUnknown,"SIP", code,reason_phrase,warnings);
+	sal_op_set_reason_error_info(op, BELLE_SIP_MESSAGE(response));
 }
 
 const SalErrorInfo *sal_op_get_error_info(const SalOp *op){

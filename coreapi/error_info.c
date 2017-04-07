@@ -222,7 +222,7 @@ LinphoneErrorInfo* linphone_error_info_get_sub(const LinphoneErrorInfo *ei){
 
 void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei){
 	if (appended_ei != NULL){
-		ei->sub_ei = appended_ei;
+		ei->sub_ei = linphone_error_info_ref(appended_ei);
 	}
 }
 
