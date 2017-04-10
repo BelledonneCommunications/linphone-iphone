@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.linphone.core;
 /**
- * Call data records object 
+ * Call data records object
  *
  */
 import java.util.Vector;
@@ -35,14 +35,14 @@ public interface LinphoneCallLog {
 	 *
 	 */
 	static class CallStatus {
-		
+
 		static private Vector<CallStatus> values = new Vector<CallStatus>();
 		private final int mValue;
 		private final String mStringValue;
 		/**
 		 * Call success.
 		 */
-		public final static CallStatus Success = new CallStatus(0,"Sucess");
+		public final static CallStatus Success = new CallStatus(0,"Success");
 		/**
 		 * Call aborted.
 		 */
@@ -55,8 +55,13 @@ public interface LinphoneCallLog {
 		 * remote call declined.
 		 */
 		public final static CallStatus Declined = new CallStatus(3,"Declined");
-		
-		
+
+		/**
+		 * The call was aborted before being advertised to the application - for protocol reasons
+		 */
+		public final static CallStatus EarlyAborted = new CallStatus(4,"Early Aborted");
+
+
 		private CallStatus(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -77,7 +82,7 @@ public interface LinphoneCallLog {
 			return mValue;
 		}
 	}
-	
+
 	/**
 	 * Originator of the call as a LinphoneAddress object.
 	 * @return LinphoneAddress
@@ -98,19 +103,19 @@ public interface LinphoneCallLog {
 	 * @return CallStatus
 	 */
 	public CallStatus getStatus();
-	
+
 	/**
 	 * A human readable String with the start date/time of the call
 	 * @return String
 	 */
 	public String getStartDate();
-	
+
 	/**
 	 * A  timestamp of the start date/time of the call in milliseconds since January 1st 1970
 	 * @return  long
 	 */
 	public long getTimestamp();
-	
+
 	/**
 	 * The call duration, in seconds
 	 * @return int
