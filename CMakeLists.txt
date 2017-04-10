@@ -172,6 +172,11 @@ if(ENABLE_NLS)
 	find_package(Intl REQUIRED)
 endif()
 if(ENABLE_LIME)
+        if(LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
+                include("${EP_bzrtp_CONFIG_DIR}/BZRTPConfig.cmake")
+        else()
+                find_package(BZRTP)
+        endif()
 	set(HAVE_LIME 1)
 endif()
 if(ENABLE_CXX_WRAPPER)
@@ -199,6 +204,7 @@ include_directories(
 set(LINPHONE_INCLUDE_DIRS
 	${BELLESIP_INCLUDE_DIRS}
 	${MEDIASTREAMER2_INCLUDE_DIRS}
+	${BZRTP_INCLUDE_DIRS}
 	${BCTOOLBOX_CORE_INCLUDE_DIRS}
 )
 if(ANDROID)

@@ -1,6 +1,6 @@
 /*
 linphone
-Copyright (C) 2015  Belledonne Communications SARL
+Copyright (C) 2017  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "private.h"
 #include "bctoolbox/crypto.h"
 #include "bctoolbox/port.h"
+#include "bzrtp/bzrtp.h"
 
 #define FILE_TRANSFER_KEY_SIZE 32
 
@@ -36,55 +37,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 bool_t lime_is_available(void) { return TRUE; }
 
-/**
- * @brief Retrieve selfZID from cache
- *
- * @param[in]	cacheBuffer		The xmlDoc containing current cache
- * @param[out]	selfZid			The ZID found as a 24 hexa char string null terminated
- *
- * @return 0 on success, error code otherwise
- */
-static int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]) {
-	xmlNodePtr cur;
-	xmlChar *selfZidHex;
-
-	if (cacheBuffer == NULL ) {
-		return LIME_INVALID_CACHE;
-	}
-
-	cur = xmlDocGetRootElement(cacheBuffer);
-	/* if we found a root element, parse its children node */
-	if (cur!=NULL)
-	{
-		cur = cur->xmlChildrenNode;
-	}
-	selfZidHex = NULL;
-	while (cur!=NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"selfZID"))){ /* self ZID found, extract it */
-			selfZidHex = xmlNodeListGetString(cacheBuffer, cur->xmlChildrenNode, 1);
-			/* copy it to the output buffer and add the null termination */
-			memcpy(selfZid, selfZidHex, 24);
-			selfZid[24]='\0';
-			break;
-		}
-		cur = cur->next;
-	}
-
-	/* did we found a ZID? */
-	if (selfZidHex == NULL) {
-		return LIME_INVALID_CACHE;
-	}
-
-	xmlFree(selfZidHex);
-	return 0;
-}
-
-int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys) {
-	xmlNodePtr cur;
+int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
+	sqlite3 *db = (sqlite3 *)cachedb;
 	size_t keysFound = 0; /* used to detect the no key found error because of validity expired */
+	char *stmt = NULL;
+	int ret;
+	sqlite3_stmt *sqlStmt = NULL;
+	int length =0;
+	uint8_t pvsOne[1] = {0x01}; /* used to bind this specific byte value to a blob WHERE constraint in the query */
 
-	/* parse the file to get all peer matching the sipURI given in associatedKeys*/
-	if (cacheBuffer == NULL ) { /* there is no cache return error */
+	if (cachedb == NULL ) { /* there is no cache return error */
 		return LIME_INVALID_CACHE;
 	}
 
@@ -92,111 +54,115 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 	associatedKeys->associatedZIDNumber = 0;
 	associatedKeys->peerKeys = NULL;
 
-	cur = xmlDocGetRootElement(cacheBuffer);
-	/* if we found a root element, parse its children node */
-	if (cur!=NULL)
-	{
-		cur = cur->xmlChildrenNode;
-	}
-	while (cur!=NULL) { /* loop on all peer nodes */
-		uint8_t matchingURIFlag = 0; /* this flag is set to one if we found the requested sipURI in the current peer node */
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))) { /* found a peer node, check if there is a matching sipURI node in it */
-			xmlNodePtr peerNodeChildren = cur->xmlChildrenNode;
-			matchingURIFlag = 0;
-
-			/* loop on children nodes until the end or we found the matching sipURI */
-			while (peerNodeChildren!=NULL && matchingURIFlag==0) {
-				if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"uri")) { /* found a peer an URI node, check the content */
-					xmlChar *uriNodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-					if (!xmlStrcmp(uriNodeContent, (const xmlChar *)associatedKeys->peerURI)) { /* found a match with requested URI */
-						matchingURIFlag=1;
-					}
-					xmlFree(uriNodeContent);
-				}
-				peerNodeChildren = peerNodeChildren->next;
-			}
-
-			if (matchingURIFlag == 1) { /* we found a match for the URI in this peer node, extract the keys, session Id, index values and key validity period */
-				/* allocate a new limeKey_t structure to hold the retreived keys */
-				limeKey_t *currentPeerKeys = (limeKey_t *)malloc(sizeof(limeKey_t));
-				uint8_t itemFound = 0; /* count the item found, we must get all of the requested infos: 5 nodes*/
-				uint8_t pvs = 0;
-				uint8_t keyValidityFound = 0; /* flag raised when we found a key validity in the cache */
-				bctoolboxTimeSpec currentTimeSpec;
-				bctoolboxTimeSpec validityTimeSpec; /* optionnal(backward compatibility) tag for key validity */
-				validityTimeSpec.tv_sec=0;
-				validityTimeSpec.tv_nsec=0;
-
-				peerNodeChildren = cur->xmlChildrenNode; /* reset peerNodeChildren to the first child of node */
-				while (peerNodeChildren!=NULL && itemFound<6) {
-					xmlChar *nodeContent = NULL;
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"ZID")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(currentPeerKeys->peerZID, nodeContent, 24);
-						itemFound++;
-					}
-
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndKey")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(currentPeerKeys->key, nodeContent, 64);
-						itemFound++;
-					}
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndSId")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(currentPeerKeys->sessionId, nodeContent, 64);
-						itemFound++;
-					}
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndIndex")) {
-						uint8_t sessionIndexBuffer[4]; /* session index is a uint32_t but we first retrieved it as an hexa string, convert it to a 4 uint8_t buffer */
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(sessionIndexBuffer, nodeContent, 8);
-						/* convert it back to a uint32_t (MSByte first)*/
-						currentPeerKeys->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
-						itemFound++;
-					}
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"pvs")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
-						itemFound++;
-					}
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"valid")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						validityTimeSpec.tv_sec = bctbx_strToUint64(nodeContent); /* validity is retrieved as a 16 characters hexa string, convert it to an uint64 */
-						itemFound++;
-						keyValidityFound = 1;
-					}
-
-					xmlFree(nodeContent);
-					peerNodeChildren = peerNodeChildren->next;
-				}
-
-				/* key validity may not be present in cache(transition from older versions), so check this, if not found-> set it to 0 wich means valid for ever */
-				if (keyValidityFound == 0) {
-					itemFound++;
-					validityTimeSpec.tv_sec = 0;
-				}
-
-				/* check if we have all the requested information and the PVS flag is set to 1 and key is still valid*/
-				bctbx_get_utc_cur_time(&currentTimeSpec);
-				if (itemFound == 6 && pvs == 1) {
-					keysFound++;
-					if (validityTimeSpec.tv_sec == 0 || bctbx_timespec_compare(&currentTimeSpec, &validityTimeSpec)<0) {
-						associatedKeys->associatedZIDNumber +=1;
-						/* extend array of pointer to limeKey_t structures to add the one we found */
-						associatedKeys->peerKeys = (limeKey_t **)realloc(associatedKeys->peerKeys, (associatedKeys->associatedZIDNumber)*sizeof(limeKey_t *));
-
-						/* add the new entry at the end */
-						associatedKeys->peerKeys[associatedKeys->associatedZIDNumber-1] = currentPeerKeys;
-					} else {
-						free(currentPeerKeys);
-					}
-				} else {
-					free(currentPeerKeys);
-				}
-			}
+	/* query the DB: join ziduri, lime and zrtp tables : retrieve zuid(for easier key update in cache), peerZID, sndKey, sndSId, sndIndex, valid where self and peer ZIDs are matching constraint and pvs is raised */
+	/* Note: retrieved potentially expired keys, just to be able to send a different status to caller(no keys found is not expired key found) */
+	/* if we do not have self uri in associatedKeys, just retrieve any available key matching peer URI */
+	if (associatedKeys->selfURI == NULL) {
+		stmt = sqlite3_mprintf("SELECT zu.zuid, zu.zid as peerZID, l.sndkey, l.sndSId, l.sndIndex, l.valid FROM ziduri as zu LEFT JOIN zrtp as z ON z.zuid=zu.zuid LEFT JOIN lime as l ON z.zuid=l.zuid WHERE zu.peeruri=? AND z.pvs=?;");
+		ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
+		sqlite3_free(stmt);
+		if (ret != SQLITE_OK) {
+			return LIME_INVALID_CACHE;
 		}
-		cur = cur->next;
+		sqlite3_bind_text(sqlStmt, 1, associatedKeys->peerURI,-1, SQLITE_TRANSIENT);
+		sqlite3_bind_blob(sqlStmt, 2, pvsOne, 1, SQLITE_TRANSIENT);
+	} else { /* we have a self URI, so include it in the query */
+		stmt = sqlite3_mprintf("SELECT zu.zuid, zu.zid as peerZID, l.sndkey, l.sndSId, l.sndIndex, l.valid FROM ziduri as zu LEFT JOIN zrtp as z ON z.zuid=zu.zuid LEFT JOIN lime as l ON z.zuid=l.zuid WHERE zu.selfuri=? AND zu.peeruri=? AND z.pvs=?;");
+		ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
+		sqlite3_free(stmt);
+		if (ret != SQLITE_OK) {
+			return LIME_INVALID_CACHE;
+		}
+		sqlite3_bind_text(sqlStmt, 1, associatedKeys->selfURI,-1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(sqlStmt, 2, associatedKeys->peerURI,-1, SQLITE_TRANSIENT);
+		sqlite3_bind_blob(sqlStmt, 3, pvsOne, 1, SQLITE_TRANSIENT);
 	}
+
+	/* parse all retrieved rows */
+	while ((ret = sqlite3_step(sqlStmt)) == SQLITE_ROW) {
+		/* allocate a new limeKey_t structure to hold the retreived keys */
+		limeKey_t *currentPeerKey = (limeKey_t *)bctbx_malloc0(sizeof(limeKey_t));
+		bctoolboxTimeSpec currentTimeSpec;
+		bctoolboxTimeSpec validityTimeSpec;
+		validityTimeSpec.tv_sec=0;
+		validityTimeSpec.tv_nsec=0;
+
+		/* get zuid from column 0 */
+		currentPeerKey->zuid = sqlite3_column_int(sqlStmt, 0);
+
+		/* retrieve values : peerZid, sndKey, sndSId, sndIndex, valid from columns 1,2,3,4,5 */
+		length = sqlite3_column_bytes(sqlStmt, 1);
+		if (length==12) { /* peerZID */
+			memcpy(currentPeerKey->peerZID, sqlite3_column_blob(sqlStmt, 1), length);
+		} else { /* something wrong with that one, skip it */
+			continue;
+		}
+
+		length = sqlite3_column_bytes(sqlStmt, 2);
+		if (length==32) { /* sndKey */
+			memcpy(currentPeerKey->key, sqlite3_column_blob(sqlStmt, 2), length);
+		} else { /* something wrong with that one, skip it */
+			continue;
+		}
+
+		length = sqlite3_column_bytes(sqlStmt, 3);
+		if (length==32) { /* sndSId */
+			memcpy(currentPeerKey->sessionId, sqlite3_column_blob(sqlStmt, 3), length);
+		} else { /* something wrong with that one, skip it */
+			continue;
+		}
+
+		length = sqlite3_column_bytes(sqlStmt, 4);
+		if (length==4) { /* sndIndex : 4 bytes of a uint32_t, stored as a blob in big endian */
+			uint8_t *sessionId = (uint8_t *)sqlite3_column_blob(sqlStmt, 4);
+			currentPeerKey->sessionIndex = ((uint32_t)(sessionId[0]))<<24 |
+							((uint32_t)(sessionId[1]))<<16 |
+							((uint32_t)(sessionId[2]))<<8 |
+							((uint32_t)(sessionId[3]));
+		} else { /* something wrong with that one, skip it */
+			continue;
+		}
+
+		length = sqlite3_column_bytes(sqlStmt, 5);
+		if (length==8) { /* sndIndex : 8 bytes of a int64_t, stored as a blob in big endian */
+			uint8_t *validity = (uint8_t *)sqlite3_column_blob(sqlStmt, 5);
+			validityTimeSpec.tv_sec = ((uint64_t)(validity[0]))<<56 |
+							((uint64_t)(validity[1]))<<48 |
+							((uint64_t)(validity[2]))<<40 |
+							((uint64_t)(validity[3]))<<32 |
+							((uint64_t)(validity[4]))<<24 |
+							((uint64_t)(validity[5]))<<16 |
+							((uint64_t)(validity[6]))<<8 |
+							((uint64_t)(validity[7]));
+		} else { /* something wrong with that one, skip it */
+			continue;
+		}
+
+		/* count is a found even if it may be expired */
+		keysFound++;
+
+		/* check validity */
+		bctbx_get_utc_cur_time(&currentTimeSpec);
+		if (validityTimeSpec.tv_sec == 0 || bctbx_timespec_compare(&currentTimeSpec, &validityTimeSpec)<0) {
+			associatedKeys->associatedZIDNumber +=1;
+			/* extend array of pointer to limeKey_t structures to add the one we found */
+			associatedKeys->peerKeys = (limeKey_t **)bctbx_realloc(associatedKeys->peerKeys, (associatedKeys->associatedZIDNumber)*sizeof(limeKey_t *));
+
+			/* add the new entry at the end */
+			associatedKeys->peerKeys[associatedKeys->associatedZIDNumber-1] = currentPeerKey;
+		} else {
+			free(currentPeerKey);
+		}
+	}
+
+	sqlite3_finalize(sqlStmt);
+
+	/* something is wrong with the cache? */
+	if (ret!=SQLITE_DONE) {
+		return LIME_INVALID_CACHE;
+	}
+
+	/* we're done, check what we have */
 	if (associatedKeys->associatedZIDNumber == 0) {
 		if (keysFound == 0) {
 			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
@@ -205,179 +171,128 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 		}
 	}
 	return 0;
+
 }
 
-int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
-	uint8_t peerZidHex[25];
-	/* to check we collect all the information needed from the cache and that pvs(boolean for previously verified Sas) is set in cache */
-	uint8_t itemFound = 0;
-	uint8_t pvs = 0;
-	xmlNodePtr cur;
+int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const char *selfURI, const char *peerURI) {
+	sqlite3 *db = (sqlite3 *)cachedb;
+	char *stmt = NULL;
+	int ret;
+	sqlite3_stmt *sqlStmt = NULL;
+	int length =0;
+	uint8_t pvsOne[1] = {0x01}; /* used to bind this specific byte value to a blob WHERE constraint in the query */
 
-	if (cacheBuffer == NULL ) { /* there is no cache return error */
+
+	if (db == NULL) { /* there is no cache return error */
 		return LIME_INVALID_CACHE;
 	}
 
-	/* get the given ZID into hex format */
-	bctbx_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
-	peerZidHex[24]='\0'; /* must be a null terminated string */
-
-	cur = xmlDocGetRootElement(cacheBuffer);
-	/* if we found a root element, parse its children node */
-	if (cur!=NULL)
-	{
-		cur = cur->xmlChildrenNode;
-
+	/* query the DB: join ziduri, lime and zrtp tables : */
+	/* retrieve zuid(for easier key update in cache), rcvKey, rcvSId, rcvIndex where self/peer uris and peer zid are matching constraint(unique row) and pvs is raised */
+	/* Note: retrieved potentially expired keys, just to be able to send a different status to caller(no keys found is not expired key found) */
+	/* if we do not have self uri in associatedKeys, just retrieve any available key matching peer URI */
+	stmt = sqlite3_mprintf("SELECT zu.zuid, l.rcvkey, l.rcvSId, l.rcvIndex FROM ziduri as zu LEFT JOIN zrtp as z ON z.zuid=zu.zuid LEFT JOIN lime as l ON z.zuid=l.zuid WHERE zu.selfuri=? AND zu.peeruri=? AND zu.zid=? AND z.pvs=? LIMIT 1;");
+	ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
+	sqlite3_free(stmt);
+	if (ret != SQLITE_OK) {
+		return LIME_INVALID_CACHE;
 	}
+	sqlite3_bind_text(sqlStmt, 1, selfURI,-1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(sqlStmt, 2, peerURI,-1, SQLITE_TRANSIENT);
+	sqlite3_bind_blob(sqlStmt, 3, associatedKey->peerZID, 12, SQLITE_TRANSIENT);
+	sqlite3_bind_blob(sqlStmt, 4, pvsOne, 1, SQLITE_TRANSIENT);
 
-	while (cur!=NULL) { /* loop on all peer nodes */
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))){ /* found a peer, check his ZID element */
-			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, cur->xmlChildrenNode->xmlChildrenNode, 1); /* ZID is the first element of peer */
-			if (!xmlStrcmp(currentZidHex, (const xmlChar *)peerZidHex)) { /* we found the peer element we are looking for */
-				xmlNodePtr peerNodeChildren = cur->xmlChildrenNode->next;
-				while (peerNodeChildren != NULL && itemFound<4) { /* look for the tag we want to read : rcvKey, rcvSId, rcvIndex and pvs*/
-					xmlChar *nodeContent = NULL;
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvKey")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(associatedKey->key, nodeContent, 64);
-						itemFound++;
-					}
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvSId")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(associatedKey->sessionId, nodeContent, 64);
-						itemFound++;
-					}
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvIndex")) {
-						uint8_t sessionIndexBuffer[4]; /* session index is a uint32_t but we first retrieved it as an hexa string, convert it to a 4 uint8_t buffer */
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(sessionIndexBuffer, nodeContent, 8);
-						/* convert it back to a uint32_t (MSByte first)*/
-						associatedKey->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
-						itemFound++;
-					}
-					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"pvs")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
-						bctbx_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
-						itemFound++;
-					}
-					xmlFree(nodeContent);
-					peerNodeChildren = peerNodeChildren->next;
-				}
-				xmlFree(currentZidHex);
-				break; /* we parsed the peer node we were looking for, get out of the main while */
-			}
-			xmlFree(currentZidHex);
+
+	if ((ret = sqlite3_step(sqlStmt)) == SQLITE_ROW) { /* we found a row */
+		/* get zuid from column 0 */
+		associatedKey->zuid = sqlite3_column_int(sqlStmt, 0);
+
+		/* retrieve values : rcvKey, rcvSId, rcvIndex from columns 1,2,3 */
+		length = sqlite3_column_bytes(sqlStmt, 1);
+		if (length==32) { /* rcvKey */
+			memcpy(associatedKey->key, sqlite3_column_blob(sqlStmt, 1), length);
+		} else { /* something wrong */
+			sqlite3_finalize(sqlStmt);
+			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
 		}
-		cur = cur->next;
-	}
 
-	/* if we manage to find the correct key information and that pvs is set to 1, return 0 (success) */
-	if ((pvs == 1) && (itemFound == 4)) {
+		length = sqlite3_column_bytes(sqlStmt, 2);
+		if (length==32) { /* rcvSId */
+			memcpy(associatedKey->sessionId, sqlite3_column_blob(sqlStmt, 2), length);
+		} else { /* something wrong */
+			sqlite3_finalize(sqlStmt);
+			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+		}
+
+		length = sqlite3_column_bytes(sqlStmt, 3);
+		if (length==4) { /* rcvKey */
+			uint8_t *sessionId = (uint8_t *)sqlite3_column_blob(sqlStmt, 3);
+			associatedKey->sessionIndex = ((uint32_t)(sessionId[0]))<<24 |
+							((uint32_t)(sessionId[1]))<<16 |
+							((uint32_t)(sessionId[2]))<<8 |
+							((uint32_t)(sessionId[3]));
+		} else { /* something wrong */
+			sqlite3_finalize(sqlStmt);
+			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+		}
+
+		sqlite3_finalize(sqlStmt);
 		return 0;
 	}
 
-	/* otherwise, key wasn't found or is invalid */
-	return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
-}
-
-int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan) {
-	uint8_t done=0;
-	xmlNodePtr cur;
-	uint8_t peerZidHex[25];
-	uint8_t keyHex[65]; /* key is 32 bytes long -> 64 bytes string + null termination */
-	uint8_t sessionIdHex[65]; /* sessionId is 32 bytes long -> 64 bytes string + null termination */
-	uint8_t sessionIndexHex[9]; /*  sessionInedx is an uint32_t : 4 bytes long -> 8 bytes string + null termination */
-	uint8_t validHex[17]; /* validity is a unix period in seconds on 64bits -> 16 bytes string + null termination */
-	bctoolboxTimeSpec currentTimeSpec;
-
-	uint8_t itemFound = 0;
-
-	if (cacheBuffer == NULL ) { /* there is no cache return error */
+	/* something is wrong with the cache? */
+	if (ret!=SQLITE_DONE) {
 		return LIME_INVALID_CACHE;
 	}
 
-	/* get the given ZID into hex format */
-	bctbx_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
-	peerZidHex[24]='\0'; /* must be a null terminated string */
+	/* reach here if the query executed correctly but returned no result */
+	return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+}
 
-	cur = xmlDocGetRootElement(cacheBuffer);
-	/* if we found a root element, parse its children node */
-	if (cur!=NULL)
-	{
-		cur = cur->xmlChildrenNode;
+int lime_setCachedKey(void *cachedb, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan) {
+	bctoolboxTimeSpec currentTime;
+	/* columns to be written in cache */
+	char *colNamesSender[] = {"sndKey", "sndSId", "sndIndex"}; /* Sender never update the validity period */
+	char *colNamesReceiver[] = {"rcvKey", "rcvSId", "rcvIndex", "valid"};
+	uint8_t *colValues[4];
+	uint8_t sessionIndex[4]; /* buffer to hold the uint32_t buffer index in big endian */
+	size_t colLength[] = {32, 32, 4, 8}; /* data length: keys and session ID : 32 bytes, Index: 4 bytes(uint32_t), validity : 8 bytes(UTC time as int64_t) */
+	int colNums;
 
+	if (cachedb == NULL  || associatedKey == NULL) { /* there is no cache return error */
+		return LIME_INVALID_CACHE;
 	}
 
-	/* convert the given tag content to null terminated Hexadecimal strings */
-	bctbx_int8ToStr(keyHex, associatedKey->key, 32);
-	keyHex[64] = '\0';
-	bctbx_int8ToStr(sessionIdHex, associatedKey->sessionId, 32);
-	sessionIdHex[64] = '\0';
-	bctbx_uint32ToStr(sessionIndexHex, associatedKey->sessionIndex);
+	/* wrap values to be written */
+	sessionIndex[0] = (associatedKey->sessionIndex>>24)&0xFF;
+	sessionIndex[1] = (associatedKey->sessionIndex>>16)&0xFF;
+	sessionIndex[2] = (associatedKey->sessionIndex>>8)&0xFF;
+	sessionIndex[3] = (associatedKey->sessionIndex)&0xFF;
+	colValues[0] = associatedKey->key;
+	colValues[1] = associatedKey->sessionId;
+	colValues[2] = sessionIndex;
+
+	/* shall we update valid column? Enforce only when receiver, if timeSpan is 0, just ignore */
 	if (validityTimeSpan > 0 && role == LIME_RECEIVER) {
-		bctbx_get_utc_cur_time(&currentTimeSpec);
-		bctbx_timespec_add(&currentTimeSpec, validityTimeSpan);
-		bctbx_uint64ToStr(validHex, currentTimeSpec.tv_sec);
+		bctbx_get_utc_cur_time(&currentTime);
+		bctbx_timespec_add(&currentTime, validityTimeSpan);
+		/* store the int64_t in big endian in the cache(cache is not typed, all data seen as blob) */
+		colValues[3][0] = (currentTime.tv_sec>>56)&0xFF;
+		colValues[3][1] = (currentTime.tv_sec>>48)&0xFF;
+		colValues[3][2] = (currentTime.tv_sec>>40)&0xFF;
+		colValues[3][3] = (currentTime.tv_sec>>32)&0xFF;
+		colValues[3][4] = (currentTime.tv_sec>>24)&0xFF;
+		colValues[3][5] = (currentTime.tv_sec>>16)&0xFF;
+		colValues[3][6] = (currentTime.tv_sec>>8)&0xFF;
+		colValues[3][7] = (currentTime.tv_sec)&0xFF;
+
+		colNums = 4;
+	} else {
+		colNums = 3; /* do not write the valid column*/
 	}
 
-	while (cur!=NULL && done==0) { /* loop on all peer nodes */
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))){ /* found a peer, check his ZID element */
-			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, cur->xmlChildrenNode->xmlChildrenNode, 1); /* ZID is the first element of peer */
-			if (!xmlStrcmp(currentZidHex, (const xmlChar *)peerZidHex)) { /* we found the peer element we are looking for */
-				uint8_t validFound = 0;
-				xmlNodePtr peerNodeChildren = cur->xmlChildrenNode->next;
-				if (role==LIME_SENDER) {
-					itemFound=1; /* we do not look for valid when setting sender key */
-				}
-				while (peerNodeChildren != NULL && itemFound<4) { /* look for the tag we want to write */
-					if (role == LIME_RECEIVER) { /* writing receiver key */
-						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvKey")) {
-							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)keyHex);
-							itemFound++;
-						}
-						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvSId")) {
-							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)sessionIdHex);
-							itemFound++;
-						}
-						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvIndex")) {
-							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)sessionIndexHex);
-							itemFound++;
-						}
-						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"valid")) {
-							if (validityTimeSpan > 0) {
-								xmlNodeSetContent(peerNodeChildren, (const xmlChar *)validHex);
-							}
-							itemFound++;
-							validFound=1;
-						}
-					} else { /* writing sender key */
-						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndKey")) {
-							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)keyHex);
-							itemFound++;
-						}
-						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndSId")) {
-							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)sessionIdHex);
-							itemFound++;
-						}
-						if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndIndex")) {
-							xmlNodeSetContent(peerNodeChildren, (const xmlChar *)sessionIndexHex);
-							itemFound++;
-						}
-					}
-					peerNodeChildren = peerNodeChildren->next;
-				}
-
-				/* we may want to add the valid node which if it is missing and we've been ask to update it */
-				if (role == LIME_RECEIVER && validityTimeSpan>0 && validFound==0) {
-					xmlNewTextChild(cur, NULL, (const xmlChar *)"valid", validHex);
-				}
-				done=1; /* step out of the <peer> loop  */
-			}
-			xmlFree(currentZidHex);
-		}
-		cur = cur->next;
-	}
-	return 0;
+	/* update cache */
+	return bzrtp_cache_write(cachedb, associatedKey->zuid, "lime", role==LIME_SENDER?colNamesSender:colNamesReceiver, colValues, colLength, colNums);
 }
 
 /**
@@ -442,11 +357,13 @@ void lime_freeKeys(limeURIKeys_t *associatedKeys) {
 		}
 	}
 
-	free(associatedKeys->peerKeys);
+	bctbx_free(associatedKeys->peerKeys);
 	associatedKeys->peerKeys = NULL;
 
-	/* free sipURI string */
-	free(associatedKeys->peerURI);
+	/* free sipURI strings */
+	bctbx_free(associatedKeys->selfURI);
+	associatedKeys->selfURI = NULL;
+	bctbx_free(associatedKeys->peerURI);
 	associatedKeys->peerURI = NULL;
 }
 
@@ -542,7 +459,7 @@ int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t mess
 	return retval;
 }
 
-int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, uint8_t *message, uint8_t *peerURI, uint8_t **output) {
+int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t *message, const char *selfURI, const char *peerURI, uint8_t **output) {
 	uint8_t selfZidHex[25];
 	uint8_t selfZid[12]; /* same data but in byte buffer */
 	uint32_t encryptedMessageLength;
@@ -554,23 +471,22 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 	int xmlStringLength;
 	xmlChar *local_output = NULL;
 
-	/* retrieve selfZIDHex from cache(return a 24 char hexa string + null termination) */
-	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
+	/* retrieve selfZIDHex from cache */
+	if (bzrtp_getSelfZID(cachedb, selfURI, selfZid, NULL) != 0) {
 		return LIME_UNABLE_TO_ENCRYPT_MESSAGE;
 	}
-	bctbx_strToUint8(selfZid, selfZidHex, 24);
 
 	/* encrypted message length is plaintext + 16 for tag */
 	encryptedMessageLength = (uint32_t)strlen((char *)message) + 16;
 	encryptedContentTypeLength = (uint32_t)strlen((char *)contentType) + 16;
 
 	/* retrieve keys associated to the peer URI */
-	associatedKeys.peerURI = (uint8_t *)malloc(strlen((char *)peerURI)+1);
-	strcpy((char *)(associatedKeys.peerURI), (char *)peerURI);
+	associatedKeys.peerURI = bctbx_strdup(peerURI);
+	associatedKeys.selfURI = bctbx_strdup(selfURI);
 	associatedKeys.associatedZIDNumber  = 0;
 	associatedKeys.peerKeys = NULL;
 
-	if ((ret = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys)) != 0) {
+	if ((ret = lime_getCachedSndKeysByURI(cachedb, &associatedKeys)) != 0) {
 		lime_freeKeys(&associatedKeys);
 		return ret;
 	}
@@ -580,7 +496,9 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 	/* root tag is "doc" */
 	rootNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"doc", NULL);
 	xmlDocSetRootElement(xmlOutputMessage, rootNode);
-	/* add the self ZID child */
+	/* add the self ZID child, convert it to an hexa string  */
+	bctbx_int8ToStr(selfZidHex, selfZid, 12);
+	selfZidHex[24] = '\0'; /* add a NULL termination for libxml */
 	xmlNewTextChild(rootNode, NULL, (const xmlChar *)"ZID", selfZidHex);
 
 	/* loop on all keys found */
@@ -638,7 +556,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 
 		/* update the key used */
 		lime_deriveKey(currentKey);
-		lime_setCachedKey(cacheBuffer, currentKey, LIME_SENDER, 0); /* never update validity when sending a message */
+		lime_setCachedKey(cachedb, currentKey, LIME_SENDER, 0); /* never update validity when sending a message */
 	}
 
 	/* dump the whole message doc into the output */
@@ -655,7 +573,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *contentType, 
 	return 0;
 }
 
-int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output, char **content_type, uint64_t validityTimeSpan) {
+int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *selfURI, const char *peerURI, uint8_t **output, char **content_type, uint64_t validityTimeSpan) {
 	int retval = 0;
 	uint8_t selfZidHex[25];
 	uint8_t selfZid[12]; /* same data but in byte buffer */
@@ -671,14 +589,16 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	uint32_t usedSessionIndex = 0;
 	int i;
 
-	if (cacheBuffer == NULL) {
+	if (cachedb == NULL) {
 		return LIME_INVALID_CACHE;
 	}
-	/* retrieve selfZIDHex from cache(return a 24 char hexa string + null termination) */
-	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
+
+	/* retrieve selfZID from cache, and convert it to an Hexa buffer to easily match it against hex string containg in xml message as pzid */
+	if (bzrtp_getSelfZID(cachedb, selfURI, selfZid, NULL) != 0) {
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
-	bctbx_strToUint8(selfZid, selfZidHex, 24);
+	bctbx_int8ToStr(selfZidHex, selfZid, 12);
+	selfZidHex[24]='\0';
 
 	xml_ctx = linphone_xmlparsing_context_new();
 	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
@@ -701,12 +621,12 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 		linphone_free_xml_text_content(peerZidHex);
 
 		/* Get the matching key from cache */
-		retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
+		retval = lime_getCachedRcvKeyByZid(cachedb, &associatedKey, selfURI, peerURI);
 		if (retval != 0) {
 			goto error;
 		}
 
-		/* Retrieve the portion of message which is encrypted with our key */
+		/* Retrieve the portion of message which is encrypted with our key(seek for a pzid matching our) */
 		msg_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/doc/msg");
 		if ((msg_object != NULL) && (msg_object->nodesetval != NULL)) {
 			for (i = 1; i <= msg_object->nodesetval->nodeNr; i++) {
@@ -793,7 +713,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 
 	/* update used key */
 	lime_deriveKey(&associatedKey);
-	lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER, validityTimeSpan);
+	lime_setCachedKey(cachedb, &associatedKey, LIME_RECEIVER, validityTimeSpan);
 
 error:
 	linphone_xmlparsing_context_destroy(xml_ctx);
@@ -806,40 +726,22 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 			case LinphoneLimeDisabled: return FALSE;
 			case LinphoneLimeMandatory:
 			case LinphoneLimePreferred: {
-				FILE *CACHEFD = NULL;
-				if (cr->lc->zrtp_secrets_cache != NULL) {
-					CACHEFD = fopen(cr->lc->zrtp_secrets_cache, "rb+");
-					if (CACHEFD) {
-						size_t cacheSize;
-						xmlDocPtr cacheXml;
-						char *cacheString = ms_load_file_content(CACHEFD, &cacheSize);
-						if (!cacheString) {
-							ms_warning("Unable to load content of ZRTP ZID cache");
-							return FALSE;
-						}
-						cacheString[cacheSize] = '\0';
-						cacheSize += 1;
-						fclose(CACHEFD);
-						cacheXml = xmlParseDoc((xmlChar*)cacheString);
-						ms_free(cacheString);
-						if (cacheXml) {
-							bool_t res;
-							limeURIKeys_t associatedKeys;
-							char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+				void *zrtp_cache_db = linphone_core_get_zrtp_cache_db(cr->lc);
+				if (zrtp_cache_db != NULL) {
+					bool_t res;
+					limeURIKeys_t associatedKeys;
+					char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 							
-							/* retrieve keys associated to the peer URI */
-							associatedKeys.peerURI = (uint8_t *)malloc(strlen(peer)+1);
-							strcpy((char *)(associatedKeys.peerURI), peer);
-							associatedKeys.associatedZIDNumber  = 0;
-							associatedKeys.peerKeys = NULL;
-
-							res = (lime_getCachedSndKeysByURI(cacheXml, &associatedKeys) == 0);
-							lime_freeKeys(&associatedKeys);
-							xmlFreeDoc(cacheXml);
-							ms_free(peer);
-							return res;
-						}
-					}
+					/* retrieve keys associated to the peer URI */
+					associatedKeys.peerURI = bctbx_strdup(peer);
+					associatedKeys.selfURI = NULL; /* TODO : there is no sender associated to chatroom so check for any local URI available, shall we add sender to chatroom? */
+					associatedKeys.associatedZIDNumber  = 0;
+					associatedKeys.peerKeys = NULL;
+					/* with NULL is selfURI, just retrieve keys for any local uri found in cache, shall we use a dedicated function which would
+					return the list of possible uris and store the selected one in the chatroom ? */
+					res = (lime_getCachedSndKeysByURI(zrtp_cache_db, &associatedKeys) == 0);
+					lime_freeKeys(&associatedKeys);
+					return res;
 				}
 			}
 		}
@@ -852,70 +754,43 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 	int errcode = -1;
 	/* check if we have a xml/cipher message to be decrypted */
 	if (msg->content_type && (strcmp("xml/cipher", msg->content_type) == 0 || strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0)) {
-		/* access the zrtp cache to get keys needed to decipher the message */
-		FILE *CACHEFD = NULL;
-		const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
 		errcode = 0;
-		if (zrtp_secrets_cache != NULL) CACHEFD = fopen(zrtp_secrets_cache, "rb+");
-		if (CACHEFD == NULL) {
-			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
+		int retval;
+		void *zrtp_cache_db = NULL; /* use a void * instead of sqlite3 * to avoid problems and ifdef when SQLITE is not available(the get function shall return NULL in that case) */
+		uint8_t *decrypted_body = NULL;
+		char *decrypted_content_type = NULL;
+		char *peerUri = NULL;
+		char *selfUri = NULL;
+
+		zrtp_cache_db = linphone_core_get_zrtp_cache_db(lc);
+		if (zrtp_cache_db == NULL) {
+			ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
 			errcode = 500;
 			return errcode;
+		}
+		peerUri = linphone_address_as_string_uri_only(msg->from);
+		selfUri = linphone_address_as_string_uri_only(msg->to);
+		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)msg->message, selfUri, peerUri, &decrypted_body, &decrypted_content_type, bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
+		if (retval != 0) {
+			ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
+			if (decrypted_body) ms_free(decrypted_body);
+			errcode = 488;
+			return errcode;
 		} else {
-			size_t cacheSize;
-			char *cacheString;
-			int retval;
-			xmlDocPtr cacheXml;
-			uint8_t *decrypted_body = NULL;
-			char *decrypted_content_type = NULL;
-			
-			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
-			if (!cacheString){
-				ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
-				errcode = 500;
-				return errcode;
+			/* swap encrypted message with plain text message */
+			if (msg->message) {
+				ms_free(msg->message);
 			}
-			cacheString[cacheSize] = '\0';
-			cacheSize += 1;
-			fclose(CACHEFD);
-			cacheXml = xmlParseDoc((xmlChar*)cacheString);
-			ms_free(cacheString);
-			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)msg->message, &decrypted_body, &decrypted_content_type, bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
-			if (retval != 0) {
-				ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
-				if (decrypted_body) ms_free(decrypted_body);
-				xmlFreeDoc(cacheXml);
-				errcode = 488;
-				return errcode;
+			msg->message = (char *)decrypted_body;
+			if (decrypted_content_type != NULL) {
+				linphone_chat_message_set_content_type(msg, decrypted_content_type);
 			} else {
-				/* dump updated cache to a string */
-				xmlChar *xmlStringOutput;
-				int xmlStringLength;
-				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-				/* write it to the cache file */
-				CACHEFD = fopen(zrtp_secrets_cache, "wb+");
-				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
-					ms_warning("Fail to write cache");
-				}
-				xmlFree(xmlStringOutput);
-				fclose(CACHEFD);
-				if (msg->message) {
-					ms_free(msg->message);
-				}
-				msg->message = (char *)decrypted_body;
-
-				if (decrypted_content_type != NULL) {
-					linphone_chat_message_set_content_type(msg, decrypted_content_type);
+				if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
+					linphone_chat_message_set_content_type(msg, "application/vnd.gsma.rcs-ft-http+xml");
 				} else {
-					if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
-						linphone_chat_message_set_content_type(msg, "application/vnd.gsma.rcs-ft-http+xml");
-					} else {
-						linphone_chat_message_set_content_type(msg, "text/plain");
-					}
+					linphone_chat_message_set_content_type(msg, "text/plain");
 				}
 			}
-
-			xmlFreeDoc(cacheXml);
 		}
 	}
 	return errcode;
@@ -927,6 +802,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 	char *new_content_type = "xml/cipher";
 	if(linphone_core_lime_enabled(room->lc)) {
 		if (linphone_chat_room_lime_available(room)) {
+			void *zrtp_cache_db = NULL; /* use a void * instead of sqlite3 * to avoid problems and ifdef when SQLITE is not available(the get function shall return NULL in that case) */
 			if (msg->content_type) {
 				if (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
 					/* It's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml
@@ -941,56 +817,31 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 			}
 
 			/* access the zrtp cache to get keys needed to cipher the message */
-			const char *zrtp_secrets_cache = linphone_core_get_zrtp_secrets_file(lc);
-			FILE *CACHEFD = fopen(zrtp_secrets_cache, "rb+");
+			zrtp_cache_db = linphone_core_get_zrtp_cache_db(lc);
 			errcode = 0;
-			if (CACHEFD == NULL) {
+			if (zrtp_cache_db == NULL) {
 				ms_warning("Unable to access ZRTP ZID cache to encrypt message");
 				errcode = 488;
 			} else {
-				size_t cacheSize;
-				char *cacheString;
-				xmlDocPtr cacheXml;
 				int retval;
 				uint8_t *crypted_body = NULL;
-				char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
+				char *selfUri = linphone_address_as_string_uri_only(msg->from);
+				char *peerUri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
 
-				cacheString=ms_load_file_content(CACHEFD, &cacheSize);
-				if (!cacheString){
-					ms_warning("Unable to load content of ZRTP ZID cache to encrypt message");
-					errcode = 500;
-					return errcode;
-				}
-				cacheString[cacheSize] = '\0';
-				cacheSize += 1;
-				fclose(CACHEFD);
-				cacheXml = xmlParseDoc((xmlChar*)cacheString);
-				ms_free(cacheString);
-				retval = lime_createMultipartMessage(cacheXml, msg->content_type, (uint8_t *)msg->message, (uint8_t *)peer, &crypted_body);
-				if (retval != 0) {
-					ms_warning("Unable to encrypt message for %s : %s", peer, lime_error_code_to_string(retval));
+				retval = lime_createMultipartMessage(zrtp_cache_db, msg->content_type, (uint8_t *)msg->message, selfUri, peerUri, &crypted_body);
+				if (retval != 0) { /* fail to encrypt */
+					ms_warning("Unable to encrypt message for %s : %s", room->peer, lime_error_code_to_string(retval));
 					if (crypted_body) ms_free(crypted_body);
 					errcode = 488;
-				} else {
-					/* dump updated cache to a string */
-					xmlChar *xmlStringOutput;
-					int xmlStringLength;
-					xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-					/* write it to the cache file */
-					CACHEFD = fopen(zrtp_secrets_cache, "wb+");
-					if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
-						ms_warning("Unable to write zid cache");
-					}
-					xmlFree(xmlStringOutput);
-					fclose(CACHEFD);
+				} else { /* encryption ok, swap plain text message body by encrypted one */
 					if (msg->message) {
 						ms_free(msg->message);
 					}
 					msg->message = (char *)crypted_body;
 					msg->content_type = ms_strdup(new_content_type);
 				}
-				ms_free(peer);
-				xmlFreeDoc(cacheXml);
+				ms_free(peerUri);
+				ms_free(selfUri);
 			}
 		} else {
 			if (linphone_core_lime_enabled(lc) == LinphoneLimeMandatory) {
@@ -1050,12 +901,12 @@ void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptio
 
 bool_t lime_is_available() { return FALSE; }
 int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) { return LIME_NOT_ENABLED;}
-int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output, char **content_type, uint64_t validityTimeSpan) { return LIME_NOT_ENABLED;}
-int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *content_type, uint8_t *message, uint8_t *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
+int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *selfURI, const char *peerURI, uint8_t **output, char **content_type, uint64_t validityTimeSpan) { return LIME_NOT_ENABLED;}
+int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t *message, const char *selfURI, const char *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {return LIME_NOT_ENABLED;}
 void lime_freeKeys(limeURIKeys_t *associatedKeys){
 }
-int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys){
+int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys){
 	return LIME_NOT_ENABLED;
 }
 int lime_encryptMessage(limeKey_t *key, const uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
@@ -1064,7 +915,7 @@ int lime_encryptMessage(limeKey_t *key, const uint8_t *plainMessage, uint32_t me
 int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan) {
 	return LIME_NOT_ENABLED;
 }
-int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
+int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, const char *selfURI, const char *peerURI) {
 	return LIME_NOT_ENABLED;
 }
 int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {

@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /**
  * @brief Structure holding all needed material to encrypt/decrypt Messages */
 typedef struct limeKey_struct  {
+	int zuid; /**< the internal cache id for this key, zuid is a binding on local uri and zid <-> peer uri and zid */
 	uint8_t key[32]; /**< a 256 bit key used to encrypt/decrypt message */
 	uint8_t sessionId[32]; /**< a session id used to derive key */
 	uint32_t sessionIndex; /**< an index to count number of derivation */
@@ -56,7 +57,8 @@ typedef struct limeKey_struct  {
 typedef struct limeURIKeys_struct {
 	limeKey_t 	**peerKeys; /**< an array of all the key material associated to each ZID matching the specified URI */
 	uint16_t	associatedZIDNumber; /**< previous array length */
-	uint8_t 	*peerURI; /**< the sip URI associated to all the keys, must be a null terminated string */
+	char 		*peerURI; /**< the peer sip URI associated to all the keys, must be a null terminated string */
+	char  		*selfURI; /**< the local sip URI used to send messages, must be a null terminated string */
 } limeURIKeys_t;
 
 /**
@@ -64,35 +66,36 @@ typedef struct limeURIKeys_struct {
  * peerKeys field from associatedKeys param must be NULL when calling this function.
  * Structure content must then be freed using lime_freeKeys function
  *
- * @param[in]		cacheBuffer		The xmlDoc containing current cache
- * @param[in,out]	associatedKeys	Structure containing the peerURI. After this call contains all key material associated to the given URI. Must be then freed through lime_freeKeys function
+ * @param[in]		cachedb		Pointer to the sqlite3 DB
+ * @param[in,out]	associatedKeys	Structure containing the self and peer URI. After this call contains all key material associated to the given URI. Must be then freed through lime_freeKeys function
  *
  * @return 0 on success(at least one valid key found), error code otherwise
  */
-LINPHONE_PUBLIC int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys);
+LINPHONE_PUBLIC int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys);
 
 /**
  * @brief Get the receiver key associated to the ZID given in the associatedKey parameter
  *
- * @param[in]		cacheBuffer		The xmlDoc containing current cache
- * @param[in,out]	associatedKey	Structure containing the peerZID and will store the retrieved key
+ * @param[in]		cachedb			Pointer to the sqlite3 DB
+ * @param[in,out]	associatedKey		Structure containing the peerZID and will store the retrieved key
+ * @param[in]		selfURI			The source URI
+ * @param[in]		peerURI			The destination URI
  *
  * @return 0 on success, error code otherwise
  */
-LINPHONE_PUBLIC int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey);
+LINPHONE_PUBLIC int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const char *selfURI, const char *peerURI);
 
 /**
  * @brief Set in cache the given key material, association is made by ZID contained in the associatedKey parameter
  *
- * @param[out]		cacheBuffer		The xmlDoc containing current cache to be updated
+ * @param[in/out]	cachedb		Pointer to the sqlite3 DB
  * @param[in,out]	associatedKey		Structure containing the key and ZID to identify the peer node to be updated
  * @param[in]		role			Can be LIME_SENDER or LIME_RECEIVER, specify which key we want to update
  * @param[in]		validityTimeSpan	If not 0, set the <valid> tag to now+validityTimeSpan (in seconds)
  *
  * @return 0 on success, error code otherwise
  */
-
-LINPHONE_PUBLIC int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan);
+LINPHONE_PUBLIC int lime_setCachedKey(void *cachedb, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan);
 
 /**
  * @brief Free all allocated data in the associated keys structure
@@ -167,28 +170,31 @@ LINPHONE_PUBLIC int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessag
  * @brief create the encrypted multipart xml message from plain text and destination URI
  * Retrieve in cache the needed keys which are then updated. Output buffer is allocated and must be freed by caller
  *
- * @param[in,out]	cacheBuffer		The xmlDoc containing current cache, get the keys and selfZID from it, updated by this function with derivated keys
- * @param[in]		content_type	The content type of the message to encrypt
+ * @param[in,out]	cachedb			Pointer to the sqlite DB holding zrtp/lime cache, get the keys and selfZID from it, updated by this function with derivated keys
+ * @param[in]		content_type		The content type of the message to encrypt
  * @param[in]		message			The message content to be encrypted
+ * @param[in]		selfURI			The source URI
  * @param[in]		peerURI			The destination URI, associated keys will be found in cache
  * @param[out]		output			The output buffer, allocated and set with the encrypted message xml body(null terminated string). Must be freed by caller
  *
  * @return 	0 on success, error code otherwise
  */
-LINPHONE_PUBLIC int lime_createMultipartMessage(xmlDocPtr cacheBuffer, const char *content_type, uint8_t *message, uint8_t *peerURI, uint8_t **output);
+LINPHONE_PUBLIC int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t *message, const char *selfURI, const char *peerURI, uint8_t **output);
 
 /**
  * @brief decrypt a multipart xml message
  * Retrieve in cache the needed key which is then updated. Output buffer is allocated and must be freed by caller
  *
- * @param[in,out]	cacheBuffer		The xmlDoc containing current cache, get the key and selfZID from it, updated by this function with derivated keys
+ * @param[in,out]	cachedb			Pointer to the sqlite DB holding zrtp/lime cache, get the keys and selfZID from it, updated by this function with derivated keys
  * @param[in]		message			The multipart message, contain one or several part identified by destination ZID, one shall match the self ZID retrieved from cache
+ * @param[in]		selfURI			The source URI
+ * @param[in]		peerURI			The destination URI, associated keys will be found in cache
  * @param[out]		output			The output buffer, allocated and set with the decrypted message(null terminated string). Must be freed by caller
  * @param[out]		content_type	The content type of the decrypted message
  * @param[in]		validityTimeSpan	If not 0, update the <valid> tag associated to sender to now+validityTimeSpan (in seconds)
  * @return 	0 on success, error code otherwise
  */
-LINPHONE_PUBLIC int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output, char **content_type, uint64_t validityTimeSpan);
+LINPHONE_PUBLIC int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *selfURI, const char *peerURI, uint8_t **output, char **content_type, uint64_t validityTimeSpan);
 
 /**
  * @brief given a readable version of error code generated by Lime functions
