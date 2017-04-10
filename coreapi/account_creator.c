@@ -505,7 +505,7 @@ const char * linphone_account_creator_get_display_name(const LinphoneAccountCrea
 }
 
 LinphoneAccountCreatorEmailStatus linphone_account_creator_set_email(LinphoneAccountCreator *creator, const char *email) {
-	if (!is_matching_regex(email, "^.+@.+\\..*$")) {
+	if (!email || !is_matching_regex(email, "^.+@.+\\..*$")) {
 		return LinphoneAccountCreatorEmailStatusMalformed;
 	}
 	if (!is_matching_regex(email, "^.+@.+\\.[A-Za-z]{2}[A-Za-z]*$")) {
