@@ -292,17 +292,7 @@ static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 		linphone_account_creator_service_get_destructor_cb(creator->service)(creator);
 	linphone_account_creator_cbs_unref(creator->cbs);
 	linphone_proxy_config_unref(creator->proxy_cfg);
-	if (creator->username) ms_free(creator->username);
-	if (creator->display_name) ms_free(creator->display_name);
-	if (creator->password) ms_free(creator->password);
-	if (creator->ha1) ms_free(creator->ha1);
-	if (creator->phone_number) ms_free(creator->phone_number);
-	if (creator->phone_country_code) ms_free(creator->phone_country_code);
-	if (creator->email) ms_free(creator->email);
-	if (creator->language) ms_free(creator->language);
-	if (creator->activation_code) ms_free(creator->activation_code);
-	if (creator->domain) ms_free(creator->domain);
-	if (creator->route) ms_free(creator->route);
+	linphone_account_creator_reset(creator);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreator);
@@ -334,6 +324,28 @@ LinphoneAccountCreator * _linphone_account_creator_new(LinphoneCore *core, const
 LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
 	return _linphone_account_creator_new(core, xmlrpc_url);
 }
+
+#define _reset_field(field) \
+	if (field) { \
+		ms_free(field); \
+		field = NULL; \
+	}
+
+void linphone_account_creator_reset(LinphoneAccountCreator *creator) {
+	_reset_field(creator->username);
+	_reset_field(creator->display_name);
+	_reset_field(creator->password);
+	_reset_field(creator->ha1);
+	_reset_field(creator->phone_number);
+	_reset_field(creator->phone_country_code);
+	_reset_field(creator->email);
+	_reset_field(creator->language);
+	_reset_field(creator->activation_code);
+	_reset_field(creator->domain);
+	_reset_field(creator->route);
+}
+
+#undef _reset_field
 
 LinphoneAccountCreator * linphone_core_create_account_creator(LinphoneCore *core, const char *xmlrpc_url) {
 	return _linphone_account_creator_new(core, xmlrpc_url);
@@ -934,19 +946,19 @@ static void _get_phone_number_for_account_cb_custom(LinphoneXmlRpcRequest *reque
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_is_account_linked_linphone(LinphoneAccountCreator *creator) {
-    LinphoneXmlRpcRequest *request;
-    if (!creator->username || !linphone_proxy_config_get_domain(creator->proxy_cfg)) {
+	LinphoneXmlRpcRequest *request;
+	if (!creator->username || !linphone_proxy_config_get_domain(creator->proxy_cfg)) {
 		return LinphoneAccountCreatorStatusMissingArguments;
-    }
-    request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "get_phone_number_for_account",
+	}
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "get_phone_number_for_account",
 		LinphoneXmlRpcArgString, creator->username,
 		LinphoneXmlRpcArgString, linphone_proxy_config_get_domain(creator->proxy_cfg),
 		LinphoneXmlRpcArgNone);
-    linphone_xml_rpc_request_set_user_data(request, creator);
-    linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _get_phone_number_for_account_cb_custom);
-    linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
-    linphone_xml_rpc_request_unref(request);
-    return LinphoneAccountCreatorStatusRequestOk;
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _get_phone_number_for_account_cb_custom);
+	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
+	linphone_xml_rpc_request_unref(request);
+	return LinphoneAccountCreatorStatusRequestOk;
 }
 /****************** END OF LINK PHONE NUMBER WITH ACCOUNT SECTION *************/
 
