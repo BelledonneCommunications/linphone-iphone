@@ -449,11 +449,17 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "sip", TRUE);
 	bool_t tunnelVerifyServerCertificate = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "verify_cert", FALSE);
 	bool_t useDualMode = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "dual_mode", FALSE);
+	const char *http_host, *http_username, *http_passwd;
+	int http_port;
+	linphone_tunnel_get_http_proxy(tunnel,&http_host, &http_port, &http_username, &http_passwd);
+	bcTunnel(tunnel)->setHttpProxy(http_host, http_port, http_username, http_passwd);
+	
 	linphone_tunnel_enable_dual_mode(tunnel, useDualMode);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);
 	linphone_tunnel_enable_sip(tunnel, tunnelizeSIPPackets);
 	linphone_tunnel_verify_server_certificate(tunnel, tunnelVerifyServerCertificate);
+	
 	/*Tunnel is started here if mode equals true*/
 	linphone_tunnel_set_mode(tunnel, mode);
 
