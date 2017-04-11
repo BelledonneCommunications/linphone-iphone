@@ -793,7 +793,7 @@ static void _activate_account_cb_custom(LinphoneXmlRpcRequest *request) {
 LinphoneAccountCreatorStatus linphone_account_creator_activate_account_linphone(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
 	char *identity = _get_identity(creator);
-	if (!identity || !creator->activation_code) {
+	if (!identity || (creator->phone_number && !creator->activation_code)) {
 		if (creator->cbs->is_account_activated_response_cb != NULL) {
 			creator->cbs->is_account_activated_response_cb(creator, LinphoneAccountCreatorStatusMissingArguments, "Missing required parameters");
 		}
