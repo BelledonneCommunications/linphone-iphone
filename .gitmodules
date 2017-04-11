@@ -107,7 +107,7 @@
 	url = git://git.linphone.org/libjpeg-turbo.git
 [submodule "submodules/mediastreamer2"]
 	path = submodules/mediastreamer2
-	url = gitosis@git.linphone.org:mediastreamer2
+	url = git://git.linphone.org/mediastreamer2.git
 [submodule "submodules/ortp"]
 	path = submodules/ortp
-	url = gitosis@git.linphone.org:ortp
+	url = git://git.linphone.org/ortp.git
