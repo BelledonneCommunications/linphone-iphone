@@ -122,7 +122,7 @@ bctbx_list_t * call_logs_read_from_config_file(LinphoneCore *lc){
 	const char *tmp;
 	uint64_t sec;
 	LpConfig *cfg=lc->config;
-	bctbx_list_t *call_logs;
+	bctbx_list_t *call_logs = NULL;
 
 	for(i=0;;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
