@@ -3654,16 +3654,35 @@ LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
  * @param[in] lc #LinphoneCore object
  * @param[in] file The path to the file to use to store the zrtp secrets cache.
  * @ingroup initializing
+ * @deprecated cache is now hold as sqlite db, use linphone_core_set_zrtp_cache_database_path to set path to the db and open it
  */
-LINPHONE_PUBLIC void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 
 /**
  * Get the path to the file storing the zrtp secrets cache.
  * @param[in] lc #LinphoneCore object.
  * @return The path to the file storing the zrtp secrets cache.
  * @ingroup initializing
+ * @deprecated cache is now hold as sqlite db, use linphone_core_get_zrtp_cache_db to get a pointer to it
  */
-LINPHONE_PUBLIC const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
+
+/**
+ * Get a pointer to the sqlite db holding zrtp/lime cache
+ * @param[in] lc #LinphoneCore object.
+ * @return An sqlite3 pointer cast to a void one or NULL if cache is not available(not enabled at compile or access failed)
+ * @ingroup initializing
+ */
+LINPHONE_PUBLIC void *linphone_core_get_zrtp_cache_db(LinphoneCore *lc);
+
+/**
+ * Sets the database filename where zrtp cache will be stored.
+ * If the file does not exist, it will be created.
+ * @ingroup initializing
+ * @param lc the linphone core
+ * @param path filesystem path
+**/
+LINPHONE_PUBLIC void linphone_core_set_zrtp_cache_database_path(LinphoneCore *lc, const char *path);
 
 /**
  * Set the path to the directory storing the user's x509 certificates (used by dtls)

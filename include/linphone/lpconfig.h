@@ -217,7 +217,7 @@ void linphone_config_for_each_section(const LinphoneConfig *lpconfig, void (*cal
 void linphone_config_for_each_entry(const LinphoneConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx);
 
 /*tells whether uncommited (with linphone_config_sync()) modifications exist*/
-int linphone_config_needs_commit(const LinphoneConfig *lpconfig);
+bool_t linphone_config_needs_commit(const LinphoneConfig *lpconfig);
 
 LINPHONE_PUBLIC void linphone_config_destroy(LinphoneConfig *cfg);
 

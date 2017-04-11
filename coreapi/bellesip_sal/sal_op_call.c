@@ -37,11 +37,11 @@ static void call_set_error(SalOp* op,belle_sip_response_t* response, bool_t fata
 	if (fatal) op->state = SalOpStateTerminating;
 	op->base.root->callbacks.call_failure(op);
 }
-static void set_addr_to_0000(char value[]) {
+static void set_addr_to_0000(char value[], size_t sz) {
 	if (ms_is_ipv6(value)) {
-		strcpy(value,"::0");
+		strncpy(value,"::0", sz);
 	} else {
-		strcpy(value,"0.0.0.0");
+		strncpy(value,"0.0.0.0", sz);
 	}
 	return;
 }
@@ -66,11 +66,11 @@ static void sdp_process(SalOp *h){
 		offer_answer_initiate_incoming(h->base.root->factory, h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
 		/*for backward compatibility purpose*/
 		if(h->cnx_ip_to_0000_if_sendonly_enabled && sal_media_description_has_dir(h->result,SalStreamSendOnly)) {
-			set_addr_to_0000(h->result->addr);
+			set_addr_to_0000(h->result->addr, sizeof(h->result->addr));
 			for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 				if (h->result->streams[i].dir == SalStreamSendOnly) {
-					set_addr_to_0000(h->result->streams[i].rtp_addr);
-					set_addr_to_0000(h->result->streams[i].rtcp_addr);
+					set_addr_to_0000(h->result->streams[i].rtp_addr, sizeof(h->result->streams[i].rtp_addr));
+					set_addr_to_0000(h->result->streams[i].rtcp_addr, sizeof(h->result->streams[i].rtcp_addr));
 				}
 			}
 		}

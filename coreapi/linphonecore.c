@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include "sqlite3_bctbx_vfs.h"
+/* we need bzrtp.h to setup the zrtp cache only when SQLITE is enabled */
+#include "bzrtp/bzrtp.h"
 #endif
 
 #include <math.h>
@@ -104,6 +106,7 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t isReachable, time_
 static void set_media_network_reachable(LinphoneCore* lc,bool_t isReachable);
 static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_uninit(LinphoneCore *lc);
+static void linphone_core_zrtp_cache_close(LinphoneCore *lc);
 
 #include "enum.h"
 #include "contact_providers_priv.h"
@@ -1727,13 +1730,15 @@ static void ui_config_read(LinphoneCore *lc)
 {
 #ifndef SQLITE_STORAGE_ENABLED
 	read_friends_from_rc(lc);
+	lc->call_logs = call_logs_read_from_config_file(lc);
 #else
 	if (!lc->friends_db) {
 		read_friends_from_rc(lc);
 	}
+	if (!lc->logs_db) {
+		lc->call_logs = call_logs_read_from_config_file(lc);
+	}
 #endif
-
-	call_logs_read_from_config_file(lc);
 }
 
 /*
@@ -4621,17 +4626,16 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 		return;
 	}
 
-	// This is because there must have been a call previously to linphone_core_call_log_storage_init
-	lc->call_logs = bctbx_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
-
-	call_logs_read_from_config_file(lc);
-	if (!lc->call_logs) {
+	logs_to_migrate = call_logs_read_from_config_file(lc);
+	if (!logs_to_migrate) {
 		ms_warning("nothing to migrate, skipping...");
 		return;
 	}
 
-	logs_to_migrate = lc->call_logs;
+	// This is because there must have been a call previously to linphone_core_call_log_storage_init
+	lc->call_logs = bctbx_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 	lc->call_logs = NULL;
+
 	// We can't use bctbx_list_for_each because logs_to_migrate are listed in the wrong order (latest first), and we want to store the logs latest last
 	for (i = (int)bctbx_list_size(logs_to_migrate) - 1; i >= 0; i--) {
 		LinphoneCallLog *log = (LinphoneCallLog *) bctbx_list_nth_data(logs_to_migrate, i);
@@ -5786,6 +5790,11 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}
+
+	if(lc->zrtp_cache_db_file != NULL) {
+		ms_free(lc->zrtp_cache_db_file);
+	}
+
 	if(lc->user_certificates_path != NULL) {
 		ms_free(lc->user_certificates_path);
 	}
@@ -5819,6 +5828,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
 	linphone_core_friends_storage_close(lc);
+	linphone_core_zrtp_cache_close(lc);
 
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
@@ -6213,6 +6223,268 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 
 const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
+}
+
+void *linphone_core_get_zrtp_cache_db(LinphoneCore *lc){
+#ifdef SQLITE_STORAGE_ENABLED
+	return (void *)lc->zrtp_cache_db;
+#else /* SQLITE_STORAGE_ENABLED */
+	return NULL;
+#endif /* SQLITE_STORAGE_ENABLED */
+}
+
+static void linphone_core_zrtp_cache_close(LinphoneCore *lc) {
+#ifdef SQLITE_STORAGE_ENABLED
+	if (lc->zrtp_cache_db) {
+		sqlite3_close(lc->zrtp_cache_db);
+		lc->zrtp_cache_db = NULL;
+	}
+#endif /* SQLITE_STORAGE_ENABLED */
+}
+
+#ifdef SQLITE_STORAGE_ENABLED
+/* this function is called only when the sqlite cache is newly created but still empty(contains tables structures but no data)
+ * and we have an xml cache
+ * SQL zid cache associate each local sip:uri its own ZID while XML version used one ZID for the whole device-> use the XML provided ZID
+ * for the default local sipUri retrieved using linphone_core_get_identity
+ */
+static void linphone_core_zrtp_cache_migration(LinphoneCore *lc) {
+	FILE *CACHEFD = NULL;
+	/* load the xml cache */
+	if (lc->zrtp_secrets_cache != NULL) {
+		CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
+		if (CACHEFD) {
+			size_t cacheSize;
+			xmlDocPtr cacheXml;
+			char *cacheString = ms_load_file_content(CACHEFD, &cacheSize);
+			if (!cacheString) {
+				ms_warning("Unable to load content of ZRTP ZID cache");
+				return;
+			}
+			cacheString[cacheSize] = '\0';
+			cacheSize += 1;
+			fclose(CACHEFD);
+			cacheXml = xmlParseDoc((xmlChar*)cacheString);
+			ms_free(cacheString);
+			if (cacheXml) {
+				xmlNodePtr cur;
+				xmlChar *selfZidHex=NULL;
+				uint8_t selfZID[12];
+				sqlite3 *db = (sqlite3 *)linphone_core_get_zrtp_cache_db(lc);
+				sqlite3_stmt *sqlStmt = NULL;
+				const char *selfURI = linphone_core_get_identity(lc);
+				int ret;
+
+				/* parse the cache to get the selfZID and insert it in sqlcache */
+				cur = xmlDocGetRootElement(cacheXml);
+				/* if we found a root element, parse its children node */
+				if (cur!=NULL)
+				{
+					cur = cur->xmlChildrenNode;
+				}
+				selfZidHex = NULL;
+				while (cur!=NULL) {
+					if ((!xmlStrcmp(cur->name, (const xmlChar *)"selfZID"))){ /* self ZID found, extract it */
+						selfZidHex = xmlNodeListGetString(cacheXml, cur->xmlChildrenNode, 1);
+						bctbx_strToUint8(selfZID, selfZidHex, 24);
+						break;
+					}
+					cur = cur->next;
+				}
+				/* did we found a self ZID? */
+				if (selfZidHex == NULL) {
+					ms_warning("ZRTP/LIME cache migration: Failed to parse selfZID");
+					return;
+				}
+
+				/* insert the selfZID in cache, associate it to default local sip:uri in case we have more than one */
+				ms_message("ZRTP/LIME cache migration: found selfZID %.24s link it to default URI %s in SQL cache", selfZidHex, selfURI);
+				xmlFree(selfZidHex);
+
+				ret = sqlite3_prepare_v2(db, "INSERT INTO ziduri (zid,selfuri,peeruri) VALUES(?,?,?);", -1, &sqlStmt, NULL);
+				if (ret != SQLITE_OK) {
+					ms_warning("ZRTP/LIME cache migration: Failed to insert selfZID");
+					return;
+				}
+				sqlite3_bind_blob(sqlStmt, 1, selfZID, 12, SQLITE_TRANSIENT);
+				sqlite3_bind_text(sqlStmt, 2, selfURI,-1,SQLITE_TRANSIENT);
+				sqlite3_bind_text(sqlStmt, 3, "self",-1,SQLITE_TRANSIENT);
+
+				ret = sqlite3_step(sqlStmt);
+				if (ret!=SQLITE_DONE) {
+					ms_warning("ZRTP/LIME cache migration: Failed to insert selfZID");
+					return;
+				}
+				sqlite3_finalize(sqlStmt);
+
+				/* loop over all the peer node in the xml cache and get from them : uri(can be more than one), ZID, rs1, rs2, pvs, sndKey, rcvKey, sndSId, rcvSId, sndIndex, rcvIndex, valid */
+				/* some of these may be missing(pvs, valid, rs2) but we'll consider them NULL */
+				/* aux and pbx secrets were not used, so don't even bother looking for them */
+				cur = xmlDocGetRootElement(cacheXml)->xmlChildrenNode;
+
+				while (cur!=NULL) { /* loop on all peer nodes */
+					if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))) { /* found a peer node, check if there is a sipURI node in it (other nodes are just ignored) */
+						int i;
+						xmlNodePtr peerNodeChildren = cur->xmlChildrenNode;
+						xmlChar *nodeContent = NULL;
+						xmlChar *peerZIDString = NULL;
+						uint8_t peerZID[12];
+						uint8_t peerZIDFound=0;
+						xmlChar *peerUri[128]; /* array to contain all the peer uris found in one node */
+						/* hopefully they won't be more than 128(it would mean some peer has more than 128 accounts and we called all of them...) */
+						int peerUriIndex=0; /* index of previous array */
+						char *zrtpColNames[] = {"rs1", "rs2", "pvs"};
+						uint8_t *zrtpColValues[] = {NULL, NULL, NULL};
+						size_t zrtpColExpectedLengths[] = {32,32,1};
+						size_t zrtpColLengths[] = {0,0,0};
+
+						char *limeColNames[] = {"sndKey", "rcvKey", "sndSId", "rcvSId", "sndIndex", "rcvIndex", "valid"};
+						uint8_t *limeColValues[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+						size_t limeColExpectedLengths[] = {32,32,32,32,4,4,8};
+						size_t limeColLengths[] = {0,0,0,0,0,0,0};
+
+						/* check all the children nodes to retrieve all information we may get */
+						while (peerNodeChildren!=NULL && peerUriIndex<128) {
+							if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"uri")) { /* found a peer an URI node, get the content */
+								peerUri[peerUriIndex] = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
+								peerUriIndex++;
+							}
+
+							if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"ZID")) {
+								peerZIDString = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
+								bctbx_strToUint8(peerZID, peerZIDString, 24);
+
+								peerZIDFound=1;
+							}
+
+							for (i=0; i<3; i++) {
+								if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)zrtpColNames[i])) {
+									nodeContent = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
+									zrtpColValues[i] = (uint8_t *)bctbx_malloc(zrtpColExpectedLengths[i]);
+									bctbx_strToUint8(zrtpColValues[i], nodeContent, 2*zrtpColExpectedLengths[i]);
+									zrtpColLengths[i]=zrtpColExpectedLengths[i];
+								}
+							}
+
+							for (i=0; i<7; i++) {
+								if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)limeColNames[i])) {
+									nodeContent = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
+									limeColValues[i] = (uint8_t *)bctbx_malloc(limeColExpectedLengths[i]);
+									bctbx_strToUint8(limeColValues[i], nodeContent, 2*limeColExpectedLengths[i]);
+									limeColLengths[i]=limeColExpectedLengths[i];
+								}
+							}
+
+							peerNodeChildren = peerNodeChildren->next;
+							xmlFree(nodeContent);
+							nodeContent=NULL;
+						}
+
+						if (peerUriIndex>0 && peerZIDFound==1) { /* we found at least an uri in this peer node, extract the keys all other informations */
+							/* retrieve all the informations */
+
+							/* loop over all the uri founds */
+							for (i=0; i<peerUriIndex; i++) {
+								char *stmt = NULL;
+								int zuid;
+								/* create the entry in the ziduri table (it will give us the zuid to be used to insert infos in lime and zrtp tables) */
+								/* we could use directly the bzrtp_cache_getZuid function, but avoid useless query by directly inserting the data */
+								stmt = sqlite3_mprintf("INSERT INTO ziduri (zid,selfuri,peeruri) VALUES(?,?,?);");
+								ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
+								if (ret != SQLITE_OK) {
+									ms_warning("ZRTP/LIME cache migration: Failed to insert peer ZID %s", peerUri[i]);
+									return;
+								}
+								sqlite3_free(stmt);
+
+								sqlite3_bind_blob(sqlStmt, 1, peerZID, 12, SQLITE_TRANSIENT);
+								sqlite3_bind_text(sqlStmt, 2, selfURI, -1, SQLITE_TRANSIENT);
+								sqlite3_bind_text(sqlStmt, 3, (const char *)(peerUri[i]), -1, SQLITE_TRANSIENT);
+
+								ret = sqlite3_step(sqlStmt);
+								if (ret!=SQLITE_DONE) {
+									ms_warning("ZRTP/LIME cache migration: Failed to insert peer ZID %s", peerUri[i]);
+									return;
+								}
+								sqlite3_finalize(sqlStmt);
+								/* get the zuid created */
+								zuid = (int)sqlite3_last_insert_rowid(db);
+
+								ms_message("ZRTP/LIME cache migration: Inserted self %s peer %s ZID %s sucessfully with zuid %d\n", selfURI, peerUri[i], peerZIDString, zuid);
+								xmlFree(peerUri[i]);
+								peerUri[i]=NULL;
+
+								/* now insert data in the zrtp and lime table, keep going even if it fails */
+								if ((ret=bzrtp_cache_write(db, zuid, "zrtp", zrtpColNames, zrtpColValues, zrtpColLengths, 3)) != 0) {
+									ms_error("ZRTP/LIME cache migration: could not insert data in zrtp table, return value %x", ret);
+								}
+								if ((ret=bzrtp_cache_write(db, zuid, "lime", limeColNames, limeColValues, limeColLengths, 7)) != 0) {
+									ms_error("ZRTP/LIME cache migration: could not insert data in lime table, return value %x", ret);
+								}
+							}
+						}
+						bctbx_free(zrtpColValues[0]);
+						bctbx_free(zrtpColValues[1]);
+						bctbx_free(zrtpColValues[2]);
+						for (i=0; i<7; i++) {
+							bctbx_free(limeColValues[i]);
+						}
+						xmlFree(peerZIDString);
+					}
+					cur = cur->next;
+				}
+			}
+		}
+	}
+}
+
+
+static void linphone_core_zrtp_cache_db_init(LinphoneCore *lc) {
+	int ret;
+	const char *errmsg;
+	sqlite3 *db;
+
+	linphone_core_zrtp_cache_close(lc);
+
+	ret = _linphone_sqlite3_open(lc->zrtp_cache_db_file, &db);
+	if (ret != SQLITE_OK) {
+		errmsg = sqlite3_errmsg(db);
+		ms_error("Error in the opening zrtp_cache_db_file(%s): %s.\n", lc->zrtp_cache_db_file, errmsg);
+		sqlite3_close(db);
+		lc->zrtp_cache_db=NULL;
+		return;
+	}
+
+	ret = bzrtp_initCache((void *)db); /* this may perform an update, check return value */
+
+	if (ret == BZRTP_CACHE_SETUP || ret == BZRTP_CACHE_UPDATE) {
+		/* After updating schema, database need to be closed/reopenned */
+		sqlite3_close(db);
+		_linphone_sqlite3_open(lc->zrtp_cache_db_file, &db);
+	}
+
+	lc->zrtp_cache_db = db;
+
+	if (ret == BZRTP_CACHE_SETUP && lc->zrtp_secrets_cache != NULL) {
+		/* we just created the db and we have an old XML version of the cache : migrate */
+		linphone_core_zrtp_cache_migration(lc);
+	}
+}
+#else /* SQLITE_STORAGE_ENABLED */
+static void linphone_core_zrtp_cache_db_init(LinphoneCore *lc) {
+	ms_warning("Tried to open %s as zrtp_cache_db_file, but SQLITE_STORAGE is not enabled", lc->zrtp_cache_db_file);
+}
+#endif /* SQLITE_STORAGE_ENABLED */
+
+void linphone_core_set_zrtp_cache_database_path(LinphoneCore *lc, const char *path) {
+	if (lc->zrtp_cache_db_file){
+		ms_free(lc->zrtp_cache_db_file);
+		lc->zrtp_cache_db_file = NULL;
+	}
+	if (path) {
+		lc->zrtp_cache_db_file = ms_strdup(path);
+		linphone_core_zrtp_cache_db_init(lc);
+	}
 }
 
 void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){

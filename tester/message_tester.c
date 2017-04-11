@@ -37,8 +37,10 @@
 
 static char* message_external_body_url=NULL;
 
-static const char *marie_zid_cache = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000078</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex></peer></cache>";
-static const char *pauline_zid_cache = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><rcvKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000078</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>";
+/* sql cache creation string, contains 3 string to be inserted : selfuri/selfuri/peeruri */
+static const char *marie_zid_sqlcache = "BEGIN TRANSACTION; CREATE TABLE IF NOT EXISTS ziduri (zuid          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,zid		BLOB NOT NULL DEFAULT '000000000000',selfuri	 TEXT NOT NULL DEFAULT 'unset',peeruri	 TEXT NOT NULL DEFAULT 'unset'); INSERT INTO `ziduri` (zuid,zid,selfuri,peeruri) VALUES (1,X'4ddc8042bee500ad0366bf93','%s','self'), (2,X'bcb4028bf55e1b7ac4c4edee','%s','%s'); CREATE TABLE IF NOT EXISTS zrtp (zuid		INTEGER NOT NULL DEFAULT 0 UNIQUE,rs1		BLOB DEFAULT NULL,rs2		BLOB DEFAULT NULL,aux		BLOB DEFAULT NULL,pbx		BLOB DEFAULT NULL,pvs		BLOB DEFAULT NULL,FOREIGN KEY(zuid) REFERENCES ziduri(zuid) ON UPDATE CASCADE ON DELETE CASCADE); INSERT INTO `zrtp` (zuid,rs1,rs2,aux,pbx,pvs) VALUES (2,X'f0e0ad4d3d4217ba4048d1553e5ab26fae0b386cdac603f29a66d5f4258e14ef',NULL,NULL,NULL,X'01'); CREATE TABLE IF NOT EXISTS lime (zuid		INTEGER NOT NULL DEFAULT 0 UNIQUE,sndKey		BLOB DEFAULT NULL,rcvKey		BLOB DEFAULT NULL,sndSId		BLOB DEFAULT NULL,rcvSId		BLOB DEFAULT NULL,sndIndex	BLOB DEFAULT NULL,rcvIndex	BLOB DEFAULT NULL,valid		BLOB DEFAULT NULL,FOREIGN KEY(zuid) REFERENCES ziduri(zuid) ON UPDATE CASCADE ON DELETE CASCADE); INSERT INTO `lime` (zuid,sndKey,rcvKey,sndSId,rcvSId,sndIndex,rcvIndex,valid) VALUES (2,X'97c75a5a92a041b415296beec268efc3373ef4aa8b3d5f301ac7522a7fb4e332',x'3b74b709b961e5ebccb1db6b850ea8c1f490546d6adee2f66b5def7093cead3d',X'e2ebca22ad33071bc37631393bf25fc0a9badeea7bf6dcbcb5d480be7ff8c5ea',X'a2086d195344ec2997bf3de7441d261041cda5d90ed0a0411ab2032e5860ea48',X'33376935',X'7ce32d86',X'0000000000000000'); COMMIT;";
+
+static const char *pauline_zid_sqlcache = "BEGIN TRANSACTION; CREATE TABLE IF NOT EXISTS ziduri (zuid          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,zid		BLOB NOT NULL DEFAULT '000000000000',selfuri	 TEXT NOT NULL DEFAULT 'unset',peeruri	 TEXT NOT NULL DEFAULT 'unset'); INSERT INTO `ziduri` (zuid,zid,selfuri,peeruri) VALUES (1,X'bcb4028bf55e1b7ac4c4edee','%s','self'), (2,X'4ddc8042bee500ad0366bf93','%s','%s'); CREATE TABLE IF NOT EXISTS zrtp (zuid		INTEGER NOT NULL DEFAULT 0 UNIQUE,rs1		BLOB DEFAULT NULL,rs2		BLOB DEFAULT NULL,aux		BLOB DEFAULT NULL,pbx		BLOB DEFAULT NULL,pvs		BLOB DEFAULT NULL,FOREIGN KEY(zuid) REFERENCES ziduri(zuid) ON UPDATE CASCADE ON DELETE CASCADE); INSERT INTO `zrtp` (zuid,rs1,rs2,aux,pbx,pvs) VALUES (2,X'f0e0ad4d3d4217ba4048d1553e5ab26fae0b386cdac603f29a66d5f4258e14ef',NULL,NULL,NULL,X'01'); CREATE TABLE IF NOT EXISTS lime (zuid		INTEGER NOT NULL DEFAULT 0 UNIQUE,sndKey		BLOB DEFAULT NULL,rcvKey		BLOB DEFAULT NULL,sndSId		BLOB DEFAULT NULL,rcvSId		BLOB DEFAULT NULL,sndIndex	BLOB DEFAULT NULL,rcvIndex	BLOB DEFAULT NULL,valid		BLOB DEFAULT NULL,FOREIGN KEY(zuid) REFERENCES ziduri(zuid) ON UPDATE CASCADE ON DELETE CASCADE); INSERT INTO `lime` (zuid,rcvKey,sndKey,rcvSId,sndSId,rcvIndex,sndIndex,valid) VALUES (2,X'97c75a5a92a041b415296beec268efc3373ef4aa8b3d5f301ac7522a7fb4e332',x'3b74b709b961e5ebccb1db6b850ea8c1f490546d6adee2f66b5def7093cead3d',X'e2ebca22ad33071bc37631393bf25fc0a9badeea7bf6dcbcb5d480be7ff8c5ea',X'a2086d195344ec2997bf3de7441d261041cda5d90ed0a0411ab2032e5860ea48',X'33376935',X'7ce32d86',X'0000000000000000'); COMMIT;";
 
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *msg) {
 	stats* counters = get_stats(lc);
@@ -864,42 +866,59 @@ static void info_message_with_body(void){
 	info_message_base(TRUE);
 }
 
-static FILE* fopen_from_write_dir(const char * name, const char * mode) {
-	char *filepath = bc_tester_file(name);
-	FILE * file = fopen(filepath,mode);
-	bc_free(filepath);
-	return file;
-}
-
 static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
+#ifdef SQLITE_STORAGE_ENABLED
 	char* filepath = NULL;
-	FILE *ZIDCacheMarieFD = NULL, *ZIDCachePaulineFD = NULL;
+	char* stmt = NULL;
+	char* errmsg=NULL;
+	int ret = 0;
+	char* paulineUri = NULL;
+	char* marieUri = NULL;
 
-	if (!linphone_core_lime_available(marie->lc)) {
+	if (!linphone_core_lime_available(marie->lc) || !linphone_core_lime_available(pauline->lc)) {
 		ms_warning("Lime not available, skiping");
 		return -1;
 	}
 	/* make sure lime is enabled */
 	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
 	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
-	
-	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
-	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
-	ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
-	fprintf(ZIDCacheMarieFD, marie_zid_cache, linphone_address_as_string_uri_only(pauline->identity), linphone_address_as_string_uri_only(pauline->identity));
-	fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
-	fclose(ZIDCacheMarieFD);
-	fclose(ZIDCachePaulineFD);
 
-	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
-	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
+	/* create temporary cache files: setting the database_path will create and initialise the files */
+	remove(bc_tester_file("tmpZIDCacheMarie.sqlite"));
+	remove(bc_tester_file("tmpZIDCachePauline.sqlite"));
+	filepath = bc_tester_file("tmpZIDCacheMarie.sqlite");
+	linphone_core_set_zrtp_cache_database_path(marie->lc, filepath);
+	bc_free(filepath);
+	filepath = bc_tester_file("tmpZIDCachePauline.sqlite");
+	linphone_core_set_zrtp_cache_database_path(pauline->lc, filepath);
 	bc_free(filepath);
 
-	filepath = bc_tester_file("tmpZIDCachePauline.xml");
-	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	bc_free(filepath);
+	/* caches are empty, populate them */
+	paulineUri =  linphone_address_as_string_uri_only(pauline->identity);
+	marieUri = linphone_address_as_string_uri_only(marie->identity);
+
+	stmt = sqlite3_mprintf(marie_zid_sqlcache, marieUri, marieUri, paulineUri);
+	ret = sqlite3_exec(linphone_core_get_zrtp_cache_db(marie->lc),stmt,NULL,NULL,&errmsg);
+	sqlite3_free(stmt);
+	if (ret != SQLITE_OK) {
+		ms_warning("Lime can't populate marie's sqlite cache: %s", errmsg);
+		sqlite3_free(errmsg);
+		return -1;
+	}
+	stmt = sqlite3_mprintf(pauline_zid_sqlcache, paulineUri, paulineUri, marieUri);
+	ret = sqlite3_exec(linphone_core_get_zrtp_cache_db(pauline->lc),stmt,NULL,NULL,&errmsg);
+	sqlite3_free(stmt);
+	if (ret != SQLITE_OK) {
+		ms_warning("Lime can't populate pauline's sqlite cache: %s", errmsg);
+		sqlite3_free(errmsg);
+		return -1;
+	}
+
 
 	return 0;
+#else /* SQLITE_STORAGE_ENABLED */
+	return -1; /* cannot enable lime without SQLITE_STORAGE */
+#endif /* SQLITE_STORAGE_ENABLED */
 }
 
 static void _is_composing_notification(bool_t lime_enabled) {
@@ -924,17 +943,19 @@ static void _is_composing_notification(bool_t lime_enabled) {
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
 }
 
 static void is_composing_notification(void) {
 	_is_composing_notification(FALSE);
 }
 
+#ifdef SQLITE_STORAGE_ENABLED
 static void is_composing_notification_with_lime(void) {
 	_is_composing_notification(TRUE);
 }
+#endif
 
 static void _imdn_notifications(bool_t with_lime) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -975,8 +996,8 @@ static void _imdn_notifications(bool_t with_lime) {
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
 }
 
 static void _im_notification_policy(bool_t with_lime) {
@@ -1067,8 +1088,8 @@ static void _im_notification_policy(bool_t with_lime) {
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
 }
 
 static void imdn_notifications(void) {
@@ -1079,6 +1100,7 @@ static void im_notification_policy(void) {
 	_im_notification_policy(FALSE);
 }
 
+#ifdef SQLITE_STORAGE_ENABLED
 static void imdn_notifications_with_lime(void) {
 	_imdn_notifications(TRUE);
 }
@@ -1086,17 +1108,16 @@ static void imdn_notifications_with_lime(void) {
 static void im_notification_policy_with_lime(void) {
 	_im_notification_policy(TRUE);
 }
+#endif
 
 static void _im_error_delivery_notification(bool_t online) {
-	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneChatRoom *chat_room;
-	char *marie_filepath;
-	char *pauline_filepath;
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneChatMessage *msg;
 	LinphoneChatMessageCbs *cbs;
 	int dummy = 0;
+	void *zrtp_cache_db_holder=NULL;
 
 	if (!linphone_core_lime_available(marie->lc)) {
 		ms_warning("Lime not available, skiping");
@@ -1104,23 +1125,7 @@ static void _im_error_delivery_notification(bool_t online) {
 	}
 
 	/* Make sure lime is enabled */
-	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
-	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
-
-	/* Set the zid cache files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri. */
-	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
-	ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
-	fprintf(ZIDCacheMarieFD, marie_zid_cache, linphone_address_as_string_uri_only(pauline->identity), linphone_address_as_string_uri_only(pauline->identity));
-	fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
-	fclose(ZIDCacheMarieFD);
-	fclose(ZIDCachePaulineFD);
-
-	marie_filepath = bc_tester_file("tmpZIDCacheMarie.xml");
-	linphone_core_set_zrtp_secrets_file(marie->lc, marie_filepath);
-
-	pauline_filepath = bc_tester_file("tmpZIDCachePauline.xml");
-	linphone_core_set_zrtp_secrets_file(pauline->lc, pauline_filepath);
-	bc_free(pauline_filepath);
+	if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
@@ -1134,8 +1139,9 @@ static void _im_error_delivery_notification(bool_t online) {
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc, pauline->identity));
 
-	/* Clear the ZID cache of the receiver of the chat message and enable all IM notifications */
-	linphone_core_set_zrtp_secrets_file(marie->lc, NULL);
+	/* Temporary disabling receiver cache and enable all IM notifications */
+	zrtp_cache_db_holder = marie->lc->zrtp_cache_db;
+	marie->lc->zrtp_cache_db = NULL;
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
 
@@ -1156,19 +1162,18 @@ static void _im_error_delivery_notification(bool_t online) {
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageNotDelivered, 1));
 
 	/* Restore the ZID cache of the receiver and resend the chat message */
-	linphone_core_set_zrtp_secrets_file(marie->lc, marie_filepath);
+	marie->lc->zrtp_cache_db = zrtp_cache_db_holder;
 	linphone_chat_message_ref(msg);
 	linphone_chat_message_resend(msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 2)); /* Check the new message is now received */
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));
 	linphone_chat_message_unref(msg);
-	bc_free(marie_filepath);
 
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
 }
 
 static void im_error_delivery_notification_online(void) {
@@ -1179,10 +1184,9 @@ static void im_error_delivery_notification_offline(void) {
 	_im_error_delivery_notification(FALSE);
 }
 
+#ifdef SQLITE_STORAGE_ENABLED
 static void lime_text_message(void) {
-	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneChatRoom* chat_room;
-	char* filepath;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -1190,25 +1194,8 @@ static void lime_text_message(void) {
 		ms_warning("Lime not available, skiping");
 		goto end;
 	}
-	/* make sure lime is enabled */
-	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
-	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 
-	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
-	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "w");
-	ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
-	fprintf(ZIDCacheMarieFD, marie_zid_cache, linphone_address_as_string_uri_only(pauline->identity), linphone_address_as_string_uri_only(pauline->identity));
-	fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
-	fclose(ZIDCacheMarieFD);
-	fclose(ZIDCachePaulineFD);
-
-	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
-	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
-	bc_free(filepath);
-
-	filepath = bc_tester_file("tmpZIDCachePauline.xml");
-	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	bc_free(filepath);
+	if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
@@ -1222,16 +1209,14 @@ static void lime_text_message(void) {
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 end:
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
 static void lime_text_message_to_non_lime(bool_t sender_policy_mandatory, bool_t lime_key_available) {
-	FILE *ZIDCachePaulineFD;
 	LinphoneChatRoom* chat_room;
-	char* filepath;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -1244,14 +1229,11 @@ static void lime_text_message_to_non_lime(bool_t sender_policy_mandatory, bool_t
 	linphone_core_enable_lime(pauline->lc, sender_policy_mandatory ? LinphoneLimeMandatory : LinphoneLimePreferred);
 
 	if (lime_key_available) {
-		/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
-		ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
-		fprintf(ZIDCachePaulineFD, pauline_zid_cache, linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
-		fclose(ZIDCachePaulineFD);
-
-		filepath = bc_tester_file("tmpZIDCachePauline.xml");
-		linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-		bc_free(filepath);
+		/* enable lime for both parts */
+		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
+		/* but then disable marie */
+		sqlite3_close(marie->lc->zrtp_cache_db);
+		marie->lc->zrtp_cache_db = NULL;
 	}
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
@@ -1282,7 +1264,7 @@ static void lime_text_message_to_non_lime(bool_t sender_policy_mandatory, bool_t
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 end:
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCachePauline.sqlite");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1304,12 +1286,9 @@ static void lime_text_message_without_cache(void) {
 }
 
 void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_stored_msg, bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download) {
-	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
 	LinphoneChatMessage *msg;
 	LinphoneChatMessageCbs *cbs;
-	char *pauline_id, *marie_id;
-	char *filepath;
 	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	MSList * msg_list = NULL;
@@ -1325,33 +1304,12 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 		goto end;
 	}
 	/* make sure lime is enabled */
-	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
-	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
+	enable_lime_for_message_test(marie, pauline);
+
 	if (!encrypt_file) {
 		LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
 		lp_config_set_int(pauline_lp, "sip", "lime_for_file_sharing", 0);
 	}
-
-	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
-	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "wb");
-	ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "wb");
-	pauline_id = linphone_address_as_string_uri_only(pauline->identity);
-	marie_id = linphone_address_as_string_uri_only(marie->identity);
-	fprintf(ZIDCacheMarieFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000078</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778csal_set_uuid(lc->sal, account->instance_id);bdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex></peer></cache>", pauline_id, pauline_id);
-	fprintf(ZIDCachePaulineFD, pauline_zid_cache, marie_id, marie_id);
-	fclose(ZIDCacheMarieFD);
-	fclose(ZIDCachePaulineFD);
-	ms_free(marie_id);
-	ms_free(pauline_id);
-
-	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
-	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
-	bc_free(filepath);
-
-	filepath = bc_tester_file("tmpZIDCachePauline.xml");
-	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	bc_free(filepath);
-
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
@@ -1402,8 +1360,8 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
 end:
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
 	remove(receive_filepath);
 	bc_free(send_filepath);
 	bc_free(receive_filepath);
@@ -1439,229 +1397,18 @@ static  void lime_transfer_message_without_encryption_2(void) {
 	lime_transfer_message_base(FALSE, FALSE, TRUE, FALSE);
 }
 
-static void printHex(char *title, uint8_t *data, size_t length) {
-	size_t i;
-	char debug_string_buffer[2048];
-	char *debug_string = debug_string_buffer;
-	sprintf (debug_string, "%s : ", title);
-	debug_string += strlen(title)+3;
-	for (i=0; i<length; i++) {
-		sprintf (debug_string, "0x%02x, ", data[i]);
-		debug_string+=6;
-	}
-	*debug_string = '\0';
-	ms_message("%s", debug_string_buffer);
-}
-
-static void stripnCR(char *dst, const char *src, const size_t srcLength) {
-	size_t i=0;
-	for (i=0; *src != '\0' && i<srcLength; src++,i++) {
-		*dst = *src;
-		if (*dst != '\r' && *dst != '\n') {
-			dst++;
-		}
-	}
-	*dst = '\0';
-}
-
 static void lime_unit(void) {
 	if (lime_is_available()) {
-		const char* PLAIN_TEXT_TEST_MESSAGE = "Ceci est un fabuleux msg de test à encrypter";
-		const char* pattern_ZIDCache_noValidity = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>963c57bb28e62068d2df23e8f9b771932d3c57bb28e62068d2df23e8f9b77193</sndKey><rcvKey>06d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>03ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000069</sndIndex><rcvIndex>000001e9</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>123456789012345678901234567890123456765431262068d2df23e8f9b77193</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000001</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>\r\n";
-		char cachedStringBufferExpected[2048];
-		char cachedStringBufferActual[2048];
-		char cachedStringBuffer[2048];
-		int retval;
-		size_t size;
-		uint8_t *cacheBufferString;
-		xmlDocPtr cacheBufferAlice;
-		xmlDocPtr cacheBufferBob;
-		uint8_t *multipartMessage = NULL;
-		uint8_t *decryptedMessage = NULL;
-		char *decryptedContentType = NULL;
-		xmlChar *xmlStringOutput;
-		int xmlStringLength;
-		limeURIKeys_t associatedKeys;
-		int i;
-		limeKey_t associatedKey;
-		uint8_t targetZID[12] = {0x00, 0x5d, 0xbe, 0x03, 0x99, 0x64, 0x3d, 0x95, 0x3a, 0x22, 0x02, 0xdd};
-		uint8_t senderZID[12] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x70, 0x80, 0x90, 0xa0, 0xb0, 0xc0, 0xd0};
-		uint8_t encryptedMessage[1024];
-		uint8_t plainMessage[1024];
-		uint8_t receiverZID[12];
-		xmlDocPtr cacheBuffer;
-		FILE *CACHE;
+		LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
-		/**** Low level tests using on cache file to extract keys, encrypt/decrypt ****/
-		/**** use functions that are not directly used by external entities ****/
+		BC_ASSERT_EQUAL(enable_lime_for_message_test(marie, pauline), 0, int, "%d");
 
-		/* create and load cache file */
-		CACHE = fopen_from_write_dir("ZIDCache.xml", "wb");
-		fprintf (CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>963c57bb28e62068d2df23e8f9b771932d3c57bb28e62068d2df23e8f9b77193</sndKey><rcvKey>05d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>02ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000069</sndIndex><rcvIndex>000001e8</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>pipo1@pipo.com</uri><sndKey>123456789012345678901234567890123456765431262068d2df23e8f9b77193</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000001</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>");
-		fclose(CACHE);
-		CACHE = fopen_from_write_dir("ZIDCache.xml", "rb+");
-		cacheBufferString = (uint8_t*) ms_load_file_content(CACHE, &size);
-		*(cacheBufferString+size) = '\0';
-		fclose(CACHE);
-		/* parse it to an xmlDoc */
-		cacheBuffer = xmlParseDoc(cacheBufferString);
-		ms_free(cacheBufferString);
-
-		/* get data from cache : sender */
-		associatedKeys.peerURI = (uint8_t *)malloc(15);
-		memcpy(associatedKeys.peerURI, "pipo1@pipo.com", 15);
-		associatedKeys.associatedZIDNumber  = 0;
-		retval = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys);
-		BC_ASSERT_EQUAL(retval, 0, int, "%d");
-		BC_ASSERT_EQUAL(associatedKeys.associatedZIDNumber, 2, int, "%d"); /* there are 2 keys associated to pipo1@pipo.com address in the cache above*/
-		ms_message("Get cached key by URI, for sender, return %d keys", associatedKeys.associatedZIDNumber);
-
-		for (i=0; i<associatedKeys.associatedZIDNumber; i++) {
-			printHex("ZID", associatedKeys.peerKeys[i]->peerZID, 12);
-			printHex("key", associatedKeys.peerKeys[i]->key, 32);
-			printHex("sessionID", associatedKeys.peerKeys[i]->sessionId, 32);
-			ms_message("session index %d\n", associatedKeys.peerKeys[i]->sessionIndex);
-		}
-
-		/* get data from cache : receiver */
-		memcpy(associatedKey.peerZID, targetZID, 12);
-		retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
-		BC_ASSERT_EQUAL(retval, 0, int, "%d");
-		printHex("Got receiver key for ZID", targetZID, 12);
-		printHex("Key", associatedKey.key, 32);
-		printHex("sessionID", associatedKey.sessionId, 32);
-		ms_message("session index %d\n", associatedKey.sessionIndex);
-
-		/* encrypt/decrypt a msg */
-		lime_encryptMessage(associatedKeys.peerKeys[0], (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint32_t)strlen(PLAIN_TEXT_TEST_MESSAGE), senderZID, encryptedMessage);
-		printHex("Ciphered", encryptedMessage, strlen((char *)encryptedMessage));
-		/* invert sender and receiverZID to decrypt/authenticate */
-		memcpy(receiverZID, associatedKeys.peerKeys[0]->peerZID, 12);
-		memcpy(associatedKeys.peerKeys[0]->peerZID, senderZID, 12);
-		retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, (uint32_t)strlen(PLAIN_TEXT_TEST_MESSAGE)+16, receiverZID, plainMessage);
-		BC_ASSERT_EQUAL(retval, 0, int, "%d");
-		BC_ASSERT_STRING_EQUAL((char *)plainMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
-		ms_message("Decrypt and auth returned %d\nPlain text is %s\n", retval, plainMessage);
-
-		/* update receiver data */
-		associatedKey.sessionIndex++;
-		associatedKey.key[0]++;
-		associatedKey.sessionId[0]++;
-		retval = lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER, 0);
-		BC_ASSERT_EQUAL(retval, 0, int, "%d");
-
-		/* update sender data */
-		associatedKeys.peerKeys[0]->sessionIndex++;
-		associatedKeys.peerKeys[0]->key[0]++;
-		associatedKeys.peerKeys[0]->sessionId[0]++;
-		retval = lime_setCachedKey(cacheBuffer, associatedKeys.peerKeys[0], LIME_SENDER, 0);
-		BC_ASSERT_EQUAL(retval, 0, int, "%d");
-
-		/* free memory */
-		lime_freeKeys(&associatedKeys);
-
-		/* write the file */
-
-		/* dump the xml document into a string */
-		xmlDocDumpFormatMemoryEnc(cacheBuffer, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-		/* must strip buffers of their \n\r or strcmp won't like it */
-		stripnCR(cachedStringBufferExpected, pattern_ZIDCache_noValidity, strlen(pattern_ZIDCache_noValidity));
-		stripnCR(cachedStringBufferActual, (const char *)xmlStringOutput, strlen((const char *)xmlStringOutput));
-		BC_ASSERT_NSTRING_EQUAL(cachedStringBufferExpected, cachedStringBufferActual, strlen(cachedStringBufferExpected));
-
-		/* write it to the file */
-		CACHE = fopen_from_write_dir("ZIDCache.xml", "w+");
-		fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
-		xmlFree(xmlStringOutput);
-		fclose(CACHE);
-		xmlFreeDoc(cacheBuffer);
-
-
-		/**** Higher level tests using 2 caches to encrypt/decrypt a msg ****/
-		/* Create Alice cache file and then load it */
-		CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "wb");
-		fprintf(CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>9111ebeb52e50edcc6fcb3eea1a2d3ae3c2c75d3668923e83c59d0f472455150</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000080</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs><valid>00000000386d4380</valid></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex><valid>00000000386d4380</valid></peer></cache>");
-		fclose(CACHE);
-		CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "rb+");
-		cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
-		*(cacheBufferString+size) = '\0';
-		fclose(CACHE);
-		/* parse it to an xmlDoc */
-		cacheBufferAlice = xmlParseDoc(cacheBufferString);
-		ms_free(cacheBufferString);
-
-		/* Create Bob cache file and then load it */
-		CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "wb");
-		fprintf(CACHE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:marie@sip.example.org</uri><rcvKey>9111ebeb52e50edcc6fcb3eea1a2d3ae3c2c75d3668923e83c59d0f472455150</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000080</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:marie@sip.example.org</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>");
-		fclose(CACHE);
-		CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "rb+");
-		cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
-		*(cacheBufferString+size) = '\0';
-		fclose(CACHE);
-		/* parse it to an xmlDoc */
-		cacheBufferBob = xmlParseDoc(cacheBufferString);
-		ms_free(cacheBufferString);
-
-
-		/*Try to encrypt the message, but it shall fail due to expired key */
-
-		/* encrypt a msg */
-		retval = lime_createMultipartMessage(cacheBufferAlice, "text/plain", (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
-		BC_ASSERT_EQUAL(retval, LIME_PEER_KEY_HAS_EXPIRED, int, "%d");
-
-		/* reload a cache but with valid key (time bomb: validity is set to the 2038 bug epoch even if we are not prone to it) */
-		sprintf(cachedStringBuffer, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>9111ebeb52e50edcc6fcb3eea1a2d3ae3c2c75d3668923e83c59d0f472455150</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000080</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs><valid>000000007fffffff</valid></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>sip:pauline@sip.example.org</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex><valid>000000007fffffff</valid></peer></cache>");
-		xmlFreeDoc(cacheBufferAlice);
-		cacheBufferAlice = xmlParseDoc((unsigned char *)cachedStringBuffer);
-
-		/* retry to encrypt a msg */
-		retval = lime_createMultipartMessage(cacheBufferAlice, "text/plain", (uint8_t *)PLAIN_TEXT_TEST_MESSAGE, (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
-		BC_ASSERT_EQUAL(retval, 0, int, "%d");
-		if (retval == 0) {
-			ms_message("Encrypted msg created is %s", multipartMessage);
-		}
-
-		/* decrypt the multipart msg */
-		retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage, &decryptedContentType, 1000);
-
-		BC_ASSERT_EQUAL(retval, 0, int, "%d");
-		if (retval == 0) {
-			BC_ASSERT_STRING_EQUAL((char *)decryptedMessage, (char *)PLAIN_TEXT_TEST_MESSAGE);
-			BC_ASSERT_STRING_EQUAL((char *)decryptedContentType, "text/plain");
-			ms_message("Succesfully decrypted msg is %s", decryptedMessage);
-		}
-		ms_free(multipartMessage);
-		ms_free(decryptedMessage);
-		ms_free(decryptedContentType);
-
-		/* update ZID files */
-		/* dump the xml document into a string */
-		xmlDocDumpFormatMemoryEnc(cacheBufferAlice, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-		/* write it to the file */
-		CACHE = fopen_from_write_dir("ZIDCacheAlice.xml", "wb+");
-		fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
-		xmlFree(xmlStringOutput);
-		fclose(CACHE);
-
-		xmlDocDumpFormatMemoryEnc(cacheBufferBob, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-		/* write it to the file */
-		CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "wb+");
-		fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
-		xmlFree(xmlStringOutput);
-		fclose(CACHE);
-
-
-		xmlFreeDoc(cacheBufferAlice);
-		xmlFreeDoc(cacheBufferBob);
-		remove("ZIDCache.xml");
-		remove("ZIDCacheAlice.xml");
-		remove("ZIDCacheBob.xml");
-	} else {
-		ms_warning("Lime not available, skiping");
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+		/* TODO: perform more elaborate testing */
 	}
 }
-
-#ifdef SQLITE_STORAGE_ENABLED
 
 /*
  * Copy file "from" to file "to".
@@ -1925,7 +1672,7 @@ void crash_during_file_transfer(void) {
 	linphone_core_manager_destroy(marie);
 }
 
-#endif
+#endif /* SQLITE_STORAGE_ENABLED */
 
 static void text_status_after_destroying_chat_room(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -2492,8 +2239,8 @@ void _text_message_with_custom_content_type(bool_t with_lime) {
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	remove("tmpZIDCacheMarie.xml");
-	remove("tmpZIDCachePauline.xml");
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
 }
 
 void text_message_with_custom_content_type(void) {
@@ -2600,9 +2347,10 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Info message", info_message),
 	TEST_NO_TAG("Info message with body", info_message_with_body),
 	TEST_NO_TAG("IsComposing notification", is_composing_notification),
-	TEST_ONE_TAG("IsComposing notification lime", is_composing_notification_with_lime, "LIME"),
 	TEST_NO_TAG("IMDN notifications", imdn_notifications),
 	TEST_NO_TAG("IM notification policy", im_notification_policy),
+#ifdef SQLITE_STORAGE_ENABLED
+	TEST_ONE_TAG("IsComposing notification lime", is_composing_notification_with_lime, "LIME"),
 	TEST_ONE_TAG("IMDN notifications with lime", imdn_notifications_with_lime, "LIME"),
 	TEST_ONE_TAG("IM notification policy with lime", im_notification_policy_with_lime, "LIME"),
 	TEST_ONE_TAG("IM error delivery notification online", im_error_delivery_notification_online, "LIME"),
@@ -2620,7 +2368,6 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption, "LIME"),
 	TEST_ONE_TAG("Lime transfer message without encryption 2", lime_transfer_message_without_encryption_2, "LIME"),
 	TEST_ONE_TAG("Lime unitary", lime_unit, "LIME"),
-#ifdef SQLITE_STORAGE_ENABLED
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
 	TEST_NO_TAG("History count", history_count),
@@ -2646,7 +2393,9 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Real Time Text copy paste", real_time_text_copy_paste, "RTT"),
 	TEST_NO_TAG("IM Encryption Engine custom headers", chat_message_custom_headers),
 	TEST_NO_TAG("Text message with custom content-type", text_message_with_custom_content_type),
+#ifdef SQLITE_STORAGE_ENABLED
 	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME"),
+#endif
 	TEST_NO_TAG("IM Encryption Engine XOR", im_encryption_engine_xor)
 };
 

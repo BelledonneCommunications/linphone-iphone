@@ -20,7 +20,7 @@ EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
 
 if BUILD_TOOLS
 
-bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers lp-autoanswer lp-test-ecc lp-sendmsg
+bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-autoanswer lp-test-ecc lp-sendmsg
 
 xml2lpc_test_SOURCES=\
 	xml2lpc_test.c
@@ -35,13 +35,6 @@ xml2lpc_test_LDADD=\
 lpc2xml_test_CFLAGS=$(COMMON_CFLAGS)
 lpc2xml_test_LDADD=\
 	$(top_builddir)/coreapi/liblinphone.la
-
-lp_gen_wrappers_SOURCES=genwrappers.cc \
-			software-desc.cc software-desc.hh \
-			generator.cc generator.hh
-
-lp_gen_wrappers_LDADD= \
-		$(LIBXML2_LIBS)
 
 lp_autoanswer_SOURCES=auto_answer.c
 lp_autoanswer_CFLAGS=$(COMMON_CFLAGS)

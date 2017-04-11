@@ -5261,7 +5261,7 @@ static void call_logs_migrate(void) {
 	}
 
 	laure->lc->call_logs = bctbx_list_free_with_data(laure->lc->call_logs, (void (*)(void*))linphone_call_log_unref);
-	call_logs_read_from_config_file(laure->lc);
+	laure->lc->call_logs = call_logs_read_from_config_file(laure->lc);
 	BC_ASSERT_TRUE(bctbx_list_size(laure->lc->call_logs) == 0);
 
 	unlink(logs_db);

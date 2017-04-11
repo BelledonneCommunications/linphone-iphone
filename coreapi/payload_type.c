@@ -29,7 +29,7 @@ struct _LinphonePayloadType {
 };
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePayloadType);
-BELLE_SIP_DECLARE_VPTR(LinphonePayloadType);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePayloadType);
 
 LinphonePayloadType *linphone_payload_type_new(LinphoneCore *lc, OrtpPayloadType *ortp_pt) {
 	LinphonePayloadType *pt;

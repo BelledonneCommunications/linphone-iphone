@@ -48,6 +48,13 @@ typedef void (*LinphoneAccountCreatorCbsStatusCb)(LinphoneAccountCreator *creato
 **/
 LINPHONE_PUBLIC LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url);
 
+
+/**
+ * Reset the account creator entries like username, password, phone number...
+ * @param[in] creator LinphoneAccountCreator object
+**/
+LINPHONE_PUBLIC void linphone_account_creator_reset(LinphoneAccountCreator *creator);
+
 /**
  * Send a request to know the existence of account on server.
  * @param[in] creator LinphoneAccountCreator object

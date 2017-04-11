@@ -87,8 +87,8 @@ struct _LpConfig{
 	char *filename;
 	char *tmpfilename;
 	bctbx_list_t *sections;
-	int modified;
-	int readonly;
+	bool_t modified;
+	bool_t readonly;
 	bctbx_vfs_t* g_bctbx_vfs;
 };
 
@@ -443,7 +443,7 @@ static int _linphone_config_init_from_files(LinphoneConfig *lpconfig, const char
 		    linphone_config_parse(lpconfig, lpconfig->pFile);
 			bctbx_file_close(lpconfig->pFile);
 			lpconfig->pFile = NULL;
-			lpconfig->modified=0;
+			lpconfig->modified = FALSE;
 		}
 	}
 	if (factory_config_filename != NULL) {
@@ -655,9 +655,12 @@ void linphone_config_set_string(LpConfig *lpconfig,const char *section, const ch
 	if (sec!=NULL){
 		item=lp_section_find_item(sec,key);
 		if (item!=NULL){
-			if (value!=NULL && value[0] != '\0')
-				lp_item_set_value(item,value);
-			else lp_section_remove_item(sec,item);
+			if ((value != NULL) && (value[0] != '\0')) {
+				if (strcmp(value, item->value) == 0) return;
+				lp_item_set_value(item, value);
+			} else {
+				lp_section_remove_item(sec, item);
+			}
 		}else{
 			if (value!=NULL && value[0] != '\0')
 				lp_section_add_item(sec,lp_item_new(key,value));
@@ -667,7 +670,7 @@ void linphone_config_set_string(LpConfig *lpconfig,const char *section, const ch
 		linphone_config_add_section(lpconfig,sec);
 		lp_section_add_item(sec,lp_item_new(key,value));
 	}
-	lpconfig->modified++;
+	lpconfig->modified = TRUE;
 }
 
 void linphone_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const bctbx_list_t *value) {
@@ -805,7 +808,7 @@ int linphone_config_sync(LpConfig *lpconfig){
 	lpconfig->pFile = pFile;
 	if (pFile == NULL){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
-		lpconfig->readonly=1;
+		lpconfig->readonly = TRUE;
 		return -1;
 	}
 	
@@ -822,7 +825,7 @@ int linphone_config_sync(LpConfig *lpconfig){
 	if (rename(lpconfig->tmpfilename,lpconfig->filename)!=0){
 		ms_error("Cannot rename %s into %s: %s",lpconfig->tmpfilename,lpconfig->filename,strerror(errno));
 	}
-	lpconfig->modified=0;
+	lpconfig->modified = FALSE;
 	return 0;
 }
 
@@ -858,11 +861,11 @@ void linphone_config_clean_section(LpConfig *lpconfig, const char *section){
 	if (sec!=NULL){
 		linphone_config_remove_section(lpconfig,sec);
 	}
-	lpconfig->modified++;
+	lpconfig->modified = TRUE;
 }
 
-int linphone_config_needs_commit(const LpConfig *lpconfig){
-	return lpconfig->modified>0;
+bool_t linphone_config_needs_commit(const LpConfig *lpconfig){
+	return lpconfig->modified;
 }
 
 static const char *DEFAULT_VALUES_SUFFIX = "_default_values";

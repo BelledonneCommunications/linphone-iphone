@@ -1056,7 +1056,7 @@ struct _LinphoneCore
 	struct _EchoTester *ect;
 	LinphoneTaskList hooks; /*tasks periodically executed in linphone_core_iterate()*/
 	LinphoneConference *conf_ctx;
-	char* zrtp_secrets_cache;
+	char* zrtp_secrets_cache; /**< zrtp xml filename cache : obsolete, use zrtp_cache_db now, kept to allow cache migration */
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	time_t network_last_check;
@@ -1091,7 +1091,9 @@ struct _LinphoneCore
 	char *chat_db_file;
 	char *logs_db_file;
 	char *friends_db_file;
+	char *zrtp_cache_db_file;
 #ifdef SQLITE_STORAGE_ENABLED
+	sqlite3 *zrtp_cache_db; /**< zrtp sqlite cache, used by both zrtp and lime */
 	sqlite3 *db;
 	sqlite3 *logs_db;
 	sqlite3 *friends_db;
@@ -1254,7 +1256,7 @@ void _linphone_core_codec_config_write(LinphoneCore *lc);
 	#endif
 #endif
 
-LINPHONE_PUBLIC void call_logs_read_from_config_file(LinphoneCore *lc);
+LINPHONE_PUBLIC bctbx_list_t * call_logs_read_from_config_file(LinphoneCore *lc);
 void call_logs_write_to_config_file(LinphoneCore *lc);
 void linphone_core_call_log_storage_init(LinphoneCore *lc);
 void linphone_core_call_log_storage_close(LinphoneCore *lc);

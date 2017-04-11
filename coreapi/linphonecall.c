@@ -2181,23 +2181,20 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
 	return call->refer_pending;
 }
 
-static int _linphone_call_get_duration (const LinphoneCall *call) {
-	return (int)(ms_time(NULL) - call->log->connected_date_time);
+static int _linphone_call_compute_duration (const LinphoneCall *call) {
+	if (call->log->connected_date_time == 0) return 0;
+	else return (int)(ms_time(NULL) - call->log->connected_date_time);
 }
 
-int linphone_call_get_duration(const LinphoneCall *call){
-	if (call->log->connected_date_time==0) return 0;
-
+int linphone_call_get_duration(const LinphoneCall *call) {
 	switch (call->state) {
 	  case LinphoneCallEnd:
 	  case LinphoneCallError:
 	  case LinphoneCallReleased:
 	    return call->log->duration;
-
-	  default: break;
+	  default:
+		return _linphone_call_compute_duration(call);
 	}
-
-	return _linphone_call_get_duration(call);
 }
 
 LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
@@ -2608,16 +2605,19 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 		/* init zrtp even if we didn't explicitely set it, just in case peer offers it */
 		if (linphone_core_media_encryption_supported(lc, LinphoneMediaEncryptionZRTP)) {
-			char *uri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
+			char *peerUri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
+			char *selfUri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->to : call->log->from);
 			MSZrtpParams params;
 			memset(&params,0,sizeof(MSZrtpParams));
 			/*call->current_params.media_encryption will be set later when zrtp is activated*/
-			params.zid_file=lc->zrtp_secrets_cache;
-			params.uri=uri;
+			params.zidCacheDB = linphone_core_get_zrtp_cache_db(lc);
+			params.peerUri=peerUri;
+			params.selfUri=selfUri;
 			params.limeKeyTimeSpan = bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")); /* get key lifespan from config file, default is 0:forever valid */
 			setZrtpCryptoTypesParameters(&params,call->core);
 			audio_stream_enable_zrtp(call->audiostream,&params);
-			if (uri != NULL) ms_free(uri);
+			if (peerUri != NULL) ms_free(peerUri);
+			if (selfUri != NULL) ms_free(selfUri);
 		}
 
 		media_stream_reclaim_sessions(&audiostream->ms, &call->sessions[call->main_audio_stream_index]);
@@ -4691,7 +4691,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 void linphone_call_log_completed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	
-	call->log->duration=_linphone_call_get_duration(call); /*store duration since connected*/
+	call->log->duration= _linphone_call_compute_duration(call); /*store duration since connected*/
 	call->log->error_info = linphone_error_info_ref((LinphoneErrorInfo*)linphone_call_get_error_info(call));
 
 	if (call->log->status==LinphoneCallMissed){
