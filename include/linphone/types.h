@@ -1188,5 +1188,16 @@ typedef struct _LinphoneIntRange {
 	int max; /**< Maximum value */
 } LinphoneIntRange;
 
+/**
+ * Status code returned by some functions to
+ * notify whether the execution has been succesfully
+ * done or not.
+ * @ingroup misc
+ */
+typedef enum _LinphoneStatus {
+	LinphoneStatusOk = 0, /**< The function has successfully returned. */
+	LinphoneStatusError = -1 /**< An error has occured while executing the function. */
+} LinphoneStatus;
+
 
 #endif /* LINPHONE_TYPES_H_ */
