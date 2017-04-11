@@ -112,7 +112,8 @@ LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInf
 LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning);
 	
 /**
- * [linphone_error_info_set_sub_error_info description]
+ * Set the sub_ei in LinphoneErrorInfo to another LinphoneErrorInfo. 
+ * Used when there is more than one reason header.
  * @param[in] ei 		  LinphoneErrorInfo object to which the other LinphoneErrorInfo will be appended as ei->sub_ei.        
  * @param[in] appended_ei LinphoneErrorInfo to append 
  */

@@ -1216,13 +1216,13 @@ static void call_declined_with_error(void) {
 	if (in_call) {
 		linphone_call_ref(in_call);
 		linphone_call_decline_with_error(in_call, ei);
-	//	linphone_call_terminate(in_call);
 
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
 
 		rcvd_ei = linphone_call_get_error_info(out_call);
 		sub_rcvd_ei = linphone_error_info_get_sub(rcvd_ei);
+	
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rcvd_ei), "Decline");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rcvd_ei), "SIP");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(sub_rcvd_ei), "J'ai plus de batterie");
