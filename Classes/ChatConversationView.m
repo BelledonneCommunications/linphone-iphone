@@ -157,6 +157,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)setChatRoom:(LinphoneChatRoom *)chatRoom {
+
 	_chatRoom = chatRoom;
 	[_messageField setText:@""];
 	[_tableController setChatRoom:_chatRoom];
@@ -188,6 +189,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)callUpdateEvent:(NSNotification *)notif {
 	_callButton.hidden = (_tableController.isEditing || linphone_core_get_current_call(LC) != NULL);
 	_backToCallButton.hidden = !_callButton.hidden;
+}
+
+- (void)markAsRead {
+	linphone_chat_room_mark_as_read(_chatRoom);
+	if (IPAD) {
+		if (IPAD) {
+			ChatsListView *listView = VIEW(ChatsListView);
+			[listView.tableController markCellAsRead:_chatRoom];
+		}
+	}
 }
 
 - (void)update {
@@ -240,6 +251,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_chat_message_unref(msg);
 
 	[_tableController scrollToBottom:true];
+
+	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(_chatRoom)) {
+		[LinphoneManager.instance alertLIME:_chatRoom];
+	}
 
 	return TRUE;
 }
@@ -343,10 +358,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (fromStr && cr_from_string) {
 		if (strcasecmp(cr_from_string, fromStr) == 0) {
-			if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+			if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+				  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive)) {
 				linphone_chat_room_mark_as_read(room);
-				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
 			}
+			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
 			[_tableController addChatEntry:chat];
 			[_tableController scrollToLastUnread:TRUE];
 		}

@@ -18,8 +18,10 @@
  */
 
 #import "UIBluetoothButton.h"
-#import <AudioToolbox/AudioToolbox.h>
+#import "../Utils/AudioHelper.h"
 #import "Utils.h"
+#import <AVFoundation/AVAudioSession.h>
+#import <AudioToolbox/AudioToolbox.h>
 
 #include "linphone/linphonecore.h"
 
@@ -29,29 +31,11 @@
 	LOGE(@"UIBluetoothButton error for %s: ret=%ld", method, au)
 
 - (void)onOn {
-	// redirect audio to bluetooth
-
-	UInt32 size = sizeof(CFStringRef);
-	CFStringRef route = CFSTR("HeadsetBT");
-	OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioRoute, size, &route);
-	check_auresult(result, "set kAudioSessionProperty_AudioRoute HeadsetBT");
-
-	int allowBluetoothInput = 1;
-	result = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryEnableBluetoothInput,
-									 sizeof(allowBluetoothInput), &allowBluetoothInput);
-	check_auresult(result, "set kAudioSessionProperty_OverrideCategoryEnableBluetoothInput 1");
+	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (void)onOff {
-	// redirect audio to bluetooth
-	int allowBluetoothInput = 0;
-	OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryEnableBluetoothInput,
-											  sizeof(allowBluetoothInput), &allowBluetoothInput);
-	check_auresult(result, "set kAudioSessionProperty_OverrideCategoryEnableBluetoothInput 0");
-	UInt32 size = sizeof(CFStringRef);
-	CFStringRef route = CFSTR("ReceiverAndMicrophone");
-	result = AudioSessionSetProperty(kAudioSessionProperty_AudioRoute, size, &route);
-	check_auresult(result, "set kAudioSessionProperty_AudioRoute ReceiverAndMicrophone");
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (bool)onUpdate {

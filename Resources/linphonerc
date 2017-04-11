@@ -79,6 +79,7 @@ rtcp_xr_voip_metrics_enabled=1
 sip_port=-1
 sip_tcp_port=-1
 use_info=0
+deliver_imdn=1
 
 [sound]
 capture_dev_id=AU: Audio Unit Receiver

@@ -63,6 +63,14 @@
 	}
 }
 
+- (void)layoutSubviews {
+	[self.tableView layoutSubviews];
+
+	CGSize contentSize = self.tableView.contentSize;
+	contentSize.width = self.tableView.bounds.size.width;
+	self.tableView.contentSize = contentSize;
+}
+
 #pragma mark -
 
 static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRoom *elem) {
@@ -127,6 +135,15 @@ static void chatTable_free_chatrooms(void *data) {
 		} else if (![self selectFirstRow]) {
 			[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
 		}
+	}
+}
+
+- (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
+	int idx = bctbx_list_index(data, VIEW(ChatConversationView).chatRoom);
+	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+	if (IPAD) {
+		UIChatCell *cell = (UIChatCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+		[cell updateUnreadBadge];
 	}
 }
 

@@ -73,14 +73,25 @@
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 	}
 	cell.displayNameLabel.text = [_contacts.allValues objectAtIndex:indexPath.row];
-	cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contacts.allKeys objectAtIndex:indexPath.row]];
+	if (addr) {
+		cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
+	} else {
+		cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
+	}
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(
-		LC, ((NSString *)[_contacts.allKeys objectAtIndex:indexPath.row]).UTF8String);
+	NSString *uri;
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contacts.allKeys objectAtIndex:indexPath.row]];
+	if (addr) {
+		uri = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
+	} else {
+		uri = [_contacts.allKeys objectAtIndex:indexPath.row];
+	}
+	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, uri.UTF8String);
 	if (!room) {
 		[PhoneMainView.instance popCurrentView];
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Invalid address", nil)

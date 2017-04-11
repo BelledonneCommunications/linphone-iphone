@@ -7,8 +7,9 @@
 //
 
 #import "FileTransferDelegate.h"
-#import "Utils.h"
+#import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
 @interface FileTransferDelegate ()
 @property(strong) NSMutableData *data;
@@ -46,6 +47,24 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 
 		// we're finished, save the image and update the message
 		UIImage *image = [UIImage imageWithData:thiz.data];
+		if (!image) {
+			UIAlertController *errView = [UIAlertController
+				alertControllerWithTitle:NSLocalizedString(@"File download error", nil)
+								 message:NSLocalizedString(@"Error while downloading the file.\n"
+														   @"The file is probably encrypted.\n"
+														   @"Please retry to download this file after activating LIME.",
+														   nil)
+						  preferredStyle:UIAlertControllerStyleAlert];
+
+			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction *action){
+																  }];
+
+			[errView addAction:defaultAction];
+			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+			return;
+		}
 
 		CFBridgingRetain(thiz);
 		[[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
@@ -171,8 +190,11 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	}
 
 	LOGI(@"%p Uploading content from message %p", self, _message);
-
 	linphone_chat_room_send_chat_message(chatRoom, _message);
+
+	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(chatRoom)) {
+		[LinphoneManager.instance alertLIME:chatRoom];
+	}
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {

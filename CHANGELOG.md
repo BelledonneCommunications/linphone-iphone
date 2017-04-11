@@ -5,12 +5,26 @@ Group changes to describe their impact on the project, as follows:
 
     Added for new features.
     Changed for changes in existing functionality.
-    Deprecated for once-stable features removed in upcoming releases.é
+    Deprecated for once-stable features removed in upcoming releases.
     Removed for deprecated features removed in this release.
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
-## [Unreleased]
+## [3.16.2] - 2017-03-01
+
+### Added
+- Link to GPLv2 licence and Linphone privacy policy in About View.
+
+### Changed
+- Optimization of Contact Lists
+
+### Fixed
+- CallKit bugs when invalid SIP address
+- CallKit error screens no longer displayed but ours
+- Crashes in Contact Lists
+- Presence supports network changes
+- Uses of linked address instead of phone number in chat rooms
+- Uses of display name instead of sip addresses in chat rooms and history lists
 
 ## [3.16.1] - 2017-09-01
 
@@ -99,9 +113,9 @@ consider inputs to be phone numbers, otherwise SIP addresses.
 ### Added
 - Initial version
 
-[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.15...HEAD
-[3.15]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.14.12.zip
-[3.13.9]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.13.9.zip
+[Unreleased]: https://github.com/BelledonneCommunications/linphone-iphone/compare/3.16.2...HEAD
+[3.16.2]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.16.2.zip
+[3.16.1]: http://www.linphone.org/releases/ios/liblinphone-iphone-sdk-3.16.1.zip
 [plugins registration]: https://github.com/BelledonneCommunications/linphone-iphone/blob/3.12.1/Classes/LinphoneManager.m#L1461-L1472
 [openh264 issue 2434]: https://github.com/cisco/openh264/issues/2434
 [Full IPv6 support to comply Apple requirements]: https://developer.apple.com/news/?id=05042016a

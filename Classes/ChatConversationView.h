@@ -65,5 +65,7 @@
 - (IBAction)onCallClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
+- (void)markAsRead;
+- (void)update;
 
 @end

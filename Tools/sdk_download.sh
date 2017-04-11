@@ -5,14 +5,27 @@ function die {
 	exit 1
 }
 
-if [ $# != 1 ]; then
-	die "error: please provide liblinphone SDK version to download (for instance 3.13.9)"
+if [ $# != 2 ]; then
+	die "error: please provide what kind of SDK (for instance release and liblinphone SDK version to download (for instance 3.16.1)"
 fi
 
 root_path="$(dirname $0)/.."
-# only download SDK if it has not yet been built
-if [ ! -d "$root_path"/liblinphone-sdk ]; then
-	sdk_version=liblinphone-iphone-sdk-$1
+sdk_version=liblinphone-iphone-sdk-$2
+filename=$(find . -name liblinphone-iphone-sdk-*.zip)
+version=$(echo $filename| cut -d'-' -f 4)
+version=$(echo "${version:0:${#version}-4}")
+if [ -z "$version" ]; then
+	version="0";
+fi 
+
+if [ $(expr ${version} \< ${2}) -eq 1 ]; then
+	for f in ./liblinphone-iphone-sdk*
+	do
+		rm -r -f "$f"
+	done
+	
+	echo "Downloading SDK"
+	sdk_dir=$1
 	sdk_path="$root_path/$sdk_version"
 	if [ -L "$root_path/liblinphone-sdk" ]; then
 		rm "$root_path/liblinphone-sdk"
@@ -20,9 +33,9 @@ if [ ! -d "$root_path"/liblinphone-sdk ]; then
 
 	if [ ! -d "$sdk_path" ]; then
 		if which wget &>/dev/null; then
-			wget https://www.linphone.org/snapshots/ios/$sdk_version.zip -O "$sdk_path".zip
+			wget https://www.linphone.org/$sdk_dir/ios/$sdk_version.zip -O "$sdk_path".zip
 		elif which curl &>/dev/null; then
-			curl -# https://www.linphone.org/snapshots/ios/$sdk_version.zip > "$sdk_path".zip
+			curl -# https://www.linphone.org/$sdk_dir/ios/$sdk_version.zip > "$sdk_path".zip
 		else
 			return 1
 		fi || die "error: cannot download liblinphone SDK from linphone.org. Please check the README.md"

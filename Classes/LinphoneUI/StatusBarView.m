@@ -318,9 +318,23 @@
 			LinphoneMediaEncryption enc =
 				linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
 			if (enc == LinphoneMediaEncryptionZRTP) {
+				NSString *code = [NSString stringWithUTF8String:linphone_call_get_authentication_token(call)];
+				NSString *myCode;
+				NSString *correspondantCode;
+				if (linphone_call_get_dir(call) == LinphoneCallIncoming) {
+					myCode = [code substringToIndex:2];
+					correspondantCode = [code substringFromIndex:2];
+				} else {
+					correspondantCode = [code substringToIndex:2];
+					myCode = [code substringFromIndex:2];
+				}
 				NSString *message =
-					[NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n%s", nil),
-											   linphone_call_get_authentication_token(call)];
+					[NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n"
+																 @"Say : %@\n"
+																 @"Your correspondant should say : %@",
+																 nil),
+											   myCode, correspondantCode];
+
 				if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground &&
 					floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 					UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
