@@ -296,7 +296,7 @@ LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const Linph
 	return status;
 }
 
-int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status) {
+LinphoneStatus linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status) {
 	LinphonePresenceService *service;
 	int err = 0;
 

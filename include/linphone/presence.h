@@ -77,7 +77,7 @@ LINPHONE_PUBLIC LinphonePresenceBasicStatus linphone_presence_model_get_basic_st
  * @param[in] basic_status The #LinphonePresenceBasicStatus to set for the #LinphonePresenceModel object.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status);
 
 /**
  *  Gets the timestamp of a presence model.
