@@ -1730,13 +1730,15 @@ static void ui_config_read(LinphoneCore *lc)
 {
 #ifndef SQLITE_STORAGE_ENABLED
 	read_friends_from_rc(lc);
+	lc->call_logs = call_logs_read_from_config_file(lc);
 #else
 	if (!lc->friends_db) {
 		read_friends_from_rc(lc);
 	}
+	if (!lc->logs_db) {
+		lc->call_logs = call_logs_read_from_config_file(lc);
+	}
 #endif
-
-	call_logs_read_from_config_file(lc);
 }
 
 /*
@@ -4624,17 +4626,16 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 		return;
 	}
 
-	// This is because there must have been a call previously to linphone_core_call_log_storage_init
-	lc->call_logs = bctbx_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
-
-	call_logs_read_from_config_file(lc);
-	if (!lc->call_logs) {
+	logs_to_migrate = call_logs_read_from_config_file(lc);
+	if (!logs_to_migrate) {
 		ms_warning("nothing to migrate, skipping...");
 		return;
 	}
 
-	logs_to_migrate = lc->call_logs;
+	// This is because there must have been a call previously to linphone_core_call_log_storage_init
+	lc->call_logs = bctbx_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 	lc->call_logs = NULL;
+
 	// We can't use bctbx_list_for_each because logs_to_migrate are listed in the wrong order (latest first), and we want to store the logs latest last
 	for (i = (int)bctbx_list_size(logs_to_migrate) - 1; i >= 0; i--) {
 		LinphoneCallLog *log = (LinphoneCallLog *) bctbx_list_nth_data(logs_to_migrate, i);

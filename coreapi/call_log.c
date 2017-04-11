@@ -116,12 +116,14 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	}
 }
 
-void call_logs_read_from_config_file(LinphoneCore *lc){
+bctbx_list_t * call_logs_read_from_config_file(LinphoneCore *lc){
 	char logsection[32];
 	int i;
 	const char *tmp;
 	uint64_t sec;
 	LpConfig *cfg=lc->config;
+	bctbx_list_t *call_logs;
+
 	for(i=0;;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
 		if (lp_config_has_section(cfg,logsection)){
@@ -154,9 +156,10 @@ void call_logs_read_from_config_file(LinphoneCore *lc){
 			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
 			tmp=lp_config_get_string(cfg,logsection,"call_id",NULL);
 			if (tmp) cl->call_id=ms_strdup(tmp);
-			lc->call_logs=bctbx_list_append(lc->call_logs,cl);
+			call_logs=bctbx_list_append(call_logs,cl);
 		}else break;
 	}
+	return call_logs;
 }
 
 

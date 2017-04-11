@@ -1254,7 +1254,7 @@ void _linphone_core_codec_config_write(LinphoneCore *lc);
 	#endif
 #endif
 
-LINPHONE_PUBLIC void call_logs_read_from_config_file(LinphoneCore *lc);
+LINPHONE_PUBLIC bctbx_list_t * call_logs_read_from_config_file(LinphoneCore *lc);
 void call_logs_write_to_config_file(LinphoneCore *lc);
 void linphone_core_call_log_storage_init(LinphoneCore *lc);
 void linphone_core_call_log_storage_close(LinphoneCore *lc);
