@@ -497,7 +497,7 @@ int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t 
 	rootNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"doc", NULL);
 	xmlDocSetRootElement(xmlOutputMessage, rootNode);
 	/* add the self ZID child, convert it to an hexa string  */
-	bctbx_int8ToStr(selfZidHex, selfZid, 12);
+	bctbx_int8_to_str(selfZidHex, selfZid, 12);
 	selfZidHex[24] = '\0'; /* add a NULL termination for libxml */
 	xmlNewTextChild(rootNode, NULL, (const xmlChar *)"ZID", selfZidHex);
 
@@ -525,9 +525,9 @@ int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t 
 		 * 		<content-type>ciphertext</content-type>
 		 * </msg> */
 		msgNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"msg", NULL);
-		bctbx_int8ToStr(peerZidHex, currentKey->peerZID, 12);
+		bctbx_int8_to_str(peerZidHex, currentKey->peerZID, 12);
 		peerZidHex[24] = '\0';
-		bctbx_uint32ToStr(sessionIndexHex, currentKey->sessionIndex);
+		bctbx_uint32_to_str(sessionIndexHex, currentKey->sessionIndex);
 
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"pzid", peerZidHex);
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"index", sessionIndexHex);
@@ -597,7 +597,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	if (bzrtp_getSelfZID(cachedb, selfURI, selfZid, NULL) != 0) {
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
-	bctbx_int8ToStr(selfZidHex, selfZid, 12);
+	bctbx_int8_to_str(selfZidHex, selfZid, 12);
 	selfZidHex[24]='\0';
 
 	xml_ctx = linphone_xmlparsing_context_new();
@@ -617,7 +617,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	peerZidHex = linphone_get_xml_text_content(xml_ctx, "/doc/ZID");
 	if (peerZidHex != NULL) {
 		/* Convert it from hexa string to bytes string and set the result in the associatedKey structure */
-		bctbx_strToUint8(associatedKey.peerZID, (const uint8_t *)peerZidHex, (uint16_t)strlen(peerZidHex));
+		bctbx_str_to_uint8(associatedKey.peerZID, (const uint8_t *)peerZidHex, (uint16_t)strlen(peerZidHex));
 		linphone_free_xml_text_content(peerZidHex);
 
 		/* Get the matching key from cache */
@@ -641,7 +641,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/index", i);
 					sessionIndexHex = linphone_get_xml_text_content(xml_ctx, xpath_str);
 					if (sessionIndexHex != NULL) {
-						usedSessionIndex = bctbx_strToUint32((const unsigned char *)sessionIndexHex);
+						usedSessionIndex = bctbx_str_to_uint32((const unsigned char *)sessionIndexHex);
 						linphone_free_xml_text_content(sessionIndexHex);
 					}
 					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/text", i);

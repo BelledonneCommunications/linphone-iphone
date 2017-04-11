@@ -6286,7 +6286,7 @@ static void linphone_core_zrtp_cache_migration(LinphoneCore *lc) {
 				while (cur!=NULL) {
 					if ((!xmlStrcmp(cur->name, (const xmlChar *)"selfZID"))){ /* self ZID found, extract it */
 						selfZidHex = xmlNodeListGetString(cacheXml, cur->xmlChildrenNode, 1);
-						bctbx_strToUint8(selfZID, selfZidHex, 24);
+						bctbx_str_to_uint8(selfZID, selfZidHex, 24);
 						break;
 					}
 					cur = cur->next;
@@ -6352,7 +6352,7 @@ static void linphone_core_zrtp_cache_migration(LinphoneCore *lc) {
 
 							if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"ZID")) {
 								peerZIDString = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
-								bctbx_strToUint8(peerZID, peerZIDString, 24);
+								bctbx_str_to_uint8(peerZID, peerZIDString, 24);
 
 								peerZIDFound=1;
 							}
@@ -6361,7 +6361,7 @@ static void linphone_core_zrtp_cache_migration(LinphoneCore *lc) {
 								if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)zrtpColNames[i])) {
 									nodeContent = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
 									zrtpColValues[i] = (uint8_t *)bctbx_malloc(zrtpColExpectedLengths[i]);
-									bctbx_strToUint8(zrtpColValues[i], nodeContent, 2*zrtpColExpectedLengths[i]);
+									bctbx_str_to_uint8(zrtpColValues[i], nodeContent, 2*zrtpColExpectedLengths[i]);
 									zrtpColLengths[i]=zrtpColExpectedLengths[i];
 								}
 							}
@@ -6370,7 +6370,7 @@ static void linphone_core_zrtp_cache_migration(LinphoneCore *lc) {
 								if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)limeColNames[i])) {
 									nodeContent = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
 									limeColValues[i] = (uint8_t *)bctbx_malloc(limeColExpectedLengths[i]);
-									bctbx_strToUint8(limeColValues[i], nodeContent, 2*limeColExpectedLengths[i]);
+									bctbx_str_to_uint8(limeColValues[i], nodeContent, 2*limeColExpectedLengths[i]);
 									limeColLengths[i]=limeColExpectedLengths[i];
 								}
 							}
