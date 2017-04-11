@@ -792,33 +792,24 @@ static void _activate_account_cb_custom(LinphoneXmlRpcRequest *request) {
 
 LinphoneAccountCreatorStatus linphone_account_creator_activate_account_linphone(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
-	char *identity = _get_identity(creator);
-	if (!identity || (creator->phone_number && !creator->activation_code)) {
+	if (!creator->phone_number || !creator->activation_code) {
 		if (creator->cbs->is_account_activated_response_cb != NULL) {
 			creator->cbs->is_account_activated_response_cb(creator, LinphoneAccountCreatorStatusMissingArguments, "Missing required parameters");
 		}
 		return LinphoneAccountCreatorStatusMissingArguments;
 	}
 
-	if (creator->phone_number) {
-		request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_phone_account",
-			LinphoneXmlRpcArgString, creator->phone_number,
-			LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
-			LinphoneXmlRpcArgString, creator->activation_code,
-			linphone_proxy_config_get_domain(creator->proxy_cfg),
-			LinphoneXmlRpcArgNone);
-	} else {
-		request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_email_account",
-			LinphoneXmlRpcArgString, creator->username,
-			LinphoneXmlRpcArgString, creator->activation_code,
-			linphone_proxy_config_get_domain(creator->proxy_cfg),
-			LinphoneXmlRpcArgNone);
-	}
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_phone_account",
+		LinphoneXmlRpcArgString, creator->phone_number,
+		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
+		LinphoneXmlRpcArgString, creator->activation_code,
+		linphone_proxy_config_get_domain(creator->proxy_cfg),
+		LinphoneXmlRpcArgNone);
+
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_account_cb_custom);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
-	ms_free(identity);
 	return LinphoneAccountCreatorStatusRequestOk;
 }
 /****************** END OF CREATE VALIDATE ACCOUNT SECTION ********************/
