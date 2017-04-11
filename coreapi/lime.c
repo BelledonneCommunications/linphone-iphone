@@ -912,10 +912,10 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys){
 int lime_encryptMessage(limeKey_t *key, const uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
 	return LIME_NOT_ENABLED;
 }
-int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan) {
+int lime_setCachedKey(void * cacheDb, limeKey_t *associatedKey, uint8_t role, uint64_t validityTimeSpan) {
 	return LIME_NOT_ENABLED;
 }
-int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, const char *selfURI, const char *peerURI) {
+int lime_getCachedRcvKeyByZid(void * cacheDb, limeKey_t *associatedKey, const char *selfURI, const char *peerURI) {
 	return LIME_NOT_ENABLED;
 }
 int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {
