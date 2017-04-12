@@ -5192,7 +5192,7 @@ int linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneE
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
 			linphone_error_info_set_reason(p_ei, LinphoneReasonDeclined);
-			return linphone_call_decline_with_error(call, p_ei);
+			return linphone_call_decline_with_error_info(call, p_ei);
 		case LinphoneCallOutgoingInit:
 			/* In state OutgoingInit, op has to be destroyed */
 			sal_op_release(call->op);
@@ -5258,7 +5258,7 @@ int linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
 }
 	
 	
-int linphone_call_decline_with_error(LinphoneCall * call, const LinphoneErrorInfo *ei) {
+int linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErrorInfo *ei) {
 	SalErrorInfo sei;
 	sal_error_info_init_to_null(&sei);
 	SalErrorInfo sub_sei;

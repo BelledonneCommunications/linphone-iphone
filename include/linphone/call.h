@@ -412,7 +412,7 @@ LINPHONE_PUBLIC int linphone_call_decline(LinphoneCall * call, LinphoneReason re
  * @param[in] ei LinphoneErrorInfo containing more information on the call rejection.
  * @return 0 on success, -1 on failure
  */
-LINPHONE_PUBLIC int linphone_call_decline_with_error(LinphoneCall * call, const LinphoneErrorInfo *ei);
+LINPHONE_PUBLIC int linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErrorInfo *ei);
 
 /**
  * Accept an incoming call.

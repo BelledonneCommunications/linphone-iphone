@@ -1215,7 +1215,7 @@ static void call_declined_with_error(void) {
 	BC_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(callee_mgr->lc));
 	if (in_call) {
 		linphone_call_ref(in_call);
-		linphone_call_decline_with_error(in_call, ei);
+		linphone_call_decline_with_error_info(in_call, ei);
 
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
