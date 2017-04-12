@@ -175,7 +175,6 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 	}
 
 	linphone_core_remove_auth_info(creator->core, info);
-	linphone_proxy_config_unref(cfg);
 	return NULL;
 }
 /************************** End Misc **************************/
