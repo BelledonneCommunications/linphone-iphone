@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/account_creator.h"
 #include "linphone/core.h"
+#include "linphone/lpconfig.h"
 #include "private.h"
 #if !_WIN32
 #include "regex.h"
@@ -105,6 +106,42 @@ static bool_t is_matching_regex(const char *entry, const char* regex) {
 	regfree(&regex_pattern);
 	return (res != REG_NOMATCH);
 #endif
+}
+
+LinphoneProxyConfig * linphone_account_creator_configure_proxy_config(const LinphoneAccountCreator *creator) {
+	LinphoneAuthInfo *info;
+	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
+	char *identity_str = _get_identity(creator);
+	LinphoneAddress *identity = linphone_address_new(identity_str);
+	ms_free(identity_str);
+
+	linphone_proxy_config_set_identity_address(cfg, identity);
+	if (creator->phone_country_code) {
+		linphone_proxy_config_set_dial_prefix(cfg, creator->phone_country_code);
+	} else if (creator->phone_number) {
+		int dial_prefix_number = linphone_dial_plan_lookup_ccc_from_e164(creator->phone_number);
+		char buff[4];
+		snprintf(buff, sizeof(buff), "%d", dial_prefix_number);
+		linphone_proxy_config_set_dial_prefix(cfg, buff);
+	}
+
+	info = linphone_auth_info_new(linphone_address_get_username(identity), // username
+								NULL, //user id
+								creator->password, // passwd
+								creator->password ? NULL : creator->ha1,  // ha1
+								!creator->password && creator->ha1 ? linphone_address_get_domain(identity) : NULL,  // realm - assumed to be domain
+								linphone_address_get_domain(identity) // domain
+	);
+	linphone_core_add_auth_info(creator->core, info);
+	linphone_address_unref(identity);
+
+	if (linphone_core_add_proxy_config(creator->core, cfg) != -1) {
+		linphone_core_set_default_proxy(creator->core, cfg);
+		return cfg;
+	}
+
+	linphone_core_remove_auth_info(creator->core, info);
+	return NULL;
 }
 
 LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator) {

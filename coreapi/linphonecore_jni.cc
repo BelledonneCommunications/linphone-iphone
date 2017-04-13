@@ -6000,6 +6000,13 @@ extern "C" void Java_org_linphone_core_LpConfigImpl_sync(JNIEnv *env, jobject th
 	lp_config_sync(lp);
 }
 
+extern "C" void Java_org_linphone_core_LpConfigImpl_loadXmlFile(JNIEnv *env, jobject thiz, jlong lpc, jstring jfilename) {
+	const char *filename = GetStringUTFChars(env, jfilename);
+	LpConfig *lp = (LpConfig *)lpc;
+	linphone_config_load_from_xml_file(lp, filename, NULL);
+	ReleaseStringUTFChars(env, jfilename, filename);
+}
+
 extern "C" void Java_org_linphone_core_LpConfigImpl_delete(JNIEnv *env, jobject thiz, jlong lpc) {
 	LpConfig *lp = (LpConfig *)lpc;
 	lp_config_destroy(lp);
@@ -8746,6 +8753,15 @@ extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_updatePassword
     linphone_account_creator_set_user_data(account_creator, (void*)NULL);
     ReleaseStringUTFChars(env, jpasswd, passwd);
     return status;
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneAccountCreatorImpl_configureProxyConfig(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	LinphoneProxyConfig  *lpc = linphone_account_creator_configure(account_creator);
+	LinphoneCore *lc = account_creator->core;
+	LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+	return getProxy(env, lpc, lcData->core);
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneAccountCreatorImpl_configure(JNIEnv *env, jobject thiz, jlong ptr) {

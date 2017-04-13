@@ -22,40 +22,40 @@ class LpConfigImpl implements LpConfig {
 
 	private long nativePtr;
 	boolean ownPtr = false;
-	
+
 	public LpConfigImpl(long ptr) {
 		nativePtr = ptr;
 	}
-	
+
 	private native long newLpConfigImpl(String file);
 	private native long newLpConfigImplFromBuffer(String buffer);
 	private native void delete(long ptr);
-	
+
 	@Deprecated
 	public LpConfigImpl(String file) {
 		nativePtr = newLpConfigImpl(file);
 		ownPtr = true;
 	}
-	
+
 	private LpConfigImpl() {
 		nativePtr = -1;
 		ownPtr = false;
 	}
-	
+
 	public static LpConfigImpl fromFile(String file) {
 		LpConfigImpl impl = new LpConfigImpl();
 		impl.nativePtr = impl.newLpConfigImpl(file);
 		impl.ownPtr = true;
 		return impl;
 	}
-	
+
 	public static LpConfigImpl fromBuffer(String buffer) {
 		LpConfigImpl impl = new LpConfigImpl();
 		impl.nativePtr = impl.newLpConfigImplFromBuffer(buffer);
 		impl.ownPtr = true;
 		return impl;
 	}
-	
+
 	protected void finalize() throws Throwable {
 		if(ownPtr) {
 			delete(nativePtr);
@@ -128,4 +128,8 @@ class LpConfigImpl implements LpConfig {
 		return getIntRange(nativePtr, section, key, defaultMin, defaultMax);
 	}
 
+	private native void loadXmlFile(long ptr, String fileName);
+	public void loadXmlFile(String fileName) {
+		loadXmlFile(nativePtr, fileName);
+	}
 }

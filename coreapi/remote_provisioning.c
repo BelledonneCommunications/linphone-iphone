@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "private.h"
 #include "xml2lpc.h"
+#include "linphone/lpconfig.h"
 
 #define XML2LPC_CALLBACK_BUFFER_SIZE  1024
 
@@ -34,27 +35,8 @@ static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt
 }
 
 static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml) {
-	xml2lpc_context *context = xml2lpc_context_new(xml2lpc_callback, lc);
-	int result = xml2lpc_set_xml_string(context, xml);
-	char * error_msg = NULL;
-	if (result == 0) {
-		LpConfig * lpc = linphone_core_get_config(lc);
-		result = xml2lpc_convert(context, lpc);
-		if (result == 0) {
-			// if the remote provisioning added a proxy config and none was set before, set it
-			if (lp_config_has_section(lpc, "proxy_0") && lp_config_get_int(lpc, "sip", "default_proxy", -1) == -1){
-				lp_config_set_int(lpc, "sip", "default_proxy", 0);
-			}
-			lp_config_sync(lpc);
+	char* error_msg = linphone_config_load_from_xml_file(linphone_core_get_config(lc), xml, lc);
 
-		} else {
-			error_msg = "xml to lpc failed";
-		}
-	} else {
-		error_msg = "invalid xml";
-	}
-
-	xml2lpc_context_destroy(context);
 	linphone_configuring_terminated(lc
 									,error_msg ? LinphoneConfiguringFailed : LinphoneConfiguringSuccessful
 									, error_msg);

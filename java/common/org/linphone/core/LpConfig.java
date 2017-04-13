@@ -21,12 +21,12 @@ package org.linphone.core;
 
 /**
  * The LpConfig object is used to manipulate a configuration file.
- * 
+ *
  * <pre>
  * The format of the configuration file is a .ini like format:
  * - sections are defined in []
  * - each section contains a sequence of key=value pairs.
- * 
+ *
  * Example:
  * [sound]
  * echocanceler=1
@@ -47,7 +47,7 @@ public interface LpConfig {
 	 * @param value the value of the setting
 	 */
 	void setInt(String section, String key, int value);
-	
+
 	/**
 	 * Sets an float config item
 	 * @param section the section in the lpconfig
@@ -80,7 +80,7 @@ public interface LpConfig {
 	 * @param max the max of the range
 	 */
 	void setIntRange(String section, String key, int min, int max);
-	
+
 	/**
 	 * Gets a int from the config
 	 * @param section the section in the lpconfig
@@ -89,7 +89,7 @@ public interface LpConfig {
 	 * @return the value of the setting or the default value if not set
 	 */
 	int getInt(String section, String key, int defaultValue);
-	
+
 	/**
 	 * Gets a float from the config
 	 * @param section the section in the lpconfig
@@ -98,7 +98,7 @@ public interface LpConfig {
 	 * @return the value of the setting or the default value if not set
 	 */
 	float getFloat(String section, String key, float defaultValue);
-	
+
 	/**
 	 * Gets a boolean from the config
 	 * @param section the section in the lpconfig
@@ -107,7 +107,7 @@ public interface LpConfig {
 	 * @return the value of the setting or the default value if not set
 	 */
 	boolean getBool(String section, String key, boolean defaultValue);
-	
+
 	/**
 	 * Gets a string from the config
 	 * @param section the section in the lpconfig
@@ -116,7 +116,7 @@ public interface LpConfig {
 	 * @return the value of the setting or the default value if not set
 	 */
 	String getString(String section, String key, String defaultValue);
-	
+
 	/**
 	 * Gets a int range from the config
 	 * @param section the section in the lpconfig
@@ -129,4 +129,10 @@ public interface LpConfig {
 	 * Synchronize LpConfig with file
 	 */
 	void sync();
+
+	/**
+	 * Load the value of the given xml file
+	 * @param fileName the name of the xml file
+	 */
+	void loadXmlFile(String fileName);
 }
