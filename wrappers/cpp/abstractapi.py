@@ -14,14 +14,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+
 import re
 import genapixml as CApi
+
 
 class Error(RuntimeError):
 	pass
 
+
 class BlacklistedException(Error):
 	pass
+
 
 class Name(object):
 	camelCaseParsingRegex = re.compile('[A-Z][a-z0-9]*')
@@ -277,8 +281,22 @@ class Namespace(DocumentableObject):
 		child.parent = self
 
 
+class Flag:
+	def __init__(self, position):
+		self.position = position
+
+
 class EnumValue(DocumentableObject):
-	pass
+	def __init__(self, name):
+		DocumentableObject.__init__(self, name)
+		self.value = None
+	
+	def value_from_string(self, stringValue):
+		m = re.match('^1\s*<<\s*([0-9]+)$', stringValue)
+		if m is not None:
+			self.value = Flag(int(m.group(1)))
+		else:
+			self.value = int(stringValue, base=0)
 
 
 class Enum(DocumentableObject):
@@ -478,7 +496,11 @@ class CParser(object):
 		
 	def parse_all(self):
 		for enum in self.cProject.enums:
-			self.parse_enum(enum)
+			try:
+				self.parse_enum(enum)
+			except Error as e:
+				print('Could not parse \'{0}\' enum: {1}'.format(enum.name, e.args[0]))
+		
 		for _class in self.cProject.classes:
 			try:
 				self.parse_class(_class)
@@ -570,6 +592,11 @@ class CParser(object):
 			valueName = EnumValueName()
 			valueName.from_camel_case(cEnumValue.name, namespace=name)
 			aEnumValue = EnumValue(valueName)
+			if cEnumValue.value is not None:
+				try:
+					aEnumValue.value_from_string(cEnumValue.value)
+				except ValueError:
+					raise Error('{0} enum value has an invalid definition ({1})'.format(cEnumValue.name, cEnumValue.value))
 			enum.add_value(aEnumValue)
 		
 		self.enumsIndex[nameStr] = enum

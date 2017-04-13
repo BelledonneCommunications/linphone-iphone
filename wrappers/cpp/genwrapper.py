@@ -55,6 +55,12 @@ class CppTranslator(object):
 	def translate_enum_value(enumValue):
 		enumValueDict = {}
 		enumValueDict['name'] = CppTranslator.translate_enum_value_name(enumValue.name)
+		if type(enumValue.value) is int:
+			enumValueDict['value'] = str(enumValue.value)
+		elif type(enumValue.value) is AbsApi.Flag:
+			enumValueDict['value'] = '1<<' + str(enumValue.value.position)
+		else:
+			enumValueDict['value'] = None
 		return enumValueDict
 	
 	def translate_class(self, _class):
@@ -429,7 +435,7 @@ class CppTranslator(object):
 			raise AbsApi.Error('{0} has been escaped'.format(_type.name))
 		
 		if _type.desc is None:
-			raise AbsApi.Error('{0} has not been fixed'.format(_type.name.to_camel_case(fullName=True)))
+			raise AbsApi.Error('{0} has not been fixed'.format(_type.name))
 		
 		if 'namespace' in params:
 			nsName = params['namespace'].name if params['namespace'] is not None else None

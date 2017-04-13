@@ -24,7 +24,7 @@ namespace linphone {
 	{{#enums}}
 	enum {{name}} {
 		{{#values}}
-		{{name}}{{#notLast}},{{/notLast}}
+		{{name}}{{#value}} = {{{value}}}{{/value}}{{#notLast}},{{/notLast}}
 		{{/values}}
 	};
 

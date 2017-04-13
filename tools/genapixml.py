@@ -34,7 +34,9 @@ class CObject:
 
 
 class CEnumValue(CObject):
-	pass
+	def __init__(self, name):
+		CObject.__init__(self, name)
+		self.value = None
 
 
 class CEnum(CObject):
@@ -360,8 +362,21 @@ class Project:
 					c.addMethod(f)
 					break
 
+	def __parseCEnumValueInitializer(self, initializer):
+		initializer = initializer.strip()
+		if not initializer.startswith('='):
+			return None
+
+		initializer = initializer[1:]
+		initializer.strip()
+		return initializer
+
 	def __parseCEnumValue(self, node):
 		ev = CEnumValue(node.find('./name').text)
+		initializerNode = node.find('./initializer')
+		if initializerNode is not None:
+			ev.value = self.__parseCEnumValueInitializer(initializerNode.text)
+
 		deprecatedNode = node.find(".//xrefsect[xreftitle='Deprecated']")
 		if deprecatedNode is not None:
 			ev.deprecated = True
