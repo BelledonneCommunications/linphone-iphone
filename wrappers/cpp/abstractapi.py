@@ -447,7 +447,7 @@ class Interface(DocumentableObject):
 
 class CParser(object):
 	def __init__(self, cProject):
-		self.cBaseType = ['void', 'bool_t', 'char', 'short', 'int', 'long', 'size_t', 'time_t', 'float', 'double']
+		self.cBaseType = ['void', 'bool_t', 'char', 'short', 'int', 'long', 'size_t', 'time_t', 'float', 'double', 'LinphoneStatus']
 		self.cListType = 'bctbx_list_t'
 		self.regexFixedSizeInteger = '^(u?)int(\d?\d)_t$'
 		self.methodBl = ['ref', 'unref', 'new', 'destroy', 'getCurrentCallbacks', 'setUserData', 'getUserData']
@@ -798,6 +798,8 @@ class CParser(object):
 					param['size'] = 'long double'
 				else:
 					param['size'] = 'double'
+			elif elem == 'LinphoneStatus':
+				name = 'status'
 			elif elem == '*':
 				if name is not None:
 					if name == 'character':
