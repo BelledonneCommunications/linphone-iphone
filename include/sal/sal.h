@@ -412,6 +412,7 @@ typedef struct SalErrorInfo{
 	char *warnings;
 	char *protocol;
 	char *full_string; /*concatenation of status_string + warnings*/
+	struct SalErrorInfo *sub_sei;
 }SalErrorInfo;
 
 typedef enum SalPresenceStatus{
@@ -730,6 +731,7 @@ const SalErrorInfo *sal_error_info_none(void);
 LINPHONE_PUBLIC const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
 const SalErrorInfo *sal_op_get_reason_error_info(const SalOp *op);
 void sal_error_info_reset(SalErrorInfo *ei);
+void sal_error_info_init_to_null(SalErrorInfo *sei);
 void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol, int code, const char *status_string, const char *warning);
 
 /*entity tag used for publish (see RFC 3903)*/
@@ -745,6 +747,7 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
+int sal_call_decline_with_error_info(SalOp *h, const SalErrorInfo* info, const char *redirection /*optional*/);
 int sal_call_update(SalOp *h, const char *subject, bool_t no_user_consent);
 void sal_call_cancel_invite(SalOp *op);
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h);
@@ -758,6 +761,7 @@ int sal_call_set_referer(SalOp *h, SalOp *refered_call);
 SalOp *sal_call_get_replaces(SalOp *h);
 int sal_call_send_dtmf(SalOp *h, char dtmf);
 int sal_call_terminate(SalOp *h);
+int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info);
 bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);

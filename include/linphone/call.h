@@ -203,9 +203,12 @@ LINPHONE_PUBLIC int linphone_call_take_preview_snapshot(LinphoneCall *call, cons
 **/
 LINPHONE_PUBLIC LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 
+
 /**
  * Returns full details about call errors or termination reasons.
-**/
+ * @param  call LinphoneCall object on which we want the information error
+ * @return      LinphoneErrorInfo object holding the reason error.
+ */
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 
 /**
@@ -376,8 +379,16 @@ LINPHONE_PUBLIC int linphone_call_resume(LinphoneCall *call);
  * Terminates a call.
  * @param[in] call LinphoneCall object
  * @return 0 on success, -1 on failure
+**/LINPHONE_PUBLIC int linphone_call_terminate(LinphoneCall *call);
+
+	
+/**
+ * Terminates a call.
+ * @param[in] call 	LinphoneCall object
+ * @param[in] ei 	LinphoneErrorInfo 
+ * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_terminate(LinphoneCall *call);
+LINPHONE_PUBLIC int linphone_call_terminate_with_error_info(LinphoneCall *call, const LinphoneErrorInfo *ei);
 
 /**
  * Redirect the specified call to the given redirect URI.
@@ -394,6 +405,14 @@ LINPHONE_PUBLIC int linphone_call_redirect(LinphoneCall *call, const char *redir
  * @return 0 on success, -1 on failure
 **/
 LINPHONE_PUBLIC int linphone_call_decline(LinphoneCall * call, LinphoneReason reason);
+
+/**
+ * Decline a pending incoming call, with a LinphoneErrorInfo object.
+ * @param[in] call A LinphoneCall object that must be in the IncomingReceived state
+ * @param[in] ei LinphoneErrorInfo containing more information on the call rejection.
+ * @return 0 on success, -1 on failure
+ */
+LINPHONE_PUBLIC int linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErrorInfo *ei);
 
 /**
  * Accept an incoming call.

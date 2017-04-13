@@ -410,7 +410,9 @@ void linphone_call_notify_info_message_received(LinphoneCall *call, const Linpho
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
-void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
+void _linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
+void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *params);
+const LinphoneCallParams * linphone_call_get_params(LinphoneCall *call);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md);
@@ -1783,8 +1785,6 @@ void linphone_core_notify_display_status(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_message(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url);
-void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
-void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
 void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 void linphone_core_notify_authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method);

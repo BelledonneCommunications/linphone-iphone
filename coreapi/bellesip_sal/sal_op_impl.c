@@ -561,9 +561,20 @@ const SalErrorInfo *sal_error_info_none(void){
 		"Ok",
 		200,
 		NULL,
-		NULL
+		NULL,
+		
 	};
 	return &none;
+}
+
+void sal_error_info_init_to_null(SalErrorInfo *sei){
+	sei->status_string = NULL;
+	sei->full_string = NULL;
+	sei->protocol = NULL;
+	sei->sub_sei = NULL;
+	sei->warnings = NULL;
+	sei->protocol_code=0;
+	sei->reason=SalReasonNone;
 }
 
 void sal_error_info_reset(SalErrorInfo *ei){
@@ -584,14 +595,23 @@ void sal_error_info_reset(SalErrorInfo *ei){
 		ms_free(ei->protocol);
 		ei->protocol = NULL;
 	}
+	if (ei->sub_sei){
+		ms_free(ei->sub_sei);
+		ei->sub_sei = NULL;
+	}
 	ei->protocol_code=0;
 	ei->reason=SalReasonNone;
 }
 
 void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol, int code, const char *status_string, const char *warning){
 	sal_error_info_reset(ei);
-	if (reason==SalReasonUnknown && strcmp(protocol, "SIP") == 0) ei->reason=_sal_reason_from_sip_code(code);
-	else ei->reason=reason;
+	if (reason==SalReasonUnknown && strcmp(protocol, "SIP") == 0 && code != 0) ei->reason=_sal_reason_from_sip_code(code);
+	else{
+		ei->reason=reason;
+		if (code == 0) {
+			code = sal_reason_to_sip_code(reason);
+		}
+	}
 	ei->protocol_code=code;
 	ei->status_string=status_string ? ms_strdup(status_string) : NULL;
 	ei->warnings=warning ? ms_strdup(warning) : NULL;
@@ -606,7 +626,7 @@ void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol
 void sal_op_set_reason_error_info(SalOp *op, belle_sip_message_t *msg){
 	belle_sip_header_reason_t* reason_header = belle_sip_message_get_header_by_type(msg,belle_sip_header_reason_t);
 	if (reason_header){
-		SalErrorInfo *ei=&op->reason_error_info;
+		SalErrorInfo *ei=&op->reason_error_info; // ?//
 		const char *protocol = belle_sip_header_reason_get_protocol(reason_header);
 		int code = belle_sip_header_reason_get_cause(reason_header);
 		const char *text = belle_sip_header_reason_get_text(reason_header);
@@ -623,6 +643,7 @@ void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *respon
 
 	warnings=warning ? belle_sip_header_get_unparsed_value(warning) : NULL;
 	sal_error_info_set(ei,SalReasonUnknown,"SIP", code,reason_phrase,warnings);
+	sal_op_set_reason_error_info(op, BELLE_SIP_MESSAGE(response));
 }
 
 const SalErrorInfo *sal_op_get_error_info(const SalOp *op){
@@ -632,6 +653,9 @@ const SalErrorInfo *sal_op_get_error_info(const SalOp *op){
 const SalErrorInfo * sal_op_get_reason_error_info(const SalOp *op){
 	return &op->reason_error_info;
 }
+
+
+
 
 static void unlink_op_with_dialog(SalOp *op, belle_sip_dialog_t* dialog){
 	belle_sip_dialog_set_application_data(dialog,NULL);

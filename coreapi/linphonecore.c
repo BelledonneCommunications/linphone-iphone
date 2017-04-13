@@ -3081,7 +3081,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				decline_reason = (lc->current_call != call) ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
 				call->non_op_error = TRUE;
-				linphone_error_info_set(call->ei, decline_reason, linphone_reason_to_error_code(decline_reason), "Not answered", NULL);
+				linphone_error_info_set(call->ei, NULL, decline_reason, linphone_reason_to_error_code(decline_reason), "Not answered", NULL);
 				linphone_call_decline(call, decline_reason);
 			}
 		}

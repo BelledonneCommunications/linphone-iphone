@@ -269,6 +269,7 @@ static void call_received(SalOp *h){
 	LinphoneAddress *from_address_to_search_if_me=NULL; /*address used to know if I'm the caller*/
 	SalMediaDescription *md;
 	const char * p_asserted_id;
+	SalErrorInfo sei;
 	LinphoneErrorInfo *ei = NULL;
 
 	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
@@ -306,10 +307,12 @@ static void call_received(SalOp *h){
 			case LinphonePresenceActivityPermanentAbsence:
 				alt_contact = linphone_presence_model_get_contact(lc->presence_model);
 				if (alt_contact != NULL) {
-					sal_call_decline(h,SalReasonRedirect,alt_contact);
+					sal_error_info_init_to_null(&sei);
+					sal_error_info_set(&sei,SalReasonRedirect, "SIP", 0, NULL, NULL);
+					sal_call_decline_with_error_info(h, &sei,alt_contact);
 					ms_free(alt_contact);
 					ei = linphone_error_info_new();
-					linphone_error_info_set(ei, LinphoneReasonMovedPermanently, 302, "Moved permanently", NULL);
+					linphone_error_info_set(ei, NULL, LinphoneReasonMovedPermanently, 302, "Moved permanently", NULL);
 					linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 					sal_op_release(h);
 					return;
@@ -324,7 +327,7 @@ static void call_received(SalOp *h){
 	if (!linphone_core_can_we_add_call(lc)){/*busy*/
 		sal_call_decline(h,SalReasonBusy,NULL);
 		ei = linphone_error_info_new();
-		linphone_error_info_set(ei, LinphoneReasonBusy, 486, "Busy - too many calls", NULL);
+		linphone_error_info_set(ei, NULL, LinphoneReasonBusy, 486, "Busy - too many calls", NULL);
 		linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 		sal_op_release(h);
 		return;
@@ -344,7 +347,7 @@ static void call_received(SalOp *h){
 		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message.",addr);
 		sal_call_decline(h,SalReasonBusy,NULL);
 		ei = linphone_error_info_new();
-		linphone_error_info_set(ei, LinphoneReasonBusy, 486, "Busy - duplicated call", NULL);
+		linphone_error_info_set(ei, NULL, LinphoneReasonBusy, 486, "Busy - duplicated call", NULL);
 		linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, from_addr, to_addr, ei);
 		sal_op_release(h);
 		linphone_address_unref(from_address_to_search_if_me);
@@ -362,7 +365,7 @@ static void call_received(SalOp *h){
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
 			ei = linphone_error_info_new();
-			linphone_error_info_set(ei, LinphoneReasonNotAcceptable, 488, "Not acceptable here", NULL);
+			linphone_error_info_set(ei, NULL, LinphoneReasonNotAcceptable, 488, "Not acceptable here", NULL);
 			linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, linphone_address_ref(from_addr), linphone_address_ref(to_addr), ei);
 			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
 			linphone_call_unref(call);
@@ -698,6 +701,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
 
 /* this callback is called when an incoming re-INVITE/ SIP UPDATE modifies the session*/
 static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t is_update){
+	SalErrorInfo sei;
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
 
 	call->defer_update = lp_config_get_int(lc->config, "sip", "defer_update_default", FALSE);
@@ -735,7 +739,9 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallUpdating:
 		case LinphoneCallPausing:
 		case LinphoneCallResuming:
-			sal_call_decline(call->op,SalReasonInternalError,NULL);
+			sal_error_info_init_to_null(&sei);
+			sal_error_info_set(&sei,SalReasonInternalError, "SIP", 0, NULL, NULL);
+			sal_call_decline_with_error_info(call->op, &sei,NULL);
 			/*no break*/
 		case LinphoneCallIdle:
 		case LinphoneCallOutgoingInit:
@@ -757,7 +763,8 @@ static void call_updating(SalOp *op, bool_t is_update){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
-
+	SalErrorInfo sei;
+	
 	if (!call) {
 		ms_error("call_updating(): call doesn't exist anymore");
 		return ;
@@ -768,7 +775,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 		if (rmd == NULL && lp_config_get_int(call->core->config,"sip","sdp_200_ack_follow_video_policy",0)) {
 			LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
 			ms_message("Applying default policy for offering SDP on call [%p]",call);
-			linphone_call_set_new_params(call, p);
+			_linphone_call_set_new_params(call, p);
 			linphone_call_params_unref(p);
 		}
 		linphone_call_make_local_media_description(call);
@@ -787,14 +794,18 @@ static void call_updating(SalOp *op, bool_t is_update){
 
 		md=sal_call_get_final_media_description(call->op);
 		if (md && (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md))){
-			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
+			sal_error_info_init_to_null(&sei);
+			sal_error_info_set(&sei,SalReasonNotAcceptable, "SIP", 0, NULL, NULL);
+			sal_call_decline_with_error_info(call->op, &sei,NULL);
 			return;
 		}
 		if (is_update && prev_result_desc && md){
 			int diff=sal_media_description_equals(prev_result_desc,md);
 			if (diff & (SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED)){
 				ms_warning("Cannot accept this update, it is changing parameters that require user approval");
-				sal_call_decline(call->op,SalReasonNotAcceptable,NULL); /*FIXME should send 504 Cannot change the session parameters without prompting the user"*/
+				sal_error_info_init_to_null(&sei);
+				sal_error_info_set(&sei,SalReasonUnknown, "SIP", 504, "Cannot change the session parameters without prompting the user", NULL);
+				sal_call_decline_with_error_info(call->op, &sei,NULL);
 				return;
 			}
 		}
@@ -838,7 +849,7 @@ static void call_terminated(SalOp *op, const char *from){
 		break;
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
-			linphone_error_info_set(call->ei, LinphoneReasonNotAnswered, 0, "Incoming call cancelled", NULL);
+			linphone_error_info_set(call->ei,NULL, LinphoneReasonNotAnswered, 0, "Incoming call cancelled", NULL);
 			call->non_op_error = TRUE;
 		break;
 		default:

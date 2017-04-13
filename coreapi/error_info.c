@@ -31,6 +31,7 @@ static void error_info_destroy(LinphoneErrorInfo *ei){
 }
 
 static void error_info_clone(LinphoneErrorInfo *ei, const LinphoneErrorInfo *other){
+	linphone_error_info_set_reason(ei, linphone_error_info_get_reason(other));
 	ei->protocol = bctbx_strdup(other->protocol);
 	ei->phrase = bctbx_strdup(other->phrase);
 	ei->warnings = bctbx_strdup(other->warnings);
@@ -214,10 +215,29 @@ void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op){
 	}
 }
 
-void linphone_error_info_set(LinphoneErrorInfo *ei, LinphoneReason reason, int code, const char *status_string, const char *warning){
+LinphoneErrorInfo* linphone_error_info_get_sub(const LinphoneErrorInfo *ei){
+		
+	return ei->sub_ei;
+}
+
+void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei){
+	if (appended_ei != NULL){
+		ei->sub_ei = linphone_error_info_ref(appended_ei);
+	}
+}
+
+void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning){
 	linphone_error_info_reset(ei);
 	ei->reason = reason;
 	ei->protocol_code = code;
+	if (protocol != NULL){
+		ei->protocol = bctbx_strdup(protocol);
+	}
+	else{
+		const char* prot = "SIP";
+		ei->protocol = bctbx_strdup(prot);
+	}
+
 	ei->phrase = bctbx_strdup(status_string);
 	ei->warnings = bctbx_strdup(warning);
 }

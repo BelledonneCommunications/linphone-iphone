@@ -63,12 +63,26 @@ LINPHONE_PUBLIC void linphone_error_info_unref(LinphoneErrorInfo *ei);
 LINPHONE_PUBLIC LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei);
 
 /**
+ * Get pointer to chained LinphoneErrorInfo set in sub_ei. 
+ * @param  ei ErrorInfo object
+ * @return    LinphoneErrorInfo pointer defined in the ei object.
+ */
+LINPHONE_PUBLIC LinphoneErrorInfo* linphone_error_info_get_sub(const LinphoneErrorInfo *ei);
+
+/**
  * Get textual phrase from the error info.
  * This is the text that is provided by the peer in the protocol (SIP).
  * @param[in] ei ErrorInfo object
  * @return The error phrase
 **/
 LINPHONE_PUBLIC const char * linphone_error_info_get_phrase(const LinphoneErrorInfo *ei);
+	
+/**
+ * Get protocol from the error info.
+ * @param[in]  ei ErrorInfo object
+ * @return    The protocol 
+ */
+LINPHONE_PUBLIC const char *linphone_error_info_get_protocol(const LinphoneErrorInfo *ei);
 
 /**
  * Provides additional information regarding the failure.
@@ -88,10 +102,28 @@ LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInf
 
 /**
  * Assign information to a LinphoneErrorInfo object.
- * @param[in] ei ErrorInfo object
+ * @param[in] ei 			ErrorInfo object
+ * @param[in] protocol      protocol name
+ * @param[in] reason        reason  from LinphoneReason enum
+ * @param[in] code          protocol code
+ * @param[in] status_string description of the reason
+ * @param[in] warning       warning message
  */
-LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, LinphoneReason reason, int code, const char *status_string, const char *warning);
+LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning);
+	
+/**
+ * Set the sub_ei in LinphoneErrorInfo to another LinphoneErrorInfo. 
+ * Used when there is more than one reason header.
+ * @param[in] ei 		  LinphoneErrorInfo object to which the other LinphoneErrorInfo will be appended as ei->sub_ei.        
+ * @param[in] appended_ei LinphoneErrorInfo to append 
+ */
+LINPHONE_PUBLIC void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei);
 
+/**
+ * Assign reason LinphoneReason to a LinphoneErrorUnfo object.
+ * @param[in] ei     ErrorInfo object
+ * @param[in] reason reason  from LinphoneReason enum
+ */
 LINPHONE_PUBLIC void linphone_error_info_set_reason(LinphoneErrorInfo *ei, LinphoneReason reason);
 
 /**

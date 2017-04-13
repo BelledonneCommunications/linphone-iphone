@@ -4419,7 +4419,7 @@ static void linphone_call_lost(LinphoneCall *call){
 	ms_message("LinphoneCall [%p]: %s", call, temp);
 	linphone_core_notify_display_warning(lc, temp);
 	call->non_op_error = TRUE;
-	linphone_error_info_set(call->ei, LinphoneReasonIOError, 503, "Media lost", NULL);
+	linphone_error_info_set(call->ei,NULL, LinphoneReasonIOError, 503, "Media lost", NULL);
 	linphone_call_terminate(call);
 	linphone_core_play_named_tone(lc, LinphoneToneCallLost);
 	ms_free(temp);
@@ -4813,12 +4813,28 @@ LinphonePlayer *linphone_call_get_player(LinphoneCall *call){
 	return call->player;
 }
 
-void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params){
+	
+void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *params){
+	if ( call->state == LinphoneCallOutgoingInit || call->state == LinphoneCallIncomingReceived){
+		_linphone_call_set_new_params(call, params);
+	}
+	else {
+		ms_error("linphone_call_set_params() invalid state %s to call this function", linphone_call_state_to_string(call->state));
+	}
+}
+
+	
+void _linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params){
 	LinphoneCallParams *cp=NULL;
 	if (params) cp=linphone_call_params_copy(params);
 	if (call->params) linphone_call_params_unref(call->params);
 	call->params=cp;
 }
+
+const LinphoneCallParams * linphone_call_get_params(LinphoneCall *call){
+	return call->params;
+}
+
 
 static int send_dtmf_handler(void *data, unsigned int revents){
 	LinphoneCall *call = (LinphoneCall*)data;
@@ -5141,10 +5157,70 @@ int linphone_call_terminate(LinphoneCall *call) {
 	return 0;
 }
 
+static void linphone_error_info_fields_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
+
+	sei->reason = linphone_error_info_get_reason(ei);
+	sei->status_string = bctbx_strdup(ei->phrase);
+	sei->full_string = bctbx_strdup(ei->full_string);
+	sei->warnings = bctbx_strdup(ei->warnings);
+	sei->protocol_code = ei->protocol_code;
+	sei->protocol = bctbx_strdup(ei->protocol);
+
+}
+	
+static void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
+	
+	linphone_error_info_fields_to_sal(ei, sei);
+	if (ei->sub_ei !=NULL) {
+		
+		linphone_error_info_to_sal(ei->sub_ei, sei->sub_sei);
+	}
+}
+	
+int linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneErrorInfo *ei){
+	SalErrorInfo sei ;
+	sal_error_info_init_to_null(&sei);
+	LinphoneErrorInfo* p_ei = (LinphoneErrorInfo*) ei;
+	
+	ms_message("Terminate call [%p] which is currently in state %s", call, linphone_call_state_to_string(call->state));
+	switch (call->state) {
+		case LinphoneCallReleased:
+		case LinphoneCallEnd:
+		case LinphoneCallError:
+			ms_warning("No need to terminate a call [%p] in state [%s]", call, linphone_call_state_to_string(call->state));
+			return -1;
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+			linphone_error_info_set_reason(p_ei, LinphoneReasonDeclined);
+			return linphone_call_decline_with_error_info(call, p_ei);
+		case LinphoneCallOutgoingInit:
+			/* In state OutgoingInit, op has to be destroyed */
+			sal_op_release(call->op);
+			call->op = NULL;
+			break;
+		default:
+			
+			if (ei == NULL){
+				sal_call_terminate(call->op);
+			}
+			else{
+				linphone_error_info_to_sal(ei, &sei);
+				sal_call_terminate_with_error(call->op, &sei);
+				sal_error_info_reset(&sei);
+			}
+			break;
+	}
+
+	terminate_call(call);
+	return 0;
+	
+}
+
 int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	char *real_url = NULL;
 	LinphoneCore *lc;
 	LinphoneAddress *real_parsed_url;
+	SalErrorInfo sei;
 
 	if (call->state != LinphoneCallIncomingReceived) {
 		ms_error("Bad state for call redirection.");
@@ -5160,9 +5236,11 @@ int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	}
 
 	real_url = linphone_address_as_string(real_parsed_url);
-	sal_call_decline(call->op, SalReasonRedirect, real_url);
+	sal_error_info_init_to_null(&sei);
+	sal_error_info_set(&sei,SalReasonRedirect, "SIP", 0, NULL, NULL);
+	sal_call_decline_with_error_info(call->op, &sei, real_url);
 	ms_free(real_url);
-	linphone_error_info_set(call->ei, LinphoneReasonMovedPermanently, 302, "Call redirected", NULL);
+	linphone_error_info_set(call->ei, NULL, LinphoneReasonMovedPermanently, 302, "Call redirected", NULL);
 	call->non_op_error = TRUE;
 	terminate_call(call);
 	linphone_address_unref(real_parsed_url);
@@ -5174,12 +5252,29 @@ int linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
 		ms_error("Cannot decline a call that is in state %s", linphone_call_state_to_string(call->state));
 		return -1;
 	}
-
 	sal_call_decline(call->op, linphone_reason_to_sal(reason), NULL);
 	terminate_call(call);
 	return 0;
 }
+	
+	
+int linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErrorInfo *ei) {
+	SalErrorInfo sei;
+	sal_error_info_init_to_null(&sei);
+	SalErrorInfo sub_sei;
+	sal_error_info_init_to_null(&sub_sei);
+	sei.sub_sei = &sub_sei;
+	
+	if ((call->state != LinphoneCallIncomingReceived) && (call->state != LinphoneCallIncomingEarlyMedia)) {
+		ms_error("Cannot decline a call that is in state %s", linphone_call_state_to_string(call->state));
+		return -1;
+	}
+	linphone_error_info_to_sal(ei, &sei);
 
+	sal_call_decline_with_error_info(call->op, &sei , NULL);
+	terminate_call(call);
+	return 0;
+}
 int linphone_call_accept(LinphoneCall *call) {
 	return linphone_call_accept_with_params(call, NULL);
 }
@@ -5248,7 +5343,7 @@ int linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParam
 	/* Try to be best-effort in giving real local or routable contact address */
 	linphone_call_set_contact_op(call);
 	if (params) {
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 		linphone_call_prepare_ice(call, TRUE);
 		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op, call->localdesc);
@@ -5304,7 +5399,7 @@ int linphone_call_accept_early_media_with_params(LinphoneCall *call, const Linph
 
 	/* If parameters are passed, update the media description */
 	if (params) {
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op, call->localdesc);
 		sal_op_set_sent_custom_header(call->op, params->custom_headers);
@@ -5377,7 +5472,7 @@ int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
 			}
 		}
 #endif /* defined(VIDEO_ENABLED) && defined(BUILD_UPNP) */
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 		err = linphone_call_prepare_ice(call, FALSE);
 		if (err == 1) {
 			ms_message("Defer call update to gather ICE candidates");
@@ -5525,7 +5620,7 @@ int _linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *p
 			linphone_call_params_enable_video_multicast(call->params, FALSE);
 		}
 	} else {
-		linphone_call_set_new_params(call, params);
+		_linphone_call_set_new_params(call, params);
 	}
 
 	if (call->params->has_video && !linphone_core_video_enabled(lc)) {
@@ -5774,6 +5869,7 @@ void linphone_call_reinvite_to_recover_from_connection_loss(LinphoneCall *call) 
 }
 
 void linphone_call_repair_if_broken(LinphoneCall *call){
+	SalErrorInfo sei;
 	if (!call->broken) return;
 	if (!call->core->media_network_reachable) return;
 
@@ -5803,7 +5899,9 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 			break;
 		case LinphoneCallUpdatedByRemote:
 			if (sal_call_dialog_request_pending(call->op)) {
-				sal_call_decline(call->op, SalReasonServiceUnavailable, NULL);
+				sal_error_info_init_to_null(&sei);
+				sal_error_info_set(&sei, SalReasonServiceUnavailable,"SIP", 0, NULL, NULL);
+				sal_call_decline_with_error_info(call->op, &sei,NULL);
 			}
 			linphone_call_reinvite_to_recover_from_connection_loss(call);
 			break;
