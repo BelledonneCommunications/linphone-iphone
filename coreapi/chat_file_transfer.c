@@ -587,7 +587,7 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
 	return err;
 }
 
-int linphone_chat_message_download_file(LinphoneChatMessage *msg) {
+LinphoneStatus linphone_chat_message_download_file(LinphoneChatMessage *msg) {
 	belle_http_request_listener_callbacks_t cbs = {0};
 	int err;
 

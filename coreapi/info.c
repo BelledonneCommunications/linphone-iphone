@@ -76,7 +76,7 @@ LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
 	return belle_sip_object_new(LinphoneInfoMessage);
 }
 
-int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info) {
+LinphoneStatus linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(info->content);
 	sal_op_set_sent_custom_header(call->op, info->headers);
 	return sal_send_info(call->op,NULL, NULL, body_handler);

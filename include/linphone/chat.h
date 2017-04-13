@@ -396,7 +396,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_message_start_file_downlo
  * Start the download of the file referenced in a LinphoneChatMessage from remote server.
  * @param[in] message LinphoneChatMessage object.
  */
-LINPHONE_PUBLIC int linphone_chat_message_download_file(LinphoneChatMessage *message);
+LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_download_file(LinphoneChatMessage *message);
 
 /**
  * Cancel an ongoing file transfer attached to this message.(upload or download)
@@ -537,7 +537,7 @@ LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(Li
  * @param[in] character T.140 char
  * @returns 0 if succeed.
  */
-LINPHONE_PUBLIC int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t character);
+LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t character);
 
 /**
  * Get the message identifier.

@@ -112,7 +112,7 @@ LinphoneSoundDaemon *lsd_player_get_daemon(const LsdPlayer *p){
 	return p->lsd;
 }
 
-int lsd_player_stop(LsdPlayer *p){
+LinphoneStatus lsd_player_stop(LsdPlayer *p){
 	ms_filter_call_method_noarg(p->player,MS_PLAYER_PAUSE);
 	return 0;
 }
@@ -185,7 +185,7 @@ static void lsd_player_configure(LsdPlayer *b){
 	ms_message("player configured for rate=%i, channels=%i",rate,chans);
 }
 
-int lsd_player_play(LsdPlayer *b, const char *filename ){
+LinphoneStatus lsd_player_play(LsdPlayer *b, const char *filename ){
 	int state;
 	
 	ms_filter_call_method(b->player,MS_PLAYER_GET_STATE,&state);

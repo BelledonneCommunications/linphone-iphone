@@ -993,7 +993,7 @@ LinphoneCore* linphone_friend_list_get_core(const LinphoneFriendList *list) {
 	return list->lc;
 }
 
-int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
+LinphoneStatus linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
 	bctbx_list_t *vcards = NULL;
 	bctbx_list_t *vcards_iterator = NULL;
 	int count = 0;
@@ -1033,7 +1033,7 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 	return count;
 }
 
-int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *list, const char *vcard_buffer) {
+LinphoneStatus linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *list, const char *vcard_buffer) {
 	bctbx_list_t *vcards = NULL;
 	bctbx_list_t *vcards_iterator = NULL;
 	int count = 0;

@@ -465,7 +465,7 @@ LpConfig *linphone_config_new_with_factory(const char *config_filename, const ch
 	}
 }
 
-int linphone_config_read_file(LpConfig *lpconfig, const char *filename){
+LinphoneStatus linphone_config_read_file(LpConfig *lpconfig, const char *filename){
 	char* path = lp_realpath(filename, NULL);
 	bctbx_vfs_file_t* pFile = bctbx_file_open(lpconfig->g_bctbx_vfs, path, "r");
 	if (pFile != NULL){
@@ -795,7 +795,7 @@ void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 	
 }
 
-int linphone_config_sync(LpConfig *lpconfig){
+LinphoneStatus linphone_config_sync(LpConfig *lpconfig){
 	bctbx_vfs_file_t *pFile = NULL;
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
@@ -990,7 +990,7 @@ end:
 	if(realfilepath) ms_free(realfilepath);
 }
 
-int linphone_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length) {
+LinphoneStatus linphone_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length) {
 	char *dup_config_file = NULL;
 	const char *dir = NULL;
 	char *filepath = NULL;

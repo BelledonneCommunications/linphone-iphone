@@ -253,7 +253,7 @@ bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *cfg){
 	return cfg->state == LinphoneRegistrationOk;
 }
 
-int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *server_addr){
+LinphoneStatus linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *server_addr){
 	LinphoneAddress *addr=NULL;
 	char *modified=NULL;
 
@@ -280,7 +280,7 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *
 }
 
 
-int linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const LinphoneAddress *addr){
+LinphoneStatus linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const LinphoneAddress *addr){
 	if (!addr || linphone_address_get_username(addr)==NULL){
 		char* as_string = addr ? linphone_address_as_string(addr) : ms_strdup("NULL");
 		ms_warning("Invalid sip identity: %s", as_string);
@@ -299,7 +299,7 @@ int linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const L
 	return 0;
 }
 
-int linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *identity){
+LinphoneStatus linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *identity){
 	if (identity!=NULL && strlen(identity)>0){
 		LinphoneAddress *addr=linphone_address_new(identity);
 		int ret=linphone_proxy_config_set_identity_address(cfg, addr);
@@ -313,7 +313,7 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
 	return cfg->identity_address ? linphone_address_get_domain(cfg->identity_address) : NULL;
 }
 
-int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
+LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
 {
 	if (cfg->reg_route!=NULL){
 		ms_free(cfg->reg_route);
@@ -767,7 +767,7 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 /**
  * Commits modification made to the proxy configuration.
 **/
-int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
+LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 {
 	LinphoneProxyConfigAddressComparisonResult res;
 
@@ -967,7 +967,7 @@ void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const cha
 	cfg->register_changed = TRUE;
 }
 
-int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
+LinphoneStatus linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	if (!linphone_proxy_config_check(lc,cfg)) {
 		return -1;
 	}

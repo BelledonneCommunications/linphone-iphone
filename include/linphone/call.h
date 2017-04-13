@@ -187,7 +187,7 @@ LINPHONE_PUBLIC bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
  * @param file a path where to write the jpeg content.
  * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported).
 **/
-LINPHONE_PUBLIC int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 
 /**
  * Take a photo of currently captured video and write it into a jpeg file.
@@ -196,7 +196,7 @@ LINPHONE_PUBLIC int linphone_call_take_video_snapshot(LinphoneCall *call, const 
  * @param file a path where to write the jpeg content.
  * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported).
 **/
-LINPHONE_PUBLIC int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file);
 
 /**
  * Returns the reason for a call termination (either error or normal termination)
@@ -275,7 +275,7 @@ LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall *call, float zoom_fac
  * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
  * @return 0 if successful, -1 on error.
 **/
-LINPHONE_PUBLIC int linphone_call_send_dtmf(LinphoneCall *call, char dtmf);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_send_dtmf(LinphoneCall *call, char dtmf);
 
 /**
  * Send a list of dtmf.
@@ -286,7 +286,7 @@ LINPHONE_PUBLIC int linphone_call_send_dtmf(LinphoneCall *call, char dtmf);
  * @param dtmfs A dtmf sequence such as '123#123123'
  * @return -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
 **/
-LINPHONE_PUBLIC int linphone_call_send_dtmfs(LinphoneCall *call, const char *dtmfs);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_send_dtmfs(LinphoneCall *call, const char *dtmfs);
 
 /**
  * Stop current DTMF sequence sending.
@@ -361,7 +361,7 @@ LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtcp_transport(LinphoneCal
  * @return 0 on success, -1 on failure
  * @see linphone_call_resume()
 **/
-LINPHONE_PUBLIC int linphone_call_pause(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_pause(LinphoneCall *call);
 
 /**
  * Resumes a call.
@@ -370,14 +370,14 @@ LINPHONE_PUBLIC int linphone_call_pause(LinphoneCall *call);
  * @return 0 on success, -1 on failure
  * @see linphone_call_pause()
 **/
-LINPHONE_PUBLIC int linphone_call_resume(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_resume(LinphoneCall *call);
 
 /**
  * Terminates a call.
  * @param[in] call LinphoneCall object
  * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_terminate(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_terminate(LinphoneCall *call);
 
 /**
  * Redirect the specified call to the given redirect URI.
@@ -385,7 +385,7 @@ LINPHONE_PUBLIC int linphone_call_terminate(LinphoneCall *call);
  * @param[in] redirect_uri The URI to redirect the call to
  * @return 0 if successful, -1 on error.
  */
-LINPHONE_PUBLIC int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_redirect(LinphoneCall *call, const char *redirect_uri);
 
 /**
  * Decline a pending incoming call, with a reason.
@@ -393,7 +393,7 @@ LINPHONE_PUBLIC int linphone_call_redirect(LinphoneCall *call, const char *redir
  * @param[in] reason The reason for rejecting the call: LinphoneReasonDeclined or LinphoneReasonBusy
  * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_decline(LinphoneCall * call, LinphoneReason reason);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_decline(LinphoneCall * call, LinphoneReason reason);
 
 /**
  * Accept an incoming call.
@@ -405,7 +405,7 @@ LINPHONE_PUBLIC int linphone_call_decline(LinphoneCall * call, LinphoneReason re
  * @param[in] call A LinphoneCall object
  * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_accept(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_accept(LinphoneCall *call);
 
 /**
  * Accept an incoming call, with parameters.
@@ -418,7 +418,7 @@ LINPHONE_PUBLIC int linphone_call_accept(LinphoneCall *call);
  * @param[in] params The specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters
  * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParams *params);
 
 /**
  * Accept an early media session for an incoming call.
@@ -427,7 +427,7 @@ LINPHONE_PUBLIC int linphone_call_accept_with_params(LinphoneCall *call, const L
  * @return 0 if successful, -1 otherwise
  * @see linphone_call_accept_early_media_with_params()
 **/
-LINPHONE_PUBLIC int linphone_call_accept_early_media(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_accept_early_media(LinphoneCall *call);
 
 /**
  * When receiving an incoming, accept to start a media session as early-media.
@@ -438,7 +438,7 @@ LINPHONE_PUBLIC int linphone_call_accept_early_media(LinphoneCall *call);
  * @param[in] params The call parameters to use (can be NULL)
  * @return 0 if successful, -1 otherwise
 **/
-LINPHONE_PUBLIC int linphone_call_accept_early_media_with_params(LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_accept_early_media_with_params(LinphoneCall *call, const LinphoneCallParams *params);
 
 /**
  * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
@@ -453,7 +453,7 @@ LINPHONE_PUBLIC int linphone_call_accept_early_media_with_params(LinphoneCall *c
  * @param[in] params The new call parameters to use (may be NULL)
  * @return 0 if successful, -1 otherwise.
 **/
-LINPHONE_PUBLIC int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params);
 
 /**
  * When receiving a #LinphoneCallUpdatedByRemote state notification, prevent LinphoneCore from performing an automatic answer.
@@ -474,7 +474,7 @@ LINPHONE_PUBLIC int linphone_call_update(LinphoneCall *call, const LinphoneCallP
  * @param[in] call A LinphoneCall object
  * @return 0 if successful, -1 if the linphone_call_defer_update() was done outside a valid #LinphoneCallUpdatedByRemote notification
 **/
-LINPHONE_PUBLIC int linphone_call_defer_update(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_defer_update(LinphoneCall *call);
 
 /**
  * Accept call modifications initiated by other end.
@@ -493,7 +493,7 @@ LINPHONE_PUBLIC int linphone_call_defer_update(LinphoneCall *call);
  * @param[in] params A LinphoneCallParams object describing the call parameters to accept
  * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state)
 **/
-LINPHONE_PUBLIC int linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *params);
 
 /**
  * Performs a simple call transfer to the specified destination.
@@ -506,7 +506,7 @@ LINPHONE_PUBLIC int linphone_call_accept_update(LinphoneCall *call, const Linpho
  * @param[in] refer_to The destination the call is to be refered to
  * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_transfer(LinphoneCall *call, const char *refer_to);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_transfer(LinphoneCall *call, const char *refer_to);
 
 /**
  * Transfers a call to destination of another running call. This is used for "attended transfer" scenarios.
@@ -522,7 +522,7 @@ LINPHONE_PUBLIC int linphone_call_transfer(LinphoneCall *call, const char *refer
  * @param[in] dest A running call whose remote person will receive the transfer
  * @return 0 on success, -1 on failure
 **/
-LINPHONE_PUBLIC int linphone_call_transfer_to_another(LinphoneCall *call, LinphoneCall *dest);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_transfer_to_another(LinphoneCall *call, LinphoneCall *dest);
 
 
 /**
@@ -812,7 +812,7 @@ LINPHONE_PUBLIC void linphone_call_ogl_render(LinphoneCall *call, bool_t is_prev
  * @param call the call
  * @param info the info message
 **/
-LINPHONE_PUBLIC int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info);
 
 /**
  * Return call statistics for a particular stream type.

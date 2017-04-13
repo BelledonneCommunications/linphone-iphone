@@ -187,7 +187,7 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 	return lev;
 }
 
-int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
+LinphoneStatus linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBodyHandler *body_handler;
 	int err;
 
@@ -226,15 +226,15 @@ int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *bod
 	return err;
 }
 
-int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
+LinphoneStatus linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
 	return linphone_event_send_subscribe(lev,body);
 }
 
-int linphone_event_refresh_subscribe(LinphoneEvent *lev) {
+LinphoneStatus linphone_event_refresh_subscribe(LinphoneEvent *lev) {
 	return sal_op_refresh(lev->op);
 }
 
-int linphone_event_accept_subscription(LinphoneEvent *lev){
+LinphoneStatus linphone_event_accept_subscription(LinphoneEvent *lev){
 	int err;
 	if (lev->subscription_state!=LinphoneSubscriptionIncomingReceived){
 		ms_error("linphone_event_accept_subscription(): cannot accept subscription if subscription wasn't just received.");
@@ -247,7 +247,7 @@ int linphone_event_accept_subscription(LinphoneEvent *lev){
 	return err;
 }
 
-int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
+LinphoneStatus linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
 	int err;
 	if (lev->subscription_state!=LinphoneSubscriptionIncomingReceived){
 		ms_error("linphone_event_deny_subscription(): cannot deny subscription if subscription wasn't just received.");
@@ -258,7 +258,7 @@ int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
 	return err;
 }
 
-int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
+LinphoneStatus linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBodyHandler *body_handler;
 	if (lev->subscription_state!=LinphoneSubscriptionActive && lev->subscription_state!=LinphoneSubscriptionIncomingReceived){
 		ms_error("linphone_event_notify(): cannot notify if subscription is not active.");
@@ -320,15 +320,15 @@ LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *re
 }
 
 
-int linphone_event_send_publish(LinphoneEvent *lev, const LinphoneContent *body){
+LinphoneStatus linphone_event_send_publish(LinphoneEvent *lev, const LinphoneContent *body){
 	return _linphone_event_send_publish(lev,body,TRUE);
 }
 
-int linphone_event_update_publish(LinphoneEvent* lev, const LinphoneContent* body ) {
+LinphoneStatus linphone_event_update_publish(LinphoneEvent* lev, const LinphoneContent* body ) {
 	return linphone_event_send_publish(lev,body);
 }
 
-int linphone_event_refresh_publish(LinphoneEvent *lev) {
+LinphoneStatus linphone_event_refresh_publish(LinphoneEvent *lev) {
 	return sal_op_refresh(lev->op);
 }
 void linphone_event_pause_publish(LinphoneEvent *lev) {

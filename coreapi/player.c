@@ -20,21 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "private.h"
 
-int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
+LinphoneStatus linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
 	obj->user_data=user_data;
 	obj->cb=cb;
 	return obj->open(obj,filename);
 }
 
-int linphone_player_start(LinphonePlayer *obj){
+LinphoneStatus linphone_player_start(LinphonePlayer *obj){
 	return obj->start(obj);
 }
 
-int linphone_player_pause(LinphonePlayer *obj){
+LinphoneStatus linphone_player_pause(LinphonePlayer *obj){
 	return obj->pause(obj);
 }
 
-int linphone_player_seek(LinphonePlayer *obj, int time_ms){
+LinphoneStatus linphone_player_seek(LinphonePlayer *obj, int time_ms){
 	return obj->seek(obj,time_ms);
 }
 

@@ -79,7 +79,7 @@ void ec_tester_destroy(EchoTester *ect) {
     ms_free(ect);
 }
 
-int linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate) {
+LinphoneStatus linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate) {
     if (lc->ect != NULL) {
         ms_error("Echo tester is still on going !");
         return -1;
@@ -91,7 +91,7 @@ int linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate) {
     return 1;
 }
 
-int linphone_core_stop_echo_tester(LinphoneCore *lc) {
+LinphoneStatus linphone_core_stop_echo_tester(LinphoneCore *lc) {
     if (lc->ect == NULL) {
         ms_error("Echo tester is not running !");
         return -1;

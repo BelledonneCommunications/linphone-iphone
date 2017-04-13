@@ -69,7 +69,7 @@ static int _linphone_core_enable_payload_type(LinphoneCore *lc, OrtpPayloadType 
 	return 0;
 }
 
-int linphone_core_enable_payload_type(LinphoneCore *lc, OrtpPayloadType *pt, bool_t enabled){
+LinphoneStatus linphone_core_enable_payload_type(LinphoneCore *lc, OrtpPayloadType *pt, bool_t enabled){
 	if (!_payload_type_is_in_core(pt, lc)) {
 		char *desc = _payload_type_get_description(pt);
 		ms_error("cannot enable '%s' payload type: not in the core", desc);

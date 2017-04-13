@@ -138,7 +138,7 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 	}
 }
 
-int linphone_core_set_provisioning_uri(LinphoneCore *lc, const char *remote_provisioning_uri) {
+LinphoneStatus linphone_core_set_provisioning_uri(LinphoneCore *lc, const char *remote_provisioning_uri) {
 	belle_generic_uri_t *uri=remote_provisioning_uri?belle_generic_uri_parse(remote_provisioning_uri):NULL;
 	if (!remote_provisioning_uri||uri) {
 		lp_config_set_string(lc->config,"misc","config-uri",remote_provisioning_uri);
