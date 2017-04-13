@@ -35,6 +35,7 @@ CERTIFICATE_FILES = $(CERTIFICATE_ALT_FILES) $(CERTIFICATE_CN_FILES) $(CERTIFICA
 
 RCFILES = \
 					rcfiles/account_creator_rc\
+					rcfiles/assistant_create.rc\
 					rcfiles/carddav_rc\
 					rcfiles/empty_rc\
 					rcfiles/friends_rc\

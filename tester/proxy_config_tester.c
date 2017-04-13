@@ -68,7 +68,7 @@ static void phone_normalization_with_proxy(void) {
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+33 (0) 1 23 45 67 89"), "+33123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+90 (903) 1234567"), "+909031234567");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "0033123456789"), "0033123456789");
-	
+
 	linphone_proxy_config_set_dial_prefix(proxy, "33");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "123456789"), "+33123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, " 0123456789"), "+33123456789");
@@ -179,11 +179,20 @@ static void sip_uri_normalization(void) {
 	SIP_URI_CHECK("١", expected); //test that no more invalid memory writes are made (valgrind only)
 }
 
+static void load_dynamic_proxy_config(void) {
+	LinphoneProxyConfig *proxy;
+
+	//Load file
+
+	proxy = linphone_proxy_config_new();
+}
+
 test_t proxy_config_tests[] = {
 	TEST_NO_TAG("Phone normalization without proxy", phone_normalization_without_proxy),
 	TEST_NO_TAG("Phone normalization with proxy", phone_normalization_with_proxy),
 	TEST_NO_TAG("Phone normalization with dial escape plus", phone_normalization_with_dial_escape_plus),
-	TEST_NO_TAG("SIP URI normalization", sip_uri_normalization)
+	TEST_NO_TAG("SIP URI normalization", sip_uri_normalization),
+	TEST_NO_TAG("Load new default value for proxy config", load_dynamic_proxy_config)
 };
 
 test_suite_t proxy_config_test_suite = {"Proxy config", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

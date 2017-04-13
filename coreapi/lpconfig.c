@@ -481,14 +481,14 @@ LinphoneStatus linphone_config_read_file(LpConfig *lpconfig, const char *filenam
 	return -1;
 }
 
-char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, void* ctx) {
+char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, void* lc, void* ctx) {
 	xml2lpc_context *context = NULL;
 	char* path = lp_realpath(filename, NULL);
 	char* error_msg = NULL;
 
 	if (path) {
 		int result = -1;
-		context = xml2lpc_context_new(NULL, ctx);
+		context = xml2lpc_context_new(ctx, lc);
 		result = xml2lpc_set_xml_string(context, path);
 		if (result == 0) {
 			result = xml2lpc_convert(context, lpc);

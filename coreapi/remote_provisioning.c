@@ -35,7 +35,7 @@ static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt
 }
 
 static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml) {
-	char* error_msg = linphone_config_load_from_xml_file(linphone_core_get_config(lc), xml, lc);
+	char* error_msg = linphone_config_load_from_xml_file(linphone_core_get_config(lc), xml, lc, xml2lpc_callback);
 
 	linphone_configuring_terminated(lc
 									,error_msg ? LinphoneConfiguringFailed : LinphoneConfiguringSuccessful
