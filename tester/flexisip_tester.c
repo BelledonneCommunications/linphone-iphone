@@ -1295,6 +1295,68 @@ void tls_client_auth_bad_certificate(void) {
 	}
 }
 
+static void on_eof(LinphonePlayer *player, void *user_data){
+	LinphoneCoreManager *marie=(LinphoneCoreManager*)user_data;
+	marie->stat.number_of_player_eof++;
+}
+
+void transcoder_tester(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+	LinphonePlayer *player;
+	char *hellopath = bc_tester_res("sounds/ahbahouaismaisbon.wav");
+	char *recordpath = bc_tester_file("record-call_with_file_player.wav");
+
+	bool_t call_ok;
+	double similar=1;
+	const double threshold = 0.8;
+
+	linphone_core_set_user_agent(marie->lc,"Transcoded Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Transcoded Linphone",NULL);
+
+	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
+	disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
+
+	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
+	linphone_core_use_files(marie->lc,TRUE);
+	linphone_core_set_play_file(marie->lc,NULL);
+	
+	/*callee is recording and plays file*/
+	linphone_core_use_files(pauline->lc,TRUE);
+	linphone_core_set_play_file(pauline->lc,NULL);
+	linphone_core_set_record_file(pauline->lc,recordpath);
+
+	BC_ASSERT_TRUE((call_ok=call(marie,pauline)));
+	if (!call_ok) goto end;
+	player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
+	BC_ASSERT_PTR_NOT_NULL(player);
+	if (player){
+		BC_ASSERT_EQUAL(linphone_player_open(player,hellopath,on_eof,marie),0, int, "%d");
+		BC_ASSERT_EQUAL(linphone_player_start(player),0, int, "%d");
+	}
+	/* This assert should be modified to be at least as long as the WAV file */
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,10000));
+	/*wait one second more for transmission to be fully ended (transmission time + jitter buffer)*/
+	wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
+
+	end_call(marie, pauline);
+	/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
+	on another thread) */
+	BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,&audio_cmp_params,NULL,NULL), 0, int, "%d");
+
+	BC_ASSERT_GREATER(similar, threshold, double, "%g");
+	BC_ASSERT_LOWER(similar, 1.0, double, "%g");
+	if (similar >= threshold && similar <= 1.0) {
+		remove(recordpath);
+	}
+
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_free(recordpath);
+	ms_free(hellopath);
+}
 
 test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
@@ -1331,7 +1393,8 @@ test_t flexisip_tests[] = {
 #endif
 	TEST_ONE_TAG("Redis Publish/subscribe", redis_publish_subscribe, "Skip"),
 	TEST_NO_TAG("TLS authentication - client rejected due to CN mismatch", tls_client_auth_bad_certificate_cn),
-	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate)
+	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate),
+	TEST_NO_TAG("Transcoder", transcoder_tester)
 };
 
 
