@@ -861,7 +861,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				LinphoneManager.instance.connectivity = none;
 			}
 			LinphoneCallLog *callLog2 = linphone_call_get_call_log(call);
-			NSString *callId2 = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog2)];
+			const char *call_id2 = linphone_call_log_get_call_id(callLog2);
+			NSString *callId2 = call_id2 ? [NSString stringWithUTF8String:call_id2] : @"";
 			NSUUID *uuid = (NSUUID *)[self.providerDelegate.uuids objectForKey:callId2];
 			if (uuid) {
 				// For security reasons do not display name
@@ -2667,6 +2668,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		self.providerDelegate.callKitCalls++;
 		NSUUID *uuid = [NSUUID UUID];
 		[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:@""];
+		[LinphoneManager.instance.providerDelegate.calls setObject:@"" forKey:uuid];
 		LinphoneManager.instance.providerDelegate.pendingAddr = linphone_address_clone(iaddr);
 		NSString *address = [FastAddressBook displayNameForAddress:iaddr];
 		CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
