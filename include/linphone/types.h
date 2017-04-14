@@ -182,8 +182,8 @@ typedef enum _LinphoneAddressFamily {
  * @ingroup call_control
 **/
 typedef enum _LinphoneAudioRoute {
-	LinphoneAudioRouteEarpiece = MSAudioRouteEarpiece,
-	LinphoneAudioRouteSpeaker = MSAudioRouteSpeaker
+	LinphoneAudioRouteEarpiece,
+	LinphoneAudioRouteSpeaker
 } LinphoneAudioRoute;
 
 /**
