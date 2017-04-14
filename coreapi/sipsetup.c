@@ -124,7 +124,7 @@ int sip_setup_context_get_capabilities(SipSetupContext *ctx){
 	return ctx->funcs->capabilities;
 }
 
-int sip_setup_context_create_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *email, int suscribe){
+LinphoneStatus sip_setup_context_create_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *email, int suscribe){
 	if (ctx->funcs->create_account)
 		return ctx->funcs->create_account(ctx, uri, passwd, email, suscribe);
 	else return -1;
@@ -142,7 +142,7 @@ int sip_setup_context_account_validated(SipSetupContext *ctx, const char *uri){
 	return -1;
 }
 
-int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid){
+LinphoneStatus sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid){
 	LinphoneAddress *from=linphone_address_new(uri);
 	if (from==NULL) {
 		ms_warning("Fail to parse %s",uri);
@@ -156,19 +156,19 @@ int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, cons
 	return -1;
 }
 
-int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz){
+LinphoneStatus sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz){
 	if (ctx->funcs->get_proxy)
 		return ctx->funcs->get_proxy(ctx,domain ? domain : ctx->domain,proxy,sz);
 	return -1;
 }
 
-int sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size){
+LinphoneStatus sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size){
 	if (ctx->funcs->get_stun_servers)
 		return ctx->funcs->get_stun_servers(ctx,stun1,stun2,size);
 	return -1;
 }
 
-int sip_setup_context_get_relay(SipSetupContext *ctx,char *relay, size_t size){
+LinphoneStatus sip_setup_context_get_relay(SipSetupContext *ctx,char *relay, size_t size){
 	if (ctx->funcs->get_relay)
 		return ctx->funcs->get_relay(ctx,relay,size);
 	return -1;
@@ -180,13 +180,13 @@ BuddyLookupRequest *sip_setup_context_create_buddy_lookup_request(SipSetupContex
 	return NULL;
 }
 
-int sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req){
+LinphoneStatus sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req){
 	if (ctx->funcs->buddy_lookup_funcs)
 		return ctx->funcs->buddy_lookup_funcs->request_submit(ctx,req);
 	return -1;
 }
 
-int sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req){
+LinphoneStatus sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req){
 	if (ctx->funcs->buddy_lookup_funcs)
 		return ctx->funcs->buddy_lookup_funcs->request_free(ctx,req);
 	return -1;
@@ -205,7 +205,7 @@ const char ** sip_setup_context_get_domains(SipSetupContext *ctx){
 }
 
 
-int sip_setup_context_logout(SipSetupContext *ctx){
+LinphoneStatus sip_setup_context_logout(SipSetupContext *ctx){
 	if (ctx->funcs->logout_account){
 		return ctx->funcs->logout_account(ctx);
 	}

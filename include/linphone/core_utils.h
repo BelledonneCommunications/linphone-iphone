@@ -33,8 +33,8 @@ typedef void (*LsdEndOfPlayCallback)(LsdPlayer *p);
 LINPHONE_PUBLIC void lsd_player_set_callback(LsdPlayer *p, LsdEndOfPlayCallback cb);
 LINPHONE_PUBLIC void lsd_player_set_user_pointer(LsdPlayer *p, void *up);
 LINPHONE_PUBLIC void *lsd_player_get_user_pointer(const LsdPlayer *p);
-LINPHONE_PUBLIC int lsd_player_play(LsdPlayer *p, const char *filename);
-LINPHONE_PUBLIC int lsd_player_stop(LsdPlayer *p);
+LINPHONE_PUBLIC LinphoneStatus lsd_player_play(LsdPlayer *p, const char *filename);
+LINPHONE_PUBLIC LinphoneStatus lsd_player_stop(LsdPlayer *p);
 LINPHONE_PUBLIC void lsd_player_enable_loop(LsdPlayer *p, bool_t loopmode);
 LINPHONE_PUBLIC bool_t lsd_player_loop_enabled(const LsdPlayer *p);
 LINPHONE_PUBLIC void lsd_player_set_gain(LsdPlayer *p, float gain);
@@ -64,11 +64,11 @@ LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, Linph
  * @param lc The core.
  * @param rate Sound sample rate.
 **/
-LINPHONE_PUBLIC int linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate);
+LINPHONE_PUBLIC LinphoneStatus linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate);
 /**
  * Stop the simulation of call
 **/
-LINPHONE_PUBLIC int linphone_core_stop_echo_tester(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneStatus linphone_core_stop_echo_tester(LinphoneCore *lc);
 /**
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode

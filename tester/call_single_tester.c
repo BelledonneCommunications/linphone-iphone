@@ -1111,6 +1111,8 @@ static void early_cancelled_call(void) {
 	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
+	const char *callID = linphone_call_log_get_call_id(linphone_call_get_call_log(out_call));
+	BC_ASSERT_PTR_NOT_NULL(callID);
 	linphone_call_terminate(out_call);
 
 	/*since everything is executed in a row, no response can be received from the server, thus the CANCEL cannot be sent.

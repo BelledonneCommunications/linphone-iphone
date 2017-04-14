@@ -106,7 +106,7 @@ LINPHONE_PUBLIC void linphone_conference_unref(LinphoneConference *conf);
  * @warning The passed SIP URI must be one of the URIs returned by linphone_conference_get_participants()
  * @return 0 if succeeded, -1 if failed
  */
-LINPHONE_PUBLIC int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
+LINPHONE_PUBLIC LinphoneStatus linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
 
 /**
  * Get URIs of all participants of one conference

@@ -397,7 +397,7 @@ LINPHONE_PUBLIC bool_t linphone_call_params_video_multicast_enabled(const Linpho
  * @param yesno if yes, subsequent outgoing calls will propose rtt
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC int linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno);
+LINPHONE_PUBLIC LinphoneStatus linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno);
 
 /**
  * Use to get real time text following rfc4103.

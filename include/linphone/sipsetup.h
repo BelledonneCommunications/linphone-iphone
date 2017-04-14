@@ -136,23 +136,23 @@ LINPHONE_PUBLIC unsigned int sip_setup_get_capabilities(SipSetup *s);
 SipSetupContext * sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig *cfg);
 int sip_setup_context_account_exists(SipSetupContext *ctx, const char *uri);
 int sip_setup_context_account_validated(SipSetupContext *ctx, const char *uri);
-int sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
+LinphoneStatus sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
 LINPHONE_PUBLIC int sip_setup_context_get_capabilities(SipSetupContext *ctx);
-LINPHONE_PUBLIC int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid);
-int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
-int sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
-int sip_setup_context_get_relay(SipSetupContext *ctx, char *relay, size_t size);
+LINPHONE_PUBLIC LinphoneStatus sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid);
+LinphoneStatus sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
+LinphoneStatus sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
+LinphoneStatus sip_setup_context_get_relay(SipSetupContext *ctx, char *relay, size_t size);
 
 LINPHONE_PUBLIC BuddyLookupRequest *sip_setup_context_create_buddy_lookup_request(SipSetupContext *ctx);
-LINPHONE_PUBLIC int sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req);
-LINPHONE_PUBLIC int sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req);
+LINPHONE_PUBLIC LinphoneStatus sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req);
+LINPHONE_PUBLIC LinphoneStatus sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req);
 
 const char * sip_setup_context_get_notice(SipSetupContext *ctx);
 const char ** sip_setup_context_get_domains(SipSetupContext *ctx);
 
 void sip_setup_context_free(SipSetupContext *ctx);
 
-LINPHONE_PUBLIC int sip_setup_context_logout(SipSetupContext *ctx);
+LINPHONE_PUBLIC LinphoneStatus sip_setup_context_logout(SipSetupContext *ctx);
 
 /*internal methods for use WITHIN plugins: do not use elsewhere*/
 struct _LinphoneProxyConfig *sip_setup_context_get_proxy_config(const SipSetupContext *ctx);

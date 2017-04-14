@@ -80,7 +80,7 @@ LINPHONE_PUBLIC LinphoneConfig * linphone_config_new_with_factory(const char *co
  * @param lpconfig The LinphoneConfig object to fill with the content of the file
  * @param filename The filename of the config file to read to fill the LinphoneConfig
  */
-LINPHONE_PUBLIC int linphone_config_read_file(LinphoneConfig *lpconfig, const char *filename);
+LINPHONE_PUBLIC LinphoneStatus linphone_config_read_file(LinphoneConfig *lpconfig, const char *filename);
 
 /**
  * Retrieves a configuration item as a string, given its section, key, and default value.
@@ -171,7 +171,7 @@ LINPHONE_PUBLIC void linphone_config_set_float(LinphoneConfig *lpconfig,const ch
 /**
  * Writes the config file to disk.
 **/
-LINPHONE_PUBLIC int linphone_config_sync(LinphoneConfig *lpconfig);
+LINPHONE_PUBLIC LinphoneStatus linphone_config_sync(LinphoneConfig *lpconfig);
 
 /**
  * Returns 1 if a given section is present in the configuration.
@@ -278,7 +278,7 @@ LINPHONE_PUBLIC void linphone_config_write_relative_file(const LinphoneConfig *l
  * @return 0 on success, -1 on failure
  * @donotwrap
  */
-LINPHONE_PUBLIC int linphone_config_read_relative_file(const LinphoneConfig *lpconfig, const char *filename, char *data, size_t max_length);
+LINPHONE_PUBLIC LinphoneStatus linphone_config_read_relative_file(const LinphoneConfig *lpconfig, const char *filename, char *data, size_t max_length);
 
 /**
  * @return TRUE if file exists relative to the to the current location

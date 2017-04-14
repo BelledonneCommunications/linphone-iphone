@@ -290,7 +290,7 @@ const LinphoneAddress * linphone_friend_get_address(const LinphoneFriend *lf) {
 	return NULL;
 }
 
-int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
+LinphoneStatus linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr) {
 	LinphoneAddress *fr = linphone_address_clone(addr);
 	char *address;
 	const LinphoneAddress *mAddr = linphone_friend_get_address(lf);
@@ -431,7 +431,7 @@ void linphone_friend_remove_phone_number(LinphoneFriend *lf, const char *phone) 
 	}
 }
 
-int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
+LinphoneStatus linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 	if (linphone_core_vcard_supported()) {
 		if (!lf->vcard) linphone_friend_create_vcard(lf, name);
 		linphone_vcard_set_full_name(lf->vcard, name);
@@ -445,12 +445,12 @@ int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 	return 0;
 }
 
-int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val){
+LinphoneStatus linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val){
 	fr->subscribe=val;
 	return 0;
 }
 
-int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol) {
+LinphoneStatus linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol) {
 	fr->pol=pol;
 	return 0;
 }

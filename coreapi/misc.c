@@ -1231,7 +1231,7 @@ static void linphone_core_migrate_proxy_config(LinphoneCore *lc, LinphoneTranspo
 	}
 }
 
-int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
+LinphoneStatus linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
 	if (!lp_config_get_int(lc->config,"sip","multi_transport_migration_done",0)){
 		LinphoneTransportType tpt;
 		int port;
@@ -1512,7 +1512,7 @@ bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc){
 	return lp_config_get_int(lc->config,"rtp","symmetric",0);
 }
 
-int linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params){
+LinphoneStatus linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params){
 	if (params!=&lc->net_conf.netsim_params)
 		lc->net_conf.netsim_params=*params;
 	/*TODO: should we make some sanity checks on the parameters here*/

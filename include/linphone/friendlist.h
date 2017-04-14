@@ -309,7 +309,7 @@ LINPHONE_PUBLIC LinphoneCore* linphone_friend_list_get_core(const LinphoneFriend
  * @param[in] vcard_file the path to a file that contains the vCard(s) to parse
  * @return the amount of linphone friends created
  */
-LINPHONE_PUBLIC int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file);
+LINPHONE_PUBLIC LinphoneStatus linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file);
 
 /**
  * Creates and adds LinphoneFriend objects to LinphoneFriendList from a buffer that contains the vCard(s) to parse
@@ -317,7 +317,7 @@ LINPHONE_PUBLIC int linphone_friend_list_import_friends_from_vcard4_file(Linphon
  * @param[in] vcard_buffer the buffer that contains the vCard(s) to parse
  * @return the amount of linphone friends created
  */
-LINPHONE_PUBLIC int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *list, const char *vcard_buffer);
+LINPHONE_PUBLIC LinphoneStatus linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *list, const char *vcard_buffer);
 
 /**
  * Creates and export LinphoneFriend objects from LinphoneFriendList to a file using vCard 4 format

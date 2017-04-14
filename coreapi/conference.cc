@@ -1035,7 +1035,7 @@ int linphone_conference_add_participant(LinphoneConference *obj, LinphoneCall *c
 	return obj->conf->addParticipant(call);
 }
 
-int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri) {
+LinphoneStatus linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri) {
 	return obj->conf->removeParticipant(uri);
 }
 

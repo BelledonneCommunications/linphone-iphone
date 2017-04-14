@@ -64,27 +64,27 @@ int linphone_address_get_port(const LinphoneAddress *u) {
 	return sal_address_get_port(u);
 }
 
-int linphone_address_set_display_name(LinphoneAddress *u, const char *display_name){
+LinphoneStatus linphone_address_set_display_name(LinphoneAddress *u, const char *display_name){
 	sal_address_set_display_name(u,display_name);
 	return 0;
 }
 
-int linphone_address_set_username(LinphoneAddress *uri, const char *username){
+LinphoneStatus linphone_address_set_username(LinphoneAddress *uri, const char *username) {
 	sal_address_set_username(uri,username);
 	return 0;
 }
 
-int linphone_address_set_domain(LinphoneAddress *uri, const char *host){
+LinphoneStatus linphone_address_set_domain(LinphoneAddress *uri, const char *host){
 	sal_address_set_domain(uri,host);
 	return 0;
 }
 
-int linphone_address_set_port(LinphoneAddress *uri, int port){
+LinphoneStatus linphone_address_set_port(LinphoneAddress *uri, int port){
 	sal_address_set_port(uri,port);
 	return 0;
 }
 
-int linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
+LinphoneStatus linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
 	sal_address_set_transport(uri,(SalTransport)tp);
 	return 0;
 }

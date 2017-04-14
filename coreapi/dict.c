@@ -86,7 +86,7 @@ int64_t linphone_dictionary_get_int64(LinphoneDictionary* obj, const char* key, 
 	return belle_sip_dict_get_int64(obj, key, default_value);
 }
 
-int linphone_dictionary_remove(LinphoneDictionary* obj, const char* key)
+LinphoneStatus linphone_dictionary_remove(LinphoneDictionary* obj, const char* key)
 {
 	return belle_sip_dict_remove(obj, key);
 }
@@ -96,7 +96,7 @@ void linphone_dictionary_clear(LinphoneDictionary* obj)
 	belle_sip_dict_clear(obj);
 }
 
-int linphone_dictionary_haskey(const LinphoneDictionary* obj, const char* key)
+LinphoneStatus linphone_dictionary_haskey(const LinphoneDictionary* obj, const char* key)
 {
 	return belle_sip_dict_haskey(obj, key);
 }

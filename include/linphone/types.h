@@ -182,8 +182,8 @@ typedef enum _LinphoneAddressFamily {
  * @ingroup call_control
 **/
 typedef enum _LinphoneAudioRoute {
-	LinphoneAudioRouteEarpiece = MSAudioRouteEarpiece,
-	LinphoneAudioRouteSpeaker = MSAudioRouteSpeaker
+	LinphoneAudioRouteEarpiece,
+	LinphoneAudioRouteSpeaker
 } LinphoneAudioRoute;
 
 /**
@@ -1194,10 +1194,7 @@ typedef struct _LinphoneIntRange {
  * done or not.
  * @ingroup misc
  */
-typedef enum _LinphoneStatus {
-	LinphoneStatusOk = 0, /**< The function has successfully returned. */
-	LinphoneStatusError = -1 /**< An error has occured while executing the function. */
-} LinphoneStatus;
+typedef int LinphoneStatus;
 
 
 #endif /* LINPHONE_TYPES_H_ */

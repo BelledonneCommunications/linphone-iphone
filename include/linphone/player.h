@@ -38,13 +38,13 @@ extern "C" {
 **/
 typedef void (*LinphonePlayerEofCallback)(LinphonePlayer *obj, void *user_data);
 
-LINPHONE_PUBLIC int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
+LINPHONE_PUBLIC LinphoneStatus linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
 
-LINPHONE_PUBLIC int linphone_player_start(LinphonePlayer *obj);
+LINPHONE_PUBLIC LinphoneStatus linphone_player_start(LinphonePlayer *obj);
 
-LINPHONE_PUBLIC int linphone_player_pause(LinphonePlayer *obj);
+LINPHONE_PUBLIC LinphoneStatus linphone_player_pause(LinphonePlayer *obj);
 
-LINPHONE_PUBLIC int linphone_player_seek(LinphonePlayer *obj, int time_ms);
+LINPHONE_PUBLIC LinphoneStatus linphone_player_seek(LinphonePlayer *obj, int time_ms);
 
 LINPHONE_PUBLIC MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
 

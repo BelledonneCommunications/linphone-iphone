@@ -67,7 +67,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_friend_destroy(LinphoneFriend 
  * @param fr #LinphoneFriend object
  * @param address #LinphoneAddress
  */
-LINPHONE_PUBLIC int linphone_friend_set_address(LinphoneFriend *fr, const LinphoneAddress* address);
+LINPHONE_PUBLIC LinphoneStatus linphone_friend_set_address(LinphoneFriend *fr, const LinphoneAddress* address);
 
 /**
  * Set #LinphoneAddress for this friend
@@ -130,7 +130,7 @@ LINPHONE_PUBLIC void linphone_friend_remove_phone_number(LinphoneFriend *lf, con
  * @param lf #LinphoneFriend object
  * @param name 
  */
-LINPHONE_PUBLIC int linphone_friend_set_name(LinphoneFriend *lf, const char *name);
+LINPHONE_PUBLIC LinphoneStatus linphone_friend_set_name(LinphoneFriend *lf, const char *name);
 
 /**
  * Get the display name for this friend
@@ -154,7 +154,7 @@ LINPHONE_PUBLIC bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *
  * @param val if TRUE this friend will receive subscription message
  */
 
-LINPHONE_PUBLIC	int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
+LINPHONE_PUBLIC	LinphoneStatus linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
 #define linphone_friend_send_subscribe linphone_friend_enable_subscribes
 
 /**
@@ -162,7 +162,7 @@ LINPHONE_PUBLIC	int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t
  * @param fr #LinphoneFriend object
  * @param pol #LinphoneSubscribePolicy policy to apply.
  */
-LINPHONE_PUBLIC int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
+LINPHONE_PUBLIC LinphoneStatus linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
 
 /**
  * get current subscription policy for this #LinphoneFriend

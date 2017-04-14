@@ -2245,7 +2245,7 @@ void linphone_call_send_vfu_request(LinphoneCall *call) {
 #endif
 }
 
-int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
+LinphoneStatus linphone_call_take_video_snapshot(LinphoneCall *call, const char *file) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->jpegwriter!=NULL){
 		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
@@ -2255,7 +2255,7 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 	return -1;
 }
 
-int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file){
+LinphoneStatus linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->local_jpegwriter!=NULL){
 		return ms_filter_call_method(call->videostream->local_jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
@@ -4869,7 +4869,7 @@ static int send_dtmf_handler(void *data, unsigned int revents){
 	}
 }
 
-int linphone_call_send_dtmf(LinphoneCall *call,char dtmf){
+LinphoneStatus linphone_call_send_dtmf(LinphoneCall *call, char dtmf) {
 	if (call==NULL){
 		ms_warning("linphone_call_send_dtmf(): invalid call, canceling DTMF.");
 		return -1;
@@ -4880,7 +4880,7 @@ int linphone_call_send_dtmf(LinphoneCall *call,char dtmf){
 	return 0;
 }
 
-int linphone_call_send_dtmfs(LinphoneCall *call,const char *dtmfs) {
+LinphoneStatus linphone_call_send_dtmfs(LinphoneCall *call,const char *dtmfs) {
 	if (call==NULL){
 		ms_warning("linphone_call_send_dtmfs(): invalid call, canceling DTMF sequence.");
 		return -1;
@@ -5008,7 +5008,7 @@ RtpTransport* linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stre
 	return meta_rtcp;
 }
 
-int linphone_call_pause(LinphoneCall *call) {
+LinphoneStatus linphone_call_pause(LinphoneCall *call) {
 	int err = _linphone_call_pause(call);
 	if (err == 0) call->paused_by_app = TRUE;
 	return err;
@@ -5053,7 +5053,7 @@ int _linphone_call_pause(LinphoneCall *call) {
 	return 0;
 }
 
-int linphone_call_resume(LinphoneCall *call) {
+LinphoneStatus linphone_call_resume(LinphoneCall *call) {
 	LinphoneCore *lc;
 	const char *subject = "Call resuming";
 	char *remote_address;
@@ -5133,32 +5133,12 @@ static void terminate_call(LinphoneCall *call) {
 	linphone_call_set_state(call, LinphoneCallEnd, "Call terminated");
 }
 
-int linphone_call_terminate(LinphoneCall *call) {
-	ms_message("Terminate call [%p] which is currently in state %s", call, linphone_call_state_to_string(call->state));
-	switch (call->state) {
-		case LinphoneCallReleased:
-		case LinphoneCallEnd:
-		case LinphoneCallError:
-			ms_warning("No need to terminate a call [%p] in state [%s]", call, linphone_call_state_to_string(call->state));
-			return -1;
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallIncomingEarlyMedia:
-			return linphone_call_decline(call, LinphoneReasonDeclined);
-		case LinphoneCallOutgoingInit:
-			/* In state OutgoingInit, op has to be destroyed */
-			sal_op_release(call->op);
-			call->op = NULL;
-			break;
-		default:
-			sal_call_terminate(call->op);
-			break;
-	}
-	terminate_call(call);
-	return 0;
+LinphoneStatus linphone_call_terminate(LinphoneCall *call) {
+	return linphone_call_terminate_with_error_info(call, NULL);
 }
 
 	
-int linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneErrorInfo *ei){
+LinphoneStatus linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneErrorInfo *ei){
 	SalErrorInfo sei={0};
 	LinphoneErrorInfo* p_ei = (LinphoneErrorInfo*) ei;
 	
@@ -5196,7 +5176,7 @@ int linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneE
 	
 }
 
-int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
+LinphoneStatus linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	char *real_url = NULL;
 	LinphoneCore *lc;
 	LinphoneAddress *real_parsed_url;
@@ -5227,7 +5207,7 @@ int linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
 	return 0;
 }
 
-int linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
+LinphoneStatus linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
 	if ((call->state != LinphoneCallIncomingReceived) && (call->state != LinphoneCallIncomingEarlyMedia)) {
 		ms_error("Cannot decline a call that is in state %s", linphone_call_state_to_string(call->state));
 		return -1;
@@ -5238,7 +5218,7 @@ int linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
 }
 	
 	
-int linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErrorInfo *ei) {
+LinphoneStatus linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErrorInfo *ei) {
 	SalErrorInfo sei = {0};
 	SalErrorInfo sub_sei = {0};
 	
@@ -5249,16 +5229,16 @@ int linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErr
 		return -1;
 	}
 	linphone_error_info_to_sal(ei, &sei);
-
 	sal_call_decline_with_error_info(call->op, &sei , NULL);
 	terminate_call(call);
 	return 0;
 }
-int linphone_call_accept(LinphoneCall *call) {
+
+LinphoneStatus linphone_call_accept(LinphoneCall *call) {
 	return linphone_call_accept_with_params(call, NULL);
 }
 
-int linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParams *params) {
 	LinphoneCore *lc;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
@@ -5361,11 +5341,11 @@ int linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParam
 	return 0;
 }
 
-int linphone_call_accept_early_media(LinphoneCall* call) {
+LinphoneStatus linphone_call_accept_early_media(LinphoneCall* call) {
 	return linphone_call_accept_early_media_with_params(call, NULL);
 }
 
-int linphone_call_accept_early_media_with_params(LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_call_accept_early_media_with_params(LinphoneCall *call, const LinphoneCallParams *params) {
 	SalMediaDescription* md;
 
 	if (call->state != LinphoneCallIncomingReceived) {
@@ -5392,7 +5372,7 @@ int linphone_call_accept_early_media_with_params(LinphoneCall *call, const Linph
 	return 0;
 }
 
-int linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
 	int err = 0;
 	LinphoneCallState nextstate;
 	LinphoneCallState initial_state = call->state;
@@ -5539,7 +5519,7 @@ int linphone_call_start_update(LinphoneCall *call) {
 	return err;
 }
 
-int linphone_call_defer_update(LinphoneCall *call) {
+LinphoneStatus linphone_call_defer_update(LinphoneCall *call) {
 	if (call->state != LinphoneCallUpdatedByRemote) {
 		ms_error("linphone_call_defer_update() not done in state LinphoneCallUpdatedByRemote");
 		return -1;
@@ -5638,7 +5618,7 @@ int _linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *p
 	return 0;
 }
 
-int linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *params) {
 	if (call->state != LinphoneCallUpdatedByRemote) {
 		ms_error("linphone_call_accept_update(): invalid state %s to call this function.", linphone_call_state_to_string(call->state));
 		return -1;
@@ -5650,7 +5630,7 @@ int linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *pa
 	return _linphone_call_accept_update(call, params, call->prevstate, linphone_call_state_to_string(call->prevstate));
 }
 
-int linphone_call_transfer(LinphoneCall *call, const char *refer_to) {
+LinphoneStatus linphone_call_transfer(LinphoneCall *call, const char *refer_to) {
 	char *real_url = NULL;
 	LinphoneCore *lc = linphone_call_get_core(call);
 	LinphoneAddress *real_parsed_url = linphone_core_interpret_url(lc, refer_to);
@@ -5668,7 +5648,7 @@ int linphone_call_transfer(LinphoneCall *call, const char *refer_to) {
 	return 0;
 }
 
-int linphone_call_transfer_to_another(LinphoneCall *call, LinphoneCall *dest) {
+LinphoneStatus linphone_call_transfer_to_another(LinphoneCall *call, LinphoneCall *dest) {
 	int result = sal_call_refer_with_replaces (call->op, dest->op);
 	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
 	return result;

@@ -80,27 +80,27 @@ LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
 /**
  * Sets the display name.
 **/
-LINPHONE_PUBLIC int linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
+LINPHONE_PUBLIC LinphoneStatus linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
 
 /**
  * Sets the username.
 **/
-LINPHONE_PUBLIC int linphone_address_set_username(LinphoneAddress *uri, const char *username);
+LINPHONE_PUBLIC LinphoneStatus linphone_address_set_username(LinphoneAddress *uri, const char *username);
 
 /**
  * Sets the domain.
 **/
-LINPHONE_PUBLIC int linphone_address_set_domain(LinphoneAddress *uri, const char *host);
+LINPHONE_PUBLIC LinphoneStatus linphone_address_set_domain(LinphoneAddress *uri, const char *host);
 
 /**
  * Sets the port number.
 **/
-LINPHONE_PUBLIC int linphone_address_set_port(LinphoneAddress *uri, int port);
+LINPHONE_PUBLIC LinphoneStatus linphone_address_set_port(LinphoneAddress *uri, int port);
 
 /**
  * Set a transport.
 **/
-LINPHONE_PUBLIC int linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
+LINPHONE_PUBLIC LinphoneStatus linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
 
 /**
  * Removes address's tags and uri headers so that it is displayable to the user.

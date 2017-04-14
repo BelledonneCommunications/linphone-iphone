@@ -37,32 +37,32 @@ extern "C" {
  * @param body optional content to attach with the subscription.
  * @return 0 if successful, -1 otherwise.
 **/
-LINPHONE_PUBLIC int linphone_event_send_subscribe(LinphoneEvent *ev, const LinphoneContent *body);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_send_subscribe(LinphoneEvent *ev, const LinphoneContent *body);
 
 /**
  * Update (refresh) an outgoing subscription, changing the body.
  * @param lev a LinphoneEvent
  * @param body an optional body to include in the subscription update, may be NULL.
 **/
-LINPHONE_PUBLIC int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body);
 
 /**
  * Refresh an outgoing subscription keeping the same body.
  * @param lev LinphoneEvent object.
  * @return 0 if successful, -1 otherwise.
  */
-LINPHONE_PUBLIC int linphone_event_refresh_subscribe(LinphoneEvent *lev);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_refresh_subscribe(LinphoneEvent *lev);
 
 
 /**
  * Accept an incoming subcription.
 **/
-LINPHONE_PUBLIC int linphone_event_accept_subscription(LinphoneEvent *lev);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_accept_subscription(LinphoneEvent *lev);
 
 /**
  * Deny an incoming subscription with given reason.
 **/
-LINPHONE_PUBLIC int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason);
 
 /**
  * Send a notification.
@@ -70,28 +70,28 @@ LINPHONE_PUBLIC int linphone_event_deny_subscription(LinphoneEvent *lev, Linphon
  * @param body an optional body containing the actual notification data.
  * @return 0 if successful, -1 otherwise.
  **/
-LINPHONE_PUBLIC int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body);
 
 /**
  * Send a publish created by linphone_core_create_publish().
  * @param lev the #LinphoneEvent
  * @param body the new data to be published
 **/
-LINPHONE_PUBLIC int linphone_event_send_publish(LinphoneEvent *lev, const LinphoneContent *body);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_send_publish(LinphoneEvent *lev, const LinphoneContent *body);
 
 /**
  * Update (refresh) a publish.
  * @param lev the #LinphoneEvent
  * @param body the new data to be published
 **/
-LINPHONE_PUBLIC int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body);
 
 /**
  * Refresh an outgoing publish keeping the same body.
  * @param lev LinphoneEvent object.
  * @return 0 if successful, -1 otherwise.
  */
-LINPHONE_PUBLIC int linphone_event_refresh_publish(LinphoneEvent *lev);
+LINPHONE_PUBLIC LinphoneStatus linphone_event_refresh_publish(LinphoneEvent *lev);
 
 /**
  * Prevent an event from refreshing its publish.

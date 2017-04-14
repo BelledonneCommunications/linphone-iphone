@@ -1190,7 +1190,7 @@ static void sound_config_read(LinphoneCore *lc)
 	}
 
 	lc->sound_conf.latency=0;
-#if TARGET_OS_IPHONE
+#if !TARGET_OS_IPHONE
 	tmp=TRUE;
 #else
 	tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
@@ -2284,7 +2284,7 @@ const bctbx_list_t *linphone_core_get_text_codecs(const LinphoneCore *lc) {
 	return lc->codecs_conf.text_codecs;
 }
 
-int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact) {
+LinphoneStatus linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact) {
 	LinphoneAddress *ctt;
 
 	if( lc->sip_conf.contact != NULL && strcmp(lc->sip_conf.contact, contact) == 0){
@@ -2411,7 +2411,7 @@ LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc){
 	return linphone_address_new(linphone_core_get_primary_contact(lc));
 }
 
-int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_t *codecs){
+LinphoneStatus linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_t *codecs){
 	if (lc->codecs_conf.audio_codecs!=NULL) bctbx_list_free(lc->codecs_conf.audio_codecs);
 	lc->codecs_conf.audio_codecs=codecs;
 	_linphone_core_codec_config_write(lc);
@@ -2419,14 +2419,14 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, bctbx_list_t *codecs){
 	return 0;
 }
 
-int linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_t *codecs){
+LinphoneStatus linphone_core_set_video_codecs(LinphoneCore *lc, bctbx_list_t *codecs){
 	if (lc->codecs_conf.video_codecs!=NULL) bctbx_list_free(lc->codecs_conf.video_codecs);
 	lc->codecs_conf.video_codecs=codecs;
 	_linphone_core_codec_config_write(lc);
 	return 0;
 }
 
-int linphone_core_set_text_codecs(LinphoneCore *lc, bctbx_list_t *codecs) {
+LinphoneStatus linphone_core_set_text_codecs(LinphoneCore *lc, bctbx_list_t *codecs) {
 	if (lc->codecs_conf.text_codecs != NULL)
 		bctbx_list_free(lc->codecs_conf.text_codecs);
 
@@ -2764,7 +2764,7 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 	return sal_transport_available(lc->sal,(SalTransport)tp);
 }
 
-int linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports * tr_config /*config to be saved*/){
+LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports * tr_config /*config to be saved*/){
 	LinphoneSipTransports tr=*tr_config;
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
@@ -2798,7 +2798,7 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTranspor
 	return _linphone_core_apply_transports(lc);
 }
 
-int linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneSipTransports *tr){
+LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneSipTransports *tr){
 	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
 	return 0;
 }
@@ -3462,7 +3462,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	return call;
 }
 
-int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *url) {
+LinphoneStatus linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *url) {
 	if (call == NULL) {
 		ms_warning("No established call to refer.");
 		return -1;
@@ -3470,7 +3470,7 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
 	return linphone_call_transfer(call, url);
 }
 
-int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest) {
+LinphoneStatus linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest) {
 	return linphone_call_transfer_to_another(call, dest);
 }
 
@@ -3544,23 +3544,23 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	ms_free(tmp);
 }
 
-int linphone_core_accept_early_media_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_core_accept_early_media_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
 	return linphone_call_accept_early_media_with_params(call, params);
 }
 
-int linphone_core_accept_early_media(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_accept_early_media(LinphoneCore *lc, LinphoneCall *call) {
 	return linphone_call_accept_early_media(call);
 }
 
-int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
 	return linphone_call_update(call, params);
 }
 
-int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call) {
 	return linphone_call_defer_update(call);
 }
 
-int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
 	return linphone_call_accept_update(call, params);
 }
 
@@ -3572,11 +3572,11 @@ static LinphoneCall * get_unique_call(LinphoneCore *lc) {
 	return call;
 }
 
-int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call) {
 	return linphone_call_accept_with_params(call, NULL);
 }
 
-int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
 	if (call == NULL) {
 		call = get_unique_call(lc);
 		if (call == NULL) {
@@ -3587,11 +3587,11 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	return linphone_call_accept_with_params(call, params);
 }
 
-int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri) {
+LinphoneStatus linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri) {
 	return linphone_call_redirect(call, redirect_uri);
 }
 
-int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call) {
 	if (call == NULL) {
 		call = get_unique_call(lc);
 		if (call == NULL) {
@@ -3602,7 +3602,7 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call) {
 	return linphone_call_terminate(call);
 }
 
-int linphone_core_terminate_all_calls(LinphoneCore *lc){
+LinphoneStatus linphone_core_terminate_all_calls(LinphoneCore *lc) {
 	bctbx_list_t *calls=lc->calls;
 	while(calls) {
 		LinphoneCall *c=(LinphoneCall*)calls->data;
@@ -3612,7 +3612,7 @@ int linphone_core_terminate_all_calls(LinphoneCore *lc){
 	return 0;
 }
 
-int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall *call, LinphoneReason reason) {
+LinphoneStatus linphone_core_decline_call(LinphoneCore *lc, LinphoneCall *call, LinphoneReason reason) {
 	return linphone_call_decline(call, reason);
 }
 
@@ -3628,11 +3628,11 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc){
 	return lc->current_call;
 }
 
-int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call) {
 	return linphone_call_pause(call);
 }
 
-int linphone_core_pause_all_calls(LinphoneCore *lc){
+LinphoneStatus linphone_core_pause_all_calls(LinphoneCore *lc){
 	const bctbx_list_t *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall *)elem->data;
@@ -3664,7 +3664,7 @@ int linphone_core_preempt_sound_resources(LinphoneCore *lc){
 	return err;
 }
 
-int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call) {
 	return linphone_call_resume(call);
 }
 
@@ -4023,7 +4023,7 @@ bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *dev
 	return ms_snd_card_manager_get_playback_card(ms_factory_get_snd_card_manager(lc->factory),devid) != NULL;
 }
 
-int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
+LinphoneStatus linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK, lc->factory);
 	lc->sound_conf.ring_sndcard=card;
 	if (card && linphone_core_ready(lc))
@@ -4031,7 +4031,7 @@ int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid){
 	return 0;
 }
 
-int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
+LinphoneStatus linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_PLAYBACK, lc->factory);
 	lc->sound_conf.play_sndcard=card;
 	if (card &&  linphone_core_ready(lc))
@@ -4039,7 +4039,7 @@ int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid){
 	return 0;
 }
 
-int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
+LinphoneStatus linphone_core_set_capture_device(LinphoneCore *lc, const char * devid){
 	MSSndCard *card=get_card_from_string_id(devid,MS_SND_CARD_CAP_CAPTURE, lc->factory);
 	lc->sound_conf.capt_sndcard=card;
 	if (card &&  linphone_core_ready(lc))
@@ -4207,7 +4207,7 @@ static void notify_end_of_ringtone( LinphoneRingtonePlayer* rp, void* user_data,
 	lc->preview_finished=1;
 }
 
-int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc end_of_ringtone,void * userdata)
+LinphoneStatus linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc end_of_ringtone,void * userdata)
 {
 	int err;
 	MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
@@ -4595,8 +4595,8 @@ void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl) {
 		linphone_core_delete_call_log(lc, cl);
 	}
 #endif
+	lc->call_logs = bctbx_list_remove(lc->call_logs, cl);
 	if (!call_logs_sqlite_db_found) {
-		lc->call_logs = bctbx_list_remove(lc->call_logs, cl);
 		call_logs_write_to_config_file(lc);
 		linphone_call_log_unref(cl);
 	}
@@ -4675,7 +4675,7 @@ static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id,
 }
 #endif
 
-int linphone_core_take_preview_snapshot(LinphoneCore *lc, const char *file) {
+LinphoneStatus linphone_core_take_preview_snapshot(LinphoneCore *lc, const char *file) {
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
 	if (!file) return -1;
@@ -4848,7 +4848,7 @@ bool_t linphone_core_self_view_enabled(const LinphoneCore *lc){
 	return lc->video_conf.selfview;
 }
 
-int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
+LinphoneStatus linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	MSWebCam *olddev=lc->video_conf.device;
 	const char *vd;
 	if (id!=NULL){
@@ -4893,7 +4893,7 @@ static VideoStream * get_active_video_stream(LinphoneCore *lc){
 }
 #endif
 
-int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
+LinphoneStatus linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
 #ifdef VIDEO_ENABLED
 	VideoStream *vs=get_active_video_stream(lc);
 	/* If we have a video stream (either preview, either from call), we
@@ -4924,7 +4924,7 @@ const char *linphone_core_get_static_picture(LinphoneCore *lc) {
 	return path;
 }
 
-int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps) {
+LinphoneStatus linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps) {
 #ifdef VIDEO_ENABLED
 	VideoStream *vs = NULL;
 
@@ -5361,7 +5361,7 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
 }
 
-int linphone_core_play_local(LinphoneCore *lc, const char *audiofile){
+LinphoneStatus linphone_core_play_local(LinphoneCore *lc, const char *audiofile){
 	MSFilter *f=get_audio_resource(lc,LinphoneLocalPlayer);
 	int loopms=-1;
 	if (!f) return -1;
@@ -6583,7 +6583,7 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 	return FALSE;
 }
 
-int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption menc) {
+LinphoneStatus linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption menc) {
 	const char *type="none";
 	int ret=-1;
 
@@ -6772,7 +6772,7 @@ void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval){
 	lp_config_set_int(lc->config,"rtp","avpf_rr_interval",interval);
 }
 
-int linphone_core_set_audio_multicast_addr(LinphoneCore *lc, const char* ip) {
+LinphoneStatus linphone_core_set_audio_multicast_addr(LinphoneCore *lc, const char* ip) {
 	char* new_value;
 	if (ip && !ms_is_multicast(ip)) {
 		ms_error("Cannot set multicast audio addr to core [%p] because [%s] is not multicast",lc,ip);
@@ -6784,7 +6784,7 @@ int linphone_core_set_audio_multicast_addr(LinphoneCore *lc, const char* ip) {
 	return 0;
 }
 
-int linphone_core_set_video_multicast_addr(LinphoneCore *lc, const char* ip) {
+LinphoneStatus linphone_core_set_video_multicast_addr(LinphoneCore *lc, const char* ip) {
 	char* new_value;
 	if (ip && !ms_is_multicast(ip)) {
 		ms_error("Cannot set multicast video addr to core [%p] because [%s] is not multicast",lc,ip);
@@ -6804,7 +6804,7 @@ const char* linphone_core_get_video_multicast_addr(const LinphoneCore *lc){
 	return lc->rtp_conf.video_multicast_addr;
 }
 
-int linphone_core_set_audio_multicast_ttl(LinphoneCore *lc, int ttl) {
+LinphoneStatus linphone_core_set_audio_multicast_ttl(LinphoneCore *lc, int ttl) {
 	if (ttl>255) {
 		ms_error("Cannot set multicast audio ttl to core [%p] to [%i] value must be <256",lc,ttl);
 		return -1;
@@ -6814,7 +6814,7 @@ int linphone_core_set_audio_multicast_ttl(LinphoneCore *lc, int ttl) {
 	return 0;
 }
 
-int linphone_core_set_video_multicast_ttl(LinphoneCore *lc, int ttl) {
+LinphoneStatus linphone_core_set_video_multicast_ttl(LinphoneCore *lc, int ttl) {
 	if (ttl>255) {
 		ms_error("Cannot set multicast video ttl to core [%p] to [%i] value must be <256",lc,ttl);
 		return -1;
@@ -6987,7 +6987,7 @@ LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc
 	return lc->conf_ctx;
 }
 
-int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 	LinphoneConference *conference = linphone_core_get_conference(lc);
 	if(conference == NULL) {
 		LinphoneConferenceParams *params = linphone_conference_params_new(lc);
@@ -6998,7 +6998,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 	else return -1;
 }
 
-int linphone_core_add_all_to_conference(LinphoneCore *lc) {
+LinphoneStatus linphone_core_add_all_to_conference(LinphoneCore *lc) {
 	bctbx_list_t *calls=lc->calls;
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
@@ -7013,7 +7013,7 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 	return 0;
 }
 
-int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneStatus linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call) {
 	if(lc->conf_ctx) return linphone_conference_remove_participant_with_call(lc->conf_ctx, call);
 	else return -1;
 }
@@ -7028,12 +7028,12 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
 	return 0;
 }
 
-int linphone_core_enter_conference(LinphoneCore *lc) {
+LinphoneStatus linphone_core_enter_conference(LinphoneCore *lc) {
 	if(lc->conf_ctx) return linphone_conference_enter(lc->conf_ctx);
 	else return -1;
 }
 
-int linphone_core_leave_conference(LinphoneCore *lc) {
+LinphoneStatus linphone_core_leave_conference(LinphoneCore *lc) {
 	if(lc->conf_ctx) return linphone_conference_leave(lc->conf_ctx);
 	else return -1;
 }
@@ -7053,12 +7053,12 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc) {
 	else return -1.0;
 }
 
-int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path) {
+LinphoneStatus linphone_core_start_conference_recording(LinphoneCore *lc, const char *path) {
 	if(lc->conf_ctx) return linphone_conference_start_recording(lc->conf_ctx, path);
 	return -1;
 }
 
-int linphone_core_stop_conference_recording(LinphoneCore *lc) {
+LinphoneStatus linphone_core_stop_conference_recording(LinphoneCore *lc) {
 	if(lc->conf_ctx) return linphone_conference_stop_recording(lc->conf_ctx);
 	return -1;
 }

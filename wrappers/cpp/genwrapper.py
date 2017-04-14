@@ -405,6 +405,8 @@ class CppTranslator(object):
 				res = 'double'
 			else:
 				res = 'float'
+		elif _type.name == 'status':
+			res = 'linphone::Status'
 		elif _type.name == 'string':
 			res = 'std::string'
 			if type(_type.parent) is AbsApi.Argument:

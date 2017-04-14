@@ -101,7 +101,7 @@ LINPHONE_PUBLIC char * linphone_presence_model_get_contact(const LinphonePresenc
  * @param[in] contact The contact string to set.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_set_contact(LinphonePresenceModel *model, const char *contact);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_set_contact(LinphonePresenceModel *model, const char *contact);
 
 /**
  * Sets the presentity of a presence model.
@@ -109,7 +109,7 @@ LINPHONE_PUBLIC int linphone_presence_model_set_contact(LinphonePresenceModel *m
  * @param[in] presentity The presentity address to set (presentity is copied).
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_set_presentity(LinphonePresenceModel *model, const LinphoneAddress *presentity);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_set_presentity(LinphonePresenceModel *model, const LinphoneAddress *presentity);
 
 /**
  * Gets the presentity of a presence model.
@@ -137,7 +137,7 @@ LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_activity(
  * If you don't want the basic status to be modified automatically, you can use the combination of linphone_presence_model_set_basic_status(),
  * linphone_presence_model_clear_activities() and linphone_presence_model_add_activity().
  */
-LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType activity, const char *description);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType activity, const char *description);
 
 /**
  * Gets the number of activities included in the presence model.
@@ -160,14 +160,14 @@ LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_nth_activ
  * @param[in] activity The #LinphonePresenceActivity object to add to the model.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivity *activity);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivity *activity);
 
 /**
  * Clears the activities of a presence model.
  * @param[in] model The #LinphonePresenceModel object for which to clear the activities.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_clear_activities(LinphonePresenceModel *model);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_clear_activities(LinphonePresenceModel *model);
 
 /**
  * Gets the first note of a presence model (there is usually only one).
@@ -186,14 +186,14 @@ LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_model_get_note(const Li
  *
  * Only one note for each language can be set, so e.g. setting a note for the 'fr' language if there is only one will replace the existing one.
  */
-LINPHONE_PUBLIC int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *note_content, const char *lang);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_add_note(LinphonePresenceModel *model, const char *note_content, const char *lang);
 
 /**
  * Clears all the notes of a presence model.
  * @param[in] model The #LinphonePresenceModel for which to clear notes.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_clear_notes(LinphonePresenceModel *model);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_clear_notes(LinphonePresenceModel *model);
 
 /**
  * Get the consolidated presence from a presence model.
@@ -238,14 +238,14 @@ LINPHONE_PUBLIC LinphonePresenceService * linphone_presence_model_get_nth_servic
  * @param[in] service The #LinphonePresenceService object to add to the model.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_add_service(LinphonePresenceModel *model, LinphonePresenceService *service);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_add_service(LinphonePresenceModel *model, LinphonePresenceService *service);
 
 /**
  * Clears the services of a presence model.
  * @param[in] model The #LinphonePresenceModel object for which to clear the services.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_clear_services(LinphonePresenceModel *model);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_clear_services(LinphonePresenceModel *model);
 
 /**
  * Gets the number of persons included in the presence model.
@@ -268,14 +268,14 @@ LINPHONE_PUBLIC LinphonePresencePerson * linphone_presence_model_get_nth_person(
  * @param[in] person The #LinphonePresencePerson object to add to the model.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_add_person(LinphonePresenceModel *model, LinphonePresencePerson *person);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_add_person(LinphonePresenceModel *model, LinphonePresencePerson *person);
 
 /**
  * Clears the persons of a presence model.
  * @param[in] model The #LinphonePresenceModel object for which to clear the persons.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_clear_persons(LinphonePresenceModel *model);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_clear_persons(LinphonePresenceModel *model);
 
 /**
  * Tells whether a presence model is considered online.
@@ -327,7 +327,7 @@ LINPHONE_PUBLIC char * linphone_presence_service_get_id(const LinphonePresenceSe
  * @param[in] id The id string to set. Can be NULL to generate it automatically.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_service_set_id(LinphonePresenceService *service, const char *id);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_service_set_id(LinphonePresenceService *service, const char *id);
 
 /**
  * Gets the basic status of a presence service.
@@ -342,7 +342,7 @@ LINPHONE_PUBLIC LinphonePresenceBasicStatus linphone_presence_service_get_basic_
  * @param[in] basic_status The #LinphonePresenceBasicStatus to set for the #LinphonePresenceService object.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_service_set_basic_status(LinphonePresenceService *service, LinphonePresenceBasicStatus basic_status);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_service_set_basic_status(LinphonePresenceService *service, LinphonePresenceBasicStatus basic_status);
 
 /**
  * Gets the contact of a presence service.
@@ -359,7 +359,7 @@ LINPHONE_PUBLIC char * linphone_presence_service_get_contact(const LinphonePrese
  * @param[in] contact The contact string to set.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_service_set_contact(LinphonePresenceService *service, const char *contact);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_service_set_contact(LinphonePresenceService *service, const char *contact);
 
 /**
  * Gets the number of notes included in the presence service.
@@ -382,14 +382,14 @@ LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_service_get_nth_note(co
  * @param[in] note The #LinphonePresenceNote object to add to the service.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_service_add_note(LinphonePresenceService *service, LinphonePresenceNote *note);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_service_add_note(LinphonePresenceService *service, LinphonePresenceNote *note);
 
 /**
  * Clears the notes of a presence service.
  * @param[in] service The #LinphonePresenceService object for which to clear the notes.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_service_clear_notes(LinphonePresenceService *service);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_service_clear_notes(LinphonePresenceService *service);
 
 
 /*****************************************************************************
@@ -418,7 +418,7 @@ LINPHONE_PUBLIC char * linphone_presence_person_get_id(const LinphonePresencePer
  * @param[in] id The id string to set. Can be NULL to generate it automatically.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_set_id(LinphonePresencePerson *person, const char *id);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_person_set_id(LinphonePresencePerson *person, const char *id);
 
 /**
  * Gets the number of activities included in the presence person.
@@ -441,14 +441,14 @@ LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_person_get_nth_acti
  * @param[in] activity The #LinphonePresenceActivity object to add to the person.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_add_activity(LinphonePresencePerson *person, LinphonePresenceActivity *activity);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_person_add_activity(LinphonePresencePerson *person, LinphonePresenceActivity *activity);
 
 /**
  * Clears the activities of a presence person.
  * @param[in] person The #LinphonePresencePerson object for which to clear the activities.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_clear_activities(LinphonePresencePerson *person);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_person_clear_activities(LinphonePresencePerson *person);
 
 /**
  * Gets the number of notes included in the presence person.
@@ -471,14 +471,14 @@ LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_person_get_nth_note(con
  * @param[in] note The #LinphonePresenceNote object to add to the person.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_add_note(LinphonePresencePerson *person, LinphonePresenceNote *note);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_person_add_note(LinphonePresencePerson *person, LinphonePresenceNote *note);
 
 /**
  * Clears the notes of a presence person.
  * @param[in] person The #LinphonePresencePerson object for which to clear the notes.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_clear_notes(LinphonePresencePerson *person);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_person_clear_notes(LinphonePresencePerson *person);
 
 /**
  * Gets the number of activities notes included in the presence person.
@@ -501,14 +501,14 @@ LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_person_get_nth_activiti
  * @param[in] note The #LinphonePresenceNote object to add to the person.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note);
 
 /**
  * Clears the activities notes of a presence person.
  * @param[in] person The #LinphonePresencePerson object for which to clear the activities notes.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_clear_activities_notes(LinphonePresencePerson *person);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_person_clear_activities_notes(LinphonePresencePerson *person);
 
 
 /*****************************************************************************
@@ -545,7 +545,7 @@ LINPHONE_PUBLIC LinphonePresenceActivityType linphone_presence_activity_get_type
  * @param[in] acttype The activity type to set for the activity.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_activity_set_type(LinphonePresenceActivity *activity, LinphonePresenceActivityType acttype);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_activity_set_type(LinphonePresenceActivity *activity, LinphonePresenceActivityType acttype);
 
 /**
  * Gets the description of a presence activity.
@@ -560,7 +560,7 @@ LINPHONE_PUBLIC const char * linphone_presence_activity_get_description(const Li
  * @param[in] description An additional description of the activity. Can be NULL if no additional description is to be added.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_activity_set_description(LinphonePresenceActivity *activity, const char *description);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_activity_set_description(LinphonePresenceActivity *activity, const char *description);
 
 
 /*****************************************************************************
@@ -588,7 +588,7 @@ LINPHONE_PUBLIC const char * linphone_presence_note_get_content(const LinphonePr
  * @param[in] content The content of the note.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_note_set_content(LinphonePresenceNote *note, const char *content);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_note_set_content(LinphonePresenceNote *note, const char *content);
 
 /**
  * Gets the language of a presence note.
@@ -603,7 +603,7 @@ LINPHONE_PUBLIC const char * linphone_presence_note_get_lang(const LinphonePrese
  * @param[in] lang The language of the note.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_note_set_lang(LinphonePresenceNote *note, const char *lang);
+LINPHONE_PUBLIC LinphoneStatus linphone_presence_note_set_lang(LinphonePresenceNote *note, const char *lang);
 
 
 /*****************************************************************************

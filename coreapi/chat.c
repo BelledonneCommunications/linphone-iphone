@@ -1384,7 +1384,7 @@ uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
 	return 0;
 }
 
-int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character) {
+LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character) {
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
 	LinphoneCall *call = cr->call;
 	LinphoneCore *lc = cr->lc;

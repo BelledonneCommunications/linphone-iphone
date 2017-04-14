@@ -72,13 +72,13 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cf
  * - IP address with port: sip:87.98.157.38:5062
  * - hostnames : sip:sip.example.net
 **/
-LINPHONE_PUBLIC int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *server_addr);
+LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *server_addr);
 
 /**
  * @deprecated Use linphone_proxy_config_set_identity_address()
  * @donotwrap
 **/
-LINPHONE_PUBLIC	LINPHONE_DEPRECATED int linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *identity);
+LINPHONE_PUBLIC	LINPHONE_DEPRECATED LinphoneStatus linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *identity);
 
 /**
  * Sets the user identity as a SIP address.
@@ -89,7 +89,7 @@ LINPHONE_PUBLIC	LINPHONE_DEPRECATED int linphone_proxy_config_set_identity(Linph
  * The REGISTER messages will have from and to set to this identity.
  *
 **/
-LINPHONE_PUBLIC int linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const LinphoneAddress *identity);
+LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const LinphoneAddress *identity);
 
 /**
  * Sets a SIP route.
@@ -97,7 +97,7 @@ LINPHONE_PUBLIC int linphone_proxy_config_set_identity_address(LinphoneProxyConf
  * is the default one (see linphone_core_set_default_proxy() ).
  * @return -1 if route is invalid, 0 otherwise.
 **/
-LINPHONE_PUBLIC int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route);
+LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route);
 
 /**
  * Sets the registration expiration time in seconds.
@@ -130,7 +130,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_edit(LinphoneProxyConfig *cfg);
 /**
  * Commits modification made to the proxy configuration.
 **/
-LINPHONE_PUBLIC int linphone_proxy_config_done(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg);
 
 /**
  * Indicates  either or not, PUBLISH must be issued for this #LinphoneProxyConfig .

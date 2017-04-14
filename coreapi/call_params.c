@@ -150,7 +150,7 @@ void linphone_call_params_enable_audio(LinphoneCallParams *cp, bool_t enabled){
 		cp->audio_dir=LinphoneMediaDirectionSendRecv;
 }
 
-int linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno) {
+LinphoneStatus linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno) {
 	params->realtimetext_enabled=yesno;
 	return 0;
 }
