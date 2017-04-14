@@ -596,6 +596,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark - ActionSheet Functions
 
 - (void)displayAskToEnableVideoCall:(LinphoneCall *)call {
+	if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call))) {
+		return;
+	}
 	if (linphone_core_get_video_policy(LC)->automatically_accept &&
 		!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground))
 		return;
