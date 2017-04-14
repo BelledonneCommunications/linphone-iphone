@@ -2003,8 +2003,9 @@ LINPHONE_PUBLIC void linphone_core_abort_authentication(LinphoneCore *lc, Linpho
 
 /**
  * Clear all authentication information.
-**/
-LINPHONE_PUBLIC	void linphone_core_clear_all_auth_info(LinphoneCore *lc);
+ * @ingroup authentication
+ **/
+LINPHONE_PUBLIC void linphone_core_clear_all_auth_info(LinphoneCore *lc);
 
 /**
  * Sets an default account creator service in the core
