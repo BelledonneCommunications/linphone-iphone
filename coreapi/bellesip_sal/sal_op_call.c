@@ -526,7 +526,7 @@ static SalReason process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	}
 
 	if (reason != SalReasonNone){
-		sal_error_info_init_to_null(&sei);
+		sal_error_info_reset(&sei);
 		sal_error_info_set(&sei, reason,"SIP", 0, NULL, NULL);
 		sal_call_decline_with_error_info(op, &sei,NULL);
 
@@ -1092,10 +1092,9 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 
 
 int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
-	SalErrorInfo sei;
+	SalErrorInfo sei = { 0 };
 	const SalErrorInfo *p_sei;
 	if (info == NULL){
-		sal_error_info_init_to_null(&sei);
 		sal_error_info_set(&sei,SalReasonDeclined, "SIP", 0, NULL, NULL);
 		p_sei = &sei;
 	} else{

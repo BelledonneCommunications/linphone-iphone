@@ -188,6 +188,11 @@ abstract public class LinphoneCoreFactory {
 	 * Create LinphoneAccountCreator object
 	 */
 	abstract public LinphoneAccountCreator createAccountCreator(LinphoneCore lc, String url);
+	
+	/**
+	 * Create ErrorInfo object
+	 */
+	abstract public ErrorInfo createErrorInfo();
 
 	/**
 	 * Array of countries list

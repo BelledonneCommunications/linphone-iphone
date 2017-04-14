@@ -255,4 +255,10 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public DialPlan[] getAllDialPlan(){
 		return getAllDialPlanNative();
 	}
+	
+	private native long createErrorInfoNative();
+	@Override
+	public ErrorInfo createErrorInfo(){
+		return new ErrorInfoImpl(createErrorInfoNative(), true);
+	}
 }

@@ -1221,7 +1221,7 @@ static void call_declined_with_error(void) {
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
 
 		rcvd_ei = linphone_call_get_error_info(out_call);
-		sub_rcvd_ei = linphone_error_info_get_sub(rcvd_ei);
+		sub_rcvd_ei = linphone_error_info_get_sub_error_info(rcvd_ei);
 	
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rcvd_ei), "Decline");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rcvd_ei), "SIP");
@@ -1745,7 +1745,7 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 	result = wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1, 2000)
 	&&
 	wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1, 2000);
-	
+	BC_ASSERT_TRUE(result);
 
 
 	caller_params = linphone_core_create_call_params(caller_mgr->lc, call_caller);
@@ -1869,6 +1869,8 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 	result = wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1, 2000)
 	&&
 	wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1, 2000);
+	
+	BC_ASSERT_TRUE(result);
 	
 	caller_remote_params = linphone_call_get_remote_params(call_caller);
 	value = linphone_call_params_get_custom_sdp_attribute(caller_remote_params, "working");

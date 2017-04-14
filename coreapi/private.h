@@ -1296,6 +1296,7 @@ LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
 SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
+void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
 void linphone_event_unpublish(LinphoneEvent *lev);

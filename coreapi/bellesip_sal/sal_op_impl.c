@@ -567,16 +567,6 @@ const SalErrorInfo *sal_error_info_none(void){
 	return &none;
 }
 
-void sal_error_info_init_to_null(SalErrorInfo *sei){
-	sei->status_string = NULL;
-	sei->full_string = NULL;
-	sei->protocol = NULL;
-	sei->sub_sei = NULL;
-	sei->warnings = NULL;
-	sei->protocol_code=0;
-	sei->reason=SalReasonNone;
-}
-
 void sal_error_info_reset(SalErrorInfo *ei){
 	if (ei->status_string){
 		ms_free(ei->status_string);
@@ -601,6 +591,7 @@ void sal_error_info_reset(SalErrorInfo *ei){
 	}
 	ei->protocol_code=0;
 	ei->reason=SalReasonNone;
+	ei->sub_sei = NULL;
 }
 
 void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol, int code, const char *status_string, const char *warning){

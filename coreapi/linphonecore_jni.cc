@@ -216,6 +216,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setLogCollectionP
 	ReleaseStringUTFChars(env, jpath, path);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCoreFactoryImpl_createErrorInfoNative(JNIEnv*  env, jobject  thiz){
+	return (jlong)linphone_factory_create_error_info(linphone_factory_get());
+}
+
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreFactoryImpl_getAllDialPlanNative(JNIEnv *env, jobject thiz) {
 	LinphoneDialPlan *countries;
 	jclass addr_class = env->FindClass("org/linphone/core/DialPlanImpl");
@@ -3689,6 +3693,18 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_mediaInProgress(	JNI
                                                                             ,jobject  thiz
                                                                             ,jlong ptr) {
 	return (jboolean) linphone_call_media_in_progress((LinphoneCall*)ptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_declineWithErrorInfo(	JNIEnv*  env
+                                                                            ,jobject  thiz
+                                                                            ,jlong callptr, jlong eiptr) {
+	linphone_call_decline_with_error_info((LinphoneCall*)callptr, (LinphoneErrorInfo*)eiptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_terminateWithErrorInfo(	JNIEnv*  env
+                                                                            ,jobject  thiz
+                                                                            ,jlong callptr, jlong eiptr) {
+	linphone_call_terminate_with_error_info((LinphoneCall*)callptr, (LinphoneErrorInfo*)eiptr);
 }
 
 //LinphoneFriend
@@ -7315,6 +7331,86 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_ErrorInfoImpl_getProtocolCode(JNIE
 JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getPhrase(JNIEnv *env, jobject jobj, jlong ei){
 	const char *tmp=linphone_error_info_get_phrase((const LinphoneErrorInfo*)ei);
 	return tmp ? env->NewStringUTF(tmp) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getProtocol
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getProtocol(JNIEnv *env, jobject jobj, jlong ei){
+	const char *tmp=linphone_error_info_get_protocol((const LinphoneErrorInfo*)ei);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getSubErrorInfo
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_linphone_core_ErrorInfoImpl_getSubErrorInfo(JNIEnv *env, jobject jobj, jlong ei){
+	return (jlong)linphone_error_info_get_sub_error_info((LinphoneErrorInfo*)ei);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    setReason
+ * Signature: (JI)
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_setReason(JNIEnv *env, jobject jobj, jlong ei, jint reason){
+	linphone_error_info_set_reason((LinphoneErrorInfo*)ei, (LinphoneReason)reason);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getProtocolCode
+ * Signature: (JI)
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_setProtocolCode(JNIEnv *env, jobject jobj, jlong ei, jint code){
+	return linphone_error_info_set_protocol_code((LinphoneErrorInfo*)ei, code);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    setPhrase
+ * Signature: (JLjava/lang/String;)
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_setPhrase(JNIEnv *env, jobject jobj, jlong ei, jstring phrase){
+	const char *tmp = GetStringUTFChars(env,phrase);
+	linphone_error_info_set_phrase((LinphoneErrorInfo*)ei, tmp);
+	if (phrase) ReleaseStringUTFChars(env, phrase, tmp);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    setProtocol
+ * Signature: (JLjava/lang/String;)
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_setProtocol(JNIEnv *env, jobject jobj, jlong ei, jstring protocol){
+	const char *tmp = GetStringUTFChars(env, protocol);
+	linphone_error_info_set_protocol((LinphoneErrorInfo*)ei, tmp);
+	if (protocol) ReleaseStringUTFChars(env, protocol, tmp);
+}
+
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    setWarnings
+ * Signature: (JLjava/lang/String;)
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_setWarnings(JNIEnv *env, jobject jobj, jlong ei, jstring warnings){
+	const char *tmp = GetStringUTFChars(env, warnings);
+	linphone_error_info_set_warnings((LinphoneErrorInfo*)ei, tmp);
+	if (warnings) ReleaseStringUTFChars(env, warnings, tmp);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    setSubErrorInfo
+ * Signature: (JLjava/lang/String;)
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_setSubErrorInfo(JNIEnv *env, jobject jobj, jlong ei, jlong sub_ei){
+	linphone_error_info_set_sub_error_info((LinphoneErrorInfo*)ei, (LinphoneErrorInfo*)sub_ei);
 }
 
 /*

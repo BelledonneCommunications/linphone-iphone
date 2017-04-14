@@ -59,9 +59,6 @@ void linphone_error_info_unref ( LinphoneErrorInfo* ei ) {
 	belle_sip_object_unref(ei);
 }
 
-void linphone_error_info_set_reason ( LinphoneErrorInfo* ei, LinphoneReason reason ) {
-	ei->reason = reason;
-}
 
 const char *linphone_reason_to_string(LinphoneReason err){
 	switch(err) {
@@ -215,29 +212,30 @@ void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op){
 	}
 }
 
-LinphoneErrorInfo* linphone_error_info_get_sub(const LinphoneErrorInfo *ei){
-		
-	return ei->sub_ei;
+void linphone_error_info_fields_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
+	sei->reason = linphone_reason_to_sal(linphone_error_info_get_reason(ei));
+	sei->status_string = bctbx_strdup(ei->phrase);
+	sei->full_string = bctbx_strdup(ei->full_string);
+	sei->warnings = bctbx_strdup(ei->warnings);
+	sei->protocol_code = ei->protocol_code;
+	sei->protocol = bctbx_strdup(ei->protocol);
 }
-
-void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei){
-	if (appended_ei != NULL){
-		ei->sub_ei = linphone_error_info_ref(appended_ei);
+	
+void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
+	
+	linphone_error_info_fields_to_sal(ei, sei);
+	if (ei->sub_ei !=NULL) {
+		
+		linphone_error_info_to_sal(ei->sub_ei, sei->sub_sei);
 	}
 }
+
 
 void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning){
 	linphone_error_info_reset(ei);
 	ei->reason = reason;
 	ei->protocol_code = code;
-	if (protocol != NULL){
-		ei->protocol = bctbx_strdup(protocol);
-	}
-	else{
-		const char* prot = "SIP";
-		ei->protocol = bctbx_strdup(prot);
-	}
-
+	ei->protocol = bctbx_strdup(protocol ?  protocol : "SIP");
 	ei->phrase = bctbx_strdup(status_string);
 	ei->warnings = bctbx_strdup(warning);
 }
@@ -268,6 +266,36 @@ int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei) {
 	return ei->protocol_code;
 }
 
-const LinphoneErrorInfo * linphone_error_info_get_sub_error_info(const LinphoneErrorInfo *ei){
+LinphoneErrorInfo * linphone_error_info_get_sub_error_info(const LinphoneErrorInfo *ei){
 	return ei->sub_ei;
+}
+
+void linphone_error_info_set_reason(LinphoneErrorInfo *ei, LinphoneReason reason){
+	ei->reason = reason;
+}
+
+void linphone_error_info_set_protocol(LinphoneErrorInfo *ei, const char *proto){
+	STRING_SET(ei->protocol, proto);
+}
+
+void linphone_error_info_set_protocol_code(LinphoneErrorInfo *ei, int code){
+	ei->protocol_code = code;
+}
+
+void linphone_error_info_set_phrase(LinphoneErrorInfo *ei, const char *phrase){
+	STRING_SET(ei->phrase, phrase);
+}
+
+void linphone_error_info_set_warnings(LinphoneErrorInfo *ei, const char *warnings){
+	STRING_SET(ei->warnings, warnings);
+}
+
+void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei){
+	if (appended_ei != NULL){
+		linphone_error_info_ref(appended_ei);
+	}
+	if (ei->sub_ei){
+		linphone_error_info_unref(ei->sub_ei);
+	}
+	ei->sub_ei = appended_ei;
 }

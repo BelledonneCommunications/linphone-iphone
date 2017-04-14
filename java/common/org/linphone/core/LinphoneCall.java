@@ -391,13 +391,13 @@ public interface LinphoneCall {
 	 * Call player enable to stream a media file through a call
 	 * @return A player
 	 */
-	public LinphonePlayer getPlayer();
+	LinphonePlayer getPlayer();
 	
 	/**
 	 * Create a new chat room for messaging from a call if not already existing, else return existing one
 	 * @return LinphoneChatRoom where messaging can take place.
 	 */
-	public LinphoneChatRoom getChatRoom() ;
+	LinphoneChatRoom getChatRoom() ;
 
 	/**
 	 * Set the callbacks associated with the LinphoneCall.
@@ -409,4 +409,15 @@ public interface LinphoneCall {
 	 * This is an indication - the application remains responsible for answering the call.
 	**/
 	boolean askedToAutoAnswer();
+	
+	/**
+	 * Decline a pending incoming call providing an ErrorInfo object.
+	**/
+	void declineWithErrorInfo(ErrorInfo ei);
+	
+	/**
+	 * Terminate a call providing an ErrorInfo object.
+	**/
+	void terminateWithErrorInfo(ErrorInfo ei);
 }
+
