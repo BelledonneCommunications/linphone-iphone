@@ -4595,8 +4595,8 @@ void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl) {
 		linphone_core_delete_call_log(lc, cl);
 	}
 #endif
+	lc->call_logs = bctbx_list_remove(lc->call_logs, cl);
 	if (!call_logs_sqlite_db_found) {
-		lc->call_logs = bctbx_list_remove(lc->call_logs, cl);
 		call_logs_write_to_config_file(lc);
 		linphone_call_log_unref(cl);
 	}
