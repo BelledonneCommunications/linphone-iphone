@@ -364,6 +364,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
 			[_tableController addChatEntry:chat];
+			[self setComposingVisible:FALSE withDelay:0];
 			[_tableController scrollToLastUnread:TRUE];
 		}
 	}
