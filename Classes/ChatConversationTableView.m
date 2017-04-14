@@ -113,15 +113,18 @@
 	if (messageList == nil || _chatRoom == nil) {
 		return;
 	}
-
 	int index = -1;
 	size_t count = bctbx_list_size(messageList);
 	// Find first unread & set all entry read
 	for (int i = 0; i < count; ++i) {
 		int read = linphone_chat_message_is_read(bctbx_list_nth_data(messageList, i));
-		if (read == 0) {
-			if (index == -1)
+		LinphoneChatMessageState state = linphone_chat_message_get_state(bctbx_list_nth_data(messageList, i));
+		if (read == 0 &&
+			!(state == LinphoneChatMessageStateFileTransferError || state == LinphoneChatMessageStateNotDelivered)) {
+			if (index == -1) {
 				index = i;
+				break;
+			}
 		}
 	}
 	if (index == -1 && count > 0) {
