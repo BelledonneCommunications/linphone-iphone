@@ -1190,7 +1190,7 @@ static void sound_config_read(LinphoneCore *lc)
 	}
 
 	lc->sound_conf.latency=0;
-#if TARGET_OS_IPHONE
+#if !TARGET_OS_IPHONE
 	tmp=TRUE;
 #else
 	tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
