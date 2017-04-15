@@ -6061,15 +6061,15 @@ bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc
 }
 
 static OrtpPayloadType* _linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
-	OrtpPayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
+	OrtpPayloadType* result = find_payload_type_from_list(type, rate, channels, lc->codecs_conf.audio_codecs);
 	if (result)  {
 		return result;
 	} else {
-		result = find_payload_type_from_list(type, rate, 0, linphone_core_get_video_codecs(lc));
+		result = find_payload_type_from_list(type, rate, 0, lc->codecs_conf.video_codecs);
 		if (result) {
 			return result;
 		} else {
-			result = find_payload_type_from_list(type, rate, 0, linphone_core_get_text_codecs(lc));
+			result = find_payload_type_from_list(type, rate, 0, lc->codecs_conf.text_codecs);
 			if (result) {
 				return result;
 			}

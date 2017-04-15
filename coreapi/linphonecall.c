@@ -5211,7 +5211,7 @@ LinphoneStatus linphone_call_decline(LinphoneCall * call, LinphoneReason reason)
 	LinphoneErrorInfo *ei = linphone_error_info_new();
 	linphone_error_info_set(ei, "SIP", reason,linphone_reason_to_error_code(reason), NULL, NULL);
 	status = linphone_call_decline_with_error_info(call, ei);
-
+	linphone_error_info_unref(ei);
 	return status;
 }
 	
