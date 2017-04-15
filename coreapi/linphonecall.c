@@ -5151,7 +5151,6 @@ LinphoneStatus linphone_call_terminate_with_error_info(LinphoneCall *call , cons
 			return -1;
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
-			linphone_error_info_set_reason(p_ei, LinphoneReasonDeclined);
 			return linphone_call_decline_with_error_info(call, p_ei);
 		case LinphoneCallOutgoingInit:
 			/* In state OutgoingInit, op has to be destroyed */
@@ -5208,13 +5207,12 @@ LinphoneStatus linphone_call_redirect(LinphoneCall *call, const char *redirect_u
 }
 
 LinphoneStatus linphone_call_decline(LinphoneCall * call, LinphoneReason reason) {
-	if ((call->state != LinphoneCallIncomingReceived) && (call->state != LinphoneCallIncomingEarlyMedia)) {
-		ms_error("Cannot decline a call that is in state %s", linphone_call_state_to_string(call->state));
-		return -1;
-	}
-	sal_call_decline(call->op, linphone_reason_to_sal(reason), NULL);
-	terminate_call(call);
-	return 0;
+	LinphoneStatus status;
+	LinphoneErrorInfo *ei = linphone_error_info_new();
+	linphone_error_info_set(ei, "SIP", reason,linphone_reason_to_error_code(reason), NULL, NULL);
+	status = linphone_call_decline_with_error_info(call, ei);
+
+	return status;
 }
 	
 	
@@ -5228,8 +5226,14 @@ LinphoneStatus linphone_call_decline_with_error_info(LinphoneCall * call, const 
 		ms_error("Cannot decline a call that is in state %s", linphone_call_state_to_string(call->state));
 		return -1;
 	}
-	linphone_error_info_to_sal(ei, &sei);
-	sal_call_decline_with_error_info(call->op, &sei , NULL);
+	if (ei) {
+		linphone_error_info_to_sal(ei, &sei);
+		sal_call_decline_with_error_info(call->op, &sei , NULL);
+	}else{
+		sal_call_decline(call->op, SalReasonDeclined, NULL);
+	}
+	sal_error_info_reset(&sei);
+	sal_error_info_reset(&sub_sei);
 	terminate_call(call);
 	return 0;
 }

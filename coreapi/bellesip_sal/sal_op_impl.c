@@ -585,10 +585,6 @@ void sal_error_info_reset(SalErrorInfo *ei){
 		ms_free(ei->protocol);
 		ei->protocol = NULL;
 	}
-	if (ei->sub_sei){
-		ms_free(ei->sub_sei);
-		ei->sub_sei = NULL;
-	}
 	ei->protocol_code=0;
 	ei->reason=SalReasonNone;
 	ei->sub_sei = NULL;
