@@ -34,7 +34,7 @@ LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 }
 
 struct _LinphoneTunnel {
-	::belle_sip_object_t *base;
+	::belle_sip_object_t base;
 	belledonnecomm::TunnelManager *manager;
 	bctbx_list_t *config_list;
 };

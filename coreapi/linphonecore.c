@@ -5582,7 +5582,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	/*now that we are unregisted, there is no more channel using tunnel socket we no longer need the tunnel.*/
 #ifdef TUNNEL_ENABLED
 	if (lc->tunnel) {
-		linphone_tunnel_ref(lc->tunnel);
+		linphone_tunnel_unref(lc->tunnel);
 		lc->tunnel=NULL;
 		ms_message("Tunnel destroyed.");
 	}
