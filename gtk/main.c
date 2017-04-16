@@ -253,8 +253,7 @@ gboolean linphone_gtk_get_audio_assistant_option(void){
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *chat_messages_db_file,
-		const char *call_logs_db_file, const char *friends_db_file,
-		const char *zrtp_cache_db_file) {
+		const char *call_logs_db_file, const char *friends_db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
@@ -291,7 +290,6 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file); /* XML cache is superseeded by the sqlite one, keep it for migration purpose but it shall be removed in future version */
-	if (zrtp_cache_db_file) linphone_core_set_zrtp_cache_database_path(the_core, zrtp_cache_db_file);
 	g_free(secrets_file);
 	linphone_core_set_user_certificates_path(the_core,user_certificates_dir);
 	g_free(user_certificates_dir);
@@ -2191,7 +2189,7 @@ int main(int argc, char *argv[]){
 	const char *icon_name=LINPHONE_ICON_NAME;
 	const char *app_name="Linphone";
 	LpConfig *factory_config;
-	char *chat_messages_db_file, *call_logs_db_file, *friends_db_file, *zrtp_cache_db_file;
+	char *chat_messages_db_file, *call_logs_db_file, *friends_db_file;
 	GError *error=NULL;
 	const char *tmp;
 	const char *resources_dir;
@@ -2339,8 +2337,7 @@ core_start:
 	chat_messages_db_file=linphone_gtk_message_storage_get_db_file(NULL);
 	call_logs_db_file = linphone_gtk_call_logs_storage_get_db_file(NULL);
 	friends_db_file = linphone_gtk_friends_storage_get_db_file(NULL);
-	zrtp_cache_db_file = linphone_gtk_zrtp_cache_get_db_file(NULL);
-	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file, friends_db_file, zrtp_cache_db_file);
+	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file, friends_db_file);
 	g_free(chat_messages_db_file);
 	g_free(call_logs_db_file);
 	g_free(friends_db_file);

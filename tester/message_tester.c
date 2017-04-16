@@ -883,14 +883,18 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 	linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
 	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 
+	/* make sure to not trigger the cache migration function */
+	lp_config_set_int(marie->lc->config, "sip", "zrtp_cache_migration_done", TRUE);
+	lp_config_set_int(pauline->lc->config, "sip", "zrtp_cache_migration_done", TRUE);
+
 	/* create temporary cache files: setting the database_path will create and initialise the files */
 	remove(bc_tester_file("tmpZIDCacheMarie.sqlite"));
 	remove(bc_tester_file("tmpZIDCachePauline.sqlite"));
 	filepath = bc_tester_file("tmpZIDCacheMarie.sqlite");
-	linphone_core_set_zrtp_cache_database_path(marie->lc, filepath);
+	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
 	bc_free(filepath);
 	filepath = bc_tester_file("tmpZIDCachePauline.sqlite");
-	linphone_core_set_zrtp_cache_database_path(pauline->lc, filepath);
+	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
 	bc_free(filepath);
 
 	/* caches are empty, populate them */
@@ -1395,6 +1399,35 @@ static  void lime_transfer_message_without_encryption(void) {
 
 static  void lime_transfer_message_without_encryption_2(void) {
 	lime_transfer_message_base(FALSE, FALSE, TRUE, FALSE);
+}
+
+static void lime_cache_migration(void) {
+	if (lime_is_available()) {
+		char *xmlCache_filepath = bc_tester_res("zidCacheMigration.xml");
+		LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+
+		if (!linphone_core_lime_available(marie->lc)) {
+			ms_warning("Lime not available, skiping");
+			return;
+		}
+
+		/* make sure lime is enabled */
+		linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
+
+		/* make sure to trigger the cache migration function */
+		lp_config_set_int(marie->lc->config, "sip", "zrtp_cache_migration_done", FALSE);
+
+		/* set the cache path, it will trigger the migration function */
+		/* TODO: copy the resource folder xml file to a writable temporary file as it will be erased by sqlite version */
+		linphone_core_set_zrtp_secrets_file(marie->lc, xmlCache_filepath);
+
+		/* perform checks on the new cache */
+		/* TODO */
+
+		/* free memory */
+		linphone_core_manager_destroy(marie);
+	}
+
 }
 
 static void lime_unit(void) {
@@ -2367,6 +2400,7 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Lime transfer message from history", lime_transfer_message_from_history, "LIME"),
 	TEST_ONE_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption, "LIME"),
 	TEST_ONE_TAG("Lime transfer message without encryption 2", lime_transfer_message_without_encryption_2, "LIME"),
+	TEST_ONE_TAG("Lime cache migration", lime_cache_migration, "LIME"),
 	TEST_ONE_TAG("Lime unitary", lime_unit, "LIME"),
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
