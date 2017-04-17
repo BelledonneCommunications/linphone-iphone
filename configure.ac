@@ -630,7 +630,7 @@ AC_ARG_ENABLE(alsa,
 	[alsa=true]
 )
 
-dnl this options are just for passing to mediastreamer2 subproject
+
 AC_ARG_ENABLE(zrtp,
 	[AS_HELP_STRING([--enable-zrtp], [Turn on zrtp support])],
 	[case "${enableval}" in
@@ -638,8 +638,21 @@ AC_ARG_ENABLE(zrtp,
 		no)	zrtp=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-zrtp) ;;
 	esac],
-	[zrtp=false]
+	[zrtp=auto]
 )
+
+if test "$zrtp" != "false" ; then
+	PKG_CHECK_MODULES(LIBBZRTP, libbzrtp >= 1.0.0, found_zrtp=true, found_zrtp=false)
+	if test "$zrtp$found_zrtp" = "truefalse" ; then
+		AC_MSG_ERROR("Cound not find bZRTP library.")
+	fi
+	if test "$found_zrtp" = "true" ; then
+		zrtp=true
+		AC_DEFINE(HAVE_BZRTP, 1, [Defined if bzrtp is available])
+	else
+		zrtp=false
+	fi
+fi
 
 dnl this options are just for passing to mediastreamer2 subproject
 AC_ARG_ENABLE(dtls,
@@ -701,18 +714,21 @@ AC_ARG_ENABLE(lime,
 		no)	lime=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-lime) ;;
 	esac],
-	[lime=false]
+	[lime=auto]
 )
 
+if test "$lime" = "true" ; then
+	if test "$zrtp" = "false" ; then
+		AC_MSG_ERROR([LIME requires zrtp])
+	fi
+fi
+
 if test "$lime" != "false" ; then
-	if test "x$found_polarssl" != "xyes" ; then
-		if test "$lime" = "true" ; then
-			AC_MSG_ERROR("LIME requires POLARSSL in version >= 1.3")
-		fi
-		lime=false
-	else
+	if test "$found_zrtp" = "true" ; then
 		AC_DEFINE(HAVE_LIME, 1, [Defined when LIME support is compiled])
 		lime=true
+	else
+		lime = false
 	fi
 fi
 
@@ -1091,6 +1107,7 @@ printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"				$build_tools
 printf "* %-30s %s\n" "Sqlite storage"		$enable_sqlite_storage
 printf "* %-30s %s\n" "VCard support"		$enable_vcard
+printf "* %-30s %s\n" "ZRTP"			$zrtp
 printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
