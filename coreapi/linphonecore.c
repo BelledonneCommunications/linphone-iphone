@@ -6243,8 +6243,11 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 				if (rename(file, bkpFile)==0 &&	rename(tmpFile, file)==0) {
 					lp_config_set_int(lc->config, "sip", "zrtp_cache_migration_done", TRUE);
 				}
+				bctbx_free(bkpFile);
 			}
+			xmlFree(cacheXml);
 		}
+		bctbx_free(tmpFile);
 	} else {
 		linphone_core_zrtp_cache_db_init(lc, file);
 	}
