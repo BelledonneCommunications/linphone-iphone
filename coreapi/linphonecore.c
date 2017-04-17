@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include "sqlite3_bctbx_vfs.h"
-#	ifdef HAVE_BZRTP
+#	ifdef HAVE_ZRTP
 #	include "bzrtp/bzrtp.h"
 #	endif
 #endif
@@ -6208,7 +6208,7 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 
 }
 
-#ifdef HAVE_BZRTP
+#ifdef HAVE_ZRTP
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	/* shall we perform cache migration ? */
 	if (!lp_config_get_int(lc->config,"sip","zrtp_cache_migration_done",FALSE)) {
@@ -6255,11 +6255,11 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 		linphone_core_zrtp_cache_db_init(lc, file);
 	}
 }
-#else
+#else /* HAVE_ZRTP */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	ms_error("linphone_core_set_zrtp_secrets_file(): no zrtp support in this build.");
 }
-#endif
+#endif /* HAVE_ZRTP */
 
 void *linphone_core_get_zrtp_cache_db(LinphoneCore *lc){
 #ifdef SQLITE_STORAGE_ENABLED
@@ -6278,7 +6278,7 @@ static void linphone_core_zrtp_cache_close(LinphoneCore *lc) {
 #endif /* SQLITE_STORAGE_ENABLED */
 }
 
-#if defined(SQLITE_STORAGE_ENABLED) && defined (HAVE_BZRTP)
+#if defined(SQLITE_STORAGE_ENABLED) && defined (HAVE_ZRTP)
 
 void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 	int ret;

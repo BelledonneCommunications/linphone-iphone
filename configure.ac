@@ -648,7 +648,7 @@ if test "$zrtp" != "false" ; then
 	fi
 	if test "$found_zrtp" = "true" ; then
 		zrtp=true
-		AC_DEFINE(HAVE_BZRTP, 1, [Defined if bzrtp is available])
+		AC_DEFINE(HAVE_ZRTP, 1, [Defined if bzrtp is available])
 	else
 		zrtp=false
 	fi
