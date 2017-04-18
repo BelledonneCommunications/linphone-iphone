@@ -28,9 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include "sqlite3_bctbx_vfs.h"
-#	ifdef HAVE_ZRTP
-#	include "bzrtp/bzrtp.h"
-#	endif
 #endif
 
 #include <math.h>
@@ -6367,7 +6364,6 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 
 }
 
-#ifdef HAVE_ZRTP
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	if (lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
@@ -6382,6 +6378,7 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 		FILE *CACHEFD = NULL;
 		/* load the xml cache */
 		if (file != NULL) {
+			int ret=0;
 			CACHEFD = fopen(file, "rb+");
 			xmlDocPtr cacheXml = NULL;
 			if (CACHEFD) {
@@ -6404,15 +6401,23 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 			linphone_core_zrtp_cache_db_init(lc, tmpFile);
 
 			/* migrate */
-			if (bzrtp_cache_migration((void *)cacheXml, linphone_core_get_zrtp_cache_db(lc), linphone_core_get_identity(lc)) == 0) {
-				char *bkpFile = bctbx_malloc(strlen(file)+6);
-				sprintf(bkpFile,"%s.bkp", file);
-				/* migration went ok, rename the original file and replace it with by the tmp one and set the migration tag in config file */
-				if (rename(file, bkpFile)==0 &&	rename(tmpFile, file)==0) {
-					lp_config_set_int(lc->config, "sip", "zrtp_cache_migration_done", TRUE);
-				}
-				bctbx_free(bkpFile);
+			char *bkpFile = bctbx_malloc(strlen(file)+6);
+			sprintf(bkpFile,"%s.bkp", file);
+
+			if ((ret = ms_zrtp_cache_migration((void *)cacheXml, linphone_core_get_zrtp_cache_db(lc), linphone_core_get_identity(lc))) == 0) {
+				ms_message("LIME/ZRTP cache migration successfull, obsolete xml file kept as backup in %s", bkpFile);
+			} else {
+				ms_error("LIME/ZRTP cache migration failed(returned -%x), start with a fresh cache, old one kept as backup in %s", -ret, bkpFile);
 			}
+
+			/* rename the newly created sqlite3 file in to the given file name */
+			rename(file, bkpFile);
+			if (rename(tmpFile, file)==0) { /* set the flag if we were able to set the sqlite file in the correct place (even if migration failed) */
+				lp_config_set_int(lc->config, "sip", "zrtp_cache_migration_done", TRUE);
+			}
+
+			/* clean up */
+			bctbx_free(bkpFile);
 			xmlFree(cacheXml);
 		}
 		bctbx_free(tmpFile);
@@ -6420,11 +6425,6 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 		linphone_core_zrtp_cache_db_init(lc, file);
 	}
 }
-#else /* HAVE_ZRTP */
-void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
-	ms_error("linphone_core_set_zrtp_secrets_file(): no zrtp support in this build.");
-}
-#endif /* HAVE_ZRTP */
 
 const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
@@ -6447,9 +6447,9 @@ static void linphone_core_zrtp_cache_close(LinphoneCore *lc) {
 #endif /* SQLITE_STORAGE_ENABLED */
 }
 
-#if defined(SQLITE_STORAGE_ENABLED) && defined (HAVE_ZRTP)
 
 void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
+#ifdef SQLITE_STORAGE_ENABLED
 	int ret;
 	const char *errmsg;
 	sqlite3 *db;
@@ -6465,17 +6465,23 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 		return;
 	}
 
-	ret = bzrtp_initCache((void *)db); /* this may perform an update, check return value */
+	ret = ms_zrtp_initCache((void *)db); /* this may perform an update, check return value */
 
-	if (ret == BZRTP_CACHE_SETUP || ret == BZRTP_CACHE_UPDATE) {
+	if (ret == MSZRTP_CACHE_SETUP || ret == MSZRTP_CACHE_UPDATE) {
 		/* After updating schema, database need to be closed/reopenned */
 		sqlite3_close(db);
 		_linphone_sqlite3_open(fileName, &db);
+	} else if(ret != 0) { /* something went wrong */
+		ms_error("Zrtp cache failed to initialise(returned -%x), run cacheless", -ret);
+		sqlite3_close(db);
+		lc->zrtp_cache_db = NULL;
+		return;
 	}
 
+	/* everything ok, set the db pointer into core */
 	lc->zrtp_cache_db = db;
-}
 #endif /* SQLITE_STORAGE_ENABLED */
+}
 
 void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){
 	char* new_value;
