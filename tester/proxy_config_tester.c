@@ -179,20 +179,20 @@ static void sip_uri_normalization(void) {
 	SIP_URI_CHECK("١", expected); //test that no more invalid memory writes are made (valgrind only)
 }
 
-static void load_dynamic_proxy_config(void) {
+/*static void load_dynamic_proxy_config(void) {
 	LinphoneProxyConfig *proxy;
 
 	//Load file
 
 	proxy = linphone_proxy_config_new();
-}
+}*/
 
 test_t proxy_config_tests[] = {
 	TEST_NO_TAG("Phone normalization without proxy", phone_normalization_without_proxy),
 	TEST_NO_TAG("Phone normalization with proxy", phone_normalization_with_proxy),
 	TEST_NO_TAG("Phone normalization with dial escape plus", phone_normalization_with_dial_escape_plus),
 	TEST_NO_TAG("SIP URI normalization", sip_uri_normalization),
-	TEST_NO_TAG("Load new default value for proxy config", load_dynamic_proxy_config)
+	//TEST_NO_TAG("Load new default value for proxy config", load_dynamic_proxy_config)
 };
 
 test_suite_t proxy_config_test_suite = {"Proxy config", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
