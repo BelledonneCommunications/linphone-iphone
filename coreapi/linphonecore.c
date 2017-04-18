@@ -2531,6 +2531,13 @@ LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc) {
 	return range;
 }
 
+LinphoneRange *linphone_core_get_audio_ports_range(const LinphoneCore *lc) {
+	LinphoneRange *range = linphone_range_new();
+	range->min = lc->rtp_conf.audio_rtp_min_port;
+	range->max = lc->rtp_conf.audio_rtp_max_port;
+	return range;
+}
+
 int linphone_core_get_video_port(const LinphoneCore *lc){
 	return lc->rtp_conf.video_rtp_min_port;
 }
@@ -2548,6 +2555,13 @@ LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc) {
 	return range;
 }
 
+LinphoneRange *linphone_core_get_video_ports_range(const LinphoneCore *lc) {
+	LinphoneRange *range = linphone_range_new();
+	range->min = lc->rtp_conf.video_rtp_min_port;
+	range->max = lc->rtp_conf.video_rtp_max_port;
+	return range;
+}
+
 int linphone_core_get_text_port(const LinphoneCore *lc) {
 	return lc->rtp_conf.text_rtp_min_port;
 }
@@ -2562,6 +2576,13 @@ LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc) {
 		.min = lc->rtp_conf.text_rtp_min_port,
 		.max = lc->rtp_conf.text_rtp_max_port
 	};
+	return range;
+}
+
+LinphoneRange *linphone_core_get_text_ports_range(const LinphoneCore *lc) {
+	LinphoneRange *range = linphone_range_new();
+	range->min = lc->rtp_conf.text_rtp_min_port;
+	range->max = lc->rtp_conf.text_rtp_max_port;
 	return range;
 }
 

@@ -1722,6 +1722,17 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneImEncryptionEngine);
 
 LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc);
 
+struct _LinphoneRange {
+	belle_sip_object_t base;
+	void *user_data;
+	int min;
+	int max;
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneRange);
+
+LinphoneRange *linphone_range_new(void);
+
 /** Belle Sip-based objects need unique ids
   */
 
@@ -1771,7 +1782,8 @@ BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
 BELLE_SIP_TYPE_ID(LinphoneConference),
 BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
-BELLE_SIP_TYPE_ID(LinphonePayloadType)
+BELLE_SIP_TYPE_ID(LinphonePayloadType),
+BELLE_SIP_TYPE_ID(LinphoneRange)
 BELLE_SIP_DECLARE_TYPES_END
 
 

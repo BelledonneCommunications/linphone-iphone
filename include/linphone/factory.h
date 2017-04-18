@@ -216,6 +216,13 @@ LINPHONE_PUBLIC void linphone_factory_set_msplugins_dir(LinphoneFactory *factory
  * @return  LinphoneErrorInfo object.
  */
 LINPHONE_PUBLIC  LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneRange.
+ * @param[in] factory LinphoneFactory object
+ * @return  LinphoneRange object.
+ */
+LINPHONE_PUBLIC LinphoneRange *linphone_factory_create_range(LinphoneFactory *factory);
 /**
  * @}
  */

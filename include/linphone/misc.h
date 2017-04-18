@@ -160,12 +160,56 @@ LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* trans
 LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
 
 /**
+ * Increment refcount.
+ * @param[in] range LinphoneRange object
+**/
+LINPHONE_PUBLIC LinphoneRange *linphone_range_ref(LinphoneRange *range);
+
+/**
+ * Decrement refcount and possibly free the object.
+ * @param[in] range LinphoneRange object
+**/
+LINPHONE_PUBLIC void linphone_range_unref(LinphoneRange *range);
+
+/**
  * Converts a LinphoneReason to an error code.
  * @param[in] reason A LinphoneReason
  * @return The error code corresponding to the specified LinphoneReason
  * @ingroup misc
  */
 LINPHONE_PUBLIC int linphone_reason_to_error_code(LinphoneReason reason);
+
+/**
+ * Gets the lower value of the range
+ * @param[in] range a LinphoneRange
+ * @return The lower value
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC int linphone_range_get_min(const LinphoneRange *range);
+
+/**
+ * Gets the higher value of the range
+ * @param[in] range a LinphoneRange
+ * @return The higher value
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC int linphone_range_get_max(const LinphoneRange *range);
+
+/**
+ * Sets the lower value of the range
+ * @param[in] range a LinphoneRange
+ * @param[in] min the value to set
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void linphone_range_set_min(LinphoneRange *range, int min);
+
+/**
+ * Sets the higher value of the range
+ * @param[in] range a LinphoneRange
+ * @param[in] max the value to set
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void linphone_range_set_max(LinphoneRange *range, int max);
 
 
 #ifdef __cplusplus

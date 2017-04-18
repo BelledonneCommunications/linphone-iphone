@@ -1181,12 +1181,18 @@ typedef struct _LinphonePayloadType LinphonePayloadType;
 
 /**
  * Structure describing a range of integers
- * @ingroup misc
+ * @deprecated
  */
 typedef struct _LinphoneIntRange {
 	int min; /**< Minimum value */
 	int max; /**< Maximum value */
 } LinphoneIntRange;
+
+/**
+ * Structure describing a range of integers
+ * @ingroup misc
+ */
+typedef struct _LinphoneRange LinphoneRange;
 
 /**
  * Status code returned by some functions to

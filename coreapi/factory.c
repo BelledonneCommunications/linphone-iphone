@@ -216,3 +216,7 @@ LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory){
 	return linphone_error_info_new();
 	
 }
+
+LinphoneRange *linphone_factory_create_range(LinphoneFactory *factory) {
+	return linphone_range_new();
+}

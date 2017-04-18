@@ -1780,26 +1780,6 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 	}
 }
 
-
-
-/* Functions to mainpulate the LinphoneIntRange structure */
-
-int linphone_int_range_get_min(const LinphoneIntRange *range) {
-	return range->min;
-}
-
-int linphone_int_range_get_max(const LinphoneIntRange *range) {
-	return range->max;
-}
-
-void linphone_int_range_set_min(LinphoneIntRange *range, int min) {
-	range->min = min;
-}
-
-void linphone_int_range_set_max(LinphoneIntRange *range, int max) {
-	range->max = max;
-}
-
 void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
 	bool_t call_logs_sqlite_db_found = FALSE;
 
@@ -1835,4 +1815,42 @@ void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir di
 	linphone_call_log_unref(l);
 }
 
+/* Functions to mainpulate the LinphoneRange structure */
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneRange);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneRange, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphoneRange *linphone_range_new() {
+	LinphoneRange *range = belle_sip_object_new(LinphoneRange);
+	return range;
+}
+
+LinphoneRange* linphone_range_ref (LinphoneRange* range) {
+	return (LinphoneRange*) belle_sip_object_ref(range);
+}
+
+void linphone_range_unref (LinphoneRange* range) {
+	belle_sip_object_unref(range);
+}
+
+int linphone_range_get_min(const LinphoneRange *range) {
+	return range->min;
+}
+
+int linphone_range_get_max(const LinphoneRange *range) {
+	return range->max;
+}
+
+void linphone_range_set_min(LinphoneRange *range, int min) {
+	range->min = min;
+}
+
+void linphone_range_set_max(LinphoneRange *range, int max) {
+	range->max = max;
+}

@@ -422,6 +422,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	int dummy = 0;
 	pol.automatically_accept = 1;
 	pol.automatically_initiate = 1;
+	LinphoneRange *port_range = NULL;
 
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, TRUE);
@@ -432,7 +433,15 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	linphone_core_enable_video_display(marie2->lc, TRUE);
 	linphone_core_set_video_policy(marie2->lc, &pol);
 	linphone_core_set_audio_port_range(marie2->lc, 40200, 40300);
+	port_range = linphone_core_get_audio_ports_range(marie2->lc);
+	BC_ASSERT_EQUAL(port_range->min, 40200, int, "%i");
+	BC_ASSERT_EQUAL(port_range->max, 40300, int, "%i");
+	linphone_range_unref(port_range);
 	linphone_core_set_video_port_range(marie2->lc, 40400, 40500);
+	port_range = linphone_core_get_video_ports_range(marie2->lc);
+	BC_ASSERT_EQUAL(port_range->min, 40400, int, "%i");
+	BC_ASSERT_EQUAL(port_range->max, 40500, int, "%i");
+	linphone_range_unref(port_range);
 
 	lcs = bctbx_list_append(lcs,marie1->lc);
 	lcs = bctbx_list_append(lcs,marie2->lc);

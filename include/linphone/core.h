@@ -2105,9 +2105,18 @@ LINPHONE_PUBLIC void linphone_core_get_audio_port_range(const LinphoneCore *lc, 
 
 /**
  * Overload of linphone_core_get_audio_port_range().
+ * @deprecated Use linphone_core_get_audio_ports_range instead
  * @ingroup network_parameters
  */
 LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc);
+
+/**
+ * Get the audio port range from which is randomly chosen the UDP port used for audio streaming.
+ * @param[in] lc LinphoneCore object
+ * @return a LinphoneRange object
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC LinphoneRange *linphone_core_get_audio_ports_range(const LinphoneCore *lc);
 
 /**
  * Gets the UDP port used for video streaming.
@@ -2129,9 +2138,18 @@ LINPHONE_PUBLIC void linphone_core_get_video_port_range(const LinphoneCore *lc, 
 
 /**
  * Overload of linphone_core_get_video_port_range().
+ * @deprecated Use linphone_core_get_video_ports_range instead
  * @ingroup network_parameters
  */
 LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc);
+
+/**
+ * Get the video port range from which is randomly chosen the UDP port used for video streaming.
+ * @param[in] lc LinphoneCore object
+ * @return a LinphoneRange object
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC LinphoneRange *linphone_core_get_video_ports_range(const LinphoneCore *lc);
 
 /**
  * Gets the UDP port used for text streaming.
@@ -2153,9 +2171,18 @@ LINPHONE_PUBLIC void linphone_core_get_text_port_range(const LinphoneCore *lc, i
 
 /**
  * Overload of linphone_core_get_text_port_range().
+ * @deprecated Use linphone_core_get_text_ports_range instead
  * @ingroup network_parameters
  */
 LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc);
+
+/**
+ * Get the text port range from which is randomly chosen the UDP port used for text streaming.
+ * @param[in] lc LinphoneCore object
+ * @return a LinphoneRange object
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC LinphoneRange *linphone_core_get_text_ports_range(const LinphoneCore *lc);
 
 /**
  * Gets the value of the no-rtp timeout.
