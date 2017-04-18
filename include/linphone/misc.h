@@ -170,12 +170,14 @@ LINPHONE_PUBLIC int linphone_reason_to_error_code(LinphoneReason reason);
 /**
  * Increment refcount.
  * @param[in] range LinphoneRange object
+ * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneRange *linphone_range_ref(LinphoneRange *range);
 
 /**
  * Decrement refcount and possibly free the object.
  * @param[in] range LinphoneRange object
+ * @ingroup misc
 **/
 LINPHONE_PUBLIC void linphone_range_unref(LinphoneRange *range);
 
