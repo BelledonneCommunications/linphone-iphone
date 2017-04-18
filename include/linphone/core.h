@@ -2105,13 +2105,6 @@ LINPHONE_PUBLIC int linphone_core_get_audio_port(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 /**
- * Overload of linphone_core_get_audio_port_range().
- * @deprecated Use linphone_core_get_audio_ports_range instead
- * @ingroup network_parameters
- */
-LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc);
-
-/**
  * Get the audio port range from which is randomly chosen the UDP port used for audio streaming.
  * @param[in] lc LinphoneCore object
  * @return a LinphoneRange object
@@ -2138,13 +2131,6 @@ LINPHONE_PUBLIC int linphone_core_get_video_port(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 /**
- * Overload of linphone_core_get_video_port_range().
- * @deprecated Use linphone_core_get_video_ports_range instead
- * @ingroup network_parameters
- */
-LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc);
-
-/**
  * Get the video port range from which is randomly chosen the UDP port used for video streaming.
  * @param[in] lc LinphoneCore object
  * @return a LinphoneRange object
@@ -2169,13 +2155,6 @@ LINPHONE_PUBLIC int linphone_core_get_text_port(const LinphoneCore *lc);
  * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
-
-/**
- * Overload of linphone_core_get_text_port_range().
- * @deprecated Use linphone_core_get_text_ports_range instead
- * @ingroup network_parameters
- */
-LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc);
 
 /**
  * Get the text port range from which is randomly chosen the UDP port used for text streaming.
@@ -2324,6 +2303,8 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_sip_port(LinphoneCore 
  * @param[in] transports A LinphoneSipTransports structure giving the ports to use
  * @return 0
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_set_transports instead
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports *transports);
 
@@ -2335,6 +2316,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc
  * @param[out] transports A #LinphoneSipTransports structure that will receive the configured ports
  * @return 0
  * @ingroup network_parameters
+ * @deprecated
  * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneSipTransports *transports);
@@ -2346,9 +2328,135 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc
  * @param[in] lc LinphoneCore object
  * @param[out] tr A #LinphoneSipTransports structure that will receive the ports being used
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_get_transports_used instead
  * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTransports *tr);
+
+/**
+ * Sets the ports to be used for each of transport (UDP or TCP)
+ * A zero value port for a given transport means the transport
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be choosen randomly by the system.
+ * @param[in] lc LinphoneCore object
+ * @param[in] transports A LinphoneSipTransports structure giving the ports to use
+ * @return 0
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneStatus linphone_core_set_transports(LinphoneCore *lc, const LinphoneTransports *transports);
+
+/**
+ * Retrieves the port configuration used for each transport (udp, tcp, tls).
+ * A zero value port for a given transport means the transport
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be chosen randomly by the system.
+ * @param[in] lc LinphoneCore object
+ * @return A #LinphoneTransports structure with the configured ports
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneTransports *linphone_core_get_transports(LinphoneCore *lc);
+
+/**
+ * Retrieves the real port number assigned for each sip transport (udp, tcp, tls).
+ * A zero value means that the transport is not activated.
+ * If LC_SIP_TRANSPORT_RANDOM was passed to linphone_core_set_sip_transports(), the random port choosed by the system is returned.
+ * @param[in] lc LinphoneCore object
+ * @return A #LinphoneTransports structure with the ports being used
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneTransports *linphone_core_get_transports_used(LinphoneCore *lc);
+
+/**
+ * Increment refcount.
+ * @param[in] transports LinphoneTransports object
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneTransports *linphone_transports_ref(LinphoneTransports *transports);
+
+/**
+ * Decrement refcount and possibly free the object.
+ * @param[in] transports LinphoneTransports object
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC void linphone_transports_unref(LinphoneTransports *transports);
+
+/**
+ * Gets the user data in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports
+ * @return the user data
+ * @ingroup network_parameters
+*/
+LINPHONE_PUBLIC void *linphone_transports_get_user_data(const LinphoneTransports *transports);
+
+/**
+ * Sets the user data in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] data the user data
+ * @ingroup network_parameters
+*/
+LINPHONE_PUBLIC void linphone_transports_set_user_data(LinphoneTransports *transports, void *data);
+
+/**
+ * Gets the UDP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the UDP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_udp_port(const LinphoneTransports* transports);
+
+/**
+ * Gets the TCP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the TCP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_tcp_port(const LinphoneTransports* transports);
+
+/**
+ * Gets the TLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the TLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_tls_port(const LinphoneTransports* transports);
+
+/**
+ * Gets the DTLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the DTLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_dtls_port(const LinphoneTransports* transports);
+
+/**
+ * Sets the UDP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the UDP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_udp_port(LinphoneTransports *transports, int port);
+
+/**
+ * Sets the TCP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the TCP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_tcp_port(LinphoneTransports *transports, int port);
+
+/**
+ * Sets the TLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the TLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_tls_port(LinphoneTransports *transports, int port);
+
+/**
+ * Sets the DTLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the DTLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_dtls_port(LinphoneTransports *transports, int port);
 
 /**
  * Tells whether the given transport type is supported by the library.

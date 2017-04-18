@@ -972,7 +972,8 @@ typedef struct _LinphoneRingtonePlayer LinphoneRingtonePlayer;
  * Linphone core SIP transport ports.
  * Special values #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_DONTBIND can be used.
  * Use with #linphone_core_set_sip_transports
- * @ingroup initializing
+ * @deprecated
+ * @donotwrap
  */
 typedef struct _LinphoneSipTransports {
 	int udp_port; /**< SIP/UDP port */
@@ -980,6 +981,14 @@ typedef struct _LinphoneSipTransports {
 	int dtls_port; /**< SIP/DTLS port */
 	int tls_port; /**< SIP/TLS port */
 } LinphoneSipTransports;
+
+/**
+ * Linphone core SIP transport ports.
+ * Special values #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_DONTBIND can be used.
+ * Use with #linphone_core_set_sip_transports
+ * @ingroup initializing
+ */
+typedef struct _LinphoneTransports LinphoneTransports;
 
 /**
  * Old name of LinphoneSipTransports
@@ -1183,16 +1192,6 @@ typedef struct _LsdPlayer LsdPlayer;
  * @ingroup media_parameters
  */
 typedef struct _LinphonePayloadType LinphonePayloadType;
-
-
-/**
- * Structure describing a range of integers
- * @deprecated
- */
-typedef struct _LinphoneIntRange {
-	int min; /**< Minimum value */
-	int max; /**< Maximum value */
-} LinphoneIntRange;
 
 /**
  * Structure describing a range of integers

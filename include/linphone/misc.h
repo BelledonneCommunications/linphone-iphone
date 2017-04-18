@@ -160,6 +160,14 @@ LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* trans
 LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
 
 /**
+ * Converts a LinphoneReason to an error code.
+ * @param[in] reason A LinphoneReason
+ * @return The error code corresponding to the specified LinphoneReason
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC int linphone_reason_to_error_code(LinphoneReason reason);
+
+/**
  * Increment refcount.
  * @param[in] range LinphoneRange object
 **/
@@ -172,12 +180,18 @@ LINPHONE_PUBLIC LinphoneRange *linphone_range_ref(LinphoneRange *range);
 LINPHONE_PUBLIC void linphone_range_unref(LinphoneRange *range);
 
 /**
- * Converts a LinphoneReason to an error code.
- * @param[in] reason A LinphoneReason
- * @return The error code corresponding to the specified LinphoneReason
- * @ingroup misc
- */
-LINPHONE_PUBLIC int linphone_reason_to_error_code(LinphoneReason reason);
+ * Gets the user data in the LinphoneRange object
+ * @param[in] range the LinphoneRange
+ * @return the user data
+*/
+LINPHONE_PUBLIC void *linphone_range_get_user_data(const LinphoneRange *range);
+
+/**
+ * Sets the user data in the LinphoneRange object
+ * @param[in] range the LinphoneRange object
+ * @param[in] data the user data
+*/
+LINPHONE_PUBLIC void linphone_range_set_user_data(LinphoneRange *range, void *data);
 
 /**
  * Gets the lower value of the range

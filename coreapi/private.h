@@ -1737,6 +1737,19 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneRange);
 
 LinphoneRange *linphone_range_new(void);
 
+struct _LinphoneTransports {
+	belle_sip_object_t base;
+	void *user_data;
+	int udp_port; /**< SIP/UDP port */
+	int tcp_port; /**< SIP/TCP port */
+	int dtls_port; /**< SIP/DTLS port */
+	int tls_port; /**< SIP/TLS port */
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneTransports);
+
+LINPHONE_PUBLIC LinphoneTransports *linphone_transports_new(LinphoneCore *lc);
+
 /** Belle Sip-based objects need unique ids
   */
 
@@ -1788,7 +1801,8 @@ BELLE_SIP_TYPE_ID(LinphoneConference),
 BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
 BELLE_SIP_TYPE_ID(LinphonePayloadType),
 BELLE_SIP_TYPE_ID(LinphoneRange),
-BELLE_SIP_TYPE_ID(LinphoneVideoDefinition)
+BELLE_SIP_TYPE_ID(LinphoneVideoDefinition),
+BELLE_SIP_TYPE_ID(LinphoneTransports)
 BELLE_SIP_DECLARE_TYPES_END
 
 

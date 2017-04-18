@@ -1828,15 +1828,25 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneRange, belle_sip_object_t,
 
 LinphoneRange *linphone_range_new() {
 	LinphoneRange *range = belle_sip_object_new(LinphoneRange);
+	range->min = 0;
+	range->max = 0;
 	return range;
 }
 
-LinphoneRange* linphone_range_ref (LinphoneRange* range) {
+LinphoneRange* linphone_range_ref(LinphoneRange* range) {
 	return (LinphoneRange*) belle_sip_object_ref(range);
 }
 
-void linphone_range_unref (LinphoneRange* range) {
+void linphone_range_unref(LinphoneRange* range) {
 	belle_sip_object_unref(range);
+}
+
+void *linphone_range_get_user_data(const LinphoneRange *range) {
+	return range->user_data;
+}
+
+void linphone_range_set_user_data(LinphoneRange *range, void *data) {
+	range->user_data = data;
 }
 
 int linphone_range_get_min(const LinphoneRange *range) {

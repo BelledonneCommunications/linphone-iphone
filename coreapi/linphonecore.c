@@ -2523,14 +2523,6 @@ void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, i
 	*max_port = lc->rtp_conf.audio_rtp_max_port;
 }
 
-LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc) {
-	LinphoneIntRange range = {
-		.min = lc->rtp_conf.audio_rtp_min_port,
-		.max = lc->rtp_conf.audio_rtp_max_port
-	};
-	return range;
-}
-
 LinphoneRange *linphone_core_get_audio_ports_range(const LinphoneCore *lc) {
 	LinphoneRange *range = linphone_range_new();
 	range->min = lc->rtp_conf.audio_rtp_min_port;
@@ -2547,14 +2539,6 @@ void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, i
 	*max_port = lc->rtp_conf.video_rtp_max_port;
 }
 
-LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc) {
-	LinphoneIntRange range = {
-		.min = lc->rtp_conf.video_rtp_min_port,
-		.max = lc->rtp_conf.video_rtp_max_port
-	};
-	return range;
-}
-
 LinphoneRange *linphone_core_get_video_ports_range(const LinphoneCore *lc) {
 	LinphoneRange *range = linphone_range_new();
 	range->min = lc->rtp_conf.video_rtp_min_port;
@@ -2569,14 +2553,6 @@ int linphone_core_get_text_port(const LinphoneCore *lc) {
 void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, int *max_port) {
 	*min_port = lc->rtp_conf.text_rtp_min_port;
 	*max_port = lc->rtp_conf.text_rtp_max_port;
-}
-
-LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc) {
-	LinphoneIntRange range = {
-		.min = lc->rtp_conf.text_rtp_min_port,
-		.max = lc->rtp_conf.text_rtp_max_port
-	};
-	return range;
 }
 
 LinphoneRange *linphone_core_get_text_ports_range(const LinphoneCore *lc) {
@@ -2787,6 +2763,72 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 	return sal_transport_available(lc->sal,(SalTransport)tp);
 }
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneTransports);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneTransports, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphoneTransports *linphone_transports_new(LinphoneCore *lc) {
+	LinphoneTransports *transports = belle_sip_object_new(LinphoneTransports);
+	transports->udp_port = 0;
+	transports->tcp_port = 0;
+	transports->tls_port = 0;
+	transports->dtls_port = 0;
+	return transports;
+}
+
+LinphoneTransports* linphone_transports_ref(LinphoneTransports* transports) {
+	return (LinphoneTransports*) belle_sip_object_ref(transports);
+}
+
+void linphone_transports_unref (LinphoneTransports* transports) {
+	belle_sip_object_unref(transports);
+}
+
+void *linphone_transports_get_user_data(const LinphoneTransports *transports) {
+	return transports->user_data;
+}
+
+void linphone_transports_set_user_data(LinphoneTransports *transports, void *data) {
+	transports->user_data = data;
+}
+
+int linphone_transports_get_udp_port(const LinphoneTransports* transports) {
+	return transports->udp_port;
+}
+
+int linphone_transports_get_tcp_port(const LinphoneTransports* transports) {
+	return transports->tcp_port;
+}
+
+int linphone_transports_get_tls_port(const LinphoneTransports* transports) {
+	return transports->tls_port;
+}
+
+int linphone_transports_get_dtls_port(const LinphoneTransports* transports) {
+	return transports->dtls_port;
+}
+
+void linphone_transports_set_udp_port(LinphoneTransports *transports, int port) {
+	transports->udp_port = port;
+}
+
+void linphone_transports_set_tcp_port(LinphoneTransports *transports, int port) {
+	transports->tcp_port = port;
+}
+
+void linphone_transports_set_tls_port(LinphoneTransports *transports, int port) {
+	transports->tls_port = port;
+}
+
+void linphone_transports_set_dtls_port(LinphoneTransports *transports, int port) {
+	transports->dtls_port = port;
+}
+
 LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports * tr_config /*config to be saved*/){
 	LinphoneSipTransports tr=*tr_config;
 
@@ -2821,15 +2863,55 @@ LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const Linphone
 	return _linphone_core_apply_transports(lc);
 }
 
+LinphoneStatus linphone_core_set_transports(LinphoneCore *lc, const LinphoneTransports * transports){
+	if (transports->udp_port == lc->sip_conf.transports.udp_port && 
+		transports->tcp_port == lc->sip_conf.transports.tcp_port &&
+		transports->tls_port == lc->sip_conf.transports.tls_port &&
+		transports->dtls_port == lc->sip_conf.transports.dtls_port) {
+		return 0;
+	}
+	lc->sip_conf.transports.udp_port = transports->udp_port;
+	lc->sip_conf.transports.tcp_port = transports->tcp_port;
+	lc->sip_conf.transports.tls_port = transports->tls_port;
+	lc->sip_conf.transports.dtls_port = transports->dtls_port;
+
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config,"sip", "sip_port", transports->udp_port);
+		lp_config_set_int(lc->config,"sip", "sip_tcp_port", transports->tcp_port);
+		lp_config_set_int(lc->config,"sip", "sip_tls_port", transports->tls_port);
+	}
+
+	if (lc->sal == NULL) return 0;
+	return _linphone_core_apply_transports(lc);
+}
+
 LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneSipTransports *tr){
 	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
 	return 0;
+}
+
+LinphoneTransports *linphone_core_get_transports(LinphoneCore *lc){
+	LinphoneTransports *transports = linphone_transports_new(lc);
+	transports->udp_port = lc->sip_conf.transports.udp_port;
+	transports->tcp_port = lc->sip_conf.transports.tcp_port;
+	transports->tls_port = lc->sip_conf.transports.tls_port;
+	transports->dtls_port = lc->sip_conf.transports.dtls_port;
+	return transports;
 }
 
 void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTransports *tr){
 	tr->udp_port=sal_get_listening_port(lc->sal,SalTransportUDP);
 	tr->tcp_port=sal_get_listening_port(lc->sal,SalTransportTCP);
 	tr->tls_port=sal_get_listening_port(lc->sal,SalTransportTLS);
+}
+
+LinphoneTransports *linphone_core_get_transports_used(LinphoneCore *lc){
+	LinphoneTransports *transports = linphone_transports_new(lc);
+	transports->udp_port = sal_get_listening_port(lc->sal, SalTransportUDP);
+	transports->tcp_port = sal_get_listening_port(lc->sal, SalTransportTCP);
+	transports->tls_port = sal_get_listening_port(lc->sal, SalTransportTLS);
+	transports->dtls_port = sal_get_listening_port(lc->sal, SalTransportDTLS);
+	return transports;
 }
 
 void linphone_core_set_sip_port(LinphoneCore *lc,int port) {
