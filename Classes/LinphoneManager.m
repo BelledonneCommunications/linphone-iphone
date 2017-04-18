@@ -668,6 +668,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		LinphoneCallLog *callLog = linphone_call_get_call_log(call);
 		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 		int index = [(NSNumber *)[_pushDict objectForKey:callId] intValue] - 1;
+		LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", callId, index);
 		[_pushDict setValue:[NSNumber numberWithInt:index] forKey:callId];
 		BOOL need_bg_task = FALSE;
 		for (NSString *key in [_pushDict allKeys]) {
@@ -1190,6 +1191,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
 	ms_free(c_address);
 	int index = [(NSNumber *)[_pushDict objectForKey:callID] intValue] - 1;
+	LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", callID, index);
 	[_pushDict setValue:[NSNumber numberWithInt:index] forKey:callID];
 	BOOL need_bg_task = FALSE;
 	for (NSString *key in [_pushDict allKeys]) {
@@ -1352,7 +1354,9 @@ static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, Li
 															LinphoneChatMessage *message) {
 
 	NSString *msgId = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(message, "Call-ID")];
+
 	int index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:msgId] intValue] - 1;
+	LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", msgId, index);
 	[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:index] forKey:msgId];
 	BOOL need_bg_task = FALSE;
 	for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {

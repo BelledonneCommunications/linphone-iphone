@@ -469,15 +469,7 @@
 			}
 		}
 
-		if (callId) {
-			int index = -1;
-			NSDictionary *dict = LinphoneManager.instance.pushDict;
-			if ([[dict allKeys] containsObject:callId]) {
-				index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:callId] intValue] + 1;
-			} else {
-				index = 1;
-			}
-			[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:index] forKey:callId];
+		if (callId && [self addLongTaskIDforCallID:callId]) {
 			if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && loc_key &&
 				index > 0) {
 				if ([loc_key isEqualToString:@"IC_MSG"]) {
@@ -490,6 +482,17 @@
 		}
 	}
     LOGI(@"Notification %@ processed", userInfo.description);
+}
+
+- (BOOL)addLongTaskIDforCallID:(NSString *)callId {
+	NSDictionary *dict = LinphoneManager.instance.pushDict;
+	if ([[dict allKeys] indexOfObject:callId] != NSNotFound) {
+		return FALSE;
+	}
+
+	LOGI(@"Adding long running task for call id : %@ with index : 1", callId);
+	[dict setValue:[NSNumber numberWithInt:1] forKey:callId];
+	return TRUE;
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
