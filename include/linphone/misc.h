@@ -185,6 +185,7 @@ LINPHONE_PUBLIC void linphone_range_unref(LinphoneRange *range);
  * Gets the user data in the LinphoneRange object
  * @param[in] range the LinphoneRange
  * @return the user data
+ * @ingroup misc
 */
 LINPHONE_PUBLIC void *linphone_range_get_user_data(const LinphoneRange *range);
 
@@ -192,6 +193,7 @@ LINPHONE_PUBLIC void *linphone_range_get_user_data(const LinphoneRange *range);
  * Sets the user data in the LinphoneRange object
  * @param[in] range the LinphoneRange object
  * @param[in] data the user data
+ * @ingroup misc
 */
 LINPHONE_PUBLIC void linphone_range_set_user_data(LinphoneRange *range, void *data);
 
