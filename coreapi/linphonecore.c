@@ -5789,6 +5789,10 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	bctbx_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_unref);
 	lc->call_logs=bctbx_list_free(lc->call_logs);
 
+	if(lc->zrtp_secrets_cache != NULL) {
+		ms_free(lc->zrtp_secrets_cache);
+	}
+
 	if(lc->user_certificates_path != NULL) {
 		ms_free(lc->user_certificates_path);
 	}
@@ -6210,6 +6214,12 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 
 #ifdef HAVE_ZRTP
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
+	if (lc->zrtp_secrets_cache != NULL) {
+		ms_free(lc->zrtp_secrets_cache);
+	}
+
+	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
+
 	/* shall we perform cache migration ? */
 	if (!lp_config_get_int(lc->config,"sip","zrtp_cache_migration_done",FALSE)) {
 		char *tmpFile = bctbx_malloc(strlen(file)+6);
@@ -6239,7 +6249,7 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 			linphone_core_zrtp_cache_db_init(lc, tmpFile);
 
 			/* migrate */
-			if (bzrtp_cache_migration((void *)cacheXml, linphone_core_get_zrtp_cache_db(lc), linphone_core_get_identity(lc)) ==0) {
+			if (bzrtp_cache_migration((void *)cacheXml, linphone_core_get_zrtp_cache_db(lc), linphone_core_get_identity(lc)) == 0) {
 				char *bkpFile = bctbx_malloc(strlen(file)+6);
 				sprintf(bkpFile,"%s.bkp", file);
 				/* migration went ok, rename the original file and replace it with by the tmp one and set the migration tag in config file */
@@ -6260,6 +6270,10 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	ms_error("linphone_core_set_zrtp_secrets_file(): no zrtp support in this build.");
 }
 #endif /* HAVE_ZRTP */
+
+const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
+	return lc->zrtp_secrets_cache;
+}
 
 void *linphone_core_get_zrtp_cache_db(LinphoneCore *lc){
 #ifdef SQLITE_STORAGE_ENABLED

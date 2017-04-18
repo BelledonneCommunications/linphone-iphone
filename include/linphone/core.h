@@ -3659,6 +3659,14 @@ LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
 LINPHONE_PUBLIC void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 
 /**
+ * Get the path to the file storing the zrtp secrets cache.
+ * @param[in] lc #LinphoneCore object.
+ * @return The path to the file storing the zrtp secrets cache.
+ * @ingroup initializing
+ */
+LINPHONE_PUBLIC const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
+
+/**
  * Get a pointer to the sqlite db holding zrtp/lime cache
  * @param[in] lc #LinphoneCore object.
  * @return An sqlite3 pointer cast to a void one or NULL if cache is not available(not enabled at compile or access failed)

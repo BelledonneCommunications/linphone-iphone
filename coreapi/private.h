@@ -1056,6 +1056,7 @@ struct _LinphoneCore
 	struct _EchoTester *ect;
 	LinphoneTaskList hooks; /*tasks periodically executed in linphone_core_iterate()*/
 	LinphoneConference *conf_ctx;
+	char* zrtp_secrets_cache; /**< zrtp cache filename */
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	time_t network_last_check;
