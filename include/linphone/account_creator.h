@@ -492,13 +492,6 @@ LINPHONE_PUBLIC void linphone_account_creator_cbs_set_update_account(LinphoneAcc
 /************************** End Account Creator Cbs **************************/
 
 /**
- * 
- * @param[in] creator LinphoneAccountCreator object
- * @return A LinphoneProxyConfig object if successful, NULL otherwise
- **/
-LINPHONE_PUBLIC LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const LinphoneAccountCreator *creator);
-
-/**
  * Configure an account (create a proxy config and authentication info for it).
  * @param[in] creator LinphoneAccountCreator object
  * @return A LinphoneProxyConfig object if successful, NULL otherwise
