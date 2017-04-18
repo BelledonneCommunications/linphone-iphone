@@ -1748,7 +1748,18 @@ struct _LinphoneTransports {
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneTransports);
 
-LINPHONE_PUBLIC LinphoneTransports *linphone_transports_new(LinphoneCore *lc);
+LinphoneTransports *linphone_transports_new(void);
+
+struct _LinphoneVideoActivationPolicy {
+	belle_sip_object_t base;
+	void *user_data;
+	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/
+	bool_t automatically_accept; /**<Whether video shall be automatically accepted for incoming calls*/
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneVideoActivationPolicy);
+
+LinphoneVideoActivationPolicy *linphone_video_activation_policy_new(void);
 
 /** Belle Sip-based objects need unique ids
   */
@@ -1802,7 +1813,8 @@ BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
 BELLE_SIP_TYPE_ID(LinphonePayloadType),
 BELLE_SIP_TYPE_ID(LinphoneRange),
 BELLE_SIP_TYPE_ID(LinphoneVideoDefinition),
-BELLE_SIP_TYPE_ID(LinphoneTransports)
+BELLE_SIP_TYPE_ID(LinphoneTransports),
+BELLE_SIP_TYPE_ID(LinphoneVideoActivationPolicy)
 BELLE_SIP_DECLARE_TYPES_END
 
 

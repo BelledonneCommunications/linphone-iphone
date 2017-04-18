@@ -247,6 +247,20 @@ LINPHONE_PUBLIC  LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneF
  * @return  LinphoneRange object.
  */
 LINPHONE_PUBLIC LinphoneRange *linphone_factory_create_range(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneTransports.
+ * @param[in] factory LinphoneFactory object
+ * @return  LinphoneTransports object.
+ */
+LINPHONE_PUBLIC LinphoneTransports *linphone_factory_create_transports(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneVideoActivationPolicy.
+ * @param[in] factory LinphoneFactory object
+ * @return  LinphoneVideoActivationPolicy object.
+ */
+LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(LinphoneFactory *factory);
 /**
  * @}
  */

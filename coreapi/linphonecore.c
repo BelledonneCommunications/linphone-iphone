@@ -2769,7 +2769,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneTransports, belle_sip_object_t,
 	FALSE
 );
 
-LinphoneTransports *linphone_transports_new(LinphoneCore *lc) {
+LinphoneTransports *linphone_transports_new() {
 	LinphoneTransports *transports = belle_sip_object_new(LinphoneTransports);
 	transports->udp_port = 0;
 	transports->tcp_port = 0;
@@ -2888,7 +2888,7 @@ LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneSipTra
 }
 
 LinphoneTransports *linphone_core_get_transports(LinphoneCore *lc){
-	LinphoneTransports *transports = linphone_transports_new(lc);
+	LinphoneTransports *transports = linphone_transports_new();
 	transports->udp_port = lc->sip_conf.transports.udp_port;
 	transports->tcp_port = lc->sip_conf.transports.tcp_port;
 	transports->tls_port = lc->sip_conf.transports.tls_port;
@@ -2903,7 +2903,7 @@ void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTranspor
 }
 
 LinphoneTransports *linphone_core_get_transports_used(LinphoneCore *lc){
-	LinphoneTransports *transports = linphone_transports_new(lc);
+	LinphoneTransports *transports = linphone_transports_new();
 	transports->udp_port = sal_get_listening_port(lc->sal, SalTransportUDP);
 	transports->tcp_port = sal_get_listening_port(lc->sal, SalTransportTCP);
 	transports->tls_port = sal_get_listening_port(lc->sal, SalTransportTLS);
@@ -4918,6 +4918,54 @@ void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy 
 
 const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc){
 	return &lc->video_policy;
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneVideoActivationPolicy);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneVideoActivationPolicy, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphoneVideoActivationPolicy *linphone_video_activation_policy_new() {
+	LinphoneVideoActivationPolicy *policy = belle_sip_object_new(LinphoneVideoActivationPolicy);
+	policy->automatically_accept = FALSE;
+	policy->automatically_initiate = FALSE;
+	return policy;
+}
+
+LinphoneVideoActivationPolicy* linphone_video_activation_policy_ref(LinphoneVideoActivationPolicy* policy) {
+	return (LinphoneVideoActivationPolicy*) belle_sip_object_ref(policy);
+}
+
+void linphone_video_activation_policy_unref(LinphoneVideoActivationPolicy* policy) {
+	belle_sip_object_unref(policy);
+}
+
+void *linphone_video_activation_policy_get_user_data(const LinphoneVideoActivationPolicy *policy) {
+	return policy->user_data;
+}
+
+void linphone_video_activation_policy_set_user_data(LinphoneVideoActivationPolicy *policy, void *data) {
+	policy->user_data = data;
+}
+
+void linphone_core_set_video_activation_policy(LinphoneCore *lc, const LinphoneVideoActivationPolicy *policy) {
+	lc->video_policy.automatically_accept = policy->automatically_accept;
+	lc->video_policy.automatically_initiate = policy->automatically_initiate;
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config, "video", "automatically_initiate", policy->automatically_initiate);
+		lp_config_set_int(lc->config, "video", "automatically_accept", policy->automatically_accept);
+	}
+}
+
+LinphoneVideoActivationPolicy *linphone_core_get_video_activation_policy(const LinphoneCore *lc){
+	LinphoneVideoActivationPolicy *policy = linphone_video_activation_policy_new();
+	policy->automatically_accept = lc->video_policy.automatically_accept;
+	policy->automatically_initiate = lc->video_policy.automatically_initiate;
+	return policy;
 }
 
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){

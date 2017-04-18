@@ -1123,12 +1123,20 @@ typedef struct _LinphoneVideoDefinition LinphoneVideoDefinition;
 /**
  * Structure describing policy regarding video streams establishments.
  * @ingroup media_parameters
+ * @deprecated
+ * @donotwrap
 **/
 typedef struct _LinphoneVideoPolicy {
 	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/
 	bool_t automatically_accept; /**<Whether video shall be automatically accepted for incoming calls*/
 	bool_t unused[2];
 } LinphoneVideoPolicy;
+
+/**
+ * Structure describing policy regarding video streams establishments.
+ * @ingroup media_parameters
+**/
+typedef struct _LinphoneVideoActivationPolicy LinphoneVideoActivationPolicy;
 
 typedef struct LinphoneVideoSizeDef {
 	MSVideoSize vsize;

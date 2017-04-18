@@ -305,3 +305,11 @@ LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory){
 LinphoneRange *linphone_factory_create_range(LinphoneFactory *factory) {
 	return linphone_range_new();
 }
+
+LinphoneTransports *linphone_factory_create_transports(LinphoneFactory *factory) {
+	return linphone_transports_new();
+}
+
+LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(LinphoneFactory *factory) {
+	return linphone_video_activation_policy_new();
+}

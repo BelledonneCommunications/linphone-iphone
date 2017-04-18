@@ -3212,6 +3212,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
  * @param[in] lc LinphoneCore object
  * @param[in] policy The video policy to use
  * @ingroup media_parameters
+ * @deprecated
 **/
 LINPHONE_PUBLIC void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
 
@@ -3221,8 +3222,59 @@ LINPHONE_PUBLIC void linphone_core_set_video_policy(LinphoneCore *lc, const Linp
  * @param[in] lc LinphoneCore object
  * @return The video policy being used
  * @ingroup media_parameters
+ * @deprecated
 **/
 LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc);
+
+/**
+ * Increment refcount.
+ * @param[in] policy LinphoneVideoActivationPolicy object
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_video_activation_policy_ref(LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Decrement refcount and possibly free the object.
+ * @param[in] policy LinphoneVideoActivationPolicy object
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_video_activation_policy_unref(LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Gets the user data in the LinphoneVideoActivationPolicy object
+ * @param[in] policy the LinphoneVideoActivationPolicy
+ * @return the user data
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void *linphone_video_activation_policy_get_user_data(const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Sets the user data in the LinphoneVideoActivationPolicy object
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @param[in] data the user data
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void linphone_video_activation_policy_set_user_data(LinphoneVideoActivationPolicy *policy, void *data);
+
+/**
+ * Sets the default policy for video.
+ * This policy defines whether:
+ * - video shall be initiated by default for outgoing calls
+ * - video shall be accepted by default for incoming calls
+ * @param[in] lc LinphoneCore object
+ * @param[in] policy The video policy to use
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_set_video_activation_policy(LinphoneCore *lc, const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Get the default policy for video.
+ * See linphone_core_set_video_activation_policy() for more details.
+ * @param[in] lc LinphoneCore object
+ * @return The video policy being used
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_core_get_video_activation_policy(const LinphoneCore *lc);
 
 /**
  * Returns the zero terminated table of supported video resolutions.
