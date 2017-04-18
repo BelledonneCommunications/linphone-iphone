@@ -25,6 +25,7 @@ username_length=-1
 sip_random_port=0
 #whether SIP passwords must be encrypted in configuration storage file
 store_ha1_passwd=0
+deliver_imdn=1
 
 [misc]
 #by default it is set to 30 by liblinphone
