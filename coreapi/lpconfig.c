@@ -489,7 +489,7 @@ char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, vo
 	if (path) {
 		int result = -1;
 		context = xml2lpc_context_new(ctx, lc);
-		result = xml2lpc_set_xml_string(context, path);
+		result = xml2lpc_set_xml_file(context, path);
 		if (result == 0) {
 			result = xml2lpc_convert(context, lpc);
 			if (result == 0) {
