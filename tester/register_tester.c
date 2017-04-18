@@ -459,7 +459,6 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 	char route[256];
 
 	sprintf(route,"sip:%s",test_route);
-	transport = linphone_transports_new(lcm->lc);
 	linphone_transports_set_udp_port(transport, 5070);
 	linphone_transports_set_tcp_port(transport, 5070);
 	linphone_transports_set_tls_port(transport, 5071);
