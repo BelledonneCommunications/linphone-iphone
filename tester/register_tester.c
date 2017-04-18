@@ -576,30 +576,32 @@ static void transport_change(void){
 	LinphoneCore* lc;
 	int register_ok;
 	stats* counters ;
-	LCSipTransports sip_tr;
-	LCSipTransports sip_tr_orig;
+	LinphoneTransports *sip_tr;
+	LinphoneTransports *sip_tr_orig;
 	int number_of_udp_proxy=0;
 	int total_number_of_proxies;
 
 	lcm=configure_lcm();
 	if (lcm) {
-		memset(&sip_tr,0,sizeof(sip_tr));
 		lc=lcm->lc;
+		sip_tr = linphone_transports_new(lc);
 		counters = get_stats(lc);
 		register_ok=counters->number_of_LinphoneRegistrationOk;
 
 		number_of_udp_proxy=get_number_of_udp_proxy(lc);
 		total_number_of_proxies=(int)bctbx_list_size(linphone_core_get_proxy_config_list(lc));
-		linphone_core_get_sip_transports(lc,&sip_tr_orig);
+		sip_tr_orig = linphone_core_get_transports(lc);
 
-		sip_tr.udp_port=sip_tr_orig.udp_port;
+		sip_tr->udp_port = sip_tr_orig->udp_port;
 
 		/*keep only udp*/
-		linphone_core_set_sip_transports(lc,&sip_tr);
+		linphone_core_set_transports(lc, sip_tr);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+number_of_udp_proxy));
 
 		BC_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,total_number_of_proxies-number_of_udp_proxy));
 
+		linphone_transports_unref(sip_tr);
+		linphone_transports_unref(sip_tr_orig);
 		linphone_core_manager_destroy(lcm);
 	}
 }
@@ -607,20 +609,18 @@ static void transport_change(void){
 static void transport_dont_bind(void){
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	stats* counters = &pauline->stat;
-	LCSipTransports tr;
+	LinphoneTransports *tr = linphone_transports_new(pauline->lc);
+	linphone_transports_set_tcp_port(tr, LC_SIP_TRANSPORT_DONTBIND);
+	linphone_transports_set_tls_port(tr, LC_SIP_TRANSPORT_DONTBIND);
 	
-	memset(&tr, 0, sizeof(tr));
-	tr.udp_port = 0;
-	tr.tcp_port = LC_SIP_TRANSPORT_DONTBIND;
-	tr.tls_port = LC_SIP_TRANSPORT_DONTBIND;
-	
-	linphone_core_set_sip_transports(pauline->lc, &tr);
+	linphone_core_set_transports(pauline->lc, tr);
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&counters->number_of_LinphoneRegistrationOk,2,15000));
-	memset(&tr, 0, sizeof(tr));
-	linphone_core_get_sip_transports_used(pauline->lc, &tr);
-	BC_ASSERT_EQUAL(tr.udp_port, 0, int, "%i");
-	BC_ASSERT_EQUAL(tr.tcp_port, LC_SIP_TRANSPORT_DONTBIND, int, "%i");
-	BC_ASSERT_EQUAL(tr.tls_port, LC_SIP_TRANSPORT_DONTBIND, int, "%i");
+	linphone_transports_unref(tr);
+	tr = linphone_core_get_transports_used(pauline->lc);
+	BC_ASSERT_EQUAL(tr->udp_port, 0, int, "%i");
+	BC_ASSERT_EQUAL(tr->tcp_port, LC_SIP_TRANSPORT_DONTBIND, int, "%i");
+	BC_ASSERT_EQUAL(tr->tls_port, LC_SIP_TRANSPORT_DONTBIND, int, "%i");
+	linphone_transports_unref(tr);
 	linphone_core_manager_destroy(pauline);
 }
 
