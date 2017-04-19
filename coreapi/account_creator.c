@@ -108,7 +108,7 @@ static bool_t is_matching_regex(const char *entry, const char* regex) {
 #endif
 }
 
-LinphoneProxyConfig * linphone_account_creator_configure_proxy_config(const LinphoneAccountCreator *creator) {
+LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const LinphoneAccountCreator *creator) {
 	LinphoneAuthInfo *info;
 	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
 	char *identity_str = _get_identity(creator);
