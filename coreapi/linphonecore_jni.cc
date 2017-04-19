@@ -4191,7 +4191,11 @@ extern "C" void  Java_org_linphone_core_LinphoneFriendImpl_finalize(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
 	LinphoneFriend *lfriend=(LinphoneFriend*)ptr;
+	jobject wref = (jobject)linphone_friend_get_user_data(lfriend);
 	linphone_friend_set_user_data(lfriend,NULL);
+	if (wref){
+		env->DeleteWeakGlobalRef(wref);
+	}
 	linphone_friend_unref(lfriend);
 }
 
@@ -4727,7 +4731,11 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEn
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  env
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
+	jobject wref = (jobject)linphone_chat_message_get_user_data((LinphoneChatMessage*)ptr);
 	linphone_chat_message_set_user_data((LinphoneChatMessage*)ptr, NULL);
+	if (wref){
+		env->DeleteWeakGlobalRef(wref);
+	}
 	linphone_chat_message_unref((LinphoneChatMessage*)ptr);
 }
 
