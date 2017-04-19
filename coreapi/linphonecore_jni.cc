@@ -3423,23 +3423,27 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_wasConference(JNI
 
 /* CallStats */
 extern "C" jint Java_org_linphone_core_LinphoneCallStatsImpl_getMediaType(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	return (jint)((LinphoneCallStats *)stats_ptr)->type;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jint)linphone_call_stats_get_type(stats);
 }
 extern "C" jint Java_org_linphone_core_LinphoneCallStatsImpl_getIceState(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	return (jint)((LinphoneCallStats *)stats_ptr)->ice_state;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jint)linphone_call_stats_get_ice_state(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getDownloadBandwidth(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	return (jfloat)((LinphoneCallStats *)stats_ptr)->download_bandwidth;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jfloat)linphone_call_stats_get_download_bandwidth(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getUploadBandwidth(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	return (jfloat)((LinphoneCallStats *)stats_ptr)->upload_bandwidth;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jfloat)linphone_call_stats_get_upload_bandwidth(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	return (jfloat) linphone_call_stats_get_sender_loss_rate(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	return (jfloat) linphone_call_stats_get_receiver_loss_rate(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr) {
@@ -3451,28 +3455,31 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverIntera
 	return (jfloat) linphone_call_stats_get_receiver_interarrival_jitter(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getRoundTripDelay(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	return (jfloat)((LinphoneCallStats *)stats_ptr)->round_trip_delay;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jfloat)linphone_call_stats_get_round_trip_delay(stats);
 }
 extern "C" jlong Java_org_linphone_core_LinphoneCallStatsImpl_getLatePacketsCumulativeNumber(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	return (jlong) linphone_call_stats_get_late_packets_cumulative_number(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getJitterBufferSize(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	return (jfloat)((LinphoneCallStats *)stats_ptr)->jitter_stats.jitter_buffer_size_ms;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jfloat)linphone_call_stats_get_jitter_buffer_size_ms(stats);
 }
 
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getLocalLossRate(JNIEnv *env, jobject thiz,jlong stats_ptr) {
-	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	return stats->local_loss_rate;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return linphone_call_stats_get_local_loss_rate(stats);
 }
 
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getLocalLateRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	return stats->local_late_rate;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return linphone_call_stats_get_local_late_rate(stats);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCallStatsImpl_getIpFamilyOfRemote(JNIEnv *env, jobject thiz, jlong stats_ptr) {
-	return (jint) ((LinphoneCallStats *)stats_ptr)->rtp_remote_family;
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jint) linphone_call_stats_get_ip_family_of_remote(stats);
 }
 
 /*payloadType*/
@@ -3509,7 +3516,7 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getStats(JNIEn
 																		,jlong ptr, jint type) {
 	LinphoneCall *call=(LinphoneCall*)ptr;
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *) linphone_core_get_user_data(linphone_call_get_core(call));
-	const LinphoneCallStats *stats = linphone_call_get_stats(call, (LinphoneStreamType)type);
+	LinphoneCallStats *stats = linphone_call_get_stats(call, (LinphoneStreamType)type);
 	return stats ? env->NewObject(ljb->callStatsClass, ljb->callStatsId, (jlong)stats) : NULL;
 }
 

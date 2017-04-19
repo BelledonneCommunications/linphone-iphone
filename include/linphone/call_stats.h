@@ -89,6 +89,18 @@ LINPHONE_PUBLIC float linphone_call_stats_get_sender_loss_rate(const LinphoneCal
 LINPHONE_PUBLIC float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats);
 
 /**
+ * Get the local loss rate since last report
+ * @return The local loss rate
+**/
+LINPHONE_PUBLIC float linphone_call_stats_get_local_loss_rate(const LinphoneCallStats *stats);
+
+/**
+ * Gets the local late rate since last report
+ * @return The local late rate
+**/
+LINPHONE_PUBLIC float linphone_call_stats_get_local_late_rate(const LinphoneCallStats *stats);
+
+/**
  * Gets the local interarrival jitter
  * @param[in] stats LinphoneCallStats object
  * @return The interarrival jitter at last emitted sender report

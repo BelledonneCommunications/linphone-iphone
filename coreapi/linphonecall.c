@@ -4362,6 +4362,14 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 	return 100.0f * report_block_get_fraction_lost(rrb) / 256.0f;
 }
 
+float linphone_call_stats_get_local_loss_rate(const LinphoneCallStats *stats) {
+	return stats->local_loss_rate;
+}
+
+float linphone_call_stats_get_local_late_rate(const LinphoneCallStats *stats) {
+	return stats->local_late_rate;
+}
+
 float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats) {
 	const report_block_t *srb = NULL;
 	
