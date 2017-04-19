@@ -4467,9 +4467,9 @@ static void report_bandwidth_for_stream(LinphoneCall *call, MediaStream *ms, Lin
 	LinphoneCallStats *stats = NULL;
 	if (type == LinphoneStreamTypeAudio) {
 		stats = call->audio_stats;
-	} else if (type == LinphoneStreamTypeAudio) {
+	} else if (type == LinphoneStreamTypeVideo) {
 		stats = call->video_stats;
-	} else if (type == LinphoneStreamTypeAudio) {
+	} else if (type == LinphoneStreamTypeText) {
 		stats = call->text_stats;
 	} else {
 		return;
