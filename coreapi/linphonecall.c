@@ -4326,7 +4326,7 @@ float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->sent_rtcp->b_cont != NULL)
 		msgpullup(stats->sent_rtcp, -1);
-	
+
 	do{
 		if (rtcp_is_SR(stats->sent_rtcp))
 			srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
@@ -4348,7 +4348,7 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->received_rtcp->b_cont != NULL)
 		msgpullup(stats->received_rtcp, -1);
-	
+
 	do{
 		if (rtcp_is_RR(stats->received_rtcp))
 			rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
@@ -4372,7 +4372,7 @@ float linphone_call_stats_get_local_late_rate(const LinphoneCallStats *stats) {
 
 float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats) {
 	const report_block_t *srb = NULL;
-	
+
 	if (!stats || !stats->sent_rtcp)
 		return 0.0;
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
@@ -4474,14 +4474,14 @@ static void report_bandwidth_for_stream(LinphoneCall *call, MediaStream *ms, Lin
 	} else {
 		return;
 	}
-	
+
 	stats->download_bandwidth=(active) ? (float)(media_stream_get_down_bw(ms)*1e-3) : 0.f;
 	stats->upload_bandwidth=(active) ? (float)(media_stream_get_up_bw(ms)*1e-3) : 0.f;
 	stats->rtcp_download_bandwidth=(active) ? (float)(media_stream_get_rtcp_down_bw(ms)*1e-3) : 0.f;
 	stats->rtcp_upload_bandwidth=(active) ? (float)(media_stream_get_rtcp_up_bw(ms)*1e-3) : 0.f;
 	stats->rtp_remote_family=(active)
 		? (ortp_stream_is_ipv6(&ms->sessions.rtp_session->rtp.gs) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
-		
+
 	if (call->core->send_call_stats_periodical_updates){
 		if (active) update_local_stats(stats, ms);
 		stats->updated |= LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
@@ -4815,7 +4815,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 
 void linphone_call_log_completed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
-	
+
 	call->log->duration= _linphone_call_compute_duration(call); /*store duration since connected*/
 	call->log->error_info = linphone_error_info_ref((LinphoneErrorInfo*)linphone_call_get_error_info(call));
 
@@ -4938,7 +4938,7 @@ LinphonePlayer *linphone_call_get_player(LinphoneCall *call){
 	return call->player;
 }
 
-	
+
 void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *params){
 	if ( call->state == LinphoneCallOutgoingInit || call->state == LinphoneCallIncomingReceived){
 		_linphone_call_set_new_params(call, params);
@@ -4948,7 +4948,7 @@ void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *para
 	}
 }
 
-	
+
 void _linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params){
 	LinphoneCallParams *cp=NULL;
 	if (params) cp=linphone_call_params_copy(params);
@@ -5262,11 +5262,11 @@ LinphoneStatus linphone_call_terminate(LinphoneCall *call) {
 	return linphone_call_terminate_with_error_info(call, NULL);
 }
 
-	
+
 LinphoneStatus linphone_call_terminate_with_error_info(LinphoneCall *call , const LinphoneErrorInfo *ei){
 	SalErrorInfo sei={0};
 	LinphoneErrorInfo* p_ei = (LinphoneErrorInfo*) ei;
-	
+
 	ms_message("Terminate call [%p] which is currently in state %s", call, linphone_call_state_to_string(call->state));
 	switch (call->state) {
 		case LinphoneCallReleased:
@@ -5283,7 +5283,7 @@ LinphoneStatus linphone_call_terminate_with_error_info(LinphoneCall *call , cons
 			call->op = NULL;
 			break;
 		default:
-			
+
 			if (ei == NULL){
 				sal_call_terminate(call->op);
 			}
@@ -5297,7 +5297,7 @@ LinphoneStatus linphone_call_terminate_with_error_info(LinphoneCall *call , cons
 
 	terminate_call(call);
 	return 0;
-	
+
 }
 
 LinphoneStatus linphone_call_redirect(LinphoneCall *call, const char *redirect_uri) {
@@ -5339,14 +5339,14 @@ LinphoneStatus linphone_call_decline(LinphoneCall * call, LinphoneReason reason)
 	linphone_error_info_unref(ei);
 	return status;
 }
-	
-	
+
+
 LinphoneStatus linphone_call_decline_with_error_info(LinphoneCall * call, const LinphoneErrorInfo *ei) {
 	SalErrorInfo sei = {0};
 	SalErrorInfo sub_sei = {0};
-	
+
 	sei.sub_sei = &sub_sei;
-	
+
 	if ((call->state != LinphoneCallIncomingReceived) && (call->state != LinphoneCallIncomingEarlyMedia)) {
 		ms_error("Cannot decline a call that is in state %s", linphone_call_state_to_string(call->state));
 		return -1;
@@ -5653,12 +5653,12 @@ LinphoneStatus linphone_call_defer_update(LinphoneCall *call) {
 		ms_error("linphone_call_defer_update() not done in state LinphoneCallUpdatedByRemote");
 		return -1;
 	}
-	
+
 	if (call->expect_media_in_ack) {
 		ms_error("linphone_call_defer_update() is not possible during a late offer incoming reINVITE (INVITE without SDP)");
 		return -1;
 	}
-	
+
 	call->defer_update=TRUE;
 	return 0;
 }
@@ -5869,7 +5869,7 @@ int linphone_call_start_invite(LinphoneCall *call, const LinphoneAddress *destin
 
 	linphone_call_ref(call); /* Take a ref because sal_call() may destroy the call if no SIP transport is available */
 	err = sal_call(call->op, from, real_url);
-	
+
 	if (err < 0) {
 		if ((call->state != LinphoneCallError) && (call->state != LinphoneCallReleased)) {
 			/* sal_call() may invoke call_failure() and call_released() SAL callbacks synchronously,
@@ -6064,20 +6064,14 @@ void linphone_call_replace_op(LinphoneCall *call, SalOp *op) {
 	sal_op_release(oldop);
 }
 
-void linphone_call_ogl_render(LinphoneCall *call, bool_t is_preview) {
+void linphone_call_ogl_render(const LinphoneCall *call) {
+	#ifdef VIDEO_ENABLED
+
 	VideoStream *stream = call->videostream;
-	if (!stream)
-		return;
+	if (stream && stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
+		ms_filter_call_method(stream->output, MS_OGL_RENDER, NULL);
 
-	if (!is_preview) {
-		if (stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
-			ms_filter_call_method(stream->output, MS_OGL_RENDER, NULL);
-
-		return;
-	}
-
-	if (stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
-		ms_filter_call_method(stream->output2, MS_OGL_RENDER, NULL);
+	#endif
 }
 
 void linphone_call_add_callbacks(LinphoneCall *call, LinphoneCallCbs *cbs) {

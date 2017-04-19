@@ -3209,7 +3209,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
  * This policy defines whether:
  * - video shall be initiated by default for outgoing calls
  * - video shall be accepter by default for incoming calls
- * 
+ *
  * @param[in] lc LinphoneCore object
  * @param[in] policy The video policy to use
  * @ingroup media_parameters
@@ -3427,6 +3427,13 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, flo
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);
+
+/**
+ * Call generic OpenGL render for a given core.
+ * @param lc The core.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_preview_ogl_render(const LinphoneCore *lc);
 
 /**
  * Controls video preview enablement.
@@ -5119,8 +5126,8 @@ LINPHONE_PUBLIC LinphonePresencePerson * linphone_core_create_presence_person(Li
  * @return The created #LinphonePresenceService object.
  */
 LINPHONE_PUBLIC LinphonePresenceService * linphone_core_create_presence_service(LinphoneCore *lc, const char *id, LinphonePresenceBasicStatus basic_status, const char *contact);
-	
-	
+
+
 /**
  * Notifies the upper layer that a presence status has been received by calling the appropriate
  * callback if one has been set.
@@ -5139,7 +5146,7 @@ LINPHONE_PUBLIC void linphone_core_notify_notify_presence_received(LinphoneCore 
  * @param[in]  presence_model the #LinphonePresenceModel that has been modified
  */
 LINPHONE_PUBLIC void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
-	
+
 
 
 /**

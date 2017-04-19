@@ -381,11 +381,11 @@ LINPHONE_PUBLIC LinphoneStatus linphone_call_resume(LinphoneCall *call);
  * @return 0 on success, -1 on failure
 **/LINPHONE_PUBLIC LinphoneStatus linphone_call_terminate(LinphoneCall *call);
 
-	
+
 /**
  * Terminates a call.
  * @param[in] call 	LinphoneCall object
- * @param[in] ei 	LinphoneErrorInfo 
+ * @param[in] ei 	LinphoneErrorInfo
  * @return 0 on success, -1 on failure
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_call_terminate_with_error_info(LinphoneCall *call, const LinphoneErrorInfo *ei);
@@ -820,9 +820,8 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
 /**
  * Call generic OpenGL render for a given call.
  * @param call The call.
- * @is_preview If true the preview is displayed otherwise it's the input stream.
  */
-LINPHONE_PUBLIC void linphone_call_ogl_render(LinphoneCall *call, bool_t is_preview);
+LINPHONE_PUBLIC void linphone_call_ogl_render(const LinphoneCall *call);
 
 
 

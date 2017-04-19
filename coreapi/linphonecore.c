@@ -36,13 +36,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
-#include "mediastreamer2/mediastream.h"
-#include "mediastreamer2/msfactory.h"
-#include "mediastreamer2/mseventqueue.h"
-#include "mediastreamer2/msvolume.h"
-#include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/dtmfgen.h"
+#include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/mseventqueue.h"
+#include "mediastreamer2/msfactory.h"
 #include "mediastreamer2/msjpegwriter.h"
+#include "mediastreamer2/msogl.h"
+#include "mediastreamer2/msvolume.h"
 
 #ifdef INET6
 #ifndef _WIN32
@@ -2861,7 +2862,7 @@ LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const Linphone
 }
 
 LinphoneStatus linphone_core_set_transports(LinphoneCore *lc, const LinphoneTransports * transports){
-	if (transports->udp_port == lc->sip_conf.transports.udp_port && 
+	if (transports->udp_port == lc->sip_conf.transports.udp_port &&
 		transports->tcp_port == lc->sip_conf.transports.tcp_port &&
 		transports->tls_port == lc->sip_conf.transports.tls_port &&
 		transports->dtls_port == lc->sip_conf.transports.dtls_port) {
@@ -5321,7 +5322,7 @@ void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVide
 	if (video_definition_supported(vdef)) {
 		LinphoneVideoDefinition *oldvdef = lc->video_conf.vdef;
 		lc->video_conf.vdef = linphone_video_definition_ref(vdef);
-		
+
 		if ((lc->previewstream != NULL) && (lc->video_conf.preview_vdef == NULL)
 			&& (oldvdef != NULL) && !linphone_video_definition_equals(oldvdef, vdef)) {
 			relaunch_video_preview(lc);
@@ -5459,6 +5460,19 @@ float linphone_core_get_preferred_framerate(LinphoneCore *lc){
 	return lc->video_conf.fps;
 }
 
+void linphone_core_preview_ogl_render(const LinphoneCore *lc) {
+	#ifdef VIDEO_ENABLED
+
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+	VideoStream *stream;
+
+	if (call && (stream = call->videostream) && stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
+		ms_filter_call_method(stream->output2, MS_OGL_RENDER, NULL);
+	else if ((stream = lc->previewstream) && stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
+		ms_filter_call_method(stream->output, MS_OGL_RENDER, NULL);
+
+	#endif
+}
 
 void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
