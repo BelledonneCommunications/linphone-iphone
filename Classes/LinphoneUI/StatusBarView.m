@@ -335,7 +335,7 @@
 																 nil),
 											   myCode, correspondantCode];
 
-				if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground &&
+				if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive &&
 					floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 					UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 					content.title = NSLocalizedString(@"ZRTP verification", nil);

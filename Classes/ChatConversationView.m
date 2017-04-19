@@ -358,8 +358,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (fromStr && cr_from_string) {
 		if (strcasecmp(cr_from_string, fromStr) == 0) {
-			if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
-				  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive)) {
+			if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 				linphone_chat_room_mark_as_read(room);
 			}
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];

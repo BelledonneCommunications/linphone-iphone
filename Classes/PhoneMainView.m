@@ -274,7 +274,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 													 linphone_chat_room_get_peer_address(view.chatRoom)))
 		return;
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
 		return;
 
 	LinphoneManager *lm = LinphoneManager.instance;
@@ -287,7 +287,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)registrationUpdate:(NSNotification *)notif {
 	LinphoneRegistrationState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneRegistrationFailed && ![currentView equal:AssistantView.compositeViewDescription] &&
-		[UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+		[UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
 																		 message:[notif.userInfo objectForKey:@"message"]
 																  preferredStyle:UIAlertControllerStyleAlert];
@@ -732,7 +732,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneCallLog *callLog = linphone_call_get_call_log(call);
 	NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
-	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 		LinphoneManager *lm = LinphoneManager.instance;
 		BOOL callIDFromPush = [lm popPushCallID:callId];
 		BOOL autoAnswer = [lm lpConfigBoolForKey:@"autoanswer_notif_preference"];

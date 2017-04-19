@@ -88,7 +88,7 @@
 	NSString *callID = [self.calls objectForKey:uuid]; // first, make sure this callid is not already involved in a call
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 	if (call != NULL) {
-		BOOL video = (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) &&
+		BOOL video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
 					  linphone_core_get_video_policy(LC)->automatically_accept &&
 					  linphone_call_params_video_enabled(linphone_call_get_remote_params((LinphoneCall *)call)));
 		self.pendingCall = call;
@@ -129,12 +129,14 @@
 	} else {
 		NSUUID *uuid = action.callUUID;
 		NSString *callID = [self.calls objectForKey:uuid];
-		LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
-		if (call) {
-			linphone_call_terminate((LinphoneCall *)call);
+		if (callID) {
+			LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
+			if (call) {
+				linphone_call_terminate((LinphoneCall *)call);
+			}
+			[self.uuids removeObjectForKey:callID];
+			[self.calls removeObjectForKey:uuid];
 		}
-		[self.uuids removeObjectForKey:callID];
-		[self.calls removeObjectForKey:uuid];
 	}
 }
 

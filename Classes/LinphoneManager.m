@@ -625,7 +625,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 - (void)userNotifContinue:(NSTimer *)timer {
     UNNotificationContent *content = [timer userInfo];
-	if (content && [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+	if (content && [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 		LOGI(@"cancelling/presenting user notif");
 		UNNotificationRequest *req =
 			[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
@@ -663,8 +663,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	NSString *address = [FastAddressBook displayNameForAddress:addr];
 
 	if (state == LinphoneCallIncomingReceived) {
-		// TESTING !!
-		// linphone_call_accept_early_media(call);
 		LinphoneCallLog *callLog = linphone_call_get_call_log(call);
 		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 		int index = [(NSNumber *)[_pushDict objectForKey:callId] intValue] - 1;
@@ -698,116 +696,118 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			return;
 		}
 
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max && call &&
-			(linphone_core_get_calls_nb(LC) < 2)) {
+		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+			if (call && (linphone_core_get_calls_nb(LC) < 2)) {
 #if !TARGET_IPHONE_SIMULATOR
-			NSString *callId =
-				[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
+				NSString *callId =
+					[NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
 
-			NSUUID *uuid = [NSUUID UUID];
-			[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
-			[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
-			BOOL video = FALSE;
-			video = (([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) &&
-					 linphone_core_get_video_policy(LC)->automatically_accept &&
-					 linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
-			[LinphoneManager.instance.providerDelegate reportIncomingCallwithUUID:uuid handle:address video:video];
+				NSUUID *uuid = [NSUUID UUID];
+				[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
+				[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
+				BOOL video = FALSE;
+				video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
+						 linphone_core_get_video_policy(LC)->automatically_accept &&
+						 linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
+				[LinphoneManager.instance.providerDelegate reportIncomingCallwithUUID:uuid handle:address video:video];
 #else
-			[PhoneMainView.instance displayIncomingCall:call];
+				[PhoneMainView.instance displayIncomingCall:call];
 #endif
-		} else if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-			// Create a UNNotification
-			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-			content.title = NSLocalizedString(@"Incoming call", nil);
-			content.body = address;
-			content.sound = [UNNotificationSound soundNamed:@"notes_of_the_optimistic.caf"];
-			content.categoryIdentifier = @"call_cat";
-			content.userInfo = @{ @"CallId" : callId };
-			UNNotificationRequest *req =
-				[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-			[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req
-																   withCompletionHandler:^(NSError *err){
-																   }];
-		}
+			} else if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+				// Create a UNNotification
+				UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+				content.title = NSLocalizedString(@"Incoming call", nil);
+				content.body = address;
+				content.sound = [UNNotificationSound soundNamed:@"notes_of_the_optimistic.caf"];
+				content.categoryIdentifier = @"call_cat";
+				content.userInfo = @{ @"CallId" : callId };
+				UNNotificationRequest *req =
+					[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+				[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req
+																	   withCompletionHandler:^(NSError *err){
+																	   }];
+			}
+		} else {
+			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+				// if (![LinphoneManager.instance popPushCallID:callId]) {
+				// case where a remote notification is not already received
+				// Create a new local notification
+				if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+					UIMutableUserNotificationAction *answer = [[UIMutableUserNotificationAction alloc] init];
+					answer.identifier = @"answer";
+					answer.title = NSLocalizedString(@"Answer", nil);
+					answer.activationMode = UIUserNotificationActivationModeForeground;
+					answer.destructive = NO;
+					answer.authenticationRequired = YES;
 
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-			// if (![LinphoneManager.instance popPushCallID:callId]) {
-			// case where a remote notification is not already received
-			// Create a new local notification
-			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-				UIMutableUserNotificationAction *answer = [[UIMutableUserNotificationAction alloc] init];
-				answer.identifier = @"answer";
-				answer.title = NSLocalizedString(@"Answer", nil);
-				answer.activationMode = UIUserNotificationActivationModeForeground;
-				answer.destructive = NO;
-				answer.authenticationRequired = YES;
+					UIMutableUserNotificationAction *decline = [[UIMutableUserNotificationAction alloc] init];
+					decline.identifier = @"decline";
+					decline.title = NSLocalizedString(@"Decline", nil);
+					decline.activationMode = UIUserNotificationActivationModeBackground;
+					decline.destructive = YES;
+					decline.authenticationRequired = NO;
 
-				UIMutableUserNotificationAction *decline = [[UIMutableUserNotificationAction alloc] init];
-				decline.identifier = @"decline";
-				decline.title = NSLocalizedString(@"Decline", nil);
-				decline.activationMode = UIUserNotificationActivationModeBackground;
-				decline.destructive = YES;
-				decline.authenticationRequired = NO;
+					NSArray *callactions = @[ decline, answer ];
 
-				NSArray *callactions = @[ decline, answer ];
+					UIMutableUserNotificationCategory *callcat = [[UIMutableUserNotificationCategory alloc] init];
+					callcat.identifier = @"incoming_call";
+					[callcat setActions:callactions forContext:UIUserNotificationActionContextDefault];
+					[callcat setActions:callactions forContext:UIUserNotificationActionContextMinimal];
 
-				UIMutableUserNotificationCategory *callcat = [[UIMutableUserNotificationCategory alloc] init];
-				callcat.identifier = @"incoming_call";
-				[callcat setActions:callactions forContext:UIUserNotificationActionContextDefault];
-				[callcat setActions:callactions forContext:UIUserNotificationActionContextMinimal];
+					NSSet *categories = [NSSet setWithObjects:callcat, nil];
 
-				NSSet *categories = [NSSet setWithObjects:callcat, nil];
+					UIUserNotificationSettings *set = [UIUserNotificationSettings
+						settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge |
+										  UIUserNotificationTypeSound)
+							  categories:categories];
+					[[UIApplication sharedApplication] registerUserNotificationSettings:set];
+					data->notification = [[UILocalNotification alloc] init];
+					if (data->notification) {
+						// iOS8 doesn't need the timer trick for the local notification.
+						data->notification.category = @"incoming_call";
+						if ([[UIDevice currentDevice].systemVersion floatValue] >= 8 &&
+							[self lpConfigBoolForKey:@"repeat_call_notification"] == NO) {
+							NSString *ring = ([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring"
+																						   inSection:@"sound"]
+																			  .lastPathComponent]
+												  ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
+												 .lastPathComponent;
+							data->notification.soundName = ring;
+						} else {
+							data->notification.soundName = @"shortring.caf";
+							data->timer = [NSTimer scheduledTimerWithTimeInterval:5
+																		   target:self
+																		 selector:@selector(localNotifContinue:)
+																		 userInfo:data->notification
+																		  repeats:TRUE];
+						}
 
-				UIUserNotificationSettings *set = [UIUserNotificationSettings
-					settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge |
-									  UIUserNotificationTypeSound)
-						  categories:categories];
-				[[UIApplication sharedApplication] registerUserNotificationSettings:set];
-				data->notification = [[UILocalNotification alloc] init];
-				if (data->notification) {
-                    // iOS8 doesn't need the timer trick for the local notification.
-                    data->notification.category = @"incoming_call";
-					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8 &&
-						[self lpConfigBoolForKey:@"repeat_call_notification"] == NO) {
-						NSString *ring =
-							([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"].lastPathComponent]
-								 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
-								.lastPathComponent;
-						data->notification.soundName = ring;
-					} else {
-						data->notification.soundName = @"shortring.caf";
-						data->timer = [NSTimer scheduledTimerWithTimeInterval:5
-																	   target:self
-																	 selector:@selector(localNotifContinue:)
-																	 userInfo:data->notification
-																	  repeats:TRUE];
-					}
+						data->notification.repeatInterval = 0;
 
-					data->notification.repeatInterval = 0;
+						data->notification.alertBody =
+							[NSString stringWithFormat:NSLocalizedString(@"IC_MSG", nil), address];
+						// data->notification.alertAction = NSLocalizedString(@"Answer", nil);
+						data->notification.userInfo = @{ @"callId" : callId, @"timer" : [NSNumber numberWithInt:1] };
+						data->notification.applicationIconBadgeNumber = 1;
+						UIApplication *app = [UIApplication sharedApplication];
+						LOGI([app currentUserNotificationSettings].description);
+						[app presentLocalNotificationNow:data->notification];
 
-					data->notification.alertBody =
-						[NSString stringWithFormat:NSLocalizedString(@"IC_MSG", nil), address];
-					//data->notification.alertAction = NSLocalizedString(@"Answer", nil);
-					data->notification.userInfo = @{ @"callId" : callId, @"timer" : [NSNumber numberWithInt:1] };
-					data->notification.applicationIconBadgeNumber = 1;
-                    UIApplication *app = [UIApplication sharedApplication];
-                    LOGI([app currentUserNotificationSettings].description);
-					[app presentLocalNotificationNow:data->notification];
+						if (!incallBgTask) {
+							incallBgTask =
+								[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+								  LOGW(@"Call cannot ring any more, too late");
+								  [[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
+								  incallBgTask = 0;
+								}];
 
-					if (!incallBgTask) {
-						incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-						  LOGW(@"Call cannot ring any more, too late");
-						  [[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
-						  incallBgTask = 0;
-						}];
-
-						if (data->timer) {
-							[[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
+							if (data->timer) {
+								[[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
+							}
 						}
 					}
 				}
-            }
-
+			}
 		}
 	}
 
@@ -835,7 +835,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		}
 
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-			if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 				if (data->timer) {
 					[data->timer invalidate];
 					data->timer = nil;
@@ -1122,7 +1122,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 
 		// dont pop up if we are in background, in any case we will refresh registers when entering
 		// the application again
-		if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+		if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
 			return;
 		}
 
@@ -1208,7 +1208,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	}
 
 	if (linphone_chat_message_is_file_transfer(msg) || linphone_chat_message_is_text(msg)) {
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
+		if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive ||
 			((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) &&
 			 ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) ||
 			(PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription &&
@@ -1382,7 +1382,7 @@ static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, Li
 						 strAddr];
 	NSString *action = NSLocalizedString(@"Call", nil);
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 			content.title = title;
@@ -1501,7 +1501,7 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 						  @"Please call this contact and verify his ZRTP key before sending your messages.",
 						  nil);
 
-	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 		UIAlertController *errView =
 			[UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
 
@@ -2249,7 +2249,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
 	pushBgTask = 0;
 	pushBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-	  if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+	  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 		  if (msg) {
 			  LOGW(@"Incomming message couldn't be received");
 			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
