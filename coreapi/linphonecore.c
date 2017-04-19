@@ -5319,20 +5319,15 @@ static bool_t video_definition_supported(const LinphoneVideoDefinition *vdef) {
 
 void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef) {
 	if (video_definition_supported(vdef)) {
-		LinphoneVideoDefinition *oldvdef;
-		if ((lc->video_conf.vdef == NULL) || linphone_video_definition_is_undefined(lc->video_conf.preview_vdef)) {
-			oldvdef = lc->video_conf.vdef;
-		} else {
-			oldvdef = lc->video_conf.preview_vdef;
-		}
-		if ((oldvdef == NULL) || !linphone_video_definition_equals(oldvdef, vdef)) {
-			lc->video_conf.vdef = linphone_video_definition_ref(vdef);
-			if (oldvdef != NULL) linphone_video_definition_unref(oldvdef);
-			if (lc->previewstream != NULL) {
-				relaunch_video_preview(lc);
-			}
+		LinphoneVideoDefinition *oldvdef = lc->video_conf.vdef;
+		lc->video_conf.vdef = linphone_video_definition_ref(vdef);
+		
+		if ((lc->previewstream != NULL) && (lc->video_conf.preview_vdef == NULL)
+			&& (oldvdef != NULL) && !linphone_video_definition_equals(oldvdef, vdef)) {
+			relaunch_video_preview(lc);
 		}
 
+		if (oldvdef != NULL) linphone_video_definition_unref(oldvdef);
 		if (linphone_core_ready(lc)) {
 			lp_config_set_string(lc->config, "video", "size", linphone_video_definition_get_name(vdef));
 		}
