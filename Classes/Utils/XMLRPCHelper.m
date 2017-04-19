@@ -71,7 +71,7 @@ NSMutableArray *personsArray;
 	// Create LinphoneXMLRPCRequest
 	LinphoneXmlRpcSession *requestSession = linphone_xml_rpc_session_new(LC, URL);
 	// LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new(method.UTF8String, LinphoneXmlRpcArgString);
-	requestObject.xmlRpcRequest = linphone_xml_rpc_request_new(method.UTF8String, LinphoneXmlRpcArgString);
+	requestObject.xmlRpcRequest = linphone_xml_rpc_request_new(LinphoneXmlRpcArgString, method.UTF8String);
 
 	[personsArray addObject:requestObject];
 	// Set argument to this LinphoneXMLRPCRequest
