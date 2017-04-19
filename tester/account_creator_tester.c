@@ -493,6 +493,28 @@ static void server_delete_account_test(void) {
 
 	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
 
+	linphone_account_creator_unref(creator);
+
+	creator = _linphone_account_creator_new(marie->lc, XMLRPC_URL);
+	cbs = linphone_account_creator_get_callbacks(creator);
+
+	linphone_account_creator_cbs_set_user_data(cbs, stats);
+	account_creator_reset_cb_done(cbs);
+	linphone_account_creator_service_set_user_data(
+		linphone_account_creator_get_service(creator),
+		(void*)LinphoneAccountCreatorStatusRequestOk);
+	linphone_account_creator_set_username(creator, "XXXTESTuser_3");
+	linphone_account_creator_set_email(creator, "user_1@linphone.org");
+	linphone_account_creator_set_password(creator, "password");
+
+	BC_ASSERT_EQUAL(
+		delete_account_cb(creator),
+		LinphoneAccountCreatorStatusRequestOk,
+		LinphoneAccountCreatorStatus,
+		"%i");
+
+	wait_for_until(marie->lc, NULL, &stats->cb_done, 1, TIMEOUT_REQUEST);
+
 	ms_free(stats);
 	linphone_account_creator_unref(creator);
 	linphone_core_manager_destroy(marie);
@@ -996,6 +1018,10 @@ static void server_activate_account_not_activated(void) {
 		(void*)LinphoneAccountCreatorStatusAccountActivated);
 	linphone_account_creator_cbs_set_activate_account(cbs, account_creator_cb);
 
+	linphone_account_creator_service_set_activate_account_cb(
+		linphone_account_creator_get_service(creator),
+		linphone_account_creator_activate_email_account_linphone);
+
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_activate_account(creator),
 		LinphoneAccountCreatorStatusRequestOk,
@@ -1026,6 +1052,9 @@ static void server_activate_account_already_activated(void) {
 		linphone_account_creator_get_service(creator),
 		(void*)LinphoneAccountCreatorStatusAccountAlreadyActivated);
 	linphone_account_creator_cbs_set_activate_account(cbs, account_creator_cb);
+	linphone_account_creator_service_set_activate_account_cb(
+		linphone_account_creator_get_service(creator),
+		linphone_account_creator_activate_email_account_linphone);
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_activate_account(creator),
@@ -1055,6 +1084,9 @@ static void server_activate_non_existent_account(void) {
 		linphone_account_creator_get_service(creator),
 		(void*)LinphoneAccountCreatorStatusAccountNotActivated);
 	linphone_account_creator_cbs_set_activate_account(cbs, account_creator_cb);
+	linphone_account_creator_service_set_activate_account_cb(
+		linphone_account_creator_get_service(creator),
+		linphone_account_creator_activate_email_account_linphone);
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_activate_account(creator),
@@ -1099,6 +1131,9 @@ static void server_activate_account_with_email_activated_arg_username_missing(vo
 		linphone_account_creator_get_service(creator),
 		(void*)LinphoneAccountCreatorStatusMissingArguments);
 	linphone_account_creator_cbs_set_activate_account(cbs, account_creator_cb);
+	linphone_account_creator_service_set_activate_account_cb(
+		linphone_account_creator_get_service(creator),
+		linphone_account_creator_activate_email_account_linphone);
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_activate_account(creator),
@@ -1125,6 +1160,9 @@ static void server_activate_account_with_email_activated_arg_activation_code_mis
 		linphone_account_creator_get_service(creator),
 		(void*)LinphoneAccountCreatorStatusMissingArguments);
 	linphone_account_creator_cbs_set_activate_account(cbs, account_creator_cb);
+	linphone_account_creator_service_set_activate_account_cb(
+		linphone_account_creator_get_service(creator),
+		linphone_account_creator_activate_email_account_linphone);
 
 	BC_ASSERT_EQUAL(
 		linphone_account_creator_activate_account(creator),
