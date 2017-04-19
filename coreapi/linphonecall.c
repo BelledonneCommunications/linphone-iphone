@@ -1307,9 +1307,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
 	call->dest_proxy=cfg;
-	call->audio_stats = linphone_call_stats_new();
-	call->video_stats = linphone_call_stats_new();
-	call->text_stats = linphone_call_stats_new();
+	call->audio_stats = linphone_call_stats_ref(linphone_call_stats_new());
+	call->video_stats = linphone_call_stats_ref(linphone_call_stats_new());
+	call->text_stats = linphone_call_stats_ref(linphone_call_stats_new());
 	linphone_call_outgoing_select_ip_version(call,to,cfg);
 	linphone_call_get_local_ip(call, to);
 	call->params = linphone_call_params_copy(params);
@@ -1492,9 +1492,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	LinphoneNatPolicy *nat_policy = NULL;
 	int i;
 	call->dir=LinphoneCallIncoming;
-	call->audio_stats = linphone_call_stats_new();
-	call->video_stats = linphone_call_stats_new();
-	call->text_stats = linphone_call_stats_new();
+	call->audio_stats = linphone_call_stats_ref(linphone_call_stats_new());
+	call->video_stats = linphone_call_stats_ref(linphone_call_stats_new());
+	call->text_stats = linphone_call_stats_ref(linphone_call_stats_new());
 	sal_op_set_user_pointer(op,call);
 	call->op=op;
 	call->core=lc;
@@ -4290,7 +4290,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallStats, belle_sip_object_t,
 	NULL, // destroy
 	_linphone_call_stats_clone, // clone
 	NULL, // marshal
-	FALSE
+	TRUE
 );
 
 LinphoneCallStats *linphone_call_stats_new() {
