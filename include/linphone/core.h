@@ -3215,7 +3215,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
  * @ingroup media_parameters
  * @deprecated
 **/
-LINPHONE_PUBLIC void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
 
 /**
  * Get the default policy for video.
@@ -3225,7 +3225,7 @@ LINPHONE_PUBLIC void linphone_core_set_video_policy(LinphoneCore *lc, const Linp
  * @ingroup media_parameters
  * @deprecated
 **/
-LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc);
 
 /**
  * Increment refcount.
