@@ -62,6 +62,13 @@ LINPHONE_PUBLIC void *linphone_video_definition_get_user_data(const LinphoneVide
 LINPHONE_PUBLIC void linphone_video_definition_set_user_data(LinphoneVideoDefinition *vdef, void *ud);
 
 /**
+ * Clone a video definition.
+ * @param[in] vdef LinphoneVideoDefinition object to be cloned
+ * @return The new clone of the video definition
+ */
+LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_video_definition_clone(const LinphoneVideoDefinition *vdef);
+
+/**
  * Get the width of the video definition.
  * @param[in] vdef LinphoneVideoDefinition object
  * @return The width of the video definition

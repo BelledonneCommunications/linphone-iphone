@@ -206,7 +206,7 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const
 		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
 		if (linphone_video_definition_equals(svdef, searched_vdef)) {
 			linphone_video_definition_unref(searched_vdef);
-			return svdef;
+			return linphone_video_definition_clone(svdef);
 		}
 	}
 
@@ -220,7 +220,7 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_na
 	for (item = supported; item != NULL; item = bctbx_list_next(item)) {
 		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
 		if (strcmp(linphone_video_definition_get_name(svdef), name) == 0) {
-			return svdef;
+			return linphone_video_definition_clone(svdef);
 		}
 	}
 	return NULL;

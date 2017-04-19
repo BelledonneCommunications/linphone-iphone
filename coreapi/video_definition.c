@@ -66,6 +66,9 @@ void linphone_video_definition_set_user_data(LinphoneVideoDefinition *vdef, void
 	vdef->user_data = ud;
 }
 
+LinphoneVideoDefinition * linphone_video_definition_clone(const LinphoneVideoDefinition *vdef) {
+	return linphone_video_definition_new(linphone_video_definition_get_width(vdef), linphone_video_definition_get_height(vdef), linphone_video_definition_get_name(vdef));
+}
 
 unsigned int linphone_video_definition_get_width(const LinphoneVideoDefinition *vdef) {
 	return vdef->width;
