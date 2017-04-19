@@ -2722,6 +2722,8 @@ static void _call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enab
 			BC_ASSERT_PTR_NOT_NULL(marie_token);
 			if (marie_token && pauline_token){
 				BC_ASSERT_STRING_EQUAL(pauline_token, marie_token);
+				BC_ASSERT_TRUE(strlen(pauline_token)>0);
+				BC_ASSERT_TRUE(strlen(marie_token)>0);
 			}
 			if (!plays_nothing) liblinphone_tester_check_rtcp(pauline,marie);
 		}

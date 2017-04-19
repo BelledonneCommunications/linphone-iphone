@@ -4749,7 +4749,7 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			}
 		} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
 			if (stream_index == call->main_audio_stream_index)
-				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
+				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_info.sas, evd->info.zrtp_info.verified);
 		} else if (evt == ORTP_EVENT_DTLS_ENCRYPTION_CHANGED) {
 			if (stream_index == call->main_audio_stream_index)
 				linphone_call_audiostream_encryption_changed(call, evd->info.dtls_stream_encrypted);
