@@ -306,7 +306,7 @@
 		[LinphoneManager.instance setProviderDelegate:self.del];
 	}
 
-	if (state == UIApplicationStateBackground) {
+	if (state != UIApplicationStateActive) {
 		// we've been woken up directly to background;
 		if (!start_at_boot || !background_mode) {
 			// autoboot disabled or no background, and no push: do nothing and wait for a real launch
@@ -470,7 +470,7 @@
 		}
 
 		if (callId && [self addLongTaskIDforCallID:callId]) {
-			if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && loc_key &&
+			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && loc_key &&
 				index > 0) {
 				if ([loc_key isEqualToString:@"IC_MSG"]) {
 					[LinphoneManager.instance startPushLongRunningTask:FALSE];
@@ -514,78 +514,6 @@
 	}
 	return NULL;
 }
-
-/*
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-	LOGI(@"%@ - state = %ld", NSStringFromSelector(_cmd), (long)application.applicationState);
-
-	if ([notification.category isEqual:LinphoneManager.instance.iapManager.notificationCategory]){
-		[PhoneMainView.instance changeCurrentView:ShopView.compositeViewDescription];
-		return;
-	}
-
-	[self fixRing];
-
-	if ([notification.userInfo objectForKey:@"callId"] != nil) {
-		BOOL bypass_incoming_view = TRUE;
-		// some local notifications have an internal timer to relaunch themselves at specified intervals
-		if ([[notification.userInfo objectForKey:@"timer"] intValue] == 1) {
-			[LinphoneManager.instance cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
-			bypass_incoming_view = [LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"];
-		}
-		if (bypass_incoming_view) {
-			[LinphoneManager.instance acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
-		}
-	} else if ([notification.userInfo objectForKey:@"from_addr"] != nil) {
-		NSString *chat = notification.alertBody;
-		NSString *remote_uri = (NSString *)[notification.userInfo objectForKey:@"from_addr"];
-		NSString *from = (NSString *)[notification.userInfo objectForKey:@"from"];
-		NSString *callID = (NSString *)[notification.userInfo objectForKey:@"call-id"];
-		LinphoneChatRoom *room = [self findChatRoomForContact:remote_uri];
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
-			((PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription) &&
-			 ((PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription))) ||
-			(PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription &&
-			 room != PhoneMainView.instance.currentRoom)) {
-			// Create a new notification
-
-			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-				// Do nothing
-			} else {
-				UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-				content.title = NSLocalizedString(@"Message received", nil);
-				if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-					content.subtitle = from;
-					content.body = chat;
-				} else {
-					content.body = from;
-				}
-				content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
-				content.categoryIdentifier = @"msg_cat";
-				content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
-				content.accessibilityLabel = @"Message notif";
-				UNNotificationRequest *req =
-					[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-				req.accessibilityLabel = @"Message notif";
-				[[UNUserNotificationCenter currentNotificationCenter]
-					addNotificationRequest:req
-					 withCompletionHandler:^(NSError *_Nullable error) {
-					   // Enable or disable features based on authorization.
-					   if (error) {
-						   LOGD(@"Error while adding notification request :");
-						   LOGD(error.description);
-					   }
-					 }];
-			}
-		}
-	} else if ([notification.userInfo objectForKey:@"callLog"] != nil) {
-		NSString *callLog = (NSString *)[notification.userInfo objectForKey:@"callLog"];
-		HistoryDetailsView *view = VIEW(HistoryDetailsView);
-		[view setCallLogId:callLog];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	}
-}
-*/
 
 #pragma mark - PushNotification Functions
 
@@ -903,8 +831,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
 				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
 				if (room) {
-					if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
-						  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive))
+					if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
 						linphone_chat_room_mark_as_read(room);
 					TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 						getCachedController:NSStringFromClass(TabBarView.class)];
@@ -954,8 +881,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
 				[LinphoneManager.instance alertLIME:room];
 			}
-			if (!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground ||
-				  [UIApplication sharedApplication].applicationState == UIApplicationStateInactive)) {
+			if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 				linphone_chat_room_mark_as_read(room);
 			}
 			[PhoneMainView.instance updateApplicationBadgeNumber];

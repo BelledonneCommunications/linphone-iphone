@@ -567,7 +567,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			if ((linphone_core_video_display_enabled(LC) && !linphone_call_params_video_enabled(current) &&
 				 linphone_call_params_video_enabled(remote)) &&
 				(!linphone_core_get_video_policy(LC)->automatically_accept ||
-				 (([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) &&
+				 (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) &&
 				  floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max))) {
 				linphone_core_defer_call_update(LC, call);
 				[self displayAskToEnableVideoCall:call];
@@ -600,12 +600,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		return;
 	}
 	if (linphone_core_get_video_policy(LC)->automatically_accept &&
-		!([UIApplication sharedApplication].applicationState == UIApplicationStateBackground))
+		!([UIApplication sharedApplication].applicationState != UIApplicationStateActive))
 		return;
 
 	NSString *username = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
 	NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%@ would like to enable video", nil), username];
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground &&
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive &&
 		floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 		UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 		content.title = NSLocalizedString(@"Video request", nil);

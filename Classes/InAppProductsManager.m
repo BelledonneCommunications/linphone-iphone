@@ -404,7 +404,7 @@
 		expireText = [NSString stringWithFormat:NSLocalizedString(@"Your account has expired.", nil), days];
 	}
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 		UILocalNotification *notification = [[UILocalNotification alloc] init];
 		if (notification) {
 
