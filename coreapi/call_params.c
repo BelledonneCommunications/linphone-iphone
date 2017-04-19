@@ -325,8 +325,6 @@ LinphoneCallParams * linphone_call_params_ref(LinphoneCallParams *cp) {
 }
 
 void linphone_call_params_unref(LinphoneCallParams *cp) {
-	if (cp->sent_vdef != NULL) linphone_video_definition_unref(cp->sent_vdef);
-	if (cp->recv_vdef != NULL) linphone_video_definition_unref(cp->recv_vdef);
 	belle_sip_object_unref(cp);
 }
 
@@ -358,6 +356,8 @@ static void _linphone_call_params_uninit(LinphoneCallParams *cp){
 		if (cp->custom_sdp_media_attributes[i]) sal_custom_sdp_attribute_free(cp->custom_sdp_media_attributes[i]);
 	}
 	if (cp->session_name) ms_free(cp->session_name);
+	if (cp->sent_vdef != NULL) linphone_video_definition_unref(cp->sent_vdef);
+	if (cp->recv_vdef != NULL) linphone_video_definition_unref(cp->recv_vdef);
 }
 
 static void _linphone_call_params_clone(LinphoneCallParams *dst, const LinphoneCallParams *src) {
@@ -369,7 +369,9 @@ static void _linphone_call_params_clone(LinphoneCallParams *dst, const LinphoneC
 	belle_sip_object_t tmp = dst->base;
 	memcpy(dst, src, sizeof(LinphoneCallParams));
 	dst->base = tmp;
-	
+
+	if (src->sent_vdef) dst->sent_vdef = linphone_video_definition_ref(src->sent_vdef);
+	if (src->recv_vdef) dst->recv_vdef = linphone_video_definition_ref(src->recv_vdef);
 	if (src->record_file) dst->record_file=ms_strdup(src->record_file);
 	if (src->session_name) dst->session_name=ms_strdup(src->session_name);
 	/*

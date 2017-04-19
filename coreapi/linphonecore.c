@@ -5846,7 +5846,8 @@ static void sound_config_uninit(LinphoneCore *lc)
 
 static void video_config_uninit(LinphoneCore *lc)
 {
-	lp_config_set_string(lc->config,"video","size",linphone_video_definition_get_name(linphone_core_get_preferred_video_definition(lc)));
+	const LinphoneVideoDefinition *vdef = linphone_core_get_preferred_video_definition(lc);
+	lp_config_set_string(lc->config,"video","size",vdef ? linphone_video_definition_get_name(vdef) : NULL);
 	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
 	if (lc->video_conf.cams)
