@@ -3209,6 +3209,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
  * This policy defines whether:
  * - video shall be initiated by default for outgoing calls
  * - video shall be accepter by default for incoming calls
+ * 
  * @param[in] lc LinphoneCore object
  * @param[in] policy The video policy to use
  * @ingroup media_parameters
