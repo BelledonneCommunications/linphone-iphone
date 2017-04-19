@@ -1106,9 +1106,9 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	linphone_core_get_text_port_range(call->core, &min_port, &max_port);
 	port_config_set(call,call->main_text_stream_index,min_port,max_port);
 
-	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
-	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
-	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_TEXT], LINPHONE_CALL_STATS_TEXT);
+	linphone_call_init_stats(call->audio_stats, LINPHONE_CALL_STATS_AUDIO);
+	linphone_call_init_stats(call->video_stats, LINPHONE_CALL_STATS_VIDEO);
+	linphone_call_init_stats(call->text_stats, LINPHONE_CALL_STATS_TEXT);
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
@@ -1307,6 +1307,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
 	call->dest_proxy=cfg;
+	call->audio_stats = linphone_call_stats_new();
+	call->video_stats = linphone_call_stats_new();
+	call->text_stats = linphone_call_stats_new();
 	linphone_call_outgoing_select_ip_version(call,to,cfg);
 	linphone_call_get_local_ip(call, to);
 	call->params = linphone_call_params_copy(params);
@@ -1489,6 +1492,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	LinphoneNatPolicy *nat_policy = NULL;
 	int i;
 	call->dir=LinphoneCallIncoming;
+	call->audio_stats = linphone_call_stats_new();
+	call->video_stats = linphone_call_stats_new();
+	call->text_stats = linphone_call_stats_new();
 	sal_op_set_user_pointer(op,call);
 	call->op=op;
 	call->core=lc;
@@ -1613,9 +1619,9 @@ static void linphone_call_free_media_resources(LinphoneCall *call){
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
 		ms_media_stream_sessions_uninit(&call->sessions[i]);
 	}
-	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_AUDIO]);
-	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_VIDEO]);
-	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_TEXT]);
+	linphone_call_stats_uninit(call->audio_stats);
+	linphone_call_stats_uninit(call->video_stats);
+	linphone_call_stats_uninit(call->text_stats);
 }
 
 /*
@@ -1871,6 +1877,18 @@ static void linphone_call_destroy(LinphoneCall *obj){
 	bctbx_list_free_with_data(obj->callbacks, (bctbx_list_free_func)linphone_call_cbs_unref);
 	if (obj->audiostream || obj->videostream){
 		linphone_call_free_media_resources(obj);
+	}
+	if (obj->audio_stats) {
+		linphone_call_stats_unref(obj->audio_stats);
+		obj->audio_stats = NULL;
+	}
+	if (obj->video_stats) {
+		linphone_call_stats_unref(obj->video_stats);
+		obj->video_stats = NULL;
+	}
+	if (obj->text_stats) {
+		linphone_call_stats_unref(obj->text_stats);
+		obj->text_stats = NULL;
 	}
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
@@ -3907,9 +3925,9 @@ void linphone_call_delete_ice_session(LinphoneCall *call){
 		if (call->audiostream != NULL) call->audiostream->ms.ice_check_list = NULL;
 		if (call->videostream != NULL) call->videostream->ms.ice_check_list = NULL;
 		if (call->textstream != NULL) call->textstream->ms.ice_check_list = NULL;
-		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateNotActivated;
-		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateNotActivated;
-		call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateNotActivated;
+		call->audio_stats->ice_state = LinphoneIceStateNotActivated;
+		call->video_stats->ice_state = LinphoneIceStateNotActivated;
+		call->text_stats->ice_state = LinphoneIceStateNotActivated;
 	}
 }
 
@@ -3934,7 +3952,15 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, MediaStream *st){
 static void update_rtp_stats(LinphoneCall *call, int stream_index) {
 	if (call->sessions[stream_index].rtp_session) {
 		const rtp_stats_t *stats = rtp_session_get_stats(call->sessions[stream_index].rtp_session);
-		memcpy(&call->stats[stream_index].rtp_stats, stats, sizeof(*stats));
+		LinphoneCallStats *call_stats = NULL;
+		if (stream_index == call->main_audio_stream_index) {
+			call_stats = call->audio_stats;
+		} else if (stream_index == call->main_video_stream_index) {
+			call_stats = call->video_stats;
+		} else {
+			call_stats = call->text_stats;
+		}
+		if (call_stats) memcpy(&(call_stats->rtp_stats), stats, sizeof(*stats));
 	}
 }
 
@@ -4202,26 +4228,47 @@ static MediaStream *linphone_call_get_stream(LinphoneCall *call, LinphoneStreamT
 	return NULL;
 }
 
-const LinphoneCallStats *linphone_call_get_stats(LinphoneCall *call, LinphoneStreamType type){
+static void _linphone_call_stats_clone(LinphoneCallStats *dst, const LinphoneCallStats *src) {
+	/*
+	 * Save the belle_sip_object_t part, copy the entire structure and restore the belle_sip_object_t part
+	 */
+	belle_sip_object_t tmp = dst->base;
+	memcpy(dst, src, sizeof(LinphoneCallStats));
+	dst->base = tmp;
+
+	dst->received_rtcp = NULL;
+	dst->sent_rtcp = NULL;
+}
+
+LinphoneCallStats *linphone_call_get_stats(LinphoneCall *call, LinphoneStreamType type){
 	if ((int)type >=0 && type<=LinphoneStreamTypeText){
-		LinphoneCallStats *stats = &call->stats[type];
+		LinphoneCallStats *stats = NULL;
+		LinphoneCallStats *stats_copy = linphone_call_stats_new();
+		if (type == LinphoneStreamTypeAudio) {
+			stats = call->audio_stats;
+		} else if (type == LinphoneStreamTypeVideo) {
+			stats = call->video_stats;
+		} else if (type == LinphoneStreamTypeText) {
+			stats = call->text_stats;
+		}
 		MediaStream *ms = linphone_call_get_stream(call, type);
-		if (ms) update_local_stats(stats, ms);
-		return stats;
+		if (ms && stats) update_local_stats(stats, ms);
+		_linphone_call_stats_clone(stats_copy, stats);
+		return stats_copy;
 	}
 	ms_error("Invalid stream type %i", (int)type);
 	return NULL;
 }
 
-const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
+LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
 	return linphone_call_get_stats(call, LinphoneStreamTypeAudio);
 }
 
-const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
+LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	return linphone_call_get_stats(call, LinphoneStreamTypeVideo);
 }
 
-const LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call) {
+LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call) {
 	return linphone_call_get_stats(call, LinphoneStreamTypeText);
 }
 
@@ -4231,10 +4278,40 @@ static bool_t ice_in_progress(LinphoneCallStats *stats){
 
 bool_t linphone_call_media_in_progress(LinphoneCall *call){
 	bool_t ret=FALSE;
-	if (ice_in_progress(&call->stats[LINPHONE_CALL_STATS_AUDIO]) || ice_in_progress(&call->stats[LINPHONE_CALL_STATS_VIDEO]) || ice_in_progress(&call->stats[LINPHONE_CALL_STATS_TEXT]))
+	if (ice_in_progress(call->audio_stats) || ice_in_progress(call->video_stats) || ice_in_progress(call->text_stats))
 		ret=TRUE;
 	/*TODO: could check zrtp state, upnp state*/
 	return ret;
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCallStats);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallStats, belle_sip_object_t,
+	NULL, // destroy
+	_linphone_call_stats_clone, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphoneCallStats *linphone_call_stats_new() {
+	LinphoneCallStats *stats = belle_sip_object_new(LinphoneCallStats);
+	return stats;
+}
+
+LinphoneCallStats* linphone_call_stats_ref(LinphoneCallStats* stats) {
+	return (LinphoneCallStats*) belle_sip_object_ref(stats);
+}
+
+void linphone_call_stats_unref(LinphoneCallStats* stats) {
+	belle_sip_object_unref(stats);
+}
+
+void *linphone_call_stats_get_user_data(const LinphoneCallStats *stats) {
+	return stats->user_data;
+}
+
+void linphone_call_stats_set_user_data(LinphoneCallStats *stats, void *data) {
+	stats->user_data = data;
 }
 
 LinphoneStreamType linphone_call_stats_get_type(const LinphoneCallStats *stats) {
@@ -4355,6 +4432,10 @@ float linphone_call_stats_get_jitter_buffer_size_ms(const LinphoneCallStats *sta
 	return stats->jitter_stats.jitter_buffer_size_ms;
 }
 
+float linphone_call_stats_get_round_trip_delay(const LinphoneCallStats *stats) {
+	return stats->round_trip_delay;
+}
+
 void linphone_call_start_recording(LinphoneCall *call){
 	if (!call->params->record_file){
 		ms_error("linphone_call_start_recording(): no output file specified. Use linphone_call_params_set_record_file().");
@@ -4375,7 +4456,16 @@ void linphone_call_stop_recording(LinphoneCall *call){
 
 static void report_bandwidth_for_stream(LinphoneCall *call, MediaStream *ms, LinphoneStreamType type){
 	bool_t active = ms ?  (media_stream_get_state(ms) == MSStreamStarted) : FALSE;
-	LinphoneCallStats *stats = &call->stats[type];
+	LinphoneCallStats *stats = NULL;
+	if (type == LinphoneStreamTypeAudio) {
+		stats = call->audio_stats;
+	} else if (type == LinphoneStreamTypeAudio) {
+		stats = call->video_stats;
+	} else if (type == LinphoneStreamTypeAudio) {
+		stats = call->text_stats;
+	} else {
+		return;
+	}
 	
 	stats->download_bandwidth=(active) ? (float)(media_stream_get_down_bw(ms)*1e-3) : 0.f;
 	stats->upload_bandwidth=(active) ? (float)(media_stream_get_up_bw(ms)*1e-3) : 0.f;
@@ -4401,18 +4491,18 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 				"\tRTP  audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f], text=[d=%5.1f,u=%5.1f] kbits/sec\n"
 				"\tRTCP audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f], text=[d=%5.1f,u=%5.1f] kbits/sec",
 				call,
-				call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_TEXT].download_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_TEXT].upload_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_download_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_download_bandwidth,
-				call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_upload_bandwidth
+				call->audio_stats->download_bandwidth,
+				call->audio_stats->upload_bandwidth,
+				call->video_stats->download_bandwidth,
+				call->video_stats->upload_bandwidth,
+				call->text_stats->download_bandwidth,
+				call->text_stats->upload_bandwidth,
+				call->audio_stats->rtcp_download_bandwidth,
+				call->audio_stats->rtcp_upload_bandwidth,
+				call->video_stats->rtcp_download_bandwidth,
+				call->video_stats->rtcp_upload_bandwidth,
+				call->text_stats->rtcp_download_bandwidth,
+				call->text_stats->rtcp_upload_bandwidth
 	);
 }
 
@@ -4545,7 +4635,14 @@ void linphone_call_stats_uninit(LinphoneCallStats *stats){
 }
 
 void linphone_call_notify_stats_updated_with_stream_index(LinphoneCall *call, int stream_index){
-	LinphoneCallStats *stats = &call->stats[stream_index];
+	LinphoneCallStats *stats = NULL;
+	if (stream_index == call->main_audio_stream_index) {
+		stats = call->audio_stats;
+	} else if (stream_index == call->main_video_stream_index) {
+		stats = call->video_stats;
+	} else {
+		stats = call->text_stats;
+	}
 	if (stats->updated){
 		switch(stats->updated) {
 			case LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE:
@@ -4615,13 +4712,25 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	while((evq = linphone_call_get_event_queue(call, stream_index)) != NULL && NULL != (ev=ortp_ev_queue_get(evq))){
 		OrtpEventType evt=ortp_event_get_type(ev);
 		OrtpEventData *evd=ortp_event_get_data(ev);
-		int stats_index = stream_index == call->main_audio_stream_index ? LINPHONE_CALL_STATS_AUDIO : (stream_index == call->main_video_stream_index ? LINPHONE_CALL_STATS_VIDEO : LINPHONE_CALL_STATS_TEXT);
+		int stats_index;
+		LinphoneCallStats *stats = NULL;
+
+		if (stream_index == call->main_audio_stream_index) {
+			stats_index = LINPHONE_CALL_STATS_AUDIO;
+			stats = call->audio_stats;
+		} else if (stream_index == call->main_video_stream_index) {
+			stats_index = LINPHONE_CALL_STATS_VIDEO;
+			stats = call->video_stats;
+		} else {
+			stats_index = LINPHONE_CALL_STATS_TEXT;
+			stats = call->text_stats;
+		}
 
 		/*and yes the MediaStream must be taken at each iteration, because it may have changed due to the handling of events
 		 * in this loop*/
 		ms = linphone_call_get_media_stream(call, stream_index);
 
-		if (ms) linphone_call_stats_fill(&call->stats[stats_index],ms,ev);
+		if (ms) linphone_call_stats_fill(stats,ms,ev);
 		linphone_call_notify_stats_updated_with_stream_index(call,stats_index);
 
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){

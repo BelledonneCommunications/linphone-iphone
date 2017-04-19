@@ -61,5 +61,5 @@ void AudioStreamStatsCommand::exec(Daemon *app, const string& args) {
 		return;
 	}
 
-	app->sendResponse(Response(AudioStreamStatsResponse(app, stream->stream, &stream->stats, false).getBody(), Response::Ok));
+	app->sendResponse(Response(AudioStreamStatsResponse(app, stream->stream, stream->stats, false).getBody(), Response::Ok));
 }

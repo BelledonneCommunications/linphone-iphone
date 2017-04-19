@@ -834,17 +834,17 @@ LINPHONE_PUBLIC void linphone_call_ogl_render(LinphoneCall *call, bool_t is_prev
 LINPHONE_PUBLIC LinphoneStatus linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info);
 
 /**
- * Return call statistics for a particular stream type.
+ * Return a copy of the call statistics for a particular stream type.
  * @param call the call
  * @param type the stream type
 **/
-LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_stats(LinphoneCall *call, LinphoneStreamType type);
+LINPHONE_PUBLIC LinphoneCallStats *linphone_call_get_stats(LinphoneCall *call, LinphoneStreamType type);
 
-LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
 
-LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
 
-LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call);
 
 /**
  * Add a listener in order to be notified of LinphoneCall events. Once an event is received, registred LinphoneCallCbs are

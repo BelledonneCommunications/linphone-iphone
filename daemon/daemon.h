@@ -191,11 +191,10 @@ private:
 struct AudioStreamAndOther {
 	AudioStream *stream;
 	OrtpEvQueue *queue;
-	LinphoneCallStats stats;
+	LinphoneCallStats *stats;
 	AudioStreamAndOther(AudioStream *as) : stream(as) {
 		queue = ortp_ev_queue_new();
 		rtp_session_register_event_queue(as->ms.sessions.rtp_session, queue);
-		memset(&stats, 0, sizeof(stats));
 	}
 	~AudioStreamAndOther() {
 		rtp_session_unregister_event_queue(stream->ms.sessions.rtp_session, queue);

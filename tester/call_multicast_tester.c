@@ -83,6 +83,7 @@ static void early_media_with_multicast_base(bool_t video) {
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 	LpConfig *marie_lp;
 	LinphoneCallParams *params;
+	LinphoneCallStats *stats = NULL;
 
 	marie   = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -167,11 +168,15 @@ static void early_media_with_multicast_base(bool_t video) {
 
 		wait_for_list(lcs, &dummy, 1, 3000);
 
+		stats = linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
 		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline),70,int,"%i");
-		BC_ASSERT_LOWER((int)linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth, 90, int, "%i");
+		BC_ASSERT_LOWER((int)linphone_call_stats_get_download_bandwidth(stats), 90, int, "%i");
+		linphone_call_stats_unref(stats);
 
+		stats = linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc));
 		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline2),70,int,"%i");
-		BC_ASSERT_LOWER((int)linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc))->download_bandwidth,90, int, "%i");
+		BC_ASSERT_LOWER((int)linphone_call_stats_get_download_bandwidth(stats),90, int, "%i");
+		linphone_call_stats_unref(stats);
 
 		BC_ASSERT_TRUE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
 		BC_ASSERT_TRUE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));

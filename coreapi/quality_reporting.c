@@ -592,21 +592,29 @@ static float reporting_rand(float t){
 void linphone_reporting_on_rtcp_update(LinphoneCall *call, SalStreamType stats_type) {
 	reporting_session_report_t * report = call->log->reporting.reports[stats_type];
 	reporting_content_metrics_t * metrics = NULL;
-	LinphoneCallStats stats = call->stats[stats_type];
+	LinphoneCallStats *stats = NULL;
 	mblk_t *block = NULL;
 	int report_interval;
+
+	if (stats_type == 0) {
+		stats = call->audio_stats;
+	} else if (stats_type == 1) {
+		stats = call->video_stats;
+	} else {
+		stats = call->text_stats;
+	}
 
 	if (! media_report_enabled(call,stats_type))
 		return;
 
 	report_interval = linphone_proxy_config_get_quality_reporting_interval(call->dest_proxy);
 
-	if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
+	if (stats->updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
 		metrics = &report->remote_metrics;
-		block = stats.received_rtcp;
-	} else if (stats.updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
+		block = stats->received_rtcp;
+	} else if (stats->updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
 		metrics = &report->local_metrics;
-		block = stats.sent_rtcp;
+		block = stats->sent_rtcp;
 	}
 	do{
 		if (rtcp_is_XR(block) && (rtcp_XR_get_block_type(block) == RTCP_XR_VOIP_METRICS)){
@@ -617,7 +625,7 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, SalStreamType stats_t
 
 			// for local mos rating, we'll use the quality indicator directly
 			// because rtcp XR might not be enabled
-			if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE){
+			if (stats->updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE){
 				metrics->quality_estimates.moslq = (rtcp_XR_voip_metrics_get_mos_lq(block)==127) ?
 					127 : rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
 				metrics->quality_estimates.moscq = (rtcp_XR_voip_metrics_get_mos_cq(block)==127) ?

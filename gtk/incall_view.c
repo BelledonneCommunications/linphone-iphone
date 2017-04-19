@@ -243,8 +243,10 @@ static const char *upnp_state_to_string(LinphoneUpnpState ice_state){
 }
 
 static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
-	const LinphoneCallStats *as=linphone_call_get_audio_stats(call);
-	const LinphoneCallStats *vs=linphone_call_get_video_stats(call);
+	LinphoneUpnpState upnp_state;
+	LinphoneIceState ice_state;
+	LinphoneCallStats *as=linphone_call_get_audio_stats(call);
+	LinphoneCallStats *vs=linphone_call_get_video_stats(call);
 	const char *audio_media_connectivity = _("Direct or through server");
 	const char *video_media_connectivity = _("Direct or through server");
 	const LinphoneCallParams *curparams=linphone_call_get_current_params(call);
@@ -256,7 +258,7 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"rtp_profile")),tmp);
 	g_free(tmp);
 	tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
-		as->download_bandwidth,as->upload_bandwidth);
+		linphone_call_stats_get_download_bandwidth(as),linphone_call_stats_get_upload_bandwidth(as));
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_bandwidth_usage")),tmp);
 	g_free(tmp);
 	if (has_video){
@@ -267,7 +269,7 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_recv")),size_r);
 		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_sent")),size_s);
 
-		tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),vs->download_bandwidth,vs->upload_bandwidth);
+		tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),linphone_call_stats_get_download_bandwidth(vs),linphone_call_stats_get_upload_bandwidth(vs));
 		g_free(size_r);
 		g_free(size_s);
 	} else {
@@ -275,27 +277,33 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	}
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_bandwidth_usage")),tmp);
 	if (tmp) g_free(tmp);
-	if(as->upnp_state != LinphoneUpnpStateNotAvailable && as->upnp_state != LinphoneUpnpStateIdle) {
-		audio_media_connectivity = upnp_state_to_string(as->upnp_state);
-	} else if(as->ice_state != LinphoneIceStateNotActivated) {
-		audio_media_connectivity = ice_state_to_string(as->ice_state);
+	upnp_state = linphone_call_stats_get_upnp_state(as);
+	ice_state = linphone_call_stats_get_ice_state(as);
+	if(upnp_state != LinphoneUpnpStateNotAvailable && upnp_state != LinphoneUpnpStateIdle) {
+		audio_media_connectivity = upnp_state_to_string(upnp_state);
+	} else if(ice_state != LinphoneIceStateNotActivated) {
+		audio_media_connectivity = ice_state_to_string(ice_state);
 	}
 	gtk_label_set_text(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_media_connectivity")),audio_media_connectivity);
 
 	if (has_video){
-		if(vs->upnp_state != LinphoneUpnpStateNotAvailable && vs->upnp_state != LinphoneUpnpStateIdle) {
-				video_media_connectivity = upnp_state_to_string(vs->upnp_state);
-		} else if(vs->ice_state != LinphoneIceStateNotActivated) {
-			video_media_connectivity = ice_state_to_string(vs->ice_state);
+		upnp_state = linphone_call_stats_get_upnp_state(vs);
+		ice_state = linphone_call_stats_get_ice_state(vs);
+		if(upnp_state != LinphoneUpnpStateNotAvailable && upnp_state != LinphoneUpnpStateIdle) {
+				video_media_connectivity = upnp_state_to_string(upnp_state);
+		} else if(ice_state != LinphoneIceStateNotActivated) {
+			video_media_connectivity = ice_state_to_string(ice_state);
 		}
 	}else video_media_connectivity=NULL;
 	gtk_label_set_text(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_media_connectivity")),video_media_connectivity);
 
-	if (as->round_trip_delay>0){
-		tmp=g_strdup_printf(_("%.3f seconds"),as->round_trip_delay);
+	if (linphone_call_stats_get_round_trip_delay(as)>0){
+		tmp=g_strdup_printf(_("%.3f seconds"),linphone_call_stats_get_round_trip_delay(as));
 		gtk_label_set_text(GTK_LABEL(linphone_gtk_get_widget(callstats,"round_trip_time")),tmp);
 		g_free(tmp);
 	}
+	linphone_call_stats_unref(as);
+	linphone_call_stats_unref(vs);
 }
 
 static gboolean refresh_call_stats(GtkWidget *callstats){

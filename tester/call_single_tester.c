@@ -112,13 +112,18 @@ void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCall
 	if (lstats->updated & LINPHONE_CALL_STATS_PERIODICAL_UPDATE ) {
 		int tab_size = sizeof (counters->audio_download_bandwidth)/sizeof(int);
 		int index = (counters->current_bandwidth_index[lstats->type]++) % tab_size;
+		LinphoneCallStats *audio_stats, *video_stats;
+		audio_stats = linphone_call_get_audio_stats(call);
+		video_stats = linphone_call_get_video_stats(call);
 		if (lstats->type == LINPHONE_CALL_STATS_AUDIO) {
-			counters->audio_download_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->download_bandwidth;
-			counters->audio_upload_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->upload_bandwidth;
+			counters->audio_download_bandwidth[index] = (int)audio_stats->download_bandwidth;
+			counters->audio_upload_bandwidth[index] = (int)audio_stats->upload_bandwidth;
 		} else {
-			counters->video_download_bandwidth[index] = (int)linphone_call_get_video_stats(call)->download_bandwidth;
-			counters->video_upload_bandwidth[index] = (int)linphone_call_get_video_stats(call)->upload_bandwidth;
+			counters->video_download_bandwidth[index] = (int)video_stats->download_bandwidth;
+			counters->video_upload_bandwidth[index] = (int)video_stats->upload_bandwidth;
 		}
+		linphone_call_stats_unref(audio_stats);
+		linphone_call_stats_unref(video_stats);
 	}
 
 }
@@ -179,6 +184,7 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 	LinphoneCall *c1,*c2;
 	MSTimeSpec ts;
 	int max_time_to_wait;
+	LinphoneCallStats *audio_stats1, *video_stats1, *audio_stats2, *video_stats2;
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
 
@@ -195,46 +201,58 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 		max_time_to_wait = 5000;
 
 	do {
-		if (linphone_call_get_audio_stats(c1)->round_trip_delay > 0.0
-			&& linphone_call_get_audio_stats(c2)->round_trip_delay > 0.0
-			&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
-			&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c2))  || linphone_call_get_video_stats(c2)->round_trip_delay>0.0)) {
+		audio_stats1 = linphone_call_get_audio_stats(c1);
+		video_stats1 = linphone_call_get_video_stats(c1);
+		audio_stats2 = linphone_call_get_audio_stats(c2);
+		video_stats2 = linphone_call_get_video_stats(c2);
+		if (audio_stats1->round_trip_delay > 0.0
+			&& audio_stats2->round_trip_delay > 0.0
+			&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || video_stats1->round_trip_delay>0.0)
+			&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c2))  || video_stats2->round_trip_delay>0.0)) {
 			break;
 
 		}
+		linphone_call_stats_unref(audio_stats1);
+		linphone_call_stats_unref(audio_stats2);
+		if (video_stats1) linphone_call_stats_unref(video_stats1);
+		if (video_stats2) linphone_call_stats_unref(video_stats2);
 		wait_for_until(caller->lc,callee->lc,NULL,0,20); /*just to sleep while iterating*/
 	}while (!liblinphone_tester_clock_elapsed(&ts,max_time_to_wait));
 
+	audio_stats1 = linphone_call_get_audio_stats(c1);
+	video_stats1 = linphone_call_get_video_stats(c1);
+	audio_stats2 = linphone_call_get_audio_stats(c2);
+	video_stats2 = linphone_call_get_video_stats(c2);
 	if (linphone_core_rtcp_enabled(caller->lc) && linphone_core_rtcp_enabled(callee->lc)) {
 		BC_ASSERT_GREATER(caller->stat.number_of_rtcp_received, 1, int, "%i");
 		BC_ASSERT_GREATER(callee->stat.number_of_rtcp_received, 1, int, "%i");
-		BC_ASSERT_GREATER(linphone_call_get_audio_stats(c1)->round_trip_delay,0.0,float,"%f");
-		BC_ASSERT_GREATER(linphone_call_get_audio_stats(c2)->round_trip_delay,0.0,float,"%f");
+		BC_ASSERT_GREATER(audio_stats1->round_trip_delay,0.0,float,"%f");
+		BC_ASSERT_GREATER(audio_stats2->round_trip_delay,0.0,float,"%f");
 		if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
-			BC_ASSERT_GREATER(linphone_call_get_video_stats(c1)->round_trip_delay,0.0,float,"%f");
+			BC_ASSERT_GREATER(video_stats1->round_trip_delay,0.0,float,"%f");
 		}
 		if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
-			BC_ASSERT_GREATER(linphone_call_get_video_stats(c2)->round_trip_delay,0.0,float,"%f");
+			BC_ASSERT_GREATER(video_stats2->round_trip_delay,0.0,float,"%f");
 		}
 	} else {
 		if (linphone_core_rtcp_enabled(caller->lc)) {
-			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
-			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
+			BC_ASSERT_EQUAL(audio_stats1->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
+			BC_ASSERT_EQUAL(audio_stats2->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
+				BC_ASSERT_EQUAL(video_stats1->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
+				BC_ASSERT_EQUAL(video_stats2->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 		}
 		if (linphone_core_rtcp_enabled(callee->lc)) {
-		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
-		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
+		BC_ASSERT_EQUAL(audio_stats2->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
+		BC_ASSERT_EQUAL(audio_stats1->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
+				BC_ASSERT_EQUAL(video_stats1->rtp_stats.recv_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
-				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
+				BC_ASSERT_EQUAL(video_stats2->rtp_stats.sent_rtcp_packets, 0, unsigned long long, "%llu");
 			}
 		}
 
@@ -3353,6 +3371,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, bctbx_l
 		if (video_dir != LinphoneMediaDirectionInvalid){
 			int current_recv_iframe = mgr->stat.number_of_IframeDecoded;
 			int expected_recv_iframe=0;
+			LinphoneCallStats *stats = linphone_call_get_video_stats(call);
 
 			if (video_dir != LinphoneMediaDirectionInactive){
 				BC_ASSERT_TRUE(linphone_call_params_video_enabled(params));
@@ -3360,24 +3379,23 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, bctbx_l
 				linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
 				linphone_call_send_vfu_request(call);
 			}
-
 			switch (video_dir) {
 			case LinphoneMediaDirectionInactive:
-				BC_ASSERT_LOWER((int)linphone_call_get_video_stats(call)->upload_bandwidth, 5, int, "%i");
+				BC_ASSERT_LOWER((int)stats->upload_bandwidth, 5, int, "%i");
 				break;
 			case LinphoneMediaDirectionSendOnly:
 				expected_recv_iframe = 0;
-				BC_ASSERT_LOWER((int)linphone_call_get_video_stats(call)->download_bandwidth, 5, int, "%i");
+				BC_ASSERT_LOWER((int)stats->download_bandwidth, 5, int, "%i");
 				break;
 			case LinphoneMediaDirectionRecvOnly:
-				BC_ASSERT_LOWER((int)linphone_call_get_video_stats(call)->upload_bandwidth, 5, int, "%i");
+				BC_ASSERT_LOWER((int)stats->upload_bandwidth, 5, int, "%i");
 			case LinphoneMediaDirectionSendRecv:
 				expected_recv_iframe = 1;
 				break;
 			default:
 				break;
 			}
-
+			linphone_call_stats_unref(stats);
 			BC_ASSERT_TRUE(wait_for_list(lcs, &mgr->stat.number_of_IframeDecoded,current_recv_iframe + expected_recv_iframe,10000));
 		}
 #endif
@@ -3719,6 +3737,7 @@ static void call_with_paused_no_sdp_on_resume(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall* call_marie = NULL;
+	LinphoneCallStats *stats;
 	bool_t call_ok;
 
 	marie = linphone_core_manager_new( "marie_rc");
@@ -3756,7 +3775,9 @@ static void call_with_paused_no_sdp_on_resume(void) {
 
 	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 3000);
 	BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(marie),70,int,"%i");
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
+	stats = linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_TRUE(stats->download_bandwidth>70);
+	linphone_call_stats_unref(stats);
 	end_call(marie,pauline);
 end:
 
@@ -4569,8 +4590,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 
 	// Now we want to ensure that all sent RTP packets actually go through our RTP transport modifier and thus no packet leave without being processed (by any operation we might want to do on it)
 	{
-		const LinphoneCallStats *marie_stats = linphone_call_get_audio_stats(call_marie);
-		const LinphoneCallStats *pauline_stats = linphone_call_get_audio_stats(call_pauline);
+		LinphoneCallStats *marie_stats = linphone_call_get_audio_stats(call_marie);
+		LinphoneCallStats *pauline_stats = linphone_call_get_audio_stats(call_pauline);
 		rtp_stats_t marie_rtp_stats = *linphone_call_stats_get_rtp_stats(marie_stats);
 		rtp_stats_t pauline_rtp_stats = *linphone_call_stats_get_rtp_stats(pauline_stats);
 		ms_message("Marie sent %i RTP packets and received %i (for real)", (int)marie_rtp_stats.packet_sent, (int)marie_rtp_stats.packet_recv);
@@ -4580,6 +4601,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		// There can be a small difference between the number of packets received in the modifier and the number processed in reception because the processing is asynchronous
 		BC_ASSERT_TRUE(data_pauline->packetReceivedCount - pauline_rtp_stats.packet_recv < 20);
 		BC_ASSERT_TRUE(data_pauline->packetSentCount == pauline_rtp_stats.packet_sent);
+		linphone_call_stats_unref(marie_stats);
+		linphone_call_stats_unref(pauline_stats);
 	}
 
 end:
@@ -5649,7 +5672,7 @@ static bool_t quick_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
 static void call_with_encryption_mandatory(bool_t caller_has_encryption_mandatory){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-
+	LinphoneCallStats *marie_stats, *pauline_stats;
 	/*marie doesn't support ZRTP at all*/
 	marie->lc->zrtp_not_available_simulation=1;
 	
@@ -5670,8 +5693,12 @@ static void call_with_encryption_mandatory(bool_t caller_has_encryption_mandator
 	BC_ASSERT_EQUAL(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->rtp_stats.packet_sent, 0, int, "%i");
 #endif
 	/*however we can trust packet_recv from the other party instead */
-	BC_ASSERT_EQUAL((int)linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->rtp_stats.packet_recv, 0, int, "%i");
-	BC_ASSERT_EQUAL((int)linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->rtp_stats.packet_recv, 0, int, "%i");
+	marie_stats = linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc));
+	pauline_stats = linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_EQUAL((int)marie_stats->rtp_stats.packet_recv, 0, int, "%i");
+	BC_ASSERT_EQUAL((int)pauline_stats->rtp_stats.packet_recv, 0, int, "%i");
+	linphone_call_stats_unref(marie_stats);
+	linphone_call_stats_unref(pauline_stats);
 	end_call(marie, pauline);
 
 	end:

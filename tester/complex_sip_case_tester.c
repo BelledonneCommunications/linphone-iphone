@@ -26,21 +26,30 @@
 #if HAVE_SIPP
 void check_rtcp(LinphoneCall *call) {
 	MSTimeSpec ts;
+	LinphoneCallStats *audio_stats, *video_stats;
 
 	linphone_call_ref(call);
 	liblinphone_tester_clock_start(&ts);
 
 	do {
-		if (linphone_call_get_audio_stats(call)->round_trip_delay > 0.0 && (!linphone_call_log_video_enabled(linphone_call_get_call_log(call)) || linphone_call_get_video_stats(call)->round_trip_delay > 0.0)) {
+		audio_stats = linphone_call_get_audio_stats(call);
+		video_stats = linphone_call_get_video_stats(call);
+		if (linphone_call_stats_get_round_trip_delay(audio_stats) > 0.0 && (!linphone_call_log_video_enabled(linphone_call_get_call_log(call)) || linphone_call_stats_get_round_trip_delay(video_stats) > 0.0)) {
 			break;
 		}
+		linphone_call_stats_unref(audio_stats);
+		if (video_stats) linphone_call_stats_unref(video_stats);
 		wait_for_until(call->core, NULL, NULL, 0, 20); /*just to sleep while iterating*/
 	} while (!liblinphone_tester_clock_elapsed(&ts, 15000));
 
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(call)->round_trip_delay, 0.0, float, "%f");
+	audio_stats = linphone_call_get_audio_stats(call);
+	BC_ASSERT_GREATER(linphone_call_stats_get_round_trip_delay(audio_stats), 0.0, float, "%f");
 	if (linphone_call_log_video_enabled(linphone_call_get_call_log(call))) {
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(call)->round_trip_delay, 0.0, float, "%f");
+		video_stats = linphone_call_get_video_stats(call);
+		BC_ASSERT_GREATER(linphone_call_stats_get_round_trip_delay(video_stats), 0.0, float, "%f");
+		linphone_call_stats_unref(video_stats);
 	}
+	linphone_call_stats_unref(audio_stats);
 
 	linphone_call_unref(call);
 }
