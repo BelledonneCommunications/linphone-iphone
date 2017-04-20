@@ -456,11 +456,7 @@ class CParser(object):
 
 		self.classBl = ['LpConfig',
 					   'LinphonePlayer',
-					   'LinphoneIntRange',
-					   'LinphoneCallStats',
-					   'LinphoneCoreVTable',
-					   'LinphoneVideoPolicy',
-					   'LinphoneSipTransports']  # temporarly blacklisted
+					   'LinphoneCoreVTable',]  # temporarly blacklisted
 		
 		# list of classes that must be concidered as refcountable even if
 		# they are no ref()/unref() methods
