@@ -102,7 +102,7 @@ LINPHONE_PUBLIC void linphone_video_definition_set_height(LinphoneVideoDefinitio
  * @param[in] width The width of the video definition
  * @param[in] height The height of the video definition
  */
-void linphone_video_definition_set_definition(LinphoneVideoDefinition *vdef, unsigned int width, unsigned int height);
+LINPHONE_PUBLIC void linphone_video_definition_set_definition(LinphoneVideoDefinition *vdef, unsigned int width, unsigned int height);
 
 /**
  * Get the name of the video definition.
@@ -124,7 +124,7 @@ LINPHONE_PUBLIC void linphone_video_definition_set_name(LinphoneVideoDefinition 
  * @param[in] vdef2 LinphoneVideoDefinition object
  * @return A boolean value telling whether the two LinphoneVideoDefinition objects are equal.
  */
-bool_t linphone_video_definition_equals(const LinphoneVideoDefinition *vdef1, const LinphoneVideoDefinition *vdef2);
+LINPHONE_PUBLIC bool_t linphone_video_definition_equals(const LinphoneVideoDefinition *vdef1, const LinphoneVideoDefinition *vdef2);
 
 /**
  * Tells whether two LinphoneVideoDefinition objects are strictly equal (the widths are the same and the heights are the same).
@@ -132,14 +132,14 @@ bool_t linphone_video_definition_equals(const LinphoneVideoDefinition *vdef1, co
  * @param[in] vdef2 LinphoneVideoDefinition object
  * @return A boolean value telling whether the two LinphoneVideoDefinition objects are strictly equal.
  */
-bool_t linphone_video_definition_strict_equals(const LinphoneVideoDefinition *vdef1, const LinphoneVideoDefinition *vdef2);
+LINPHONE_PUBLIC bool_t linphone_video_definition_strict_equals(const LinphoneVideoDefinition *vdef1, const LinphoneVideoDefinition *vdef2);
 
 /**
  * Tells whether a LinphoneVideoDefinition is undefined.
  * @param[in] vdef LinphoneVideoDefinition object
  * @return A boolean value telling whether the LinphoneVideoDefinition is undefined.
  */
-bool_t linphone_video_definition_is_undefined(const LinphoneVideoDefinition *vdef);
+LINPHONE_PUBLIC bool_t linphone_video_definition_is_undefined(const LinphoneVideoDefinition *vdef);
 
 /**
  * @}
