@@ -60,6 +60,12 @@ namespace Linphone
 		
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern IntPtr bctbx_list_get_data(IntPtr ptr);
+
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern IntPtr bctbx_list_append(IntPtr elem, string data);
+
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern IntPtr bctbx_list_append(IntPtr elem, IntPtr data);
 		
 		~LinphoneObject()
 		{
@@ -133,6 +139,26 @@ namespace Linphone
 					ptr = bctbx_list_next(ptr);
 				}
 			}
+		}
+
+		internal static IntPtr StringArrayToBctbxList(IEnumerable<string> stringlist)
+		{
+			IntPtr bctbx_list = IntPtr.Zero;
+			foreach (string s in stringlist)
+			{
+				bctbx_list = bctbx_list_append(bctbx_list, s);
+			}
+			return bctbx_list;
+		}
+
+		internal static IntPtr ObjectArrayToBctbxList<T>(IEnumerable<T> objlist) where T : LinphoneObject, new()
+		{
+			IntPtr bctbx_list = IntPtr.Zero;
+			foreach (T ptr in objlist)
+			{
+				bctbx_list = bctbx_list_append(bctbx_list, ptr.nativePtr);
+			}
+			return bctbx_list;
 		}
 	}
 	
@@ -294,13 +320,21 @@ namespace Linphone
 				{{#exception}}int exception_result = {{/exception}}{{setter_c_name}}({{setter_nativePtr}}value);
 				{{#exception}}if (exception_result != 0) throw new LinphoneException("{{property_name}} setter returned value " + exception_result);{{/exception}}
 				{{/is_generic}}
+				{{#is_string_list}}
+				{{#exception}}int exception_result = {{/exception}}{{setter_c_name}}({{setter_nativePtr}}StringArrayToBctbxList(value));
+				{{#exception}}if (exception_result != 0) throw new LinphoneException("{{property_name}} setter returned value " + exception_result);{{/exception}}
+				{{/is_string_list}}
+				{{#is_class_list}}
+				{{#exception}}int exception_result = {{/exception}}{{setter_c_name}}({{setter_nativePtr}}ObjectArrayToBctbxList<{{{list_type}}}>(value));
+				{{#exception}}if (exception_result != 0) throw new LinphoneException("{{property_name}} setter returned value " + exception_result);{{/exception}}
+				{{/is_class_list}}
 			}
 		{{/has_setter}}
 		}
 		{{/has_property}}
 		{{#has_impl}}
 		{{#impl}}
-		public {{static}}{{override}}{{{type}}} {{name}}({{args}})
+		public {{static}}{{override}}{{{type}}} {{name}}({{{args}}})
 		{
 			{{#is_string}}
 			IntPtr stringPtr = {{c_name}}({{nativePtr}}{{c_args}});

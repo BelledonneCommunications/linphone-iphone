@@ -138,9 +138,7 @@ class CsharpTranslator(object):
 		elif type(_type) is AbsApi.BaseType:
 			return self.translate_base_type(_type, isArg, dllImport)
 		elif type(_type) is AbsApi.ListType:
-			if isArg:
-				raise AbsApi.Error('Lists as params are not supported yet')
-			elif dllImport:
+			if dllImport:
 				return 'IntPtr'
 			else:
 				if type(_type.containedTypeDesc) is AbsApi.BaseType:
@@ -222,6 +220,12 @@ class CsharpTranslator(object):
 						methodDict['impl']['c_args'] += '(int)' + self.translate_argument_name(arg.name)
 				elif self.translate_type(arg.type, False, False) == "bool":
 					methodDict['impl']['c_args'] += self.translate_argument_name(arg.name) + " ? 1 : 0"
+				elif self.get_class_array_type(self.translate_type(arg.type, False, False)) is not None:
+					listtype = self.get_class_array_type(self.translate_type(arg.type, False, False))
+					if listtype == 'string':
+						methodDict['impl']['c_args'] += "StringArrayToBctbxList(" + self.translate_argument_name(arg.name) + ")"
+					else:
+						methodDict['impl']['c_args'] += "ObjectArrayToBctbxList<" + listtype + ">(" + self.translate_argument_name(arg.name) + ")"
 				else:
 					methodDict['impl']['c_args'] += self.translate_argument_name(arg.name)
 				methodDict['impl']['args'] += self.translate_argument(arg, False)
