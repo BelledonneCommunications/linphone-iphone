@@ -3258,6 +3258,38 @@ LINPHONE_PUBLIC void *linphone_video_activation_policy_get_user_data(const Linph
 LINPHONE_PUBLIC void linphone_video_activation_policy_set_user_data(LinphoneVideoActivationPolicy *policy, void *data);
 
 /**
+ * Gets the value for the automatically accept video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @return whether or not to automatically accept video requests is enabled
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC bool_t linphone_video_activation_policy_get_automatically_accept(const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Gets the value for the automatically initiate video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @return whether or not to automatically initiate video calls is enabled
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC bool_t linphone_video_activation_policy_get_automatically_initiate(const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Sets the value for the automatically accept video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @param[in] enable whether or not to enable automatically accept video requests
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void linphone_video_activation_policy_set_automatically_accept(LinphoneVideoActivationPolicy *policy, bool_t enable);
+
+/**
+ * Sets the value for the automatically initiate video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @param[in] enable whether or not to enable automatically initiate video calls
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void linphone_video_activation_policy_set_automatically_initiate(LinphoneVideoActivationPolicy *policy, bool_t enable);
+
+/**
  * Sets the default policy for video.
  * This policy defines whether:
  * - video shall be initiated by default for outgoing calls

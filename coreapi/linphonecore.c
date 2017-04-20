@@ -4953,6 +4953,22 @@ void linphone_video_activation_policy_set_user_data(LinphoneVideoActivationPolic
 	policy->user_data = data;
 }
 
+bool_t linphone_video_activation_policy_get_automatically_accept(const LinphoneVideoActivationPolicy *policy) {
+	return policy->automatically_accept;
+}
+
+bool_t linphone_video_activation_policy_get_automatically_initiate(const LinphoneVideoActivationPolicy *policy) {
+	return policy->automatically_initiate;
+}
+
+void linphone_video_activation_policy_set_automatically_accept(LinphoneVideoActivationPolicy *policy, bool_t enable) {
+	policy->automatically_accept = enable;
+}
+
+void linphone_video_activation_policy_set_automatically_initiate(LinphoneVideoActivationPolicy *policy, bool_t enable) {
+	policy->automatically_initiate = enable;
+}
+
 void linphone_core_set_video_activation_policy(LinphoneCore *lc, const LinphoneVideoActivationPolicy *policy) {
 	lc->video_policy.automatically_accept = policy->automatically_accept;
 	lc->video_policy.automatically_initiate = policy->automatically_initiate;
