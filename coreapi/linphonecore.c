@@ -5464,12 +5464,10 @@ void linphone_core_preview_ogl_render(const LinphoneCore *lc) {
 	#ifdef VIDEO_ENABLED
 
 	LinphoneCall *call = linphone_core_get_current_call(lc);
-	VideoStream *stream;
+	VideoStream *stream = call ? call->videostream : lc->previewstream;
 
-	if (call && (stream = call->videostream) && stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
+	if (stream && stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
 		ms_filter_call_method(stream->output2, MS_OGL_RENDER, NULL);
-	else if ((stream = lc->previewstream) && stream->output && ms_filter_get_id(stream->output) == MS_OGL_ID)
-		ms_filter_call_method(stream->output, MS_OGL_RENDER, NULL);
 
 	#endif
 }
