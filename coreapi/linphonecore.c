@@ -4812,7 +4812,13 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 	if (val){
 		if (lc->previewstream==NULL){
 			const char *display_filter=linphone_core_get_video_display_filter(lc);
-			MSVideoSize vsize=lc->video_conf.preview_vsize.width!=0 ? lc->video_conf.preview_vsize : lc->video_conf.vsize;
+			MSVideoSize vsize = { 0 };
+			const LinphoneVideoDefinition *vdef = linphone_core_get_preview_video_definition(lc);
+			if (!vdef || linphone_video_definition_is_undefined(vdef)) {
+				vdef = linphone_core_get_preferred_video_definition(lc);
+			}
+			vsize.width = linphone_video_definition_get_width(vdef);
+			vsize.height = linphone_video_definition_get_height(vdef);
 			lc->previewstream=video_preview_new(lc->factory);
 			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
