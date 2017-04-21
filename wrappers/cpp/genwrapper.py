@@ -35,27 +35,28 @@ class CppTranslator(object):
 	def __init__(self):
 		self.ignore = []
 		self.ambigousTypes = ['LinphonePayloadType']
+		self.docTranslator = metadoc.DoxygenCppTranslator()
 	
 	def is_ambigous_type(self, _type):
 		return _type.name in self.ambigousTypes or (_type.name == 'list' and self.is_ambigous_type(_type.containedTypeDesc))
 	
-	@staticmethod
-	def translate_enum(enum):
+	def translate_enum(self, enum):
 		enumDict = {}
 		enumDict['name'] = enum.name.to_camel_case()
+		enumDict['doc'] = self.docTranslator.translate(enum.briefDescription)
 		enumDict['values'] = []
 		i = 0
 		for enumValue in enum.values:
-			enumValDict = CppTranslator.translate_enum_value(enumValue)
+			enumValDict = self.translate_enum_value(enumValue)
 			enumValDict['notLast'] = (i != len(enum.values)-1)
 			enumDict['values'].append(enumValDict)
 			i += 1
 		return enumDict
 	
-	@staticmethod
-	def translate_enum_value(enumValue):
+	def translate_enum_value(self, enumValue):
 		enumValueDict = {}
 		enumValueDict['name'] = CppTranslator.translate_enum_value_name(enumValue.name)
+		enumValueDict['doc'] = self.docTranslator.translate(enumValue.briefDescription)
 		if type(enumValue.value) is int:
 			enumValueDict['value'] = str(enumValue.value)
 		elif type(enumValue.value) is AbsApi.Flag:
@@ -241,8 +242,7 @@ class CppTranslator(object):
 			methodDict['implPrototype'] = '{implReturn} {longname}({implParams}){const}'.format(**methodElems)
 			methodDict['sourceCode' ] = self._generate_source_code(method, usedNamespace=namespace)
 		
-		t = metadoc.DoxygenCppTranslator()
-		methodDict['doc'] = t.translate(method.briefDescription) if method.briefDescription is not None else None
+		methodDict['doc'] = self.docTranslator.translate(method.briefDescription) if method.briefDescription is not None else None
 		
 		return methodDict
 	
