@@ -80,5 +80,5 @@ class DoxygenCppTranslator(Translator):
 class SandcastleCSharpTranslator(Translator):
 	def _tag_as_brief(self, lines):
 		if len(lines) > 0:
-			lines[0] = '<summary>' + lines[0]
-			lines[-1] = lines[-1] + '</summary>'
+			lines.insert(0, '<summary>')
+			lines.append('</summary>')

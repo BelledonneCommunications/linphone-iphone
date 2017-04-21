@@ -25,10 +25,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
 print sys.path
 import genapixml as CApi
 import abstractapi as AbsApi
+import metadoc
 
 class CsharpTranslator(object):
 	def __init__(self):
 		self.ignore = []
+		self.docTranslator = metadoc.SandcastleCSharpTranslator()
 
 	def init_method_dict(self):
 		methodDict = {}
@@ -179,6 +181,8 @@ class CsharpTranslator(object):
 		
 		methodDict = {}
 		methodDict['prototype'] = "static extern {return} {name}({params});".format(**methodElems)
+
+		methodDict['doc'] = self.docTranslator.translate(method.briefDescription) if method.briefDescription is not None else None
 
 		methodDict['has_impl'] = genImpl
 		if genImpl:
@@ -427,6 +431,7 @@ class CsharpTranslator(object):
 	def translate_enum(self, enum):
 		enumDict = {}
 		enumDict['enumName'] = enum.name.to_camel_case()
+		enumDict['doc'] = self.docTranslator.translate(enum.briefDescription) if enum.briefDescription is not None else None
 		enumDict['values'] = []
 		i = 0
 		lastValue = None

@@ -191,6 +191,11 @@ namespace Linphone
 	#region Enums
 	{{#enums}}
 	{{#enum}}
+	{{#doc}}
+	{{#lines}}
+	/// {{{line}}}
+	{{/lines}}
+	{{/doc}}
 	public enum {{enumName}}
 	{
 		{{#values}}
@@ -273,6 +278,11 @@ namespace Linphone
 		{{/has_second_prototype}}
 		
 		{{#has_property}}
+		{{#doc}}
+		{{#lines}}
+		/// {{{line}}}
+		{{/lines}}
+		{{/doc}}
 		{{property_static}}public {{{property_return}}} {{property_name}}
 		{
 		{{#has_getter}}
@@ -340,6 +350,11 @@ namespace Linphone
 		{{/has_property}}
 		{{#has_impl}}
 		{{#impl}}
+		{{#doc}}
+		{{#lines}}
+		/// {{{line}}}
+		{{/lines}}
+		{{/doc}}
 		public {{static}}{{override}}{{{type}}} {{name}}({{{args}}})
 		{
 			{{#is_string}}
