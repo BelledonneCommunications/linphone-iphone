@@ -56,6 +56,9 @@ class Description:
 
 class Translator:
 	def translate(self, description):
+		if description is None:
+			return None
+		
 		lines = []
 		for para in description.paragraphs:
 			if para is not description.paragraphs[0]:
