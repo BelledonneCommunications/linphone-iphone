@@ -162,6 +162,7 @@ namespace Linphone
 		}
 	}
 	
+	#if ANDROID
 	public class LinphoneAndroid
 	{
 		[DllImport(LinphoneWrapper.LIB_NAME)]
@@ -184,6 +185,7 @@ namespace Linphone
 			setMediastreamerAndroidContext(jnienv, context);
 		}
 	}
+	#endif
 	#endregion
 	
 	#region Enums
