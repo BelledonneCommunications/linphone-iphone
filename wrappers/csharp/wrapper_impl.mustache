@@ -24,11 +24,17 @@ using System.Collections.Generic;
 namespace Linphone
 {
 	#region Wrapper specifics
+	/// <summary>
+	/// Only contains the LIB_NAME value that represents the library in which all DllImport are made
+	/// </summary>
 	public class LinphoneWrapper 
 	{
 		public const string LIB_NAME = "linphone"; // With this, it automatically finds liblinphone.so
 	}
 
+	/// <summary>
+	/// All methods that returns a LinphoneStatus with a value != 0 as an error code in C are translated in C# by throwing a LinphoneException
+	/// </summary>
 	[Serializable()]
 	public class LinphoneException : System.Exception
 	{
@@ -39,6 +45,9 @@ namespace Linphone
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
+	/// <summary>
+	/// Parent class for a Linphone public objects
+	/// </summary>
 	public class LinphoneObject
 	{
 		internal IntPtr nativePtr;
@@ -69,9 +78,9 @@ namespace Linphone
 		
 		~LinphoneObject()
 		{
-			Console.WriteLine("Destroying" + this.ToString());
+			//Console.WriteLine("Destroying" + this.ToString());
 			if (nativePtr != IntPtr.Zero) {
-				Console.WriteLine("Unreffing" + this.ToString());
+				//Console.WriteLine("Unreffing" + this.ToString());
 				belle_sip_object_unref(nativePtr);
 			}
 		}
@@ -83,11 +92,11 @@ namespace Linphone
 			if (objPtr == IntPtr.Zero)
 			{
 				T obj = new T();
-				Console.WriteLine("Creating" + obj.ToString());
+				//Console.WriteLine("Creating" + obj.ToString());
 				if (takeRef)
 				{
 					ptr = belle_sip_object_ref(ptr);
-					Console.WriteLine("Reffing" + obj.ToString());
+					//Console.WriteLine("Reffing" + obj.ToString());
 				}
 				obj.nativePtr = ptr;
 				objPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(T)));
@@ -101,7 +110,7 @@ namespace Linphone
 				if (takeRef)
 				{
 					obj.nativePtr = belle_sip_object_ref(obj.nativePtr);
-					Console.WriteLine("Reffing" + obj.ToString());
+					//Console.WriteLine("Reffing" + obj.ToString());
 				}
 				return obj;
 			}
@@ -163,6 +172,9 @@ namespace Linphone
 	}
 	
 	#if ANDROID
+	/// <summary>
+	/// Methods that are only found in Android version of Linphone libraries and related to JNI
+	/// </summary>
 	public class LinphoneAndroid
 	{
 		[DllImport(LinphoneWrapper.LIB_NAME)]
@@ -174,11 +186,18 @@ namespace Linphone
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern void setMediastreamerAndroidContext(IntPtr jnienv, IntPtr context);
 		
+		/// <summary>
+		/// Registers the Android log handler (adb logcat) in Linphone.
+		/// </summary>
 		public static void setNativeLogHandler()
 		{
 			setAndroidLogHandler();
 		}
 		
+		/// <summary>
+		/// Sets the JVM and JNI pointers in Linphone, required to be able to make JAVA upcalls.
+		/// Calling this method is mandatory and must be done as soon as possible !
+		/// </summary>
 		public static void setAndroidContext(IntPtr jnienv, IntPtr context)
 		{
 			ms_set_jvm_from_env(jnienv);
@@ -256,6 +275,11 @@ namespace Linphone
 	#region Classes
 	{{#classes}}
 	{{#_class}}
+	{{#doc}}
+	{{#lines}}
+	/// {{{line}}}
+	{{/lines}}
+	{{/doc}}
 	[StructLayout(LayoutKind.Sequential)]
 	public class {{className}} : LinphoneObject
 	{

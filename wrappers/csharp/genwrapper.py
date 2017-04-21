@@ -460,6 +460,7 @@ class CsharpTranslator(object):
 		classDict = {}
 		classDict['className'] = _class.name.to_camel_case()
 		classDict['isLinphoneFactory'] = _class.name.to_camel_case() == "Factory"
+		classDict['doc'] = self.docTranslator.translate(_class.briefDescription) if _class.briefDescription is not None else None
 		classDict['dllImports'] = []
 
 		islistenable = _class.listenerInterface is not None
