@@ -277,9 +277,9 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_email(const LinphoneAc
  * Set the domain.
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] domain The domain to set
- * @return LinphoneAccountCreatorStatusRequestOk if everything is OK, or a specific error otherwise.
+ * @return LinphoneAccountCreatorDomainOk if everything is OK, or a specific error otherwise.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain);
+LINPHONE_PUBLIC LinphoneAccountCreatorDomainStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain);
 
 /**
  * Get the domain.
@@ -292,9 +292,9 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_domain(const LinphoneA
  * Set Transport
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] transport The transport to set
- * @return LinphoneAccountCreatorStatusRequestOk if everything is OK, or a specific error otherwise.
+ * @return LinphoneAccountCreatorTransportOk if everything is OK, or a specific error otherwise.
 **/
-LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport);
+LINPHONE_PUBLIC LinphoneAccountCreatorTransportStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport);
 
 /**
  * get Transport

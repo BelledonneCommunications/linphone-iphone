@@ -507,25 +507,25 @@ const char * linphone_account_creator_get_email(const LinphoneAccountCreator *cr
 	return creator->email;
 }
 
-LinphoneAccountCreatorStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain) {
+LinphoneAccountCreatorDomainStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain) {
 	if (domain && validate_uri(NULL, domain, NULL) != 0) {
-		return LinphoneAccountCreatorStatusRequestFailed;
+		return LinphoneAccountCreatorDomainInvalid;
 	}
 
 	set_string(&creator->domain, domain, TRUE);
-	return LinphoneAccountCreatorStatusRequestOk;
+	return LinphoneAccountCreatorDomainOk;
  }
 
 const char * linphone_account_creator_get_domain(const LinphoneAccountCreator *creator) {
 	return creator->domain;
 }
 
-LinphoneAccountCreatorStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport) {
+LinphoneAccountCreatorTransportStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport) {
 	if (!linphone_core_sip_transport_supported(creator->core, transport)) {
-		return LinphoneAccountCreatorStatusRequestFailed;
+		return LinphoneAccountCreatorTransportUnsupported;
 	}
 	creator->transport = transport;
-	return LinphoneAccountCreatorStatusRequestOk;
+	return LinphoneAccountCreatorTransportOk;
 }
 
 LinphoneTransportType linphone_account_creator_get_transport(const LinphoneAccountCreator *creator) {

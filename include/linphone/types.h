@@ -118,6 +118,24 @@ typedef enum _LinphoneAccountCreatorActivationCodeStatus {
 } LinphoneAccountCreatorActivationCodeStatus;
 
 /**
+ * Enum describing Domain checking
+ * @ingroup account_creator
+**/
+typedef enum _LinphoneAccountCreatorDomainStatus {
+	LinphoneAccountCreatorDomainOk, /**< Domain ok */
+	LinphoneAccountCreatorDomainInvalid /**< Domain invalid */
+} LinphoneAccountCreatorDomainStatus;
+
+/**
+ * Enum describing Transport checking
+ * @ingroup account_creator
+**/
+typedef enum _LinphoneAccountCreatorTransportStatus {
+	LinphoneAccountCreatorTransportOk, /**< Transport ok */
+	LinphoneAccountCreatorTransportUnsupported /**< Transport invalid */
+} LinphoneAccountCreatorTransportStatus;
+
+/**
  * Enum describing the status of server request.
  * @ingroup account_creator_request
 **/
