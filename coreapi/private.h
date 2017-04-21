@@ -1495,9 +1495,10 @@ struct _LinphoneAccountCreator {
 	/* Misc */
 	char *language; /**< User language */
 	char *activation_code; /**< Account validation code */
+	char *domain; /**< Domain */
+	LinphoneTransportType transport; /**< Transport used */
 
 	/* Deprecated */
-	char *domain;
 	char *route;
 };
 

@@ -279,14 +279,29 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_email(const LinphoneAc
  * @param[in] domain The domain to set
  * @return LinphoneAccountCreatorStatusRequestOk if everything is OK, or a specific error otherwise.
 **/
-LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain);
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain);
 
 /**
  * Get the domain.
  * @param[in] creator LinphoneAccountCreator object
  * @return The domain of the LinphoneAccountCreator
 **/
-LINPHONE_DEPRECATED LINPHONE_PUBLIC const char * linphone_account_creator_get_domain(const LinphoneAccountCreator *creator);
+LINPHONE_PUBLIC const char * linphone_account_creator_get_domain(const LinphoneAccountCreator *creator);
+
+/**
+ * Set Transport
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] transport The transport to set
+ * @return LinphoneAccountCreatorStatusRequestOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport);
+
+/**
+ * get Transport
+ * @param[in] creator LinphoneAccountCreator object
+ * @return The transport of LinphoneAccountCreator
+**/
+LINPHONE_PUBLIC LinphoneTransportType linphone_account_creator_get_transport(const LinphoneAccountCreator *creator);
 
 /**
  * Set the route.
