@@ -566,6 +566,8 @@ def main():
 	project.check()
 	
 	parser = AbsApi.CParser(project)
+	parser.functionBl = ['linphone_vcard_get_belcard']
+	parser.classBl += 'LinphoneCoreVTable'
 	parser.parse_all()
 	translator = CsharpTranslator()
 	renderer = pystache.Renderer()
