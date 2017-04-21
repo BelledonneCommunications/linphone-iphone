@@ -277,16 +277,31 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_email(const LinphoneAc
  * Set the domain.
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] domain The domain to set
- * @return LinphoneAccountCreatorStatusRequestOk if everything is OK, or a specific error otherwise.
+ * @return LinphoneAccountCreatorDomainOk if everything is OK, or a specific error otherwise.
 **/
-LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain);
+LINPHONE_PUBLIC LinphoneAccountCreatorDomainStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain);
 
 /**
  * Get the domain.
  * @param[in] creator LinphoneAccountCreator object
  * @return The domain of the LinphoneAccountCreator
 **/
-LINPHONE_DEPRECATED LINPHONE_PUBLIC const char * linphone_account_creator_get_domain(const LinphoneAccountCreator *creator);
+LINPHONE_PUBLIC const char * linphone_account_creator_get_domain(const LinphoneAccountCreator *creator);
+
+/**
+ * Set Transport
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] transport The transport to set
+ * @return LinphoneAccountCreatorTransportOk if everything is OK, or a specific error otherwise.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorTransportStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport);
+
+/**
+ * get Transport
+ * @param[in] creator LinphoneAccountCreator object
+ * @return The transport of LinphoneAccountCreator
+**/
+LINPHONE_PUBLIC LinphoneTransportType linphone_account_creator_get_transport(const LinphoneAccountCreator *creator);
 
 /**
  * Set the route.
@@ -492,11 +507,18 @@ LINPHONE_PUBLIC void linphone_account_creator_cbs_set_update_account(LinphoneAcc
 /************************** End Account Creator Cbs **************************/
 
 /**
+ * Create and configure a proxy config and a authentication info for an account creator
+ * @param[in] creator LinphoneAccountCreator object
+ * @return A LinphoneProxyConfig object if successful, NULL otherwise
+**/
+LINPHONE_PUBLIC LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const LinphoneAccountCreator *creator);
+
+/**
  * Configure an account (create a proxy config and authentication info for it).
  * @param[in] creator LinphoneAccountCreator object
  * @return A LinphoneProxyConfig object if successful, NULL otherwise
- **/
-LINPHONE_PUBLIC LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator);
+**/
+LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator);
 
 /**
  * @}

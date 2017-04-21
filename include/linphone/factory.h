@@ -126,6 +126,30 @@ LINPHONE_PUBLIC LinphoneCallCbs * linphone_factory_create_call_cbs(const Linphon
 LINPHONE_PUBLIC LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory);
 
 /**
+ * Create a LinphoneVideoDefinition from a given width and height
+ * @param[in] factory LinphoneFactory singleton object
+ * @param[in] width The width of the created video definition
+ * @param[in] height The height of the created video definition
+ * @return A new LinphoneVideoDefinition object
+ */
+LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_factory_create_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height);
+
+/**
+ * Create a LinphoneVideoDefinition from a given standard definition name
+ * @param[in] factory LinphoneFactory singleton object
+ * @param[in] name The standard definition name of the video definition to create
+ * @return A new LinphoneVideoDefinition object
+ */
+LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_factory_create_video_definition_from_name(const LinphoneFactory *factory, const char *name);
+
+/**
+ * Get the list of standard video definitions supported by Linphone.
+ * @param[in] factory LinphoneFactory singleton object
+ * @return \bctbx_list{LinphoneVideoDefinition}
+ */
+LINPHONE_PUBLIC const bctbx_list_t * linphone_factory_get_supported_video_definitions(const LinphoneFactory *factory);
+
+/**
  * Get the top directory where the resources are located.
  * @param[in] factory LinphoneFactory object
  * @return The path to the top directory where the resources are located
@@ -210,6 +234,33 @@ LINPHONE_PUBLIC const char * linphone_factory_get_msplugins_dir(LinphoneFactory 
  */
 LINPHONE_PUBLIC void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *path);
 
+/**
+ * Creates an object LinphoneErrorInfo.
+ * @param[in] factory LinphoneFactory object
+ * @return  LinphoneErrorInfo object.
+ */
+LINPHONE_PUBLIC  LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneRange.
+ * @param[in] factory LinphoneFactory object
+ * @return  LinphoneRange object.
+ */
+LINPHONE_PUBLIC LinphoneRange *linphone_factory_create_range(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneTransports.
+ * @param[in] factory LinphoneFactory object
+ * @return  LinphoneTransports object.
+ */
+LINPHONE_PUBLIC LinphoneTransports *linphone_factory_create_transports(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneVideoActivationPolicy.
+ * @param[in] factory LinphoneFactory object
+ * @return  LinphoneVideoActivationPolicy object.
+ */
+LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(LinphoneFactory *factory);
 /**
  * @}
  */

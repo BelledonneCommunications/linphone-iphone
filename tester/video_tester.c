@@ -414,25 +414,35 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	LinphoneCallParams *pauline_params;
 	LinphoneCallParams *marie1_params;
 	LinphoneCallParams *marie2_params;
-	LinphoneVideoPolicy pol;
+	LinphoneVideoActivationPolicy *pol = linphone_video_activation_policy_new();
 	LinphoneCall *marie1_call;
 	LinphoneCall *marie2_call;
 	LinphoneCall *pauline_call;
 	LinphoneInfoMessage *info;
 	int dummy = 0;
-	pol.automatically_accept = 1;
-	pol.automatically_initiate = 1;
+	pol->automatically_accept = TRUE;
+	pol->automatically_initiate = TRUE;
+	LinphoneRange *port_range = NULL;
 
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, TRUE);
 	linphone_core_enable_video_capture(marie1->lc, TRUE);
 	linphone_core_enable_video_display(marie1->lc, TRUE);
-	linphone_core_set_video_policy(marie1->lc, &pol);
+	linphone_core_set_video_activation_policy(marie1->lc, pol);
 	linphone_core_enable_video_capture(marie2->lc, TRUE);
 	linphone_core_enable_video_display(marie2->lc, TRUE);
-	linphone_core_set_video_policy(marie2->lc, &pol);
+	linphone_core_set_video_activation_policy(marie2->lc, pol);
+	linphone_video_activation_policy_unref(pol);
 	linphone_core_set_audio_port_range(marie2->lc, 40200, 40300);
+	port_range = linphone_core_get_audio_ports_range(marie2->lc);
+	BC_ASSERT_EQUAL(port_range->min, 40200, int, "%i");
+	BC_ASSERT_EQUAL(port_range->max, 40300, int, "%i");
+	linphone_range_unref(port_range);
 	linphone_core_set_video_port_range(marie2->lc, 40400, 40500);
+	port_range = linphone_core_get_video_ports_range(marie2->lc);
+	BC_ASSERT_EQUAL(port_range->min, 40400, int, "%i");
+	BC_ASSERT_EQUAL(port_range->max, 40500, int, "%i");
+	linphone_range_unref(port_range);
 
 	lcs = bctbx_list_append(lcs,marie1->lc);
 	lcs = bctbx_list_append(lcs,marie2->lc);
@@ -471,18 +481,32 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	BC_ASSERT_PTR_NOT_NULL(marie2_call);
 
 	if (pauline_call && marie1_call && marie2_call) {
+		LinphoneCallStats *pauline_audio_stats, *marie1_audio_stats, *marie2_audio_stats;
+		LinphoneCallStats *pauline_video_stats, *marie1_video_stats, *marie2_video_stats;
 		linphone_call_set_next_video_frame_decoded_callback(pauline_call, linphone_call_iframe_decoded_cb, pauline->lc);
 
 		/* wait a bit that streams are established */
 		wait_for_list(lcs, &dummy, 1, 3000);
-		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 0, float, "%f");
-		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 0, float, "%f");
-		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(marie2_call)->download_bandwidth, 0, float, "%f");
-		BC_ASSERT_LOWER(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 11, float, "%f"); /* because of stun packets*/
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie1_call)->download_bandwidth, 0, float, "%f");
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie2_call)->download_bandwidth, 0, float, "%f");
+		pauline_audio_stats = linphone_call_get_audio_stats(pauline_call);
+		marie1_audio_stats = linphone_call_get_audio_stats(marie1_call);
+		marie2_audio_stats = linphone_call_get_audio_stats(marie2_call);
+		pauline_video_stats = linphone_call_get_video_stats(pauline_call);
+		marie1_video_stats = linphone_call_get_video_stats(marie1_call);
+		marie2_video_stats = linphone_call_get_video_stats(marie2_call);
+		BC_ASSERT_EQUAL(pauline_audio_stats->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_EQUAL(marie1_audio_stats->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_EQUAL(marie2_audio_stats->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_LOWER(pauline_video_stats->download_bandwidth, 11, float, "%f"); /* because of stun packets*/
+		BC_ASSERT_GREATER(marie1_video_stats->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_GREATER(marie2_video_stats->download_bandwidth, 0, float, "%f");
 		BC_ASSERT_GREATER(marie1->stat.number_of_IframeDecoded, 1, int, "%i");
 		BC_ASSERT_GREATER(marie2->stat.number_of_IframeDecoded, 1, int, "%i");
+		linphone_call_stats_unref(pauline_audio_stats);
+		linphone_call_stats_unref(marie1_audio_stats);
+		linphone_call_stats_unref(marie2_audio_stats);
+		linphone_call_stats_unref(pauline_video_stats);
+		linphone_call_stats_unref(marie1_video_stats);
+		linphone_call_stats_unref(marie2_video_stats);
 
 		linphone_call_params_set_audio_direction(marie1_params, LinphoneMediaDirectionSendRecv);
 		linphone_call_accept_with_params(linphone_core_get_current_call(marie1->lc), marie1_params);
@@ -494,11 +518,19 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 
 		/*wait a bit that streams are established*/
 		wait_for_list(lcs, &dummy, 1, 3000);
-		BC_ASSERT_GREATER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 71, float, "%f");
-		BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 71, float, "%f");
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 0, float, "%f");
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie1_call)->download_bandwidth, 0, float, "%f");
+		pauline_audio_stats = linphone_call_get_audio_stats(pauline_call);
+		marie1_audio_stats = linphone_call_get_audio_stats(marie1_call);
+		pauline_video_stats = linphone_call_get_video_stats(pauline_call);
+		marie1_video_stats = linphone_call_get_video_stats(marie1_call);
+		BC_ASSERT_GREATER(pauline_audio_stats->download_bandwidth, 71, float, "%f");
+		BC_ASSERT_GREATER(marie1_audio_stats->download_bandwidth, 71, float, "%f");
+		BC_ASSERT_GREATER(pauline_video_stats->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_GREATER(marie1_video_stats->download_bandwidth, 0, float, "%f");
 		BC_ASSERT_GREATER(pauline->stat.number_of_IframeDecoded, 1, int, "%i");
+		linphone_call_stats_unref(pauline_audio_stats);
+		linphone_call_stats_unref(marie1_audio_stats);
+		linphone_call_stats_unref(pauline_video_stats);
+		linphone_call_stats_unref(marie1_video_stats);
 
 		/* send an INFO in reverse side to check that dialogs are properly established */
 		info = linphone_core_create_info_message(marie1->lc);

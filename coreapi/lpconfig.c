@@ -27,6 +27,7 @@
 #include "private.h"
 #include "bctoolbox/vfs.h"
 #include "belle-sip/object.h"
+#include "xml2lpc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -402,7 +403,7 @@ LpConfig * linphone_config_new_from_buffer(const char *buffer){
 
 static int _linphone_config_init_from_files(LinphoneConfig *lpconfig, const char *config_filename, const char *factory_config_filename) {
 	lpconfig->g_bctbx_vfs = bctbx_vfs_get_default();
-	
+
 	if (config_filename!=NULL){
 		if(ortp_file_exist(config_filename) == 0) {
 			lpconfig->filename=lp_realpath(config_filename, NULL);
@@ -478,6 +479,34 @@ LinphoneStatus linphone_config_read_file(LpConfig *lpconfig, const char *filenam
 	ms_warning("Fail to open file %s",path);
 	ms_free(path);
 	return -1;
+}
+
+char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, void* lc, void* ctx) {
+	xml2lpc_context *context = NULL;
+	char* path = lp_realpath(filename, NULL);
+	char* error_msg = NULL;
+
+	if (path) {
+		int result = -1;
+		context = xml2lpc_context_new(ctx, lc);
+		result = xml2lpc_set_xml_file(context, path);
+		if (result == 0) {
+			result = xml2lpc_convert(context, lpc);
+			if (result == 0) {
+				// if the remote provisioning added a proxy config and none was set before, set it
+				if (lp_config_has_section(lpc, "proxy_0") && lp_config_get_int(lpc, "sip", "default_proxy", -1) == -1){
+					lp_config_set_int(lpc, "sip", "default_proxy", 0);
+				}
+				lp_config_sync(lpc);
+			} else {
+				error_msg = "xml to lpc failed";
+			}
+		} else {
+			error_msg = "invalid xml";
+		}
+	}
+	if (context) xml2lpc_context_destroy(context);
+	return error_msg;
 }
 
 void lp_item_set_value(LpItem *item, const char *value){
@@ -758,14 +787,14 @@ void linphone_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *s
 
 void lp_item_write(LpItem *item, LpConfig *lpconfig){
 	int ret =-1 ;
-	if (item->is_comment){	
+	if (item->is_comment){
 		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s\n",item->value);
 
 	}
 	else if (item->value && item->value[0] != '\0' ){
 		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s=%s\n",item->key,item->value);
 	}
-	
+
 	else {
 		ms_warning("Not writing item %s to file, it is empty", item->key);
 	}
@@ -792,7 +821,7 @@ void lp_section_write(LpSection *sec,LpConfig *lpconfig){
 	bctbx_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)lpconfig);
 
 	if (bctbx_file_fprintf(lpconfig->pFile, 0, "\n")< 0) ms_error("lp_section_write : write error");
-	
+
 }
 
 LinphoneStatus linphone_config_sync(LpConfig *lpconfig){
@@ -811,7 +840,7 @@ LinphoneStatus linphone_config_sync(LpConfig *lpconfig){
 		lpconfig->readonly = TRUE;
 		return -1;
 	}
-	
+
 	bctbx_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)lpconfig);
 	bctbx_file_close(pFile);
 
@@ -1018,7 +1047,7 @@ LinphoneStatus linphone_config_read_relative_file(const LpConfig *lpconfig, cons
 	if(bctbx_file_read(pFile, data, 1, (off_t)max_length) < 0){
 		ms_error("%s could not be loaded.", realfilepath);
 		goto err;
-		
+
 	}
 
 	bctbx_file_close(pFile);
@@ -1109,7 +1138,7 @@ int linphone_config_has_entry(const LpConfig *lpconfig, const char *section, con
 		return lp_section_find_item(sec,key) != NULL;
 	} else
 		return FALSE;
-	
+
 }
 
 BELLE_SIP_INSTANCIATE_VPTR(

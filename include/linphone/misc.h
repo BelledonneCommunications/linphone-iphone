@@ -167,6 +167,68 @@ LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
  */
 LINPHONE_PUBLIC int linphone_reason_to_error_code(LinphoneReason reason);
 
+/**
+ * Increment refcount.
+ * @param[in] range LinphoneRange object
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC LinphoneRange *linphone_range_ref(LinphoneRange *range);
+
+/**
+ * Decrement refcount and possibly free the object.
+ * @param[in] range LinphoneRange object
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void linphone_range_unref(LinphoneRange *range);
+
+/**
+ * Gets the user data in the LinphoneRange object
+ * @param[in] range the LinphoneRange
+ * @return the user data
+ * @ingroup misc
+*/
+LINPHONE_PUBLIC void *linphone_range_get_user_data(const LinphoneRange *range);
+
+/**
+ * Sets the user data in the LinphoneRange object
+ * @param[in] range the LinphoneRange object
+ * @param[in] data the user data
+ * @ingroup misc
+*/
+LINPHONE_PUBLIC void linphone_range_set_user_data(LinphoneRange *range, void *data);
+
+/**
+ * Gets the lower value of the range
+ * @param[in] range a LinphoneRange
+ * @return The lower value
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC int linphone_range_get_min(const LinphoneRange *range);
+
+/**
+ * Gets the higher value of the range
+ * @param[in] range a LinphoneRange
+ * @return The higher value
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC int linphone_range_get_max(const LinphoneRange *range);
+
+/**
+ * Sets the lower value of the range
+ * @param[in] range a LinphoneRange
+ * @param[in] min the value to set
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void linphone_range_set_min(LinphoneRange *range, int min);
+
+/**
+ * Sets the higher value of the range
+ * @param[in] range a LinphoneRange
+ * @param[in] max the value to set
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void linphone_range_set_max(LinphoneRange *range, int max);
+
 
 #ifdef __cplusplus
 }

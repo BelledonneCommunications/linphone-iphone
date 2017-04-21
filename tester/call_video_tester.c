@@ -223,7 +223,7 @@ static LinphoneCall* _request_video(LinphoneCoreManager* caller,LinphoneCoreMana
 bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t accept_with_params) {
 	stats initial_caller_stat=caller->stat;
 	stats initial_callee_stat=callee->stat;
-	const LinphoneVideoPolicy *video_policy;
+	LinphoneVideoActivationPolicy *video_policy;
 	LinphoneCall *call_obj;
 	bool_t video_added = FALSE;
 	
@@ -233,7 +233,7 @@ bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bo
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&callee->stat.number_of_LinphoneCallStreamsRunning,initial_callee_stat.number_of_LinphoneCallStreamsRunning+1));
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&caller->stat.number_of_LinphoneCallStreamsRunning,initial_caller_stat.number_of_LinphoneCallStreamsRunning+1));
 
-		video_policy = linphone_core_get_video_policy(caller->lc);
+		video_policy = linphone_core_get_video_activation_policy(caller->lc);
 		if (video_policy->automatically_accept || accept_with_params) {
 			video_added = BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(callee->lc))));
 			video_added = 
@@ -243,6 +243,7 @@ bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bo
 			BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(callee->lc))));
 			BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(caller->lc))));
 		}
+		linphone_video_activation_policy_unref(video_policy);
 		if (linphone_core_get_media_encryption(caller->lc) != LinphoneMediaEncryptionNone
 				&& linphone_core_get_media_encryption(callee->lc) != LinphoneMediaEncryptionNone) {
 			const LinphoneCallParams* call_param;

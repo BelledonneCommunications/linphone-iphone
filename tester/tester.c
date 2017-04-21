@@ -677,6 +677,7 @@ void liblinphone_tester_uninit(void) {
 
 static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStreamType stream_type) {
 	MediaStream *ms;
+	LinphoneCallStats *stats;
 	switch (stream_type) {
 	case LinphoneStreamTypeAudio:
 		ms=&c1->audiostream->ms;
@@ -693,7 +694,8 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 		return;
 	}
 
-	if (linphone_call_get_audio_stats(c1)->ice_state == LinphoneIceStateHostConnection && media_stream_started(ms)) {
+	stats = linphone_call_get_audio_stats(c1);
+	if (stats->ice_state == LinphoneIceStateHostConnection && media_stream_started(ms)) {
 		struct sockaddr_storage remaddr;
 		socklen_t remaddrlen = sizeof(remaddr);
 		char ip[NI_MAXHOST] = { 0 };
@@ -718,6 +720,7 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 			BC_ASSERT_STRING_EQUAL(ip, expected_addr);
 		}
 	}
+	linphone_call_stats_unref(stats);
 }
 
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state) {
@@ -747,13 +750,17 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 		liblinphone_tester_clock_start(&ts);
 		do{
 			if ((c1 != NULL) && (c2 != NULL)) {
-				if (linphone_call_get_audio_stats(c1)->ice_state==state &&
-					linphone_call_get_audio_stats(c2)->ice_state==state ){
+				LinphoneCallStats *stats1 = linphone_call_get_audio_stats(c1);
+				LinphoneCallStats *stats2 = linphone_call_get_audio_stats(c2);
+				if (stats1->ice_state==state &&
+					stats2->ice_state==state){
 					audio_success=TRUE;
 					check_ice_from_rtp(c1,c2,LinphoneStreamTypeAudio);
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeAudio);
 					break;
 				}
+				linphone_call_stats_unref(stats1);
+				linphone_call_stats_unref(stats2);
 				linphone_core_iterate(caller->lc);
 				linphone_core_iterate(callee->lc);
 			}
@@ -765,13 +772,17 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 		liblinphone_tester_clock_start(&ts);
 		do{
 			if ((c1 != NULL) && (c2 != NULL)) {
-				if (linphone_call_get_video_stats(c1)->ice_state==state &&
-					linphone_call_get_video_stats(c2)->ice_state==state ){
+				LinphoneCallStats *stats1 = linphone_call_get_video_stats(c1);
+				LinphoneCallStats *stats2 = linphone_call_get_video_stats(c2);
+				if (stats1->ice_state==state &&
+					stats2->ice_state==state){
 					video_success=TRUE;
 					check_ice_from_rtp(c1,c2,LinphoneStreamTypeVideo);
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeVideo);
 					break;
 				}
+				linphone_call_stats_unref(stats1);
+				linphone_call_stats_unref(stats2);
 				linphone_core_iterate(caller->lc);
 				linphone_core_iterate(callee->lc);
 			}
@@ -783,13 +794,17 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 		liblinphone_tester_clock_start(&ts);
 		do{
 			if ((c1 != NULL) && (c2 != NULL)) {
-				if (linphone_call_get_text_stats(c1)->ice_state==state &&
-					linphone_call_get_text_stats(c2)->ice_state==state ){
+				LinphoneCallStats *stats1 = linphone_call_get_text_stats(c1);
+				LinphoneCallStats *stats2 = linphone_call_get_text_stats(c2);
+				if (stats1->ice_state==state &&
+					stats2->ice_state==state){
 					text_success=TRUE;
 					check_ice_from_rtp(c1,c2,LinphoneStreamTypeText);
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeText);
 					break;
 				}
+				linphone_call_stats_unref(stats1);
+				linphone_call_stats_unref(stats2);
 				linphone_core_iterate(caller->lc);
 				linphone_core_iterate(callee->lc);
 			}

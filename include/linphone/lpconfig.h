@@ -83,6 +83,16 @@ LINPHONE_PUBLIC LinphoneConfig * linphone_config_new_with_factory(const char *co
 LINPHONE_PUBLIC LinphoneStatus linphone_config_read_file(LinphoneConfig *lpconfig, const char *filename);
 
 /**
+ * Reads a xml config file and fill the LinphoneConfig with the read config dynamic values.
+ * @ingroup misc
+ * @param lpconfig The LinphoneConfig object to fill with the content of the file
+ * @param filename The filename of the config file to read to fill the LinphoneConfig
+ * @param lc LinphoneCore to share with xml2lpc
+ * @param ctx The context given to xml2lpc callback
+ */
+LINPHONE_PUBLIC char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, void* lc, void* ctx);
+
+/**
  * Retrieves a configuration item as a string, given its section, key, and default value.
  *
  * The default value string is returned if the config item isn't found.
@@ -198,7 +208,7 @@ LINPHONE_PUBLIC int linphone_config_has_entry(const LinphoneConfig *lpconfig, co
  * @param[in] key
  **/
 LINPHONE_PUBLIC void linphone_config_clean_entry(LinphoneConfig *lpconfig, const char *section, const char *key);
-	
+
 /**
  * Returns the list of sections' names in the LinphoneConfig.
  * @param[in] lpconfig The LinphoneConfig object

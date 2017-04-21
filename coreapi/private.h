@@ -139,8 +139,10 @@ struct _LinphoneCallParams{
 	PayloadType *audio_codec; /*audio codec currently in use */
 	PayloadType *video_codec; /*video codec currently in use */
 	PayloadType *text_codec; /*text codec currently in use */
-	MSVideoSize sent_vsize; /* Size of the video currently being sent */
-	MSVideoSize recv_vsize; /* Size of the video currently being received */
+	MSVideoSize sent_vsize; /* DEPRECATED: Size of the video currently being sent */
+	MSVideoSize recv_vsize; /* DEPRECATED: Size of the video currently being received */
+	LinphoneVideoDefinition *sent_vdef; /* Definition of the video currently being sent */
+	LinphoneVideoDefinition *recv_vdef; /* Definition of the video currrently being received */
 	float received_fps,sent_fps;
 	int down_bw;
 	int up_bw;
@@ -349,7 +351,9 @@ struct _LinphoneCall{
 	OrtpEvQueue *videostream_app_evq;
 	OrtpEvQueue *textstream_app_evq;
 	CallCallbackObj nextVideoFrameDecoded;
-	LinphoneCallStats stats[3]; /* audio, video, text */
+	LinphoneCallStats *audio_stats;
+	LinphoneCallStats *video_stats;
+	LinphoneCallStats *text_stats;
 #ifdef BUILD_UPNP
 	UpnpSession *upnp_session;
 #endif //BUILD_UPNP
@@ -390,7 +394,7 @@ struct _LinphoneCall{
 	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
 	bool_t defer_notify_incoming;
 	bool_t need_localip_refresh;
-	
+
 	bool_t reinvite_on_cancel_response_requested;
 	bool_t non_op_error; /*set when the LinphoneErrorInfo was set at higher level than sal*/
 
@@ -410,7 +414,9 @@ void linphone_call_notify_info_message_received(LinphoneCall *call, const Linpho
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
-void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
+void _linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC const LinphoneCallParams * linphone_call_get_params(LinphoneCall *call);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md);
@@ -927,6 +933,8 @@ typedef struct video_config{
 	const char **cams;
 	MSVideoSize vsize;
 	MSVideoSize preview_vsize; /*is 0,0 if no forced preview size is set, in which case vsize field above is used.*/
+	LinphoneVideoDefinition *vdef;
+	LinphoneVideoDefinition *preview_vdef;
 	float fps;
 	bool_t capture;
 	bool_t show_local;
@@ -1054,7 +1062,7 @@ struct _LinphoneCore
 	struct _EchoTester *ect;
 	LinphoneTaskList hooks; /*tasks periodically executed in linphone_core_iterate()*/
 	LinphoneConference *conf_ctx;
-	char* zrtp_secrets_cache; /**< zrtp xml filename cache : obsolete, use zrtp_cache_db now, kept to allow cache migration */
+	char* zrtp_secrets_cache; /**< zrtp cache filename */
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	time_t network_last_check;
@@ -1089,7 +1097,6 @@ struct _LinphoneCore
 	char *chat_db_file;
 	char *logs_db_file;
 	char *friends_db_file;
-	char *zrtp_cache_db_file;
 #ifdef SQLITE_STORAGE_ENABLED
 	sqlite3 *zrtp_cache_db; /**< zrtp sqlite cache, used by both zrtp and lime */
 	sqlite3 *db;
@@ -1294,6 +1301,7 @@ LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
 SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
+void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
 void linphone_event_unpublish(LinphoneEvent *lev);
@@ -1487,9 +1495,10 @@ struct _LinphoneAccountCreator {
 	/* Misc */
 	char *language; /**< User language */
 	char *activation_code; /**< Account validation code */
+	char *domain; /**< Domain */
+	LinphoneTransportType transport; /**< Transport used */
 
 	/* Deprecated */
-	char *domain;
 	char *route;
 };
 
@@ -1517,11 +1526,18 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_is_account
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_create_account_linphone(LinphoneAccountCreator *creator);
 
 /**
- * Send an XML-RPC request to activate a Linphone account.
+ * Send an XML-RPC request to activate a Linphone account with phone number.
  * @param[in] creator LinphoneAccountCreator object
  * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_activate_account_linphone(LinphoneAccountCreator *creator);
+
+/**
+ * Send an XML-RPC request to activate a Linphone account with email.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return LinphoneAccountCreatorStatusRequestOk if the request has been sent, LinphoneAccountCreatorStatusRequestFailed otherwise
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_activate_email_account_linphone(LinphoneAccountCreator *creator);
 
 /**
  * Send an XML-RPC request to test the validation of a Linphone account.
@@ -1720,6 +1736,76 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneImEncryptionEngine);
 
 LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc);
 
+struct _LinphoneRange {
+	belle_sip_object_t base;
+	void *user_data;
+	int min;
+	int max;
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneRange);
+
+LinphoneRange *linphone_range_new(void);
+
+struct _LinphoneTransports {
+	belle_sip_object_t base;
+	void *user_data;
+	int udp_port; /**< SIP/UDP port */
+	int tcp_port; /**< SIP/TCP port */
+	int dtls_port; /**< SIP/DTLS port */
+	int tls_port; /**< SIP/TLS port */
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneTransports);
+
+LINPHONE_PUBLIC LinphoneTransports *linphone_transports_new(void);
+
+struct _LinphoneVideoActivationPolicy {
+	belle_sip_object_t base;
+	void *user_data;
+	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/
+	bool_t automatically_accept; /**<Whether video shall be automatically accepted for incoming calls*/
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneVideoActivationPolicy);
+
+LinphoneVideoActivationPolicy *linphone_video_activation_policy_new(void);
+
+/**
+ * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
+ *
+ * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
+ * it passes for instantiating the LinphoneCore object (see linphone_core_new() ).
+ *
+ * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
+**/
+struct _LinphoneCallStats {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneStreamType type; /**< Type of the stream which the stats refer to */
+	jitter_stats_t jitter_stats; /**<jitter buffer statistics, see oRTP documentation for details */
+	mblk_t *received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
+	mblk_t *sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
+	float round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
+	LinphoneIceState ice_state; /**< State of ICE processing. */
+	LinphoneUpnpState upnp_state; /**< State of uPnP processing. */
+	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float local_late_rate; /**<percentage of packet received too late over last second*/
+	float local_loss_rate; /**<percentage of lost packet over last second*/
+	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
+	float rtcp_download_bandwidth; /**<RTCP download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	rtp_stats_t rtp_stats; /**< RTP stats */
+	int rtp_remote_family; /**< Ip adress family of the remote destination */
+	int clockrate;  /*RTP clockrate of the stream, provided here for easily converting timestamp units expressed in RTCP packets in milliseconds*/
+	bool_t rtcp_received_via_mux; /*private flag, for non-regression test only*/
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallStats);
+
+LinphoneCallStats *linphone_call_stats_new(void);
+
 /** Belle Sip-based objects need unique ids
   */
 
@@ -1769,7 +1855,12 @@ BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
 BELLE_SIP_TYPE_ID(LinphoneConference),
 BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
-BELLE_SIP_TYPE_ID(LinphonePayloadType)
+BELLE_SIP_TYPE_ID(LinphonePayloadType),
+BELLE_SIP_TYPE_ID(LinphoneRange),
+BELLE_SIP_TYPE_ID(LinphoneVideoDefinition),
+BELLE_SIP_TYPE_ID(LinphoneTransports),
+BELLE_SIP_TYPE_ID(LinphoneVideoActivationPolicy),
+BELLE_SIP_TYPE_ID(LinphoneCallStats)
 BELLE_SIP_DECLARE_TYPES_END
 
 
@@ -1783,8 +1874,6 @@ void linphone_core_notify_display_status(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_message(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message);
 void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url);
-void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
-void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
 void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 void linphone_core_notify_authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method);
@@ -1908,6 +1997,21 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneErrorInfo);
 
 void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
 void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to, LinphoneErrorInfo *ei);
+
+struct _LinphoneVideoDefinition {
+	belle_sip_object_t base;
+	void *user_data;
+	unsigned int width; /**< The width of the video */
+	unsigned int height; /**< The height of the video */
+	char *name; /** The name of the video definition */
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneVideoDefinition);
+
+LinphoneVideoDefinition * linphone_video_definition_new(unsigned int width, unsigned int height, const char *name);
+
+LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height);
+LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_name(const LinphoneFactory *factory, const char *name);
 
 #ifdef __cplusplus
 }

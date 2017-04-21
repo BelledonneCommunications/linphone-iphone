@@ -28,8 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include "sqlite3_bctbx_vfs.h"
-/* we need bzrtp.h to setup the zrtp cache only when SQLITE is enabled */
-#include "bzrtp/bzrtp.h"
 #endif
 
 #include <math.h>
@@ -38,13 +36,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
-#include "mediastreamer2/mediastream.h"
-#include "mediastreamer2/msfactory.h"
-#include "mediastreamer2/mseventqueue.h"
-#include "mediastreamer2/msvolume.h"
-#include "mediastreamer2/msequalizer.h"
 #include "mediastreamer2/dtmfgen.h"
+#include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/msequalizer.h"
+#include "mediastreamer2/mseventqueue.h"
+#include "mediastreamer2/msfactory.h"
 #include "mediastreamer2/msjpegwriter.h"
+#include "mediastreamer2/msogl.h"
+#include "mediastreamer2/msvolume.h"
 
 #ifdef INET6
 #ifndef _WIN32
@@ -107,6 +106,7 @@ static void set_media_network_reachable(LinphoneCore* lc,bool_t isReachable);
 static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_uninit(LinphoneCore *lc);
 static void linphone_core_zrtp_cache_close(LinphoneCore *lc);
+void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName);
 
 #include "enum.h"
 #include "contact_providers_priv.h"
@@ -2521,11 +2521,10 @@ void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, i
 	*max_port = lc->rtp_conf.audio_rtp_max_port;
 }
 
-LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc) {
-	LinphoneIntRange range = {
-		.min = lc->rtp_conf.audio_rtp_min_port,
-		.max = lc->rtp_conf.audio_rtp_max_port
-	};
+LinphoneRange *linphone_core_get_audio_ports_range(const LinphoneCore *lc) {
+	LinphoneRange *range = linphone_range_new();
+	range->min = lc->rtp_conf.audio_rtp_min_port;
+	range->max = lc->rtp_conf.audio_rtp_max_port;
 	return range;
 }
 
@@ -2538,11 +2537,10 @@ void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, i
 	*max_port = lc->rtp_conf.video_rtp_max_port;
 }
 
-LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc) {
-	LinphoneIntRange range = {
-		.min = lc->rtp_conf.video_rtp_min_port,
-		.max = lc->rtp_conf.video_rtp_max_port
-	};
+LinphoneRange *linphone_core_get_video_ports_range(const LinphoneCore *lc) {
+	LinphoneRange *range = linphone_range_new();
+	range->min = lc->rtp_conf.video_rtp_min_port;
+	range->max = lc->rtp_conf.video_rtp_max_port;
 	return range;
 }
 
@@ -2555,11 +2553,10 @@ void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, in
 	*max_port = lc->rtp_conf.text_rtp_max_port;
 }
 
-LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc) {
-	LinphoneIntRange range = {
-		.min = lc->rtp_conf.text_rtp_min_port,
-		.max = lc->rtp_conf.text_rtp_max_port
-	};
+LinphoneRange *linphone_core_get_text_ports_range(const LinphoneCore *lc) {
+	LinphoneRange *range = linphone_range_new();
+	range->min = lc->rtp_conf.text_rtp_min_port;
+	range->max = lc->rtp_conf.text_rtp_max_port;
 	return range;
 }
 
@@ -2764,6 +2761,72 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 	return sal_transport_available(lc->sal,(SalTransport)tp);
 }
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneTransports);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneTransports, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphoneTransports *linphone_transports_new() {
+	LinphoneTransports *transports = belle_sip_object_new(LinphoneTransports);
+	transports->udp_port = 0;
+	transports->tcp_port = 0;
+	transports->tls_port = 0;
+	transports->dtls_port = 0;
+	return transports;
+}
+
+LinphoneTransports* linphone_transports_ref(LinphoneTransports* transports) {
+	return (LinphoneTransports*) belle_sip_object_ref(transports);
+}
+
+void linphone_transports_unref (LinphoneTransports* transports) {
+	belle_sip_object_unref(transports);
+}
+
+void *linphone_transports_get_user_data(const LinphoneTransports *transports) {
+	return transports->user_data;
+}
+
+void linphone_transports_set_user_data(LinphoneTransports *transports, void *data) {
+	transports->user_data = data;
+}
+
+int linphone_transports_get_udp_port(const LinphoneTransports* transports) {
+	return transports->udp_port;
+}
+
+int linphone_transports_get_tcp_port(const LinphoneTransports* transports) {
+	return transports->tcp_port;
+}
+
+int linphone_transports_get_tls_port(const LinphoneTransports* transports) {
+	return transports->tls_port;
+}
+
+int linphone_transports_get_dtls_port(const LinphoneTransports* transports) {
+	return transports->dtls_port;
+}
+
+void linphone_transports_set_udp_port(LinphoneTransports *transports, int port) {
+	transports->udp_port = port;
+}
+
+void linphone_transports_set_tcp_port(LinphoneTransports *transports, int port) {
+	transports->tcp_port = port;
+}
+
+void linphone_transports_set_tls_port(LinphoneTransports *transports, int port) {
+	transports->tls_port = port;
+}
+
+void linphone_transports_set_dtls_port(LinphoneTransports *transports, int port) {
+	transports->dtls_port = port;
+}
+
 LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports * tr_config /*config to be saved*/){
 	LinphoneSipTransports tr=*tr_config;
 
@@ -2798,15 +2861,55 @@ LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const Linphone
 	return _linphone_core_apply_transports(lc);
 }
 
+LinphoneStatus linphone_core_set_transports(LinphoneCore *lc, const LinphoneTransports * transports){
+	if (transports->udp_port == lc->sip_conf.transports.udp_port &&
+		transports->tcp_port == lc->sip_conf.transports.tcp_port &&
+		transports->tls_port == lc->sip_conf.transports.tls_port &&
+		transports->dtls_port == lc->sip_conf.transports.dtls_port) {
+		return 0;
+	}
+	lc->sip_conf.transports.udp_port = transports->udp_port;
+	lc->sip_conf.transports.tcp_port = transports->tcp_port;
+	lc->sip_conf.transports.tls_port = transports->tls_port;
+	lc->sip_conf.transports.dtls_port = transports->dtls_port;
+
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config,"sip", "sip_port", transports->udp_port);
+		lp_config_set_int(lc->config,"sip", "sip_tcp_port", transports->tcp_port);
+		lp_config_set_int(lc->config,"sip", "sip_tls_port", transports->tls_port);
+	}
+
+	if (lc->sal == NULL) return 0;
+	return _linphone_core_apply_transports(lc);
+}
+
 LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneSipTransports *tr){
 	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
 	return 0;
+}
+
+LinphoneTransports *linphone_core_get_transports(LinphoneCore *lc){
+	LinphoneTransports *transports = linphone_transports_new();
+	transports->udp_port = lc->sip_conf.transports.udp_port;
+	transports->tcp_port = lc->sip_conf.transports.tcp_port;
+	transports->tls_port = lc->sip_conf.transports.tls_port;
+	transports->dtls_port = lc->sip_conf.transports.dtls_port;
+	return transports;
 }
 
 void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTransports *tr){
 	tr->udp_port=sal_get_listening_port(lc->sal,SalTransportUDP);
 	tr->tcp_port=sal_get_listening_port(lc->sal,SalTransportTCP);
 	tr->tls_port=sal_get_listening_port(lc->sal,SalTransportTLS);
+}
+
+LinphoneTransports *linphone_core_get_transports_used(LinphoneCore *lc){
+	LinphoneTransports *transports = linphone_transports_new();
+	transports->udp_port = sal_get_listening_port(lc->sal, SalTransportUDP);
+	transports->tcp_port = sal_get_listening_port(lc->sal, SalTransportTCP);
+	transports->tls_port = sal_get_listening_port(lc->sal, SalTransportTLS);
+	transports->dtls_port = sal_get_listening_port(lc->sal, SalTransportDTLS);
+	return transports;
 }
 
 void linphone_core_set_sip_port(LinphoneCore *lc,int port) {
@@ -3081,7 +3184,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				decline_reason = (lc->current_call != call) ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
 				call->non_op_error = TRUE;
-				linphone_error_info_set(call->ei, decline_reason, linphone_reason_to_error_code(decline_reason), "Not answered", NULL);
+				linphone_error_info_set(call->ei, NULL, decline_reason, linphone_reason_to_error_code(decline_reason), "Not answered", NULL);
 				linphone_call_decline(call, decline_reason);
 			}
 		}
@@ -4595,8 +4698,8 @@ void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl) {
 		linphone_core_delete_call_log(lc, cl);
 	}
 #endif
+	lc->call_logs = bctbx_list_remove(lc->call_logs, cl);
 	if (!call_logs_sqlite_db_found) {
-		lc->call_logs = bctbx_list_remove(lc->call_logs, cl);
 		call_logs_write_to_config_file(lc);
 		linphone_call_log_unref(cl);
 	}
@@ -4709,7 +4812,13 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 	if (val){
 		if (lc->previewstream==NULL){
 			const char *display_filter=linphone_core_get_video_display_filter(lc);
-			MSVideoSize vsize=lc->video_conf.preview_vsize.width!=0 ? lc->video_conf.preview_vsize : lc->video_conf.vsize;
+			MSVideoSize vsize = { 0 };
+			const LinphoneVideoDefinition *vdef = linphone_core_get_preview_video_definition(lc);
+			if (!vdef || linphone_video_definition_is_undefined(vdef)) {
+				vdef = linphone_core_get_preferred_video_definition(lc);
+			}
+			vsize.width = linphone_video_definition_get_width(vdef);
+			vsize.height = linphone_video_definition_get_height(vdef);
 			lc->previewstream=video_preview_new(lc->factory);
 			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
@@ -4816,6 +4925,70 @@ void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy 
 
 const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc){
 	return &lc->video_policy;
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneVideoActivationPolicy);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneVideoActivationPolicy, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphoneVideoActivationPolicy *linphone_video_activation_policy_new() {
+	LinphoneVideoActivationPolicy *policy = belle_sip_object_new(LinphoneVideoActivationPolicy);
+	policy->automatically_accept = FALSE;
+	policy->automatically_initiate = FALSE;
+	return policy;
+}
+
+LinphoneVideoActivationPolicy* linphone_video_activation_policy_ref(LinphoneVideoActivationPolicy* policy) {
+	return (LinphoneVideoActivationPolicy*) belle_sip_object_ref(policy);
+}
+
+void linphone_video_activation_policy_unref(LinphoneVideoActivationPolicy* policy) {
+	belle_sip_object_unref(policy);
+}
+
+void *linphone_video_activation_policy_get_user_data(const LinphoneVideoActivationPolicy *policy) {
+	return policy->user_data;
+}
+
+void linphone_video_activation_policy_set_user_data(LinphoneVideoActivationPolicy *policy, void *data) {
+	policy->user_data = data;
+}
+
+bool_t linphone_video_activation_policy_get_automatically_accept(const LinphoneVideoActivationPolicy *policy) {
+	return policy->automatically_accept;
+}
+
+bool_t linphone_video_activation_policy_get_automatically_initiate(const LinphoneVideoActivationPolicy *policy) {
+	return policy->automatically_initiate;
+}
+
+void linphone_video_activation_policy_set_automatically_accept(LinphoneVideoActivationPolicy *policy, bool_t enable) {
+	policy->automatically_accept = enable;
+}
+
+void linphone_video_activation_policy_set_automatically_initiate(LinphoneVideoActivationPolicy *policy, bool_t enable) {
+	policy->automatically_initiate = enable;
+}
+
+void linphone_core_set_video_activation_policy(LinphoneCore *lc, const LinphoneVideoActivationPolicy *policy) {
+	lc->video_policy.automatically_accept = policy->automatically_accept;
+	lc->video_policy.automatically_initiate = policy->automatically_initiate;
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config, "video", "automatically_initiate", policy->automatically_initiate);
+		lp_config_set_int(lc->config, "video", "automatically_accept", policy->automatically_accept);
+	}
+}
+
+LinphoneVideoActivationPolicy *linphone_core_get_video_activation_policy(const LinphoneCore *lc){
+	LinphoneVideoActivationPolicy *policy = linphone_video_activation_policy_new();
+	policy->automatically_accept = lc->video_policy.automatically_accept;
+	policy->automatically_initiate = lc->video_policy.automatically_initiate;
+	return policy;
 }
 
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
@@ -5107,33 +5280,32 @@ int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
 	return -1;
 }
 
-static MSVideoSizeDef supported_resolutions[]={
+static MSVideoSizeDef supported_resolutions[] = {
 #if !defined(__ANDROID__) && !TARGET_OS_IPHONE
-	{	{ MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }	,	"1080p"	},
+	{ { MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }, "1080p" },
 #endif
 #if !defined(__ANDROID__) && !TARGET_OS_MAC /*limit to most common sizes because mac video API cannot list supported resolutions*/
-	{	{ MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }	,	"uxga"	},
-	{	{ MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }	,	"sxga-"	},
+	{ { MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }, "uxga" },
+	{ { MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }, "sxga-" },
 #endif
-	{	{ MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }	,	"720p"	},
+	{ { MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }, "720p" },
 #if !defined(__ANDROID__) && !TARGET_OS_MAC
-	{	{ MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }	,	"xga"	},
+	{ { MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }, "xga" },
 #endif
 #if !defined(__ANDROID__) && !TARGET_OS_IPHONE
-	{	{ MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H }	,	"svga"	},
-	{	{ MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H }	,	"4cif"	},
+	{ { MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H }, "svga" },
+	{ { MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H }, "4cif" },
 #endif
-
-	{	{ MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H }	,	"vga"	},
+	{ { MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H }, "vga" },
 #if TARGET_OS_IPHONE
-	{	{ MS_VIDEO_SIZE_IOS_MEDIUM_H, MS_VIDEO_SIZE_IOS_MEDIUM_W }	,	"ios-medium"	},
+	{ { MS_VIDEO_SIZE_IOS_MEDIUM_H, MS_VIDEO_SIZE_IOS_MEDIUM_W }, "ios-medium" },
 #endif
-	{	{ MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H }	,	"cif"	},
+	{ { MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H }, "cif" },
 #if !TARGET_OS_MAC || TARGET_OS_IPHONE /* OS_MAC is 1 for iPhone, but we need QVGA */
-	{	{ MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H }	,	"qvga"	},
+	{ { MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H } , "qvga" },
 #endif
-	{	{ MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H }	,	"qcif"	},
-	{	{ 0,0 }			,	NULL	}
+	{ { MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H }, "qcif" },
+	{ { 0, 0 }, NULL }
 };
 
 const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
@@ -5157,69 +5329,77 @@ static MSVideoSize video_size_get_by_name(const char *name){
 	return null_vsize;
 }
 
-/* warning: function not reentrant*/
-static const char *video_size_get_name(MSVideoSize vsize){
-	MSVideoSizeDef *pdef=supported_resolutions;
-	static char customsize[64]={0};
-	for(;pdef->name!=NULL;pdef++){
-		if (pdef->vsize.width==vsize.width && pdef->vsize.height==vsize.height){
-			return pdef->name;
-		}
+static bool_t video_definition_supported(const LinphoneVideoDefinition *vdef) {
+	const bctbx_list_t *item;
+	const bctbx_list_t *supported_definitions = linphone_factory_get_supported_video_definitions(linphone_factory_get());
+	for (item = supported_definitions; item != NULL; item = bctbx_list_next(item)) {
+		LinphoneVideoDefinition *supported_vdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
+		if (linphone_video_definition_equals(vdef, supported_vdef)) return TRUE;
 	}
-	if (vsize.width && vsize.height){
-		snprintf(customsize,sizeof(customsize)-1,"%ix%i",vsize.width,vsize.height);
-		return customsize;
-	}
-	return NULL;
-}
-
-static bool_t video_size_supported(MSVideoSize vsize){
-	if (video_size_get_name(vsize)) return TRUE;
-	ms_warning("Video resolution %ix%i is not supported in linphone.",vsize.width,vsize.height);
+	ms_warning("Video definition %ix%i is not supported", linphone_video_definition_get_width(vdef), linphone_video_definition_get_height(vdef));
 	return FALSE;
 }
 
-static void update_preview_size(LinphoneCore *lc, MSVideoSize oldvsize, MSVideoSize vsize){
-	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-		relaunch_video_preview(lc);
-	}
-}
+void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef) {
+	if (video_definition_supported(vdef)) {
+		LinphoneVideoDefinition *oldvdef = lc->video_conf.vdef;
+		lc->video_conf.vdef = linphone_video_definition_ref(vdef);
 
-void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
-	if (video_size_supported(vsize)){
-		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
-
-		if (oldvsize.width==0){
-			oldvsize=lc->video_conf.vsize;
+		if ((lc->previewstream != NULL) && (lc->video_conf.preview_vdef == NULL)
+			&& (oldvdef != NULL) && !linphone_video_definition_equals(oldvdef, vdef)) {
+			relaunch_video_preview(lc);
 		}
-		lc->video_conf.vsize=vsize;
-		update_preview_size(lc,oldvsize,vsize);
 
-		if (linphone_core_ready(lc))
-			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
+		if (oldvdef != NULL) linphone_video_definition_unref(oldvdef);
+		if (linphone_core_ready(lc)) {
+			lp_config_set_string(lc->config, "video", "size", linphone_video_definition_get_name(vdef));
+		}
 	}
 }
 
-void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
-	MSVideoSize oldvsize;
-	if (vsize.width==0 && vsize.height==0){
-		/*special case to reset the forced preview size mode*/
-		lc->video_conf.preview_vsize=vsize;
-		if (linphone_core_ready(lc))
-			lp_config_set_string(lc->config,"video","preview_size",NULL);
+void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize) {
+	linphone_core_set_preferred_video_definition(lc,
+		linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height));
+}
+
+void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef) {
+	if (!vdef || linphone_video_definition_is_undefined(vdef)) {
+		/* Reset the forced preview video definition mode */
+		if (lc->video_conf.preview_vdef != NULL) linphone_video_definition_unref(lc->video_conf.preview_vdef);
+		lc->video_conf.preview_vdef = NULL;
+		if (linphone_core_ready(lc)) {
+			lp_config_set_string(lc->config, "video", "preview_size", NULL);
+		}
 		return;
 	}
-	oldvsize=lc->video_conf.preview_vsize;
-	lc->video_conf.preview_vsize=vsize;
-	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-		relaunch_video_preview(lc);
+
+	if (!linphone_video_definition_equals(lc->video_conf.preview_vdef, vdef)) {
+		LinphoneVideoDefinition *oldvdef = lc->video_conf.preview_vdef;
+		lc->video_conf.preview_vdef = linphone_video_definition_ref(vdef);
+		if (oldvdef != NULL) linphone_video_definition_unref(oldvdef);
+		if (lc->previewstream != NULL) {
+			relaunch_video_preview(lc);
+		}
 	}
-	if (linphone_core_ready(lc))
-		lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
+	if (linphone_core_ready(lc)) {
+		lp_config_set_string(lc->config, "video", "preview_size", linphone_video_definition_get_name(vdef));
+	}
 }
 
-MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
-	return lc->video_conf.preview_vsize;
+void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize) {
+	linphone_core_set_preview_video_definition(lc,
+		linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height));
+}
+
+const LinphoneVideoDefinition * linphone_core_get_preview_video_definition(const LinphoneCore *lc) {
+	return lc->video_conf.preview_vdef;
+}
+
+MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc) {
+	MSVideoSize vsize = { 0 };
+	vsize.width = linphone_video_definition_get_width(lc->video_conf.preview_vdef);
+	vsize.height = linphone_video_definition_get_height(lc->video_conf.preview_vdef);
+	return vsize;
 }
 
 MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc){
@@ -5234,9 +5414,31 @@ MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc)
 	return ret;
 }
 
+LinphoneVideoDefinition * linphone_core_get_current_preview_video_definition(const LinphoneCore *lc) {
+#ifdef VIDEO_ENABLED
+	MSVideoSize vsize;
+	if (lc->previewstream) {
+		vsize = video_preview_get_current_size(lc->previewstream);
+	}
+	return linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height);
+#else
+	ms_error("Video support is disabled");
+	return NULL;
+#endif
+}
+
 void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name){
 	MSVideoSize vsize=video_size_get_by_name(name);
 	linphone_core_set_preview_video_size(lc,vsize);
+}
+
+void linphone_core_set_preview_video_definition_by_name(LinphoneCore *lc, const char *name) {
+	LinphoneVideoDefinition *vdef = linphone_factory_find_supported_video_definition_by_name(linphone_factory_get(), name);
+	if (vdef == NULL) {
+		ms_error("Video definition '%s' is not supported", name);
+	} else {
+		linphone_core_set_preview_video_definition(lc, vdef);
+	}
 }
 
 void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name){
@@ -5246,12 +5448,28 @@ void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char
 	else linphone_core_set_preferred_video_size(lc,default_vsize);
 }
 
-MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc){
-	return lc->video_conf.vsize;
+void linphone_core_set_preferred_video_definition_by_name(LinphoneCore *lc, const char *name) {
+	LinphoneVideoDefinition *vdef = linphone_factory_find_supported_video_definition_by_name(linphone_factory_get(), name);
+	if (vdef == NULL) {
+		ms_error("Video definition '%s' is not supported", name);
+	} else {
+		linphone_core_set_preferred_video_definition(lc, vdef);
+	}
+}
+
+const LinphoneVideoDefinition * linphone_core_get_preferred_video_definition(const LinphoneCore *lc) {
+	return lc->video_conf.vdef;
+}
+
+MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc) {
+	MSVideoSize vsize = { 0 };
+	vsize.width = linphone_video_definition_get_width(lc->video_conf.vdef);
+	vsize.height = linphone_video_definition_get_height(lc->video_conf.vdef);
+	return vsize;
 }
 
 char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc) {
-	return ms_strdup(video_size_get_name(lc->video_conf.vsize));
+	return ms_strdup(linphone_video_definition_get_name(lc->video_conf.vdef));
 }
 
 void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps){
@@ -5264,6 +5482,17 @@ float linphone_core_get_preferred_framerate(LinphoneCore *lc){
 	return lc->video_conf.fps;
 }
 
+void linphone_core_preview_ogl_render(const LinphoneCore *lc) {
+	#ifdef VIDEO_ENABLED
+
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+	VideoStream *stream = call ? call->videostream : lc->previewstream;
+
+	if (stream && stream->output2 && ms_filter_get_id(stream->output2) == MS_OGL_ID)
+		ms_filter_call_method(stream->output2, MS_OGL_RENDER, NULL);
+
+	#endif
+}
 
 void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
@@ -5582,7 +5811,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	/*now that we are unregisted, there is no more channel using tunnel socket we no longer need the tunnel.*/
 #ifdef TUNNEL_ENABLED
 	if (lc->tunnel) {
-		linphone_tunnel_ref(lc->tunnel);
+		linphone_tunnel_unref(lc->tunnel);
 		lc->tunnel=NULL;
 		ms_message("Tunnel destroyed.");
 	}
@@ -5646,11 +5875,14 @@ static void sound_config_uninit(LinphoneCore *lc)
 
 static void video_config_uninit(LinphoneCore *lc)
 {
-	lp_config_set_string(lc->config,"video","size",video_size_get_name(linphone_core_get_preferred_video_size(lc)));
+	const LinphoneVideoDefinition *vdef = linphone_core_get_preferred_video_definition(lc);
+	lp_config_set_string(lc->config,"video","size",vdef ? linphone_video_definition_get_name(vdef) : NULL);
 	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
 	if (lc->video_conf.cams)
 		ms_free((void *)lc->video_conf.cams);
+	if (lc->video_conf.vdef) linphone_video_definition_unref(lc->video_conf.vdef);
+	if (lc->video_conf.preview_vdef) linphone_video_definition_unref(lc->video_conf.preview_vdef);
 }
 
 void _linphone_core_codec_config_write(LinphoneCore *lc){
@@ -5789,10 +6021,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
-	}
-
-	if(lc->zrtp_cache_db_file != NULL) {
-		ms_free(lc->zrtp_cache_db_file);
 	}
 
 	if(lc->user_certificates_path != NULL) {
@@ -6061,15 +6289,15 @@ bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc
 }
 
 static OrtpPayloadType* _linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
-	OrtpPayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
+	OrtpPayloadType* result = find_payload_type_from_list(type, rate, channels, lc->codecs_conf.audio_codecs);
 	if (result)  {
 		return result;
 	} else {
-		result = find_payload_type_from_list(type, rate, 0, linphone_core_get_video_codecs(lc));
+		result = find_payload_type_from_list(type, rate, 0, lc->codecs_conf.video_codecs);
 		if (result) {
 			return result;
 		} else {
-			result = find_payload_type_from_list(type, rate, 0, linphone_core_get_text_codecs(lc));
+			result = find_payload_type_from_list(type, rate, 0, lc->codecs_conf.text_codecs);
 			if (result) {
 				return result;
 			}
@@ -6218,7 +6446,62 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	if (lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}
+
 	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
+
+	/* shall we perform cache migration ? */
+	if (!lp_config_get_int(lc->config,"sip","zrtp_cache_migration_done",FALSE)) {
+		char *tmpFile = bctbx_malloc(strlen(file)+6);
+		/* check we have a valid xml cache file given in path */
+		FILE *CACHEFD = NULL;
+		/* load the xml cache */
+		if (file != NULL) {
+			int ret=0;
+			CACHEFD = fopen(file, "rb+");
+			xmlDocPtr cacheXml = NULL;
+			if (CACHEFD) {
+				size_t cacheSize;
+				char *cacheString = ms_load_file_content(CACHEFD, &cacheSize);
+				if (!cacheString) {
+					ms_warning("Unable to load content of ZRTP ZID cache");
+					bctbx_free(tmpFile);
+					return;
+				}
+				cacheString[cacheSize] = '\0';
+				cacheSize += 1;
+				fclose(CACHEFD);
+				cacheXml = xmlParseDoc((xmlChar*)cacheString);
+				ms_free(cacheString);
+			}
+
+			/* create a temporary file for the sqlite base and initialise it */
+			sprintf(tmpFile,"%s.tmp", file);
+			linphone_core_zrtp_cache_db_init(lc, tmpFile);
+
+			/* migrate */
+			char *bkpFile = bctbx_malloc(strlen(file)+6);
+			sprintf(bkpFile,"%s.bkp", file);
+
+			if ((ret = ms_zrtp_cache_migration((void *)cacheXml, linphone_core_get_zrtp_cache_db(lc), linphone_core_get_identity(lc))) == 0) {
+				ms_message("LIME/ZRTP cache migration successfull, obsolete xml file kept as backup in %s", bkpFile);
+			} else {
+				ms_error("LIME/ZRTP cache migration failed(returned -%x), start with a fresh cache, old one kept as backup in %s", -ret, bkpFile);
+			}
+
+			/* rename the newly created sqlite3 file in to the given file name */
+			rename(file, bkpFile);
+			if (rename(tmpFile, file)==0) { /* set the flag if we were able to set the sqlite file in the correct place (even if migration failed) */
+				lp_config_set_int(lc->config, "sip", "zrtp_cache_migration_done", TRUE);
+			}
+
+			/* clean up */
+			bctbx_free(bkpFile);
+			xmlFree(cacheXml);
+		}
+		bctbx_free(tmpFile);
+	} else {
+		linphone_core_zrtp_cache_db_init(lc, file);
+	}
 }
 
 const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
@@ -6242,249 +6525,40 @@ static void linphone_core_zrtp_cache_close(LinphoneCore *lc) {
 #endif /* SQLITE_STORAGE_ENABLED */
 }
 
+
+void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 #ifdef SQLITE_STORAGE_ENABLED
-/* this function is called only when the sqlite cache is newly created but still empty(contains tables structures but no data)
- * and we have an xml cache
- * SQL zid cache associate each local sip:uri its own ZID while XML version used one ZID for the whole device-> use the XML provided ZID
- * for the default local sipUri retrieved using linphone_core_get_identity
- */
-static void linphone_core_zrtp_cache_migration(LinphoneCore *lc) {
-	FILE *CACHEFD = NULL;
-	/* load the xml cache */
-	if (lc->zrtp_secrets_cache != NULL) {
-		CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
-		if (CACHEFD) {
-			size_t cacheSize;
-			xmlDocPtr cacheXml;
-			char *cacheString = ms_load_file_content(CACHEFD, &cacheSize);
-			if (!cacheString) {
-				ms_warning("Unable to load content of ZRTP ZID cache");
-				return;
-			}
-			cacheString[cacheSize] = '\0';
-			cacheSize += 1;
-			fclose(CACHEFD);
-			cacheXml = xmlParseDoc((xmlChar*)cacheString);
-			ms_free(cacheString);
-			if (cacheXml) {
-				xmlNodePtr cur;
-				xmlChar *selfZidHex=NULL;
-				uint8_t selfZID[12];
-				sqlite3 *db = (sqlite3 *)linphone_core_get_zrtp_cache_db(lc);
-				sqlite3_stmt *sqlStmt = NULL;
-				const char *selfURI = linphone_core_get_identity(lc);
-				int ret;
-
-				/* parse the cache to get the selfZID and insert it in sqlcache */
-				cur = xmlDocGetRootElement(cacheXml);
-				/* if we found a root element, parse its children node */
-				if (cur!=NULL)
-				{
-					cur = cur->xmlChildrenNode;
-				}
-				selfZidHex = NULL;
-				while (cur!=NULL) {
-					if ((!xmlStrcmp(cur->name, (const xmlChar *)"selfZID"))){ /* self ZID found, extract it */
-						selfZidHex = xmlNodeListGetString(cacheXml, cur->xmlChildrenNode, 1);
-						bctbx_str_to_uint8(selfZID, selfZidHex, 24);
-						break;
-					}
-					cur = cur->next;
-				}
-				/* did we found a self ZID? */
-				if (selfZidHex == NULL) {
-					ms_warning("ZRTP/LIME cache migration: Failed to parse selfZID");
-					return;
-				}
-
-				/* insert the selfZID in cache, associate it to default local sip:uri in case we have more than one */
-				ms_message("ZRTP/LIME cache migration: found selfZID %.24s link it to default URI %s in SQL cache", selfZidHex, selfURI);
-				xmlFree(selfZidHex);
-
-				ret = sqlite3_prepare_v2(db, "INSERT INTO ziduri (zid,selfuri,peeruri) VALUES(?,?,?);", -1, &sqlStmt, NULL);
-				if (ret != SQLITE_OK) {
-					ms_warning("ZRTP/LIME cache migration: Failed to insert selfZID");
-					return;
-				}
-				sqlite3_bind_blob(sqlStmt, 1, selfZID, 12, SQLITE_TRANSIENT);
-				sqlite3_bind_text(sqlStmt, 2, selfURI,-1,SQLITE_TRANSIENT);
-				sqlite3_bind_text(sqlStmt, 3, "self",-1,SQLITE_TRANSIENT);
-
-				ret = sqlite3_step(sqlStmt);
-				if (ret!=SQLITE_DONE) {
-					ms_warning("ZRTP/LIME cache migration: Failed to insert selfZID");
-					return;
-				}
-				sqlite3_finalize(sqlStmt);
-
-				/* loop over all the peer node in the xml cache and get from them : uri(can be more than one), ZID, rs1, rs2, pvs, sndKey, rcvKey, sndSId, rcvSId, sndIndex, rcvIndex, valid */
-				/* some of these may be missing(pvs, valid, rs2) but we'll consider them NULL */
-				/* aux and pbx secrets were not used, so don't even bother looking for them */
-				cur = xmlDocGetRootElement(cacheXml)->xmlChildrenNode;
-
-				while (cur!=NULL) { /* loop on all peer nodes */
-					if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))) { /* found a peer node, check if there is a sipURI node in it (other nodes are just ignored) */
-						int i;
-						xmlNodePtr peerNodeChildren = cur->xmlChildrenNode;
-						xmlChar *nodeContent = NULL;
-						xmlChar *peerZIDString = NULL;
-						uint8_t peerZID[12];
-						uint8_t peerZIDFound=0;
-						xmlChar *peerUri[128]; /* array to contain all the peer uris found in one node */
-						/* hopefully they won't be more than 128(it would mean some peer has more than 128 accounts and we called all of them...) */
-						int peerUriIndex=0; /* index of previous array */
-						char *zrtpColNames[] = {"rs1", "rs2", "pvs"};
-						uint8_t *zrtpColValues[] = {NULL, NULL, NULL};
-						size_t zrtpColExpectedLengths[] = {32,32,1};
-						size_t zrtpColLengths[] = {0,0,0};
-
-						char *limeColNames[] = {"sndKey", "rcvKey", "sndSId", "rcvSId", "sndIndex", "rcvIndex", "valid"};
-						uint8_t *limeColValues[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-						size_t limeColExpectedLengths[] = {32,32,32,32,4,4,8};
-						size_t limeColLengths[] = {0,0,0,0,0,0,0};
-
-						/* check all the children nodes to retrieve all information we may get */
-						while (peerNodeChildren!=NULL && peerUriIndex<128) {
-							if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"uri")) { /* found a peer an URI node, get the content */
-								peerUri[peerUriIndex] = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
-								peerUriIndex++;
-							}
-
-							if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"ZID")) {
-								peerZIDString = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
-								bctbx_str_to_uint8(peerZID, peerZIDString, 24);
-
-								peerZIDFound=1;
-							}
-
-							for (i=0; i<3; i++) {
-								if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)zrtpColNames[i])) {
-									nodeContent = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
-									zrtpColValues[i] = (uint8_t *)bctbx_malloc(zrtpColExpectedLengths[i]);
-									bctbx_str_to_uint8(zrtpColValues[i], nodeContent, 2*zrtpColExpectedLengths[i]);
-									zrtpColLengths[i]=zrtpColExpectedLengths[i];
-								}
-							}
-
-							for (i=0; i<7; i++) {
-								if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)limeColNames[i])) {
-									nodeContent = xmlNodeListGetString(cacheXml, peerNodeChildren->xmlChildrenNode, 1);
-									limeColValues[i] = (uint8_t *)bctbx_malloc(limeColExpectedLengths[i]);
-									bctbx_str_to_uint8(limeColValues[i], nodeContent, 2*limeColExpectedLengths[i]);
-									limeColLengths[i]=limeColExpectedLengths[i];
-								}
-							}
-
-							peerNodeChildren = peerNodeChildren->next;
-							xmlFree(nodeContent);
-							nodeContent=NULL;
-						}
-
-						if (peerUriIndex>0 && peerZIDFound==1) { /* we found at least an uri in this peer node, extract the keys all other informations */
-							/* retrieve all the informations */
-
-							/* loop over all the uri founds */
-							for (i=0; i<peerUriIndex; i++) {
-								char *stmt = NULL;
-								int zuid;
-								/* create the entry in the ziduri table (it will give us the zuid to be used to insert infos in lime and zrtp tables) */
-								/* we could use directly the bzrtp_cache_getZuid function, but avoid useless query by directly inserting the data */
-								stmt = sqlite3_mprintf("INSERT INTO ziduri (zid,selfuri,peeruri) VALUES(?,?,?);");
-								ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
-								if (ret != SQLITE_OK) {
-									ms_warning("ZRTP/LIME cache migration: Failed to insert peer ZID %s", peerUri[i]);
-									return;
-								}
-								sqlite3_free(stmt);
-
-								sqlite3_bind_blob(sqlStmt, 1, peerZID, 12, SQLITE_TRANSIENT);
-								sqlite3_bind_text(sqlStmt, 2, selfURI, -1, SQLITE_TRANSIENT);
-								sqlite3_bind_text(sqlStmt, 3, (const char *)(peerUri[i]), -1, SQLITE_TRANSIENT);
-
-								ret = sqlite3_step(sqlStmt);
-								if (ret!=SQLITE_DONE) {
-									ms_warning("ZRTP/LIME cache migration: Failed to insert peer ZID %s", peerUri[i]);
-									return;
-								}
-								sqlite3_finalize(sqlStmt);
-								/* get the zuid created */
-								zuid = (int)sqlite3_last_insert_rowid(db);
-
-								ms_message("ZRTP/LIME cache migration: Inserted self %s peer %s ZID %s sucessfully with zuid %d\n", selfURI, peerUri[i], peerZIDString, zuid);
-								xmlFree(peerUri[i]);
-								peerUri[i]=NULL;
-
-								/* now insert data in the zrtp and lime table, keep going even if it fails */
-								if ((ret=bzrtp_cache_write(db, zuid, "zrtp", zrtpColNames, zrtpColValues, zrtpColLengths, 3)) != 0) {
-									ms_error("ZRTP/LIME cache migration: could not insert data in zrtp table, return value %x", ret);
-								}
-								if ((ret=bzrtp_cache_write(db, zuid, "lime", limeColNames, limeColValues, limeColLengths, 7)) != 0) {
-									ms_error("ZRTP/LIME cache migration: could not insert data in lime table, return value %x", ret);
-								}
-							}
-						}
-						bctbx_free(zrtpColValues[0]);
-						bctbx_free(zrtpColValues[1]);
-						bctbx_free(zrtpColValues[2]);
-						for (i=0; i<7; i++) {
-							bctbx_free(limeColValues[i]);
-						}
-						xmlFree(peerZIDString);
-					}
-					cur = cur->next;
-				}
-			}
-		}
-	}
-}
-
-
-static void linphone_core_zrtp_cache_db_init(LinphoneCore *lc) {
 	int ret;
 	const char *errmsg;
 	sqlite3 *db;
 
 	linphone_core_zrtp_cache_close(lc);
 
-	ret = _linphone_sqlite3_open(lc->zrtp_cache_db_file, &db);
+	ret = _linphone_sqlite3_open(fileName, &db);
 	if (ret != SQLITE_OK) {
 		errmsg = sqlite3_errmsg(db);
-		ms_error("Error in the opening zrtp_cache_db_file(%s): %s.\n", lc->zrtp_cache_db_file, errmsg);
+		ms_error("Error in the opening zrtp_cache_db_file(%s): %s.\n", fileName, errmsg);
 		sqlite3_close(db);
 		lc->zrtp_cache_db=NULL;
 		return;
 	}
 
-	ret = bzrtp_initCache((void *)db); /* this may perform an update, check return value */
+	ret = ms_zrtp_initCache((void *)db); /* this may perform an update, check return value */
 
-	if (ret == BZRTP_CACHE_SETUP || ret == BZRTP_CACHE_UPDATE) {
+	if (ret == MSZRTP_CACHE_SETUP || ret == MSZRTP_CACHE_UPDATE) {
 		/* After updating schema, database need to be closed/reopenned */
 		sqlite3_close(db);
-		_linphone_sqlite3_open(lc->zrtp_cache_db_file, &db);
+		_linphone_sqlite3_open(fileName, &db);
+	} else if(ret != 0) { /* something went wrong */
+		ms_error("Zrtp cache failed to initialise(returned -%x), run cacheless", -ret);
+		sqlite3_close(db);
+		lc->zrtp_cache_db = NULL;
+		return;
 	}
 
+	/* everything ok, set the db pointer into core */
 	lc->zrtp_cache_db = db;
-
-	if (ret == BZRTP_CACHE_SETUP && lc->zrtp_secrets_cache != NULL) {
-		/* we just created the db and we have an old XML version of the cache : migrate */
-		linphone_core_zrtp_cache_migration(lc);
-	}
-}
-#else /* SQLITE_STORAGE_ENABLED */
-static void linphone_core_zrtp_cache_db_init(LinphoneCore *lc) {
-	ms_warning("Tried to open %s as zrtp_cache_db_file, but SQLITE_STORAGE is not enabled", lc->zrtp_cache_db_file);
-}
 #endif /* SQLITE_STORAGE_ENABLED */
-
-void linphone_core_set_zrtp_cache_database_path(LinphoneCore *lc, const char *path) {
-	if (lc->zrtp_cache_db_file){
-		ms_free(lc->zrtp_cache_db_file);
-		lc->zrtp_cache_db_file = NULL;
-	}
-	if (path) {
-		lc->zrtp_cache_db_file = ms_strdup(path);
-		linphone_core_zrtp_cache_db_init(lc);
-	}
 }
 
 void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){

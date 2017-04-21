@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/account_creator.h"
 #include "linphone/core.h"
+#include "linphone/lpconfig.h"
 #include "private.h"
 #if !_WIN32
 #include "regex.h"
@@ -46,7 +47,7 @@ static unsigned int validate_uri(const char* username, const char* domain, const
 	LinphoneAddress* addr;
 	int status = 0;
 	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
-	linphone_proxy_config_set_identity(proxy, "sip:userame@domain.com");
+	linphone_proxy_config_set_identity(proxy, "sip:?@domain.com");
 
 	if (username) {
 		addr = linphone_proxy_config_normalize_sip_uri(proxy, username);
@@ -107,13 +108,14 @@ static bool_t is_matching_regex(const char *entry, const char* regex) {
 #endif
 }
 
-LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator) {
+LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const LinphoneAccountCreator *creator) {
 	LinphoneAuthInfo *info;
-	LinphoneProxyConfig *cfg = creator->proxy_cfg;
+	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
 	char *identity_str = _get_identity(creator);
 	LinphoneAddress *identity = linphone_address_new(identity_str);
 	char *route = NULL;
 	char *domain = NULL;
+
 	ms_free(identity_str);
 	if (creator->display_name) {
 		linphone_address_set_display_name(identity, creator->display_name);
@@ -122,7 +124,7 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 		route = ms_strdup_printf("%s", creator->route);
 	}
 	if (creator->domain) {
-		domain = ms_strdup_printf("%s", creator->domain);
+		domain = ms_strdup_printf("%s;transport=%s", creator->domain, linphone_transport_to_string(creator->transport));
 	}
 	linphone_proxy_config_set_identity_address(cfg, identity);
 	if (creator->phone_country_code) {
@@ -141,24 +143,6 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 	linphone_proxy_config_enable_publish(cfg, FALSE);
 	linphone_proxy_config_enable_register(cfg, TRUE);
 
-	if (linphone_proxy_config_get_realm(cfg) != NULL
-		&& strcmp(linphone_proxy_config_get_realm(cfg), "sip.linphone.org") == 0) {
-		linphone_proxy_config_enable_avpf(cfg, TRUE);
-		// If account created on sip.linphone.org, we configure linphone to use TLS by default
-		if (linphone_core_sip_transport_supported(creator->core, LinphoneTransportTls)) {
-			LinphoneAddress *addr = linphone_address_new(linphone_proxy_config_get_server_addr(cfg));
-			char *tmp;
-			linphone_address_set_transport(addr, LinphoneTransportTls);
-			tmp = linphone_address_as_string(addr);
-			linphone_proxy_config_set_server_addr(cfg, tmp);
-			linphone_proxy_config_set_route(cfg, tmp);
-			ms_free(tmp);
-			linphone_address_unref(addr);
-		}
-		linphone_core_set_stun_server(creator->core, "stun.linphone.org");
-		linphone_core_set_firewall_policy(creator->core, LinphonePolicyUseIce);
-	}
-
 	info = linphone_auth_info_new(linphone_address_get_username(identity), // username
 								NULL, //user id
 								creator->password, // passwd
@@ -176,6 +160,10 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 
 	linphone_core_remove_auth_info(creator->core, info);
 	return NULL;
+}
+
+LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator) {
+	return linphone_account_creator_create_proxy_config(creator);
 }
 /************************** End Misc **************************/
 
@@ -310,6 +298,7 @@ LinphoneAccountCreator * _linphone_account_creator_new(LinphoneCore *core, const
 	creator->service = linphone_core_get_account_creator_service(core);
 	creator->cbs = linphone_account_creator_cbs_new();
 	creator->core = core;
+	creator->transport = LinphoneTransportTcp;
 	creator->xmlrpc_session = (xmlrpc_url) ? linphone_xml_rpc_session_new(core, xmlrpc_url) : NULL;
 	if (domain) {
 		linphone_account_creator_set_domain(creator, domain);
@@ -518,17 +507,29 @@ const char * linphone_account_creator_get_email(const LinphoneAccountCreator *cr
 	return creator->email;
 }
 
-LinphoneAccountCreatorStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain) {
+LinphoneAccountCreatorDomainStatus linphone_account_creator_set_domain(LinphoneAccountCreator *creator, const char *domain) {
 	if (domain && validate_uri(NULL, domain, NULL) != 0) {
-		return LinphoneAccountCreatorStatusRequestFailed;
+		return LinphoneAccountCreatorDomainInvalid;
 	}
 
 	set_string(&creator->domain, domain, TRUE);
-	return LinphoneAccountCreatorStatusRequestOk;
+	return LinphoneAccountCreatorDomainOk;
  }
 
 const char * linphone_account_creator_get_domain(const LinphoneAccountCreator *creator) {
 	return creator->domain;
+}
+
+LinphoneAccountCreatorTransportStatus linphone_account_creator_set_transport(LinphoneAccountCreator *creator, LinphoneTransportType transport) {
+	if (!linphone_core_sip_transport_supported(creator->core, transport)) {
+		return LinphoneAccountCreatorTransportUnsupported;
+	}
+	creator->transport = transport;
+	return LinphoneAccountCreatorTransportOk;
+}
+
+LinphoneTransportType linphone_account_creator_get_transport(const LinphoneAccountCreator *creator) {
+	return creator->transport;
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_route(LinphoneAccountCreator *creator, const char *route) {
@@ -799,11 +800,33 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_account_linphone(
 	}
 
 	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_phone_account",
-		LinphoneXmlRpcArgString, creator->phone_number,
-		LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
-		LinphoneXmlRpcArgString, creator->activation_code,
-		linphone_proxy_config_get_domain(creator->proxy_cfg),
-		LinphoneXmlRpcArgNone);
+	LinphoneXmlRpcArgString, creator->phone_number,
+	LinphoneXmlRpcArgString, creator->username ? creator->username : creator->phone_number,
+	LinphoneXmlRpcArgString, creator->activation_code,
+	linphone_proxy_config_get_domain(creator->proxy_cfg),
+	LinphoneXmlRpcArgNone);
+
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_account_cb_custom);
+	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
+	linphone_xml_rpc_request_unref(request);
+	return LinphoneAccountCreatorStatusRequestOk;
+}
+
+LinphoneAccountCreatorStatus linphone_account_creator_activate_email_account_linphone(LinphoneAccountCreator *creator) {
+	LinphoneXmlRpcRequest *request;
+	if (!creator->activation_code) {
+		if (creator->cbs->is_account_activated_response_cb != NULL) {
+			creator->cbs->is_account_activated_response_cb(creator, LinphoneAccountCreatorStatusMissingArguments, "Missing required parameters");
+		}
+		return LinphoneAccountCreatorStatusMissingArguments;
+	}
+
+	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_email_account",
+	LinphoneXmlRpcArgString, creator->username,
+	LinphoneXmlRpcArgString, creator->activation_code,
+	linphone_proxy_config_get_domain(creator->proxy_cfg),
+	LinphoneXmlRpcArgNone);
 
 	linphone_xml_rpc_request_set_user_data(request, creator);
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _activate_account_cb_custom);

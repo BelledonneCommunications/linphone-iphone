@@ -118,6 +118,24 @@ typedef enum _LinphoneAccountCreatorActivationCodeStatus {
 } LinphoneAccountCreatorActivationCodeStatus;
 
 /**
+ * Enum describing Domain checking
+ * @ingroup account_creator
+**/
+typedef enum _LinphoneAccountCreatorDomainStatus {
+	LinphoneAccountCreatorDomainOk, /**< Domain ok */
+	LinphoneAccountCreatorDomainInvalid /**< Domain invalid */
+} LinphoneAccountCreatorDomainStatus;
+
+/**
+ * Enum describing Transport checking
+ * @ingroup account_creator
+**/
+typedef enum _LinphoneAccountCreatorTransportStatus {
+	LinphoneAccountCreatorTransportOk, /**< Transport ok */
+	LinphoneAccountCreatorTransportUnsupported /**< Transport invalid */
+} LinphoneAccountCreatorTransportStatus;
+
+/**
  * Enum describing the status of server request.
  * @ingroup account_creator_request
 **/
@@ -182,8 +200,8 @@ typedef enum _LinphoneAddressFamily {
  * @ingroup call_control
 **/
 typedef enum _LinphoneAudioRoute {
-	LinphoneAudioRouteEarpiece = MSAudioRouteEarpiece,
-	LinphoneAudioRouteSpeaker = MSAudioRouteSpeaker
+	LinphoneAudioRouteEarpiece,
+	LinphoneAudioRouteSpeaker
 } LinphoneAudioRoute;
 
 /**
@@ -972,7 +990,8 @@ typedef struct _LinphoneRingtonePlayer LinphoneRingtonePlayer;
  * Linphone core SIP transport ports.
  * Special values #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_DONTBIND can be used.
  * Use with #linphone_core_set_sip_transports
- * @ingroup initializing
+ * @deprecated
+ * @donotwrap
  */
 typedef struct _LinphoneSipTransports {
 	int udp_port; /**< SIP/UDP port */
@@ -980,6 +999,14 @@ typedef struct _LinphoneSipTransports {
 	int dtls_port; /**< SIP/DTLS port */
 	int tls_port; /**< SIP/TLS port */
 } LinphoneSipTransports;
+
+/**
+ * Linphone core SIP transport ports.
+ * Special values #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_RANDOM, #LC_SIP_TRANSPORT_DONTBIND can be used.
+ * Use with #linphone_core_set_sip_transports
+ * @ingroup initializing
+ */
+typedef struct _LinphoneTransports LinphoneTransports;
 
 /**
  * Old name of LinphoneSipTransports
@@ -1106,14 +1133,28 @@ typedef enum _LinphoneUpnpState {
 typedef struct _LinphoneVcard LinphoneVcard;
 
 /**
+ * The LinphoneVideoDefinition object represents a video definition, eg. its width and its height.
+ * @ingroup media_parameters
+ */
+typedef struct _LinphoneVideoDefinition LinphoneVideoDefinition;
+
+/**
  * Structure describing policy regarding video streams establishments.
  * @ingroup media_parameters
+ * @deprecated
+ * @donotwrap
 **/
 typedef struct _LinphoneVideoPolicy {
 	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/
 	bool_t automatically_accept; /**<Whether video shall be automatically accepted for incoming calls*/
 	bool_t unused[2];
 } LinphoneVideoPolicy;
+
+/**
+ * Structure describing policy regarding video streams establishments.
+ * @ingroup media_parameters
+**/
+typedef struct _LinphoneVideoActivationPolicy LinphoneVideoActivationPolicy;
 
 typedef struct LinphoneVideoSizeDef {
 	MSVideoSize vsize;
@@ -1178,15 +1219,11 @@ typedef struct _LsdPlayer LsdPlayer;
  */
 typedef struct _LinphonePayloadType LinphonePayloadType;
 
-
 /**
  * Structure describing a range of integers
  * @ingroup misc
  */
-typedef struct _LinphoneIntRange {
-	int min; /**< Minimum value */
-	int max; /**< Maximum value */
-} LinphoneIntRange;
+typedef struct _LinphoneRange LinphoneRange;
 
 /**
  * Status code returned by some functions to

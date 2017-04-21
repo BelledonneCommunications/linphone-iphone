@@ -548,19 +548,19 @@ static void linphone_core_add_local_ice_candidates(LinphoneCall *call, int famil
 	if ((ice_check_list_state(audio_cl) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_cl) == FALSE)) {
 		ice_add_local_candidate(audio_cl, "host", family, addr, call->media_ports[call->main_audio_stream_index].rtp_port, 1, NULL);
 		ice_add_local_candidate(audio_cl, "host", family, addr, call->media_ports[call->main_audio_stream_index].rtcp_port, 2, NULL);
-		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
+		call->audio_stats->ice_state = LinphoneIceStateInProgress;
 	}
 	if (linphone_core_video_enabled(call->core) && (video_cl != NULL)
 		&& (ice_check_list_state(video_cl) != ICL_Completed) && (ice_check_list_candidates_gathered(video_cl) == FALSE)) {
 		ice_add_local_candidate(video_cl, "host", family, addr, call->media_ports[call->main_video_stream_index].rtp_port, 1, NULL);
 		ice_add_local_candidate(video_cl, "host", family, addr, call->media_ports[call->main_video_stream_index].rtcp_port, 2, NULL);
-		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
+		call->video_stats->ice_state = LinphoneIceStateInProgress;
 	}
 	if (call->params->realtimetext_enabled && (text_cl != NULL)
 		&& (ice_check_list_state(text_cl) != ICL_Completed) && (ice_check_list_candidates_gathered(text_cl) == FALSE)) {
 		ice_add_local_candidate(text_cl, "host", family, addr, call->media_ports[call->main_text_stream_index].rtp_port, 1, NULL);
 		ice_add_local_candidate(text_cl, "host", family, addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
-		call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateInProgress;
+		call->text_stats->ice_state = LinphoneIceStateInProgress;
 	}
 }
 
@@ -697,14 +697,14 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 			if (ice_check_list_state(audio_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
 					case ICT_HostCandidate:
-						call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
+						call->audio_stats->ice_state = LinphoneIceStateHostConnection;
 						break;
 					case ICT_ServerReflexiveCandidate:
 					case ICT_PeerReflexiveCandidate:
-						call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
+						call->audio_stats->ice_state = LinphoneIceStateReflexiveConnection;
 						break;
 					case ICT_RelayedCandidate:
-						call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
+						call->audio_stats->ice_state = LinphoneIceStateRelayConnection;
 						break;
 					case ICT_CandidateInvalid:
 					case ICT_CandidateTypeMax:
@@ -712,22 +712,22 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 						break;
 				}
 			} else {
-				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
+				call->audio_stats->ice_state = LinphoneIceStateFailed;
 			}
-		}else call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateNotActivated;
+		}else call->audio_stats->ice_state = LinphoneIceStateNotActivated;
 		
 		if (call->params->has_video && (video_check_list != NULL)) {
 			if (ice_check_list_state(video_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
 					case ICT_HostCandidate:
-						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+						call->video_stats->ice_state = LinphoneIceStateHostConnection;
 						break;
 					case ICT_ServerReflexiveCandidate:
 					case ICT_PeerReflexiveCandidate:
-						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+						call->video_stats->ice_state = LinphoneIceStateReflexiveConnection;
 						break;
 					case ICT_RelayedCandidate:
-						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+						call->video_stats->ice_state = LinphoneIceStateRelayConnection;
 						break;
 					case ICT_CandidateInvalid:
 					case ICT_CandidateTypeMax:
@@ -735,22 +735,22 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 						break;
 				}
 			} else {
-				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
+				call->video_stats->ice_state = LinphoneIceStateFailed;
 			}
-		}else call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateNotActivated;
+		}else call->video_stats->ice_state = LinphoneIceStateNotActivated;
 		
 		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
 			if (ice_check_list_state(text_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(text_check_list)) {
 					case ICT_HostCandidate:
-						call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateHostConnection;
+						call->text_stats->ice_state = LinphoneIceStateHostConnection;
 						break;
 					case ICT_ServerReflexiveCandidate:
 					case ICT_PeerReflexiveCandidate:
-						call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateReflexiveConnection;
+						call->text_stats->ice_state = LinphoneIceStateReflexiveConnection;
 						break;
 					case ICT_RelayedCandidate:
-						call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateRelayConnection;
+						call->text_stats->ice_state = LinphoneIceStateRelayConnection;
 						break;
 					case ICT_CandidateInvalid:
 					case ICT_CandidateTypeMax:
@@ -758,28 +758,28 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 						break;
 				}
 			} else {
-				call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateFailed;
+				call->text_stats->ice_state = LinphoneIceStateFailed;
 			}
-		}else call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateNotActivated;
+		}else call->text_stats->ice_state = LinphoneIceStateNotActivated;
 	} else if (session_state == IS_Running) {
-		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
+		call->audio_stats->ice_state = LinphoneIceStateInProgress;
 		if (call->params->has_video && (video_check_list != NULL)) {
-			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
+			call->video_stats->ice_state = LinphoneIceStateInProgress;
 		}
 		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
-			call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateInProgress;
+			call->text_stats->ice_state = LinphoneIceStateInProgress;
 		}
 	} else {
-		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
+		call->audio_stats->ice_state = LinphoneIceStateFailed;
 		if (call->params->has_video && (video_check_list != NULL)) {
-			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
+			call->video_stats->ice_state = LinphoneIceStateFailed;
 		}
 		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
-			call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateFailed;
+			call->text_stats->ice_state = LinphoneIceStateFailed;
 		}
 	}
 	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]    text: [%s]", call,
-		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_TEXT].ice_state));
+		   linphone_ice_state_to_string(call->audio_stats->ice_state), linphone_ice_state_to_string(call->video_stats->ice_state), linphone_ice_state_to_string(call->text_stats->ice_state));
 }
 
 void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *desc) {
@@ -1780,26 +1780,6 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 	}
 }
 
-
-
-/* Functions to mainpulate the LinphoneIntRange structure */
-
-int linphone_int_range_get_min(const LinphoneIntRange *range) {
-	return range->min;
-}
-
-int linphone_int_range_get_max(const LinphoneIntRange *range) {
-	return range->max;
-}
-
-void linphone_int_range_set_min(LinphoneIntRange *range, int min) {
-	range->min = min;
-}
-
-void linphone_int_range_set_max(LinphoneIntRange *range, int max) {
-	range->max = max;
-}
-
 void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
 	bool_t call_logs_sqlite_db_found = FALSE;
 
@@ -1835,4 +1815,52 @@ void linphone_core_report_early_failed_call(LinphoneCore *lc, LinphoneCallDir di
 	linphone_call_log_unref(l);
 }
 
+/* Functions to mainpulate the LinphoneRange structure */
 
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneRange);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneRange, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphoneRange *linphone_range_new() {
+	LinphoneRange *range = belle_sip_object_new(LinphoneRange);
+	range->min = 0;
+	range->max = 0;
+	return range;
+}
+
+LinphoneRange* linphone_range_ref(LinphoneRange* range) {
+	return (LinphoneRange*) belle_sip_object_ref(range);
+}
+
+void linphone_range_unref(LinphoneRange* range) {
+	belle_sip_object_unref(range);
+}
+
+void *linphone_range_get_user_data(const LinphoneRange *range) {
+	return range->user_data;
+}
+
+void linphone_range_set_user_data(LinphoneRange *range, void *data) {
+	range->user_data = data;
+}
+
+int linphone_range_get_min(const LinphoneRange *range) {
+	return range->min;
+}
+
+int linphone_range_get_max(const LinphoneRange *range) {
+	return range->max;
+}
+
+void linphone_range_set_min(LinphoneRange *range, int min) {
+	range->min = min;
+}
+
+void linphone_range_set_max(LinphoneRange *range, int max) {
+	range->max = max;
+}

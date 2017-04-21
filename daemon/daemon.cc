@@ -141,13 +141,13 @@ DtmfResponse::DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf) {
 }
 
 static ostream &printCallStatsHelper(ostream &ostr, const LinphoneCallStats *stats, const string &prefix) {
-	ostr << prefix << "ICE state: " << ice_state_str[stats->ice_state] << "\n";
-	ostr << prefix << "RoundTripDelay: " << stats->round_trip_delay << "\n";
-	ostr << prefix << "Jitter: " << stats->jitter_stats.jitter << "\n";
+	ostr << prefix << "ICE state: " << ice_state_str[linphone_call_stats_get_ice_state(stats)] << "\n";
+	ostr << prefix << "RoundTripDelay: " << linphone_call_stats_get_round_trip_delay(stats) << "\n";
+//	ostr << prefix << "Jitter: " << stats->jitter_stats.jitter << "\n";
 //	ostr << prefix << "MaxJitter: " << stats->jitter_stats.max_jitter << "\n";
 //	ostr << prefix << "SumJitter: " << stats->jitter_stats.sum_jitter << "\n";
 //	ostr << prefix << "MaxJitterTs: " << stats->jitter_stats.max_jitter_ts << "\n";
-	ostr << prefix << "JitterBufferSizeMs: " << stats->jitter_stats.jitter_buffer_size_ms << "\n";
+	ostr << prefix << "JitterBufferSizeMs: " << linphone_call_stats_get_jitter_buffer_size_ms(stats) << "\n";
 
 	ostr << prefix << "Received-InterarrivalJitter: " << linphone_call_stats_get_receiver_interarrival_jitter(stats) << "\n";
 	ostr << prefix << "Received-FractionLost: " << linphone_call_stats_get_receiver_loss_rate(stats) << "\n";
@@ -199,14 +199,14 @@ AudioStreamStatsResponse::AudioStreamStatsResponse(Daemon* daemon, AudioStream* 
 		ostr << "Event-type: audio-stream-stats\n";
 		ostr << "Id: " << daemon->updateAudioStreamId(stream) << "\n";
 		ostr << "Type: ";
-		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+		if (linphone_call_stats_get_type(stats) == LINPHONE_CALL_STATS_AUDIO) {
 			ostr << "Audio";
 		} else {
 			ostr << "Video";
 		}
 		ostr << "\n";
 	} else {
-		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
+		prefix = ((linphone_call_stats_get_type(stats) == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
 	}
 
 	printCallStatsHelper(ostr, stats, prefix);
@@ -547,9 +547,9 @@ void Daemon::iterateStreamStats() {
 		while (it->second->queue && (NULL != (ev=ortp_ev_queue_get(it->second->queue)))){
 			OrtpEventType evt=ortp_event_get_type(ev);
 			if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED || evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-				linphone_call_stats_fill(&it->second->stats, &it->second->stream->ms, ev);
+				linphone_call_stats_fill(it->second->stats, &it->second->stream->ms, ev);
 				if (mUseStatsEvents) mEventQueue.push(new AudioStreamStatsResponse(this,
-					it->second->stream, &it->second->stats, true));
+					it->second->stream, it->second->stats, true));
 			}
 			ortp_event_destroy(ev);
 		}

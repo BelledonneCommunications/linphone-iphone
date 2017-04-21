@@ -133,11 +133,19 @@ LINPHONE_PUBLIC LinphonePrivacyMask linphone_call_params_get_privacy(const Linph
 LINPHONE_PUBLIC float linphone_call_params_get_received_framerate(const LinphoneCallParams *cp);
 
 /**
+ * Get the definition of the received video.
+ * @param[in] cp LinphoneCallParams object
+ * @return The received LinphoneVideoDefinition
+ */
+LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_call_params_get_received_video_definition(const LinphoneCallParams *cp);
+
+/**
  * Get the size of the video that is received.
  * @param[in] cp LinphoneCallParams object
  * @return The received video size or MS_VIDEO_SIZE_UNKNOWN if not available.
+ * @deprecated Use linphone_call_params_get_received_video_definition() instead
  */
-LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp);
 
 /**
  * Get the path for the audio recording of the call.
@@ -161,11 +169,19 @@ LINPHONE_PUBLIC const char * linphone_call_params_get_rtp_profile(const Linphone
 LINPHONE_PUBLIC float linphone_call_params_get_sent_framerate(const LinphoneCallParams *cp);
 
 /**
+ * Get the definition of the sent video.
+ * @param[in] cp LinphoneCallParams object
+ * @return The sent LinphoneVideoDefinition
+ */
+LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_call_params_get_sent_video_definition(const LinphoneCallParams *cp);
+
+/**
  * Gets the size of the video that is sent.
  * @param[in] cp LinphoneCalParams object
  * @return The sent video size or MS_VIDEO_SIZE_UNKNOWN if not available.
+ * @deprecated Use linphone_call_params_get_sent_video_definition() instead
  */
-LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *cp);
 
 /**
  * Get the session name of the media session (ie in SDP).

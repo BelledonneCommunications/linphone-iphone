@@ -23,6 +23,7 @@ import string
 import sys
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom
+import metadoc
 
 
 class CObject:
@@ -31,6 +32,7 @@ class CObject:
 		self.briefDescription = ''
 		self.detailedDescription = None
 		self.deprecated = False
+		self.briefDoc = None
 
 
 class CEnumValue(CObject):
@@ -381,6 +383,7 @@ class Project:
 		if deprecatedNode is not None:
 			ev.deprecated = True
 		ev.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
+		ev.briefDoc = metadoc.Description(node.find('./briefdescription'))
 		ev.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		return ev
 
@@ -392,6 +395,7 @@ class Project:
 		if deprecatedNode is not None:
 			e.deprecated = True
 		e.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
+		e.briefDoc = metadoc.Description(node.find('./briefdescription'))
 		e.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		enumvalues = node.findall("enumvalue[@prot='public']")
 		for enumvalue in enumvalues:
@@ -414,6 +418,7 @@ class Project:
 		if deprecatedNode is not None:
 			sm.deprecated = True
 		sm.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
+		sm.briefDoc = metadoc.Description(node.find('./briefdescription'))
 		sm.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		return sm
 
@@ -423,6 +428,7 @@ class Project:
 		if deprecatedNode is not None:
 			s.deprecated = True
 		s.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
+		s.briefDoc = metadoc.Description(node.find('./briefdescription'))
 		s.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		structmembers = node.findall("sectiondef/memberdef[@kind='variable'][@prot='public']")
 		for structmember in structmembers:
@@ -561,6 +567,7 @@ class Project:
 		if deprecatedNode is not None:
 			f.deprecated = True
 		f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
+		f.briefDoc = metadoc.Description(node.find('./briefdescription'))
 		f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		if f.briefDescription == '' and ''.join(f.detailedDescription.itertext()).strip() == '':
 			return None

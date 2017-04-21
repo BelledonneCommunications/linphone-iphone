@@ -62,6 +62,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/proxy_config.h"
 #include "linphone/ringtoneplayer.h"
 #include "linphone/vcard.h"
+#include "linphone/video_definition.h"
 #include "linphone/xmlrpc.h"
 
 
@@ -2104,10 +2105,12 @@ LINPHONE_PUBLIC int linphone_core_get_audio_port(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 /**
- * Overload of linphone_core_get_audio_port_range().
+ * Get the audio port range from which is randomly chosen the UDP port used for audio streaming.
+ * @param[in] lc LinphoneCore object
+ * @return a LinphoneRange object
  * @ingroup network_parameters
  */
-LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_audio_port_range_2(const LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneRange *linphone_core_get_audio_ports_range(const LinphoneCore *lc);
 
 /**
  * Gets the UDP port used for video streaming.
@@ -2128,10 +2131,12 @@ LINPHONE_PUBLIC int linphone_core_get_video_port(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 /**
- * Overload of linphone_core_get_video_port_range().
+ * Get the video port range from which is randomly chosen the UDP port used for video streaming.
+ * @param[in] lc LinphoneCore object
+ * @return a LinphoneRange object
  * @ingroup network_parameters
  */
-LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_video_port_range_2(const LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneRange *linphone_core_get_video_ports_range(const LinphoneCore *lc);
 
 /**
  * Gets the UDP port used for text streaming.
@@ -2152,10 +2157,12 @@ LINPHONE_PUBLIC int linphone_core_get_text_port(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 /**
- * Overload of linphone_core_get_text_port_range().
+ * Get the text port range from which is randomly chosen the UDP port used for text streaming.
+ * @param[in] lc LinphoneCore object
+ * @return a LinphoneRange object
  * @ingroup network_parameters
  */
-LINPHONE_PUBLIC LinphoneIntRange linphone_core_get_text_port_range_2(const LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneRange *linphone_core_get_text_ports_range(const LinphoneCore *lc);
 
 /**
  * Gets the value of the no-rtp timeout.
@@ -2296,6 +2303,8 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_sip_port(LinphoneCore 
  * @param[in] transports A LinphoneSipTransports structure giving the ports to use
  * @return 0
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_set_transports instead
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc, const LinphoneSipTransports *transports);
 
@@ -2307,6 +2316,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_set_sip_transports(LinphoneCore *lc
  * @param[out] transports A #LinphoneSipTransports structure that will receive the configured ports
  * @return 0
  * @ingroup network_parameters
+ * @deprecated
  * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc, LinphoneSipTransports *transports);
@@ -2318,9 +2328,135 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_get_sip_transports(LinphoneCore *lc
  * @param[in] lc LinphoneCore object
  * @param[out] tr A #LinphoneSipTransports structure that will receive the ports being used
  * @ingroup network_parameters
+ * @deprecated Use linphone_core_get_transports_used instead
  * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTransports *tr);
+
+/**
+ * Sets the ports to be used for each of transport (UDP or TCP)
+ * A zero value port for a given transport means the transport
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be choosen randomly by the system.
+ * @param[in] lc LinphoneCore object
+ * @param[in] transports A LinphoneSipTransports structure giving the ports to use
+ * @return 0
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneStatus linphone_core_set_transports(LinphoneCore *lc, const LinphoneTransports *transports);
+
+/**
+ * Retrieves the port configuration used for each transport (udp, tcp, tls).
+ * A zero value port for a given transport means the transport
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be chosen randomly by the system.
+ * @param[in] lc LinphoneCore object
+ * @return A #LinphoneTransports structure with the configured ports
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneTransports *linphone_core_get_transports(LinphoneCore *lc);
+
+/**
+ * Retrieves the real port number assigned for each sip transport (udp, tcp, tls).
+ * A zero value means that the transport is not activated.
+ * If LC_SIP_TRANSPORT_RANDOM was passed to linphone_core_set_sip_transports(), the random port choosed by the system is returned.
+ * @param[in] lc LinphoneCore object
+ * @return A #LinphoneTransports structure with the ports being used
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneTransports *linphone_core_get_transports_used(LinphoneCore *lc);
+
+/**
+ * Increment refcount.
+ * @param[in] transports LinphoneTransports object
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC LinphoneTransports *linphone_transports_ref(LinphoneTransports *transports);
+
+/**
+ * Decrement refcount and possibly free the object.
+ * @param[in] transports LinphoneTransports object
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC void linphone_transports_unref(LinphoneTransports *transports);
+
+/**
+ * Gets the user data in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports
+ * @return the user data
+ * @ingroup network_parameters
+*/
+LINPHONE_PUBLIC void *linphone_transports_get_user_data(const LinphoneTransports *transports);
+
+/**
+ * Sets the user data in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] data the user data
+ * @ingroup network_parameters
+*/
+LINPHONE_PUBLIC void linphone_transports_set_user_data(LinphoneTransports *transports, void *data);
+
+/**
+ * Gets the UDP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the UDP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_udp_port(const LinphoneTransports* transports);
+
+/**
+ * Gets the TCP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the TCP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_tcp_port(const LinphoneTransports* transports);
+
+/**
+ * Gets the TLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the TLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_tls_port(const LinphoneTransports* transports);
+
+/**
+ * Gets the DTLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @return the DTLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC int linphone_transports_get_dtls_port(const LinphoneTransports* transports);
+
+/**
+ * Sets the UDP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the UDP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_udp_port(LinphoneTransports *transports, int port);
+
+/**
+ * Sets the TCP port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the TCP port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_tcp_port(LinphoneTransports *transports, int port);
+
+/**
+ * Sets the TLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the TLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_tls_port(LinphoneTransports *transports, int port);
+
+/**
+ * Sets the DTLS port in the LinphoneTransports object
+ * @param[in] transports the LinphoneTransports object
+ * @param[in] port the DTLS port
+ * @ingroup network_parameters
+ */
+LINPHONE_PUBLIC void linphone_transports_set_dtls_port(LinphoneTransports *transports, int port);
 
 /**
  * Tells whether the given transport type is supported by the library.
@@ -2789,7 +2925,7 @@ LINPHONE_PUBLIC void linphone_core_set_ring_during_incoming_early_media(Linphone
 /**
  * Tells whether the ring play is enabled during an incoming early media call.
  * @param[in] lc #LinphoneCore object
- * @ingroup media_paramaters
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc);
 
@@ -3073,11 +3209,13 @@ LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
  * This policy defines whether:
  * - video shall be initiated by default for outgoing calls
  * - video shall be accepter by default for incoming calls
+ *
  * @param[in] lc LinphoneCore object
  * @param[in] policy The video policy to use
  * @ingroup media_parameters
+ * @deprecated
 **/
-LINPHONE_PUBLIC void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
 
 /**
  * Get the default policy for video.
@@ -3085,14 +3223,107 @@ LINPHONE_PUBLIC void linphone_core_set_video_policy(LinphoneCore *lc, const Linp
  * @param[in] lc LinphoneCore object
  * @return The video policy being used
  * @ingroup media_parameters
+ * @deprecated
 **/
-LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc);
+
+/**
+ * Increment refcount.
+ * @param[in] policy LinphoneVideoActivationPolicy object
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_video_activation_policy_ref(LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Decrement refcount and possibly free the object.
+ * @param[in] policy LinphoneVideoActivationPolicy object
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_video_activation_policy_unref(LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Gets the user data in the LinphoneVideoActivationPolicy object
+ * @param[in] policy the LinphoneVideoActivationPolicy
+ * @return the user data
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void *linphone_video_activation_policy_get_user_data(const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Sets the user data in the LinphoneVideoActivationPolicy object
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @param[in] data the user data
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void linphone_video_activation_policy_set_user_data(LinphoneVideoActivationPolicy *policy, void *data);
+
+/**
+ * Gets the value for the automatically accept video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @return whether or not to automatically accept video requests is enabled
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC bool_t linphone_video_activation_policy_get_automatically_accept(const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Gets the value for the automatically initiate video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @return whether or not to automatically initiate video calls is enabled
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC bool_t linphone_video_activation_policy_get_automatically_initiate(const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Sets the value for the automatically accept video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @param[in] enable whether or not to enable automatically accept video requests
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void linphone_video_activation_policy_set_automatically_accept(LinphoneVideoActivationPolicy *policy, bool_t enable);
+
+/**
+ * Sets the value for the automatically initiate video policy
+ * @param[in] policy the LinphoneVideoActivationPolicy object
+ * @param[in] enable whether or not to enable automatically initiate video calls
+ * @ingroup media_parameters
+*/
+LINPHONE_PUBLIC void linphone_video_activation_policy_set_automatically_initiate(LinphoneVideoActivationPolicy *policy, bool_t enable);
+
+/**
+ * Sets the default policy for video.
+ * This policy defines whether:
+ * - video shall be initiated by default for outgoing calls
+ * - video shall be accepted by default for incoming calls
+ * @param[in] lc LinphoneCore object
+ * @param[in] policy The video policy to use
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_set_video_activation_policy(LinphoneCore *lc, const LinphoneVideoActivationPolicy *policy);
+
+/**
+ * Get the default policy for video.
+ * See linphone_core_set_video_activation_policy() for more details.
+ * @param[in] lc LinphoneCore object
+ * @return The video policy being used
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_core_get_video_activation_policy(const LinphoneCore *lc);
 
 /**
  * Returns the zero terminated table of supported video resolutions.
  * @ingroup media_parameters
+ * @deprecated Use linphone_factory_get_supported_video_definitions() instead
 **/
-LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
+
+/**
+ * Set the preferred video definition for the stream that is captured and sent to the remote party.
+ * All standard video definitions are accepted on the receive path.
+ * @param[in] lc LinphoneCore object
+ * @param[in] vdef LinphoneVideoDefinition object
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef);
 
 /**
  * Sets the preferred video size.
@@ -3100,8 +3331,20 @@ LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(Li
  * This applies only to the stream that is captured and sent to the remote party,
  * since we accept all standard video size on the receive path.
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_set_preferred_video_definition() instead
 **/
-LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+
+/**
+ * Set the video definition for the captured (preview) video.
+ * This method is for advanced usage where a video capture must be set independently of the definition of the stream actually sent through the call.
+ * This allows for example to have the preview window in High Definition  even if due to bandwidth constraint the sent video definition is small.
+ * Using this feature increases the CPU consumption, since a rescaling will be done internally.
+ * @param[in] lc LinphoneCore object
+ * @param[in] vdef LinphoneVideoDefinition object
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef);
 
 /**
  * Sets the video size for the captured (preview) video.
@@ -3111,16 +3354,27 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MS
  * @ingroup media_parameters
  * @param lc the linphone core
  * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
+ * @deprecated Use linphone_core_set_preview_video_definition() instead
 **/
-LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
 
 /**
  * Sets the preview video size by its name. See linphone_core_set_preview_video_size() for more information about this feature.
  *
  * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
  * @ingroup media_parameters
+ * @deprecated Use linphone_factory_create_video_definition_from_name() and linphone_core_set_preview_video_definition() instead
 **/
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
+
+/**
+ * Get the definition of the captured video.
+ * @param[in] lc LinphoneCore object
+ * @return The captured LinphoneVideoDefinition if it was previously set by linphone_core_set_preview_video_definition(), otherwise a 0x0 LinphoneVideoDefinition.
+ * @see linphone_core_set_preview_video_definition()
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_core_get_preview_video_definition(const LinphoneCore *lc);
 
 /**
  * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
@@ -3128,8 +3382,19 @@ LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *
  * @ingroup media_parameters
  * @param lc the core
  * @return a MSVideoSize
+ * @deprecated Use linphone_core_get_preview_video_definition() instead
 **/
-LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
+
+/**
+ * Get the effective video definition provided by the camera for the captured video.
+ * When preview is disabled or not yet started this function returns a 0x0 video definition.
+ * @param[in] lc LinphoneCore object
+ * @return The captured LinphoneVideoDefinition
+ * @ingroup media_parameters
+ * @see linphone_core_set_preview_video_definition()
+ */
+LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_core_get_current_preview_video_definition(const LinphoneCore *lc);
 
 /**
  * Returns the effective video size for the captured video as provided by the camera.
@@ -3138,20 +3403,30 @@ LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneC
  * @ingroup media_parameters
  * @param lc the core
  * @return a MSVideoSize
+ * @deprecated Use linphone_core_get_current_preview_video_definition() instead
 **/
-LINPHONE_PUBLIC MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc);
+
+/**
+ * Get the preferred video definition for the stream that is captured and sent to the remote party.
+ * @param[in] lc LinphoneCore object
+ * @return The preferred LinphoneVideoDefinition
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_core_get_preferred_video_definition(const LinphoneCore *lc);
 
 /**
  * Returns the current preferred video size for sending.
- *
  * @ingroup media_parameters
+ * @deprecated Use linphone_core_get_preferred_video_definition() instead
 **/
-LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
 
 /**
  * Get the name of the current preferred video size for sending.
  * @param[in] lc #LinphoneCore object.
  * @return A string containing the name of the current preferred video size (to be freed with ms_free()).
+ * @deprecated Use linphone_core_get_preferred_video_defintion() and linphone_video_definition_get_name() instead
  */
 LINPHONE_PUBLIC char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc);
 
@@ -3162,6 +3437,7 @@ LINPHONE_PUBLIC char * linphone_core_get_preferred_video_size_name(const Linphon
  * that it takes the name of the video resolution as input.
  * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
  * @ingroup media_parameters
+ * @deprecated Use linphone_factory_create_video_definition_from_name() and linphone_core_set_preferred_video_definition() instead
 **/
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
 
@@ -3183,6 +3459,13 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, flo
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);
+
+/**
+ * Call generic OpenGL render for a given core.
+ * @param lc The core.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_preview_ogl_render(const LinphoneCore *lc);
 
 /**
  * Controls video preview enablement.
@@ -3655,18 +3938,16 @@ LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
  * @param[in] lc #LinphoneCore object
  * @param[in] file The path to the file to use to store the zrtp secrets cache.
  * @ingroup initializing
- * @deprecated cache is now hold as sqlite db, use linphone_core_set_zrtp_cache_database_path to set path to the db and open it
  */
-LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
+LINPHONE_PUBLIC void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 
 /**
  * Get the path to the file storing the zrtp secrets cache.
  * @param[in] lc #LinphoneCore object.
  * @return The path to the file storing the zrtp secrets cache.
  * @ingroup initializing
- * @deprecated cache is now hold as sqlite db, use linphone_core_get_zrtp_cache_db to get a pointer to it
  */
-LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
+LINPHONE_PUBLIC const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
 
 /**
  * Get a pointer to the sqlite db holding zrtp/lime cache
@@ -3675,15 +3956,6 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_core_get_zrtp_secrets_f
  * @ingroup initializing
  */
 LINPHONE_PUBLIC void *linphone_core_get_zrtp_cache_db(LinphoneCore *lc);
-
-/**
- * Sets the database filename where zrtp cache will be stored.
- * If the file does not exist, it will be created.
- * @ingroup initializing
- * @param lc the linphone core
- * @param path filesystem path
-**/
-LINPHONE_PUBLIC void linphone_core_set_zrtp_cache_database_path(LinphoneCore *lc, const char *path);
 
 /**
  * Set the path to the directory storing the user's x509 certificates (used by dtls)
@@ -4124,7 +4396,7 @@ LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneC
  * @see linphone_core_get_supported_file_formats
  * @param lc A #LinphoneCore object
  * @param fmt The format extension (wav, mkv).
- * @ingroup media_paramaters
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC bool_t linphone_core_file_format_supported(LinphoneCore *lc, const char *fmt);
 
@@ -4886,6 +5158,28 @@ LINPHONE_PUBLIC LinphonePresencePerson * linphone_core_create_presence_person(Li
  * @return The created #LinphonePresenceService object.
  */
 LINPHONE_PUBLIC LinphonePresenceService * linphone_core_create_presence_service(LinphoneCore *lc, const char *id, LinphonePresenceBasicStatus basic_status, const char *contact);
+
+
+/**
+ * Notifies the upper layer that a presence status has been received by calling the appropriate
+ * callback if one has been set.
+ * @param[in]  lc the #LinphoneCore object.
+ * @param[in]  lf the #LinphoneFriend whose presence information has been received.
+ */
+LINPHONE_PUBLIC void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend *lf);
+
+
+/**
+ * Notifies the upper layer that a presence model change has been received for the uri or
+ * telephone number given as a parameter, by calling the appropriate callback if one has been set.
+ * @param[in]  lc  the #LinphoneCore object.
+ * @param[in]  lf  the #LinphoneFriend whose presence information has been received.
+ * @param[in]  uri_or_tel  telephone number or sip uri
+ * @param[in]  presence_model the #LinphonePresenceModel that has been modified
+ */
+LINPHONE_PUBLIC void linphone_core_notify_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf, const char *uri_or_tel, const LinphonePresenceModel *presence_model);
+
+
 
 /**
  * @}

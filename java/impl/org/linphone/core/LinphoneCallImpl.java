@@ -93,20 +93,26 @@ class LinphoneCallImpl implements LinphoneCall {
 		return LinphoneCall.State.fromInt(getState(nativePtr));
 	}
 	public LinphoneCallParams getCurrentParams() {
-		return new LinphoneCallParamsImpl(getCurrentParams(nativePtr));
+		synchronized(mCore){
+			return new LinphoneCallParamsImpl(getCurrentParams(nativePtr));
+		}
 	}
 	public LinphoneCallParams getCurrentParamsCopy(){
 		return getCurrentParams();
 	}
 	public LinphoneCallParams getRemoteParams() {
-		long remoteParamsPtr = getRemoteParams(nativePtr);
-		if (remoteParamsPtr == 0) {
-			return null;
+		synchronized(mCore){
+			long remoteParamsPtr = getRemoteParams(nativePtr);
+			if (remoteParamsPtr == 0) {
+				return null;
+			}
+			return new LinphoneCallParamsImpl(remoteParamsPtr);
 		}
-		return new LinphoneCallParamsImpl(remoteParamsPtr);
 	}
 	public void enableCamera(boolean enabled) {
-		enableCamera(nativePtr, enabled);
+		synchronized(mCore){
+			enableCamera(nativePtr, enabled);
+		}
 	}
 	public boolean cameraEnabled() {
 		return cameraEnabled(nativePtr);
@@ -200,7 +206,9 @@ class LinphoneCallImpl implements LinphoneCall {
 	
 	private native void takeSnapshot(long nativePtr, String path);
 	public void takeSnapshot(String path) {
-		takeSnapshot(nativePtr, path);
+		synchronized(mCore){
+			takeSnapshot(nativePtr, path);
+		}
 	}
 
 	private native void zoomVideo(long nativePtr, float factor, float cx, float cy);
@@ -211,12 +219,16 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native void startRecording(long nativePtr);
 	@Override
 	public void startRecording() {
-		startRecording(nativePtr);
+		synchronized(mCore){
+			startRecording(nativePtr);
+		}
 	}
 	private native void stopRecording(long nativePtr);
 	@Override
 	public void stopRecording() {
-		stopRecording(nativePtr);
+		synchronized(mCore){
+			stopRecording(nativePtr);
+		}
 	}
 	private native int getTransferState(long nativePtr);
 	@Override
@@ -226,7 +238,9 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native int sendInfoMessage(long callPtr, long msgptr);
 	@Override
 	public void sendInfoMessage(LinphoneInfoMessage msg) {
-		sendInfoMessage(nativePtr,((LinphoneInfoMessageImpl)msg).nativePtr);
+		synchronized(mCore){
+			sendInfoMessage(nativePtr,((LinphoneInfoMessageImpl)msg).nativePtr);
+		}
 	}
 	private native Object getTransfererCall(long callPtr); 
 	@Override
@@ -246,7 +260,9 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native long getErrorInfo(long nativePtr);
 	@Override
 	public ErrorInfo getErrorInfo() {
-		return new ErrorInfoImpl(getErrorInfo(nativePtr));
+		synchronized(mCore){
+			return new ErrorInfoImpl(getErrorInfo(nativePtr));
+		}
 	}
 	@Override
 	public void setUserData(Object obj) {
@@ -260,18 +276,24 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native long getPlayer(long callPtr);
 	@Override
 	public LinphonePlayer getPlayer() {
-		return new LinphonePlayerImpl(getPlayer(nativePtr));
+		synchronized(mCore){
+			return new LinphonePlayerImpl(getPlayer(nativePtr));
+		}
 	}
 	
 	private native Object getChatRoom(long nativePtr);
 	@Override
 	public LinphoneChatRoom getChatRoom() {
-		return (LinphoneChatRoom)(getChatRoom(nativePtr));
+		synchronized(mCore){
+			return (LinphoneChatRoom)(getChatRoom(nativePtr));
+		}
 	}
 
 	@Override
 	public void setListener(LinphoneCallListener listener) {
-		setListener(nativePtr, listener);
+		synchronized(mCore){
+			setListener(nativePtr, listener);
+		}
 	}
     
 	public LinphoneAddress getDiversionAddress() {
@@ -288,5 +310,20 @@ class LinphoneCallImpl implements LinphoneCall {
 	public boolean askedToAutoAnswer(){
 		return askedToAutoAnswer(nativePtr);
 	}
+	
+	private native void declineWithErrorInfo(long call, long ei);
+	@Override
+	public void declineWithErrorInfo(ErrorInfo ei){
+		synchronized(mCore){
+			declineWithErrorInfo(nativePtr, ((ErrorInfoImpl)ei).mNativePtr);
+		}
+	}
 
+	private native void terminateWithErrorInfo(long call, long ei);
+	@Override
+	public void terminateWithErrorInfo(ErrorInfo ei){
+		synchronized(mCore){
+			terminateWithErrorInfo(nativePtr, ((ErrorInfoImpl)ei).mNativePtr);
+		}
+	}
 }

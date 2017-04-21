@@ -60,6 +60,7 @@ set(HEADER_FILES
 	tunnel.h
 	types.h
 	vcard.h
+	video_definition.h
 	wrapper_utils.h
 	xmlrpc.h
 

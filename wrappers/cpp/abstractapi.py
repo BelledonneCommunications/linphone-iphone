@@ -586,6 +586,7 @@ class CParser(object):
 		name = EnumName()
 		name.from_camel_case(nameStr, namespace=self.namespace.name)
 		enum = Enum(name)
+		enum.briefDescription = cenum.briefDoc
 		self.namespace.add_child(enum)
 		
 		for cEnumValue in cenum.values:
@@ -619,6 +620,7 @@ class CParser(object):
 		name = ClassName()
 		name.from_camel_case(cclass.name, namespace=self.namespace.name)
 		_class = Class(name)
+		_class.briefDescription = cclass.briefDoc
 		_class.refcountable = self._class_is_refcountable(cclass)
 		
 		for cproperty in cclass.properties.values():
@@ -686,6 +688,7 @@ class CParser(object):
 			raise Error('{0} is not a listener'.format(cclass.name))
 		
 		listener = Interface(name)
+		listener.briefDescription = cclass.briefDoc
 		
 		for property in cclass.properties.values():
 			if property.name != 'user_data':
@@ -733,6 +736,7 @@ class CParser(object):
 			raise BlacklistedException('{0} is blacklisted'.format(name.to_c()));
 		
 		method = Method(name, type=type)
+		method.briefDescription = cfunction.briefDoc
 		method.deprecated = cfunction.deprecated
 		method.returnType = self.parse_type(cfunction.returnArgument)
 		

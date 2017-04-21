@@ -26,6 +26,7 @@ import errno
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
 import genapixml as CApi
 import abstractapi as AbsApi
+import metadoc
 
 
 class CppTranslator(object):
@@ -239,6 +240,9 @@ class CppTranslator(object):
 			
 			methodDict['implPrototype'] = '{implReturn} {longname}({implParams}){const}'.format(**methodElems)
 			methodDict['sourceCode' ] = self._generate_source_code(method, usedNamespace=namespace)
+		
+		t = metadoc.DoxygenCppTranslator()
+		methodDict['doc'] = t.translate(method.briefDescription) if method.briefDescription is not None else None
 		
 		return methodDict
 	

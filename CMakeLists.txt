@@ -21,7 +21,7 @@
 ############################################################################
 
 cmake_minimum_required(VERSION 3.0)
-project(linphone VERSION 3.11.1 LANGUAGES C CXX)
+project(linphone VERSION 3.11.2 LANGUAGES C CXX)
 
 
 set(LINPHONE_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
@@ -45,8 +45,8 @@ option(ENABLE_DOC "Enable documentation generation with Doxygen." YES)
 option(ENABLE_JAVADOC "Add a target to generate documentation for Java API" NO)
 option(ENABLE_GTK_UI "Turn on or off compilation of gtk interface." YES)
 option(ENABLE_LDAP "Enable LDAP support." NO)
-option(ENABLE_LIME "Enable Instant Messaging Encryption." YES)
 option(ENABLE_SQLITE_STORAGE "Turn on compilation sqlite storage, for messages, contacts, history" YES)
+cmake_dependent_option(ENABLE_LIME "Enable Instant Messaging Encryption." YES "ENABLE_SQLITE_STORAGE" NO)
 cmake_dependent_option(ENABLE_NOTIFY "Enable libnotify support." YES "ENABLE_GTK_UI;NOT APPLE" NO)
 option(ENABLE_RELATIVE_PREFIX "Find resources relatively to the installation directory." NO)
 option(ENABLE_STRICT "Build with strict compile options." YES)
@@ -172,11 +172,12 @@ if(ENABLE_NLS)
 	find_package(Intl REQUIRED)
 endif()
 if(ENABLE_LIME)
-        if(LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
-                include("${EP_bzrtp_CONFIG_DIR}/BZRTPConfig.cmake")
-        else()
-                find_package(BZRTP)
-        endif()
+	#bzrtp is only required for LIME
+	if(LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
+		include("${EP_bzrtp_CONFIG_DIR}/BZRTPConfig.cmake")
+	else()
+		find_package(BZRTP REQUIRED)
+	endif()
 	set(HAVE_LIME 1)
 endif()
 if(ENABLE_CXX_WRAPPER)
@@ -204,9 +205,11 @@ include_directories(
 set(LINPHONE_INCLUDE_DIRS
 	${BELLESIP_INCLUDE_DIRS}
 	${MEDIASTREAMER2_INCLUDE_DIRS}
-	${BZRTP_INCLUDE_DIRS}
 	${BCTOOLBOX_CORE_INCLUDE_DIRS}
 )
+if (BZRTP_FOUND)
+	list(APPEND LINPHONE_INCLUDE_DIRS ${BZRTP_INCLUDE_DIRS})
+endif()
 if(ANDROID)
 	include_directories(${CMAKE_CURRENT_BINARY_DIR}/java)
 endif()

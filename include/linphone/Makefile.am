@@ -40,6 +40,7 @@ linphone_include_HEADERS=\
 	tunnel.h \
 	types.h \
 	vcard.h \
+	video_definition.h \
 	wrapper_utils.h \
 	xmlrpc.h \
 	linphonecore.h \
