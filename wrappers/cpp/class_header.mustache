@@ -84,10 +84,24 @@ namespace linphone {
 			
 		
 			{{#methods}}
+			{{#doc}}
+			/**
+			 {{#lines}}
+			 * {{{line}}}
+			 {{/lines}}
+			 */
+			{{/doc}}
 			{{{prototype}}}
 			
 			{{/methods}}
 			{{#staticMethods}}
+			{{#doc}}
+			/**
+			 {{#lines}}
+			 * {{{line}}}
+			 {{/lines}}
+			 */
+			{{/doc}}
 			{{{prototype}}}
 			
 			{{/staticMethods}}
