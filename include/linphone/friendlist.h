@@ -334,6 +334,13 @@ LINPHONE_PUBLIC void linphone_friend_list_export_friends_as_vcard4_file(Linphone
 LINPHONE_PUBLIC void linphone_friend_list_enable_subscriptions(LinphoneFriendList *list, bool_t enabled);
 
 /**
+ * Gets whether subscription to NOTIFYes of all friends list are enabled or not
+ * @param[in] list the LinphoneFriendList object
+ * @return Whether subscriptions are enabled or not
+ */
+LINPHONE_PUBLIC bool_t linphone_friend_list_subscriptions_enabled(LinphoneFriendList *list);
+
+/**
  * @}
  */
 

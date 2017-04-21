@@ -1112,3 +1112,7 @@ void linphone_friend_list_enable_subscriptions(LinphoneFriendList *list, bool_t 
 		
 	}
 }
+
+bool_t linphone_friend_list_subscriptions_enabled(LinphoneFriendList *list) {
+	return list->enable_subscriptions;
+}

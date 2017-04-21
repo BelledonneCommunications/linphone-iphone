@@ -1715,6 +1715,10 @@ void linphone_core_set_friends_database_path(LinphoneCore *lc, const char *path)
 	}
 }
 
+const char* linphone_core_get_friends_database_path(LinphoneCore *lc) {
+	return lc->friends_db_file;
+}
+
 void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 	LpConfig *lpc = NULL;
 	LinphoneFriend *lf = NULL;

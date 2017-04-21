@@ -722,6 +722,13 @@ LINPHONE_PUBLIC void linphone_core_set_log_collection_max_file_size(size_t size)
 LINPHONE_PUBLIC void linphone_core_set_log_collection_upload_server_url(LinphoneCore *core, const char *server_url);
 
 /**
+ * Gets the url of the server where to upload the collected log files.
+ * @param[in] core LinphoneCore object
+ * @return The url of the server where to upload the collected log files.
+ */
+LINPHONE_PUBLIC const char * linphone_core_get_log_collection_upload_server_url(LinphoneCore *core);
+
+/**
  * Upload the log collection to the configured server url.
  * @param[in] core LinphoneCore object
  */
@@ -3107,6 +3114,14 @@ LINPHONE_PUBLIC void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCal
 LINPHONE_PUBLIC void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *path);
 
 /**
+ * Gets the database filename where call logs will be stored.
+ * @ingroup initializing
+ * @param lc the linphone core
+ * @return filesystem path
+**/
+LINPHONE_PUBLIC const char * linphone_core_get_call_logs_database_path(LinphoneCore *lc);
+
+/**
  * Migrates the call logs from the linphonerc to the database if not done yet
  * @ingroup initializing
  * @param lc the linphone core
@@ -5053,6 +5068,14 @@ LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_ref_key(const Linpho
  * @param path filesystem path
 **/
 LINPHONE_PUBLIC void linphone_core_set_friends_database_path(LinphoneCore *lc, const char *path);
+
+/**
+ * Gets the database filename where friends will be stored.
+ * @ingroup initializing
+ * @param lc the linphone core
+ * @return filesystem path
+**/
+LINPHONE_PUBLIC const char* linphone_core_get_friends_database_path(LinphoneCore *lc);
 
 /**
  * Migrates the friends from the linphonerc to the database if not done yet
