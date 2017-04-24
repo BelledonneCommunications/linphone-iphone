@@ -336,13 +336,17 @@ class Project:
 			if td.definition.startswith('struct '):
 				for st in self.__structs:
 					if st.associatedTypedef == td:
-						self.add(CClass(st))
+						cclass = CClass(st)
+						cclass.briefDoc = td.briefDoc
+						self.add(cclass)
 						break
 			elif ('Linphone' + td.definition) == td.name:
 				st = CStruct(td.name)
 				st.associatedTypedef = td
+				cclass = CClass(st)
+				cclass.briefDoc = td.briefDoc
 				self.add(st)
-				self.add(CClass(st))
+				self.add(cclass)
 		# Sort classes by length of name (longest first), so that methods are put in the right class
 		self.classes.sort(key = lambda c: len(c.name), reverse = True)
 		for e in self.__events:
@@ -497,6 +501,7 @@ class Project:
 			if deprecatedNode is not None:
 				f.deprecated = True
 			f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
+			f.briefDoc = metadoc.Description(node.find('./briefdescription'))
 			f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 			return f
 		else:
@@ -508,6 +513,7 @@ class Project:
 			if deprecatedNode is not None:
 				td.deprecated = True
 			td.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
+			td.briefDoc = metadoc.Description(node.find('./briefdescription'))
 			td.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 			return td
 		return None
