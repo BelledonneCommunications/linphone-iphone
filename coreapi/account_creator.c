@@ -77,14 +77,16 @@ static char* _get_identity(const LinphoneAccountCreator *creator) {
 	char *identity = NULL;
 	if ((creator->username || creator->phone_number)) {
 		//we must escape username
-		LinphoneProxyConfig* proxy = creator->proxy_cfg;
+		LinphoneProxyConfig* proxy = linphone_core_create_proxy_config(creator->core);
 		LinphoneAddress* addr;
 
 		addr = linphone_proxy_config_normalize_sip_uri(proxy, creator->username ? creator->username : creator->phone_number);
-		if (addr == NULL) return NULL;
+		if (addr == NULL) goto end;
 
 		identity = linphone_address_as_string(addr);
 		linphone_address_unref(addr);
+		end:
+		linphone_proxy_config_destroy(proxy);
 	}
 	return identity;
 }
