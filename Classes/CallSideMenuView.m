@@ -140,14 +140,13 @@
 
 	if (stats != NULL) {
 		[result
-			appendString:[NSString stringWithFormat:@"Download bandwidth: %1.1f kbits/s", stats->download_bandwidth]];
+			appendString:[NSString stringWithFormat:@"Download bandwidth: %1.1f kbits/s", linphone_call_stats_get_download_bandwidth(stats)]];
 		[result appendString:@"\n"];
-		[result appendString:[NSString stringWithFormat:@"Upload bandwidth: %1.1f kbits/s", stats->upload_bandwidth]];
+		[result appendString:[NSString stringWithFormat:@"Upload bandwidth: %1.1f kbits/s", linphone_call_stats_get_upload_bandwidth(stats)]];
 		[result appendString:@"\n"];
-		[result appendString:[NSString stringWithFormat:@"ICE state: %@", [self.class iceToString:stats->ice_state]]];
+		[result appendString:[NSString stringWithFormat:@"ICE state: %@", [self.class iceToString:linphone_call_stats_get_ice_state(stats)]]];
 		[result appendString:@"\n"];
-		
-		[result appendString:[NSString stringWithFormat:@"Afinet: %@", [self.class afinetToString:stats->rtp_remote_family]]];
+		[result appendString:[NSString stringWithFormat:@"Afinet: %@", [self.class afinetToString:linphone_call_stats_get_ip_family_of_remote(stats)]]];
 		[result appendString:@"\n"];
 
 		// RTP stats section (packet loss count, etc)

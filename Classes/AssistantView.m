@@ -111,6 +111,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	mustRestoreView = NO;
 	_outgoingView = DialerView.compositeViewDescription;
+	[self resetLiblinphone:FALSE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -135,17 +136,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Utils
 
-- (void)resetLiblinphone {
+- (void)resetLiblinphone:(BOOL)core {
 	if (account_creator) {
 		linphone_account_creator_unref(account_creator);
 		account_creator = NULL;
 	}
-	[LinphoneManager.instance resetLinphoneCore];
+	if(core) {
+		[LinphoneManager.instance resetLinphoneCore];
+	}
 	account_creator = linphone_account_creator_new(
 		LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
 				.UTF8String);
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-	linphone_account_creator_cbs_set_is_account_used(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_is_account_exist(linphone_account_creator_get_callbacks(account_creator),
 													  assistant_is_account_used);
 	linphone_account_creator_cbs_set_create_account(linphone_account_creator_get_callbacks(account_creator),
 													assistant_create_account);
@@ -153,18 +156,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 													assistant_activate_account);
 	linphone_account_creator_cbs_set_is_account_activated(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_is_account_activated);
-	linphone_account_creator_cbs_set_recover_phone_account(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_recover_account(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_recover_phone_account);
 	linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_is_account_linked);
 	
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
-	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
-	linphone_core_set_provisioning_uri(LC, fullPath.UTF8String);
-	[LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
-
-	[self resetLiblinphone];
+	linphone_config_load_from_xml_file(linphone_core_get_config(LC), [LinphoneManager bundleFile:rcFilename].UTF8String, LC, NULL);
+	[self changeView:nextView back:FALSE animation:TRUE];
 }
 
 - (void)reset {
@@ -178,59 +178,188 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[historyViews removeAllObjects];
 }
 
-+ (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
-	switch (status) {
-		case LinphoneAccountCreatorCountryCodeInvalid:
-			return NSLocalizedString(@"Invalid country code.", nil);
-		case LinphoneAccountCreatorEmailInvalid:
-			return NSLocalizedString(@"Invalid email.", nil);
-		case LinphoneAccountCreatorUsernameInvalid:
-			return NSLocalizedString(@"Invalid username.", nil);
-		case LinphoneAccountCreatorUsernameTooShort:
-			return NSLocalizedString(@"Username too short.", nil);
-		case LinphoneAccountCreatorUsernameTooLong:
-			return NSLocalizedString(@"Username too long.", nil);
-		case LinphoneAccountCreatorUsernameInvalidSize:
-			return NSLocalizedString(@"Username length invalid.", nil);
-		case LinphoneAccountCreatorPhoneNumberTooShort:
-		case LinphoneAccountCreatorPhoneNumberTooLong:
++ (NSString *)StringForXMLRPCError:(const char *)err {
+#define IS(x) (strcmp(err, #x) == 0)
+	if
+		IS(ERROR_ACCOUNT_ALREADY_ACTIVATED)
+		return NSLocalizedString(@"This account is already activated.", nil);
+	if
+		IS(ERROR_ACCOUNT_ALREADY_IN_USE)
+		return NSLocalizedString(@"This account is already in use.", nil);
+	if
+		IS(ERROR_ACCOUNT_DOESNT_EXIST)
+		return NSLocalizedString(@"This account does not exist.", nil);
+	if
+		IS(ERROR_ACCOUNT_NOT_ACTIVATED)
+		return NSLocalizedString(@"This account is not activated yet.", nil);
+	if
+		IS(ERROR_ALIAS_ALREADY_IN_USE)
+		return NSLocalizedString(@"This phone number is already used. Please type a different number. \nYou can delete "
+								 @"your existing account if you want to reuse your phone number.",
+								 nil);
+	if
+		IS(ERROR_ALIAS_DOESNT_EXIST)
+		return NSLocalizedString(@"This alias does not exist.", nil);
+	if
+		IS(ERROR_EMAIL_ALREADY_IN_USE)
+		return NSLocalizedString(@"This email address is already used.", nil);
+	if
+		IS(ERROR_EMAIL_DOESNT_EXIST)
+		return NSLocalizedString(@"This email does not exist.", nil);
+	if
+		IS(ERROR_KEY_DOESNT_MATCH)
+		return NSLocalizedString(@"The confirmation code is invalid. \nPlease try again.", nil);
+	if
+		IS(ERROR_PASSWORD_DOESNT_MATCH)
+		return NSLocalizedString(@"Passwords do not match.", nil);
+	if
+		IS(ERROR_PHONE_ISNT_E164)
+		return NSLocalizedString(@"Your phone number is invalid.", nil);
+	if
+		IS(ERROR_CANNOT_SEND_SMS)
+		return NSLocalizedString(@"Server error, please try again later.", nil);
+	if
+		IS(ERROR_NO_PHONE_NUMBER)
+		return NSLocalizedString(@"Please confirm your country code and enter your phone number.", nil);
+	if IS(Missing required parameters)
+		return NSLocalizedString(@"Missing required parameters", nil);
+	if IS(ERROR_BAD_CREDENTIALS)
+		return NSLocalizedString(@"Bad credentials, check your account settings", nil);
+	if IS(ERROR_NO_PASSWORD)
+		return NSLocalizedString(@"Please enter a password to your account", nil);
+	if IS(ERROR_NO_EMAIL)
+		return NSLocalizedString(@"Please enter your email", nil);
+	if IS(ERROR_NO_USERNAME)
+		return NSLocalizedString(@"Please enter a username", nil);
+	if IS(ERROR_INVALID_CONFIRMATION)
+		return NSLocalizedString(@"Your confirmation password doesn't match your password", nil);
+	if IS(ERROR_INVALID_EMAIL)
+		return NSLocalizedString(@"Your email is invalid", nil);
+
+	if (!linphone_core_is_network_reachable(LC))
+		return NSLocalizedString(@"There is no network connection available, enable "
+								 @"WIFI or WWAN prior to configure an account.",
+								 nil);
+
+	return NSLocalizedString(@"Unknown error, please try again later.", nil);
+}
+
++ (NSString *)errorForLinphoneAccountCreatorPhoneNumberStatus:(LinphoneAccountCreatorPhoneNumberStatus)status {
+	switch(status) {
+		case LinphoneAccountCreatorPhoneNumberStatusTooShort: /**< Phone number too short */
+			return NSLocalizedString(@"Your country code is too short.", nil);
+		case LinphoneAccountCreatorPhoneNumberStatusTooLong: /**< Phone number too long */
+			return NSLocalizedString(@"Your country code is too long.", nil);
 			return nil; /* this is not an error, just user has to finish typing */
-		case LinphoneAccountCreatorPhoneNumberInvalid:
-			return NSLocalizedString(@"Invalid phone number.", nil);
-		case LinphoneAccountCreatorPasswordTooShort:
-			return NSLocalizedString(@"Password too short.", nil);
-		case LinphoneAccountCreatorPasswordTooLong:
-			return NSLocalizedString(@"Password too long.", nil);
-		case LinphoneAccountCreatorDomainInvalid:
-			return NSLocalizedString(@"Invalid domain.", nil);
-		case LinphoneAccountCreatorRouteInvalid:
-			return NSLocalizedString(@"Invalid route.", nil);
-		case LinphoneAccountCreatorDisplayNameInvalid:
-			return NSLocalizedString(@"Invalid display name.", nil);
-		case LinphoneAccountCreatorReqFailed:
-			return NSLocalizedString(@"Failed to query the server. Please try again later", nil);
-		case LinphoneAccountCreatorTransportNotSupported:
-			return NSLocalizedString(@"Unsupported transport", nil);
-		case LinphoneAccountCreatorErrorServer:
-			return NSLocalizedString(@"Server error", nil);
-		case LinphoneAccountCreatorAccountCreated:
-		case LinphoneAccountCreatorAccountExist:
-		case LinphoneAccountCreatorAccountExistWithAlias:
-		case LinphoneAccountCreatorAccountNotCreated:
-		case LinphoneAccountCreatorAccountNotExist:
-		case LinphoneAccountCreatorAccountNotActivated:
-		case LinphoneAccountCreatorAccountAlreadyActivated:
-		case LinphoneAccountCreatorAccountActivated:
-		case LinphoneAccountCreatorAccountLinked:
-		case LinphoneAccountCreatorAccountNotLinked:
-		case LinphoneAccountCreatorPhoneNumberNotUsed:
-		case LinphoneAccountCreatorPhoneNumberUsedAlias:
-		case LinphoneAccountCreatorPhoneNumberUsedAccount:
-		case LinphoneAccountCreatorOK:
-		
-			break;
+		case LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode: /**< Country code invalid */
+			return NSLocalizedString(@"Your country code is invalid.", nil);
+		case LinphoneAccountCreatorPhoneNumberStatusInvalid: /**< Phone number invalid */
+			return NSLocalizedString(@"Your phone number is invalid.", nil);
+		default:
+			return NSLocalizedString(@"Unknown error, please try again later.", nil);
 	}
-	return nil;
+}
+
++ (NSString *)errorForLinphoneAccountCreatorUsernameStatus:(LinphoneAccountCreatorUsernameStatus)status {
+	switch(status) {
+		case LinphoneAccountCreatorUsernameStatusTooShort: /**< Username too short */
+			return NSLocalizedString(@"Your username is too short.", nil);
+		case LinphoneAccountCreatorUsernameStatusTooLong:  /**< Username too long */
+			return NSLocalizedString(@"Your username is too long.", nil);
+		case LinphoneAccountCreatorUsernameStatusInvalidCharacters: /**< Contain invalid characters */
+			return NSLocalizedString(@"Your username contains invalid characters.", nil);
+		case LinphoneAccountCreatorUsernameStatusInvalid: /**< Invalid username */
+			return NSLocalizedString(@"Your username is invalid.", nil);
+		default:
+			return NSLocalizedString(@"Unknown error, please try again later.", nil);
+	}
+}
+
++ (NSString *)errorForLinphoneAccountCreatorEmailStatus:(LinphoneAccountCreatorEmailStatus)status {
+	switch(status) {
+		case LinphoneAccountCreatorEmailStatusMalformed: /**< Email malformed */
+			return NSLocalizedString(@"Your email is malformed.", nil);
+		case LinphoneAccountCreatorEmailStatusInvalidCharacters: /**< Contain invalid characters */
+			return NSLocalizedString(@"Your email contains invalid characters.", nil);
+		default:
+			return NSLocalizedString(@"Unknown error, please try again later.", nil);
+	}
+}
+
++ (NSString *)errorForLinphoneAccountCreatorPasswordStatus:(LinphoneAccountCreatorPasswordStatus)status {
+	switch(status) {
+		case LinphoneAccountCreatorPasswordStatusTooShort: /**< Password too short */
+			//return NSLocalizedString(@"Your password is too short.", nil);
+		case LinphoneAccountCreatorPasswordStatusTooLong:  /**< Password too long */
+			//return NSLocalizedString(@"Your password is too long.", nil);
+			return nil;
+		case LinphoneAccountCreatorPasswordStatusInvalidCharacters: /**< Contain invalid characters */
+			return NSLocalizedString(@"Your password contains invalid characters.", nil);
+		case LinphoneAccountCreatorPasswordStatusMissingCharacters: /**< Missing specific characters */
+		default:
+			return NSLocalizedString(@"Unknown error, please try again later.", nil);
+	}
+}
+
++ (NSString *)errorForLinphoneAccountCreatorActivationCodeStatus:(LinphoneAccountCreatorActivationCodeStatus)status {
+	switch(status) {
+		case LinphoneAccountCreatorActivationCodeStatusTooShort: /**< Activation code too short */
+			return NSLocalizedString(@"Your country code is too short.", nil);
+		case LinphoneAccountCreatorActivationCodeStatusTooLong: /**< Activation code too long */
+			return NSLocalizedString(@"Your country code is too long.", nil);
+			return nil; /* this is not an error, just user has to finish typing */
+		case LinphoneAccountCreatorActivationCodeStatusInvalidCharacters: /**< Contain invalid characters */
+			return NSLocalizedString(@"Your activation code contains invalid characters.", nil);
+		default:
+			return NSLocalizedString(@"Unknown error, please try again later.", nil);
+	}
+}
+
++ (NSString *)errorForLinphoneAccountCreatorStatus:(LinphoneAccountCreatorStatus)status {
+	switch(status) {
+		case LinphoneAccountCreatorStatusRequestFailed: /**< Request failed */
+			return NSLocalizedString(@"Server error, please try again later.", nil);
+		case LinphoneAccountCreatorStatusMissingArguments: /**< Request failed due to missing argument(s) */
+			return NSLocalizedString(@"Missing required parameters", nil);
+		case LinphoneAccountCreatorStatusMissingCallbacks: /**< Request failed due to missing callback(s) */
+			return NSLocalizedString(@"Missing required callbacks", nil);
+
+		/** Account status **/
+		/* Existence */
+		case LinphoneAccountCreatorStatusAccountNotExist: /**< Account not exist */
+			return NSLocalizedString(@"This account does not exist.", nil);
+		case LinphoneAccountCreatorStatusAliasExist: /**< Alias exist */
+			return NSLocalizedString(@"This phone number is already used. Please type a different number. \nYou can delete "
+									 @"your existing account if you want to reuse your phone number.",
+									 nil);
+		case LinphoneAccountCreatorStatusAliasNotExist: /**< Alias not exist */
+			return NSLocalizedString(@"This alias does not exist.", nil);
+		/* Activation */
+		case LinphoneAccountCreatorStatusAccountAlreadyActivated: /**< Account already activated */
+			return NSLocalizedString(@"This account is already activated.", nil);
+		case LinphoneAccountCreatorStatusAccountNotActivated: /**< Account not activated */
+			return NSLocalizedString(@"This account is not activated yet.", nil);
+
+		/** Server **/
+		case LinphoneAccountCreatorStatusServerError: /**< Error server */
+			return NSLocalizedString(@"Server error, please try again later.", nil);
+		default:
+			if (!linphone_core_is_network_reachable(LC)) {
+				return NSLocalizedString(@"There is no network connection available, enable "
+										 @"WIFI or WWAN prior to configure an account.",
+										 nil);
+			}
+			return NSLocalizedString(@"Unknown error, please try again later.", nil);
+	}
+}
+
++ (NSString *)errorForLinphoneAccountCreatorDomainStatus:(LinphoneAccountCreatorDomainStatus)status {
+	switch(status) {
+		case LinphoneAccountCreatorDomainInvalid: /**< Domain invalid */
+			return NSLocalizedString(@"Invalid.", nil);
+		default:
+			return NSLocalizedString(@"Unknown error, please try again later.", nil);
+	}
 }
 
 - (void)configureProxyConfig {
@@ -261,18 +390,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			linphone_core_remove_auth_info(LC, auth);
 		}
 	}
-
-	// set transport
-	UISegmentedControl *transports = (UISegmentedControl *)[self findView:ViewElement_Transport
-																   inView:self.contentView
-																   ofType:UISegmentedControl.class];
-	if (transports) {
-		NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
-		linphone_account_creator_set_transport(account_creator,
-											   linphone_transport_parse(type.lowercaseString.UTF8String));
-	}
-	
-	new_config = linphone_account_creator_configure(account_creator);
+	new_config = linphone_account_creator_create_proxy_config(account_creator);
 
 	if (new_config) {
 		[lm configurePushTokenForProxyConfig:new_config];
@@ -281,20 +399,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// todo: STOP doing that!
 		[[LinphoneManager.instance fastAddressBook] reload];
 	} else {
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Assistant error", nil)
-																		 message:NSLocalizedString(@"Could not configure your account, please check parameters or try again later",
-																								   nil)
-																  preferredStyle:UIAlertControllerStyleAlert];
-		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
-																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction * action) {}];
-		
-		[errView addAction:defaultAction];
-		[self presentViewController:errView animated:YES completion:nil];
-		_waitView.hidden = YES;
-		return;
+		[self displayAssistantConfigurationError];
 	}
+}
+
+-(void) displayAssistantConfigurationError {
+	UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Assistant error", nil)
+																	 message:NSLocalizedString(@"Could not configure your account, please check parameters or try again later",
+																							   nil)
+															  preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+
+	[errView addAction:defaultAction];
+	[self presentViewController:errView animated:YES completion:nil];
+	_waitView.hidden = YES;
+	return;
 }
 
 #pragma mark - UI update
@@ -506,43 +628,43 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)prepareErrorLabels {
 	UIAssistantTextField *createUsername = [self findTextField:ViewElement_Username];
-	[createUsername showError:[AssistantView errorForStatus:LinphoneAccountCreatorUsernameInvalid]
+	[createUsername showError:[AssistantView errorForLinphoneAccountCreatorUsernameStatus:LinphoneAccountCreatorUsernameStatusInvalid]
 						 when:^BOOL(NSString *inputEntry) {
-						   LinphoneAccountCreatorStatus s =
+						   LinphoneAccountCreatorUsernameStatus s =
 							   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
-							 if (s != LinphoneAccountCreatorOK) linphone_account_creator_set_username(account_creator, NULL);
-						   createUsername.errorLabel.text = [AssistantView errorForStatus:s];
-						   return s != LinphoneAccountCreatorOK;
+							 if (s != LinphoneAccountCreatorUsernameStatusOk) linphone_account_creator_set_username(account_creator, NULL);
+						   createUsername.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorUsernameStatus:s];
+						   return s != LinphoneAccountCreatorUsernameStatusOk;
 						 }];
 	UIAssistantTextField *createPhone = [self findTextField:ViewElement_Phone];
-	[createPhone showError:[AssistantView errorForStatus:LinphoneAccountCreatorPhoneNumberInvalid]
+	[createPhone showError:[AssistantView errorForLinphoneAccountCreatorPhoneNumberStatus:LinphoneAccountCreatorPhoneNumberStatusInvalid]
 						 when:^BOOL(NSString *inputEntry) {
 							 
 							 UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
 							 NSString *newStr = [countryCodeField.text substringWithRange:NSMakeRange(1, [countryCodeField.text length]-1)];
 							 NSString *prefix = (inputEntry.length > 0) ? newStr : nil;
-							 LinphoneAccountCreatorStatus s =
+							 LinphoneAccountCreatorPhoneNumberStatus s =
 							 linphone_account_creator_set_phone_number(account_creator, inputEntry.length > 0 ? inputEntry.UTF8String : NULL, prefix.UTF8String);
-							 if (s != LinphoneAccountCreatorOK) {
+							 if (s != LinphoneAccountCreatorPhoneNumberStatusOk) {
 								 linphone_account_creator_set_phone_number(account_creator, NULL, NULL);
 								 // if phone is empty and username is empty, this is wrong
 								 if (linphone_account_creator_get_username(account_creator) == NULL) {
-									 s = LinphoneAccountCreatorPhoneNumberTooShort;
+									 s = LinphoneAccountCreatorPhoneNumberStatusTooShort;
 								 }
 							 }
 
-							 createPhone.errorLabel.text = [AssistantView errorForStatus:s];
+							 createPhone.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorPhoneNumberStatus:s];
 
-							 return s != LinphoneAccountCreatorOK;
+							 return s != LinphoneAccountCreatorPhoneNumberStatusOk;
 						 }];
 
 	UIAssistantTextField *password = [self findTextField:ViewElement_Password];
-	[password showError:[AssistantView errorForStatus:LinphoneAccountCreatorPasswordTooShort]
+	[password showError:[AssistantView errorForLinphoneAccountCreatorPasswordStatus:LinphoneAccountCreatorPasswordStatusTooShort]
 				   when:^BOOL(NSString *inputEntry) {
-					 LinphoneAccountCreatorStatus s =
+					 LinphoneAccountCreatorPasswordStatus s =
 					   linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
-					 password.errorLabel.text = [AssistantView errorForStatus:s];
-					 return s != LinphoneAccountCreatorOK;
+					 password.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorPasswordStatus:s];
+					 return s != LinphoneAccountCreatorPasswordStatusOk;
 				   }];
 
 	UIAssistantTextField *password2 = [self findTextField:ViewElement_Password2];
@@ -552,21 +674,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 					}];
 
 	UIAssistantTextField *email = [self findTextField:ViewElement_Email];
-	[email showError:[AssistantView errorForStatus:LinphoneAccountCreatorEmailInvalid]
+	[email showError:[AssistantView errorForLinphoneAccountCreatorEmailStatus:LinphoneAccountCreatorEmailStatusMalformed]
 				when:^BOOL(NSString *inputEntry) {
-				  LinphoneAccountCreatorStatus s =
+				  LinphoneAccountCreatorEmailStatus s =
 					  linphone_account_creator_set_email(account_creator, inputEntry.UTF8String);
-				  email.errorLabel.text = [AssistantView errorForStatus:s];
-				  return s != LinphoneAccountCreatorOK;
+				  email.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorEmailStatus:s];
+				  return s != LinphoneAccountCreatorEmailStatusOk;
 				}];
 
 	UIAssistantTextField *domain = [self findTextField:ViewElement_Domain];
-	[domain showError:[AssistantView errorForStatus:LinphoneAccountCreatorDomainInvalid]
+	[domain showError:[AssistantView errorForLinphoneAccountCreatorDomainStatus:LinphoneAccountCreatorDomainInvalid]
 				 when:^BOOL(NSString *inputEntry) {
-				   LinphoneAccountCreatorStatus s =
-					   linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
-				   domain.errorLabel.text = [AssistantView errorForStatus:s];
-				   return s != LinphoneAccountCreatorOK;
+					 LinphoneAccountCreatorDomainStatus s =
+						linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
+					 domain.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorDomainStatus:s];
+					 return s != LinphoneAccountCreatorDomainOk;
 				 }];
 
 	UIAssistantTextField *url = [self findTextField:ViewElement_URL];
@@ -583,14 +705,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 			  }];
 
 	UIAssistantTextField *displayName = [self findTextField:ViewElement_DisplayName];
-	[displayName showError:[AssistantView errorForStatus:LinphoneAccountCreatorDisplayNameInvalid]
+	[displayName showError:[AssistantView errorForLinphoneAccountCreatorUsernameStatus:LinphoneAccountCreatorUsernameStatusInvalid]
 					  when:^BOOL(NSString *inputEntry) {
-						LinphoneAccountCreatorStatus s = LinphoneAccountCreatorOK;
+						LinphoneAccountCreatorUsernameStatus s = LinphoneAccountCreatorUsernameStatusOk;
 						if (inputEntry.length > 0) {
 							s = linphone_account_creator_set_display_name(account_creator, inputEntry.UTF8String);
-							displayName.errorLabel.text = [AssistantView errorForStatus:s];
+							displayName.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorUsernameStatus:s];
 						}
-						return s != LinphoneAccountCreatorOK;
+						return s != LinphoneAccountCreatorUsernameStatusOk;
 					  }];
 
 	UIAssistantTextField *smsCode = [self findTextField:ViewElement_SMSCode];
@@ -628,8 +750,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[self showErrorPopup:"ERROR_NO_EMAIL"];
 			return FALSE;
 		} else {
-			LinphoneAccountCreatorStatus s = linphone_account_creator_set_email(account_creator, [self findTextField:ViewElement_Email].text.UTF8String);
-			if (s == LinphoneAccountCreatorEmailInvalid) {
+			LinphoneAccountCreatorEmailStatus s = linphone_account_creator_set_email(account_creator, [self findTextField:ViewElement_Email].text.UTF8String);
+			if (s == LinphoneAccountCreatorEmailStatusMalformed) {
 				[self showErrorPopup:"ERROR_INVALID_EMAIL"];
 				return FALSE;
 			}
@@ -755,72 +877,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-+ (NSString *)StringForXMLRPCError:(const char *)err {
-#define IS(x) (strcmp(err, #x) == 0)
-	if
-		IS(ERROR_ACCOUNT_ALREADY_ACTIVATED)
-	return NSLocalizedString(@"This account is already activated.", nil);
-	if
-		IS(ERROR_ACCOUNT_ALREADY_IN_USE)
-	return NSLocalizedString(@"This account is already in use.", nil);
-	if
-		IS(ERROR_ACCOUNT_DOESNT_EXIST)
-	return NSLocalizedString(@"This account does not exist.", nil);
-	if
-		IS(ERROR_ACCOUNT_NOT_ACTIVATED)
-	return NSLocalizedString(@"This account is not activated yet.", nil);
-	if
-		IS(ERROR_ALIAS_ALREADY_IN_USE)
-	return NSLocalizedString(@"This phone number is already used. Please type a different number. \nYou can delete "
-							 @"your existing account if you want to reuse your phone number.",
-							 nil);
-	if
-		IS(ERROR_ALIAS_DOESNT_EXIST)
-	return NSLocalizedString(@"This alias does not exist.", nil);
-	if
-		IS(ERROR_EMAIL_ALREADY_IN_USE)
-	return NSLocalizedString(@"This email address is already used.", nil);
-	if
-		IS(ERROR_EMAIL_DOESNT_EXIST)
-	return NSLocalizedString(@"This email does not exist.", nil);
-	if
-		IS(ERROR_KEY_DOESNT_MATCH)
-	return NSLocalizedString(@"The confirmation code is invalid. \nPlease try again.", nil);
-	if
-		IS(ERROR_PASSWORD_DOESNT_MATCH)
-	return NSLocalizedString(@"Passwords do not match.", nil);
-	if
-		IS(ERROR_PHONE_ISNT_E164)
-	return NSLocalizedString(@"Your phone number is invalid.", nil);
-	if
-		IS(ERROR_CANNOT_SEND_SMS)
-		return NSLocalizedString(@"Server error, please try again later.", nil);
-	if
-		IS(ERROR_NO_PHONE_NUMBER)
-		return NSLocalizedString(@"Please confirm your country code and enter your phone number.", nil);
-	if IS(Missing required parameters)
-		return NSLocalizedString(@"Missing required parameters", nil);
-	if IS(ERROR_BAD_CREDENTIALS)
-		return NSLocalizedString(@"Bad credentials, check your account settings", nil);
-	if IS(ERROR_NO_PASSWORD)
-		return NSLocalizedString(@"Please enter a password to your account", nil);
-	if IS(ERROR_NO_EMAIL)
-		return NSLocalizedString(@"Please enter your email", nil);
-	if IS(ERROR_NO_USERNAME)
-		return NSLocalizedString(@"Please enter a username", nil);
-	if IS(ERROR_INVALID_CONFIRMATION)
-		return NSLocalizedString(@"Your confirmation password doesn't match your password", nil);
-	if IS(ERROR_INVALID_EMAIL)
-		return NSLocalizedString(@"Your email is invalid", nil);
-
-	if (!linphone_core_is_network_reachable(LC))
-		return NSLocalizedString(@"There is no network connection available, enable "
-								 @"WIFI or WWAN prior to configure an account.",
-								 nil);
-
-	return NSLocalizedString(@"Unknown error, please try again later.", nil);
-}
-
 - (void)showErrorPopup:(const char *)error {
 	const char *err = error ? error : "";
 	if (strcmp(err, "ERROR_BAD_CREDENTIALS") == 0) {
@@ -915,10 +971,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)isAccountUsed:(LinphoneAccountCreatorStatus)status withResp:(const char *)resp {
 	if (currentView == _linphoneLoginView) {
-		if (status == LinphoneAccountCreatorAccountExistWithAlias) {
+		if (status == LinphoneAccountCreatorStatusAccountExistWithAlias) {
 			_outgoingView = DialerView.compositeViewDescription;
 			[self configureProxyConfig];
-		} else if (status == LinphoneAccountCreatorAccountExist) {
+		} else if (status == LinphoneAccountCreatorStatusAccountExist) {
 			_outgoingView = AssistantLinkView.compositeViewDescription;
 			[self configureProxyConfig];
 		} else {
@@ -934,14 +990,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 		}
 	} else {
-		if (status == LinphoneAccountCreatorAccountExist || status == LinphoneAccountCreatorAccountExistWithAlias) {
+		if (status == LinphoneAccountCreatorStatusAccountExist || status == LinphoneAccountCreatorStatusAccountExistWithAlias) {
 			if (linphone_account_creator_get_phone_number(account_creator) != NULL) {
 				// Offer the possibility to resend a sms confirmation in some cases
 				linphone_account_creator_is_account_activated(account_creator);
 			} else {
 				[self showErrorPopup:resp];
 			}
-		} else if (status == LinphoneAccountCreatorAccountNotExist) {
+		} else if (status == LinphoneAccountCreatorStatusAccountNotExist) {
 			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
 			linphone_account_creator_create_account(account_creator);
@@ -980,7 +1036,7 @@ void assistant_is_account_used(LinphoneAccountCreator *creator, LinphoneAccountC
 void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorAccountCreated) {
+	if (status == LinphoneAccountCreatorStatusAccountCreated) {
 		if (linphone_account_creator_get_phone_number(creator)) {
 			NSString* phoneNumber = [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(creator)];
 			thiz.activationSMSText.text = [NSString stringWithFormat:NSLocalizedString(@"We have sent a SMS with a validation code to %@. To complete your phone number verification, please enter the 4 digit code below:", nil), phoneNumber];
@@ -999,7 +1055,7 @@ void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAc
 									 const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorOK) {
+	if (status == LinphoneAccountCreatorStatusRequestOk) {
 		NSString* phoneNumber = [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(creator)];
 		thiz.activationSMSText.text = [NSString stringWithFormat:NSLocalizedString(@"We have sent a SMS with a validation code to %@. To complete your phone number verification, please enter the 4 digit code below:", nil), phoneNumber];
 		[thiz changeView:thiz.createAccountActivateSMSView back:FALSE animation:TRUE];
@@ -1016,12 +1072,12 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 								const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorAccountActivated) {
+	if (status == LinphoneAccountCreatorStatusAccountActivated) {
 		[thiz configureProxyConfig];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
-	} else if (status == LinphoneAccountCreatorAccountAlreadyActivated) {
+	} else if (status == LinphoneAccountCreatorStatusAccountAlreadyActivated) {
 		// in case we are actually trying to link account, let's try it now
-		linphone_account_creator_activate_phone_number_link(creator);
+		linphone_account_creator_activate_alias(creator);
 	} else {
 		[thiz showErrorPopup:resp];
 	}
@@ -1031,9 +1087,9 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 									const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorAccountActivated) {
+	if (status == LinphoneAccountCreatorStatusAccountActivated) {
 		[thiz isAccountActivated:resp];
-	} else if (status == LinphoneAccountCreatorAccountNotActivated) {
+	} else if (status == LinphoneAccountCreatorStatusAccountNotActivated) {
 		if (!IPAD || linphone_account_creator_get_phone_number(creator) != NULL) {
 			//Re send SMS if the username is the phone number
 			if (linphone_account_creator_get_username(creator) != linphone_account_creator_get_phone_number(creator) && linphone_account_creator_get_username(creator) != NULL) {
@@ -1042,7 +1098,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 			} else {
 				NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 				linphone_account_creator_set_language(creator, [[language substringToIndex:2] UTF8String]);
-				linphone_account_creator_recover_phone_account(creator);
+				linphone_account_creator_recover_account(creator);
 			}
 		} else {
 			// TO DO : Re send email ?
@@ -1058,9 +1114,9 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 									const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorAccountLinked) {
+	if (status == LinphoneAccountCreatorStatusAccountLinked) {
 		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
-	} else if (status == LinphoneAccountCreatorAccountNotLinked) {
+	} else if (status == LinphoneAccountCreatorStatusAccountNotLinked) {
 		[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970 forKey:@"must_link_account_time"];
 	} else {
 		[thiz showErrorPopup:resp];
@@ -1168,7 +1224,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		ONCLICKBUTTON(sender, 100, {
 			_activationTitle.text = @"CREATE ACCOUNT";
 			_waitView.hidden = NO;
-			linphone_account_creator_is_account_used(account_creator);
+			linphone_account_creator_is_account_exist(account_creator);
 		});
 	}
 }
@@ -1186,8 +1242,8 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		} else {
 			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
-			linphone_account_creator_link_phone_number_with_account(account_creator);
-			linphone_account_creator_activate_phone_number_link(account_creator);
+			linphone_account_creator_link_account(account_creator);
+			linphone_account_creator_activate_alias(account_creator);
 		}
     });
 }
@@ -1204,7 +1260,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		_waitView.hidden = NO;
 		NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 		linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
-		linphone_account_creator_link_phone_number_with_account(account_creator);
+		linphone_account_creator_link_account(account_creator);
 	});
 }
 
@@ -1218,19 +1274,65 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 			linphone_account_creator_get_ha1(account_creator) == NULL) {
 			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
-			linphone_account_creator_recover_phone_account(account_creator);
+			linphone_account_creator_recover_account(account_creator);
 		} else {
 			// check if account is already linked with a phone number.
 			// if not, propose it to the user
-			linphone_account_creator_is_account_used(account_creator);
+			linphone_account_creator_is_account_exist(account_creator);
 		}
     });
 }
 
 - (IBAction)onLoginClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
-        _waitView.hidden = NO;
-        [self configureProxyConfig];
+		_waitView.hidden = NO;
+		NSString *domain = [self findTextField:ViewElement_Domain].text;
+		NSString *username = [self findTextField:ViewElement_Username].text;
+		NSString *displayName = [self findTextField:ViewElement_DisplayName].text;
+		NSString *pwd = [self findTextField:ViewElement_Password].text;
+		LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
+		LinphoneAddress *addr = linphone_address_new([NSString stringWithFormat:@"sip:%@@%@", username, domain].UTF8String);
+		if(displayName && ![displayName isEqualToString:@""]) {
+			linphone_address_set_display_name(addr, displayName.UTF8String);
+		}
+		linphone_proxy_config_set_identity_address(config, addr);
+		// set transport
+		UISegmentedControl *transports = (UISegmentedControl *)[self findView:ViewElement_Transport
+																	   inView:self.contentView
+																	   ofType:UISegmentedControl.class];
+		if (transports) {
+			NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
+			linphone_proxy_config_set_route(config, [NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String].UTF8String);
+			linphone_proxy_config_set_server_addr(config, [NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String].UTF8String);
+		}
+
+		linphone_proxy_config_enable_publish(config, FALSE);
+		linphone_proxy_config_enable_register(config, TRUE);
+
+		LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(addr), // username
+									  NULL, //user id
+									  pwd.UTF8String, // passwd
+									  NULL,  // ha1
+									  linphone_address_get_domain(addr),  // realm - assumed to be domain
+									  linphone_address_get_domain(addr) // domain
+									  );
+		linphone_core_add_auth_info(LC, info);
+		linphone_address_unref(addr);
+
+		if(config) {
+			[[LinphoneManager instance] configurePushTokenForProxyConfig:config];
+			if(linphone_core_add_proxy_config(LC, config) != -1) {
+				linphone_core_set_default_proxy_config(LC, config);
+				// reload address book to prepend proxy config domain to contacts' phone number
+				// todo: STOP doing that!
+				[[LinphoneManager.instance fastAddressBook] reload];
+				[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+			} else {
+				[self displayAssistantConfigurationError];
+			}
+		} else {
+			[self displayAssistantConfigurationError];
+		}
     });
 }
 
@@ -1245,7 +1347,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         [_waitView setHidden:false];
-        [self resetLiblinphone];
+		[self resetLiblinphone:TRUE];
     });
 }
 

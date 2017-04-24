@@ -84,28 +84,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[LinphoneManager instance] lpConfigStringForKey:@"first_login_view_url"] ?: @"http://www.linphone.org";
 	account_creator = linphone_account_creator_new([LinphoneManager getLc], siteUrl.UTF8String);
 
-	[_usernameField showError:[self.class errorForStatus:LinphoneAccountCreatorUsernameInvalid]
+	[_usernameField showError:[AssistantView errorForLinphoneAccountCreatorUsernameStatus:LinphoneAccountCreatorUsernameStatusInvalid]
 						 when:^BOOL(NSString *inputEntry) {
-						   LinphoneAccountCreatorStatus s =
+						   LinphoneAccountCreatorUsernameStatus s =
 							   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
-						   _usernameField.errorLabel.text = [self.class errorForStatus:s];
-						   return s != LinphoneAccountCreatorOK;
+						   _usernameField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorUsernameStatus:s];
+						   return s != LinphoneAccountCreatorUsernameStatusOk;
 						 }];
 
-	[_passwordField showError:[self.class errorForStatus:LinphoneAccountCreatorPasswordTooShort]
+	[_passwordField showError:[AssistantView errorForLinphoneAccountCreatorPasswordStatus:LinphoneAccountCreatorPasswordStatusTooShort]
 						 when:^BOOL(NSString *inputEntry) {
-						   LinphoneAccountCreatorStatus s =
+						   LinphoneAccountCreatorPasswordStatus s =
 							   linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
-						   _passwordField.errorLabel.text = [self.class errorForStatus:s];
-						   return s != LinphoneAccountCreatorOK;
+						   _passwordField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorPasswordStatus:s];
+						   return s != LinphoneAccountCreatorUsernameStatusOk;
 						 }];
 
-	[_domainField showError:[self.class errorForStatus:LinphoneAccountCreatorDomainInvalid]
+	[_domainField showError:[AssistantView errorForLinphoneAccountCreatorDomainStatus:LinphoneAccountCreatorDomainInvalid]
 					   when:^BOOL(NSString *inputEntry) {
-						 LinphoneAccountCreatorStatus s =
+						 LinphoneAccountCreatorDomainStatus s =
 							 linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
-						 _domainField.errorLabel.text = [self.class errorForStatus:s];
-						 return s != LinphoneAccountCreatorOK;
+						 _domainField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorDomainStatus:s];
+						 return s != LinphoneAccountCreatorDomainOk;
 					   }];
 }
 
@@ -114,65 +114,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Remove observer
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
-}
-
-+ (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
-	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"];
-	switch (status) {
-		case LinphoneAccountCreatorCountryCodeInvalid:
-			return NSLocalizedString(@"Invalid country code.", nil);
-		case LinphoneAccountCreatorEmailInvalid:
-			return NSLocalizedString(@"Invalid email.", nil);
-		case LinphoneAccountCreatorUsernameInvalid:
-			return usePhoneNumber ? NSLocalizedString(@"Invalid phone number.", nil)
-								  : NSLocalizedString(@"Invalid username.", nil);
-		case LinphoneAccountCreatorUsernameTooShort:
-			return usePhoneNumber ? NSLocalizedString(@"Phone number too short.", nil)
-								  : NSLocalizedString(@"Username too short.", nil);
-		case LinphoneAccountCreatorUsernameTooLong:
-			return usePhoneNumber ? NSLocalizedString(@"Phone number too long.", nil)
-								  : NSLocalizedString(@"Username too long.", nil);
-		case LinphoneAccountCreatorUsernameInvalidSize:
-			return usePhoneNumber ? NSLocalizedString(@"Phone number length invalid.", nil)
-								  : NSLocalizedString(@"Username length invalid.", nil);
-		case LinphoneAccountCreatorPhoneNumberTooShort:
-		case LinphoneAccountCreatorPhoneNumberTooLong:
-			return nil; /* this is not an error, just user has to finish typing */
-		case LinphoneAccountCreatorPhoneNumberInvalid:
-			return NSLocalizedString(@"Invalid phone number.", nil);
-		case LinphoneAccountCreatorPasswordTooShort:
-			return NSLocalizedString(@"Password too short.", nil);
-		case LinphoneAccountCreatorPasswordTooLong:
-			return NSLocalizedString(@"Password too long.", nil);
-		case LinphoneAccountCreatorDomainInvalid:
-			return NSLocalizedString(@"Invalid domain.", nil);
-		case LinphoneAccountCreatorRouteInvalid:
-			return NSLocalizedString(@"Invalid route.", nil);
-		case LinphoneAccountCreatorDisplayNameInvalid:
-			return NSLocalizedString(@"Invalid display name.", nil);
-		case LinphoneAccountCreatorReqFailed:
-			return NSLocalizedString(@"Failed to query the server. Please try again later", nil);
-		case LinphoneAccountCreatorTransportNotSupported:
-			return NSLocalizedString(@"Unsupported transport", nil);
-		case LinphoneAccountCreatorErrorServer:
-			return NSLocalizedString(@"Server error", nil);
-		case LinphoneAccountCreatorAccountCreated:
-		case LinphoneAccountCreatorAccountExist:
-		case LinphoneAccountCreatorAccountExistWithAlias:
-		case LinphoneAccountCreatorAccountNotCreated:
-		case LinphoneAccountCreatorAccountNotExist:
-		case LinphoneAccountCreatorAccountNotActivated:
-		case LinphoneAccountCreatorAccountAlreadyActivated:
-		case LinphoneAccountCreatorAccountActivated:
-		case LinphoneAccountCreatorAccountLinked:
-		case LinphoneAccountCreatorAccountNotLinked:
-		case LinphoneAccountCreatorPhoneNumberNotUsed:
-		case LinphoneAccountCreatorPhoneNumberUsedAlias:
-		case LinphoneAccountCreatorPhoneNumberUsedAccount:
-		case LinphoneAccountCreatorOK:
-			break;
-	}
-	return nil;
 }
 
 - (void)shouldEnableNextButton {

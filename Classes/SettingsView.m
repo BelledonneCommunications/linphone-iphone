@@ -392,10 +392,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Account Creator callbacks
 
 void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
-	SettingsView *thiz = (__bridge SettingsView *)(linphone_account_creator_get_user_data(creator));
+	SettingsView *thiz = (__bridge SettingsView *)(linphone_account_creator_cbs_get_user_data(linphone_account_creator_get_callbacks(creator)));
 	
 	switch (status) {
-		case LinphoneAccountCreatorOK:
+		case LinphoneAccountCreatorStatusRequestOk:
 			[thiz updatePassword:creator];
 			break;
 		default:
@@ -408,10 +408,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	_tmpPwd = NULL;
 	NSString* err;
 	switch (status) {
-		case LinphoneAccountCreatorAccountNotExist:
+		case LinphoneAccountCreatorStatusAccountNotExist:
 			err = NSLocalizedString(@"Bad credentials, check your account settings", nil);
 			break;
-		case LinphoneAccountCreatorErrorServer:
+		case LinphoneAccountCreatorStatusServerError:
 			err = NSLocalizedString(@"Server error, please try again later.", nil);
 			break;
 		default:
@@ -880,9 +880,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																		   }
 																		   
 																		   linphone_account_creator_set_domain(account_creator, linphone_auth_info_get_domain(ai));
-																		   linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-																		   linphone_account_creator_cbs_set_update_hash(linphone_account_creator_get_callbacks(account_creator), update_hash_cbs);
-																		   linphone_account_creator_update_password(account_creator, pwd.UTF8String);
+																		   linphone_account_creator_set_user_data(account_creator, (void *)pwd.UTF8String);
+																		   linphone_account_creator_cbs_set_update_account(linphone_account_creator_get_callbacks(account_creator), update_hash_cbs);
+																		   linphone_account_creator_cbs_set_user_data(linphone_account_creator_get_callbacks(account_creator), (__bridge void *)(self));
+																		   linphone_account_creator_update_account(account_creator);
 																	   } else {
 																		   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing your password", nil)
 																																			message:NSLocalizedString(@"Your confirmation password doesn't match your password", nil)

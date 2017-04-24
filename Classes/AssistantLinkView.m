@@ -47,9 +47,9 @@
 				.UTF8String);
 
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-	linphone_account_creator_cbs_set_link_phone_number_with_account(
+	linphone_account_creator_cbs_set_link_account(
 		linphone_account_creator_get_callbacks(account_creator), assistant_link_phone_number_with_account);
-	linphone_account_creator_cbs_set_activate_phone_number_link(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_activate_alias(linphone_account_creator_get_callbacks(account_creator),
 																assistant_activate_phone_number_link);
 
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
@@ -166,7 +166,7 @@ void assistant_link_phone_number_with_account(LinphoneAccountCreator *creator, L
 											  const char *resp) {
 	AssistantLinkView *thiz = (__bridge AssistantLinkView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorOK) {
+	if (status == LinphoneAccountCreatorStatusRequestOk) {
 		thiz.linkAccountView.hidden = thiz.activateSMSView.userInteractionEnabled = YES;
 		NSString* phoneNumber = [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(creator)];
 		thiz.linkSMSText.text = [NSString stringWithFormat:NSLocalizedString(@"We have sent a SMS with a validation code to %@. To complete your phone number verification, please enter the 4 digit code below:",nil), phoneNumber];
@@ -184,7 +184,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 										  const char *resp) {
 	AssistantLinkView *thiz = (__bridge AssistantLinkView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorOK) {
+	if (status == LinphoneAccountCreatorStatusAccountActivated) {
 		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
 		// save country code prefix if none is already entered
 		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
@@ -245,13 +245,13 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	
 	NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 	linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
-	linphone_account_creator_link_phone_number_with_account(account_creator);
+	linphone_account_creator_link_account(account_creator);
 }
 
 - (IBAction)onCheckValidationButton:(id)sender {
 	_waitView.hidden = NO;
 	linphone_account_creator_set_activation_code(account_creator, _activationCodeField.text.UTF8String);
-	linphone_account_creator_activate_phone_number_link(account_creator);
+	linphone_account_creator_activate_alias(account_creator);
 }
 
 - (IBAction)onDialerClick:(id)sender {
@@ -290,7 +290,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	//remove the + from the country code to avoir error when checking its validity
 	NSString *newStr = [_countryCodeField.text substringWithRange:NSMakeRange(1, [_countryCodeField.text length]-1)];
 	LinphoneAccountCreatorStatus status = linphone_account_creator_set_phone_number(account_creator, [_phoneField.text UTF8String], [newStr UTF8String]);
-	if (status == LinphoneAccountCreatorPhoneNumberTooLong || self.phoneField.text.length < 8) {
+	if (status == LinphoneAccountCreatorPhoneNumberStatusTooLong || status == LinphoneAccountCreatorPhoneNumberStatusTooShort) {
 		self.phoneField.layer.borderWidth = .8;
 		self.phoneField.layer.cornerRadius = 4.f;
 		self.phoneField.layer.borderColor = [[UIColor redColor] CGColor];

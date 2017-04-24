@@ -66,8 +66,14 @@
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;
 
-+ (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status;
 + (NSString *)StringForXMLRPCError:(const char *)err;
++ (NSString *)errorForLinphoneAccountCreatorPhoneNumberStatus:(LinphoneAccountCreatorPhoneNumberStatus)status;
++ (NSString *)errorForLinphoneAccountCreatorUsernameStatus:(LinphoneAccountCreatorUsernameStatus)status;
++ (NSString *)errorForLinphoneAccountCreatorEmailStatus:(LinphoneAccountCreatorEmailStatus)status;
++ (NSString *)errorForLinphoneAccountCreatorPasswordStatus:(LinphoneAccountCreatorPasswordStatus)status;
++ (NSString *)errorForLinphoneAccountCreatorActivationCodeStatus:(LinphoneAccountCreatorActivationCodeStatus)status;
++ (NSString *)errorForLinphoneAccountCreatorStatus:(LinphoneAccountCreatorStatus)status;
++ (NSString *)errorForLinphoneAccountCreatorDomainStatus:(LinphoneAccountCreatorDomainStatus)status;
 
 - (void)reset;
 - (void)fillDefaultValues;
