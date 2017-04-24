@@ -1582,6 +1582,8 @@ LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx
  * @param[in] lc The core.
  * @return \bctbx_list{LinphonePayloadType} A freshly allocated list of the available payload types. It must be released
  * with bctbx_list_free_with_data() calling linphone_payload_type_unref() on each element.
+ * @warning Each element of the returned list is freshly allocated as floating reference. That means their reference counter
+ * is initialized to 0.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_audio_payload_types(LinphoneCore *lc);
@@ -1628,6 +1630,8 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_set_audio_codec
  * @param[in] lc The core.
  * @return \bctbx_list{LinphonePayloadType} A freshly allocated list of the available payload types. It must be released
  * with bctbx_list_free_with_data() calling linphone_payload_type_unref() on each element.
+ * @warning Each element of the returned list is freshly allocated as floating reference. That means their reference counter
+ * is initialized to 0.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_video_payload_types(LinphoneCore *lc);
@@ -1675,6 +1679,8 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_set_video_codec
  * @param[in] lc The core.
  * @return \bctbx_list{LinphonePayloadType} A freshly allocated list of the available payload types. It must be released
  * with bctbx_list_free_with_data() calling linphone_payload_type_unref() on each element.
+ * @warning Each element of the returned list is freshly allocated as floating reference. That means their reference counter
+ * is initialized to 0.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_text_payload_types(LinphoneCore *lc);
@@ -1841,6 +1847,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED OrtpPayloadType *linphone_core_find_payload_
  * @param channels  number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
  * @return Returns NULL if not found. If a #LinphonePayloadType is returned, it must be released with
  * linphone_payload_type_unref() after using it.
+ * @warning The returned payload type is allocated as a floating reference i.e. the reference counter is initialized to 0.
  */
 LINPHONE_PUBLIC LinphonePayloadType *linphone_core_get_payload_type(LinphoneCore *lc, const char *type, int rate, int channels);
 
