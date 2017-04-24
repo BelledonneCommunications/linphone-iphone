@@ -481,29 +481,45 @@ LinphoneStatus linphone_config_read_file(LpConfig *lpconfig, const char *filenam
 	return -1;
 }
 
+static char* _linphone_config_xml_convert(LpConfig *lpc, xml2lpc_context *context, int result) {
+	char* error_msg = NULL;
+	if (result == 0) {
+		result = xml2lpc_convert(context, lpc);
+		if (result == 0) {
+			// if the remote provisioning added a proxy config and none was set before, set it
+			if (lp_config_has_section(lpc, "proxy_0") && lp_config_get_int(lpc, "sip", "default_proxy", -1) == -1){
+				lp_config_set_int(lpc, "sip", "default_proxy", 0);
+			}
+			lp_config_sync(lpc);
+		} else {
+			error_msg = "xml to lpc failed";
+		}
+	} else {
+		error_msg = "invalid xml";
+	}
+	return error_msg;
+}
+
 char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, void* lc, void* ctx) {
 	xml2lpc_context *context = NULL;
 	char* path = lp_realpath(filename, NULL);
 	char* error_msg = NULL;
 
 	if (path) {
-		int result = -1;
 		context = xml2lpc_context_new(ctx, lc);
-		result = xml2lpc_set_xml_file(context, path);
-		if (result == 0) {
-			result = xml2lpc_convert(context, lpc);
-			if (result == 0) {
-				// if the remote provisioning added a proxy config and none was set before, set it
-				if (lp_config_has_section(lpc, "proxy_0") && lp_config_get_int(lpc, "sip", "default_proxy", -1) == -1){
-					lp_config_set_int(lpc, "sip", "default_proxy", 0);
-				}
-				lp_config_sync(lpc);
-			} else {
-				error_msg = "xml to lpc failed";
-			}
-		} else {
-			error_msg = "invalid xml";
-		}
+		error_msg = _linphone_config_xml_convert(lpc, context, xml2lpc_set_xml_file(context, path));
+	}
+	if (context) xml2lpc_context_destroy(context);
+	return error_msg;
+}
+
+char* linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer, void* lc, void* ctx) {
+	xml2lpc_context *context = NULL;
+	char* error_msg = NULL;
+
+	if (buffer != NULL) {
+		context = xml2lpc_context_new(ctx, lc);
+		error_msg = _linphone_config_xml_convert(lpc, context, xml2lpc_set_xml_string(context, buffer));
 	}
 	if (context) xml2lpc_context_destroy(context);
 	return error_msg;
