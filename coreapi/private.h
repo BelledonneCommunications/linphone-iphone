@@ -1635,21 +1635,35 @@ LINPHONE_PUBLIC int linphone_remote_provisioning_load_file( LinphoneCore* lc, co
  * Player interface                                                          *
  ****************************************************************************/
 
-struct _LinphonePlayer{
-	int (*open)(struct _LinphonePlayer* player, const char *filename);
-	int (*start)(struct _LinphonePlayer* player);
-	int (*pause)(struct _LinphonePlayer* player);
-	int (*seek)(struct _LinphonePlayer* player, int time_ms);
-	MSPlayerState (*get_state)(struct _LinphonePlayer* player);
-	int (*get_duration)(struct _LinphonePlayer *player);
-	int (*get_position)(struct _LinphonePlayer *player);
-	void (*close)(struct _LinphonePlayer* player);
-	void (*destroy)(struct _LinphonePlayer *player);
-	LinphonePlayerEofCallback cb;
+struct _LinphonePlayerCbs {
+	belle_sip_object_t base;
 	void *user_data;
-	void *impl;
+	LinphonePlayerCbsEofReachedCb eof;
 };
 
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePlayerCbs);
+
+LinphonePlayerCbs *linphone_player_cbs_new(void);
+
+struct _LinphonePlayer{
+	belle_sip_object_t base;
+	void *user_data;
+	int (*open)(LinphonePlayer* player, const char *filename);
+	int (*start)(LinphonePlayer* player);
+	int (*pause)(LinphonePlayer* player);
+	int (*seek)(LinphonePlayer* player, int time_ms);
+	MSPlayerState (*get_state)(LinphonePlayer* player);
+	int (*get_duration)(LinphonePlayer *player);
+	int (*get_position)(LinphonePlayer *player);
+	void (*close)(LinphonePlayer* player);
+	void (*destroy)(LinphonePlayer *player);
+	void *impl;
+	LinphonePlayerCbs *callbacks;
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphonePlayer);
+
+LinphonePlayer * linphone_player_new(void);
 void _linphone_player_destroy(LinphonePlayer *player);
 
 
@@ -1860,7 +1874,9 @@ BELLE_SIP_TYPE_ID(LinphoneRange),
 BELLE_SIP_TYPE_ID(LinphoneVideoDefinition),
 BELLE_SIP_TYPE_ID(LinphoneTransports),
 BELLE_SIP_TYPE_ID(LinphoneVideoActivationPolicy),
-BELLE_SIP_TYPE_ID(LinphoneCallStats)
+BELLE_SIP_TYPE_ID(LinphoneCallStats),
+BELLE_SIP_TYPE_ID(LinphonePlayer),
+BELLE_SIP_TYPE_ID(LinphonePlayerCbs)
 BELLE_SIP_DECLARE_TYPES_END
 
 

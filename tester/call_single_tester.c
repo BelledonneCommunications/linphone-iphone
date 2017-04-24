@@ -2482,8 +2482,9 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void on_eof(LinphonePlayer *player, void *user_data){
-	LinphoneCoreManager *marie=(LinphoneCoreManager*)user_data;
+static void on_eof(LinphonePlayer *player){
+	LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+	LinphoneCoreManager *marie=(LinphoneCoreManager*)linphone_player_cbs_get_user_data(cbs);
 	marie->stat.number_of_player_eof++;
 }
 
@@ -2491,6 +2492,7 @@ static void call_with_file_player(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePlayer *player;
+	LinphonePlayerCbs *cbs;
 	char *hellopath = bc_tester_res("sounds/ahbahouaismaisbon.wav");
 	char *recordpath = bc_tester_file("record-call_with_file_player.wav");
 	bool_t call_ok;
@@ -2517,9 +2519,12 @@ static void call_with_file_player(void) {
 		BC_ASSERT_TRUE((call_ok=call(marie,pauline)));
 		if (!call_ok) goto end;
 		player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
+		cbs = linphone_player_get_callbacks(player);
+		linphone_player_cbs_set_eof_reached(cbs, on_eof);
+		linphone_player_cbs_set_user_data(cbs, marie);
 		BC_ASSERT_PTR_NOT_NULL(player);
 		if (player){
-			BC_ASSERT_EQUAL(linphone_player_open(player,hellopath,on_eof,marie),0, int, "%d");
+			BC_ASSERT_EQUAL(linphone_player_open(player,hellopath),0, int, "%d");
 			BC_ASSERT_EQUAL(linphone_player_start(player),0, int, "%d");
 		}
 		/* This assert should be modified to be at least as long as the WAV file */
@@ -2585,7 +2590,10 @@ static void call_with_mkv_file_player(void) {
 	player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if (player){
-		int res = linphone_player_open(player,hellomkv,on_eof,marie);
+		LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+		linphone_player_cbs_set_eof_reached(cbs, on_eof);
+		linphone_player_cbs_set_user_data(cbs, marie);
+		int res = linphone_player_open(player,hellomkv);
 		//if(!ms_filter_codec_supported("opus")) {
 		if(!ms_factory_codec_supported(marie->lc->factory, "opus") && !ms_factory_codec_supported(pauline->lc->factory, "opus")){
 			BC_ASSERT_EQUAL(res, -1, int, "%d");
@@ -4256,7 +4264,10 @@ static void call_with_rtp_io_mode(void) {
 		player = linphone_call_get_player(linphone_core_get_current_call(marie->lc));
 		BC_ASSERT_PTR_NOT_NULL(player);
 		if (player) {
-			BC_ASSERT_EQUAL(linphone_player_open(player, hellopath, on_eof, marie) , 0, int, "%d");
+			LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+			linphone_player_cbs_set_eof_reached(cbs, on_eof);
+			linphone_player_cbs_set_user_data(cbs, marie);
+			BC_ASSERT_EQUAL(linphone_player_open(player, hellopath) , 0, int, "%d");
 			BC_ASSERT_EQUAL(linphone_player_start(player) , 0, int, "%d");
 		}
 
@@ -4548,7 +4559,10 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		BC_ASSERT_PTR_NOT_NULL(player);
 		if (player) {
 			// This will ask pauline to play the file
-			BC_ASSERT_EQUAL(linphone_player_open(player, hellopath, on_eof, pauline),0, int, "%d");
+			LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+			linphone_player_cbs_set_eof_reached(cbs, on_eof);
+			linphone_player_cbs_set_user_data(cbs, pauline);
+			BC_ASSERT_EQUAL(linphone_player_open(player, hellopath),0, int, "%d");
 			BC_ASSERT_EQUAL(linphone_player_start(player), 0, int, "%d");
 		}
 		/* This assert should be modified to be at least as long as the WAV file */

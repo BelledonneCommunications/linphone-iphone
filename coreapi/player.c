@@ -20,9 +20,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "private.h"
 
-LinphoneStatus linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
-	obj->user_data=user_data;
-	obj->cb=cb;
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePlayer);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphonePlayer, belle_sip_object_t,
+	_linphone_player_destroy, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+LinphonePlayer * linphone_player_new(void) {
+	LinphonePlayer *player = belle_sip_object_new(LinphonePlayer);
+	player->callbacks = linphone_player_cbs_new();
+	return player;
+}
+
+LinphonePlayer * linphone_player_ref(LinphonePlayer *player) {
+	belle_sip_object_ref(player);
+	return player;
+}
+
+void linphone_player_unref(LinphonePlayer *player) {
+	belle_sip_object_unref(player);
+}
+
+void *linphone_player_get_user_data(const LinphonePlayer *player) {
+	return player->user_data;
+}
+
+void linphone_player_set_user_data(LinphonePlayer *player, void *ud) {
+	player->user_data = ud;
+}
+
+LinphonePlayerCbs * linphone_player_get_callbacks(const LinphonePlayer *player) {
+	return player->callbacks;
+}
+
+LinphoneStatus linphone_player_open(LinphonePlayer *obj, const char *filename){
 	return obj->open(obj,filename);
 }
 
@@ -38,8 +72,16 @@ LinphoneStatus linphone_player_seek(LinphonePlayer *obj, int time_ms){
 	return obj->seek(obj,time_ms);
 }
 
-MSPlayerState linphone_player_get_state(LinphonePlayer *obj){
-	return obj->get_state(obj);
+LinphonePlayerState linphone_player_get_state(LinphonePlayer *obj){
+	switch (obj->get_state(obj)) {
+		case MSPlayerClosed:
+		default:
+			return LinphonePlayerClosed;
+		case MSPlayerPaused:
+			return LinphonePlayerPaused;
+		case MSPlayerPlaying:
+			return LinphonePlayerPlaying;
+	}
 }
 
 int linphone_player_get_duration(LinphonePlayer *obj) {
@@ -59,7 +101,7 @@ void linphone_player_destroy(LinphonePlayer *obj) {
 }
 
 void _linphone_player_destroy(LinphonePlayer *player) {
-	ms_free(player);
+	linphone_player_cbs_unref(player->callbacks);
 }
 
 
@@ -87,7 +129,9 @@ static bool_t call_player_check_state(LinphonePlayer *player, bool_t check_playe
 
 static void on_eof(void *user_data, MSFilter *f, unsigned int event_id, void *arg){
 	LinphonePlayer *player=(LinphonePlayer *)user_data;
-	if (player->cb) player->cb(player,player->user_data);
+	LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+	LinphonePlayerCbsEofReachedCb cb = linphone_player_cbs_get_eof_reached(cbs);
+	if (cb) cb(player);
 }
 
 static int call_player_open(LinphonePlayer* player, const char *filename){
@@ -134,11 +178,11 @@ static void call_player_close(LinphonePlayer *player){
 }
 
 static void on_call_destroy(void *obj, belle_sip_object_t *call_being_destroyed){
-	_linphone_player_destroy(obj);
+	linphone_player_unref(obj);
 }
 
 LinphonePlayer *linphone_call_build_player(LinphoneCall *call){
-	LinphonePlayer *obj=ms_new0(LinphonePlayer,1);
+	LinphonePlayer *obj = linphone_player_new();
 	obj->open=call_player_open;
 	obj->close=call_player_close;
 	obj->start=call_player_start;
@@ -148,4 +192,42 @@ LinphonePlayer *linphone_call_build_player(LinphoneCall *call){
 	obj->impl=call;
 	belle_sip_object_weak_ref(call,on_call_destroy,obj);
 	return obj;
+}
+
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePlayerCbs);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphonePlayerCbs, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE);
+
+LinphonePlayerCbs *linphone_player_cbs_new(void) {
+	return belle_sip_object_new(LinphonePlayerCbs);
+}
+
+LinphonePlayerCbs * linphone_player_cbs_ref(LinphonePlayerCbs *cbs) {
+	belle_sip_object_ref(cbs);
+	return cbs;
+}
+
+void linphone_player_cbs_unref(LinphonePlayerCbs *cbs) {
+	belle_sip_object_unref(cbs);
+}
+
+void *linphone_player_cbs_get_user_data(const LinphonePlayerCbs *cbs) {
+	return cbs->user_data;
+}
+
+void linphone_player_cbs_set_user_data(LinphonePlayerCbs *cbs, void *ud) {
+	cbs->user_data = ud;
+}
+
+LinphonePlayerCbsEofReachedCb linphone_player_cbs_get_eof_reached(const LinphonePlayerCbs *cbs) {
+	return cbs->eof;
+}
+
+void linphone_player_cbs_set_eof_reached(LinphonePlayerCbs *cbs, LinphonePlayerCbsEofReachedCb cb) {
+	cbs->eof = cb;
 }

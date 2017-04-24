@@ -96,12 +96,12 @@ LINPHONE_PUBLIC LinphoneAddress * linphone_core_create_address(LinphoneCore *lc,
  * Create an independent media file player.
  * This player support WAVE and MATROSKA formats.
  * @param lc A LinphoneCore object
- * @param snd_card Playback sound card. If NULL, the sound card set in LinphoneCore will be used
- * @param video_out Video display. If NULL, the video display set in LinphoneCore will be used
+ * @param sound_card_name Playback sound card. If NULL, the ringer sound card set in LinphoneCore will be used
+ * @param video_display_name Video display. If NULL, the video display set in LinphoneCore will be used
  * @param window_id Id of the drawing window. Depend of video out
  * @return A pointer on the new instance. NULL if faild.
  */
-LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
+LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, const char *sound_card_name, const char *video_display_name, void *window_id);
 
 /**
  * Creates an empty info message.

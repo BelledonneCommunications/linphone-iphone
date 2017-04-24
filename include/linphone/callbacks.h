@@ -642,4 +642,20 @@ typedef void (*LinphoneXmlRpcRequestCbsResponseCb)(LinphoneXmlRpcRequest *reques
  * @}
 **/
 
+/**
+ * @addtogroup call_control
+ * @{
+ */
+
+/**
+ * Callback for notifying end of play (file).
+ * @param[in] player The LinphonePlayer object
+**/
+typedef void (*LinphonePlayerCbsEofReachedCb)(LinphonePlayer *obj);
+
+
+/**
+ * @}
+**/
+
 #endif /* LINPHONE_CALLBACKS_H_ */

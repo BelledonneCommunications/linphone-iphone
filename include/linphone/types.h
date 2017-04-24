@@ -711,6 +711,22 @@ typedef enum _LinphoneOnlineStatus{
 typedef struct _LinphonePlayer LinphonePlayer;
 
 /**
+ * An object to handle the callbacks for the handling a LinphonePlayer objects.
+ * @ingroup call_control
+ */
+typedef struct _LinphonePlayerCbs LinphonePlayerCbs;
+
+/**
+ * The state of a LinphonePlayer.
+ * @ingroup call_control
+ */
+typedef enum LinphonePlayerState {
+	LinphonePlayerClosed, /**< No file is opened for playing. */
+	LinphonePlayerPaused, /**< The player is paused. */
+	LinphonePlayerPlaying /**< The player is playing. */
+} LinphonePlayerState;
+
+/**
  * Presence activity type holding information about a presence activity.
  * @ingroup buddy_list
  */

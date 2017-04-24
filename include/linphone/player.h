@@ -31,30 +31,145 @@ extern "C" {
 
 
 /**
- * Callback for notifying end of play (file).
- * @param obj the LinphonePlayer
- * @param user_data the user_data provided when calling linphone_player_open().
- * @ingroup call_control
+ * @addtogroup call_control
+ * @{
+ */
+
+/**
+ * Acquire a reference to the player.
+ * @param[in] player LinphonePlayer object.
+ * @return The same LinphonePlayer object.
 **/
-typedef void (*LinphonePlayerEofCallback)(LinphonePlayer *obj, void *user_data);
+LINPHONE_PUBLIC LinphonePlayer * linphone_player_ref(LinphonePlayer *player);
 
-LINPHONE_PUBLIC LinphoneStatus linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
+/**
+ * Release reference to the player.
+ * @param[in] player LinphonePlayer object.
+**/
+LINPHONE_PUBLIC void linphone_player_unref(LinphonePlayer *player);
 
+/**
+ * Retrieve the user pointer associated with the player.
+ * @param[in] player LinphonePlayer object.
+ * @return The user pointer associated with the player.
+**/
+LINPHONE_PUBLIC void *linphone_player_get_user_data(const LinphonePlayer *player);
+
+/**
+ * Assign a user pointer to the player.
+ * @param[in] player LinphonePlayer object.
+ * @param[in] ud The user pointer to associate with the player.
+**/
+LINPHONE_PUBLIC void linphone_player_set_user_data(LinphonePlayer *player, void *ud);
+
+/**
+ * Get the LinphonePlayerCbs object associated with the LinphonePlayer.
+ * @param[in] player LinphonePlayer object
+ * @return The LinphonePlayerCbs object associated with the LinphonePlayer.
+ */
+LINPHONE_PUBLIC LinphonePlayerCbs * linphone_player_get_callbacks(const LinphonePlayer *player);
+
+/**
+ * Open a file for playing.
+ * @param[in] obj LinphonePlayer object
+ * @param[in] filename The path to the file to open
+ */
+LINPHONE_PUBLIC LinphoneStatus linphone_player_open(LinphonePlayer *obj, const char *filename);
+
+/**
+ * Start playing a file that has been opened with linphone_player_open().
+ * @param[in] obj LinphonePlayer object
+ * @return 0 on success, a negative value otherwise
+ */
 LINPHONE_PUBLIC LinphoneStatus linphone_player_start(LinphonePlayer *obj);
 
+/**
+ * Pause the playing of a file.
+ * @param[in] obj LinphonePlayer object
+ * @return 0 on success, a negative value otherwise
+ */
 LINPHONE_PUBLIC LinphoneStatus linphone_player_pause(LinphonePlayer *obj);
 
+/**
+ * Seek in an opened file.
+ * @param[in] obj LinphonePlayer object
+ * @param[in] time_ms The time we want to go to in the file (in milliseconds).
+ * @return 0 on success, a negative value otherwise.
+ */
 LINPHONE_PUBLIC LinphoneStatus linphone_player_seek(LinphonePlayer *obj, int time_ms);
 
-LINPHONE_PUBLIC MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
+/**
+ * Get the current state of a player.
+ * @param[in] obj LinphonePlayer object
+ * @return The current state of the player.
+ */
+LINPHONE_PUBLIC LinphonePlayerState linphone_player_get_state(LinphonePlayer *obj);
 
+/**
+ * Get the duration of the opened file.
+ * @param[in] obj LinphonePlayer object
+ * @return The duration of the opened file
+ */
 LINPHONE_PUBLIC int linphone_player_get_duration(LinphonePlayer *obj);
 
+/**
+ * Get the current position in the opened file.
+ * @param[in] obj LinphonePlayer object
+ * @return The current position in the opened file
+ */
 LINPHONE_PUBLIC int linphone_player_get_current_position(LinphonePlayer *obj);
 
+/**
+ * Close the opened file.
+ * @param[in] obj LinphonePlayer object
+ */
 LINPHONE_PUBLIC void linphone_player_close(LinphonePlayer *obj);
 
-LINPHONE_PUBLIC void linphone_player_destroy(LinphonePlayer *obj);
+
+/**
+ * Acquire a reference to the LinphonePlayerCbs object.
+ * @param[in] cbs LinphonePlayerCbs object.
+ * @return The same LinphonePlayerCbs object.
+ */
+LINPHONE_PUBLIC LinphonePlayerCbs * linphone_player_cbs_ref(LinphonePlayerCbs *cbs);
+
+/**
+ * Release reference to the LinphonePlayerCbs object.
+ * @param[in] cbs LinphonePlayerCbs object.
+ */
+LINPHONE_PUBLIC void linphone_player_cbs_unref(LinphonePlayerCbs *cbs);
+
+/**
+ * Retrieve the user pointer associated with the LinphonePlayerCbs object.
+ * @param[in] cbs LinphonePlayerCbs object.
+ * @return The user pointer associated with the LinphonePlayerCbs object.
+ */
+LINPHONE_PUBLIC void *linphone_player_cbs_get_user_data(const LinphonePlayerCbs *cbs);
+
+/**
+ * Assign a user pointer to the LinphonePlayerCbs object.
+ * @param[in] cbs LinphonePlayerCbs object.
+ * @param[in] ud The user pointer to associate with the LinphonePlayerCbs object.
+ */
+LINPHONE_PUBLIC void linphone_player_cbs_set_user_data(LinphonePlayerCbs *cbs, void *ud);
+
+/**
+ * Get the end-of-file reached callback.
+ * @param[in] cbs LinphonePlayerCbs object.
+ * @return The current end-of-file reached callback.
+ */
+LINPHONE_PUBLIC LinphonePlayerCbsEofReachedCb linphone_player_cbs_get_eof_reached(const LinphonePlayerCbs *cbs);
+
+/**
+ * Set the end-of-file reached callback.
+ * @param[in] cbs LinphonePlayerCbs object.
+ * @param[in] cb The end-of-file reached callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_player_cbs_set_eof_reached(LinphonePlayerCbs *cbs, LinphonePlayerCbsEofReachedCb cb);
+
+/**
+ * @}
+**/
 
 
 #ifdef __cplusplus

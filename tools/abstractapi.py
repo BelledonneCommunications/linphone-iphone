@@ -456,8 +456,7 @@ class CParser(object):
 					   'linphone_factory_create_core_with_config', # manualy wrapped
 					   'linphone_vcard_get_belcard'] # manualy wrapped
 
-		self.classBl = ['LpConfig',
-					   'LinphonePlayer']  # temporarly blacklisted
+		self.classBl = ['LpConfig']  # temporarly blacklisted
 		
 		# list of classes that must be concidered as refcountable even if
 		# they are no ref()/unref() methods

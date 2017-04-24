@@ -27,14 +27,16 @@ static bool_t wait_for_eof(bool_t *eof, int *time,int time_refresh, int timeout)
 	return *time < timeout;
 }
 
-static void eof_callback(LinphonePlayer *player, void *user_data) {
-	bool_t *eof = (bool_t *)user_data;
+static void eof_callback(LinphonePlayer *player) {
+	LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+	bool_t *eof = (bool_t *)linphone_player_cbs_get_user_data(cbs);
 	*eof = TRUE;
 }
 
 static void play_file(const char *filename, bool_t supported_format, const char *audio_mime, const char *video_mime) {
 	LinphoneCoreManager *lc_manager = linphone_core_manager_new("marie_rc");
 	LinphonePlayer *player;
+	LinphonePlayerCbs *cbs;
 	int res, timer = 0;
 	bool_t eof = FALSE;
 
@@ -42,13 +44,14 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	bool_t video_codec_supported = (video_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), video_mime));
 	int expected_res = (supported_format && (audio_codec_supported || video_codec_supported)) ? 0 : -1;
 
-	player = linphone_core_create_local_player(lc_manager->lc,
-											   ms_snd_card_manager_get_default_card(ms_factory_get_snd_card_manager(linphone_core_get_ms_factory((void *)lc_manager->lc))),
-																					video_stream_get_default_video_renderer(), 0);
+	player = linphone_core_create_local_player(lc_manager->lc, linphone_core_get_ringer_device(lc_manager->lc), video_stream_get_default_video_renderer(), 0);
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 
-	res = linphone_player_open(player, filename, eof_callback, &eof);
+	cbs = linphone_player_get_callbacks(player);
+	linphone_player_cbs_set_eof_reached(cbs, eof_callback);
+	linphone_player_cbs_set_user_data(cbs, &eof);
+	res = linphone_player_open(player, filename);
 	BC_ASSERT_EQUAL(res, expected_res, int, "%d");
 
 	if(res == -1) goto fail;
@@ -62,7 +65,7 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	linphone_player_close(player);
 
 	fail:
-	if(player) linphone_player_destroy(player);
+	if(player) linphone_player_unref(player);
 	if(lc_manager) linphone_core_manager_destroy(lc_manager);
 }
 

@@ -32,11 +32,14 @@ static void _local_player_close(LinphonePlayer *obj);
 static void _local_player_destroy(LinphonePlayer *obj);
 static void _local_player_eof_callback(void *user_data);
 
-LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id) {
-	LinphonePlayer *obj = ms_new0(LinphonePlayer, 1);
-	if(snd_card == NULL) snd_card = lc->sound_conf.ring_sndcard;
-	if(video_out == NULL) video_out = linphone_core_get_video_display_filter(lc);
-	obj->impl = ms_media_player_new(lc->factory, snd_card, video_out, window_id);
+LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, const char *sound_card_name, const char *video_display_name, void *window_id) {
+	LinphonePlayer *obj = linphone_player_new();
+	MSSndCard *snd_card;
+	MSSndCardManager *snd_card_manager = ms_factory_get_snd_card_manager(lc->factory);
+	if (sound_card_name == NULL) linphone_core_get_ringer_device(lc);
+	snd_card = ms_snd_card_manager_get_card(snd_card_manager, sound_card_name);
+	if (video_display_name == NULL) video_display_name = linphone_core_get_video_display_filter(lc);
+	obj->impl = ms_media_player_new(lc->factory, snd_card, video_display_name, window_id);
 	obj->open = _local_player_open;
 	obj->start = _local_player_start;
 	obj->pause = _local_player_pause;
@@ -94,5 +97,7 @@ static void _local_player_close(LinphonePlayer *obj) {
 
 static void _local_player_eof_callback(void *user_data) {
 	LinphonePlayer *obj = (LinphonePlayer *)user_data;
-	obj->cb(obj, obj->user_data);
+	LinphonePlayerCbs *cbs = linphone_player_get_callbacks(obj);
+	LinphonePlayerCbsEofReachedCb cb = linphone_player_cbs_get_eof_reached(cbs);
+	if (cb) cb(obj);
 }

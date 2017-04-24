@@ -1295,8 +1295,9 @@ void tls_client_auth_bad_certificate(void) {
 	}
 }
 
-static void on_eof(LinphonePlayer *player, void *user_data){
-	LinphoneCoreManager *marie=(LinphoneCoreManager*)user_data;
+static void on_eof(LinphonePlayer *player){
+	LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+	LinphoneCoreManager *marie=(LinphoneCoreManager*)linphone_player_cbs_get_user_data(cbs);
 	marie->stat.number_of_player_eof++;
 }
 
@@ -1332,7 +1333,10 @@ void transcoder_tester(void) {
 	player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if (player){
-		BC_ASSERT_EQUAL(linphone_player_open(player,hellopath,on_eof,marie),0, int, "%d");
+		LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+		linphone_player_cbs_set_eof_reached(cbs, on_eof);
+		linphone_player_cbs_set_user_data(cbs, marie);
+		BC_ASSERT_EQUAL(linphone_player_open(player,hellopath),0, int, "%d");
 		BC_ASSERT_EQUAL(linphone_player_start(player),0, int, "%d");
 	}
 	/* This assert should be modified to be at least as long as the WAV file */
