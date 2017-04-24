@@ -182,7 +182,7 @@ class CsharpTranslator(object):
 		methodDict = {}
 		methodDict['prototype'] = "static extern {return} {name}({params});".format(**methodElems)
 
-		methodDict['doc'] = self.docTranslator.translate(method.briefDescription) if method.briefDescription is not None else None
+		methodDict['doc'] = self.docTranslator.translate(method.briefDescription)
 
 		methodDict['has_impl'] = genImpl
 		if genImpl:
@@ -431,13 +431,14 @@ class CsharpTranslator(object):
 	def translate_enum(self, enum):
 		enumDict = {}
 		enumDict['enumName'] = enum.name.to_camel_case()
-		enumDict['doc'] = self.docTranslator.translate(enum.briefDescription) if enum.briefDescription is not None else None
+		enumDict['doc'] = self.docTranslator.translate(enum.briefDescription)
 		enumDict['values'] = []
 		i = 0
 		lastValue = None
 		for enumValue in enum.values:
 			enumValDict = {}
 			enumValDict['name'] = enumValue.name.to_camel_case()
+			enumValDict['doc'] = self.docTranslator.translate(enumValue.briefDescription)
 			if type(enumValue.value) is int:
 				lastValue = enumValue.value
 				enumValDict['value'] = str(enumValue.value)
@@ -460,7 +461,7 @@ class CsharpTranslator(object):
 		classDict = {}
 		classDict['className'] = _class.name.to_camel_case()
 		classDict['isLinphoneFactory'] = _class.name.to_camel_case() == "Factory"
-		classDict['doc'] = self.docTranslator.translate(_class.briefDescription) if _class.briefDescription is not None else None
+		classDict['doc'] = self.docTranslator.translate(_class.briefDescription)
 		classDict['dllImports'] = []
 
 		islistenable = _class.listenerInterface is not None

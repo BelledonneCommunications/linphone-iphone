@@ -218,6 +218,11 @@ namespace Linphone
 	public enum {{enumName}}
 	{
 		{{#values}}
+		{{#doc}}
+		{{#lines}}
+		/// {{{line}}}
+		{{/lines}}
+		{{/doc}}
 		{{name}} = {{value}},
 		{{/values}}
 	}
