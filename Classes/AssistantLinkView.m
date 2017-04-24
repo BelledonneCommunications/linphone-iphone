@@ -47,10 +47,10 @@
 				.UTF8String);
 
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-	linphone_account_creator_cbs_set_link_account(
-		linphone_account_creator_get_callbacks(account_creator), assistant_link_phone_number_with_account);
+	linphone_account_creator_cbs_set_link_account(linphone_account_creator_get_callbacks(account_creator),
+												  assistant_link_phone_number_with_account);
 	linphone_account_creator_cbs_set_activate_alias(linphone_account_creator_get_callbacks(account_creator),
-																assistant_activate_phone_number_link);
+													assistant_activate_phone_number_link);
 
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 	if (cfg &&
@@ -290,7 +290,8 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	//remove the + from the country code to avoir error when checking its validity
 	NSString *newStr = [_countryCodeField.text substringWithRange:NSMakeRange(1, [_countryCodeField.text length]-1)];
 	LinphoneAccountCreatorStatus status = linphone_account_creator_set_phone_number(account_creator, [_phoneField.text UTF8String], [newStr UTF8String]);
-	if (status == LinphoneAccountCreatorPhoneNumberStatusTooLong || status == LinphoneAccountCreatorPhoneNumberStatusTooShort) {
+	if (status == LinphoneAccountCreatorPhoneNumberStatusTooLong ||
+		status == LinphoneAccountCreatorPhoneNumberStatusTooShort) {
 		self.phoneField.layer.borderWidth = .8;
 		self.phoneField.layer.cornerRadius = 4.f;
 		self.phoneField.layer.borderColor = [[UIColor redColor] CGColor];

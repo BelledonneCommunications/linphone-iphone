@@ -84,29 +84,34 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[LinphoneManager instance] lpConfigStringForKey:@"first_login_view_url"] ?: @"http://www.linphone.org";
 	account_creator = linphone_account_creator_new([LinphoneManager getLc], siteUrl.UTF8String);
 
-	[_usernameField showError:[AssistantView errorForLinphoneAccountCreatorUsernameStatus:LinphoneAccountCreatorUsernameStatusInvalid]
-						 when:^BOOL(NSString *inputEntry) {
-						   LinphoneAccountCreatorUsernameStatus s =
-							   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
-						   _usernameField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorUsernameStatus:s];
-						   return s != LinphoneAccountCreatorUsernameStatusOk;
-						 }];
+	[_usernameField
+		showError:[AssistantView
+					  errorForLinphoneAccountCreatorUsernameStatus:LinphoneAccountCreatorUsernameStatusInvalid]
+			 when:^BOOL(NSString *inputEntry) {
+			   LinphoneAccountCreatorUsernameStatus s =
+				   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
+			   _usernameField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorUsernameStatus:s];
+			   return s != LinphoneAccountCreatorUsernameStatusOk;
+			 }];
 
-	[_passwordField showError:[AssistantView errorForLinphoneAccountCreatorPasswordStatus:LinphoneAccountCreatorPasswordStatusTooShort]
-						 when:^BOOL(NSString *inputEntry) {
-						   LinphoneAccountCreatorPasswordStatus s =
-							   linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
-						   _passwordField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorPasswordStatus:s];
-						   return s != LinphoneAccountCreatorUsernameStatusOk;
-						 }];
+	[_passwordField
+		showError:[AssistantView
+					  errorForLinphoneAccountCreatorPasswordStatus:LinphoneAccountCreatorPasswordStatusTooShort]
+			 when:^BOOL(NSString *inputEntry) {
+			   LinphoneAccountCreatorPasswordStatus s =
+				   linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
+			   _passwordField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorPasswordStatus:s];
+			   return s != LinphoneAccountCreatorUsernameStatusOk;
+			 }];
 
-	[_domainField showError:[AssistantView errorForLinphoneAccountCreatorDomainStatus:LinphoneAccountCreatorDomainInvalid]
-					   when:^BOOL(NSString *inputEntry) {
-						 LinphoneAccountCreatorDomainStatus s =
-							 linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
-						 _domainField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorDomainStatus:s];
-						 return s != LinphoneAccountCreatorDomainOk;
-					   }];
+	[_domainField
+		showError:[AssistantView errorForLinphoneAccountCreatorDomainStatus:LinphoneAccountCreatorDomainInvalid]
+			 when:^BOOL(NSString *inputEntry) {
+			   LinphoneAccountCreatorDomainStatus s =
+				   linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
+			   _domainField.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorDomainStatus:s];
+			   return s != LinphoneAccountCreatorDomainOk;
+			 }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
