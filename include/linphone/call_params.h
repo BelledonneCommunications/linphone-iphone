@@ -196,6 +196,7 @@ LINPHONE_PUBLIC const char *linphone_call_params_get_session_name(const Linphone
  * @param[in] cp The call.
  * @return The selected payload type. NULL is returned if no audio payload type has been seleced
  * by the call. If a payload type is returned, it must be released with linphone_payload_type_unref() after use.
+ * @warning The returned object is allocated as a floating reference i.e. the reference counter is initialized to 0.
 **/
 LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_audio_payload_type(const LinphoneCallParams *cp);
 
@@ -204,6 +205,7 @@ LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_audio_payload
  * @param[in] cp The call.
  * @return The selected payload type. NULL is returned if no video payload type has been seleced
  * by the call. If a payload type is returned, it must be released with linphone_payload_type_unref() after use.
+ * @warning The returned object is allocated as a floating reference i.e. the reference counter is initialized to 0.
 **/
 LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_video_payload_type(const LinphoneCallParams *cp);
 
@@ -212,6 +214,7 @@ LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_video_payload
  * @param[in] cp The call.
  * @return The selected payload type. NULL is returned if no text payload type has been seleced
  * by the call. If a payload type is returned, it must be released with linphone_payload_type_unref() after use.
+ * @warning The returned object is allocated as a floating reference i.e. the reference counter is initialized to 0.
 **/
 LINPHONE_PUBLIC LinphonePayloadType *linphone_call_params_get_used_text_payload_type(const LinphoneCallParams *cp);
 

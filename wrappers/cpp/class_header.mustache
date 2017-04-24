@@ -44,6 +44,13 @@ namespace linphone {
 	{{/priorDeclarations}}
 
 	{{#_class}}
+	{{#doc}}
+	/**
+	 {{#lines}}
+	 * {{{line}}}
+	 {{/lines}}
+	 */
+	{{/doc}}
 	class {{className}}{{#parentClassName}}: public {{{parentClassName}}}{{/parentClassName}} {
 		{{#friendClasses}}
 		friend class {{name}};

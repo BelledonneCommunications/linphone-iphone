@@ -4657,6 +4657,10 @@ void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *pat
 	}
 }
 
+const char * linphone_core_get_call_logs_database_path(LinphoneCore *lc) {
+	return lc->logs_db_file;
+}
+
 const bctbx_list_t* linphone_core_get_call_logs(LinphoneCore *lc) {
 #ifdef SQLITE_STORAGE_ENABLED
 	if (lc->logs_db) {

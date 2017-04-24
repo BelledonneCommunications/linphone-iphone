@@ -773,10 +773,12 @@ LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendLis
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
-	bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map, (void*)ref_key);
-	if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))) {
-		bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
-		return (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
+	if(list) {
+		bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map, (void*)ref_key);
+		if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))) {
+			bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
+			return (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
+		}
 	}
 	return NULL;
 }
@@ -1111,4 +1113,8 @@ void linphone_friend_list_enable_subscriptions(LinphoneFriendList *list, bool_t 
 		}
 		
 	}
+}
+
+bool_t linphone_friend_list_subscriptions_enabled(LinphoneFriendList *list) {
+	return list->enable_subscriptions;
 }

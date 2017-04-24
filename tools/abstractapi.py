@@ -593,6 +593,7 @@ class CParser(object):
 			valueName = EnumValueName()
 			valueName.from_camel_case(cEnumValue.name, namespace=name)
 			aEnumValue = EnumValue(valueName)
+			aEnumValue.briefDescription = cEnumValue.briefDoc
 			if cEnumValue.value is not None:
 				try:
 					aEnumValue.value_from_string(cEnumValue.value)
