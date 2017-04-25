@@ -480,6 +480,18 @@ class CParser(object):
 				else:
 					self.classesIndex[_class.name] = None
 		
+		self.methodsIndex = {}
+		for _class in self.cProject.classes:
+			for funcname in _class.classMethods:
+				self.methodsIndex[funcname] = None
+			for funcname in _class.instanceMethods:
+				self.methodsIndex[funcname] = None
+			for _property in _class.properties.values():
+				if _property.setter is not None:
+					self.methodsIndex[_property.setter.name] = None
+				if _property.getter is not None:
+					self.methodsIndex[_property.getter.name] = None
+		
 		name = NamespaceName()
 		name.from_snake_case('linphone')
 		
@@ -507,9 +519,24 @@ class CParser(object):
 				pass
 			except Error as e:
 				print('Could not parse \'{0}\' class: {1}'.format(_class.name, e.args[0]))
-				
+		
+		
+		self._clean_all_indexes()
 		self._fix_all_types()
+		self._fix_all_docs()
 	
+	def _clean_all_indexes(self):
+		for index in [self.classesIndex, self.interfacesIndex, self.methodsIndex]:
+			self._clean_index(index)
+	
+	def _clean_index(self, index):
+		keysToRemove = []
+		for key in index.keys():
+			if index[key] is None:
+				keysToRemove.append(key)
+		
+		for key in keysToRemove:
+			del index[key]
 	
 	def _class_is_refcountable(self, _class):
 		if _class.name in self.forcedRefcountableClasses:
@@ -575,6 +602,14 @@ class CParser(object):
 					_type.containedTypeDesc = self.parse_c_base_type(_type.containedTypeName)
 				else:
 					raise Error('bctbx_list_t type without specified contained type')
+	
+	def _fix_all_docs(self):
+		for _class in self.classesIndex.values():
+			if _class.briefDescription is not None:
+				_class.briefDescription.resolve_all_references(self)
+		for method in self.methodsIndex.values():
+			if method.briefDescription is not None:
+				method.briefDescription.resolve_all_references(self)
 	
 	def parse_enum(self, cenum):
 		if 'associatedTypedef' in dir(cenum):
@@ -750,6 +785,7 @@ class CParser(object):
 				absArg = Argument(argName, aType)
 				method.add_arguments(absArg)
 		
+		self.methodsIndex[cfunction.name] = method
 		return method
 	
 	def parse_type(self, cType):

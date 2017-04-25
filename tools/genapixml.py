@@ -246,6 +246,7 @@ class Project:
 		self.__events = []
 		self.__functions = []
 		self.classes = []
+		self.docparser = metadoc.Parser()
 
 	def add(self, elem):
 		if isinstance(elem, CClass):
@@ -387,7 +388,7 @@ class Project:
 		if deprecatedNode is not None:
 			ev.deprecated = True
 		ev.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-		ev.briefDoc = metadoc.Description(node.find('./briefdescription'))
+		ev.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 		ev.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		return ev
 
@@ -399,7 +400,7 @@ class Project:
 		if deprecatedNode is not None:
 			e.deprecated = True
 		e.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-		e.briefDoc = metadoc.Description(node.find('./briefdescription'))
+		e.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 		e.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		enumvalues = node.findall("enumvalue[@prot='public']")
 		for enumvalue in enumvalues:
@@ -422,7 +423,7 @@ class Project:
 		if deprecatedNode is not None:
 			sm.deprecated = True
 		sm.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-		sm.briefDoc = metadoc.Description(node.find('./briefdescription'))
+		sm.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 		sm.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		return sm
 
@@ -432,7 +433,7 @@ class Project:
 		if deprecatedNode is not None:
 			s.deprecated = True
 		s.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-		s.briefDoc = metadoc.Description(node.find('./briefdescription'))
+		s.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 		s.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		structmembers = node.findall("sectiondef/memberdef[@kind='variable'][@prot='public']")
 		for structmember in structmembers:
@@ -501,7 +502,7 @@ class Project:
 			if deprecatedNode is not None:
 				f.deprecated = True
 			f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-			f.briefDoc = metadoc.Description(node.find('./briefdescription'))
+			f.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 			f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 			return f
 		else:
@@ -513,7 +514,7 @@ class Project:
 			if deprecatedNode is not None:
 				td.deprecated = True
 			td.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-			td.briefDoc = metadoc.Description(node.find('./briefdescription'))
+			td.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 			td.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 			return td
 		return None
@@ -573,7 +574,7 @@ class Project:
 		if deprecatedNode is not None:
 			f.deprecated = True
 		f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-		f.briefDoc = metadoc.Description(node.find('./briefdescription'))
+		f.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 		f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		if f.briefDescription == '' and ''.join(f.detailedDescription.itertext()).strip() == '':
 			return None
