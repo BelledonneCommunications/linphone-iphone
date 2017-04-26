@@ -90,7 +90,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_config_read_file(LinphoneConfig *lpconfi
  * @param lc LinphoneCore to share with xml2lpc
  * @param ctx The context given to xml2lpc callback
  */
-LINPHONE_PUBLIC char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, void* lc, void* ctx);
+LINPHONE_PUBLIC char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename, void* lc, void* ctx);
 
 /**
  * Reads a xml config string and fill the LinphoneConfig with the read config dynamic values.

@@ -500,7 +500,7 @@ static char* _linphone_config_xml_convert(LpConfig *lpc, xml2lpc_context *contex
 	return error_msg;
 }
 
-char* linphone_config_load_from_xml_file(LpConfig *lpc, const char *filename, void* lc, void* ctx) {
+char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename, void* lc, void* ctx) {
 	xml2lpc_context *context = NULL;
 	char* path = lp_realpath(filename, NULL);
 	char* error_msg = NULL;
