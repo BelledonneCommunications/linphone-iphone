@@ -42,7 +42,7 @@ static GtkTargetEntry targets[] = {
 
 static void set_video_controls_position(GtkWidget *video_window);
 
-static void on_end_of_play(LinphonePlayer *player, void *user_data){
+static void on_end_of_play(LinphonePlayer *player){
 	linphone_player_close(player);
 }
 
@@ -61,9 +61,10 @@ static void drag_data_received(GtkWidget *widget, GdkDragContext *context, gint 
 			datalen--;
 		}
 		if (player){
-
+			LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+			linphone_player_cbs_set_eof_reached(cbs, on_end_of_play);
 			const char* filepath = (strstr(path,"file://")==path) ? path+strlen("file://") : path;
-			if (linphone_player_open(player,filepath,on_end_of_play,NULL)==0){
+			if (linphone_player_open(player,filepath)==0){
 
 				linphone_player_start(player);
 			}else{
