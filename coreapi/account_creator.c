@@ -817,7 +817,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_account_linphone(
 
 LinphoneAccountCreatorStatus linphone_account_creator_activate_email_account_linphone(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
-	if (!creator->activation_code) {
+	if (!creator->activation_code || !creator->username) {
 		if (creator->cbs->is_account_activated_response_cb != NULL) {
 			creator->cbs->is_account_activated_response_cb(creator, LinphoneAccountCreatorStatusMissingArguments, "Missing required parameters");
 		}
