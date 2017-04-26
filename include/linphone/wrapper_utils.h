@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* 
+/*
  * That file declares functions that are used by automatic API wrapper generators. These
  * should not be used by C API users.
  */
@@ -38,7 +38,7 @@ extern "C" {
 
 /**
  * Send a message to peer member of this chat room.
- * 
+ *
  * The state of the sending message will be notified via the callbacks defined in the #LinphoneChatMessageCbs object that can be obtained
  * by calling linphone_chat_message_get_callbacks().
  * @note Unlike linphone_chat_room_send_chat_message(), that function only takes a reference on the #LinphoneChatMessage
@@ -58,7 +58,7 @@ LINPHONE_PUBLIC void linphone_chat_room_send_chat_message_2(LinphoneChatRoom *cr
  *
  * @param[in] msg LinphoneChatMessage object
  */
-LINPHONE_PUBLIC void linphone_chat_message_resend(LinphoneChatMessage *msg);
+LINPHONE_PUBLIC void linphone_chat_message_resend_2(LinphoneChatMessage *msg);
 
 /**
  * Accessor for the shared_ptr&lt;BelCard&gt; stored by a #LinphoneVcard

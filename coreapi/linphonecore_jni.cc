@@ -35,6 +35,7 @@ extern "C" {
 #include "linphone/core.h"
 #include "linphone/tunnel.h"
 #include "linphone/account_creator.h"
+#include "linphone/wrapper_utils.h"
 
 #include "private.h" /*Included for multicast and wifi lock management by linphonecore. Very ugly.*/
 #include <cpu-features.h>
@@ -4605,7 +4606,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isSecured(JNI
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_reSend(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	linphone_chat_message_resend((LinphoneChatMessage*)ptr);
+	linphone_chat_message_resend_2((LinphoneChatMessage*)ptr);
 }
 
 static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageState state) {
@@ -4834,9 +4835,8 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendChatMessage(JNIE
 																		,jobject message
 																		,jlong messagePtr) {
 	message = env->NewGlobalRef(message);
-	linphone_chat_message_ref((LinphoneChatMessage*)messagePtr);
 	linphone_chat_message_set_user_data((LinphoneChatMessage*)messagePtr, message);
-	linphone_chat_room_send_chat_message((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr);
+	linphone_chat_room_send_chat_message_2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
