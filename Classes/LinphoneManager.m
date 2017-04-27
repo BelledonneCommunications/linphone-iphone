@@ -899,6 +899,16 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
 																			  completion:^(NSError *err){
 																			  }];
+			} else { // Can happen when Call-ID changes (Replaces header)
+				if (linphone_core_get_calls_nb(LC) == 0) { // Need to clear all CK calls
+					for(NSUUID *myUuid in self.providerDelegate.calls) {
+						[self.providerDelegate.provider reportCallWithUUID:myUuid
+															   endedAtDate:NULL
+																	reason:(state == LinphoneCallError ? CXCallEndedReasonFailed : CXCallEndedReasonRemoteEnded)];
+					}
+					[self.providerDelegate.uuids removeAllObjects];
+					[self.providerDelegate.calls removeAllObjects];
+				}
 			}
 		} else {
 			if (data != nil && data->notification != nil) {
