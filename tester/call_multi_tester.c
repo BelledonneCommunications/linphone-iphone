@@ -349,15 +349,11 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	}
 
 	if (pause_and_hangup) {
-		ms_error("#############################################################################");
 		linphone_core_pause_call(marie->lc, marie_call_laure);
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallPaused,2,10000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallPausedByRemote,1,10000));
-		ms_error("#############################################################################");
 		linphone_core_remove_from_conference(marie->lc, marie_call_laure);
-		ms_error("#############################################################################");
 		linphone_core_terminate_call(marie->lc, marie_call_laure);
-		ms_error("#############################################################################");
 	}
 
 	linphone_core_terminate_conference(marie->lc);
