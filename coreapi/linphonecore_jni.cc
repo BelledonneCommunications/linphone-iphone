@@ -7484,16 +7484,9 @@ static void _eof_callback(LinphonePlayer *player, void *user_data) {
 	env->CallVoidMethod(player_data->mListener, player_data->mEndOfFileMethodID, player_data->mJLinphonePlayer);
 }
 
-extern "C" jint Java_org_linphone_core_LinphonePlayerImpl_open(JNIEnv *env, jobject jPlayer, jlong ptr, jstring filename, jobject listener) {
-	LinphonePlayerData *data = NULL;
-	LinphonePlayerEofCallback cb = NULL;
+extern "C" jint Java_org_linphone_core_LinphonePlayerImpl_open(JNIEnv *env, jobject jPlayer, jlong ptr, jstring filename) {
 	const char *cfilename = GetStringUTFChars(env, filename);
-	if(listener) {
-		data = new LinphonePlayerData(env, listener, jPlayer);
-		cb = _eof_callback;
-	}
-	if(linphone_player_open((LinphonePlayer *)ptr, cfilename, cb, data) == -1) {
-		if(data) delete data;
+	if(linphone_player_open((LinphonePlayer *)ptr, cfilename) == -1) {
 		ReleaseStringUTFChars(env, filename, cfilename);
 		return -1;
 	}
@@ -7546,7 +7539,7 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_destroy(JNIEnv *env, j
 	}
 	jobject window_id = (jobject)ms_media_player_get_window_id((MSMediaPlayer *)player->impl);
 	if(window_id) env->DeleteGlobalRef(window_id);
-	linphone_player_destroy(player);
+	_linphone_player_destroy(player);
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createLocalPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {

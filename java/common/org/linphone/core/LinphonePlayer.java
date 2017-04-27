@@ -17,7 +17,7 @@ public interface LinphonePlayer {
 		closed, /*< No file is open */
 		paused, /*< A file is open and playback is not running */
 		playing; /*< A file is open and playback is running */
-		
+
 		public static State fromValue(int value) {
 			if(value == 0) {
 				return closed;
@@ -30,64 +30,51 @@ public interface LinphonePlayer {
 			}
 		}
 	};
-	
-	/**
-	 * Listener for Linphone players
-	 * @author François Grisez
-	 *
-	 */
-	public interface Listener {
-		/**
-		 * Method called when a player reaches the end of a file
-		 * @param player The player which called the method
-		 */
-		public void endOfFile(LinphonePlayer player);
-	}
-	
+
 	/**
 	 * Open a file
 	 * @param filename Name of the file to open
 	 * @return 0 on success, -1 on failure
 	 */
-	public int open(String filename, Listener listener);
-	
+	public int open(String filename);
+
 	/**
 	 * Start playback
 	 * @return 0 on success, -1 on failure
 	 */
 	public int start();
-	
+
 	/**
 	 * Get playback paused
 	 * @return 0 on success, -1 on failure
 	 */
 	public int pause();
-	
+
 	/**
 	 * Go to a specific position in the timeline
 	 * @param timeMs Time in milliseconds
 	 * @return 0 on success, -1 on failure
 	 */
 	public int seek(int timeMs);
-	
+
 	/**
 	 * Get the state of the player
 	 * @return See State enumeration
 	 */
 	public State getState();
-	
+
 	/**
 	 * Get the duration of the media
 	 * @return The duration in milliseconds
 	 */
 	public int getDuration();
-	
+
 	/**
 	 * Get the position of the playback
 	 * @return The position in milliseconds
 	 */
 	public int getCurrentPosition();
-	
+
 	/**
 	 * Close a file
 	 */
