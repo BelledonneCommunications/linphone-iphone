@@ -241,7 +241,7 @@ static void incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_
 	incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallOutgoingEarlyMedia);
 }
 
-static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, LinphoneCoreManager* laure, LinphoneCoreManager *focus) {
+static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, LinphoneCoreManager* laure, LinphoneCoreManager *focus, bool_t pause_and_hangup) {
 	stats initial_marie_stat;
 	stats initial_pauline_stat;
 	stats initial_laure_stat;
@@ -348,6 +348,18 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 		bctbx_list_free_with_data(participants, (void(*)(void *))linphone_address_unref);
 	}
 
+	if (pause_and_hangup) {
+		ms_error("#############################################################################");
+		linphone_core_pause_call(marie->lc, marie_call_laure);
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallPaused,2,10000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallPausedByRemote,1,10000));
+		ms_error("#############################################################################");
+		linphone_core_remove_from_conference(marie->lc, marie_call_laure);
+		ms_error("#############################################################################");
+		linphone_core_terminate_call(marie->lc, marie_call_laure);
+		ms_error("#############################################################################");
+	}
+
 	linphone_core_terminate_conference(marie->lc);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,is_remote_conf?2:1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,is_remote_conf?3:2,10000));
@@ -367,7 +379,7 @@ static void simple_conference(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
-	simple_conference_base(marie,pauline,laure, NULL);
+	simple_conference_base(marie,pauline,laure, NULL, FALSE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
@@ -389,7 +401,7 @@ static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 		linphone_core_set_media_encryption(pauline->lc,mode);
 		linphone_core_set_media_encryption(laure->lc,mode);
 
-		simple_conference_base(marie,pauline,laure,NULL);
+		simple_conference_base(marie,pauline,laure,NULL,FALSE);
 	} else {
 		ms_warning("No [%s] support available",linphone_media_encryption_to_string(mode));
 		BC_PASS("Passed");
@@ -403,10 +415,20 @@ static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 static void simple_conference_with_ice(void) {
 	simple_encrypted_conference_with_ice(LinphoneMediaEncryptionNone);
 }
+
 static void simple_zrtp_conference_with_ice(void) {
 	simple_encrypted_conference_with_ice(LinphoneMediaEncryptionZRTP);
 }
 
+static void conference_hang_up_call_on_hold(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new("laure_rc_udp");
+	simple_conference_base(marie, pauline, laure, NULL, TRUE);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+}
 
 static void simple_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -949,7 +971,7 @@ void simple_remote_conference(void) {
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
 
-	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus);
+	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus, FALSE);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -975,7 +997,7 @@ void simple_remote_conference_shut_down_focus(void) {
 	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
 	linphone_proxy_config_done(laure_proxy_config);
 
-	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus);
+	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus, FALSE);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -1022,6 +1044,7 @@ test_t multi_call_tests[] = {
 	TEST_ONE_TAG("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE"),
 	TEST_NO_TAG("Eject from 3 participants conference", eject_from_3_participants_local_conference),
 	TEST_NO_TAG("Eject from 4 participants conference", eject_from_4_participants_conference),
+	TEST_NO_TAG("Conference pause and terminate call", conference_hang_up_call_on_hold),
 	TEST_NO_TAG("Simple call transfer", simple_call_transfer),
 	TEST_NO_TAG("Unattended call transfer", unattended_call_transfer),
 	TEST_NO_TAG("Unattended call transfer with error", unattended_call_transfer_with_error),
