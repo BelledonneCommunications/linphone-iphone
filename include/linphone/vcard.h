@@ -66,6 +66,13 @@ LINPHONE_PUBLIC LinphoneVcard *linphone_vcard_ref(LinphoneVcard *vCard);
 LINPHONE_PUBLIC void linphone_vcard_unref(LinphoneVcard *vCard);
 
 /**
+ * Clone a #LinphoneVcard.
+ * @param[in] vCard LinphoneVcard object
+ * @return a new LinphoneVcard object
+ */
+LINPHONE_PUBLIC LinphoneVcard *linphone_vcard_clone(const LinphoneVcard *vCard);
+
+/**
  * Returns the vCard4 representation of the LinphoneVcard.
  * @param[in] vCard the LinphoneVcard
  * @return a const char * that represents the vCard

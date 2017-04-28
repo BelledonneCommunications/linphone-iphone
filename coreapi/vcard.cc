@@ -118,6 +118,19 @@ void linphone_vcard_unref(LinphoneVcard *vCard) {
 	belle_sip_object_unref((belle_sip_object_t *)vCard);
 }
 
+LinphoneVcard *linphone_vcard_clone(const LinphoneVcard *vCard) {
+	LinphoneVcard *copy = belle_sip_object_new(LinphoneVcard);
+
+	copy->belCard = belcard::BelCardParser::getInstance()->parseOne(vCard->belCard->toFoldedString());
+
+	if (vCard->url) copy->url = ms_strdup(vCard->url);
+	if (vCard->etag) copy->etag = ms_strdup(vCard->etag);
+
+	memcpy(copy->md5, vCard->md5, sizeof *vCard->md5);
+
+	return copy;
+}
+
 bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardContext *context, const char *filename) {
 	bctbx_list_t *result = NULL;
 	if (context && filename) {
