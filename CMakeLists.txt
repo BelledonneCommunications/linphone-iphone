@@ -61,7 +61,7 @@ option(ENABLE_NLS "Build with internationalisation support" YES)
 option(ENABLE_VCARD "Turn on compilation of vcard4 support." YES)
 option(ENABLE_ROOTCA_DOWNLOAD "Download rootca.pem at build time." YES)
 option(ENABLE_CXX_WRAPPER "Build the C++ wrapper for Liblinphone." OFF)
-
+option(ENABLE_CSHARP_WRAPPER "Build the C# wrapper for Liblinphone." OFF)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -180,7 +180,7 @@ if(ENABLE_LIME)
 	endif()
 	set(HAVE_LIME 1)
 endif()
-if(ENABLE_CXX_WRAPPER)
+if(ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER)
 	find_package(PythonInterp REQUIRED)
 endif()
 
@@ -344,7 +344,9 @@ endif()
 if(ENABLE_CXX_WRAPPER)
 	add_subdirectory(wrappers/cpp)
 endif()
-
+if(ENABLE_CSHARP_WRAPPER)
+	add_subdirectory(wrappers/csharp)
+endif()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
