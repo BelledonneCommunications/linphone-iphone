@@ -98,5 +98,10 @@ public class ErrorInfoImpl implements ErrorInfo {
 		return getWarnings();
 	}
 
-	
+	protected void finalize() throws Throwable {
+		if (mNativePtr != 0){
+			unref(mNativePtr);
+			mNativePtr = 0;
+		}
+	}
 }

@@ -7445,6 +7445,24 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getDetails(JNIEnv
 	return tmp ? env->NewStringUTF(tmp) : NULL;
 }
 
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    ref
+ * Signature: (J);
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_ref(JNIEnv *env, jobject jobj, jlong ei){
+	linphone_error_info_ref((LinphoneErrorInfo*)ei);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    unref
+ * Signature: (J);
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_unref(JNIEnv *env, jobject jobj, jlong ei){
+	linphone_error_info_unref((LinphoneErrorInfo*)ei);
+}
+
 #ifdef __cplusplus
 }
 #endif
