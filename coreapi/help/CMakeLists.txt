@@ -38,7 +38,7 @@ if (ENABLE_DOC OR ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER)
 			install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc/html" "${CMAKE_CURRENT_BINARY_DIR}/doc/xml"
 				DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
 		else()
-			if (CXX_WRAPPER) 
+			if (ENABLE_CXX_WRAPPER) 
 				message(FATAL_ERROR "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
 			else()
 				message(WARNING "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
