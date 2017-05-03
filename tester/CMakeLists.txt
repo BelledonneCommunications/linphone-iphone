@@ -222,23 +222,27 @@ endif()
 
 # on mobile platforms, we compile the tester as a library so that we can link with it directly from native applications
 if(ANDROID OR IOS)
+	add_library(linphonetester SHARED ${SOURCE_FILES_C})
 	if(ANDROID)
-		add_library(linphonetester SHARED ${SOURCE_FILES_C})
 		if(ENABLE_ARCH_SUFFIX)
 			set_target_properties(linphonetester PROPERTIES OUTPUT_NAME "linphonetester-${CMAKE_ANDROID_ARCH_ABI}")
 		else()
 			set_target_properties(linphonetester PROPERTIES OUTPUT_NAME "linphonetester")
 		endif()
 	endif()
-	if(IOS)
-		add_library(linphonetester STATIC ${SOURCE_FILES_C})
-	endif()
 	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(linphonetester ${LINPHONE_LIBS_FOR_TOOLS} ${OTHER_LIBS_FOR_TESTER})
+	if(IOS)
+		set_target_properties(linphonetester PROPERTIES
+			FRAMEWORK TRUE
+			MACOSX_FRAMEWORK_IDENTIFIER com.belledonne-communications.linphonetester
+		)
+	endif()
 	install(TARGETS linphonetester
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		FRAMEWORK DESTINATION Frameworks
 		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 		)
 	install(FILES "liblinphone_tester.h"
