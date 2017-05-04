@@ -1817,7 +1817,9 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 				call->log->status=LinphoneCallDeclined;
 				break;
 			case LinphoneReasonNotAnswered:
-				call->log->status=LinphoneCallMissed;
+				if (call->log->dir == LinphoneCallIncoming){
+					call->log->status=LinphoneCallMissed;
+				}
 				break;
 			default:
 				break;
