@@ -10,6 +10,18 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+## [3.16.3] - 2017-05-03
+
+### Added
+- Imdm, chat message reception/lecture notification.
+
+### Changed
+- Optimization of Chat list
+
+### Fixed
+- Minor bugs fixes
+- Crashes on Call cancel too soon
+
 ## [3.16.2] - 2017-03-01
 
 ### Added
