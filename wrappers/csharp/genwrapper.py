@@ -331,12 +331,13 @@ class CsharpTranslator(object):
 
 		listenerDict = {}
 		c_name_setter = listenedClass.name.to_snake_case(fullName=True) + '_cbs_set_' + method.name.to_snake_case()[3:]
-		listenerDict['cb_setter'] = {}
-		listenerDict['cb_setter']['name'] = c_name_setter
-
-		listenerDict['delegate'] = {}
 		delegate_name_public = method.name.to_camel_case() + "Delegate"
 		delegate_name_private = delegate_name_public + "Private"
+		listenerDict['cb_setter'] = {}
+		listenerDict['cb_setter']['name'] = c_name_setter
+		listenerDict['name_private'] = delegate_name_private
+
+		listenerDict['delegate'] = {}
 		listenerDict['delegate']['name_public'] = delegate_name_public
 		listenerDict['delegate']['name_private'] = delegate_name_private
 		var_name_public = method.name.to_snake_case() + '_public'
@@ -346,6 +347,9 @@ class CsharpTranslator(object):
 		listenerDict['delegate']['cb_name'] = method.name.to_snake_case()
 		listenerDict['delegate']['name'] = method.name.to_camel_case()
 
+		listenerDict['delegate']['interfaceClassName'] = listenedClass.name.to_camel_case()
+		listenerDict['delegate']['isSimpleListener'] = not listenedClass.multilistener
+		listenerDict['delegate']['isMultiListener'] = listenedClass.multilistener
 		
 		listenerDict['delegate']['params_public'] = ""
 		listenerDict['delegate']['params_private'] = ""
@@ -359,6 +363,9 @@ class CsharpTranslator(object):
 				listenerDict['delegate']['params_public'] += ', '
 				listenerDict['delegate']['params_private'] += ', '
 				listenerDict['delegate']['params'] += ', '
+			else:
+				listenerDict['delegate']['first_param'] = argName
+
 			if normalType == dllImportType:
 				listenerDict['delegate']['params'] += argName
 			else:
@@ -570,6 +577,7 @@ def main():
 	parser = AbsApi.CParser(project)
 	parser.functionBl = ['linphone_vcard_get_belcard']
 	parser.classBl += 'LinphoneCoreVTable'
+	parser.methodBl.remove('getCurrentCallbacks')
 	parser.parse_all()
 	translator = CsharpTranslator()
 	renderer = pystache.Renderer()

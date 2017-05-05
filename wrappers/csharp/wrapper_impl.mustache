@@ -20,16 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using ObjCRuntime;
 
 namespace Linphone
 {
-	#region Wrapper specifics
+#region Wrapper specifics
 	/// <summary>
 	/// Only contains the LIB_NAME value that represents the library in which all DllImport are made
 	/// </summary>
 	public class LinphoneWrapper 
 	{
+#if ANDROID
 		public const string LIB_NAME = "linphone"; // With this, it automatically finds liblinphone.so
+#else
+		public const string LIB_NAME = "linphone.framework/linphone";
+#endif
 	}
 
 	/// <summary>
@@ -52,8 +57,11 @@ namespace Linphone
 	{
 		internal IntPtr nativePtr;
 		
-		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, IntPtr cb);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void OnLinphoneObjectDataDestroyed(IntPtr data);
+
+        [DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, OnLinphoneObjectDataDestroyed cb);
 
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern IntPtr belle_sip_object_data_get(IntPtr ptr, string name);
@@ -75,6 +83,17 @@ namespace Linphone
 
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, IntPtr data);
+
+		[MonoPInvokeCallback(typeof(OnLinphoneObjectDataDestroyed))]
+        private static void onDataDestroyed(IntPtr data)
+        {
+            if (data != IntPtr.Zero)
+            {
+                //Console.WriteLine("Freeing C# handle");
+                GCHandle handle = GCHandle.FromIntPtr(data);
+                handle.Free();
+            }
+        }
 		
 		~LinphoneObject()
 		{
@@ -99,14 +118,18 @@ namespace Linphone
 					//Console.WriteLine("Reffing" + obj.ToString());
 				}
 				obj.nativePtr = ptr;
-				objPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(T)));
-				Marshal.StructureToPtr(obj, objPtr, false);
-				belle_sip_object_data_set(ptr, "cs_obj", objPtr, IntPtr.Zero);
+				/*objPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(T)));
+				Marshal.StructureToPtr(obj, objPtr, false);*/
+				GCHandle handle = GCHandle.Alloc(obj);
+                objPtr = GCHandle.ToIntPtr(handle);
+				belle_sip_object_data_set(ptr, "cs_obj", objPtr, onDataDestroyed);
 				return obj;
 			} 
 			else
 			{
-				T obj = Marshal.PtrToStructure<T>(objPtr);
+				//T obj = Marshal.PtrToStructure<T>(objPtr);
+				GCHandle handle = GCHandle.FromIntPtr(objPtr);
+                T obj = (T)handle.Target;
 				if (takeRef)
 				{
 					obj.nativePtr = belle_sip_object_ref(obj.nativePtr);
@@ -240,7 +263,7 @@ namespace Linphone
 		{{#methods}}
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		{{#cb_setter}}
-		static extern void {{name}}(IntPtr thiz, IntPtr cb);
+		static extern void {{name}}(IntPtr thiz, {{name_private}} cb);
 		{{/cb_setter}}
 		
 		{{#delegate}}
@@ -248,13 +271,17 @@ namespace Linphone
 		private delegate void {{name_private}}({{params_private}});
 		
 		public delegate void {{name_public}}({{params_public}});
-		private {{name_private}} {{var_private}};
 		private {{name_public}} {{var_public}};
 		
-		private void {{cb_name}}({{params_private}})
+		[MonoPInvokeCallback(typeof({{name_private}}))]
+		private static void {{cb_name}}({{params_private}})
 		{
-			{{var_public}}?.Invoke({{{params}}});
+			{{interfaceClassName}} thiz = fromNativePtr<{{interfaceClassName}}>({{first_param}});
+            {{#isSimpleListener}}{{interfaceName}} listener = thiz.Listener;{{/isSimpleListener}}
+			{{#isMultiListener}}{{interfaceName}} listener = thiz.CurrentCallbacks;{{/isMultiListener}}
+			listener.{{var_public}}?.Invoke({{{params}}});
 		}
+
 		public {{name_public}} {{name}}
 		{
 			get
@@ -263,10 +290,8 @@ namespace Linphone
 			}
 			set
 			{
-				{{var_private}} = {{cb_name}};
 				{{var_public}} = value;
-				IntPtr cb = Marshal.GetFunctionPointerForDelegate({{var_private}});
-				{{c_name_setter}}(nativePtr, cb);
+				{{c_name_setter}}(nativePtr, {{cb_name}});
 			}
 		}
 		{{/delegate}}		
