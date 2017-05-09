@@ -26,7 +26,7 @@ using ObjCRuntime;
 
 namespace Linphone
 {
-	#region Wrapper specifics
+#region Wrapper specifics
 	/// <summary>
 	/// Only contains the LIB_NAME value that represents the library in which all DllImport are made
 	/// </summary>
@@ -37,6 +37,27 @@ namespace Linphone
 #else
 		public const string LIB_NAME = "linphone"; // With this, it automatically finds liblinphone.so
 #endif
+
+#if ANDROID
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern void setAndroidLogHandler();
+#endif
+#if __IOS__
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern void linphone_iphone_enable_logs();
+#endif
+
+		/// <summary>
+		/// Registers the native log handler in Linphone.
+		/// </summary>
+		public static void setNativeLogHandler()
+		{
+#if ANDROID
+			setAndroidLogHandler();
+#else
+			linphone_iphone_enable_logs();
+#endif
+		}
 	}
 
 	/// <summary>
@@ -205,18 +226,7 @@ namespace Linphone
 		static extern void ms_set_jvm_from_env(IntPtr jnienv);
 
 		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern void setAndroidLogHandler();
-
-		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern void setMediastreamerAndroidContext(IntPtr jnienv, IntPtr context);
-		
-		/// <summary>
-		/// Registers the Android log handler (adb logcat) in Linphone.
-		/// </summary>
-		public static void setNativeLogHandler()
-		{
-			setAndroidLogHandler();
-		}
 		
 		/// <summary>
 		/// Sets the JVM and JNI pointers in Linphone, required to be able to make JAVA upcalls.
@@ -229,9 +239,9 @@ namespace Linphone
 		}
 	}
 	#endif
-	#endregion
+#endregion
 	
-	#region Enums
+#region Enums
 	{{#enums}}
 	{{#enum}}
 	{{#doc}}
@@ -253,9 +263,9 @@ namespace Linphone
 	
 	{{/enum}}
 	{{/enums}}
-	#endregion
+#endregion
 	
-	#region Listeners
+#region Listeners
 	{{#interfaces}}
 	{{#interface}}
 	[StructLayout(LayoutKind.Sequential)]
@@ -303,9 +313,9 @@ namespace Linphone
 	
 	{{/interface}}
 	{{/interfaces}}
-	#endregion
+#endregion
 	
-	#region Classes
+#region Classes
 	{{#classes}}
 	{{#_class}}
 	{{#doc}}
@@ -446,5 +456,5 @@ namespace Linphone
 	}
 	{{/_class}}	
 	{{/classes}}
-	#endregion
+#endregion
 }
