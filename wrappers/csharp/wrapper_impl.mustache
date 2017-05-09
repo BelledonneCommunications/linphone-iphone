@@ -122,9 +122,9 @@ namespace Linphone
 		
 		~LinphoneObject()
 		{
-			//Console.WriteLine("Destroying" + this.ToString());
+			//Console.WriteLine("Destroying " + this.ToString());
 			if (nativePtr != IntPtr.Zero) {
-				//Console.WriteLine("Unreffing" + this.ToString());
+				//Console.WriteLine("Unreffing " + this.ToString());
 				belle_sip_object_unref(nativePtr);
 			}
 		}
@@ -136,14 +136,14 @@ namespace Linphone
 			if (objPtr == IntPtr.Zero)
 			{
 				T obj = new T();
-				//Console.WriteLine("Creating" + obj.ToString());
+				//Console.WriteLine("Creating " + obj.ToString());
 				if (takeRef)
 				{
 					ptr = belle_sip_object_ref(ptr);
-					//Console.WriteLine("Reffing" + obj.ToString());
+					//Console.WriteLine("Reffing " + obj.ToString());
 				}
 				obj.nativePtr = ptr;
-				GCHandle handle = GCHandle.Alloc(obj, GCHandleType.Weak);
+				GCHandle handle = GCHandle.Alloc(obj, GCHandleType.WeakTrackResurrection);
 				objPtr = GCHandle.ToIntPtr(handle);
 				belle_sip_object_data_set(ptr, "cs_obj", objPtr, onDataDestroyed);
 				return obj;
@@ -152,11 +152,7 @@ namespace Linphone
 			{
 				GCHandle handle = GCHandle.FromIntPtr(objPtr);
 				T obj = (T)handle.Target;
-				if (takeRef)
-				{
-					obj.nativePtr = belle_sip_object_ref(obj.nativePtr);
-					//Console.WriteLine("Reffing" + obj.ToString());
-				}
+				//Console.WriteLine("Using existing " + obj.ToString());
 				return obj;
 			}
 		}
