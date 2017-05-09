@@ -3967,8 +3967,11 @@ LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc)
 
 LinphoneConsolidatedPresence linphone_core_get_consolidated_presence(const LinphoneCore *lc) {
 	LinphoneProxyConfig *cfg = lc->default_proxy;
-	if ((cfg != NULL) && !linphone_proxy_config_publish_enabled(cfg)) return LinphoneConsolidatedPresenceOffline;
-	return linphone_presence_model_get_consolidated_presence(linphone_core_get_presence_model(lc));
+	LinphonePresenceModel *model = linphone_core_get_presence_model(lc);
+
+	return ((cfg && !linphone_proxy_config_publish_enabled(cfg)) || !model)
+		? LinphoneConsolidatedPresenceOffline
+		: linphone_presence_model_get_consolidated_presence(model);
 }
 
 void linphone_core_set_consolidated_presence(LinphoneCore *lc, LinphoneConsolidatedPresence presence) {
