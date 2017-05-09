@@ -133,6 +133,25 @@ namespace Linphone
 		{
 			if (ptr == IntPtr.Zero) return null;
 			IntPtr objPtr = belle_sip_object_data_get(ptr, "cs_obj");
+			if (objPtr != IntPtr.Zero)
+			{
+				T obj = null;
+				GCHandle handle = GCHandle.FromIntPtr(objPtr);
+				if (handle.IsAllocated)
+				{
+					obj = (T)handle.Target;
+				}
+				if (obj == null)
+				{
+					//Console.WriteLine("Handle target is null " + handle.Target);
+					objPtr = IntPtr.Zero;
+				}
+				else
+				{
+					//Console.WriteLine("Using existing " + obj.ToString());
+					return obj;
+				}
+			}
 			if (objPtr == IntPtr.Zero)
 			{
 				T obj = new T();
@@ -147,14 +166,8 @@ namespace Linphone
 				objPtr = GCHandle.ToIntPtr(handle);
 				belle_sip_object_data_set(ptr, "cs_obj", objPtr, onDataDestroyed);
 				return obj;
-			} 
-			else
-			{
-				GCHandle handle = GCHandle.FromIntPtr(objPtr);
-				T obj = (T)handle.Target;
-				//Console.WriteLine("Using existing " + obj.ToString());
-				return obj;
 			}
+			return null;
 		}
 		
 		internal static IEnumerable<string> MarshalStringArray(IntPtr arrayPtr)
