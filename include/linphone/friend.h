@@ -128,7 +128,7 @@ LINPHONE_PUBLIC void linphone_friend_remove_phone_number(LinphoneFriend *lf, con
 /**
  * Set the display name for this friend
  * @param lf #LinphoneFriend object
- * @param name 
+ * @param name
  */
 LINPHONE_PUBLIC LinphoneStatus linphone_friend_set_name(LinphoneFriend *lf, const char *name);
 

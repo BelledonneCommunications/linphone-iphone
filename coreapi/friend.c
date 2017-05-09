@@ -119,7 +119,7 @@ static LinphoneFriendPresence * find_presence_model_for_uri_or_tel(const Linphon
 		/*no need to move forward, just reutn to avoid useless uri parsing*/
 		return NULL;
 	};
-	
+
 	uri_or_tel_addr = linphone_core_interpret_url(lf->lc, uri_or_tel);
 
 	while (uri_or_tel_addr && iterator) {
@@ -802,7 +802,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 		}
 		fr->inc_subscribe_pending = FALSE;
 	}
-	
+
 	if (fr->pol == LinphoneSPDeny && fr->insubs) {
 		linphone_friend_close_incoming_subscriptions(fr);
 	}
@@ -1123,6 +1123,8 @@ LinphoneVcard* linphone_friend_get_vcard(LinphoneFriend *fr) {
 void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVcard *vcard) {
 	if (!fr || !linphone_core_vcard_supported()) return;
 
+	if (vcard) linphone_vcard_ref(vcard);
+
 	if (fr->vcard) linphone_vcard_unref(fr->vcard);
 	fr->vcard = vcard;
 	linphone_friend_save(fr, fr->lc);
@@ -1147,7 +1149,7 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 	}
 
 	vcard = linphone_factory_create_vcard(linphone_factory_get());
-	
+
 	lc = fr->lc;
 	if (!lc && fr->friend_list) {
 		lc = fr->friend_list->lc;
@@ -1322,7 +1324,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 		const bctbx_list_t *it;
 		ms_warning("Replacing current default friend list by the one(s) from the database");
 		lc->friends_lists = bctbx_list_free_with_data(lc->friends_lists, (bctbx_list_free_func)linphone_friend_list_unref);
-		
+
 		for (it=friends_lists;it!=NULL;it=bctbx_list_next(it)) {
 			LinphoneFriendList *list = (LinphoneFriendList *)bctbx_list_get_data(it);
 			linphone_core_add_friend_list(lc, list);
@@ -1831,7 +1833,7 @@ const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const c
 		bctbx_pair_t *pair = (bctbx_pair_t*) bctbx_pair_cchar_new(full_uri, linphone_friend_ref(lf));
 		bctbx_map_cchar_insert_and_delete(lf->friend_list->friends_map_uri, pair);
 	}
-	
+
 	ms_free(normalized_number);
 	lfpnsu = ms_new0(LinphoneFriendPhoneNumberSipUri, 1);
 	lfpnsu->number = ms_strdup(phone_number);
