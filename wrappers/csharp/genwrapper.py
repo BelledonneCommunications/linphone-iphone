@@ -575,7 +575,7 @@ def main():
 	project.check()
 	
 	parser = AbsApi.CParser(project)
-	parser.functionBl = ['linphone_vcard_get_belcard']
+	parser.functionBl = ['linphone_vcard_get_belcard', 'linphone_core_get_current_vtable']
 	parser.classBl += 'LinphoneCoreVTable'
 	parser.methodBl.remove('getCurrentCallbacks')
 	parser.parse_all()

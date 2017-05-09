@@ -54,7 +54,7 @@ namespace Linphone
 		{
 #if ANDROID
 			setAndroidLogHandler();
-#else
+#elif __IOS__
 			linphone_iphone_enable_logs();
 #endif
 		}
@@ -216,7 +216,7 @@ namespace Linphone
 		}
 	}
 	
-	#if ANDROID
+#if ANDROID
 	/// <summary>
 	/// Methods that are only found in Android version of Linphone libraries and related to JNI
 	/// </summary>
@@ -238,7 +238,7 @@ namespace Linphone
 			setMediastreamerAndroidContext(jnienv, context);
 		}
 	}
-	#endif
+#endif
 #endregion
 	
 #region Enums

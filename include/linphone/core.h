@@ -213,6 +213,7 @@ typedef struct _LinphoneCoreVTable{
 /**
  * Instantiate a vtable with all arguments set to NULL
  * @return newly allocated vtable
+ * @donotwrap
  */
 LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_v_table_new(void);
 
