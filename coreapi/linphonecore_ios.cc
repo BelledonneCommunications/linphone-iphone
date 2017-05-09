@@ -35,7 +35,7 @@ static void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, co
 		case ORTP_LOGLEV_END:
 			return;
 	}
-	fprintf(stdout,"[%s] %s", levname, str);
+	fprintf(stdout,"[%s] %s\n", levname, str);
 }
 
 extern "C" void linphone_iphone_enable_logs() {
