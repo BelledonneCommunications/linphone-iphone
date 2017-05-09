@@ -22,20 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define XML2LPC_CALLBACK_BUFFER_SIZE  1024
 
-static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt, va_list list) {
-	char buffer[XML2LPC_CALLBACK_BUFFER_SIZE];
-	vsnprintf(buffer, XML2LPC_CALLBACK_BUFFER_SIZE, fmt, list);
-
-	if (level == XML2LPC_ERROR)
-		ms_error("%s", buffer);
-	else if (level == XML2LPC_WARNING)
-		ms_warning("%s", buffer);
-	/*else
-		ms_message("%s", buffer); // Don't log debug messages */
-}
 
 static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml) {
-	char* error_msg = linphone_config_load_from_xml_string(linphone_core_get_config(lc), xml, lc, xml2lpc_callback);
+	char* error_msg = _linphone_config_load_from_xml_string(linphone_core_get_config(lc), xml);
 
 	linphone_configuring_terminated(lc
 									,error_msg ? LinphoneConfiguringFailed : LinphoneConfiguringSuccessful

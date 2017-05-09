@@ -87,20 +87,17 @@ LINPHONE_PUBLIC LinphoneStatus linphone_config_read_file(LinphoneConfig *lpconfi
  * @ingroup misc
  * @param lpconfig The LinphoneConfig object to fill with the content of the file
  * @param filename The filename of the config file to read to fill the LinphoneConfig
- * @param lc LinphoneCore to share with xml2lpc
- * @param ctx The context given to xml2lpc callback
  */
-LINPHONE_PUBLIC char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename, void* lc, void* ctx);
+LINPHONE_PUBLIC char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename);
 
 /**
  * Reads a xml config string and fill the LinphoneConfig with the read config dynamic values.
  * @ingroup misc
  * @param lpconfig The LinphoneConfig object to fill with the content of the file
  * @param buffer The string of the config file to fill the LinphoneConfig
- * @param lc LinphoneCore to share with xml2lpc
- * @param ctx The context given to xml2lpc callback
+ * @return 0 in case of success
  */
-LINPHONE_PUBLIC char* linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer, void* lc, void* ctx);
+LINPHONE_PUBLIC LinphoneStatus linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
 
 /**
  * Retrieves a configuration item as a string, given its section, key, and default value.

@@ -107,6 +107,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	const char *contact_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_parameters", NULL) : NULL;
 	const char *contact_uri_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_uri_parameters", NULL) : NULL;
 	const char *refkey = lc ? lp_config_get_default_string(lc->config, "proxy", "refkey", NULL) : NULL;
+	const char *nat_policy_ref = lc ? lp_config_get_default_string(lc->config, "proxy", "nat_policy_ref", NULL):NULL;
 	cfg->lc = lc;
 	cfg->expires = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_expires", 3600) : 3600;
 	cfg->reg_sendregister = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 1) : 1;
@@ -127,6 +128,15 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->avpf_rr_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
 	cfg->publish_expires= lc ? lp_config_get_default_int(lc->config, "proxy", "publish_expires", -1) : -1;
 	cfg->refkey = refkey ? ms_strdup(refkey) : NULL;
+	if (nat_policy_ref) {
+		LinphoneNatPolicy *policy = linphone_config_create_nat_policy_from_section(lc->config,nat_policy_ref);
+		linphone_proxy_config_set_nat_policy(cfg, policy);
+		if (policy) {
+			linphone_nat_policy_unref(policy);
+		} else {
+			ms_error("Cannot create default nat policy with ref [%s] for proxy config [%p]",nat_policy_ref,cfg);
+		}
+	}
 }
 
 LinphoneProxyConfig *linphone_proxy_config_new() {

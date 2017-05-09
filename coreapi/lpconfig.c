@@ -500,29 +500,49 @@ static char* _linphone_config_xml_convert(LpConfig *lpc, xml2lpc_context *contex
 	return error_msg;
 }
 
-char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename, void* lc, void* ctx) {
+char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename) {
 	xml2lpc_context *context = NULL;
 	char* path = lp_realpath(filename, NULL);
 	char* error_msg = NULL;
 
 	if (path) {
-		context = xml2lpc_context_new(ctx, lc);
+		context = xml2lpc_context_new(NULL, NULL);
 		error_msg = _linphone_config_xml_convert(lpc, context, xml2lpc_set_xml_file(context, path));
 	}
 	if (context) xml2lpc_context_destroy(context);
 	return error_msg;
 }
 
-char* linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer, void* lc, void* ctx) {
+static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt, va_list list) {
+	BctbxLogLevel bctbx_level;
+	switch(level) {
+		case XML2LPC_DEBUG: bctbx_level = BCTBX_LOG_DEBUG; break;
+		case XML2LPC_MESSAGE: bctbx_level = BCTBX_LOG_MESSAGE;break;
+		case XML2LPC_WARNING: bctbx_level = BCTBX_LOG_WARNING;break;
+		case XML2LPC_ERROR: bctbx_level = BCTBX_LOG_ERROR;break;
+	}
+	bctbx_logv(BCTBX_LOG_DOMAIN, bctbx_level,fmt,list);
+}
+
+char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer) {
 	xml2lpc_context *context = NULL;
 	char* error_msg = NULL;
 
 	if (buffer != NULL) {
-		context = xml2lpc_context_new(ctx, lc);
+		context = xml2lpc_context_new(xml2lpc_callback, NULL);
 		error_msg = _linphone_config_xml_convert(lpc, context, xml2lpc_set_xml_string(context, buffer));
 	}
 	if (context) xml2lpc_context_destroy(context);
 	return error_msg;
+}
+LinphoneStatus linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer) {
+	char *status;
+	if ((status =_linphone_config_load_from_xml_string(lpc,buffer))) {
+		ms_error("%s",status);
+		//ms_free(status)
+		return -1;
+	} else
+		return 0;
 }
 
 void lp_item_set_value(LpItem *item, const char *value){

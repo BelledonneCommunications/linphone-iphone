@@ -166,7 +166,7 @@ static void phone_normalization_with_dial_escape_plus(void){
 		BC_ASSERT_STRING_EQUAL(actual_str, expected); \
 		ms_free(actual_str); \
 		linphone_address_unref(res); \
-		linphone_proxy_config_destroy(proxy); \
+		linphone_proxy_config_unref(proxy); \
 	}
 
 
@@ -179,20 +179,62 @@ static void sip_uri_normalization(void) {
 	SIP_URI_CHECK("١", expected); //test that no more invalid memory writes are made (valgrind only)
 }
 
-/*static void load_dynamic_proxy_config(void) {
+static void load_dynamic_proxy_config(void) {
+	LinphoneCoreManager *lauriane = linphone_core_manager_new(NULL);
 	LinphoneProxyConfig *proxy;
-
-	//Load file
-
-	proxy = linphone_proxy_config_new();
-}*/
+	LinphoneAddress *read, *expected;
+	LinphoneNatPolicy *nat_policy;
+	const char* config =	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+							"<config xmlns=\"http://www.linphone.org/xsds/lpconfig.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd\">\r\n"
+							"<section name=\"proxy_default_values\">\r\n"
+								"<entry name=\"avpf\" overwrite=\"true\">1</entry>\r\n"
+								"<entry name=\"dial_escape_plus\" overwrite=\"true\">0</entry>\r\n"
+								"<entry name=\"publish\" overwrite=\"true\">0</entry>\r\n"
+								"<entry name=\"quality_reporting_collector\" overwrite=\"true\">sip:voip-metrics@sip.linphone.org;transport=tls</entry>\r\n"
+								"<entry name=\"quality_reporting_enabled\" overwrite=\"true\">1</entry>\r\n"
+								"<entry name=\"quality_reporting_interval\" overwrite=\"true\">180</entry>\r\n"
+								"<entry name=\"reg_expires\" overwrite=\"true\">31536000</entry>\r\n"
+								"<entry name=\"reg_identity\" overwrite=\"true\">sip:?@sip.linphone.org</entry>\r\n"
+								"<entry name=\"reg_proxy\" overwrite=\"true\">&lt;sip:sip.linphone.org;transport=tls&gt;</entry>\r\n"
+								"<entry name=\"reg_sendregister\" overwrite=\"true\">1</entry>\r\n"
+								"<entry name=\"nat_policy_ref\" overwrite=\"true\">nat_policy_default_values</entry>\r\n"
+								"<entry name=\"realm\" overwrite=\"true\">sip.linphone.org</entry>\r\n"
+							"</section>\r\n"
+							"<section name=\"nat_policy_default_values\">\r\n"
+								"<entry name=\"stun_server\" overwrite=\"true\">stun.linphone.org</entry>\r\n"
+								"<entry name=\"protocols\" overwrite=\"true\">stun,ice</entry>\r\n"
+							"</section>\r\n"
+							"</config>";
+	BC_ASSERT_FALSE(linphone_config_load_from_xml_string(linphone_core_get_config(lauriane->lc),config));
+	proxy = linphone_core_create_proxy_config(lauriane->lc);
+	
+	read = linphone_address_new(linphone_proxy_config_get_server_addr(proxy));
+	expected = linphone_address_new("sip:sip.linphone.org;transport=tls");
+	
+	BC_ASSERT_TRUE(linphone_address_equal(read,expected));
+	linphone_address_unref(read);
+	linphone_address_unref(expected);
+	
+	nat_policy = linphone_proxy_config_get_nat_policy(proxy);
+	
+	if (BC_ASSERT_PTR_NOT_NULL(nat_policy)) {
+		BC_ASSERT_TRUE(linphone_nat_policy_ice_enabled(nat_policy));
+		BC_ASSERT_TRUE(linphone_nat_policy_stun_enabled(nat_policy));
+		BC_ASSERT_FALSE(linphone_nat_policy_turn_enabled(nat_policy));
+	}
+	linphone_proxy_config_unref(proxy);
+	linphone_core_manager_destroy(lauriane);
+	
+	//BC_ASSERT_STRING_EQUAL(linphone_proxy_config_get(proxy), "sip:sip.linphone.org;transport=tls");
+	
+}
 
 test_t proxy_config_tests[] = {
 	TEST_NO_TAG("Phone normalization without proxy", phone_normalization_without_proxy),
 	TEST_NO_TAG("Phone normalization with proxy", phone_normalization_with_proxy),
 	TEST_NO_TAG("Phone normalization with dial escape plus", phone_normalization_with_dial_escape_plus),
 	TEST_NO_TAG("SIP URI normalization", sip_uri_normalization),
-	//TEST_NO_TAG("Load new default value for proxy config", load_dynamic_proxy_config)
+	TEST_NO_TAG("Load new default value for proxy config", load_dynamic_proxy_config)
 };
 
 test_suite_t proxy_config_test_suite = {"Proxy config", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

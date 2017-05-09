@@ -267,40 +267,51 @@ LinphoneNatPolicy * linphone_core_create_nat_policy(LinphoneCore *lc) {
 	return linphone_nat_policy_new(lc);
 }
 
+LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const LinphoneConfig *config, const char* section) {
+	const char *config_ref = lp_config_get_string(config, section, "ref", NULL);
+	const char *server = lp_config_get_string(config, section, "stun_server", NULL);
+	const char *username = lp_config_get_string(config, section, "stun_server_username", NULL);
+	bctbx_list_t *l = lp_config_get_string_list(config, section, "protocols", NULL);
+	LinphoneNatPolicy *policy;
+	if (config_ref)
+		policy = _linphone_nat_policy_new_with_ref(NULL, config_ref);
+	else
+		policy = linphone_nat_policy_new(NULL);
+	
+	if (server != NULL) linphone_nat_policy_set_stun_server(policy, server);
+	if (username != NULL) linphone_nat_policy_set_stun_server_username(policy, username);
+	if (l != NULL) {
+		bool_t upnp_enabled = FALSE;
+		bctbx_list_t *elem;
+		for (elem = l; elem != NULL; elem = elem->next) {
+			const char *value = (const char *)elem->data;
+			if (strcmp(value, "stun") == 0) linphone_nat_policy_enable_stun(policy, TRUE);
+			else if (strcmp(value, "turn") == 0) linphone_nat_policy_enable_turn(policy, TRUE);
+			else if (strcmp(value, "ice") == 0) linphone_nat_policy_enable_ice(policy, TRUE);
+			else if (strcmp(value, "upnp") == 0) upnp_enabled = TRUE;
+		}
+		if (upnp_enabled) linphone_nat_policy_enable_upnp(policy, TRUE);
+	}
+	return policy;
+}
 LinphoneNatPolicy * linphone_core_create_nat_policy_from_config(LinphoneCore *lc, const char *ref) {
 	LpConfig *config = lc->config;
 	LinphoneNatPolicy *policy = NULL;
 	char *section;
 	int index;
 	bool_t finished = FALSE;
-
+	
 	for (index = 0; finished != TRUE; index++) {
 		section = belle_sip_strdup_printf("nat_policy_%i", index);
 		if (lp_config_has_section(config, section)) {
 			const char *config_ref = lp_config_get_string(config, section, "ref", NULL);
 			if ((config_ref != NULL) && (strcmp(config_ref, ref) == 0)) {
-				const char *server = lp_config_get_string(config, section, "stun_server", NULL);
-				const char *username = lp_config_get_string(config, section, "stun_server_username", NULL);
-				bctbx_list_t *l = lp_config_get_string_list(config, section, "protocols", NULL);
-				policy = _linphone_nat_policy_new_with_ref(lc, ref);
-				if (server != NULL) linphone_nat_policy_set_stun_server(policy, server);
-				if (username != NULL) linphone_nat_policy_set_stun_server_username(policy, username);
-				if (l != NULL) {
-					bool_t upnp_enabled = FALSE;
-					bctbx_list_t *elem;
-					for (elem = l; elem != NULL; elem = elem->next) {
-						const char *value = (const char *)elem->data;
-						if (strcmp(value, "stun") == 0) linphone_nat_policy_enable_stun(policy, TRUE);
-						else if (strcmp(value, "turn") == 0) linphone_nat_policy_enable_turn(policy, TRUE);
-						else if (strcmp(value, "ice") == 0) linphone_nat_policy_enable_ice(policy, TRUE);
-						else if (strcmp(value, "upnp") == 0) upnp_enabled = TRUE;
-					}
-					if (upnp_enabled) linphone_nat_policy_enable_upnp(policy, TRUE);
-				}
+				policy = linphone_config_create_nat_policy_from_section(config, section);
+				policy->lc = lc;
 				finished = TRUE;
 			}
 		} else finished = TRUE;
-		belle_sip_free(section);
+	belle_sip_free(section);
 	}
-	return policy;
+return policy;
 }
