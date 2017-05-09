@@ -128,6 +128,7 @@ endif()
 set(LINPHONE_SOURCE_FILES_OBJC)
 if (IOS)
 	list(APPEND LINPHONE_SOURCE_FILES_OBJC ringtoneplayer_ios.m ringtoneplayer_ios.h)
+	list(APPEND LINPHONE_SOURCE_FILES_CXX linphonecore_ios.cc)
 endif()
 
 
