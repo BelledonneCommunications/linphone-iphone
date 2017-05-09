@@ -20,20 +20,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+#if __IOS__
 using ObjCRuntime;
+#endif
 
 namespace Linphone
 {
-#region Wrapper specifics
+	#region Wrapper specifics
 	/// <summary>
 	/// Only contains the LIB_NAME value that represents the library in which all DllImport are made
 	/// </summary>
 	public class LinphoneWrapper 
 	{
-#if ANDROID
-		public const string LIB_NAME = "linphone"; // With this, it automatically finds liblinphone.so
-#else
+#if __IOS__
 		public const string LIB_NAME = "linphone.framework/linphone";
+#else
+		public const string LIB_NAME = "linphone"; // With this, it automatically finds liblinphone.so
 #endif
 	}
 
@@ -58,9 +60,9 @@ namespace Linphone
 		internal IntPtr nativePtr;
 		
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void OnLinphoneObjectDataDestroyed(IntPtr data);
+		private delegate void OnLinphoneObjectDataDestroyed(IntPtr data);
 
-        [DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, OnLinphoneObjectDataDestroyed cb);
 
 		[DllImport(LinphoneWrapper.LIB_NAME)]
@@ -84,16 +86,18 @@ namespace Linphone
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, IntPtr data);
 
+#if __IOS__
 		[MonoPInvokeCallback(typeof(OnLinphoneObjectDataDestroyed))]
-        private static void onDataDestroyed(IntPtr data)
-        {
-            if (data != IntPtr.Zero)
-            {
-                //Console.WriteLine("Freeing C# handle");
-                GCHandle handle = GCHandle.FromIntPtr(data);
-                handle.Free();
-            }
-        }
+#endif
+		private static void onDataDestroyed(IntPtr data)
+		{
+			if (data != IntPtr.Zero)
+			{
+				//Console.WriteLine("Freeing C# handle");
+				GCHandle handle = GCHandle.FromIntPtr(data);
+				handle.Free();
+			}
+		}
 		
 		~LinphoneObject()
 		{
@@ -118,18 +122,15 @@ namespace Linphone
 					//Console.WriteLine("Reffing" + obj.ToString());
 				}
 				obj.nativePtr = ptr;
-				/*objPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(T)));
-				Marshal.StructureToPtr(obj, objPtr, false);*/
-				GCHandle handle = GCHandle.Alloc(obj);
-                objPtr = GCHandle.ToIntPtr(handle);
+				GCHandle handle = GCHandle.Alloc(obj, GCHandleType.Weak);
+				objPtr = GCHandle.ToIntPtr(handle);
 				belle_sip_object_data_set(ptr, "cs_obj", objPtr, onDataDestroyed);
 				return obj;
 			} 
 			else
 			{
-				//T obj = Marshal.PtrToStructure<T>(objPtr);
 				GCHandle handle = GCHandle.FromIntPtr(objPtr);
-                T obj = (T)handle.Target;
+				T obj = (T)handle.Target;
 				if (takeRef)
 				{
 					obj.nativePtr = belle_sip_object_ref(obj.nativePtr);
@@ -272,12 +273,14 @@ namespace Linphone
 		
 		public delegate void {{name_public}}({{params_public}});
 		private {{name_public}} {{var_public}};
-		
+
+#if __IOS__
 		[MonoPInvokeCallback(typeof({{name_private}}))]
+#endif
 		private static void {{cb_name}}({{params_private}})
 		{
 			{{interfaceClassName}} thiz = fromNativePtr<{{interfaceClassName}}>({{first_param}});
-            {{#isSimpleListener}}{{interfaceName}} listener = thiz.Listener;{{/isSimpleListener}}
+			{{#isSimpleListener}}{{interfaceName}} listener = thiz.Listener;{{/isSimpleListener}}
 			{{#isMultiListener}}{{interfaceName}} listener = thiz.CurrentCallbacks;{{/isMultiListener}}
 			listener.{{var_public}}?.Invoke({{{params}}});
 		}
