@@ -363,20 +363,22 @@ class CsharpTranslator(object):
 				listenerDict['delegate']['params_public'] += ', '
 				listenerDict['delegate']['params_private'] += ', '
 				listenerDict['delegate']['params'] += ', '
+
+				if normalType == dllImportType:
+					listenerDict['delegate']['params'] += argName
+				else:
+					if normalType == "bool":
+						listenerDict['delegate']['params'] += argName + " == 0"
+					elif self.is_linphone_type(arg.type, True, False) and type(arg.type) is AbsApi.ClassType:
+						listenerDict['delegate']['params'] += "fromNativePtr<" + normalType + ">(" + argName + ")"
+					elif self.is_linphone_type(arg.type, True, False) and type(arg.type) is AbsApi.EnumType:
+						listenerDict['delegate']['params'] += "(" + normalType + ")" + argName + ""
+					else:
+						raise("Error")
 			else:
 				listenerDict['delegate']['first_param'] = argName
-
-			if normalType == dllImportType:
-				listenerDict['delegate']['params'] += argName
-			else:
-				if normalType == "bool":
-					listenerDict['delegate']['params'] += argName + " == 0"
-				elif self.is_linphone_type(arg.type, True, False) and type(arg.type) is AbsApi.ClassType:
-					listenerDict['delegate']['params'] += "fromNativePtr<" + normalType + ">(" + argName + ")"
-				elif self.is_linphone_type(arg.type, True, False) and type(arg.type) is AbsApi.EnumType:
-					listenerDict['delegate']['params'] += "(" + normalType + ")" + argName + ""
-				else:
-					raise("Error")
+				listenerDict['delegate']['params'] = 'thiz'
+				
 			listenerDict['delegate']['params_public'] += normalType + " " + argName
 			listenerDict['delegate']['params_private'] += dllImportType + " " + argName
 
