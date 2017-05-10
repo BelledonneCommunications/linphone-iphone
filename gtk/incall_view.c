@@ -171,7 +171,6 @@ void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value){
 
 static void conference_button_clicked(GtkWidget *button, gpointer call_ref){
 	gtk_widget_set_sensitive(button,FALSE);
-	g_object_set_data(G_OBJECT(linphone_gtk_get_main_window()),"conf_frame",NULL);
 	linphone_core_add_all_to_conference(linphone_gtk_get_core());
 
 }

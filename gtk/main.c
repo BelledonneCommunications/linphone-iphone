@@ -829,12 +829,12 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
 	if(conf_frame==NULL){
 		linphone_gtk_enable_transfer_button(lc,call_list_size>1);
-		linphone_gtk_enable_conference_button(lc,call_list_size>1);
 	} else {
 		linphone_gtk_enable_transfer_button(lc,FALSE);
-		linphone_gtk_enable_conference_button(lc,FALSE);
 	}
 	if (call) {
+		bool_t enable_conference = call_list_size>1 && linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call)) == FALSE;
+		linphone_gtk_enable_conference_button(lc,enable_conference);
 		linphone_gtk_update_video_button(call);
 	}
 }
