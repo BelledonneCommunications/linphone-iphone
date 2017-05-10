@@ -111,4 +111,3 @@
 [submodule "submodules/ortp"]
 	path = submodules/ortp
 	url = git://git.linphone.org/ortp.git
-

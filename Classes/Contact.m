@@ -197,8 +197,8 @@
 	if (_person) {
 		normSip = [self setOrCreateSipContactEntry:index withValue:sip];
 		NSDictionary *lDict = @{
-			(NSString *)kABPersonInstantMessageUsernameKey : normSip ? normSip : sip,
-			(NSString *)kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
+			(NSString *) kABPersonInstantMessageUsernameKey : normSip ? normSip : sip, (NSString *)
+			kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
 		};
 
 		ret = [self replaceInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict) atIndex:index];
@@ -358,8 +358,8 @@
 	CFErrorRef error = NULL;
 
 	NSDictionary *lDict = @{
-		(NSString *)kABPersonInstantMessageUsernameKey : value,
-		(NSString *)kABPersonInstantMessageServiceKey : [LinphoneManager instance].contactSipField
+		(NSString *) kABPersonInstantMessageUsernameKey : value, (NSString *)
+		kABPersonInstantMessageServiceKey : [LinphoneManager instance].contactSipField
 	};
 
 	if (![self replaceInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict) atIndex:index]) {
