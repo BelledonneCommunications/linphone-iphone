@@ -153,7 +153,8 @@ class IOSPreparator(prepare.Preparator):
 
     def extract_libs_list(self):
         # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-        regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
+        # regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
+        regex = re.compile("name = ([A-Za-z0-9\-_]+)\.framework; path = \"liblinphone-sdk/apple-darwin/Frameworks/")
         return self.extract_from_xcode_project_with_regex(regex)
 
     def detect_package_manager(self):
@@ -264,11 +265,13 @@ LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 all: build
 
 sdk:
-\tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name '*.a'` && \\
+\tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name '*.framework'` && \\
 \trm -rf liblinphone-sdk/apple-darwin && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\
-\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
 \tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/share liblinphone-sdk/apple-darwin/. && \\
+\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/lib liblinphone-sdk/apple-darwin/. && \\
+\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
+\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/Frameworks liblinphone-sdk/apple-darwin/. && \\
 \tfor archive in $$archives ; do \\
 \t\tarmv7_path=`echo $$archive | sed -e "s/{first_arch}/armv7/"`; \\
 \t\tarm64_path=`echo $$archive | sed -e "s/{first_arch}/arm64/"`; \\
@@ -277,10 +280,12 @@ sdk:
 \t\tdestpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/{first_arch}-//" | sed -e "s/\.ios//"`; \\
 \t\tall_paths=`echo $$archive`; \\
 \t\tall_archs="{first_arch}"; \\
+\t\tarchive_name=`basename $$archive`; \\
+\t\tframework_name=`echo $$archive_name | cut -d '.' -f 1`; \\
 \t\tmkdir -p `dirname $$destpath`; \\
 \t\t{multiarch} \\
 \t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
-\t\tlipo -create $$all_paths -output $$destpath; \\
+\t\tlipo -create -output $$destpath/$$framework_name $$armv7_path/$$framework_name $$arm64_path/$$framework_name $$x86_64_path/$$framework_name; \\
 \tdone; \\
 \tif test -s WORK/ios-{first_arch}/Build/dummy_libraries/dummy_libraries.txt; then \\
 \t\techo 'NOTE: the following libraries were STUBBED:'; \\
