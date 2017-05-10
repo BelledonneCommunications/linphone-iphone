@@ -306,7 +306,7 @@
 		[LinphoneManager.instance setProviderDelegate:self.del];
 	}
 
-	if (state != UIApplicationStateActive) {
+	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
 		if (!start_at_boot || !background_mode) {
 			// autoboot disabled or no background, and no push: do nothing and wait for a real launch
