@@ -163,8 +163,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
-	linphone_config_load_from_xml_file(linphone_core_get_config(LC), [LinphoneManager bundleFile:rcFilename].UTF8String,
-									   LC, NULL);
+	linphone_config_load_from_xml_file(linphone_core_get_config(LC),
+									   [LinphoneManager bundleFile:rcFilename].UTF8String);
 	[self changeView:nextView back:FALSE animation:TRUE];
 }
 
