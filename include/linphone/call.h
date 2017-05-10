@@ -874,6 +874,26 @@ LINPHONE_PUBLIC void linphone_call_remove_callbacks(LinphoneCall *call, Linphone
 LINPHONE_PUBLIC LinphoneCallCbs *linphone_call_get_current_callbacks(const LinphoneCall *call);
 
 /**
+ * Set call parameters - advanced and not recommended feature - use with caution.
+ * Local call parameters applicable to an outgoing or incoming shall usually be passed to linphone_core_invite_address_with_params() or 
+ * linphone_call_accept_with_params().
+ * However, in some cases it might be desirable from a software design standpoint to modify local parameters outside of the application layer, typically
+ * in the purpose of implementing a custom logic including special headers in INVITE or 200Ok requests, driven by a call_state_changed listener method.
+ * This function accepts to assign a new LinphoneCallParams only in LinphoneCallOutgoingInit and LinphoneCallIncomingReceived states.
+ * @param call the LinphoneCall object
+**/
+LINPHONE_PUBLIC void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *params);
+
+/**
+ * Returns local parameters associated with the call.
+ * This is typically the parameters passed at call initiation to linphone_core_invite_address_with_params() or linphone_call_accept_with_params(), or some default
+ * parameters if no LinphoneCallParams was explicitely passed during call initiation.
+ * @param call the LinphoneCall object
+ * @return the call's local parameters.
+ **/
+LINPHONE_PUBLIC const LinphoneCallParams * linphone_call_get_params(LinphoneCall *call);
+
+/**
  * @}
  */
 

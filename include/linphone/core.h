@@ -5189,6 +5189,7 @@ LINPHONE_PUBLIC LinphonePresenceService * linphone_core_create_presence_service(
 /**
  * Notifies the upper layer that a presence status has been received by calling the appropriate
  * callback if one has been set.
+ * This method is for advanced usage, where customization of the liblinphone's internal behavior is required.
  * @param[in]  lc the #LinphoneCore object.
  * @param[in]  lf the #LinphoneFriend whose presence information has been received.
  */
@@ -5198,6 +5199,7 @@ LINPHONE_PUBLIC void linphone_core_notify_notify_presence_received(LinphoneCore 
 /**
  * Notifies the upper layer that a presence model change has been received for the uri or
  * telephone number given as a parameter, by calling the appropriate callback if one has been set.
+ * This method is for advanced usage, where customization of the liblinphone's internal behavior is required.
  * @param[in]  lc  the #LinphoneCore object.
  * @param[in]  lf  the #LinphoneFriend whose presence information has been received.
  * @param[in]  uri_or_tel  telephone number or sip uri

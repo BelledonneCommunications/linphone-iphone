@@ -415,8 +415,6 @@ void linphone_call_notify_info_message_received(LinphoneCall *call, const Linpho
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
 void _linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
-LINPHONE_PUBLIC void linphone_call_set_params(LinphoneCall *call, const LinphoneCallParams *params);
-LINPHONE_PUBLIC const LinphoneCallParams * linphone_call_get_params(LinphoneCall *call);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md);
