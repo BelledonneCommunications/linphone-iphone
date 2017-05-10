@@ -682,6 +682,7 @@
 		8C5BCEE01EB385B100A9AAEF /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
+		8CE845651EC3500A00A94D60 /* bctoolbox-tester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
@@ -1897,6 +1898,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8CE845651EC3500A00A94D60 /* bctoolbox-tester.framework in Frameworks */,
 				8C3EAA1C1EB8D9DB00B732B6 /* linphonetester.framework in Frameworks */,
 				F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */,
 				F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */,
