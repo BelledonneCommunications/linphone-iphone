@@ -519,7 +519,9 @@ static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt
 		case XML2LPC_DEBUG: bctbx_level = BCTBX_LOG_DEBUG; break;
 		case XML2LPC_MESSAGE: bctbx_level = BCTBX_LOG_MESSAGE;break;
 		case XML2LPC_WARNING: bctbx_level = BCTBX_LOG_WARNING;break;
-		case XML2LPC_ERROR: bctbx_level = BCTBX_LOG_ERROR;break;
+		case XML2LPC_ERROR: 
+		default:
+			bctbx_level = BCTBX_LOG_ERROR;break;
 	}
 	bctbx_logv(BCTBX_LOG_DOMAIN, bctbx_level,fmt,list);
 }
