@@ -5251,7 +5251,7 @@ LinphoneStatus linphone_call_resume(LinphoneCall *call) {
 static void terminate_call(LinphoneCall *call) {
 	LinphoneCore *lc = linphone_call_get_core(call);
 	const bctbx_list_t *calls = linphone_core_get_calls(lc);
-	bool_t stop_ringing = true;
+	bool_t stop_ringing = TRUE;
 
 	if ((call->state == LinphoneCallIncomingReceived) && (linphone_error_info_get_reason(call->ei) != LinphoneReasonNotAnswered)){
 		linphone_error_info_set_reason(call->ei, LinphoneReasonDeclined);
@@ -5261,7 +5261,7 @@ static void terminate_call(LinphoneCall *call) {
 	/* Stop ringing */
 	while(calls) {
 		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived) {
-			stop_ringing = false;
+			stop_ringing = FALSE;
 			break;
 		}
 		calls = calls->next;
