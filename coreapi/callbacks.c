@@ -901,6 +901,8 @@ static void call_failure(SalOp *op){
 	const char *msg=ei->full_string;
 	LinphoneCall *referer;
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	bool_t stop_ringing = TRUE;
+	bctbx_list_t *calls = lc->calls;
 	
 	if (call==NULL){
 		ms_warning("Call faillure reported on already terminated call.");
@@ -1012,7 +1014,17 @@ static void call_failure(SalOp *op){
 		break; /*nothing to do*/
 	}
 
-	linphone_core_stop_ringing(lc);
+	/* Stop ringing */
+	while(calls) {
+		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived) {
+			stop_ringing = FALSE;
+			break;
+		}
+		calls = calls->next;
+	}
+	if(stop_ringing) {
+		linphone_core_stop_ringing(lc);
+	}
 	linphone_call_stop_media_streams(call);
 
 #ifdef BUILD_UPNP
