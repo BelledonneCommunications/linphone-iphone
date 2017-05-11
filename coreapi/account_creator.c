@@ -122,9 +122,11 @@ LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const Linphon
 	if (creator->display_name) {
 		linphone_address_set_display_name(identity, creator->display_name);
 	}
+	/*deprecated, use default proxy config instead*/
 	if (creator->route) {
 		route = ms_strdup_printf("%s", creator->route);
 	}
+	/*deprecated, use default proxy config instead*/
 	if (creator->domain) {
 		domain = ms_strdup_printf("%s;transport=%s", creator->domain, linphone_transport_to_string(creator->transport));
 	}
@@ -137,12 +139,7 @@ LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const Linphon
 		snprintf(buff, sizeof(buff), "%d", dial_prefix_number);
 		linphone_proxy_config_set_dial_prefix(cfg, buff);
 	}
-	if (linphone_proxy_config_get_server_addr(cfg) == NULL)
-		linphone_proxy_config_set_server_addr(cfg, domain);
-	if (linphone_proxy_config_get_route(cfg) == NULL)
-		linphone_proxy_config_set_route(cfg, route);
 
-	linphone_proxy_config_enable_publish(cfg, FALSE);
 	linphone_proxy_config_enable_register(cfg, TRUE);
 
 	info = linphone_auth_info_new(linphone_address_get_username(identity), // username

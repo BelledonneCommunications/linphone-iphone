@@ -517,7 +517,7 @@ static void stun_auth_requested_cb(LinphoneCall *call, const char *realm, const 
 	if (nat_policy != NULL) {
 		user = linphone_nat_policy_get_stun_server_username(nat_policy);
 	} else {
-		nat_policy = linphone_core_get_nat_policy(call->core);
+		nat_policy = call->nat_policy;
 		if (nat_policy != NULL) {
 			user = linphone_nat_policy_get_stun_server_username(nat_policy);
 		}
@@ -598,11 +598,9 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	IceCheckList *audio_cl;
 	IceCheckList *video_cl;
 	IceCheckList *text_cl;
-	LinphoneNatPolicy *nat_policy = NULL;
+	LinphoneNatPolicy *nat_policy = call->nat_policy;
 	const char *server = NULL;
 
-	if (call->dest_proxy != NULL) nat_policy = linphone_proxy_config_get_nat_policy(call->dest_proxy);
-	if (nat_policy == NULL) nat_policy = linphone_core_get_nat_policy(lc);
 	if (nat_policy != NULL) server = linphone_nat_policy_get_stun_server(nat_policy);
 
 	if (call->ice_session == NULL) return -1;

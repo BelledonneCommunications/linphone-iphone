@@ -1109,6 +1109,20 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	linphone_call_init_stats(call->audio_stats, LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(call->video_stats, LINPHONE_CALL_STATS_VIDEO);
 	linphone_call_init_stats(call->text_stats, LINPHONE_CALL_STATS_TEXT);
+	
+	if (call->dest_proxy == NULL) {
+		/* Try to define the destination proxy if it has not already been done to have a correct contact field in the SIP messages */
+		call->dest_proxy = linphone_core_lookup_known_proxy(call->core, call->log->to);
+	}
+	
+	
+	if (call->dest_proxy != NULL)
+		call->nat_policy = linphone_proxy_config_get_nat_policy(call->dest_proxy);
+	if (call->nat_policy == NULL)
+		call->nat_policy = linphone_core_get_nat_policy(call->core);
+	
+	linphone_nat_policy_ref(call->nat_policy);
+
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
@@ -1283,7 +1297,7 @@ void linphone_call_fill_media_multicast_addr(LinphoneCall *call) {
 void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite){
 	if (call->ice_session) return; /*already created*/
 
-	if (!linphone_nat_policy_ice_enabled(linphone_core_get_nat_policy(call->core))){
+	if (!linphone_nat_policy_ice_enabled(call->nat_policy)){
 		return;
 	}
 
@@ -1321,7 +1335,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 	linphone_call_check_ice_session(call, IR_Controlling, FALSE);
 
-	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
+	if (linphone_nat_policy_ice_enabled(call->nat_policy)) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
 #ifdef BUILD_UPNP
@@ -1566,8 +1580,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		}
 	}
 
-	if (call->dest_proxy != NULL) nat_policy = linphone_proxy_config_get_nat_policy(call->dest_proxy);
-	if (nat_policy == NULL) nat_policy = linphone_core_get_nat_policy(call->core);
 	if ((nat_policy != NULL) && linphone_nat_policy_ice_enabled(nat_policy)) {
 		/* Create the ice session now if ICE is required */
 		if (md){
@@ -1958,6 +1970,8 @@ static void linphone_call_destroy(LinphoneCall *obj){
 	if (obj->onhold_file) ms_free(obj->onhold_file);
 
 	if (obj->ei) linphone_error_info_unref(obj->ei);
+	if (obj->nat_policy)
+		linphone_nat_policy_unref(obj->nat_policy);
 }
 
 LinphoneCall * linphone_call_ref(LinphoneCall *obj){
@@ -2380,7 +2394,7 @@ static void port_config_set_random_choosed(LinphoneCall *call, int stream_index,
 
 static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream_index, bool_t create_checklist){
 	MediaStream *ms = stream_index == call->main_audio_stream_index ? (MediaStream*)call->audiostream : stream_index == call->main_video_stream_index ? (MediaStream*)call->videostream : (MediaStream*)call->textstream;
-	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
+	if (linphone_nat_policy_ice_enabled(call->nat_policy) && (call->ice_session != NULL)){
 		IceCheckList *cl;
 		rtp_session_set_pktinfo(ms->sessions.rtp_session, TRUE);
 		cl=ice_session_check_list(call->ice_session, stream_index);
@@ -2400,7 +2414,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 	int err;
 	bool_t has_video=FALSE;
 
-	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
+	if (linphone_nat_policy_ice_enabled(call->nat_policy) && (call->ice_session != NULL)){
 		if (incoming_offer){
 			remote=sal_call_get_remote_media_description(call->op);
 			has_video=linphone_core_video_enabled(call->core) && linphone_core_media_description_contains_video_stream(remote);
@@ -4918,12 +4932,6 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 
 void linphone_call_set_contact_op(LinphoneCall* call) {
 	LinphoneAddress *contact;
-
-	if (call->dest_proxy == NULL) {
-		/* Try to define the destination proxy if it has not already been done to have a correct contact field in the SIP messages */
-		call->dest_proxy = linphone_core_lookup_known_proxy(call->core, call->log->to);
-	}
-
 	contact=get_fixed_contact(call->core,call,call->dest_proxy);
 	if (contact){
 		SalTransport tport=sal_address_get_transport((SalAddress*)contact);

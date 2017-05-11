@@ -1454,7 +1454,10 @@ LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConf
 }
 
 void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy) {
-	if (policy != NULL) policy = linphone_nat_policy_ref(policy); /* Prevent object destruction if the same policy is used */
+	if (policy != NULL) {
+		policy = linphone_nat_policy_ref(policy); /* Prevent object destruction if the same policy is used */
+		policy->lc = cfg->lc;
+	}
 	if (cfg->nat_policy != NULL) linphone_nat_policy_unref(cfg->nat_policy);
 	cfg->nat_policy = policy;
 }

@@ -400,6 +400,7 @@ struct _LinphoneCall{
 
 	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
 	LinphoneCallCbs *current_cbs; /* The current LinphoneCallCbs object used to call a callback */
+	LinphoneNatPolicy *nat_policy; /*nat policy for this call, either from proxy nor from core*/
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCall);
