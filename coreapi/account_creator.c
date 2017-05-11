@@ -115,20 +115,10 @@ LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const Linphon
 	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
 	char *identity_str = _get_identity(creator);
 	LinphoneAddress *identity = linphone_address_new(identity_str);
-	char *route = NULL;
-	char *domain = NULL;
 
 	ms_free(identity_str);
 	if (creator->display_name) {
 		linphone_address_set_display_name(identity, creator->display_name);
-	}
-	/*deprecated, use default proxy config instead*/
-	if (creator->route) {
-		route = ms_strdup_printf("%s", creator->route);
-	}
-	/*deprecated, use default proxy config instead*/
-	if (creator->domain) {
-		domain = ms_strdup_printf("%s;transport=%s", creator->domain, linphone_transport_to_string(creator->transport));
 	}
 	linphone_proxy_config_set_identity_address(cfg, identity);
 	if (creator->phone_country_code) {
