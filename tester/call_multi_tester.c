@@ -1027,6 +1027,44 @@ void eject_from_3_participants_remote_conference(void) {
 	linphone_conference_server_destroy(focus);
 }
 
+void do_not_stop_ringing_when_declining_one_of_two_incoming_calls(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
+	LinphoneCall* pauline_called_by_marie;
+	LinphoneCall* pauline_called_by_laure;
+	LinphoneCallParams *laure_params=linphone_core_create_call_params(laure->lc, NULL);
+	LinphoneCallParams *marie_params=linphone_core_create_call_params(marie->lc, NULL);
+
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(laure->lc,pauline->identity,laure_params));
+	linphone_call_params_unref(laure_params);
+
+	BC_ASSERT_TRUE(wait_for(laure->lc
+							,pauline->lc
+							,&pauline->stat.number_of_LinphoneCallIncomingReceived
+							,1));
+	pauline_called_by_laure=linphone_core_get_current_call(pauline->lc);
+
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(marie->lc,pauline->identity,marie_params));
+	linphone_call_params_unref(marie_params);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc
+							,pauline->lc
+							,&pauline->stat.number_of_LinphoneCallIncomingReceived
+							,2));
+	pauline_called_by_marie=linphone_core_get_current_call(marie->lc);
+	linphone_call_decline(pauline_called_by_laure, LinphoneReasonDeclined);
+	BC_ASSERT_TRUE(wait_for(laure->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+
+	BC_ASSERT_TRUE(linphone_ringtoneplayer_is_started(pauline->lc->ringtoneplayer));
+	linphone_call_terminate(pauline_called_by_marie);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallEnd,2));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+}
+
 test_t multi_call_tests[] = {
 	TEST_NO_TAG("Call waiting indication", call_waiting_indication),
 	TEST_NO_TAG("Call waiting indication with privacy", call_waiting_indication_with_privacy),
@@ -1050,6 +1088,7 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Simple remote conference", simple_remote_conference),
 	TEST_NO_TAG("Simple remote conference with shut down focus", simple_remote_conference_shut_down_focus),
 	TEST_NO_TAG("Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference),
+	TEST_NO_TAG("Do not stop ringing when declining one of two incoming calls", do_not_stop_ringing_when_declining_one_of_two_incoming_calls),
 };
 
 test_suite_t multi_call_test_suite = {"Multi call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
