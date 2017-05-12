@@ -2867,6 +2867,10 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getContactUriP
 	return params ? env->NewStringUTF(params) : NULL;
 }
 
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getNatPolicy(JNIEnv* env,jobject thiz,jlong proxyCfg) {
+	LinphoneNatPolicy *nat_policy = linphone_proxy_config_get_nat_policy((LinphoneProxyConfig *)proxyCfg);
+	return (nat_policy != NULL) ? getNatPolicy(env, nat_policy) : NULL;
+}
 
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
 	if (jroute != NULL) {

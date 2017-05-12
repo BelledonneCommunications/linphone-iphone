@@ -86,6 +86,11 @@ public interface LinphoneProxyConfig {
 	public boolean registerEnabled();
 
 	/**
+	 * @return nat policy from proxy config
+	 */
+	public LinphoneNatPolicy getNatPolicy();
+
+	/**
 	 * normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
 	 * @param number
 	 * @return
