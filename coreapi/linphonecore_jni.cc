@@ -6022,7 +6022,7 @@ extern "C" void Java_org_linphone_core_LpConfigImpl_sync(JNIEnv *env, jobject th
 extern "C" void Java_org_linphone_core_LpConfigImpl_loadXmlFile(JNIEnv *env, jobject thiz, jlong lpc, jstring jfilename) {
 	const char *filename = GetStringUTFChars(env, jfilename);
 	LpConfig *lp = (LpConfig *)lpc;
-	linphone_config_load_from_xml_file(lp, filename, NULL, NULL);
+	linphone_config_load_from_xml_file(lp, filename);
 	ReleaseStringUTFChars(env, jfilename, filename);
 }
 
