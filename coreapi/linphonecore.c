@@ -3471,8 +3471,11 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	bool_t defer = FALSE;
 	LinphoneCallParams *cp;
 
-	if (!(!linphone_call_params_audio_enabled(params) || linphone_call_params_get_audio_direction(params) == LinphoneMediaDirectionInactive)
-		&& linphone_core_preempt_sound_resources(lc) == -1){
+	if (!(!linphone_call_params_audio_enabled(params) || 
+		linphone_call_params_get_audio_direction(params) == LinphoneMediaDirectionInactive ||
+		linphone_call_params_get_local_conference_mode(params) == TRUE
+		)
+		&& linphone_core_preempt_sound_resources(lc) == -1) {
 		ms_error("linphone_core_invite_address_with_params(): sound is required for this call but another call is already locking the sound resource. Call attempt is rejected.");
 		return NULL;
 	}
@@ -3776,7 +3779,7 @@ static int remote_address_compare(LinphoneCall *call, const LinphoneAddress *rad
 	return !linphone_address_weak_equal (addr,raddr);
 }
 
-LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address){
+LinphoneCall *linphone_core_get_call_by_remote_address(const LinphoneCore *lc, const char *remote_address){
 	LinphoneCall *call=NULL;
 	LinphoneAddress *raddr=linphone_address_new(remote_address);
 	if (raddr) {
@@ -3786,8 +3789,12 @@ LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const c
 	return call;
 }
 
-LinphoneCall *linphone_core_get_call_by_remote_address2(LinphoneCore *lc, const LinphoneAddress *raddr){
-	bctbx_list_t *elem=bctbx_list_find_custom(lc->calls,(int (*)(const void*,const void *))remote_address_compare,raddr);
+LinphoneCall *linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *remote_address){
+	return linphone_core_get_call_by_remote_address(lc, remote_address);
+}
+
+LinphoneCall *linphone_core_get_call_by_remote_address2(const LinphoneCore *lc, const LinphoneAddress *raddr){
+	const bctbx_list_t *elem=bctbx_list_find_custom(lc->calls,(int (*)(const void*,const void *))remote_address_compare,raddr);
 
 	if (elem) return (LinphoneCall*) elem->data;
 	return NULL;
@@ -6580,29 +6587,6 @@ const char *linphone_core_get_user_certificates_path(LinphoneCore *lc){
 	return lc->user_certificates_path;
 }
 
-LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri) {
-	bctbx_list_t *calls;
-	LinphoneCall *c;
-	const LinphoneAddress *address;
-	char *current_uri;
-
-	if (uri == NULL) return NULL;
-	calls=lc->calls;
-	while(calls) {
-		c=(LinphoneCall*)calls->data;
-		calls=calls->next;
-		address = linphone_call_get_remote_address(c);
-		current_uri=linphone_address_as_string_uri_only(address);
-		if (strcmp(uri,current_uri)==0) {
-			ms_free(current_uri);
-			return c;
-		} else {
-			ms_free(current_uri);
-		}
-	}
-	return NULL;
-}
-
 bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
 	bctbx_list_t *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next) {
@@ -7066,6 +7050,10 @@ LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc
 		return NULL;
 	}
 	return lc->conf_ctx;
+}
+
+LinphoneConferenceParams * linphone_core_create_conference_params(LinphoneCore *lc){
+	return linphone_conference_params_new(lc);
 }
 
 LinphoneStatus linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {

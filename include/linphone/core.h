@@ -1300,7 +1300,7 @@ LINPHONE_PUBLIC LinphoneCallParams *linphone_core_create_call_params(LinphoneCor
  * @return The call if it has been found, NULL otherwise
  * @ingroup call_control
  */
-LINPHONE_PUBLIC LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
+LINPHONE_PUBLIC LinphoneCall *linphone_core_get_call_by_remote_address(const LinphoneCore *lc, const char *remote_address);
 
 /**
  * Get the call with the remote_address specified
@@ -1310,7 +1310,7 @@ LINPHONE_PUBLIC LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneC
  *
  * @ingroup call_control
  */
-LINPHONE_PUBLIC LinphoneCall *linphone_core_get_call_by_remote_address2(LinphoneCore *lc, const LinphoneAddress *remote_address);
+LINPHONE_PUBLIC LinphoneCall *linphone_core_get_call_by_remote_address2(const LinphoneCore *lc, const LinphoneAddress *remote_address);
 
 
 /**
@@ -4014,6 +4014,14 @@ LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCor
  */
 
 /**
+ * Create some default conference parameters for instanciating a a conference with linphone_core_create_conference_with_params().
+ * @param lc the core
+ * @return conference parameters.
+**/
+LINPHONE_PUBLIC LinphoneConferenceParams * linphone_core_create_conference_params(LinphoneCore *lc);
+
+
+/**
  * Create a conference
  * @param lc The #LinphoneCore instance where the conference will be created inside.
  * @param params Parameters of the conference. See #LinphoneConferenceParams.
@@ -4021,6 +4029,7 @@ LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCor
  * freed by the core after calling linphone_core_terminate_conference().
  */
 LINPHONE_PUBLIC LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc, const LinphoneConferenceParams *params);
+
 
 /**
  * Add a participant to the conference. If no conference is going on

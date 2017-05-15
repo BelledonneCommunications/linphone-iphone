@@ -381,6 +381,77 @@ static void simple_conference(void) {
 	linphone_core_manager_destroy(laure);
 }
 
+
+static void simple_conference_from_scratch(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
+	LinphoneConference *conf;
+	LinphoneConferenceParams *conf_params;
+	LinphoneCall *pauline_call, *laure_call;
+	bctbx_list_t *participants = NULL;
+	bctbx_list_t *lcs = NULL;
+	
+	lcs = bctbx_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
+	lcs = bctbx_list_append(lcs, laure->lc);
+	
+	/*marie creates the conference*/
+	conf_params = linphone_core_create_conference_params(marie->lc);
+	linphone_conference_params_enable_video(conf_params, FALSE);
+	conf = linphone_core_create_conference_with_params(marie->lc, conf_params);
+	linphone_conference_params_unref(conf_params);
+	
+	participants = bctbx_list_append(participants, pauline->identity);
+	participants = bctbx_list_append(participants, laure->identity);
+	
+	linphone_conference_invite_participants(conf, participants, NULL);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingProgress,2,2000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallIncomingReceived,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallIncomingReceived,1,10000));
+	
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	laure_call = linphone_core_get_current_call(laure->lc);
+	
+	BC_ASSERT_PTR_NOT_NULL(pauline_call);
+	BC_ASSERT_PTR_NOT_NULL(laure_call);
+	
+	if (pauline_call && laure_call){
+		const bctbx_list_t *marie_calls, *it;
+		linphone_call_accept(pauline_call);
+		linphone_call_accept(laure_call);
+		
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,2,10000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,2,3000));
+		
+		/*make sure that the two calls from Marie's standpoint are in conference*/
+		marie_calls = linphone_core_get_calls(marie->lc);
+		BC_ASSERT_EQUAL(bctbx_list_size(marie_calls), 2, int, "%i");
+		for (it = marie_calls; it != NULL; it = it->next){
+			BC_ASSERT_TRUE(linphone_call_params_get_local_conference_mode(linphone_call_get_current_params((LinphoneCall*)it->data)) == TRUE);
+		}
+		/*wait a bit for the conference audio processing to run, despite we do not test it for the moment*/
+		wait_for_list(lcs,NULL,0,5000);
+		
+		linphone_core_terminate_conference(marie->lc);
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,2,5000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,10000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
+		
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,2,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,1000));
+	}
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+	
+	bctbx_list_free(participants);
+	bctbx_list_free(lcs);
+}
+
 static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -1074,6 +1145,7 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing),
 	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media),
 	TEST_NO_TAG("Simple conference", simple_conference),
+	TEST_NO_TAG("Simple conference established from scractch", simple_conference_from_scratch),
 	TEST_ONE_TAG("Simple conference with ICE", simple_conference_with_ice, "ICE"),
 	TEST_ONE_TAG("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE"),
 	TEST_NO_TAG("Eject from 3 participants conference", eject_from_3_participants_local_conference),
