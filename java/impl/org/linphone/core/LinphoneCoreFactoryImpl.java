@@ -32,8 +32,6 @@ import org.linphone.mediastream.Version;
 import org.linphone.tools.OpenH264DownloadHelper;
 
 public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
-	public static String ABI;
-
 	private static boolean loadOptionalLibrary(String s) {
 		try {
 			System.loadLibrary(s);
@@ -45,34 +43,14 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	static {
-		List<String> cpuabis = Version.getCpuAbis();
-		boolean libLoaded = false;
-		Throwable firstException = null;
 		System.loadLibrary("gnustl_shared");
-		for (String abi : cpuabis) {
-			android.util.Log.i("LinphoneCoreFactoryImpl", "Trying to load liblinphone for " + abi);
-			loadOptionalLibrary("ffmpeg-linphone-" + abi);
-			//Main library
-			try {
-				System.loadLibrary("bctoolbox-" + abi);
-				System.loadLibrary("ortp-" + abi);
-				System.loadLibrary("mediastreamer_base-" + abi);
-				System.loadLibrary("mediastreamer_voip-" + abi);
-				System.loadLibrary("linphone-" + abi);
-				ABI = abi;
-				libLoaded = true;
-				break;
-			} catch(Throwable e) {
-				if (firstException == null) firstException = e;
-			}
-		}
-
-		if (!libLoaded){
-			throw new RuntimeException(firstException);
-
-		}else{
-			Version.dumpCapabilities();
-		}
+		loadOptionalLibrary("ffmpeg-linphone");
+		System.loadLibrary("bctoolbox");
+		System.loadLibrary("ortp");
+		System.loadLibrary("mediastreamer_base");
+		System.loadLibrary("mediastreamer_voip");
+		System.loadLibrary("linphone");
+		Version.dumpCapabilities();
 	}
 	@Override
 	public LinphoneAuthInfo createAuthInfo(String username, String password,
