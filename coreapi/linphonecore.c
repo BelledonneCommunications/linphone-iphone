@@ -1353,9 +1353,6 @@ static void sip_config_read(LinphoneCore *lc) {
 	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
 	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound"));
 	lc->sip_conf.save_auth_info = lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
-	if (lp_config_get_string(lc->config, "sip", "rls_uri", NULL))
-		lc->default_rls_addr = linphone_address_new(lp_config_get_string(lc->config, "sip", "rls_uri", NULL));
-
 	linphone_core_create_im_notif_policy(lc);
 }
 

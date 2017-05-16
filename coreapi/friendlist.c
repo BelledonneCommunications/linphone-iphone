@@ -459,8 +459,20 @@ const LinphoneAddress * linphone_friend_list_get_rls_address(const LinphoneFrien
 const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFriendList *list) {
 	if (list->rls_addr)
 		return list->rls_addr;
-	else if (list->lc)
+	else if (list->lc) {
+		const char* rls_uri = lp_config_get_string(list->lc->config, "sip", "rls_uri", NULL);
+		if (list->lc->default_rls_addr)
+			linphone_address_unref(list->lc->default_rls_addr);
+		
+		list->lc->default_rls_addr=NULL;
+		
+		if (rls_uri) {
+			/*to make sure changes in config are used if any*/
+			list->lc->default_rls_addr = linphone_address_new(rls_uri);
+		}
+		
 		return list->lc->default_rls_addr;
+	}
 	else
 		return NULL;
 }
