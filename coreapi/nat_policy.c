@@ -291,6 +291,7 @@ LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const Linphon
 			else if (strcmp(value, "upnp") == 0) upnp_enabled = TRUE;
 		}
 		if (upnp_enabled) linphone_nat_policy_enable_upnp(policy, TRUE);
+		bctbx_list_free_with_data(l, (bctbx_list_free_func)ms_free);
 	}
 	return policy;
 }
