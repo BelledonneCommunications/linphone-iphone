@@ -3982,16 +3982,21 @@ LinphoneConsolidatedPresence linphone_core_get_consolidated_presence(const Linph
 }
 
 void linphone_core_set_consolidated_presence(LinphoneCore *lc, LinphoneConsolidatedPresence presence) {
+	const bctbx_list_t *cfg_list;
+	const bctbx_list_t *item;
 	LinphoneProxyConfig *cfg;
 	LinphonePresenceModel *model;
 	LinphonePresenceActivity *activity = NULL;
 
-	cfg = linphone_core_get_default_proxy_config(lc);
-	if ((cfg != NULL) && (presence == LinphoneConsolidatedPresenceOffline) && linphone_proxy_config_publish_enabled(cfg)) {
-		/* Unpublish when going offline before changing the presence model. */
-		linphone_proxy_config_edit(cfg);
-		linphone_proxy_config_enable_publish(cfg, FALSE);
-		linphone_proxy_config_done(cfg);
+	cfg_list = linphone_core_get_proxy_config_list(lc);
+	for (item = cfg_list; item != NULL; item = bctbx_list_next(item)) {
+		cfg = (LinphoneProxyConfig *)bctbx_list_get_data(item);
+		if ((cfg != NULL) && (presence == LinphoneConsolidatedPresenceOffline) && linphone_proxy_config_publish_enabled(cfg)) {
+			/* Unpublish when going offline before changing the presence model. */
+			linphone_proxy_config_edit(cfg);
+			linphone_proxy_config_enable_publish(cfg, FALSE);
+			linphone_proxy_config_done(cfg);
+		}
 	}
 	model = linphone_presence_model_new();
 	switch (presence) {
@@ -4014,11 +4019,14 @@ void linphone_core_set_consolidated_presence(LinphoneCore *lc, LinphoneConsolida
 	if (activity != NULL) linphone_presence_model_add_activity(model, activity);
 	linphone_core_set_presence_model(lc, model);
 	linphone_presence_model_unref(model);
-	if ((cfg != NULL) && (presence != LinphoneConsolidatedPresenceOffline) && !linphone_proxy_config_publish_enabled(cfg)) {
-		/* When going online or busy, publish after changing the presence model. */
-		linphone_proxy_config_edit(cfg);
-		linphone_proxy_config_enable_publish(cfg, TRUE);
-		linphone_proxy_config_done(cfg);
+	for (item = cfg_list; item != NULL; item = bctbx_list_next(item)) {
+		cfg = (LinphoneProxyConfig *)bctbx_list_get_data(item);
+		if ((cfg != NULL) && (presence != LinphoneConsolidatedPresenceOffline) && !linphone_proxy_config_publish_enabled(cfg)) {
+			/* When going online or busy, publish after changing the presence model. */
+			linphone_proxy_config_edit(cfg);
+			linphone_proxy_config_enable_publish(cfg, TRUE);
+			linphone_proxy_config_done(cfg);
+		}
 	}
 }
 
