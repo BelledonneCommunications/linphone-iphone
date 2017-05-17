@@ -2085,6 +2085,20 @@ static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, 
 	}
 }
 
+static void linphone_core_internal_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state) {
+	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
+		const bctbx_list_t *cfgs = linphone_core_get_proxy_config_list(lc);
+		const bctbx_list_t *item;
+		for (item = cfgs; item != NULL; item = bctbx_list_next(item)) {
+			LinphoneProxyConfig *cfg = (LinphoneProxyConfig *)bctbx_list_get_data(item);
+			if (cfg->long_term_event == lev) {
+				linphone_proxy_config_notify_publish_state_changed(cfg, state);
+				break;
+			}
+		}
+	}
+}
+
 static void _linphone_core_init_account_creator_service(LinphoneCore *lc) {
 	LinphoneAccountCreatorService *service = linphone_account_creator_service_new();
 	service->account_creator_service_constructor_cb = linphone_account_creator_constructor_linphone;
@@ -2121,6 +2135,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	linphone_core_cbs_set_notify_received(internal_cbs, linphone_core_internal_notify_received);
 	linphone_core_cbs_set_subscription_state_changed(internal_cbs, linphone_core_internal_subscription_state_changed);
+	linphone_core_cbs_set_publish_state_changed(internal_cbs, linphone_core_internal_publish_state_changed);
 	_linphone_core_add_callbacks(lc, internal_cbs, TRUE);
 	belle_sip_object_unref(internal_cbs);
 

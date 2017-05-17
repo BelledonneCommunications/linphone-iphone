@@ -824,8 +824,6 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			}
 			/*publish is terminated*/
 			linphone_event_terminate(cfg->long_term_event);
-			linphone_event_unref(cfg->long_term_event);
-			cfg->long_term_event = NULL;
 		}
 		if (cfg->publish) cfg->send_publish=TRUE;
 	} else {
@@ -1460,4 +1458,11 @@ void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatP
 	}
 	if (cfg->nat_policy != NULL) linphone_nat_policy_unref(cfg->nat_policy);
 	cfg->nat_policy = policy;
+}
+
+void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state) {
+	if ((cfg->long_term_event != NULL) && ((state == LinphonePublishCleared) || (state == LinphonePublishError))) {
+		linphone_event_unref(cfg->long_term_event);
+		cfg->long_term_event = NULL;
+	}
 }

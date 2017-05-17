@@ -453,6 +453,7 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *obj);
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
 void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
 void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj);
+void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state);
 
 /*
  * returns service route as defined in as defined by rfc3608, might be a list instead of just one.
