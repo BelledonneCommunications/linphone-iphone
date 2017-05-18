@@ -5259,8 +5259,9 @@ static void terminate_call(LinphoneCall *call) {
 	}
 
 	/* Stop ringing */
+	bool_t ring_during_early_media = linphone_core_get_ring_during_incoming_early_media(lc);
 	while(calls) {
-		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived || (linphone_core_get_ring_during_incoming_early_media(lc) && ((LinphoneCall *)calls->data)->state == LinphoneCallIncomingEarlyMedia)) {
+		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived || (ring_during_early_media && ((LinphoneCall *)calls->data)->state == LinphoneCallIncomingEarlyMedia)) {
 			stop_ringing = FALSE;
 			break;
 		}
