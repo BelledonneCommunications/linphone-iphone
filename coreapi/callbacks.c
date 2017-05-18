@@ -1016,7 +1016,7 @@ static void call_failure(SalOp *op){
 
 	/* Stop ringing */
 	while(calls) {
-		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived) {
+		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived || (linphone_core_get_ring_during_incoming_early_media(lc) && ((LinphoneCall *)calls->data)->state == LinphoneCallIncomingEarlyMedia)) {
 			stop_ringing = FALSE;
 			break;
 		}
