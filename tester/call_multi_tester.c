@@ -443,7 +443,7 @@ static void simple_conference_from_scratch(void){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,1000));
 	}
-	
+	linphone_conference_unref(conf);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
@@ -451,6 +451,9 @@ static void simple_conference_from_scratch(void){
 	bctbx_list_free(participants);
 	bctbx_list_free(lcs);
 }
+
+
+
 
 static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");

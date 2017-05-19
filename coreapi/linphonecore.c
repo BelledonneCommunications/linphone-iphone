@@ -7052,22 +7052,30 @@ static void _linphone_core_conference_state_changed(LinphoneConference *conf, Li
 	}
 }
 
+/*This function sets the "unique" conference object for the LinphoneCore - which is necessary as long as
+ * liblinphone is used in a client app. When liblinphone will be used in a server app, this shall not be done anymore.*/
+static void linphone_core_set_conference(LinphoneCore *lc, LinphoneConference *conf){
+	lc->conf_ctx = linphone_conference_ref(conf);
+}
+
 LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc, const LinphoneConferenceParams *params) {
 	const char *conf_method_name;
+	LinphoneConference *conf;
 	if(lc->conf_ctx == NULL) {
 		LinphoneConferenceParams *params2 = linphone_conference_params_clone(params);
 		linphone_conference_params_set_state_changed_callback(params2, _linphone_core_conference_state_changed, lc);
 		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
 		if(strcasecmp(conf_method_name, "local") == 0) {
-			lc->conf_ctx = linphone_local_conference_new_with_params(lc, params2);
+			conf = linphone_local_conference_new_with_params(lc, params2);
 		} else if(strcasecmp(conf_method_name, "remote") == 0) {
-			lc->conf_ctx = linphone_remote_conference_new_with_params(lc, params2);
+			conf = linphone_remote_conference_new_with_params(lc, params2);
 		} else {
 			ms_error("'%s' is not a valid conference method", conf_method_name);
 			linphone_conference_params_unref(params2);
 			return NULL;
 		}
 		linphone_conference_params_unref(params2);
+		linphone_core_set_conference(lc, conf);
 	} else {
 		ms_error("Could not create a conference: a conference instance already exists");
 		return NULL;
