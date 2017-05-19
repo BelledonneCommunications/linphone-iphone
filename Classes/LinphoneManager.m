@@ -2261,7 +2261,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		pushBgTaskMsg = 0;
 		pushBgTaskMsg = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
 		  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-			  LOGW(@"Incomming message couldn't be received");
+			  LOGW(@"Incomming message with call-id [%@] couldn't be received", callId);
 			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 			  content.title = NSLocalizedString(@"Message received", nil);
 			  content.body = NSLocalizedString(@"You have received a message.", nil);
@@ -2292,7 +2292,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		pushBgTaskCall = 0;
 		pushBgTaskCall = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
 		  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-			  LOGW(@"Incomming call couldn't be received");
+			  LOGW(@"Incomming call with call-id [%@] couldn't be received", callId);
 			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 			  content.title = NSLocalizedString(@"Missed call", nil);
 			  content.body = NSLocalizedString(@"You have missed a call.", nil);
