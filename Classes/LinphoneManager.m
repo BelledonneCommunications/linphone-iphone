@@ -676,10 +676,10 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				break;
 			}
 		}
-		if (pushBgTask && !need_bg_task) {
-			LOGI(@"Call received, stopping background task");
-			[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
-			pushBgTask = 0;
+		if (pushBgTaskCall && !need_bg_task) {
+			LOGI(@"Call received, stopping call background task for call-id [%@]", callId);
+			[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
+			pushBgTaskCall = 0;
 		}
 		/*first step is to re-enable ctcall center*/
 		CTCallCenter *lCTCallCenter = [[CTCallCenter alloc] init];
@@ -1211,10 +1211,10 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			break;
 		}
 	}
-	if (pushBgTask && !need_bg_task) {
-		LOGI(@"Message received, stopping background task");
-		[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
-		pushBgTask = 0;
+	if (pushBgTaskMsg && !need_bg_task) {
+		LOGI(@"Message received, stopping message background task for call-id [%@]", callID);
+		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
+		pushBgTaskMsg = 0;
 	}
 
 	if (linphone_chat_message_is_file_transfer(msg) || linphone_chat_message_is_text(msg)) {
@@ -1376,10 +1376,10 @@ static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, Li
 			break;
 		}
 	}
-	if (theLinphoneManager->pushBgTask && !need_bg_task) {
-		LOGI(@"Message received, stopping background task");
-		[[UIApplication sharedApplication] endBackgroundTask:theLinphoneManager->pushBgTask];
-		theLinphoneManager->pushBgTask = 0;
+	if (theLinphoneManager->pushBgTaskMsg && !need_bg_task) {
+		LOGI(@"Message received, stopping message background task for call-id [%@]", msgId);
+		[[UIApplication sharedApplication] endBackgroundTask:theLinphoneManager->pushBgTaskMsg];
+		theLinphoneManager->pushBgTaskMsg = 0;
 	}
 	const LinphoneAddress *address = linphone_chat_message_get_peer_address(message);
 	NSString *strAddr = [FastAddressBook displayNameForAddress:address];
@@ -2255,12 +2255,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		 [[UIApplication sharedApplication] backgroundTimeRemaining]);
 }
 
-- (void)startPushLongRunningTask:(BOOL)msg {
-	[[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
-	pushBgTask = 0;
-	pushBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-	  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-		  if (msg) {
+- (void)startPushLongRunningTask:(BOOL)msg callId:(NSString *)callId {
+	if (msg) {
+		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
+		pushBgTaskMsg = 0;
+		pushBgTaskMsg = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+		  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 			  LOGW(@"Incomming message couldn't be received");
 			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 			  content.title = NSLocalizedString(@"Message received", nil);
@@ -2278,7 +2278,20 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 						 LOGD(error.description);
 					 }
 				   }];
-		  } else {
+		  }
+		  for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
+			  [LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
+		  }
+		  [[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
+		  pushBgTaskMsg = 0;
+		}];
+		LOGI(@"Message long running task started for call-id [%@], remaining [%g s] because a push has been received",
+			 callId, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+	} else {
+		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
+		pushBgTaskCall = 0;
+		pushBgTaskCall = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+		  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 			  LOGW(@"Incomming call couldn't be received");
 			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 			  content.title = NSLocalizedString(@"Missed call", nil);
@@ -2297,15 +2310,15 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 					 }
 				   }];
 		  }
-	  }
-	  for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
-		  [LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
-	  }
-	  [[UIApplication sharedApplication] endBackgroundTask:pushBgTask];
-	  pushBgTask = 0;
-	}];
-	LOGI(@"Long running task started, remaining [%g s] because a push has been received",
-		 [[UIApplication sharedApplication] backgroundTimeRemaining]);
+		  for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
+			  [LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
+		  }
+		  [[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
+		  pushBgTaskCall = 0;
+		}];
+		LOGI(@"Call long running task started for call-id [%@], remaining [%g s] because a push has been received",
+			 callId, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+	}
 }
 
 - (void)enableProxyPublish:(BOOL)enabled {
@@ -2333,9 +2346,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		linphone_core_iterate(theLinphoneCore);
 	}
 
-	linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(LC),
-											  enabled &&
-												  [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
+	const MSList *lists = linphone_core_get_friends_lists(LC);
+	while (lists) {
+		linphone_friend_list_enable_subscriptions(
+			lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
+		lists = lists->next;
+	}
 }
 
 - (BOOL)enterBackgroundMode {

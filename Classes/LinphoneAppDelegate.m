@@ -473,10 +473,10 @@
 			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && loc_key &&
 				index > 0) {
 				if ([loc_key isEqualToString:@"IC_MSG"]) {
-					[LinphoneManager.instance startPushLongRunningTask:FALSE];
+					[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
 					[self fixRing];
 				} else if ([loc_key isEqualToString:@"IM_MSG"]) {
-					[LinphoneManager.instance startPushLongRunningTask:TRUE];
+					[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
 				}
 			}
 		}
