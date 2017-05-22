@@ -429,6 +429,41 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 }
 #endif
 
+static void video_bandwidth_estimation(void){
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneVideoPolicy pol = {0};
+	OrtpNetworkSimulatorParams simparams = { 0 };
+	
+	linphone_core_set_video_device(marie->lc, "Mire: Mire (synthetic moving picture)");
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
+	
+	pol.automatically_accept = TRUE;
+	pol.automatically_initiate = TRUE;
+	linphone_core_set_video_policy(marie->lc, &pol);
+	linphone_core_set_video_policy(pauline->lc, &pol);
+	
+	linphone_core_set_preferred_video_size_by_name(marie->lc, "vga");
+	simparams.mode = OrtpNetworkSimulatorOutbound;
+	simparams.enabled = TRUE;
+	simparams.max_bandwidth = 300000;
+	linphone_core_set_network_simulator_params(marie->lc, &simparams);
+	
+	if (BC_ASSERT_TRUE(call(marie, pauline))){
+		/*wait for the first TMMBR*/
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_tmmbr_received, 1, 50000));
+		BC_ASSERT_GREATER((float)marie->stat.last_tmmbr_value_received, 270000.f, float, "%f");
+		BC_ASSERT_LOWER((float)marie->stat.last_tmmbr_value_received, 330000.f, float, "%f");
+		
+		end_call(marie, pauline);
+	}
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t quality_reporting_tests[] = {
 	TEST_NO_TAG("Not used if no config", quality_reporting_not_used_without_config),
 	TEST_NO_TAG("Call term session report not sent if call did not start", quality_reporting_not_sent_if_call_not_started),
@@ -440,7 +475,8 @@ test_t quality_reporting_tests[] = {
 	TEST_NO_TAG("Interval report if interval is configured with video and realtime text", quality_reporting_interval_report_video_and_rtt),
 	TEST_NO_TAG("Session report sent if video stopped during call", quality_reporting_session_report_if_video_stopped),
 	#endif
-	TEST_NO_TAG("Sent using custom route", quality_reporting_sent_using_custom_route)
+	TEST_NO_TAG("Sent using custom route", quality_reporting_sent_using_custom_route),
+	TEST_NO_TAG("Video bandwidth estimation", video_bandwidth_estimation)
 };
 
 test_suite_t quality_reporting_test_suite = {"QualityReporting", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
