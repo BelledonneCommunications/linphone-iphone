@@ -1580,6 +1580,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		}
 	}
 
+	nat_policy=call->nat_policy;
 	if ((nat_policy != NULL) && linphone_nat_policy_ice_enabled(nat_policy)) {
 		/* Create the ice session now if ICE is required */
 		if (md){
