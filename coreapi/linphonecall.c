@@ -3081,9 +3081,15 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 					up_ptime=params->up_ptime;
 				else up_ptime=linphone_core_get_upload_ptime(lc);
 			}
-			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
 		}
+		if (*used_pt == -1){
+			/*don't select telephone-event as a payload type*/
+			if (strcasecmp(pt->mime_type, "telephone-event") != 0){
+				*used_pt = payload_type_get_number(pt);
+			}
+		}
+		
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
 			ms_message("Payload type [%s/%i] has explicit bitrate [%i] kbit/s", pt->mime_type, pt->clock_rate, pt->normal_bitrate/1000);
 			pt->normal_bitrate=get_min_bandwidth(pt->normal_bitrate,bw*1000);
