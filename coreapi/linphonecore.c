@@ -5819,7 +5819,9 @@ void sip_config_uninit(LinphoneCore *lc)
 		}
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
-	config->proxies=bctbx_list_free_with_data(config->proxies,(void (*)(void*)) _linphone_proxy_config_release);
+	elem = config->proxies;
+	config->proxies=NULL; /*to make sure proxies cannot be refferenced during deletion*/
+	bctbx_list_free_with_data(elem,(void (*)(void*)) _linphone_proxy_config_release);
 
 	config->deleted_proxies=bctbx_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
