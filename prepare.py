@@ -152,9 +152,12 @@ class IOSPreparator(prepare.Preparator):
         return self.extract_from_xcode_project_with_regex(regex)[0]
 
     def extract_libs_list(self):
-        # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-        # regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
-        regex = re.compile("name = ([A-Za-z0-9\-_]+)\.framework; path = \"liblinphone-sdk/apple-darwin/Frameworks/")
+        if '-DENABLE_STATIC_ONLY=ON' in sys.argv or '-DENABLE_STATIC_ONLY=YES' in sys.argv:
+            #name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+            regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
+        else:
+            regex = re.compile("name = ([A-Za-z0-9\-_]+)\.framework; path = \"liblinphone-sdk/apple-darwin/Frameworks/")
+
         return self.extract_from_xcode_project_with_regex(regex)
 
     def detect_package_manager(self):
