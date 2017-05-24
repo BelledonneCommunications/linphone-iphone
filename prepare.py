@@ -154,7 +154,7 @@ class IOSPreparator(prepare.Preparator):
     def extract_libs_list(self):
         if '-DENABLE_STATIC_ONLY=ON' in sys.argv or '-DENABLE_STATIC_ONLY=YES' in sys.argv:
             #name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-            regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
+            regex = re.compile("name = (lib[A-Za-z0-9\-_]+)\.a; path = \"liblinphone-sdk/apple-darwin/lib/")
         else:
             regex = re.compile("name = ([A-Za-z0-9\-_]+)\.framework; path = \"liblinphone-sdk/apple-darwin/Frameworks/")
 
