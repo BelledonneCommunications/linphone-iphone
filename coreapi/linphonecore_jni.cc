@@ -7451,6 +7451,16 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getDetails(JNIEnv
 
 /*
  * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getDetails
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getWarnings(JNIEnv *env, jobject jobj, jlong ei){
+	const char *tmp=linphone_error_info_get_warnings((const LinphoneErrorInfo*)ei);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
  * Method:    ref
  * Signature: (J);
  */
