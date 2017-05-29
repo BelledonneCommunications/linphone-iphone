@@ -67,10 +67,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-	if (![self.tableController.searchBar isFirstResponder]) {
-		return NO;
-	}
-	return YES;
+	return NO;
 }
 
 @end
