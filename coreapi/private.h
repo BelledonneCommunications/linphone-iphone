@@ -1783,7 +1783,7 @@ struct _LinphoneVideoActivationPolicy {
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneVideoActivationPolicy);
 
-LinphoneVideoActivationPolicy *linphone_video_activation_policy_new(void);
+LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_video_activation_policy_new(void);
 
 /**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.

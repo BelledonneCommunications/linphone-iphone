@@ -1353,9 +1353,6 @@ static void sip_config_read(LinphoneCore *lc) {
 	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
 	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound"));
 	lc->sip_conf.save_auth_info = lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
-	if (lp_config_get_string(lc->config, "sip", "rls_uri", NULL))
-		lc->default_rls_addr = linphone_address_new(lp_config_get_string(lc->config, "sip", "rls_uri", NULL));
-
 	linphone_core_create_im_notif_policy(lc);
 }
 
@@ -5822,7 +5819,9 @@ void sip_config_uninit(LinphoneCore *lc)
 		}
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
-	config->proxies=bctbx_list_free_with_data(config->proxies,(void (*)(void*)) _linphone_proxy_config_release);
+	elem = config->proxies;
+	config->proxies=NULL; /*to make sure proxies cannot be refferenced during deletion*/
+	bctbx_list_free_with_data(elem,(void (*)(void*)) _linphone_proxy_config_release);
 
 	config->deleted_proxies=bctbx_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
@@ -7052,22 +7051,30 @@ static void _linphone_core_conference_state_changed(LinphoneConference *conf, Li
 	}
 }
 
+/*This function sets the "unique" conference object for the LinphoneCore - which is necessary as long as
+ * liblinphone is used in a client app. When liblinphone will be used in a server app, this shall not be done anymore.*/
+static void linphone_core_set_conference(LinphoneCore *lc, LinphoneConference *conf){
+	lc->conf_ctx = linphone_conference_ref(conf);
+}
+
 LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc, const LinphoneConferenceParams *params) {
 	const char *conf_method_name;
+	LinphoneConference *conf;
 	if(lc->conf_ctx == NULL) {
 		LinphoneConferenceParams *params2 = linphone_conference_params_clone(params);
 		linphone_conference_params_set_state_changed_callback(params2, _linphone_core_conference_state_changed, lc);
 		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
 		if(strcasecmp(conf_method_name, "local") == 0) {
-			lc->conf_ctx = linphone_local_conference_new_with_params(lc, params2);
+			conf = linphone_local_conference_new_with_params(lc, params2);
 		} else if(strcasecmp(conf_method_name, "remote") == 0) {
-			lc->conf_ctx = linphone_remote_conference_new_with_params(lc, params2);
+			conf = linphone_remote_conference_new_with_params(lc, params2);
 		} else {
 			ms_error("'%s' is not a valid conference method", conf_method_name);
 			linphone_conference_params_unref(params2);
 			return NULL;
 		}
 		linphone_conference_params_unref(params2);
+		linphone_core_set_conference(lc, conf);
 	} else {
 		ms_error("Could not create a conference: a conference instance already exists");
 		return NULL;
@@ -7085,6 +7092,7 @@ LinphoneStatus linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *c
 		LinphoneConferenceParams *params = linphone_conference_params_new(lc);
 		conference = linphone_core_create_conference_with_params(lc, params);
 		linphone_conference_params_unref(params);
+		linphone_conference_unref(conference); /*actually linphone_core_create_conference_with_params() takes a ref for lc->conf_ctx */
 	}
 	if(conference) return linphone_conference_add_participant(lc->conf_ctx, call);
 	else return -1;

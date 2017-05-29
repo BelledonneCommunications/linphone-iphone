@@ -25,7 +25,7 @@
 
 #ifndef LINPHONE_CONFERENCE_H
 #define LINPHONE_CONFERENCE_H
-	
+
 #include "linphone/types.h"
 
 #ifdef __cplusplus
@@ -54,7 +54,7 @@ LINPHONE_PUBLIC LinphoneConferenceParams *linphone_conference_params_ref(Linphon
 /**
  * Release a #LinphoneConferenceParams.
  * @param[in] params The #LinphoneConferenceParams to release.
- */ 
+ */
 LINPHONE_PUBLIC void linphone_conference_params_unref(LinphoneConferenceParams *params);
 
 /**
@@ -120,7 +120,7 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_conference_get_participants(const Linphon
 /**
  * Invite participants to the conference, by supplying a list of LinphoneAddress
  * @param obj The conference.
- * @param addresses bctbx_list_t of #LinphoneAddress object
+ * @param addresses \bctbx_list{LinphoneAddress}
  * @param params #LinphoneCallParams to use for inviting the participants.
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_conference_invite_participants(LinphoneConference *conf, const bctbx_list_t *addresses, const LinphoneCallParams *params);

@@ -5101,6 +5101,16 @@ extern "C" jintArray Java_org_linphone_core_LinphoneCallParamsImpl_getReceivedVi
 	return arr;
 }
 
+extern "C" jfloat Java_org_linphone_core_LinphoneCallParamsImpl_getSentFramerate(JNIEnv *env, jobject thiz, jlong lcp) {
+	const LinphoneCallParams *params = (LinphoneCallParams *) lcp;
+	return (jfloat)linphone_call_params_get_sent_framerate(params);
+}
+
+extern "C" jfloat Java_org_linphone_core_LinphoneCallParamsImpl_getReceivedFramerate(JNIEnv *env, jobject thiz, jlong lcp) {
+	const LinphoneCallParams *params = (LinphoneCallParams *) lcp;
+	return (jfloat)linphone_call_params_get_received_framerate(params);
+}
+
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_getAudioDirection(JNIEnv *env, jobject thiz, jlong ptr) {
 	return (jint)linphone_call_params_get_audio_direction((LinphoneCallParams *)ptr);
 }
@@ -7445,6 +7455,16 @@ JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_setSubErrorInfo(JNIE
  * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getDetails(JNIEnv *env, jobject jobj, jlong ei){
+	const char *tmp=linphone_error_info_get_warnings((const LinphoneErrorInfo*)ei);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getDetails
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getWarnings(JNIEnv *env, jobject jobj, jlong ei){
 	const char *tmp=linphone_error_info_get_warnings((const LinphoneErrorInfo*)ei);
 	return tmp ? env->NewStringUTF(tmp) : NULL;
 }

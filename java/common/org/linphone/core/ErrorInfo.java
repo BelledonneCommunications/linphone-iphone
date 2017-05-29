@@ -28,7 +28,7 @@ public interface ErrorInfo {
 	 * Get additional error information, which is provided as a Reason header in SIP response.
 	**/
 	ErrorInfo getSubErrorInfo();
-	
+
 	/**
 	 * Set Reason enum.
 	 */
@@ -39,12 +39,10 @@ public interface ErrorInfo {
 	void setProtocol(String protocol);
 	/**
 	 * Set the protocol code corresponding to the error (typically a SIP status code).
-	 * @return the code.
 	 */
 	void setProtocolCode(int code);
 	/**
 	 * Set the reason-phrase provided by the protocol (typically a SIP reason-phrase).
-	 * @return the reason phrase.
 	 */
 	void setPhrase(String phrase);
 	/**
@@ -55,7 +53,7 @@ public interface ErrorInfo {
 	 * Set additional error information, which is provided as a Reason header in SIP response.
 	**/
 	void setSubErrorInfo(ErrorInfo sub_ei);
-	
+
 	/**
 	 * Get details about the error, if provided by the protocol. For SIP it consists of the content of a Warning or Reason header.
 	 * @return details about the error.

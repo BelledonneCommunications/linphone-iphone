@@ -1015,8 +1015,9 @@ static void call_failure(SalOp *op){
 	}
 
 	/* Stop ringing */
+	bool_t ring_during_early_media = linphone_core_get_ring_during_incoming_early_media(lc);
 	while(calls) {
-		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived) {
+		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived || (ring_during_early_media && ((LinphoneCall *)calls->data)->state == LinphoneCallIncomingEarlyMedia)) {
 			stop_ringing = FALSE;
 			break;
 		}
@@ -1138,7 +1139,6 @@ static void register_failure(SalOp *op){
 	if (cfg->long_term_event){
 		/*prevent publish to be sent now until registration gets successful*/
 		linphone_event_terminate(cfg->long_term_event);
-		linphone_event_unref(cfg->long_term_event);
 		cfg->long_term_event=NULL;
 		cfg->send_publish=cfg->publish;
 	}

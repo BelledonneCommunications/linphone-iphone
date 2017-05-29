@@ -417,8 +417,11 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	}
 	if (cfg->long_term_event){ /*might probably do better*/
 		linphone_event_terminate(cfg->long_term_event);
-		linphone_event_unref(cfg->long_term_event);
-		cfg->long_term_event=NULL;
+		if (cfg->long_term_event) {
+			linphone_event_unref(cfg->long_term_event); /*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
+			cfg->long_term_event=NULL;
+		}
+		
 	}
 	if (cfg->op){
 		sal_op_release(cfg->op);

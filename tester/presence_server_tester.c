@@ -1101,6 +1101,69 @@ static void long_term_presence_with_crossed_references(void) {
 	}else ms_warning("Test skipped, no vcard support");
 }
 
+static void multiple_publish_aggregation(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
+	LinphonePresenceModel *pauline_presence2 = linphone_presence_model_new_with_activity(LinphonePresenceActivityAway, NULL);
+	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
+	LinphonePresenceActivity *activity = NULL;
+	LinphoneCoreCbs *callbacks = linphone_factory_create_core_cbs(linphone_factory_get());
+	int nb_act = 0;
+	int i = 0;
+	bool_t eq = FALSE;
+
+	linphone_core_cbs_set_publish_state_changed(callbacks, linphone_publish_state_changed);
+	_linphone_core_add_callbacks(pauline->lc, callbacks, TRUE);
+	_linphone_core_add_callbacks(pauline2->lc, callbacks, TRUE);
+	linphone_core_cbs_unref(callbacks);
+
+	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 40);
+	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
+	linphone_core_set_user_agent(pauline2->lc, "full-presence-support", NULL);
+	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
+	enable_publish(pauline, TRUE);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,1));
+	enable_publish(pauline2, TRUE);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline2->lc,&pauline2->stat.number_of_LinphonePublishOk,1));
+
+	linphone_friend_enable_subscribes(f, TRUE);
+	linphone_friend_set_inc_subscribe_policy(f,LinphoneSPAccept); /* Accept incoming subscription request for this friend*/
+	linphone_core_add_friend(marie->lc, f);
+
+	linphone_core_set_presence_model(pauline->lc, pauline_presence);
+	linphone_presence_model_unref(pauline_presence);
+	linphone_core_set_presence_model(pauline2->lc, pauline_presence2);
+	linphone_presence_model_unref(pauline_presence2);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityDinner,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline2->lc,&marie->stat.number_of_LinphonePresenceActivityAway,1));
+	nb_act = linphone_presence_model_get_nb_activities(linphone_friend_get_presence_model(f));
+	BC_ASSERT_EQUAL(nb_act, 2, int, "%d");
+
+	for(i = 0; i < nb_act; i++) {
+		activity = linphone_presence_model_get_nth_activity(linphone_friend_get_presence_model(f),i);
+		eq = (linphone_presence_activity_get_type(activity) == LinphonePresenceActivityAway || linphone_presence_activity_get_type(activity) == LinphonePresenceActivityDinner);
+		BC_ASSERT_TRUE(eq);
+	}
+
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,2));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline2->lc,&pauline2->stat.number_of_LinphonePublishOk,2));
+
+	linphone_friend_unref(f);
+	linphone_core_manager_destroy(marie);
+
+	linphone_core_manager_stop(pauline);
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishCleared,1,int,"%i");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishOk,2,int,"%i");
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_stop(pauline2);
+	BC_ASSERT_EQUAL(pauline2->stat.number_of_LinphonePublishCleared,1,int,"%i");
+	BC_ASSERT_EQUAL(pauline2->stat.number_of_LinphonePublishOk,2,int,"%i");
+	linphone_core_manager_destroy(pauline2);
+}
+
 test_t presence_server_tests[] = {
 	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
@@ -1121,6 +1184,7 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence with cross references", long_term_presence_with_crossed_references,"longtern"),
 	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
 	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
+	TEST_NO_TAG("Multiple publish aggregation", multiple_publish_aggregation),
 };
 
 test_suite_t presence_server_test_suite = {"Presence using server", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

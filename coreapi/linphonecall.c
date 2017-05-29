@@ -1109,18 +1109,18 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	linphone_call_init_stats(call->audio_stats, LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(call->video_stats, LINPHONE_CALL_STATS_VIDEO);
 	linphone_call_init_stats(call->text_stats, LINPHONE_CALL_STATS_TEXT);
-	
+
 	if (call->dest_proxy == NULL) {
 		/* Try to define the destination proxy if it has not already been done to have a correct contact field in the SIP messages */
 		call->dest_proxy = linphone_core_lookup_known_proxy(call->core, call->log->to);
 	}
-	
-	
+
+
 	if (call->dest_proxy != NULL)
 		call->nat_policy = linphone_proxy_config_get_nat_policy(call->dest_proxy);
 	if (call->nat_policy == NULL)
 		call->nat_policy = linphone_core_get_nat_policy(call->core);
-	
+
 	linphone_nat_policy_ref(call->nat_policy);
 
 }
@@ -1580,6 +1580,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		}
 	}
 
+	nat_policy=call->nat_policy;
 	if ((nat_policy != NULL) && linphone_nat_policy_ice_enabled(nat_policy)) {
 		/* Create the ice session now if ICE is required */
 		if (md){
@@ -3080,9 +3081,15 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 					up_ptime=params->up_ptime;
 				else up_ptime=linphone_core_get_upload_ptime(lc);
 			}
-			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
 		}
+		if (*used_pt == -1){
+			/*don't select telephone-event as a payload type*/
+			if (strcasecmp(pt->mime_type, "telephone-event") != 0){
+				*used_pt = payload_type_get_number(pt);
+			}
+		}
+		
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
 			ms_message("Payload type [%s/%i] has explicit bitrate [%i] kbit/s", pt->mime_type, pt->clock_rate, pt->normal_bitrate/1000);
 			pt->normal_bitrate=get_min_bandwidth(pt->normal_bitrate,bw*1000);
@@ -3506,7 +3513,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				setup_ring_player(lc,call);
 			}
 
-			if (call->params->in_conference){
+			if (call->params->in_conference && lc->conf_ctx){
 				/*transform the graph to connect it to the conference filter */
 				mute = stream->dir==SalStreamRecvOnly;
 				linphone_conference_on_call_stream_starting(lc->conf_ctx, call, mute);
@@ -5259,8 +5266,9 @@ static void terminate_call(LinphoneCall *call) {
 	}
 
 	/* Stop ringing */
+	bool_t ring_during_early_media = linphone_core_get_ring_during_incoming_early_media(lc);
 	while(calls) {
-		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived) {
+		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived || (ring_during_early_media && ((LinphoneCall *)calls->data)->state == LinphoneCallIncomingEarlyMedia)) {
 			stop_ringing = FALSE;
 			break;
 		}
