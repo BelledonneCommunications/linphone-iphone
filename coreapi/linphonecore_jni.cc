@@ -5101,6 +5101,16 @@ extern "C" jintArray Java_org_linphone_core_LinphoneCallParamsImpl_getReceivedVi
 	return arr;
 }
 
+extern "C" jfloat Java_org_linphone_core_LinphoneCallParamsImpl_getSentFramerate(JNIEnv *env, jobject thiz, jlong lcp) {
+	const LinphoneCallParams *params = (LinphoneCallParams *) lcp;
+	return (jfloat)linphone_call_params_get_sent_framerate(params);
+}
+
+extern "C" jfloat Java_org_linphone_core_LinphoneCallParamsImpl_getReceivedFramerate(JNIEnv *env, jobject thiz, jlong lcp) {
+	const LinphoneCallParams *params = (LinphoneCallParams *) lcp;
+	return (jfloat)linphone_call_params_get_received_framerate(params);
+}
+
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_getAudioDirection(JNIEnv *env, jobject thiz, jlong ptr) {
 	return (jint)linphone_call_params_get_audio_direction((LinphoneCallParams *)ptr);
 }

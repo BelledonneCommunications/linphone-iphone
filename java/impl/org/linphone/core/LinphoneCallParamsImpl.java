@@ -245,4 +245,16 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	public void setVideoDirection(MediaDirection direction) {
 		setVideoDirection(nativePtr, direction.mValue);
 	}
+	
+	private native float getSentFramerate(long nativePtr);
+	@Override
+	public float getSentFramerate() {
+		return getSentFramerate(nativePtr);
+	}
+	
+	private native float getReceivedFramerate(long nativePtr);
+	@Override
+	public float getReceivedFramerate() {
+		return getReceivedFramerate(nativePtr);
+	}
 }
