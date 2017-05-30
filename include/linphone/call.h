@@ -221,6 +221,11 @@ LINPHONE_PUBLIC const char *linphone_call_get_remote_user_agent(LinphoneCall *ca
 **/
 LINPHONE_PUBLIC const char *linphone_call_get_remote_contact(LinphoneCall *call);
 
+/**
+ * Returns the ZRTP authentication token to verify.
+ * @param call the LinphoneCall
+ * @return the authentication token to verify.
+**/
 LINPHONE_PUBLIC const char * linphone_call_get_authentication_token(LinphoneCall *call);
 
 /**
