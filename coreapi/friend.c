@@ -1640,8 +1640,6 @@ bctbx_list_t* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFrie
 			}
 			iterator = bctbx_list_next(iterator);
 		}
-
-		linphone_friend_save(lf, lc); /* required if we freshly created vcard but core was not set at this time */
 	}
 	linphone_vcard_context_set_user_data(lc->vcard_context, NULL);
 
