@@ -460,12 +460,16 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 		case ORTP_TRACE:
 		case ORTP_DEBUG:
 			mask |= ORTP_DEBUG;
+			LINPHONE_NO_BREAK;
 		case ORTP_MESSAGE:
 			mask |= ORTP_MESSAGE;
+			LINPHONE_NO_BREAK;
 		case ORTP_WARNING:
 			mask |= ORTP_WARNING;
+			LINPHONE_NO_BREAK;
 		case ORTP_ERROR:
 			mask |= ORTP_ERROR;
+			LINPHONE_NO_BREAK;
 		case ORTP_FATAL:
 			mask |= ORTP_FATAL;
 			break;

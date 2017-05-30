@@ -1417,6 +1417,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		case LinphoneCallPausing:
 			linphone_gtk_enable_hold_button(call,TRUE,FALSE);
 			linphone_gtk_call_update_tab_header(call,FALSE);
+			LINPHONE_NO_BREAK;
 		case LinphoneCallPausedByRemote:
 			linphone_gtk_in_call_view_set_paused(call);
 			linphone_gtk_call_update_tab_header(call,TRUE);

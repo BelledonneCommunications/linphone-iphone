@@ -2540,6 +2540,7 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 					break;
 				case MS_AES_CM_256_SHA1_80:
 				    ms_warning("Deprecated crypto suite MS_AES_CM_256_SHA1_80, use MS_AES_256_SHA1_80 instead");
+					LINPHONE_NO_BREAK;
 				case MS_AES_256_SHA1_80:
 				    params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
                     params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
@@ -3797,6 +3798,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 			if (linphone_core_get_remote_ringback_tone(lc)){
 				call->playing_ringbacktone = TRUE;
 			}
+			LINPHONE_NO_BREAK;
 		case LinphoneCallOutgoingEarlyMedia:
 			if (!call->params->real_early_media){
 				call->all_muted = TRUE;

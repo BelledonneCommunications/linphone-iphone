@@ -569,10 +569,10 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 		switch (call->state){
 			case LinphoneCallResuming:
 				linphone_core_notify_display_status(lc,_("Call resumed."));
-			/*intentionally no break*/
+				LINPHONE_NO_BREAK; /*intentionally no break*/
 			case LinphoneCallConnected:
 				if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
-			/*intentionally no break*/
+				LINPHONE_NO_BREAK; /*intentionally no break*/
 			case LinphoneCallUpdating:
 			case LinphoneCallUpdatedByRemote:
 				if (!sal_media_description_has_dir(call->localdesc, SalStreamInactive) &&
@@ -741,7 +741,7 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallResuming:
 			sal_error_info_set(&sei,SalReasonInternalError, "SIP", 0, NULL, NULL);
 			sal_call_decline_with_error_info(call->op, &sei,NULL);
-			/*no break*/
+			LINPHONE_NO_BREAK; /*no break*/
 		case LinphoneCallIdle:
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallEnd:

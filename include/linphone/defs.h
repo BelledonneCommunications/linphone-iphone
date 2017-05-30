@@ -48,5 +48,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_DEPRECATED MS2_DEPRECATED
 #endif
 
+/* Macro telling GCC that a 'break' statement has been deliberately omitted
+ * in switch block */
+#ifndef LINPHONE_NO_BREAK
+#ifdef __GNUC__
+#define LINPHONE_NO_BREAK __attribute__((fallthrough))
+#else
+#define LINPHONE_NO_BREAK
+#endif // __GNUC__
+#endif // LINPHONE_NO_BREAK
+
 
 #endif /* LINPHONE_DEFS_H_ */
