@@ -51,7 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /* Macro telling GCC that a 'break' statement has been deliberately omitted
  * in switch block */
 #ifndef LINPHONE_NO_BREAK
-#ifdef __GNUC__
+#if defined(__GNUC__) && __GNUC__ >= 7
 #define LINPHONE_NO_BREAK __attribute__((fallthrough))
 #else
 #define LINPHONE_NO_BREAK
