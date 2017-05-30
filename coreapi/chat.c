@@ -661,6 +661,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	const SalCustomHeader *ch;
 	LinphoneReason reason = LinphoneReasonNone;
 	int retval = -1;
+	bool_t increase_msg_count = TRUE;
 
 	addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
@@ -729,12 +730,14 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	} else if (is_im_iscomposing(msg->content_type)) {
 		linphone_chat_room_notify_is_composing(cr, msg->message);
 		linphone_chat_message_set_to_be_stored(msg, FALSE);
+		increase_msg_count = FALSE;
 		if(lp_config_get_int(cr->lc->config, "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	} else if (is_imdn(msg->content_type)) {
 		linphone_chat_room_notify_imdn(cr, msg->message);
 		linphone_chat_message_set_to_be_stored(msg, FALSE);
+		increase_msg_count = FALSE;
 		if(lp_config_get_int(cr->lc->config, "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
@@ -742,15 +745,17 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 		linphone_chat_message_set_to_be_stored(msg, TRUE);
 	}
 
-	linphone_chat_room_message_received(cr, lc, msg);
-
-	if(linphone_chat_message_get_to_be_stored(msg)) {
-		msg->storage_id = linphone_chat_message_store(msg);
-
+	if (increase_msg_count == TRUE) {
 		if (cr->unread_count < 0)
 			cr->unread_count = 1;
 		else
 			cr->unread_count++;
+	}
+
+	linphone_chat_room_message_received(cr, lc, msg);
+
+	if(linphone_chat_message_get_to_be_stored(msg)) {
+		msg->storage_id = linphone_chat_message_store(msg);
 	}
 
 end:
