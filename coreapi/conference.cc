@@ -399,7 +399,7 @@ void LocalConference::addLocalEndpoint() {
 
 int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &addresses, const LinphoneCallParams *params){
 	
-	for (auto it = addresses.begin(); it != addresses.end(); ++it){
+	for (std::list<const LinphoneAddress*>::const_iterator it = addresses.begin(); it != addresses.end(); ++it){
 		const LinphoneAddress *addr = *it;
 		LinphoneCall * call = linphone_core_get_call_by_remote_address2(m_core, addr);
 		if (!call){
