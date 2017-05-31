@@ -847,12 +847,12 @@
 			NSString *menc = [self stringForKey:@"media_encryption_preference"];
 			if (menc && [menc compare:@"SRTP"] == NSOrderedSame)
 				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionSRTP);
-			else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)
-				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
+			else if (menc && [menc compare:@"None"] == NSOrderedSame)
+				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionNone);
 			else if (menc && [menc compare:@"DTLS"] == NSOrderedSame)
 				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionDTLS);
 			else
-				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionNone);
+				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
 
 			linphone_core_enable_adaptive_rate_control(LC, [self boolForKey:@"adaptive_rate_control_preference"]);
 		}
