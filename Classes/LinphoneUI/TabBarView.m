@@ -142,6 +142,9 @@
 #pragma mark - Action Functions
 
 - (IBAction)onHistoryClick:(id)event {
+	linphone_core_reset_missed_calls_count(LC);
+	[self update:FALSE];
+	[PhoneMainView.instance updateApplicationBadgeNumber];
 	[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
 }
 
