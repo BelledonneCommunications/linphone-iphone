@@ -25,6 +25,7 @@
 #include "liblinphone_tester.h"
 #include "mediastreamer2/msutils.h"
 #include "belle-sip/sipstack.h"
+#include <bctoolbox/defs.h>
 
 #ifdef _WIN32
 #define unlink _unlink
@@ -395,8 +396,8 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_callee.number_of_LinphoneCallEncryptedOn+1);
 
 		/* when caller is encryptionNone but callee is ZRTP, we expect ZRTP to take place */
-		if ((linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionNone) 
-			&& (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP) 
+		if ((linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionNone)
+			&& (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP)
 			&& linphone_core_media_encryption_supported(caller_mgr->lc, LinphoneMediaEncryptionZRTP)) {
 			const LinphoneCallParams* call_param = linphone_call_get_current_params(callee_call);
 			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param), LinphoneMediaEncryptionZRTP, int, "%d");
@@ -1004,7 +1005,7 @@ static void terminate_call_with_error(void) {
 	const LinphoneErrorInfo *rei ;
 	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	
+
 	LinphoneCall* out_call = linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity);
 
 
@@ -1015,20 +1016,20 @@ static void terminate_call_with_error(void) {
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, 1));
-	
+
 	call_callee = linphone_core_get_current_call(callee_mgr->lc);
 	BC_ASSERT_PTR_NOT_NULL(call_callee);
-	
+
 	BC_ASSERT_EQUAL( linphone_core_accept_call(callee_mgr->lc,call_callee), 0 , int, "%d");
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,1));
-	
+
 
 
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
-	
+
 
 	rei = ei;
-	
+
 	linphone_call_terminate_with_error_info(out_call,rei);
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
 
@@ -1044,7 +1045,7 @@ static void terminate_call_with_error(void) {
 
 	BC_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallEnd,1, int, "%d");
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallReleased,1));
-	
+
 	linphone_error_info_unref(ei);
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(callee_mgr);
@@ -1212,24 +1213,24 @@ static void call_busy_when_calling_self(void) {
 static void call_declined_with_error(void) {
 	LinphoneCoreManager* callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	
+
 	LinphoneCall* in_call = NULL;
 	LinphoneCall* out_call = linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity);
 	LinphoneFactory* factory = linphone_factory_get();
 	const LinphoneErrorInfo* rcvd_ei;
 	const LinphoneErrorInfo* sub_rcvd_ei;
-	
+
 	LinphoneErrorInfo *ei = linphone_factory_create_error_info(factory);
 	LinphoneErrorInfo *reason_ei = linphone_factory_create_error_info(factory);
-	
+
 	linphone_error_info_set(ei, "SIP", LinphoneReasonUnknown,  603, "Decline", NULL); //ordre des arguments à vérifier
 	linphone_error_info_set(reason_ei, "hardware", LinphoneReasonUnknown,  66, "J'ai plus de batterie", NULL);
 
 	linphone_error_info_set_sub_error_info(ei, reason_ei);
-	
+
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
 	BC_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(callee_mgr->lc));
-	
+
 	linphone_call_ref(out_call);
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
 	BC_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(callee_mgr->lc));
@@ -1242,7 +1243,7 @@ static void call_declined_with_error(void) {
 
 		rcvd_ei = linphone_call_get_error_info(out_call);
 		sub_rcvd_ei = linphone_error_info_get_sub_error_info(rcvd_ei);
-	
+
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rcvd_ei), "Decline");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rcvd_ei), "SIP");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(sub_rcvd_ei), "J'ai plus de batterie");
@@ -1252,8 +1253,8 @@ static void call_declined_with_error(void) {
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)),LinphoneCallDeclined, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(out_call)),LinphoneCallDeclined, int, "%d");
-		
-	
+
+
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallReleased,1));
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallReleased,1));
 		linphone_call_unref(in_call);
@@ -1345,7 +1346,7 @@ int check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *call
 	BC_ASSERT_PTR_NOT_NULL(c1);
 	BC_ASSERT_PTR_NOT_NULL(c2);
 	if (!c1 || !c2) return FALSE;
-	
+
 	if (c1) {
 		c1_ret = c1->nb_media_starts == caller_nb_media_starts;
 		BC_ASSERT_EQUAL(c1->nb_media_starts, caller_nb_media_starts, unsigned int, "%u");
@@ -1476,7 +1477,7 @@ static void ice_added_by_reinvite(void){
 
 	lp_config_set_int(linphone_core_get_config(marie->lc), "net", "allow_late_ice", 1);
 	lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "allow_late_ice", 1);
-	
+
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (!call_ok) goto end;
 	liblinphone_tester_check_rtcp(marie,pauline);
@@ -1538,7 +1539,7 @@ static void call_with_custom_headers(void) {
 	linphone_call_params_add_custom_header(params,"Working","yes");
 
 	if (!BC_ASSERT_TRUE(call_with_caller_params(pauline,marie,params))) goto end;
-	
+
 
 	call_marie=linphone_core_get_current_call(marie->lc);
 	call_pauline=linphone_core_get_current_call(pauline->lc);
@@ -1575,7 +1576,7 @@ static void call_with_custom_headers(void) {
 	ms_free(marie_remote_contact_header);
 
 	end_call(pauline, marie);
-	
+
 end:
 	linphone_call_params_unref(params);
 	linphone_core_manager_destroy(marie);
@@ -1656,7 +1657,7 @@ static void call_with_custom_sdp_attributes(void) {
 
 
 static void call_with_custom_header_or_sdp_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
-	
+
 
 	const char *value;
 	if (cstate == LinphoneCallOutgoingInit){
@@ -1697,7 +1698,7 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 	LinphoneCallParams  *caller_params; //	*callee_params ;
 
 	LinphoneCoreVTable *vtable;
-	
+
 	LinphoneCallTestParams caller_test_params = {0};
 	LinphoneCallTestParams callee_test_params =  {0};
 
@@ -1705,7 +1706,7 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 	stats initial_callee=callee_mgr->stat;
 	bool_t result=FALSE;
 	bool_t did_receive_call;
-	
+
 	//Create caller params with custom header and custom SDP
 	caller_params = linphone_core_create_call_params(caller_mgr->lc, NULL);
 	linphone_call_params_add_custom_header(caller_params, "weather", "thunderstorm");
@@ -1713,24 +1714,24 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 
 	caller_test_params.base = (LinphoneCallParams*)caller_params;
 	callee_test_params.base = NULL;
-	
+
 	/* TODO: This should be handled correctly inside the liblinphone library but meanwhile handle this here. */
 	linphone_core_manager_wait_for_stun_resolution(caller_mgr);
 	linphone_core_manager_wait_for_stun_resolution(callee_mgr);
-	
+
 	setup_sdp_handling(&caller_test_params, caller_mgr);
 	setup_sdp_handling(&callee_test_params, callee_mgr);
-	
+
 	// Assign dedicated callback to vtable for caller and callee
 	vtable = linphone_core_v_table_new();
 	vtable->call_state_changed = call_with_custom_header_or_sdp_cb;
 	linphone_core_add_listener(callee_mgr->lc, vtable);
 	linphone_core_add_listener(caller_mgr->lc, vtable);
-	
+
 	//Caller initates the call with INVITE
 	// caller params not null
 	BC_ASSERT_PTR_NOT_NULL((call_caller=linphone_core_invite_address_with_params(caller_mgr->lc,callee_mgr->identity,caller_params)));
-	
+
 	BC_ASSERT_PTR_NULL(linphone_call_get_remote_params(call_caller)); /*assert that remote params are NULL when no response is received yet*/
 
 	// Wait for Incoming received
@@ -1739,29 +1740,29 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 								,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived
 								,initial_callee.number_of_LinphoneCallIncomingReceived+1);
 	BC_ASSERT_EQUAL(did_receive_call, !callee_test_params.sdp_simulate_error, int, "%d");
-	
+
 	linphone_call_params_unref(caller_params);
-	
+
 	sal_default_set_sdp_handling(caller_mgr->lc->sal, SalOpSDPNormal);
 	sal_default_set_sdp_handling(callee_mgr->lc->sal, SalOpSDPNormal);
-	
+
 	// Wait for Outgoing Progress
 	if (linphone_core_get_calls_nb(callee_mgr->lc)<=1)
 		BC_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
 	BC_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,initial_caller.number_of_LinphoneCallOutgoingProgress+1, int, "%d");
 
 
-	
+
 
 	LinphoneCallParams *default_params=linphone_core_create_call_params(callee_mgr->lc,call_callee);
 	ms_message("Created default call params with video=%i", linphone_call_params_video_enabled(default_params));
 	linphone_core_accept_call_with_params(callee_mgr->lc,call_callee,default_params);
 	linphone_call_params_unref(default_params);
-	
+
 
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_caller.number_of_LinphoneCallConnected+1));
-	
+
 	result = wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1, 2000)
 	&&
 	wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1, 2000);
@@ -1775,9 +1776,9 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 	linphone_core_update_call(caller_mgr->lc, call_caller, caller_params);
 	linphone_call_params_unref(caller_params);
 
-	
+
 	end_call(caller_mgr, callee_mgr);
-	
+
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(caller_mgr);
 }
@@ -1786,17 +1787,17 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 
 
 static void call_callee_with_custom_header_or_sdp_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
-	
-	
+
+
 	const char *value;
 	if (cstate == LinphoneCallOutgoingInit){
 		LinphoneCallParams *params = linphone_call_params_copy(linphone_call_get_params(call));
 		linphone_call_params_add_custom_sdp_attribute(params, "working", "maybe");
 		linphone_call_set_params(call, params);
 		linphone_call_params_unref(params);
-		
+
 	}
-	
+
 	else if (cstate == LinphoneCallIncomingReceived){
 		const LinphoneCallParams *tparams = linphone_call_get_remote_params(call);
 		LinphoneCallParams *params = linphone_call_params_copy(tparams);
@@ -1805,7 +1806,7 @@ static void call_callee_with_custom_header_or_sdp_cb(LinphoneCore *lc, LinphoneC
 		if (value) BC_ASSERT_STRING_EQUAL(value, "maybe");
 		linphone_call_set_params(call, params);
 		linphone_call_params_unref(params);
-		
+
 	}
 
 }
@@ -1817,60 +1818,60 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall *call_caller = NULL, *call_callee = NULL;
 	LinphoneCallParams *callee_params, *caller_params ;
-	
+
 	LinphoneCoreVTable *vtable;
 	const char *value;
 	LinphoneCallTestParams caller_test_params = {0};
 	LinphoneCallTestParams callee_test_params =  {0};
-	
+
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
 	bool_t did_receive_call;
 	const LinphoneCallParams *caller_remote_params;
-	
+
 	caller_params = linphone_core_create_call_params(caller_mgr->lc, NULL);
 
-	
+
 	callee_test_params.base = NULL;
 	caller_test_params.base = NULL;
-	
+
 	/* TODO: This should be handled correctly inside the liblinphone library but meanwhile handle this here. */
 	linphone_core_manager_wait_for_stun_resolution(caller_mgr);
 	linphone_core_manager_wait_for_stun_resolution(callee_mgr);
-	
+
 	setup_sdp_handling(&caller_test_params, caller_mgr);
 	setup_sdp_handling(&callee_test_params, callee_mgr);
-	
+
 	// Assign dedicated callback to vtable for caller and callee
 	vtable = linphone_core_v_table_new();
 	vtable->call_state_changed = call_callee_with_custom_header_or_sdp_cb;
 	linphone_core_add_listener(callee_mgr->lc, vtable);
 	linphone_core_add_listener(caller_mgr->lc, vtable);
-	
+
 	//Caller initates the call with INVITE
 	// caller params not null
 	BC_ASSERT_PTR_NOT_NULL((call_caller=linphone_core_invite_address_with_params(caller_mgr->lc,callee_mgr->identity,caller_params)));
-	
+
 	BC_ASSERT_PTR_NULL(linphone_call_get_remote_params(call_caller)); /*assert that remote params are NULL when no response is received yet*/
-	
+
 	// Wait for Incoming received
 	did_receive_call = wait_for(callee_mgr->lc
 								,caller_mgr->lc
 								,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived
 								,initial_callee.number_of_LinphoneCallIncomingReceived+1);
 	BC_ASSERT_EQUAL(did_receive_call, !callee_test_params.sdp_simulate_error, int, "%d");
-	
-	
-	
+
+
+
 	sal_default_set_sdp_handling(caller_mgr->lc->sal, SalOpSDPNormal);
 	sal_default_set_sdp_handling(callee_mgr->lc->sal, SalOpSDPNormal);
-	
+
 	// Wait for Outgoing Progress
 	if (linphone_core_get_calls_nb(callee_mgr->lc)<=1)
 		BC_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
 	BC_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,initial_caller.number_of_LinphoneCallOutgoingProgress+1, int, "%d");
-	
-	
+
+
 	//Create callee params with custom header and custom SDP
 
 
@@ -1881,17 +1882,17 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 	ms_message("Created default call params with video=%i", linphone_call_params_video_enabled(callee_params));
 	linphone_core_accept_call_with_params(callee_mgr->lc,call_callee,callee_params);
 	linphone_call_params_unref(callee_params);
-	
-	
+
+
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_caller.number_of_LinphoneCallConnected+1));
-	
+
 	result = wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1, 2000)
 	&&
 	wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1, 2000);
-	
+
 	BC_ASSERT_TRUE(result);
-	
+
 	caller_remote_params = linphone_call_get_remote_params(call_caller);
 	value = linphone_call_params_get_custom_sdp_attribute(caller_remote_params, "working");
 	BC_ASSERT_PTR_NOT_NULL(value);
@@ -1903,7 +1904,7 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 
 	linphone_call_params_unref(caller_params);
 	end_call(caller_mgr, callee_mgr);
-	
+
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(caller_mgr);
 }
@@ -2220,9 +2221,9 @@ static void audio_call_with_ice_no_matching_audio_codecs(void) {
 	BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallError, 1, 6000));
 	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
-	
+
 	logs = linphone_core_get_call_logs(pauline->lc);
-	
+
 	BC_ASSERT_EQUAL(bctbx_list_size(logs), 1, int, "%d");
 	if (logs){
 		const LinphoneErrorInfo *ei;
@@ -2642,9 +2643,9 @@ static void _call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enab
 	}
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
-	
+
 	if (plays_nothing){
-		/*This case was for trying to replicate an issue because 
+		/*This case was for trying to replicate an issue because
 		 * zrtp_iterate() was only called when packets are received, which
 		 * creates a big problem because no retransmission of HELLO packet will occur
 		 * if the remote sends nothing.
@@ -2886,7 +2887,7 @@ static void early_media_call_with_ringing_base(bool_t network_change){
 		BC_ASSERT_TRUE(marie_call->all_muted);
 
 		liblinphone_tester_check_rtcp(marie, pauline);
-		
+
 		/* this is a hack to simulate an incoming OK with a different IP address
 		 * in the 'c' SDP field. */
 		if (network_change) {
@@ -3335,7 +3336,7 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 		((VTableReference*)(marie->lc->vtable_refs->data))->cbs->vtable->auth_info_requested=NULL;
 		linphone_core_add_auth_info(marie->lc,wrong_auth_info);
 	}
-	
+
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(marie->lc,marie->identity));
 
@@ -3399,6 +3400,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, bctbx_l
 				break;
 			case LinphoneMediaDirectionRecvOnly:
 				BC_ASSERT_LOWER((int)stats->upload_bandwidth, 5, int, "%i");
+				BCTBX_NO_BREAK; /*intentionally no break*/
 			case LinphoneMediaDirectionSendRecv:
 				expected_recv_iframe = 1;
 				break;
@@ -3704,7 +3706,7 @@ static void incoming_invite_with_invalid_sdp(void) {
 	BC_ASSERT_EQUAL(caller->stat.number_of_LinphoneCallError,1, int, "%d");
 	/*call will be drop before presented to the application, because it is invalid*/
 	BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
-	
+
 	logs = linphone_core_get_call_logs(callee->lc);
 	BC_ASSERT_EQUAL(bctbx_list_size(logs), 1, int, "%i");
 	if (logs){
@@ -3810,7 +3812,7 @@ void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ice ){
 	lcs = bctbx_list_append(lcs,pauline->lc);
 	if (use_ice){
 		linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
-		/* We need RTP symmetric because ICE will put the STUN address in the C line, and no relay is made in this 
+		/* We need RTP symmetric because ICE will put the STUN address in the C line, and no relay is made in this
 		 * scenario.*/
 		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "symmetric", 1);
 	}
@@ -4663,7 +4665,7 @@ static void call_record_with_custom_rtp_modifier(void) {
 static void recovered_call_on_network_switch_in_early_state(LinphoneCoreManager* callerMgr) {
 	const LinphoneCallParams *remote_params;
 	LinphoneCall *incoming_call;
-	
+
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	linphone_core_invite_address(callerMgr->lc, pauline->identity);
@@ -4692,7 +4694,7 @@ static void recovered_call_on_network_switch_in_early_state(LinphoneCoreManager*
 	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &callerMgr->stat.number_of_LinphoneCallReleased, 1));
 	BC_ASSERT_TRUE(wait_for(callerMgr->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
 end:
-	
+
 	linphone_core_manager_destroy(pauline);
 }
 static void recovered_call_on_network_switch_in_early_state_1(void) {
@@ -5124,7 +5126,7 @@ static void call_with_network_switch_no_recovery(void){
 
 	lcs = bctbx_list_append(lcs, marie->lc);
 	lcs = bctbx_list_append(lcs, pauline->lc);
-	
+
 	linphone_core_set_nortp_timeout(marie->lc, 50000);
 
 	BC_ASSERT_TRUE((call_ok=call_with_params(pauline, marie, pauline_params, NULL)));
@@ -5140,14 +5142,14 @@ static void call_with_network_switch_no_recovery(void){
 	 * We have to wait 32 seconds so that the BYE transaction is terminated, and dialog removed.
 	 * This is the condition to receive a 481 when marie sends the reINVITE.*/
 	wait_for_list(lcs, NULL, 0, 32500);
-	
+
 	/*marie will reconnect, register, and send an automatic reINVITE to try to repair the call*/
 	linphone_core_set_network_reachable(marie->lc, TRUE);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
 	/*This reINVITE should of course fail, so marie's call should be terminated.*/
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	
+
 end:
 	if (pauline_params) {
 		linphone_call_params_unref(pauline_params);
@@ -5691,18 +5693,18 @@ static void call_with_encryption_mandatory(bool_t caller_has_encryption_mandator
 	LinphoneCallStats *marie_stats, *pauline_stats;
 	/*marie doesn't support ZRTP at all*/
 	marie->lc->zrtp_not_available_simulation=1;
-	
+
 	/*pauline requests encryption to be mandatory*/
 	linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionZRTP);
 	linphone_core_set_media_encryption_mandatory(pauline->lc, TRUE);
-	
+
 	if (!caller_has_encryption_mandatory){
 		if (!BC_ASSERT_TRUE(quick_call(marie, pauline))) goto end;
 	}else{
 		if (!BC_ASSERT_TRUE(quick_call(pauline, marie))) goto end;
 	}
 	wait_for_until(pauline->lc, marie->lc, NULL, 0, 2000);
-	
+
 	/*assert that no RTP packets have been sent or received by Pauline*/
 	/*testing packet_sent doesn't work, because packets dropped by the transport layer are counted as if they were sent.*/
 #if 0
@@ -5734,11 +5736,11 @@ static void v6_to_v4_call_without_relay(void){
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	bctbx_list_t *lcs = NULL;
-	
+
 	if (liblinphone_tester_ipv4_available() && liblinphone_tester_ipv6_available()){
 		marie = linphone_core_manager_new("marie_rc");
 		pauline = linphone_core_manager_new2("pauline_tcp_rc", FALSE);
-		
+
 		lcs = bctbx_list_append(lcs, marie->lc);
 		lcs = bctbx_list_append(lcs, pauline->lc);
 		linphone_core_enable_ipv6(pauline->lc, FALSE);
@@ -5756,7 +5758,7 @@ static void v6_to_v4_call_without_relay(void){
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 		bctbx_list_free(lcs);
-		
+
 	}else ms_warning("Test skipped, dual stack not available");
 }
 
@@ -5854,17 +5856,17 @@ static void call_with_network_reachable_down_in_callback(void){
 	LinphoneCoreManager* marie;
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	LinphoneCall *call;
-	
+
 	linphone_core_cbs_set_call_state_changed(cbs, my_call_state_changed_cb);
-	
+
 	marie = linphone_core_manager_new("laure_rc_udp");
-	
+
 	linphone_core_add_callbacks(marie->lc, cbs);
-	
+
 	call = linphone_core_invite(marie->lc, "inexistant_username_xbfuuuf");
 	BC_ASSERT_PTR_NOT_NULL(call);
 	BC_ASSERT_TRUE(wait_for(marie->lc, NULL, &marie->stat.number_of_LinphoneCallError, 1));
-	
+
 	linphone_core_cbs_unref(cbs);
 	linphone_core_manager_destroy(marie);
 }

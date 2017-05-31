@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
+#include <bctoolbox/defs.h>
 #include "mediastreamer2/dtmfgen.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msequalizer.h"
@@ -460,16 +461,16 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 		case ORTP_TRACE:
 		case ORTP_DEBUG:
 			mask |= ORTP_DEBUG;
-			LINPHONE_NO_BREAK;
+			BCTBX_NO_BREAK;
 		case ORTP_MESSAGE:
 			mask |= ORTP_MESSAGE;
-			LINPHONE_NO_BREAK;
+			BCTBX_NO_BREAK;
 		case ORTP_WARNING:
 			mask |= ORTP_WARNING;
-			LINPHONE_NO_BREAK;
+			BCTBX_NO_BREAK;
 		case ORTP_ERROR:
 			mask |= ORTP_ERROR;
-			LINPHONE_NO_BREAK;
+			BCTBX_NO_BREAK;
 		case ORTP_FATAL:
 			mask |= ORTP_FATAL;
 			break;
@@ -3487,7 +3488,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	bool_t defer = FALSE;
 	LinphoneCallParams *cp;
 
-	if (!(!linphone_call_params_audio_enabled(params) || 
+	if (!(!linphone_call_params_audio_enabled(params) ||
 		linphone_call_params_get_audio_direction(params) == LinphoneMediaDirectionInactive ||
 		linphone_call_params_get_local_conference_mode(params) == TRUE
 		)

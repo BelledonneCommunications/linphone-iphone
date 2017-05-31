@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "sal_impl.h"
 #include "offeranswer.h"
 
+#include <bctoolbox/defs.h>
+
 static int extract_sdp(SalOp* op,belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
 
 /*used for calls terminated before creation of a dialog*/
@@ -149,10 +151,10 @@ static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event
 	if (op->state == SalOpStateTerminated) return;
 
 	if (op->pending_client_trans && (belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_INIT)) {
-		
+
 		sal_error_info_set(&op->error_info, SalReasonIOError, "SIP", 503, "IO error", NULL);
 		op->base.root->callbacks.call_failure(op);
-		
+
 		if (!op->dialog || belle_sip_dialog_get_state(op->dialog) != BELLE_SIP_DIALOG_CONFIRMED){
 			/* Call terminated very very early, before INVITE is even sent, probably DNS resolution timeout. */
 			op->state = SalOpStateTerminating;
@@ -223,7 +225,7 @@ void sal_call_cancel_invite(SalOp* op) {
 		sal_op_send_request(op,cancel);
 	}else if (op->dialog){
 		belle_sip_dialog_state_t state = belle_sip_dialog_get_state(op->dialog);;
-		/*case where the response received is invalid (could not establish a dialog), but the transaction is not cancellable 
+		/*case where the response received is invalid (could not establish a dialog), but the transaction is not cancellable
 		 * because already terminated*/
 		switch(state){
 			case BELLE_SIP_DIALOG_EARLY:
@@ -412,7 +414,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 		resp=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(server_transaction));
 	}
 	if (resp) code = belle_sip_response_get_status_code(resp);
-	
+
 	if (op->state == SalOpStateTerminating
 			&& strcmp("BYE",belle_sip_request_get_method(req))==0
 			&& (!resp || (belle_sip_response_get_status_code(resp) != 401
@@ -611,7 +613,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				drop_op = TRUE;
 			}
 			break;
-		} /* else same behavior as for EARLY state, thus NO BREAK*/
+		}BCTBX_NO_BREAK; /* else same behavior as for EARLY state, thus NO BREAK*/
 	}
 	case BELLE_SIP_DIALOG_EARLY: {
 		if (strcmp("CANCEL",method)==0) {
@@ -646,7 +648,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	case BELLE_SIP_DIALOG_CONFIRMED:
 		/*great ACK received*/
 		if (strcmp("ACK",method)==0) {
-			if (!op->pending_client_trans || 
+			if (!op->pending_client_trans ||
 				!belle_sip_transaction_state_is_transient(belle_sip_transaction_get_state((belle_sip_transaction_t*)op->pending_client_trans))){
 				if (op->sdp_offering){
 					SalReason reason;
@@ -990,7 +992,7 @@ int sal_call_decline_with_error_info(SalOp *op,  const SalErrorInfo *info, const
 	belle_sip_header_contact_t* contact=NULL;
 	int status = info->protocol_code;
 	belle_sip_transaction_t *trans;
-	
+
 	if (info->reason==SalReasonRedirect){
 		if (redirection!=NULL) {
 			if (strstr(redirection,"sip:")!=0) status=302;
@@ -1098,7 +1100,7 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 		p_sei = &sei;
 	} else{
 		p_sei = info;
-	
+
 	}
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
 	if (op->state==SalOpStateTerminating || op->state==SalOpStateTerminated) {
