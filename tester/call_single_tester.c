@@ -1002,7 +1002,7 @@ static void simple_call_compatibility_mode(void) {
 static void terminate_call_with_error(void) {
 	LinphoneCall* call_callee ;
 	LinphoneErrorInfo *ei  ;
-	const LinphoneErrorInfo *rei ;
+	const LinphoneErrorInfo *rei = NULL;
 	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
@@ -1018,21 +1018,26 @@ static void terminate_call_with_error(void) {
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, 1));
 
 	call_callee = linphone_core_get_current_call(callee_mgr->lc);
+	linphone_call_ref(call_callee);
 	BC_ASSERT_PTR_NOT_NULL(call_callee);
 
 	BC_ASSERT_EQUAL( linphone_core_accept_call(callee_mgr->lc,call_callee), 0 , int, "%d");
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,1));
 
-
-
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_PTR_NOT_NULL(ei);
+	if (ei){
+		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),200, int, "%d");
+		BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(ei));
+		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(ei), "Call completed elsewhere");
+		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(ei), "SIP");
 
+	}
+	linphone_call_terminate_with_error_info(out_call,ei);
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallReleased,1));
 
-	rei = ei;
-
-	linphone_call_terminate_with_error_info(out_call,rei);
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
-
+	rei = linphone_call_get_error_info(call_callee);
 	BC_ASSERT_PTR_NOT_NULL(rei);
 	if (rei){
 		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),200, int, "%d");
@@ -1042,16 +1047,66 @@ static void terminate_call_with_error(void) {
 
 	}
 
-
-	BC_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallEnd,1, int, "%d");
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallReleased,1));
 
 	linphone_error_info_unref(ei);
 	linphone_call_unref(out_call);
+	linphone_call_unref(call_callee);
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(caller_mgr);
 }
 
+static void cancel_call_with_error(void) {
+	LinphoneCall* call_callee ;
+	LinphoneErrorInfo *ei  ;
+	const LinphoneErrorInfo *rei = NULL;
+	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	LinphoneCall* out_call = linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity);
+
+	linphone_call_ref(out_call);
+	ei = linphone_error_info_new();
+	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 200, "Call completed elsewhere", NULL);
+
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, 1));
+
+	call_callee = linphone_core_get_current_call(callee_mgr->lc);
+	linphone_call_ref(call_callee);
+
+	BC_ASSERT_PTR_NOT_NULL(call_callee);
+	BC_ASSERT_PTR_NOT_NULL(ei);
+	if (ei){
+		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),200, int, "%d");
+		BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(ei));
+		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(ei), "Call completed elsewhere");
+		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(ei), "SIP");
+
+	}
+	linphone_call_terminate_with_error_info(out_call,ei);
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallReleased,1));
+
+	rei = linphone_call_get_error_info(call_callee);
+	BC_ASSERT_PTR_NOT_NULL(rei);
+	if (rei){
+		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),0, int, "%d");
+		BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(rei));
+		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rei), "Incoming call cancelled");
+		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(ei), "SIP");
+
+	}
+
+	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallReleased,1));
+
+	linphone_error_info_unref(ei);
+	linphone_call_unref(out_call);
+	linphone_call_unref(call_callee);
+	linphone_core_manager_destroy(callee_mgr);
+	linphone_core_manager_destroy(caller_mgr);
+}
 
 static void cancelled_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -6018,7 +6073,8 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call from plain RTP to ZRTP mandatory should be silent", call_from_plain_rtp_to_zrtp),
 	TEST_NO_TAG("Call ZRTP mandatory to plain RTP should be silent", call_from_zrtp_to_plain_rtp),
 	TEST_NO_TAG("Call with network reachable down in callback", call_with_network_reachable_down_in_callback),
-	TEST_NO_TAG("Call terminated with reason", terminate_call_with_error)
+	TEST_NO_TAG("Call terminated with reason", terminate_call_with_error),
+	TEST_NO_TAG("Call cancelled with reason", cancel_call_with_error)
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -445,6 +445,7 @@ static void call_terminated(SalOp* op,belle_sip_server_transaction_t* server_tra
 	belle_sip_response_t* resp;
 	op->state = SalOpStateTerminating;
 	op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
+	sal_op_set_reason_error_info(op, BELLE_SIP_MESSAGE(request));
 	resp=sal_op_create_response_from_request(op,request,status_code);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
 }
@@ -670,10 +671,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				ms_message("Ignored received ack since a new client transaction has been started since.");
 			}
 		} else if(strcmp("BYE",method)==0) {
-			resp=sal_op_create_response_from_request(op,req,200);
-			belle_sip_server_transaction_send_response(server_transaction,resp);
-			op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
-			op->state=SalOpStateTerminating;
+			call_terminated(op,server_transaction,req,200);
 			/*call end not notified by dialog deletion because transaction can end before dialog*/
 		} else if(strcmp("INVITE",method)==0 || (is_update=(strcmp("UPDATE",method)==0)) ) {
 			if (is_update && !belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))) {
