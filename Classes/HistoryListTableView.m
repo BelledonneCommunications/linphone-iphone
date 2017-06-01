@@ -59,6 +59,11 @@
 											 object:nil];
 
 	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(loadData)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+
+	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(coreUpdateEvent:)
 											   name:kLinphoneCoreUpdate
 											 object:nil];
@@ -69,8 +74,8 @@
 	[super viewWillDisappear:animated];
 
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
-
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCoreUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
 }
 
 #pragma mark - Event Functions
