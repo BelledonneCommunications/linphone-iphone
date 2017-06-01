@@ -44,8 +44,7 @@ static void enable_deflate_content_encoding(LinphoneCoreManager *mgr, bool_t ena
 
 static void simple(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
 	LinphonePresenceActivity *activity = NULL;
@@ -136,8 +135,7 @@ static void fast_activity_change(void) {
 
 static void subscriber_no_longer_reachable(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline1 = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneFriend *lf;
 	bctbx_list_t *lcs = NULL;
 	LinphonePresenceModel * presence;
@@ -209,8 +207,7 @@ static void subscriber_no_longer_reachable(void){
 
 static void subscribe_with_late_publish(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
 	LpConfig *pauline_lp;
@@ -295,8 +292,7 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
 	LpConfig *pauline_lp;
@@ -368,8 +364,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_core_set_user_agent(laure->lc, "bypass", NULL);
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	linphone_core_set_user_agent(marie->lc, "bypass", NULL);
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "bypass", NULL);
 	const char *rls_uri = "sip:rls@sip.example.org";
 	LinphoneFriendList *lfl;
@@ -623,8 +618,7 @@ static void test_presence_list_subscription_expire_for_unknown(void) {
 static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
 	linphone_core_set_user_agent(laure->lc, "bypass", NULL);
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "bypass", NULL);
 	const char *rls_uri = "sip:rls@sip.example.org";
 	LinphoneFriendList *lfl;
@@ -714,8 +708,7 @@ static void presence_list_subscribe_io_error(void) {
 static void presence_list_subscribe_network_changes(void) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
 	linphone_core_set_user_agent(laure->lc, "bypass", NULL);
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "bypass", NULL);
 	const char *rls_uri = "sip:rls@sip.example.org";
 	LinphoneFriendList *lfl;
@@ -793,8 +786,7 @@ static void long_term_presence_base(const char* addr, bool_t exist, const char* 
 	const LinphonePresenceModel* model;
 	char *presence_contact;
 	int *presence;
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support-bypass", NULL);
 
 	friend2=linphone_core_create_friend_with_address(pauline->lc,addr);
@@ -868,8 +860,7 @@ static void long_term_presence_list(void) {
 		const char *nationnal_phone_number = "0123456789";
 		LinphoneProxyConfig * pauline_proxy_config;
 		
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	linphone_core_set_user_agent(pauline->lc, "bypass", NULL);
 		enable_publish(pauline, FALSE);
 		enable_deflate_content_encoding(pauline, FALSE);
@@ -927,8 +918,7 @@ static void long_term_presence_with_e164_phone_without_sip(void) {
 
 		LinphoneFriend* friend2;
 		char *presence_contact;
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 		linphone_core_set_user_agent(pauline->lc, "full-presence-support-bypass", NULL);
 
 		friend2=linphone_core_create_friend(pauline->lc);
@@ -986,8 +976,7 @@ static void long_term_presence_with_phone_without_sip(void) {
 		linphone_core_set_user_agent(marie->lc, "bypass", NULL);
 		identity = linphone_address_as_string_uri_only(marie->identity);
 		
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 		linphone_core_set_user_agent(pauline->lc, "full-presence-support-bypass", NULL);
 		
 		friend2=linphone_core_create_friend(pauline->lc);
@@ -1124,10 +1113,8 @@ static void long_term_presence_with_crossed_references(void) {
 
 static void multiple_publish_aggregation(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	//LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
-	LinphoneCoreManager* pauline2 = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityVacation, NULL);
 	LinphonePresenceModel *pauline_presence2 = linphone_presence_model_new_with_activity(LinphonePresenceActivityAway, NULL);
 	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
@@ -1219,8 +1206,7 @@ static void multiple_publish_aggregation(void) {
 
 static void extended_notify_only_both_side_subscribed(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	LinphonePresenceModel *marie_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityTV, NULL);
 	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
@@ -1294,8 +1280,7 @@ static void extended_notify_only_both_side_subscribed(void) {
 
 static void extended_notify_only_both_side_subscribed2(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	LinphonePresenceModel *marie_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityTV, NULL);
 	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
@@ -1372,8 +1357,7 @@ static void extended_notify_only_both_side_subscribed2(void) {
 
 static void extended_notify_sub_unsub_sub(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	LinphonePresenceModel *marie_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityTV, NULL);
 	LinphoneFriend* f = linphone_core_create_friend_with_address(marie->lc, get_identity(pauline));
@@ -1457,10 +1441,8 @@ static void extended_notify_sub_unsub_sub(void) {
 
 static void extended_notify_sub_unsub_sub2(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
-	//LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* pauline2 = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePresenceModel *pauline_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityAppointment, NULL);
 	LinphonePresenceModel *pauline_presence2 = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
 	LinphonePresenceModel *marie_presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityTV, NULL);
