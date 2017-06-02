@@ -394,6 +394,7 @@ void LocalConference::addLocalEndpoint() {
 	_post_configure_audio_stream(st,m_core,FALSE);
 	m_localParticipantStream=st;
 	m_localEndpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
+	ms_message("conference: adding local endpoint");
 	ms_audio_conference_add_member(m_conf,m_localEndpoint);
 }
 
@@ -418,6 +419,8 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 			if (!call->current_params->in_conference)
 				addParticipant(call);
 		}
+		/*if the local participant is not yet created, created it and it to the conference */
+		if (!m_localEndpoint) addLocalEndpoint();
 	}
 	return 0;
 }
@@ -433,7 +436,7 @@ int LocalConference::addParticipant(LinphoneCall *call) {
 		call->params->has_video=FALSE;
 		linphone_call_resume(call);
 	}else if (call->state==LinphoneCallStreamsRunning){
-		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		LinphoneCallParams *params = linphone_core_create_call_params(m_core, call);
 		params->in_conference=TRUE;
 		params->has_video=FALSE;
 
