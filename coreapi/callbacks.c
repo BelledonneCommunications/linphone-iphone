@@ -850,9 +850,11 @@ static void call_terminated(SalOp *op, const char *from){
 		break;
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
-			linphone_error_info_set(call->ei,NULL, LinphoneReasonNotAnswered, 0, "Incoming call cancelled", NULL);
-			call->non_op_error = TRUE;
-		break;
+			if(sal_op_get_reason_error_info(op)->reason != SalReasonNone) {
+				linphone_error_info_set(call->ei,NULL, LinphoneReasonNotAnswered, 0, "Incoming call cancelled", NULL);
+				call->non_op_error = TRUE;
+			}
+			break;
 		default:
 		break;
 	}
