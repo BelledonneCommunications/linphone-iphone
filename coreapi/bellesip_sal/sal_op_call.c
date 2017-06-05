@@ -426,10 +426,10 @@ static void call_terminated(SalOp* op,belle_sip_server_transaction_t* server_tra
 	belle_sip_response_t* resp;
 	belle_sip_request_t* server_req = belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(server_transaction));
 	op->state = SalOpStateTerminating;
-	op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
 	sal_op_set_reason_error_info(op, BELLE_SIP_MESSAGE(cancel_request ? cancel_request : server_req));
 	resp=sal_op_create_response_from_request(op,server_req,status_code);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
+	op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
 }
 
 static void unsupported_method(belle_sip_server_transaction_t* server_transaction,belle_sip_request_t* request) {
