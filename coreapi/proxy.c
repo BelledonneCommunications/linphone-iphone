@@ -856,8 +856,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 		LinphoneContent *content;
 		char *presence_body;
 		if (proxy->presence_publish_event==NULL){
-			proxy->presence_publish_event = linphone_core_create_publish(proxy->lc
-										 , linphone_proxy_config_get_identity_address(proxy)
+			proxy->presence_publish_event = linphone_proxy_config_create_publish(proxy
 										 , "presence"
 										 , linphone_proxy_config_get_publish_expires(proxy));
 			linphone_event_ref(proxy->presence_publish_event);
