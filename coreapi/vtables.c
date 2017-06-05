@@ -316,6 +316,11 @@ void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call) {
 	cleanup_dead_vtable_refs(lc);
 }
 
+void linphone_core_notify_version_update_check_result_received(LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url) {
+	NOTIFY_IF_EXIST(version_update_check_result_received, lc, result, version, url);
+	cleanup_dead_vtable_refs(lc);
+}
+
 static VTableReference * v_table_reference_new(LinphoneCoreCbs *cbs, bool_t internal){
 	VTableReference *ref=ms_new0(VTableReference,1);
 	ref->valid=TRUE;

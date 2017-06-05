@@ -1110,6 +1110,10 @@ struct _LinphoneCore
 	belle_http_provider_t *http_provider;
 	belle_tls_crypto_config_t *http_crypto_config;
 	belle_http_request_listener_t *provisioning_http_listener;
+#ifdef ENABLE_UPDATE_CHECK
+	belle_http_request_listener_t *update_check_http_listener;
+	char *update_check_current_version;
+#endif
 	MSList *tones;
 	LinphoneReason chat_deny_code;
 	char *file_transfer_server;
@@ -1922,6 +1926,7 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call);
+void linphone_core_notify_version_update_check_result_received(LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
