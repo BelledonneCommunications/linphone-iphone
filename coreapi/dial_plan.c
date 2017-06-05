@@ -158,6 +158,8 @@ static LinphoneDialPlan const dial_plans[]={
 	{"Mauritius"                    ,"MU"		, "230"     , 7     , "00"	},
 	{"Mayotte Island"               ,"YT"		, "262"     , 9     , "00"	},
 	{"Mexico"                       ,"MX"		, "52"      , 10	, "00"	},
+	/*The following is a pseudo dial plan for Mexican mobile phones. See https://en.wikipedia.org/wiki/Telephone_numbers_in_Mexico*/
+	{"Mexico"                       ,"MX"		, "521"      , 10	, "00"	}, 
 	{"Micronesia"                   ,"FM"		, "691"     , 7		, "011" },
 	{"Moldova"                      ,"MD"		, "373"     , 8		, "00"  },
 	{"Monaco"                       ,"MC"		, "377"     , 8     , "00"	},
