@@ -1007,10 +1007,41 @@ LinphoneCore* linphone_friend_list_get_core(const LinphoneFriendList *list) {
 	return list->lc;
 }
 
-LinphoneStatus linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
-	bctbx_list_t *vcards = NULL;
+static LinphoneStatus linphone_friend_list_import_friends_from_vcard4(LinphoneFriendList *list, bctbx_list_t *vcards)  {
 	bctbx_list_t *vcards_iterator = NULL;
 	int count = 0;
+	
+	if (!linphone_core_vcard_supported()) {
+		ms_error("vCard support wasn't enabled at compilation time");
+		return -1;
+	}
+	if (!list) {
+		ms_error("Can't import into a NULL list");
+		return -1;
+	}
+	
+	vcards_iterator = vcards;
+	
+	while (vcards_iterator != NULL && bctbx_list_get_data(vcards_iterator) != NULL) {
+		LinphoneVcard *vcard = (LinphoneVcard *)bctbx_list_get_data(vcards_iterator);
+		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
+		linphone_vcard_unref(vcard);
+		if (lf) {
+			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
+				linphone_friend_save(lf, lf->lc);
+				count++;
+			}
+			linphone_friend_unref(lf);
+		}
+		vcards_iterator = bctbx_list_next(vcards_iterator);
+	}
+	bctbx_list_free(vcards);
+	linphone_core_store_friends_list_in_db(list->lc, list);
+	return count;
+	
+}
+LinphoneStatus linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
+	bctbx_list_t *vcards = NULL;
 
 	if (!linphone_core_vcard_supported()) {
 		ms_error("vCard support wasn't enabled at compilation time");
@@ -1022,35 +1053,15 @@ LinphoneStatus linphone_friend_list_import_friends_from_vcard4_file(LinphoneFrie
 	}
 
 	vcards = linphone_vcard_context_get_vcard_list_from_file(list->lc->vcard_context, vcard_file);
-	vcards_iterator = vcards;
 	if (!vcards) {
 		ms_error("Failed to parse the file %s", vcard_file);
 		return -1;
 	}
-
-	while (vcards_iterator != NULL && bctbx_list_get_data(vcards_iterator) != NULL) {
-		LinphoneVcard *vcard = (LinphoneVcard *)bctbx_list_get_data(vcards_iterator);
-		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
-		if (lf) {
-			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
-				linphone_friend_save(lf, lf->lc);
-				count++;
-			}
-			linphone_friend_unref(lf);
-		} else {
-			linphone_vcard_unref(vcard);
-		}
-		vcards_iterator = bctbx_list_next(vcards_iterator);
-	}
-	bctbx_list_free(vcards);
-	linphone_core_store_friends_list_in_db(list->lc, list);
-	return count;
+	return linphone_friend_list_import_friends_from_vcard4(list,vcards);
 }
 
 LinphoneStatus linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *list, const char *vcard_buffer) {
 	bctbx_list_t *vcards = NULL;
-	bctbx_list_t *vcards_iterator = NULL;
-	int count = 0;
 
 	if (!linphone_core_vcard_supported()) {
 		ms_error("vCard support wasn't enabled at compilation time");
@@ -1062,29 +1073,12 @@ LinphoneStatus linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFr
 	}
 
 	vcards = linphone_vcard_context_get_vcard_list_from_buffer(list->lc->vcard_context, vcard_buffer);
-	vcards_iterator = vcards;
 	if (!vcards) {
 		ms_error("Failed to parse the buffer");
 		return -1;
 	}
 
-	while (vcards_iterator != NULL && bctbx_list_get_data(vcards_iterator) != NULL) {
-		LinphoneVcard *vcard = (LinphoneVcard *)bctbx_list_get_data(vcards_iterator);
-		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
-		if (lf) {
-			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
-				count++;
-			}
-			linphone_friend_unref(lf);
-		} else {
-			linphone_vcard_unref(vcard);
-		}
-		vcards_iterator = bctbx_list_next(vcards_iterator);
-	}
-	bctbx_list_free(vcards);
-	linphone_core_store_friends_list_in_db(list->lc, list);
-	return count;
-}
+	return linphone_friend_list_import_friends_from_vcard4(list,vcards);}
 
 void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
 	FILE *file = NULL;

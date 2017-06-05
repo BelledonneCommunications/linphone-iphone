@@ -1397,6 +1397,7 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 		linphone_vcard_set_etag(vcard, argv[7]);
 		linphone_vcard_set_url(vcard, argv[8]);
 		lf = linphone_friend_new_from_vcard(vcard);
+		linphone_vcard_unref(vcard);
 	}
 	if (!lf) {
 		lf = linphone_friend_new();
