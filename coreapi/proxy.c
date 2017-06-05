@@ -209,10 +209,10 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *cfg){
 		sal_op_release(cfg->op);
 		cfg->op=NULL;
 	}
-	if (cfg->long_term_event){
-		linphone_event_terminate(cfg->long_term_event);
-		linphone_event_unref(cfg->long_term_event);
-		cfg->long_term_event=NULL;
+	if (cfg->presence_publish_event){
+		linphone_event_terminate(cfg->presence_publish_event);
+		linphone_event_unref(cfg->presence_publish_event);
+		cfg->presence_publish_event=NULL;
 	}
 }
 
@@ -391,8 +391,8 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
 	linphone_proxy_config_store_server_config(cfg);
 	linphone_proxy_config_compute_publish_params_hash(cfg);
 
-	if (cfg->publish && cfg->long_term_event){
-		linphone_event_pause_publish(cfg->long_term_event);
+	if (cfg->publish && cfg->presence_publish_event){
+		linphone_event_pause_publish(cfg->presence_publish_event);
 	}
 	/*Don't stop refresher*/
 }
@@ -415,11 +415,11 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 		cfg->pending_contact=contact_addr;
 
 	}
-	if (cfg->long_term_event){ /*might probably do better*/
-		linphone_event_terminate(cfg->long_term_event);
-		if (cfg->long_term_event) {
-			linphone_event_unref(cfg->long_term_event); /*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
-			cfg->long_term_event=NULL;
+	if (cfg->presence_publish_event){ /*might probably do better*/
+		linphone_event_terminate(cfg->presence_publish_event);
+		if (cfg->presence_publish_event) {
+			linphone_event_unref(cfg->presence_publish_event); /*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
+			cfg->presence_publish_event=NULL;
 		}
 		
 	}
@@ -800,7 +800,7 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			sal_op_unref(cfg->op); /*but we keep refresher to handle authentication if needed*/
 			cfg->op=NULL;
 		}
-		if (cfg->long_term_event) {
+		if (cfg->presence_publish_event) {
 			if (res == LinphoneProxyConfigAddressDifferent) {
 				_linphone_proxy_config_unpublish(cfg);
 			}
@@ -817,16 +817,16 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 
 	if (linphone_proxy_config_compute_publish_params_hash(cfg)) {
 		ms_message("Publish params have changed on proxy config [%p]",cfg);
-		if (cfg->long_term_event) {
+		if (cfg->presence_publish_event) {
 			if (cfg->publish) {
-				const char * sip_etag = linphone_event_get_custom_header(cfg->long_term_event, "SIP-ETag");
+				const char * sip_etag = linphone_event_get_custom_header(cfg->presence_publish_event, "SIP-ETag");
 				if (sip_etag) {
 					if (cfg->sip_etag) ms_free(cfg->sip_etag);
 					cfg->sip_etag = ms_strdup(sip_etag);
 				}
 			}
 			/*publish is terminated*/
-			linphone_event_terminate(cfg->long_term_event);
+			linphone_event_terminate(cfg->presence_publish_event);
 		}
 		if (cfg->publish) cfg->send_publish=TRUE;
 	} else {
@@ -855,14 +855,14 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 	if (proxy->state==LinphoneRegistrationOk || proxy->state==LinphoneRegistrationCleared){
 		LinphoneContent *content;
 		char *presence_body;
-		if (proxy->long_term_event==NULL){
-			proxy->long_term_event = linphone_core_create_publish(proxy->lc
+		if (proxy->presence_publish_event==NULL){
+			proxy->presence_publish_event = linphone_core_create_publish(proxy->lc
 										 , linphone_proxy_config_get_identity_address(proxy)
 										 , "presence"
 										 , linphone_proxy_config_get_publish_expires(proxy));
-			linphone_event_ref(proxy->long_term_event);
+			linphone_event_ref(proxy->presence_publish_event);
 		}
-		proxy->long_term_event->internal = TRUE;
+		proxy->presence_publish_event->internal = TRUE;
 
 		if (linphone_presence_model_get_presentity(presence) == NULL) {
 			ms_message("No presentity set for model [%p], using identity from proxy config [%p]", presence, proxy);
@@ -879,11 +879,11 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 		linphone_content_set_type(content, "application");
 		linphone_content_set_subtype(content,"pidf+xml");
 		if (proxy->sip_etag) {
-			linphone_event_add_custom_header(proxy->long_term_event, "SIP-If-Match", proxy->sip_etag);
+			linphone_event_add_custom_header(proxy->presence_publish_event, "SIP-If-Match", proxy->sip_etag);
 			ms_free(proxy->sip_etag);
 			proxy->sip_etag=NULL;
 		}
-		err = linphone_event_send_publish(proxy->long_term_event, content);
+		err = linphone_event_send_publish(proxy->presence_publish_event, content);
 		linphone_content_unref(content);
 		ms_free(presence_body);
 	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
@@ -891,10 +891,10 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 }
 
 void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj) {
-	if (obj->long_term_event
-		&& (linphone_event_get_publish_state(obj->long_term_event) == LinphonePublishOk ||
-					(linphone_event_get_publish_state(obj->long_term_event)  == LinphonePublishProgress && obj->publish_expires != 0))) {
-		linphone_event_unpublish(obj->long_term_event);
+	if (obj->presence_publish_event
+		&& (linphone_event_get_publish_state(obj->presence_publish_event) == LinphonePublishOk ||
+					(linphone_event_get_publish_state(obj->presence_publish_event)  == LinphonePublishProgress && obj->publish_expires != 0))) {
+		linphone_event_unpublish(obj->presence_publish_event);
 	}
 	if (obj->sip_etag) {
 		ms_free(obj->sip_etag);
@@ -1464,8 +1464,8 @@ void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatP
 }
 
 void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state) {
-	if ((cfg->long_term_event != NULL) && ((state == LinphonePublishCleared) || (state == LinphonePublishError))) {
-		linphone_event_unref(cfg->long_term_event);
-		cfg->long_term_event = NULL;
+	if ((cfg->presence_publish_event != NULL) && ((state == LinphonePublishCleared) || (state == LinphonePublishError))) {
+		linphone_event_unref(cfg->presence_publish_event);
+		cfg->presence_publish_event = NULL;
 	}
 }

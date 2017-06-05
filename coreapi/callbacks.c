@@ -1137,10 +1137,10 @@ static void register_failure(SalOp *op){
 	} else {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 	}
-	if (cfg->long_term_event){
+	if (cfg->presence_publish_event){
 		/*prevent publish to be sent now until registration gets successful*/
-		linphone_event_terminate(cfg->long_term_event);
-		cfg->long_term_event=NULL;
+		linphone_event_terminate(cfg->presence_publish_event);
+		cfg->presence_publish_event=NULL;
 		cfg->send_publish=cfg->publish;
 	}
 }

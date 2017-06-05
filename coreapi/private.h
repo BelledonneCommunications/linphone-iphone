@@ -702,7 +702,7 @@ struct _LinphoneProxyConfig
 	bool_t unused[3];
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
-	LinphoneEvent *long_term_event;
+	LinphoneEvent *presence_publish_event;
 	unsigned long long previous_publish_config_hash[2];
 
 	char *refkey;

@@ -2093,7 +2093,7 @@ static void linphone_core_internal_publish_state_changed(LinphoneCore *lc, Linph
 		const bctbx_list_t *item;
 		for (item = cfgs; item != NULL; item = bctbx_list_next(item)) {
 			LinphoneProxyConfig *cfg = (LinphoneProxyConfig *)bctbx_list_get_data(item);
-			if (cfg->long_term_event == lev) {
+			if (cfg->presence_publish_event == lev) {
 				linphone_proxy_config_notify_publish_state_changed(cfg, state);
 				break;
 			}
