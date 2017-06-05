@@ -127,6 +127,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->avpf_mode = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf", LinphoneAVPFDefault) : LinphoneAVPFDefault;
 	cfg->avpf_rr_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
 	cfg->publish_expires= lc ? lp_config_get_default_int(lc->config, "proxy", "publish_expires", -1) : -1;
+	cfg->publish = lc ? lp_config_get_default_int(lc->config, "proxy", "publish", FALSE) : FALSE;
 	cfg->refkey = refkey ? ms_strdup(refkey) : NULL;
 	if (nat_policy_ref) {
 		LinphoneNatPolicy *policy = linphone_config_create_nat_policy_from_section(lc->config,nat_policy_ref);
