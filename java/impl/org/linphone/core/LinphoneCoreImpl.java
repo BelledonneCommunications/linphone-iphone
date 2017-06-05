@@ -194,6 +194,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setDefaultSoundDevices(long nativePtr);
 	private native Object createFriend(long nativePtr);
 	private native Object createFriendWithAddress(long nativePtr, String address);
+	private native int getIncomingTimeout(long nativePtr);
 
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -1100,6 +1101,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void setIncomingTimeout(int timeout) {
 		setIncomingTimeout(nativePtr, timeout);
+	}
+
+	public synchronized int getIncomingTimeout() {
+		return getIncomingTimeout(nativePtr);
 	}
 
 	public synchronized void setInCallTimeout(int timeout)

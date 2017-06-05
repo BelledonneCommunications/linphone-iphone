@@ -5911,6 +5911,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setIncomingTimeout(JNIEn
 	linphone_core_set_inc_timeout((LinphoneCore *)lc, timeout);
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getIncomingTimeout(JNIEnv *env, jobject thiz, jlong lc) {
+	return linphone_core_get_inc_timeout((LinphoneCore *)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setInCallTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
 	linphone_core_set_in_call_timeout((LinphoneCore *)lc, timeout);
 }

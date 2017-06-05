@@ -1921,6 +1921,12 @@ public interface LinphoneCore {
 	void setIncomingTimeout(int timeout);
 
 	/**
+	 * Return the incoming call timeout in seconds.
+	 * @return the incoming call timeout in seconds.
+	 **/
+	int getIncomingTimeout();
+
+	/**
 	 * Set the call timeout in seconds.
 	 * Once this time is elapsed (ringing included), the call is automatically hung up.
 	**/
