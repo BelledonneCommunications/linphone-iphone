@@ -468,10 +468,10 @@ void _linphone_friend_list_release(LinphoneFriendList *list);
 /*get rls either from list or core if any*/
 const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFriendList *list);
 
-void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
+LINPHONE_PUBLIC void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void _linphone_friend_release(LinphoneFriend *lf);
-void linphone_friend_update_subscribes(LinphoneFriend *fr, bool_t only_when_registered);
+LINPHONE_PUBLIC void linphone_friend_update_subscribes(LinphoneFriend *fr, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
@@ -2032,8 +2032,8 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_na
 
 char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
 LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const LinphoneConfig *config, const char* section);
-	
-	
+
+
 #ifdef __cplusplus
 }
 #endif
