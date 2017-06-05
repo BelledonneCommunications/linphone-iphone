@@ -2872,6 +2872,10 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getNatP
 	return (nat_policy != NULL) ? getNatPolicy(env, nat_policy) : NULL;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setNatPolicy(JNIEnv* env,jobject thiz,jlong proxyCfg, jlong jnat_policy) {
+	linphone_proxy_config_set_nat_policy((LinphoneProxyConfig *)proxyCfg, (LinphoneNatPolicy *)jnat_policy);
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
 	if (jroute != NULL) {
 		const char* route = GetStringUTFChars(env, jroute);
