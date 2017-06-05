@@ -841,7 +841,17 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					data->timer = nil;
 				}
 				LinphoneCallLog *UNlog = linphone_call_get_call_log(call);
-				if (UNlog == NULL || linphone_call_log_get_status(UNlog) == LinphoneCallMissed) {
+				BOOL notAnsweredElsewhere = TRUE;
+				const LinphoneErrorInfo *ei = linphone_call_get_error_info(call);
+				if (ei) {
+					// error not between 200-299 or 600-699
+					int code = linphone_error_info_get_protocol_code(ei);
+					notAnsweredElsewhere = !((code >= 200 && code < 300) || (code >= 600 && code < 700));
+				}
+				if ((UNlog == NULL || linphone_call_log_get_status(UNlog) == LinphoneCallMissed ||
+					 linphone_call_log_get_status(UNlog) == LinphoneCallAborted ||
+					 linphone_call_log_get_status(UNlog) == LinphoneCallEarlyAborted) &&
+					notAnsweredElsewhere) {
 					UNMutableNotificationContent *missed_content = [[UNMutableNotificationContent alloc] init];
 					missed_content.title = NSLocalizedString(@"Missed call", nil);
 					missed_content.body = address;
