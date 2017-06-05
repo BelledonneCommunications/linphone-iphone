@@ -1064,7 +1064,7 @@ static void cancel_call_with_error(void) {
 
 	linphone_call_ref(out_call);
 	ei = linphone_error_info_new();
-	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 200, "Call has been cancelled", NULL);
+	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 600, "Call has been cancelled", NULL);
 
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -1076,7 +1076,7 @@ static void cancel_call_with_error(void) {
 	BC_ASSERT_PTR_NOT_NULL(call_callee);
 	BC_ASSERT_PTR_NOT_NULL(ei);
 	if (ei){
-		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),200, int, "%d");
+		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),600, int, "%d");
 		BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(ei));
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(ei), "Call has been cancelled");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(ei), "SIP");
@@ -1088,7 +1088,7 @@ static void cancel_call_with_error(void) {
 	rei = linphone_call_get_error_info(call_callee);
 	BC_ASSERT_PTR_NOT_NULL(rei);
 	if (rei){
-		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),200, int, "%d");
+		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),600, int, "%d");
 		BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(rei));
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rei), "Call has been cancelled");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rei), "SIP");
@@ -1159,8 +1159,7 @@ static void cancel_other_device_after_decline(void) {
 	const LinphoneErrorInfo *rei = NULL;
 	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *callee_mgr_2 = linphone_core_manager_new("marie_rc");
-	//LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager *caller_mgr = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	LinphoneCall* out_call = linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity);
 	linphone_call_ref(out_call);
