@@ -1098,17 +1098,20 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 	SalErrorInfo sei = { 0 };
 	const SalErrorInfo *p_sei;
-	if (info == NULL){
+	belle_sip_dialog_state_t dialog_state = op->dialog ? belle_sip_dialog_get_state(op->dialog) : BELLE_SIP_DIALOG_NULL;
+	int ret = 0;
+	
+	if (info == NULL && dialog_state != BELLE_SIP_DIALOG_CONFIRMED && op->dir == SalOpDirIncoming){
+		/*the purpose of this line is to set a default SalErrorInfo for declining an incoming call (not yet established of course) */
 		sal_error_info_set(&sei,SalReasonDeclined, "SIP", 0, NULL, NULL);
 		p_sei = &sei;
 	} else{
 		p_sei = info;
-
 	}
-	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
 	if (op->state==SalOpStateTerminating || op->state==SalOpStateTerminated) {
 		ms_error("Cannot terminate op [%p] in state [%s]",op,sal_op_state_to_string(op->state));
-		return -1;
+		ret = -1;
+		goto end;
 	}
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_CONFIRMED: {
@@ -1150,10 +1153,13 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 		}
 		default: {
 			ms_error("sal_call_terminate not implemented yet for dialog state [%s]",belle_sip_dialog_state_to_string(dialog_state));
-			return -1;
+			ret = -1;
+			goto end;
 		}
 	}
-	return 0;
+end:
+	sal_error_info_reset(&sei);
+	return ret;
 }
 
 
