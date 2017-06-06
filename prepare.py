@@ -290,6 +290,8 @@ sdk:
 \t\tfor archive in $$archives ; do \\
 \t\t\tarmv7_path=`echo $$archive | sed -e "s/{first_arch}/armv7/"`; \\
 \t\t\tarm64_path=`echo $$archive | sed -e "s/{first_arch}/arm64/"`; \\
+\t\t\ti386_path=`echo $$archive | sed -e "s/{first_arch}/i386/"`; \\
+\t\t\tx86_64_path=`echo $$archive | sed -e "s/{first_arch}/x86_64/"`; \\
 \t\t\tdestpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/{first_arch}-//" | sed -e "s/\.ios//"`; \\
 \t\t\tall_paths=`echo $$archive`; \\
 \t\t\tall_archs="{first_arch}"; \\
