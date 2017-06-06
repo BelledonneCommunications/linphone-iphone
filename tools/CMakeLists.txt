@@ -54,6 +54,12 @@ add_executable(xml2lpc_test ${USE_BUNDLE} ${LP_XML2LPC_TEST_SOURCE_FILES})
 target_link_libraries(xml2lpc_test ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
 set_target_properties(xml2lpc_test PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
+set(LP_TEST_ECC_SOURCE_FILES test_ecc.c)
+bc_apply_compile_flags(LP_TEST_ECC_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
+add_executable(lp-test-ecc ${USE_BUNDLE} ${LP_TEST_ECC_SOURCE_FILES})
+target_link_libraries(lp-test-ecc ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES})
+set_target_properties(lp-test-ecc PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
+
 if (NOT IOS)
 	install(TARGETS lp-auto-answer lp-sendmsg lpc2xml_test xml2lpc_test
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
