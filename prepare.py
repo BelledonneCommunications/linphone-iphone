@@ -256,13 +256,22 @@ class IOSPreparator(prepare.Preparator):
         multiarch = ""
         for arch in platforms[1:]:
             multiarch += \
-                """\t\t\tif test -f "$${arch}_path"; then \\
-\t\t\t\tall_paths=`echo $$all_paths $${arch}_path`; \\
-\t\t\t\tall_archs="$$all_archs,{arch}" ; \\
-\t\t\telse \\
-\t\t\t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
+                """\t\t\tif {static}; then \\
+\t\t\t\tif test -f "$${arch}_path"; then \\
+\t\t\t\t\tall_paths=`echo $$all_paths $${arch}_path`; \\
+\t\t\t\t\tall_archs="$$all_archs,{arch}" ; \\
+\t\t\t\telse \\
+\t\t\t\t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
+\t\t\t\tfi; \\
+\t\t\t else \\
+\t\t\t\tif test -f "$${arch}_path/$$framework_name"; then \\
+\t\t\t\t\tall_paths=`echo $$all_paths $${arch}_path/$$framework_name`; \\
+\t\t\t\t\tall_archs="$$all_archs,{arch}" ; \\
+\t\t\t\telse \\
+\t\t\t\t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
+\t\t\t\tfi; \\
 \t\t\tfi; \\
-""".format(first_arch=platforms[0], arch=arch)
+""".format(first_arch=platforms[0], arch=arch, static=static)
         makefile = """
 archs={archs}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
@@ -307,10 +316,11 @@ sdk:
 \t\t\tall_archs="{first_arch}"; \\
 \t\t\tarchive_name=`basename $$archive`; \\
 \t\t\tframework_name=`echo $$archive_name | cut -d '.' -f 1`; \\
+\t\t\tall_paths=`echo $$all_paths/$$framework_name`; \\
 \t\t\tmkdir -p `dirname $$destpath`; \\
 {multiarch} \\
 \t\t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
-\t\t\tlipo -create -output $$destpath/$$framework_name $$armv7_path/$$framework_name $$arm64_path/$$framework_name $$x86_64_path/$$framework_name; \\
+\t\t\tlipo -create -output $$destpath/$$framework_name $$all_paths;  \\
 \t\tdone; \\
 \tfi; \\
 \tif test -s WORK/ios-{first_arch}/Build/dummy_libraries/dummy_libraries.txt; then \\
