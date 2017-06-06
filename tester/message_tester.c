@@ -22,6 +22,7 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 #include "lime.h"
+#include "bctoolbox/crypto.h"
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include <sqlite3.h>
@@ -2295,25 +2296,18 @@ void text_message_with_custom_content_type_and_lime(void) {
 	_text_message_with_custom_content_type(TRUE);
 }
 
-char* xor(char* message, char* key) {
-	size_t messagelen = strlen(message);
-	size_t keylen = strlen(key);
-	char* encrypted = (char *)ms_malloc(messagelen+1);
 
-	int i;
-	for(i = 0; i < (int)messagelen; i++) {
-		encrypted[i] = message[i] ^ key[i % keylen];
-	}
-	encrypted[messagelen] = '\0';
-
-	return encrypted;
-}
-
-int xor_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	char *new_content_type = "cipher/xor";
+static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	if (msg->content_type) {
-		if (strcmp(msg->content_type, new_content_type) == 0) {
-			msg->message = xor(msg->message, "SuperSecretXorKey");
+		if (strcmp(msg->content_type, "cipher/b64") == 0) {
+			size_t b64Size;
+			unsigned char *output;
+			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
+			output = (unsigned char *)ms_malloc(b64Size+1),
+			bctbx_base64_decode(output, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
+			ms_free (msg->message);
+			output[b64Size] = '\0';
+			msg->message = (char *)output;
 			msg->content_type = ms_strdup("text/plain");
 			return 0;
 		} else if (strcmp(msg->content_type, "text/plain") == 0) {
@@ -2325,14 +2319,24 @@ int xor_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEng
 	return 500;
 }
 
-int xor_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	char *new_content_type = "cipher/xor";
-	msg->message = xor(msg->message, "SuperSecretXorKey");
-	msg->content_type = ms_strdup(new_content_type);
-	return 0;
+static int im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	if (strcmp(msg->content_type,"text/plain") == 0) {
+		size_t b64Size;
+		unsigned char *output;
+		bctbx_base64_encode(NULL, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
+		output = (unsigned char *)ms_malloc(b64Size+1),
+		bctbx_base64_encode(output, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
+		ms_free (msg->message);
+		output[b64Size] = '\0';
+		msg->message = (char *)output;
+		ms_free(msg->content_type);
+		msg->content_type = ms_strdup("cipher/b64");
+		return 0;
+	}
+	return -1;
 }
 
-void im_encryption_engine_xor(void) {
+void im_encryption_engine_b64(void) {
 	LinphoneChatMessage *chat_msg = NULL;
 	LinphoneChatRoom* chat_room = NULL;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -2342,10 +2346,10 @@ void im_encryption_engine_xor(void) {
 	LinphoneImEncryptionEngine *pauline_imee = linphone_im_encryption_engine_new(pauline->lc);
 	LinphoneImEncryptionEngineCbs *pauline_cbs = linphone_im_encryption_engine_get_callbacks(pauline_imee);
 	
-	linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, xor_im_encryption_engine_process_incoming_message_cb);
-	linphone_im_encryption_engine_cbs_set_process_outgoing_message(marie_cbs, xor_im_encryption_engine_process_outgoing_message_cb);
-	linphone_im_encryption_engine_cbs_set_process_incoming_message(pauline_cbs, xor_im_encryption_engine_process_incoming_message_cb);
-	linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, xor_im_encryption_engine_process_outgoing_message_cb);
+	linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, im_encryption_engine_process_incoming_message_cb);
+	linphone_im_encryption_engine_cbs_set_process_outgoing_message(marie_cbs, im_encryption_engine_process_outgoing_message_cb);
+	linphone_im_encryption_engine_cbs_set_process_incoming_message(pauline_cbs, im_encryption_engine_process_incoming_message_cb);
+	linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, im_encryption_engine_process_outgoing_message_cb);
 	
 	linphone_core_set_im_encryption_engine(marie->lc, marie_imee);
 	linphone_core_set_im_encryption_engine(pauline->lc, pauline_imee);
@@ -2441,7 +2445,7 @@ test_t message_tests[] = {
 #ifdef SQLITE_STORAGE_ENABLED
 	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME"),
 #endif
-	TEST_NO_TAG("IM Encryption Engine XOR", im_encryption_engine_xor)
+	TEST_NO_TAG("IM Encryption Engine b64", im_encryption_engine_b64)
 };
 
 test_suite_t message_test_suite = {
