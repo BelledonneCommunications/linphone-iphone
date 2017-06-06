@@ -338,6 +338,9 @@ ipa: build
 \t&& xcrun -sdk iphoneos PackageApplication -v build/Release-iphoneos/linphone.app -o $$PWD/linphone-iphone.ipa
 
 zipsdk: sdk
+\trm -rf liblinphone-sdk/apple-darwin/Tools &&\\
+\tmkdir -p liblinphone-sdk/apple-darwin/Tools &&\\
+\tcp -f Tools/deploy.sh liblinphone-sdk/apple-darwin/Tools/.; \\
 \techo "Generating SDK zip file for version $(LINPHONE_IPHONE_VERSION)"
 \tzip -r liblinphone-iphone-sdk-$(LINPHONE_IPHONE_VERSION).zip \\
 \tliblinphone-sdk/apple-darwin \\

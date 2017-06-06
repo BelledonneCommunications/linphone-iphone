@@ -66,6 +66,11 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 **The resulting SDK is located in `liblinphone-sdk/` root directory.**
 
+## Incorporating our SDK in your project
+
+After the SDK has been built, add all the `.framework` files located in `liblinphone-sdk/apple-darwin/Frameworks` to your XCode project Embedded Frameworks.
+Add a Run Script step to your build steps, put it after your step to embed frameworks, set it to use our `deploy.sh` script located in `liblinphone-sdk/apple-darwin/Tools`.
+
 ## Licensing: GPL third parties versus non GPL third parties
 
 This SDK can be generated in 2 flavors:
