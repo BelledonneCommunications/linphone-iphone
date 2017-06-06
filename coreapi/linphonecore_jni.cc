@@ -5919,6 +5919,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setInCallTimeout(JNIEnv 
 	linphone_core_set_in_call_timeout((LinphoneCore *)lc, timeout);
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getInCallTimeout(JNIEnv *env, jobject thiz, jlong lc) {
+	return linphone_core_get_in_call_timeout((LinphoneCore *)lc);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
 	return jvalue;

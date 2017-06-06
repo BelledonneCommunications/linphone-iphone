@@ -1931,6 +1931,13 @@ public interface LinphoneCore {
 	 * Once this time is elapsed (ringing included), the call is automatically hung up.
 	**/
 	void setInCallTimeout(int timeout);
+
+	/**
+	 * Return the call timeout in seconds.
+	 * @return the call timeout in seconds.
+	 */
+	int getInCallTimeout();
+
 	/**
 	 * Allow to control microphone level:
 	 * @param gain in db

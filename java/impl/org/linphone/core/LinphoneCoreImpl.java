@@ -1112,6 +1112,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setInCallTimeout(nativePtr, timeout);
 	}
 
+	private native int getInCallTimeout(long ptr);
+	public synchronized int getInCallTimeout() {
+		return getInCallTimeout(nativePtr);
+	}
+
 	private native void setMicrophoneGain(long ptr, float gain);
 	public synchronized void setMicrophoneGain(float gain) {
 		setMicrophoneGain(nativePtr, gain);
