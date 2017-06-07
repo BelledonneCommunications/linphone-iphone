@@ -145,6 +145,7 @@ bool_t sal_address_is_sip(const SalAddress *addr);
 void sal_address_set_password(SalAddress *addr, const char *passwd);
 const char *sal_address_get_password(const SalAddress *addr);
 void sal_address_set_header(SalAddress *addr, const char *header_name, const char *header_value);
+const char *sal_address_get_header(const SalAddress *addr, const char *name);
 
 LINPHONE_PUBLIC Sal * sal_init(MSFactory *factory);
 LINPHONE_PUBLIC void sal_uninit(Sal* sal);

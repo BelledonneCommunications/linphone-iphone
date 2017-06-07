@@ -201,6 +201,12 @@ LINPHONE_PUBLIC const char *linphone_address_get_password(const LinphoneAddress 
 **/
 LINPHONE_PUBLIC void linphone_address_set_header(LinphoneAddress *addr, const char *header_name, const char *header_value);
 
+/**
+ * Get the header encoded in the address.
+ * @param addr the address
+**/
+LINPHONE_PUBLIC const char * linphone_address_get_header(const LinphoneAddress *addr, const char *name);
+
 LINPHONE_PUBLIC bool_t linphone_address_has_param(const LinphoneAddress *addr, const char *name);
 
 LINPHONE_PUBLIC const char * linphone_address_get_param(const LinphoneAddress *addr, const char *name);
