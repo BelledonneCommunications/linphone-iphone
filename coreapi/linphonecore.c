@@ -3542,8 +3542,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		return NULL;
 	}
 
-	/* this call becomes now the current one*/
-	lc->current_call=call;
+	/* Unless this call is for a conference, it becomes now the current one*/
+	if (linphone_call_params_get_local_conference_mode(params) ==  FALSE) lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 	call->log->start_date_time=ms_time(NULL);
 	linphone_call_init_media_streams(call);

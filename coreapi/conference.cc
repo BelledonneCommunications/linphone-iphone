@@ -409,6 +409,7 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 			LinphoneCall *call;
 			/*toggle this flag so the call is immediately added to the conference upon acceptance*/
 			new_params->in_conference = TRUE;
+			linphone_call_params_enable_video(new_params, FALSE); /*turn off video as it is not supported for conferencing at this time*/
 			call = linphone_core_invite_address_with_params(m_core, addr, new_params);
 			if (!call){
 				ms_error("LocalConference::inviteAddresses(): could not invite participant");
