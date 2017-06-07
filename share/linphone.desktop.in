@@ -3,10 +3,11 @@ Name=Linphone
 GenericName=Web-phone
 Comment=Linphone is a web-phone
 Type=Application
-Exec=linphone
+Exec=linphone %u
 Icon=linphone
 Terminal=false
 Categories=Network;Telephony;
+MimeType=x-scheme-handler/sip-linphone;x-scheme-handler/sip;
 
 
 # Translations
