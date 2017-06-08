@@ -366,6 +366,7 @@ static void friends_sqlite_storage(void) {
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 0, unsigned int, "%u");
 	friends_from_db = linphone_core_fetch_friends_from_db(lc, lfl);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends_from_db), 0, unsigned int, "%u");
+	friends_from_db = bctbx_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
 
 	linphone_core_remove_friend_list(lc, lfl);
 	wait_for_until(lc, NULL, &stats->removed_list_count, 1, 1000);
