@@ -88,7 +88,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_config_read_file(LinphoneConfig *lpconfi
  * @param lpconfig The LinphoneConfig object to fill with the content of the file
  * @param filename The filename of the config file to read to fill the LinphoneConfig
  */
-LINPHONE_PUBLIC char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename);
+LINPHONE_PUBLIC const char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename);
 
 /**
  * Reads a xml config string and fill the LinphoneConfig with the read config dynamic values.

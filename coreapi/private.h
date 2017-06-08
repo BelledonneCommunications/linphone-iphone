@@ -2035,7 +2035,7 @@ LinphoneVideoDefinition * linphone_video_definition_new(unsigned int width, unsi
 LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height);
 LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_name(const LinphoneFactory *factory, const char *name);
 
-char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
+const char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
 LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const LinphoneConfig *config, const char* section);
 
 
