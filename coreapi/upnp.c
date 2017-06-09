@@ -749,8 +749,8 @@ int linphone_call_update_upnp(LinphoneCall *call) {
 }
 
 void linphone_call_update_upnp_state_in_call_stats(LinphoneCall *call) {
-	call->stats[LINPHONE_CALL_STATS_AUDIO].upnp_state = call->upnp_session->audio->state;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].upnp_state = call->upnp_session->video->state;
+	call->audio_stats->upnp_state = call->upnp_session->audio->state;
+	call->video_stats->upnp_state = call->upnp_session->video->state;
 }
 
 void linphone_upnp_update_stream_state(UpnpStream *stream) {
@@ -1274,8 +1274,8 @@ void linphone_upnp_session_destroy(UpnpSession *session) {
 		}
 	}
 
-	session->call->stats[LINPHONE_CALL_STATS_AUDIO].upnp_state = LinphoneUpnpStateKo;
-	session->call->stats[LINPHONE_CALL_STATS_VIDEO].upnp_state = LinphoneUpnpStateKo;
+	session->call->audio_stats->upnp_state = LinphoneUpnpStateKo;
+	session->call->video_stats->upnp_state = LinphoneUpnpStateKo;
 
 	linphone_upnp_stream_destroy(session->audio);
 	linphone_upnp_stream_destroy(session->video);
