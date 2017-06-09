@@ -1098,7 +1098,7 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 			msg = linphone_chat_room_create_message(cr, content);
 			linphone_chat_message_set_from_address(msg, from_addr);
 			linphone_chat_message_set_to_address(msg, to_addr);
-			msg->content_type = ms_strdup("application/im-iscomposing+xml");
+			linphone_chat_message_set_content_type(msg, "application/im-iscomposing+xml");
 
 			if (imee) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
