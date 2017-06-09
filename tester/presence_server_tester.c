@@ -74,15 +74,23 @@ static void simple(void) {
 	}
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,2));
-				   
+	
+	linphone_friend_invalidate_subscription(f);
+	linphone_friend_enable_subscribes(f, FALSE);
+	wait_for_until(marie->lc, NULL, NULL, 0, 5000);
 	linphone_friend_unref(f);
+
+	linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(marie->lc), FALSE);
+	wait_for_until(marie->lc, NULL, NULL, 0, 5000);
+
+	linphone_core_manager_stop(marie);
 	linphone_core_manager_destroy(marie);
 	
 	linphone_core_manager_stop(pauline);
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishCleared,1,int,"%i");
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishOk,2,int,"%i");
 	linphone_core_manager_destroy(pauline);
-	}
+}
 
 static void fast_activity_change(void) {
 #if FIX_ME
@@ -1558,7 +1566,6 @@ static void extended_notify_sub_unsub_sub2(void) {
 }
 
 test_t presence_server_tests[] = {
-	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
 	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
 	TEST_NO_TAG("Presence list", test_presence_list),
@@ -1567,6 +1574,7 @@ test_t presence_server_tests[] = {
 	TEST_NO_TAG("Presence list, silent subscription expiration", presence_list_subscribe_dialog_expire),
 	TEST_NO_TAG("Presence list, io error",presence_list_subscribe_io_error),
 	TEST_NO_TAG("Presence list, network changes",presence_list_subscribe_network_changes),
+	TEST_NO_TAG("Simple", simple),
 	TEST_ONE_TAG("Long term presence existing friend",long_term_presence_existing_friend, "longterm"),
 	TEST_ONE_TAG("Long term presence inexistent friend",long_term_presence_inexistent_friend, "longterm"),
 	TEST_ONE_TAG("Long term presence phone alias",long_term_presence_phone_alias, "longterm"),
