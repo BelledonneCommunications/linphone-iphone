@@ -222,10 +222,8 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		}
 		version = atoi(version_str);
 		linphone_free_xml_text_content(version_str);
-		if (version < list->expected_notification_version) {
-			ms_warning("rlmi+xml: Discarding received notification with version %d because %d was expected", version, list->expected_notification_version);
-			linphone_friend_list_update_subscriptions(list); /* Refresh subscription to get new full state notify. */
-			goto end;
+		if (version < list->expected_notification_version) { /*no longuer an error as dialog may be silently restarting by the refresher*/
+			ms_warning("rlmi+xml: Received notification with version %d expected was %d, dialog may have been reseted", version, list->expected_notification_version);
 		}
 
 		full_state_str = linphone_get_xml_attribute_text_content(xml_ctx, "/rlmi:list", "fullState");
