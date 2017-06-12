@@ -73,8 +73,8 @@ const char *StringUtilities::cppStringToC(const std::string &cppstr) {
 
 std::list<std::string> StringUtilities::cStringArrayToCppList(const char **cArray) {
 	list<string> cppList;
-	int i;
-	for(i=0; cArray[i]!=NULL; i++) {
+	if (cArray == NULL) return cppList;
+	for(int i=0; cArray[i]!=NULL; i++) {
 		cppList.push_back(cArray[i]);
 	}
 	return cppList;
