@@ -3164,7 +3164,10 @@ LINPHONE_PUBLIC void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc);
  */
 LINPHONE_PUBLIC bool_t linphone_core_vcard_supported(void);
 
-/* video support */
+/**
+ * Test if video is supported
+ * @ingroup misc
+**/
 LINPHONE_PUBLIC bool_t linphone_core_video_supported(LinphoneCore *lc);
 
 /**
