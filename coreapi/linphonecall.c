@@ -2154,6 +2154,10 @@ const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *cal
 	return call->dir==LinphoneCallIncoming ? call->log->from : call->log->to;
 }
 
+const LinphoneAddress * linphone_call_get_to_address(const LinphoneCall *call){
+  return (const LinphoneAddress *)sal_op_get_to_address(call->op);
+}
+
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
 	return linphone_address_as_string(linphone_call_get_remote_address(call));
 }
