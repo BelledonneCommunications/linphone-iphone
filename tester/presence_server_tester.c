@@ -343,7 +343,7 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	/*wait for marie status*/
 	wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityOnline,3,2000); /*initial + 2 from publish*/
-	BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOnline, int, "%d");
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
@@ -351,7 +351,7 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	/*wait for new status*/
 	wait_for_list(lcs,&pauline->stat.number_of_LinphonePresenceActivityBusy,1,3000);
-	BC_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf), int, "%d");
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusBusy, int, "%d");
 
 
 	presence =linphone_presence_model_new_with_activity(  LinphonePresenceActivityMeeting,NULL);
@@ -692,7 +692,7 @@ static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	/*a new subscribe should be sent */
 
 	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityVacation, 3, 9000)); /* give time for subscription to recover to avoid to receive 491 Request pending*/
-
+	reset_counters(&laure->stat);
 	presence = linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityAway, NULL);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	linphone_presence_model_unref(presence);
@@ -1566,6 +1566,7 @@ static void extended_notify_sub_unsub_sub2(void) {
 }
 
 test_t presence_server_tests[] = {
+	TEST_NO_TAG("Simple", simple),
 	TEST_NO_TAG("Fast activity change", fast_activity_change),
 	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
 	TEST_NO_TAG("Presence list", test_presence_list),
@@ -1574,7 +1575,6 @@ test_t presence_server_tests[] = {
 	TEST_NO_TAG("Presence list, silent subscription expiration", presence_list_subscribe_dialog_expire),
 	TEST_NO_TAG("Presence list, io error",presence_list_subscribe_io_error),
 	TEST_NO_TAG("Presence list, network changes",presence_list_subscribe_network_changes),
-	TEST_NO_TAG("Simple", simple),
 	TEST_ONE_TAG("Long term presence existing friend",long_term_presence_existing_friend, "longterm"),
 	TEST_ONE_TAG("Long term presence inexistent friend",long_term_presence_inexistent_friend, "longterm"),
 	TEST_ONE_TAG("Long term presence phone alias",long_term_presence_phone_alias, "longterm"),
