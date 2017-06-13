@@ -1300,8 +1300,14 @@ static void early_cancelled_call(void) {
 static void cancelled_ringing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-
-	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
+	const bctbx_list_t * call_history;
+	LinphoneCall* out_call;
+	
+	char * db_path= bctbx_strdup_printf("%s,%s",bc_tester_get_writable_dir_prefix(),"tmp_call_log.db");
+	linphone_core_set_call_logs_database_path(marie->lc,db_path);
+	
+	
+	out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 	linphone_call_ref(out_call);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
 
@@ -1310,10 +1316,18 @@ static void cancelled_ringing_call(void) {
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd,1, int, "%d");
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1, int, "%d");
-
+	
+	call_history = linphone_core_get_call_history(marie->lc);
+	BC_ASSERT_PTR_NOT_NULL(call_history);
+	BC_ASSERT_EQUAL(bctbx_list_size(call_history),1, int,"%i");
+	BC_ASSERT_EQUAL(linphone_call_log_get_status((LinphoneCallLog*)bctbx_list_get_data(call_history)), LinphoneCallMissed, LinphoneCallStatus, "%i");
+	
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	unlink(db_path);
+	bctbx_free(db_path);
+
 }
 
 static void early_declined_call(void) {
