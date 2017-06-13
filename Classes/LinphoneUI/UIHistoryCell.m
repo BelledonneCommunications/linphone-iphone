@@ -56,13 +56,13 @@
 #pragma mark - Action Functions
 
 - (IBAction)onDetails:(id)event {
-	if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
-		// Go to History details view
+	if (callLog != NULL) {
 		HistoryDetailsView *view = VIEW(HistoryDetailsView);
-		[view setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
+		if (linphone_call_log_get_call_id(callLog) != NULL) {
+			// Go to History details view
+			[view setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
+		}
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	} else {
-		LOGE(@"Cannot open selected call log, it is NULL or corrupted");
 	}
 }
 

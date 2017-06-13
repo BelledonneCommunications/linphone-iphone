@@ -221,7 +221,7 @@
 	if (![self isEditing]) {
 		id log = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
 		LinphoneCallLog *callLog = [log pointerValue];
-		if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
+		if (callLog != NULL) {
 			if (IPAD) {
 				UIHistoryCell *cell = (UIHistoryCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
 				[cell onDetails:self];
