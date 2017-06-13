@@ -264,8 +264,12 @@ void linphone_factory_set_sound_resources_dir(LinphoneFactory *factory, const ch
 const char * linphone_factory_get_ring_resources_dir(LinphoneFactory *factory) {
 	if (factory->ring_resources_dir) return factory->ring_resources_dir;
 	if (factory->sound_resources_dir){
-		STRING_TRANSFER(factory->cached_sound_resources_dir, bctbx_strdup_printf("%s/rings", factory->sound_resources_dir));
-		return factory->cached_sound_resources_dir;
+		STRING_TRANSFER(factory->cached_ring_resources_dir, bctbx_strdup_printf("%s/rings", factory->sound_resources_dir));
+		return factory->cached_ring_resources_dir;
+	}
+	if (factory->top_resources_dir) {
+		STRING_TRANSFER(factory->cached_ring_resources_dir, bctbx_strdup_printf("%s/sounds/linphone/rings", factory->top_resources_dir));
+		return factory->cached_ring_resources_dir;
 	}
 	return PACKAGE_RING_DIR;
 }
