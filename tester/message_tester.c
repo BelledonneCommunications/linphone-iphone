@@ -2300,7 +2300,7 @@ void text_message_with_custom_content_type_and_lime(void) {
 static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	if (msg->content_type) {
 		if (strcmp(msg->content_type, "cipher/b64") == 0) {
-			size_t b64Size;
+			size_t b64Size = 0;
 			unsigned char *output;
 			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
 			output = (unsigned char *)ms_malloc(b64Size+1),
