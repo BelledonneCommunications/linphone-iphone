@@ -1270,7 +1270,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 void linphone_core_call_log_storage_init(LinphoneCore *lc);
 void linphone_core_call_log_storage_close(LinphoneCore *lc);
 void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log);
-const MSList *linphone_core_get_call_history(LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList *linphone_core_get_call_history(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_delete_call_history(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log);
 LINPHONE_PUBLIC int linphone_core_get_call_history_size(LinphoneCore *lc);
