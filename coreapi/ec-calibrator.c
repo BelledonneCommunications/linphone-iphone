@@ -44,8 +44,8 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ecc->read_resampler=ms_factory_create_filter(ecc->factory, MS_RESAMPLE_ID);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_SAMPLE_RATE,&rate);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&ecc->rate);
-	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_NCHANNELS,&ecc_channels);
-	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&channels);
+	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_NCHANNELS,&channels);
+	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&ecc_channels);
 	
 	
 	ecc->det=ms_factory_create_filter(ecc->factory, MS_TONE_DETECTOR_ID);
