@@ -61,7 +61,7 @@ target_link_libraries(lp-test-ecc ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES} $
 set_target_properties(lp-test-ecc PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 if (NOT IOS)
-	install(TARGETS lp-auto-answer lp-sendmsg lpc2xml_test xml2lpc_test
+	install(TARGETS lp-auto-answer lp-sendmsg lpc2xml_test xml2lpc_test lp-test-ecc
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
