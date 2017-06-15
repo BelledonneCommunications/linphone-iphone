@@ -146,6 +146,7 @@ void linphone_call_update_streams(LinphoneCall *call, SalMediaDescription *new_m
 		/* We already started media: check if we really need to restart it */
 		if (oldmd) {
 			md_changed = media_parameters_changed(call, oldmd, new_md);
+			/*might not be mandatory to restart stream for each ice restart as it leads bad user experience, specially in video. See 0002495 for better background on this*/
 			if ((md_changed & (	SAL_MEDIA_DESCRIPTION_CODEC_CHANGED
 								|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED
 								|SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED
