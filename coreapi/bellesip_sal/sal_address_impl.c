@@ -236,6 +236,11 @@ void sal_address_set_header(SalAddress *addr, const char *header_name, const cha
 	belle_sip_uri_set_header(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)),header_name, header_value);
 }
 
+
+const char* sal_address_get_header(const SalAddress *addr, const char *name){
+  return belle_sip_uri_get_header(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)),name);
+}
+
 void sal_address_set_transport(SalAddress* addr,SalTransport transport){
 	if (!sal_address_is_secure(addr)){
 		SAL_ADDRESS_SET(addr,transport_param,sal_transport_to_string(transport));

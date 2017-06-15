@@ -114,6 +114,13 @@ LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *
 LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore*lc);
 
 /**
+ * Checks if a new version of the application is available.
+ * @param lc LinphoneCore object
+ * @param current_version The current version of the application
+ */
+LINPHONE_PUBLIC void linphone_core_check_for_update(LinphoneCore *lc, const char *current_version);
+
+/**
  * @}
  */
 
@@ -208,6 +215,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreFriendListCreatedCb friend_list_created;
 	LinphoneCoreFriendListRemovedCb friend_list_removed;
 	LinphoneCoreCbsCallCreatedCb call_created;
+	LinphoneCoreCbsVersionUpdateCheckResultReceivedCb version_update_check_result_received;
 	void *user_data; /**<User data associated with the above callbacks */
 } LinphoneCoreVTable;
 
@@ -651,6 +659,20 @@ LINPHONE_PUBLIC void linphone_core_cbs_set_call_created(LinphoneCoreCbs *cbs, Li
  * @return The current call created callback.
  */
 LINPHONE_PUBLIC LinphoneCoreCbsCallCreatedCb linphone_core_cbs_get_call_created(LinphoneCoreCbs *cbs);
+
+/**
+ * Set the version update check result callback.
+ * @param[in] cbs LinphoneCoreCbs object
+ * @param[in] cb The callback to use
+ */
+LINPHONE_PUBLIC void linphone_core_cbs_set_version_update_check_result_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsVersionUpdateCheckResultReceivedCb cb);
+
+/**
+ * Get the version update check result callback.
+ * @param[in] cbs LinphoneCoreCbs object
+ * @return The current callback
+ */
+LINPHONE_PUBLIC LinphoneCoreCbsVersionUpdateCheckResultReceivedCb linphone_core_cbs_get_version_update_check_result_received(LinphoneCoreCbs *cbs);
 
 /**
  * @}
@@ -3142,7 +3164,10 @@ LINPHONE_PUBLIC void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc);
  */
 LINPHONE_PUBLIC bool_t linphone_core_vcard_supported(void);
 
-/* video support */
+/**
+ * Test if video is supported
+ * @ingroup misc
+**/
 LINPHONE_PUBLIC bool_t linphone_core_video_supported(LinphoneCore *lc);
 
 /**

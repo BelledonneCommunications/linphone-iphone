@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
+#include <bctoolbox/defs.h>
 #include "mediastreamer2/dtmfgen.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msequalizer.h"
@@ -400,6 +401,15 @@ void linphone_core_cbs_set_call_created(LinphoneCoreCbs *cbs, LinphoneCoreCbsCal
 	cbs->vtable->call_created = cb;
 }
 
+LinphoneCoreCbsVersionUpdateCheckResultReceivedCb linphone_core_cbs_get_version_update_check_result_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->version_update_check_result_received;
+}
+
+void linphone_core_cbs_set_version_update_check_result_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsVersionUpdateCheckResultReceivedCb cb) {
+	cbs->vtable->version_update_check_result_received = cb;
+}
+
+
 typedef belle_sip_object_t_vptr_t LinphoneCore_vptr_t;
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCore);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneCore, belle_sip_object_t,
@@ -460,12 +470,16 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 		case ORTP_TRACE:
 		case ORTP_DEBUG:
 			mask |= ORTP_DEBUG;
+			BCTBX_NO_BREAK;
 		case ORTP_MESSAGE:
 			mask |= ORTP_MESSAGE;
+			BCTBX_NO_BREAK;
 		case ORTP_WARNING:
 			mask |= ORTP_WARNING;
+			BCTBX_NO_BREAK;
 		case ORTP_ERROR:
 			mask |= ORTP_ERROR;
+			BCTBX_NO_BREAK;
 		case ORTP_FATAL:
 			mask |= ORTP_FATAL;
 			break;
@@ -2088,7 +2102,7 @@ static void linphone_core_internal_publish_state_changed(LinphoneCore *lc, Linph
 		const bctbx_list_t *item;
 		for (item = cfgs; item != NULL; item = bctbx_list_next(item)) {
 			LinphoneProxyConfig *cfg = (LinphoneProxyConfig *)bctbx_list_get_data(item);
-			if (cfg->long_term_event == lev) {
+			if (cfg->presence_publish_event == lev) {
 				linphone_proxy_config_notify_publish_state_changed(cfg, state);
 				break;
 			}
@@ -3441,9 +3455,8 @@ static void linphone_transfer_routes_to_op(bctbx_list_t *routes, SalOp *op){
 	bctbx_list_free(routes);
 }
 
-void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact){
+void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy){
 	bctbx_list_t *routes=NULL;
-	LinphoneProxyConfig *proxy=linphone_core_lookup_known_proxy(lc,dest);
 	const char *identity;
 	if (proxy){
 		identity=linphone_proxy_config_get_identity(proxy);
@@ -3473,6 +3486,9 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	}
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }
+void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact) {
+	linphone_configure_op_with_proxy(lc, op, dest, headers,with_contact,linphone_core_lookup_known_proxy(lc,dest));
+}
 
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params){
 	const char *from=NULL;
@@ -3483,7 +3499,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	bool_t defer = FALSE;
 	LinphoneCallParams *cp;
 
-	if (!(!linphone_call_params_audio_enabled(params) || 
+	if (!(!linphone_call_params_audio_enabled(params) ||
 		linphone_call_params_get_audio_direction(params) == LinphoneMediaDirectionInactive ||
 		linphone_call_params_get_local_conference_mode(params) == TRUE
 		)
@@ -3526,8 +3542,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		return NULL;
 	}
 
-	/* this call becomes now the current one*/
-	lc->current_call=call;
+	/* Unless this call is for a conference, it becomes now the current one*/
+	if (linphone_call_params_get_local_conference_mode(params) ==  FALSE) lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 	call->log->start_date_time=ms_time(NULL);
 	linphone_call_init_media_streams(call);
@@ -7237,4 +7253,144 @@ bool_t linphone_core_is_content_type_supported(const LinphoneCore *lc, const cha
 
 void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type) {
 	sal_add_content_type_support(lc->sal, content_type);
+}
+
+#ifdef ENABLE_UPDATE_CHECK
+static void update_check_process_terminated(LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url) {
+	linphone_core_notify_version_update_check_result_received(lc, result, version, url);
+	if (lc->update_check_http_listener) {
+		belle_sip_object_unref(lc->update_check_http_listener);
+		lc->update_check_http_listener = NULL;
+	}
+	bctbx_free(lc->update_check_current_version);
+	lc->update_check_current_version = NULL;
+}
+
+typedef struct _parsed_version_st {
+	int major;
+	int minor;
+	int patch;
+} parsed_version_t;
+
+static int compare_parsed_versions(parsed_version_t current_version, parsed_version_t last_version) {
+	if (last_version.major > current_version.major) return 1;
+	if (last_version.minor > current_version.minor) return 1;
+	if (last_version.patch > current_version.patch) return 1;
+	return -1;
+}
+
+static void parse_version(const char *version, parsed_version_t *parsed_version) {
+	char *copy = bctbx_strdup(version);
+	char *ptr = copy;
+	char *next;
+	memset(parsed_version, 0, sizeof(parsed_version_t));
+	next = strchr(ptr, '.');
+	parsed_version->major = atoi(ptr);
+	ptr = next + 1;
+	next = strchr(ptr, '.');
+	parsed_version->minor = atoi(ptr);
+	if (next != NULL) {
+		ptr = next + 1;
+		parsed_version->patch = atoi(ptr);
+	}
+	bctbx_free(copy);
+}
+
+static bool_t update_is_available(const char *current_version, const char *last_version) {
+	parsed_version_t current_parsed_version;
+	parsed_version_t last_parsed_version;
+	parse_version(current_version, &current_parsed_version);
+	parse_version(last_version, &last_parsed_version);
+	return (compare_parsed_versions(current_parsed_version, last_parsed_version) > 0) ? TRUE : FALSE;
+}
+
+static void update_check_process_response_event(void *ctx, const belle_http_response_event_t *event) {
+	LinphoneCore *lc = (LinphoneCore *)ctx;
+
+	if (belle_http_response_get_status_code(event->response) == 200) {
+		belle_sip_message_t *message = BELLE_SIP_MESSAGE(event->response);
+		char *body = bctbx_strdup(belle_sip_message_get_body(message));
+		char *last_version = body;
+		char *url = strchr(body, '\t');
+		char *ptr;
+		if (url == NULL) {
+			update_check_process_terminated(lc, LinphoneVersionUpdateCheckError, NULL, NULL);
+			bctbx_free(body);
+			return;
+		}
+		*url = '\0';
+		url++;
+		ptr = strrchr(url, '\r');
+		if (ptr != NULL) *ptr = '\0';
+		ptr = strrchr(url, '\n');
+		if (ptr != NULL) *ptr = '\0';
+		if (update_is_available(lc->update_check_current_version, last_version)) {
+			update_check_process_terminated(lc, LinphoneVersionUpdateCheckNewVersionAvailable, last_version, url);
+		} else {
+			update_check_process_terminated(lc, LinphoneVersionUpdateCheckUpToDate, NULL, NULL);
+		}
+		bctbx_free(body);
+	} else {
+		update_check_process_terminated(lc, LinphoneVersionUpdateCheckError, NULL, NULL);
+	}
+}
+
+static void update_check_process_io_error(void *ctx, const belle_sip_io_error_event_t *event) {
+	LinphoneCore *lc = (LinphoneCore *)ctx;
+	update_check_process_terminated(lc, LinphoneVersionUpdateCheckError, NULL, NULL);
+}
+
+static void update_check_process_timeout(void *ctx, const belle_sip_timeout_event_t *event) {
+	LinphoneCore *lc = (LinphoneCore *)ctx;
+	update_check_process_terminated(lc, LinphoneVersionUpdateCheckError, NULL, NULL);
+}
+
+static void update_check_process_auth_requested(void *ctx, belle_sip_auth_event_t *event) {
+	LinphoneCore *lc = (LinphoneCore *)ctx;
+	update_check_process_terminated(lc, LinphoneVersionUpdateCheckError, NULL, NULL);
+}
+#endif /* ENABLE_UPDATE_CHECK */
+
+void linphone_core_check_for_update(LinphoneCore *lc, const char *current_version) {
+#ifdef ENABLE_UPDATE_CHECK
+	int err;
+	bool_t is_desktop = FALSE;
+	const char *platform = NULL;
+	const char *version_check_url_root = lp_config_get_string(lc->config, "misc", "version_check_url_root", NULL);
+
+	if (version_check_url_root != NULL) {
+		belle_http_request_listener_callbacks_t belle_request_listener = { 0 };
+		belle_http_request_t *request;
+		belle_generic_uri_t *uri;
+		char *version_check_url;
+		MSList *item;
+		MSList *platform_tags = ms_factory_get_platform_tags(linphone_core_get_ms_factory(lc));
+
+		for (item = platform_tags; item != NULL; item = ms_list_next(item)) {
+			const char *tag = (const char *)item->data;
+			if (strcmp(tag, "win32") == 0) platform = "windows";
+			else if (strcmp(tag, "apple") == 0) platform = "macosx";
+			else if (strcmp(tag, "linux") == 0) platform = "linux";
+			else if (strcmp(tag, "desktop") == 0) is_desktop = TRUE;
+		}
+		if ((is_desktop == FALSE) || (platform == NULL)) {
+			ms_warning("Update checking is not supported on this platform");
+			return;
+		}
+		version_check_url = bctbx_strdup_printf("%s/%s/RELEASE", version_check_url_root, platform);
+		uri = belle_generic_uri_parse(version_check_url);
+		ms_message("Checking for new version at: %s", version_check_url);
+		bctbx_free(version_check_url);
+
+		belle_request_listener.process_response = update_check_process_response_event;
+		belle_request_listener.process_auth_requested = update_check_process_auth_requested;
+		belle_request_listener.process_io_error = update_check_process_io_error;
+		belle_request_listener.process_timeout = update_check_process_timeout;
+
+		lc->update_check_current_version = bctbx_strdup(current_version);
+		lc->update_check_http_listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
+		request = belle_http_request_create("GET", uri, belle_sip_header_create("User-Agent", linphone_core_get_user_agent(lc)), NULL);
+		err = belle_http_provider_send_request(lc->http_provider, request, lc->update_check_http_listener);
+	}
+#endif
 }

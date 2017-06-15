@@ -454,7 +454,7 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
 void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
 void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj);
 void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state);
-
+LinphoneEvent *linphone_proxy_config_create_publish(LinphoneProxyConfig *cfg, const char *event, int expires);
 /*
  * returns service route as defined in as defined by rfc3608, might be a list instead of just one.
  * Can be NULL
@@ -468,10 +468,10 @@ void _linphone_friend_list_release(LinphoneFriendList *list);
 /*get rls either from list or core if any*/
 const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFriendList *list);
 
-void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
+LINPHONE_PUBLIC void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void _linphone_friend_release(LinphoneFriend *lf);
-void linphone_friend_update_subscribes(LinphoneFriend *fr, bool_t only_when_registered);
+LINPHONE_PUBLIC void linphone_friend_update_subscribes(LinphoneFriend *fr, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
@@ -702,7 +702,7 @@ struct _LinphoneProxyConfig
 	bool_t unused[3];
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
-	LinphoneEvent *long_term_event;
+	LinphoneEvent *presence_publish_event;
 	unsigned long long previous_publish_config_hash[2];
 
 	char *refkey;
@@ -1110,6 +1110,10 @@ struct _LinphoneCore
 	belle_http_provider_t *http_provider;
 	belle_tls_crypto_config_t *http_crypto_config;
 	belle_http_request_listener_t *provisioning_http_listener;
+#ifdef ENABLE_UPDATE_CHECK
+	belle_http_request_listener_t *update_check_http_listener;
+	char *update_check_current_version;
+#endif
 	MSList *tones;
 	LinphoneReason chat_deny_code;
 	char *file_transfer_server;
@@ -1266,7 +1270,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 void linphone_core_call_log_storage_init(LinphoneCore *lc);
 void linphone_core_call_log_storage_close(LinphoneCore *lc);
 void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log);
-const MSList *linphone_core_get_call_history(LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList *linphone_core_get_call_history(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_delete_call_history(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log);
 LINPHONE_PUBLIC int linphone_core_get_call_history_size(LinphoneCore *lc);
@@ -1293,6 +1297,7 @@ void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
 const char *linphone_core_create_uuid(LinphoneCore *lc);
 void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact);
+void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy);
 void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandler *body);
@@ -1921,6 +1926,7 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call);
+void linphone_core_notify_version_update_check_result_received(LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
@@ -2029,10 +2035,10 @@ LinphoneVideoDefinition * linphone_video_definition_new(unsigned int width, unsi
 LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height);
 LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_name(const LinphoneFactory *factory, const char *name);
 
-char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
+const char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
 LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const LinphoneConfig *config, const char* section);
-	
-	
+
+
 #ifdef __cplusplus
 }
 #endif

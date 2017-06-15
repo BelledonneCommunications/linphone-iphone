@@ -487,6 +487,14 @@ typedef void (*LinphoneCoreCbsFriendListRemovedCb) (LinphoneCore *lc, LinphoneFr
 typedef LinphoneCoreCbsFriendListRemovedCb LinphoneCoreFriendListRemovedCb;
 
 /**
+ * Callback prototype for reporting the result of a version update check.
+ * @param[in] lc LinphoneCore object
+ * @param[in] result The result of the version update check
+ * @param[in] url The url where to download the new version if the result is LinphoneVersionUpdateCheckNewVersionAvailable
+ */
+typedef void (*LinphoneCoreCbsVersionUpdateCheckResultReceivedCb) (LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url);
+
+/**
  * @}
 **/
 

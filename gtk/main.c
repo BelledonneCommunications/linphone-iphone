@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/lpconfig.h"
 #include "liblinphone_gitversion.h"
 #include <bctoolbox/vfs.h>
+#include <bctoolbox/defs.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -303,7 +304,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	if (chat_messages_db_file) linphone_core_set_chat_database_path(the_core,chat_messages_db_file);
 	if (call_logs_db_file) linphone_core_set_call_logs_database_path(the_core, call_logs_db_file);
 	if (friends_db_file) linphone_core_set_friends_database_path(the_core, friends_db_file);
-	
+
 	// Disable the generic OpenGL displaying filter
 	msfactory = linphone_core_get_ms_factory(the_core);
 	ogl_filter_desc = ms_factory_lookup_filter_by_id(msfactory, MS_OGL_ID);
@@ -1417,6 +1418,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		case LinphoneCallPausing:
 			linphone_gtk_enable_hold_button(call,TRUE,FALSE);
 			linphone_gtk_call_update_tab_header(call,FALSE);
+			BCTBX_NO_BREAK;
 		case LinphoneCallPausedByRemote:
 			linphone_gtk_in_call_view_set_paused(call);
 			linphone_gtk_call_update_tab_header(call,TRUE);

@@ -79,6 +79,7 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 		break;
 		case LinphoneStatusVacation:
 		str=_("Vacation");
+		break;
 		default:
 		str=_("Unknown status");
 	}
@@ -1396,6 +1397,7 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 		linphone_vcard_set_etag(vcard, argv[7]);
 		linphone_vcard_set_url(vcard, argv[8]);
 		lf = linphone_friend_new_from_vcard(vcard);
+		linphone_vcard_unref(vcard);
 	}
 	if (!lf) {
 		lf = linphone_friend_new();
@@ -1639,8 +1641,6 @@ bctbx_list_t* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFrie
 			}
 			iterator = bctbx_list_next(iterator);
 		}
-
-		linphone_friend_save(lf, lc); /* required if we freshly created vcard but core was not set at this time */
 	}
 	linphone_vcard_context_set_user_data(lc->vcard_context, NULL);
 

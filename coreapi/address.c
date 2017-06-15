@@ -178,6 +178,10 @@ void linphone_address_set_header(LinphoneAddress *addr, const char *header_name,
 	sal_address_set_header(addr,header_name,header_value);
 }
 
+const char *linphone_address_get_header(const LinphoneAddress *addr, const char *name){
+  return sal_address_get_header(addr,name);
+}
+
 bool_t linphone_address_has_param(const LinphoneAddress *addr, const char *name) {
 	return sal_address_has_param(addr, name);
 }

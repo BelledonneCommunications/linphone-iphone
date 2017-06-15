@@ -85,6 +85,7 @@ class CppTranslator(object):
 			'isVcard'             : (_class.name.to_c() == 'LinphoneVcard'),
 			'className'           : CppTranslator.translate_class_name(_class.name),
 			'cClassName'          : '::' + _class.name.to_c(),
+			'privCClassName'      : '_' + _class.name.to_c(),
 			'parentClassName'     : 'Object' if _class.refcountable else None,
 			'methods'             : [],
 			'staticMethods'       : [],

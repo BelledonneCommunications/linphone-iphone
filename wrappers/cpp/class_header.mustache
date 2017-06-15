@@ -37,6 +37,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 {{/isfactory}}{{/_class}}
 
 
+{{#_class}}
+{{#isNotListener}}
+struct {{{privCClassName}}};
+{{/isNotListener}}
+{{/_class}}
+
+
 namespace linphone {
 
 	{{#priorDeclarations}}
@@ -68,6 +75,7 @@ namespace linphone {
 			LINPHONECXX_PUBLIC ~{{{className}}}();
 			LINPHONECXX_PUBLIC const void *c_struct() const {return mPrivPtr;}
 			{{/isnotrefcountable}}
+			LINPHONECXX_PUBLIC {{{privCClassName}}} *cPtr() {return ({{{privCClassName}}} *)mPrivPtr;}
 			{{/isNotListener}}
 			
 			{{#ismonolistenable}}

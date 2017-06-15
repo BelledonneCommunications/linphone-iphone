@@ -92,6 +92,11 @@ LINPHONE_PUBLIC bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 
 /**
+ * Returns the to address with its headers associated to this call
+**/
+LINPHONE_PUBLIC const LinphoneAddress * linphone_call_get_to_address(const LinphoneCall * call);
+
+/**
  * Returns the remote address associated to this call as a string.
  * The result string must be freed by user using ms_free().
 **/
@@ -221,6 +226,11 @@ LINPHONE_PUBLIC const char *linphone_call_get_remote_user_agent(LinphoneCall *ca
 **/
 LINPHONE_PUBLIC const char *linphone_call_get_remote_contact(LinphoneCall *call);
 
+/**
+ * Returns the ZRTP authentication token to verify.
+ * @param call the LinphoneCall
+ * @return the authentication token to verify.
+**/
 LINPHONE_PUBLIC const char * linphone_call_get_authentication_token(LinphoneCall *call);
 
 /**

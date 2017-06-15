@@ -22,6 +22,12 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+static void setPublish(LinphoneProxyConfig * proxy_config, bool_t enable) {
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_enable_publish(proxy_config, enable);
+	linphone_proxy_config_done(proxy_config);
+}
+
 static void subscribe_forking(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -724,7 +730,7 @@ static void _call_with_ipv6(bool_t caller_with_ipv6, bool_t callee_with_ipv6) {
 	marie = linphone_core_manager_new2( "marie_rc", FALSE);
 	linphone_core_enable_ipv6(marie->lc, caller_with_ipv6);
 	linphone_core_manager_start(marie, TRUE);
-	
+
 	pauline = linphone_core_manager_new2( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", FALSE);
 	linphone_core_enable_ipv6(pauline->lc, callee_with_ipv6);
 	linphone_core_manager_start(pauline, TRUE);
@@ -740,13 +746,13 @@ static void _call_with_ipv6(bool_t caller_with_ipv6, bool_t callee_with_ipv6) {
 		/*check that the remote contact is IPv6*/
 		BC_ASSERT_EQUAL(is_remote_contact_ipv6(pauline_call), caller_with_ipv6, int, "%i");
 		BC_ASSERT_EQUAL(is_remote_contact_ipv6(marie_call), callee_with_ipv6, int, "%i");
-		
+
 		/*check that the RTP destinations are IPv6 (flexisip should propose an IPv6 relay for parties with IPv6)*/
 		BC_ASSERT_EQUAL(is_sending_ipv6(marie_call->sessions[0].rtp_session, FALSE), caller_with_ipv6, int, "%i");
 		BC_ASSERT_EQUAL(is_sending_ipv6(marie_call->sessions[0].rtp_session, TRUE), caller_with_ipv6, int, "%i");
 		BC_ASSERT_EQUAL(is_sending_ipv6(pauline_call->sessions[0].rtp_session, FALSE), callee_with_ipv6, int, "%i");
 		BC_ASSERT_EQUAL(is_sending_ipv6(pauline_call->sessions[0].rtp_session, TRUE), callee_with_ipv6, int, "%i");
-		
+
 	}
 
 	liblinphone_tester_check_rtcp(marie,pauline);
@@ -1053,16 +1059,11 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 
 static void test_publish_unpublish(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneProxyConfig* proxy;
+	LinphoneProxyConfig* proxy = linphone_core_get_default_proxy_config(marie->lc);
 
-	proxy = linphone_core_get_default_proxy_config(marie->lc);
-	linphone_proxy_config_edit(proxy);
-	linphone_proxy_config_enable_publish(proxy,TRUE);
-	linphone_proxy_config_done(proxy);
+	setPublish(proxy, TRUE);
 	wait_for(marie->lc, NULL, NULL, 0);
-	linphone_proxy_config_edit(proxy);
-	linphone_proxy_config_enable_publish(proxy,FALSE);
-	linphone_proxy_config_done(proxy);
+	setPublish(proxy, FALSE);
 	wait_for(marie->lc, NULL, NULL, 0);
 	linphone_core_manager_destroy(marie);
 }
@@ -1090,7 +1091,6 @@ static void test_list_subscribe (void) {
 	char * subscribe_content = ms_strdup_printf(list,pauline_uri,laure_uri);
 	LinphoneContent* content = linphone_core_create_content(marie->lc);
 	LinphoneAddress *list_name = linphone_address_new("sip:mescops@sip.example.org");
-	LinphoneProxyConfig* proxy_config;
 	int dummy=0;
 
 	ms_free(pauline_uri);
@@ -1119,17 +1119,11 @@ static void test_list_subscribe (void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 	/*dummy wait to avoid derred notify*/
 	wait_for_list(lcs,&dummy,1,2000);
-	proxy_config = linphone_core_get_default_proxy_config(pauline->lc);
-	linphone_proxy_config_edit(proxy_config);
-	linphone_proxy_config_enable_publish(proxy_config,TRUE);
-	linphone_proxy_config_done(proxy_config);
+	setPublish(linphone_core_get_default_proxy_config(pauline->lc), TRUE);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
 
-	proxy_config = linphone_core_get_default_proxy_config(laure->lc);
-	linphone_proxy_config_edit(proxy_config);
-	linphone_proxy_config_enable_publish(proxy_config,TRUE);
-	linphone_proxy_config_done(proxy_config);
+	setPublish(linphone_core_get_default_proxy_config(laure->lc), TRUE);
 	/*make sure notify is not sent "imadiatly but defered*/
 	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,1000));
 
@@ -1172,20 +1166,20 @@ static void test_subscribe_on_wrong_dialog(void) {
 
 static void test_list_subscribe_wrong_body(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	
+
 	LinphoneEvent *lev;
 	LinphoneAddress *sub_addr = linphone_address_new("sip:rls@sip.example.com");
-	
+
 	lev=linphone_core_create_subscribe(marie->lc,sub_addr,"presence",60);
-	
+
 	linphone_event_add_custom_header(lev,"Supported","eventlist");
 	linphone_event_add_custom_header(lev,"Accept","application/pidf+xml, application/rlmi+xml");
 	linphone_event_add_custom_header(lev,"Content-Disposition", "recipient-list");
 	linphone_event_add_custom_header(lev,"Require", "recipient-list-subscribe");
 	linphone_event_add_custom_header(lev,"Content-type", "application/resource-lists+xml");
-	
+
 	linphone_event_send_subscribe(lev,NULL);
-	
+
 	BC_ASSERT_TRUE(wait_for_until(marie->lc,NULL,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,1,1000));
 	BC_ASSERT_FALSE(wait_for_until(marie->lc,NULL,&marie->stat.number_of_LinphoneSubscriptionActive,1,2000));
 
@@ -1200,16 +1194,16 @@ static void redis_publish_subscribe(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = NULL;
 	LinphoneAddress *marie_identity = linphone_address_ref(marie->identity);
-	
+
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	linphone_core_manager_destroy(marie);
-	
+
 	linphone_core_invite_address(pauline->lc, marie_identity);
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneCallOutgoingProgress, 1, 3000));
-	
+
 	marie2 = linphone_core_manager_new("marie2_rc");
 	BC_ASSERT_TRUE(wait_for_until(marie2->lc, NULL, &marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
-	
+
 	linphone_address_unref(marie_identity);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie2);
@@ -1218,10 +1212,10 @@ static void redis_publish_subscribe(void) {
 
 static void tls_authentication_requested_good(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
 	if (method == LinphoneAuthTls){
-	
+
 		char *cert = bc_tester_res("certificates/client/cert2.pem");
 		char *key = bc_tester_res("certificates/client/key2.pem");
-		
+
 		linphone_auth_info_set_tls_cert_path(auth_info, cert);
 		linphone_auth_info_set_tls_key_path(auth_info, key);
 		linphone_core_add_auth_info(lc, auth_info);
@@ -1232,10 +1226,10 @@ static void tls_authentication_requested_good(LinphoneCore *lc, LinphoneAuthInfo
 
 static void tls_authentication_requested_bad(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
 	if (method == LinphoneAuthTls){
-	
+
 		char *cert = bc_tester_res("certificates/client/cert2-signed-by-other-ca.pem");
 		char *key = bc_tester_res("certificates/client/key2.pem");
-		
+
 		linphone_auth_info_set_tls_cert_path(auth_info, cert);
 		linphone_auth_info_set_tls_key_path(auth_info, key);
 		linphone_core_add_auth_info(lc, auth_info);
@@ -1255,7 +1249,7 @@ static void tls_client_auth_try_register(const char *identity, bool_t with_good_
 	linphone_core_add_callbacks(lcm->lc, cbs);
 	linphone_core_cbs_unref(cbs);
 	cfg = linphone_core_create_proxy_config(lcm->lc);
-	
+
 	linphone_proxy_config_set_server_addr(cfg, "sip:sip2.linphone.org:5063;transport=tls");
 	linphone_proxy_config_enable_register(cfg, TRUE);
 	linphone_proxy_config_set_identity(cfg, identity);
@@ -1272,7 +1266,7 @@ static void tls_client_auth_try_register(const char *identity, bool_t with_good_
 		if (with_good_cert) BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,2, int, "%d");
 		else BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,1, int, "%d");
 	}
-	
+
 	linphone_proxy_config_unref(cfg);
 	linphone_core_manager_destroy(lcm);
 }
@@ -1322,7 +1316,7 @@ void transcoder_tester(void) {
 	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
 	linphone_core_use_files(marie->lc,TRUE);
 	linphone_core_set_play_file(marie->lc,NULL);
-	
+
 	/*callee is recording and plays file*/
 	linphone_core_use_files(pauline->lc,TRUE);
 	linphone_core_set_play_file(pauline->lc,NULL);
@@ -1362,6 +1356,30 @@ end:
 	ms_free(hellopath);
 }
 
+void test_removing_old_tport(void) {
+	bctbx_list_t* lcs;
+	LinphoneCoreManager* marie2;
+	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_rc");
+	lcs=bctbx_list_append(NULL,marie1->lc);
+
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneRegistrationOk,1,5000));
+
+	marie2 = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie2, "marie_rc", NULL);
+	sal_set_uuid(marie2->lc->sal, linphone_config_get_string(linphone_core_get_config(marie1->lc),"misc", "uuid", "0"));
+	linphone_core_manager_start(marie2, TRUE);
+	lcs=bctbx_list_append(lcs, marie2->lc);
+	linphone_core_refresh_registers(marie2->lc);
+
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneRegistrationOk,1,5000));
+
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneRegistrationProgress,2,5000));
+
+	linphone_core_manager_destroy(marie1);
+	linphone_core_manager_destroy(marie2);
+	bctbx_list_free(lcs);
+}
+
 test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
 	TEST_NO_TAG("Message forking", message_forking),
@@ -1398,7 +1416,8 @@ test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Redis Publish/subscribe", redis_publish_subscribe, "Skip"),
 	TEST_NO_TAG("TLS authentication - client rejected due to CN mismatch", tls_client_auth_bad_certificate_cn),
 	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate),
-	TEST_NO_TAG("Transcoder", transcoder_tester)
+	TEST_NO_TAG("Transcoder", transcoder_tester),
+	TEST_NO_TAG("Removing old tport on flexisip for the same client", test_removing_old_tport)
 };
 
 

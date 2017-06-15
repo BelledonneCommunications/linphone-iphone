@@ -41,6 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/mssndcard.h"
 #include "mediastreamer2/msrtt4103.h"
 
+#include <bctoolbox/defs.h>
+
 
 static const char *EC_STATE_STORE = ".linphone.ecstate";
 #define EC_STATE_MAX_LEN 1048576 // 1Mo
@@ -2152,6 +2154,10 @@ const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *cal
 	return call->dir==LinphoneCallIncoming ? call->log->from : call->log->to;
 }
 
+const LinphoneAddress * linphone_call_get_to_address(const LinphoneCall *call){
+  return (const LinphoneAddress *)sal_op_get_to_address(call->op);
+}
+
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
 	return linphone_address_as_string(linphone_call_get_remote_address(call));
 }
@@ -2540,6 +2546,7 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 					break;
 				case MS_AES_CM_256_SHA1_80:
 				    ms_warning("Deprecated crypto suite MS_AES_CM_256_SHA1_80, use MS_AES_256_SHA1_80 instead");
+					BCTBX_NO_BREAK;
 				case MS_AES_256_SHA1_80:
 				    params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
                     params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
@@ -3089,7 +3096,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 				*used_pt = payload_type_get_number(pt);
 			}
 		}
-		
+
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
 			ms_message("Payload type [%s/%i] has explicit bitrate [%i] kbit/s", pt->mime_type, pt->clock_rate, pt->normal_bitrate/1000);
 			pt->normal_bitrate=get_min_bandwidth(pt->normal_bitrate,bw*1000);
@@ -3797,6 +3804,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 			if (linphone_core_get_remote_ringback_tone(lc)){
 				call->playing_ringbacktone = TRUE;
 			}
+			BCTBX_NO_BREAK;
 		case LinphoneCallOutgoingEarlyMedia:
 			if (!call->params->real_early_media){
 				call->all_muted = TRUE;

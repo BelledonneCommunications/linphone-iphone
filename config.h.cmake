@@ -47,3 +47,4 @@
 #cmakedefine HAVE_LIBUDEV_H 0
 #cmakedefine HAVE_LIME
 #cmakedefine ENABLE_NLS 1
+#cmakedefine ENABLE_UPDATE_CHECK 1

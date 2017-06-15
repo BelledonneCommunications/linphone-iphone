@@ -36,7 +36,7 @@ LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, const char *
 	LinphonePlayer *obj = linphone_player_new();
 	MSSndCard *snd_card;
 	MSSndCardManager *snd_card_manager = ms_factory_get_snd_card_manager(lc->factory);
-	if (sound_card_name == NULL) linphone_core_get_ringer_device(lc);
+	if (sound_card_name == NULL) sound_card_name = linphone_core_get_ringer_device(lc);
 	snd_card = ms_snd_card_manager_get_card(snd_card_manager, sound_card_name);
 	if (video_display_name == NULL) video_display_name = linphone_core_get_video_display_filter(lc);
 	obj->impl = ms_media_player_new(lc->factory, snd_card, video_display_name, window_id);

@@ -150,7 +150,7 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op) ;
 
 bool_t _sal_compute_sal_errors(belle_sip_response_t* response, SalReason* sal_reason, char* reason, size_t reason_size);
 SalReason _sal_reason_from_sip_code(int code);
-
+void sal_op_set_reason_error_info(SalOp *op, belle_sip_message_t *msg);
 void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *response);
 /*presence*/
 void sal_op_presence_fill_cbs(SalOp*op);

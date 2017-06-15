@@ -2872,6 +2872,10 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getNatP
 	return (nat_policy != NULL) ? getNatPolicy(env, nat_policy) : NULL;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setNatPolicy(JNIEnv* env,jobject thiz,jlong proxyCfg, jlong jnat_policy) {
+	linphone_proxy_config_set_nat_policy((LinphoneProxyConfig *)proxyCfg, (LinphoneNatPolicy *)jnat_policy);
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
 	if (jroute != NULL) {
 		const char* route = GetStringUTFChars(env, jroute);
@@ -5907,8 +5911,16 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setIncomingTimeout(JNIEn
 	linphone_core_set_inc_timeout((LinphoneCore *)lc, timeout);
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getIncomingTimeout(JNIEnv *env, jobject thiz, jlong lc) {
+	return linphone_core_get_inc_timeout((LinphoneCore *)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setInCallTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
 	linphone_core_set_in_call_timeout((LinphoneCore *)lc, timeout);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getInCallTimeout(JNIEnv *env, jobject thiz, jlong lc) {
+	return linphone_core_get_in_call_timeout((LinphoneCore *)lc);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {

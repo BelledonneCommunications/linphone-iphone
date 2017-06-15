@@ -394,12 +394,13 @@ void LocalConference::addLocalEndpoint() {
 	_post_configure_audio_stream(st,m_core,FALSE);
 	m_localParticipantStream=st;
 	m_localEndpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
+	ms_message("conference: adding local endpoint");
 	ms_audio_conference_add_member(m_conf,m_localEndpoint);
 }
 
 int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &addresses, const LinphoneCallParams *params){
 	
-	for (auto it = addresses.begin(); it != addresses.end(); ++it){
+	for (std::list<const LinphoneAddress*>::const_iterator it = addresses.begin(); it != addresses.end(); ++it){
 		const LinphoneAddress *addr = *it;
 		LinphoneCall * call = linphone_core_get_call_by_remote_address2(m_core, addr);
 		if (!call){
@@ -408,6 +409,7 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 			LinphoneCall *call;
 			/*toggle this flag so the call is immediately added to the conference upon acceptance*/
 			new_params->in_conference = TRUE;
+			linphone_call_params_enable_video(new_params, FALSE); /*turn off video as it is not supported for conferencing at this time*/
 			call = linphone_core_invite_address_with_params(m_core, addr, new_params);
 			if (!call){
 				ms_error("LocalConference::inviteAddresses(): could not invite participant");
@@ -418,6 +420,8 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 			if (!call->current_params->in_conference)
 				addParticipant(call);
 		}
+		/*if the local participant is not yet created, created it and it to the conference */
+		if (!m_localEndpoint) addLocalEndpoint();
 	}
 	return 0;
 }
@@ -433,7 +437,7 @@ int LocalConference::addParticipant(LinphoneCall *call) {
 		call->params->has_video=FALSE;
 		linphone_call_resume(call);
 	}else if (call->state==LinphoneCallStreamsRunning){
-		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		LinphoneCallParams *params = linphone_core_create_call_params(m_core, call);
 		params->in_conference=TRUE;
 		params->has_video=FALSE;
 

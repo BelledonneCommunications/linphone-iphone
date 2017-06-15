@@ -1149,6 +1149,16 @@ typedef enum _LinphoneUpnpState {
 typedef struct _LinphoneVcard LinphoneVcard;
 
 /**
+ * Enum describing the result of a version update check.
+ * @ingroup misc
+ */
+typedef enum _LinphoneVersionUpdateCheckResult {
+	LinphoneVersionUpdateCheckUpToDate,
+	LinphoneVersionUpdateCheckNewVersionAvailable,
+	LinphoneVersionUpdateCheckError
+} LinphoneVersionUpdateCheckResult;
+
+/**
  * The LinphoneVideoDefinition object represents a video definition, eg. its width and its height.
  * @ingroup media_parameters
  */

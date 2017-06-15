@@ -145,6 +145,7 @@ bool_t sal_address_is_sip(const SalAddress *addr);
 void sal_address_set_password(SalAddress *addr, const char *passwd);
 const char *sal_address_get_password(const SalAddress *addr);
 void sal_address_set_header(SalAddress *addr, const char *header_name, const char *header_value);
+const char *sal_address_get_header(const SalAddress *addr, const char *name);
 
 LINPHONE_PUBLIC Sal * sal_init(MSFactory *factory);
 LINPHONE_PUBLIC void sal_uninit(Sal* sal);
@@ -660,7 +661,7 @@ const char *sal_get_root_ca(Sal* ctx);
 void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 void sal_verify_server_cn(Sal *ctx, bool_t verify);
 void sal_set_ssl_config(Sal *ctx, void *ssl_config);
-void sal_set_uuid(Sal*ctx, const char *uuid);
+LINPHONE_PUBLIC void sal_set_uuid(Sal*ctx, const char *uuid);
 int sal_create_uuid(Sal*ctx, char *uuid, size_t len);
 int sal_generate_uuid(char *uuid, size_t len);
 LINPHONE_PUBLIC void sal_enable_test_features(Sal*ctx, bool_t enabled);
@@ -750,6 +751,7 @@ int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optio
 int sal_call_decline_with_error_info(SalOp *h, const SalErrorInfo* info, const char *redirection /*optional*/);
 int sal_call_update(SalOp *h, const char *subject, bool_t no_user_consent);
 void sal_call_cancel_invite(SalOp *op);
+void sal_call_cancel_invite_with_info(SalOp* op, const SalErrorInfo *info);
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h);
 LINPHONE_PUBLIC SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_call_refer(SalOp *h, const char *refer_to);

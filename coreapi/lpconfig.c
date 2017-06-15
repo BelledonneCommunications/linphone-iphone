@@ -481,8 +481,12 @@ LinphoneStatus linphone_config_read_file(LpConfig *lpconfig, const char *filenam
 	return -1;
 }
 
-static char* _linphone_config_xml_convert(LpConfig *lpc, xml2lpc_context *context, int result) {
-	char* error_msg = NULL;
+static const char *xml_to_lpc_failed = "xml to lpc failed";
+static const char *invalid_xml = "invalid xml";
+static const char *empty_xml = "empty provisioning file";
+
+static const char* _linphone_config_xml_convert(LpConfig *lpc, xml2lpc_context *context, int result) {
+	const char* error_msg = NULL;
 	if (result == 0) {
 		result = xml2lpc_convert(context, lpc);
 		if (result == 0) {
@@ -492,18 +496,18 @@ static char* _linphone_config_xml_convert(LpConfig *lpc, xml2lpc_context *contex
 			}
 			lp_config_sync(lpc);
 		} else {
-			error_msg = "xml to lpc failed";
+			error_msg = xml_to_lpc_failed;
 		}
 	} else {
-		error_msg = "invalid xml";
+		error_msg = invalid_xml;
 	}
 	return error_msg;
 }
 
-char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename) {
+const char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename) {
 	xml2lpc_context *context = NULL;
 	char* path = lp_realpath(filename, NULL);
-	char* error_msg = NULL;
+	const char* error_msg = NULL;
 
 	if (path) {
 		context = xml2lpc_context_new(NULL, NULL);
@@ -526,22 +530,24 @@ static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt
 	bctbx_logv(BCTBX_LOG_DOMAIN, bctbx_level,fmt,list);
 }
 
-char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer) {
+const char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer) {
 	xml2lpc_context *context = NULL;
-	char* error_msg = NULL;
+	const char* error_msg = NULL;
 
 	if (buffer != NULL) {
 		context = xml2lpc_context_new(xml2lpc_callback, NULL);
 		error_msg = _linphone_config_xml_convert(lpc, context, xml2lpc_set_xml_string(context, buffer));
+	}else{
+		error_msg = empty_xml;
 	}
 	if (context) xml2lpc_context_destroy(context);
 	return error_msg;
 }
+
 LinphoneStatus linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer) {
-	char *status;
+	const char *status;
 	if ((status =_linphone_config_load_from_xml_string(lpc,buffer))) {
 		ms_error("%s",status);
-		//ms_free(status)
 		return -1;
 	} else
 		return 0;

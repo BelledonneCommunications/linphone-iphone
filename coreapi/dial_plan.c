@@ -158,6 +158,8 @@ static LinphoneDialPlan const dial_plans[]={
 	{"Mauritius"                    ,"MU"		, "230"     , 7     , "00"	},
 	{"Mayotte Island"               ,"YT"		, "262"     , 9     , "00"	},
 	{"Mexico"                       ,"MX"		, "52"      , 10	, "00"	},
+	/*The following is a pseudo dial plan for Mexican mobile phones. See https://en.wikipedia.org/wiki/Telephone_numbers_in_Mexico*/
+	{"Mexico"                       ,"MX"		, "521"      , 10	, "00"	},
 	{"Micronesia"                   ,"FM"		, "691"     , 7		, "011" },
 	{"Moldova"                      ,"MD"		, "373"     , 8		, "00"  },
 	{"Monaco"                       ,"MC"		, "377"     , 8     , "00"	},
@@ -172,7 +174,7 @@ static LinphoneDialPlan const dial_plans[]={
 	{"Nepal"                        ,"NP"		, "43"      , 10	, "00"  },
 	{"Netherlands"                  ,"NL"       , "31"      , 9		, "00"  },
 	{"New Caledonia"				,"NC"		, "687"     , 6     , "00"	},
-	{"New Zealand"                  ,"NZ"		, "64"      , 10	, "00"  },
+	{"New Zealand"                  ,"NZ"		, "64"      , 8	, "00"  },
 	{"Nicaragua"                    ,"NI"		, "505"     , 8     , "00"  },
 	{"Niger"                        ,"NE"		, "227"     , 8     , "00"	},
 	{"Nigeria"                      ,"NG"		, "234"     , 10	, "009"	},
@@ -261,7 +263,7 @@ int linphone_dial_plan_lookup_ccc_from_e164(const char* e164) {
 	LinphoneDialPlan* elected_dial_plan=NULL;
 	unsigned int found;
 	unsigned int i=0;
-	
+
 	if (e164[0]!='+') {
 		return -1;/*not an e164 number*/
 	}
@@ -300,7 +302,7 @@ const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc) {
 	int i;
 	char ccc_as_char[16] = {0};
 	snprintf(ccc_as_char,sizeof(ccc_as_char)-1,"%i",ccc);
-	
+
 	for(i=0;dial_plans[i].country!=NULL;++i){
 		if (strcmp(ccc_as_char,dial_plans[i].ccc)==0){
 			return &dial_plans[i];

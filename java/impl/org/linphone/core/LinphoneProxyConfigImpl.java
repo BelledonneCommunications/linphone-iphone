@@ -101,6 +101,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	private native int lookupCCCFromE164(long nativePtr, String e164);
 
 	private native Object getNatPolicy(long nativePtr);
+	private native void setNatPolicy(long nativePtr, long natpolicy);
 
 
 	public LinphoneProxyConfig enableRegister(boolean value) {
@@ -127,7 +128,13 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	}
 
 	public LinphoneNatPolicy getNatPolicy() {
+		isValid();
 		return (LinphoneNatPolicy)getNatPolicy(nativePtr);
+	}
+
+	public void setNatPolicy(LinphoneNatPolicy natpolicy) {
+		isValid();
+		setNatPolicy(nativePtr, ((LinphoneNatPolicyImpl)natpolicy).mNativePtr);
 	}
 
 	public void setIdentity(String identity) throws LinphoneCoreException {

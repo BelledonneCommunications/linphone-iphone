@@ -272,13 +272,35 @@ LinphoneStatus linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *
 	return sal_notify(lev->op, body_handler);
 }
 
-LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
-	LinphoneEvent *lev=linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event,expires);
-	linphone_configure_op(lc,lev->op,resource,NULL,lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0));
+static LinphoneEvent *_linphone_core_create_publish(LinphoneCore *core, LinphoneProxyConfig *cfg, const LinphoneAddress *resource, const char *event, int expires){
+	LinphoneCore *lc = core;
+	LinphoneEvent *lev;
+	
+	if (!lc && cfg) {
+		if (cfg->lc)
+			lc = cfg->lc;
+		else  {
+			ms_error("Cannot create publish from proxy config [%p] not attached to any core",cfg);
+			return NULL;
+		}
+	}
+	if (!resource && cfg)
+		resource = linphone_proxy_config_get_identity_address(cfg);
+	
+	lev = linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event,expires);
+	linphone_configure_op_with_proxy(lc,lev->op,resource,NULL,lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0),cfg);
 	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
 	return lev;
 }
-
+LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
+	return _linphone_core_create_publish(lc, NULL, resource, event, expires);
+}
+LinphoneEvent *linphone_proxy_config_create_publish(LinphoneProxyConfig *cfg, const char *event, int expires) {
+	
+	return _linphone_core_create_publish(NULL, cfg,NULL, event, expires);
+	
+		
+}
 LinphoneEvent *linphone_core_create_one_shot_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event){
 	LinphoneEvent *lev = linphone_core_create_publish(lc, resource, event, -1);
 	lev->oneshot = TRUE;

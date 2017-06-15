@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
 #include "linphone/lpconfig.h"
+#include <bctoolbox/defs.h>
 
 // stat
 #ifndef _WIN32
@@ -145,6 +146,7 @@ void linphone_call_update_streams(LinphoneCall *call, SalMediaDescription *new_m
 		/* We already started media: check if we really need to restart it */
 		if (oldmd) {
 			md_changed = media_parameters_changed(call, oldmd, new_md);
+			/*might not be mandatory to restart stream for each ice restart as it leads bad user experience, specially in video. See 0002495 for better background on this*/
 			if ((md_changed & (	SAL_MEDIA_DESCRIPTION_CODEC_CHANGED
 								|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED
 								|SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED
@@ -255,7 +257,7 @@ static LinphoneCall * look_for_broken_call_to_replace(SalOp *h, LinphoneCore *lc
 		}
 		it = bctbx_list_next(it);
 	}
-	
+
 	return NULL;
 }
 
@@ -277,7 +279,7 @@ static void call_received(SalOp *h){
 		linphone_call_replace_op(replaced_call, h);
 		return;
 	}
-	
+
 	p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
 	/*in some situation, better to trust the network rather than the UAC*/
 	if (lp_config_get_int(lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0)) {
@@ -332,7 +334,7 @@ static void call_received(SalOp *h){
 		sal_op_release(h);
 		return;
 	}
-	
+
 
 	if (sal_op_get_privacy(h) == SalPrivacyNone) {
 		from_address_to_search_if_me=linphone_address_clone(from_addr);
@@ -569,10 +571,10 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 		switch (call->state){
 			case LinphoneCallResuming:
 				linphone_core_notify_display_status(lc,_("Call resumed."));
-			/*intentionally no break*/
+				BCTBX_NO_BREAK; /*intentionally no break*/
 			case LinphoneCallConnected:
 				if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
-			/*intentionally no break*/
+				BCTBX_NO_BREAK; /*intentionally no break*/
 			case LinphoneCallUpdating:
 			case LinphoneCallUpdatedByRemote:
 				if (!sal_media_description_has_dir(call->localdesc, SalStreamInactive) &&
@@ -741,7 +743,7 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 		case LinphoneCallResuming:
 			sal_error_info_set(&sei,SalReasonInternalError, "SIP", 0, NULL, NULL);
 			sal_call_decline_with_error_info(call->op, &sei,NULL);
-			/*no break*/
+			BCTBX_NO_BREAK; /*no break*/
 		case LinphoneCallIdle:
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallEnd:
@@ -764,7 +766,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
 	SalErrorInfo sei = {0};
-	
+
 	if (!call) {
 		ms_error("call_updating(): call doesn't exist anymore");
 		return ;
@@ -849,9 +851,11 @@ static void call_terminated(SalOp *op, const char *from){
 		break;
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
-			linphone_error_info_set(call->ei,NULL, LinphoneReasonNotAnswered, 0, "Incoming call cancelled", NULL);
-			call->non_op_error = TRUE;
-		break;
+			if(!sal_op_get_reason_error_info(op)->protocol || strcmp(sal_op_get_reason_error_info(op)->protocol, "") == 0) {
+				linphone_error_info_set(call->ei,NULL, LinphoneReasonNotAnswered, 0, "Incoming call cancelled", NULL);
+				call->non_op_error = TRUE;
+			}
+			break;
 		default:
 		break;
 	}
@@ -903,12 +907,12 @@ static void call_failure(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	bool_t stop_ringing = TRUE;
 	bctbx_list_t *calls = lc->calls;
-	
+
 	if (call==NULL){
 		ms_warning("Call faillure reported on already terminated call.");
 		return ;
 	}
-	
+
 	referer=call->referer;
 
 	linphone_core_notify_show_interface(lc);
@@ -1136,10 +1140,10 @@ static void register_failure(SalOp *op){
 	} else {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 	}
-	if (cfg->long_term_event){
+	if (cfg->presence_publish_event){
 		/*prevent publish to be sent now until registration gets successful*/
-		linphone_event_terminate(cfg->long_term_event);
-		cfg->long_term_event=NULL;
+		linphone_event_terminate(cfg->presence_publish_event);
+		cfg->presence_publish_event=NULL;
 		cfg->send_publish=cfg->publish;
 	}
 }
@@ -1296,7 +1300,7 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 				fill_auth_info_with_client_certificate(lc, sai);
 			}
 		}
-		
+
 		if (sai->realm && !ai->realm){
 			/*if realm was not known, then set it so that ha1 may eventually be calculated and clear text password dropped*/
 			linphone_auth_info_set_realm(ai, sai->realm);
@@ -1423,7 +1427,7 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalB
 	if (out_of_dialog){
 		/*out of dialog NOTIFY do not create an implicit subscription*/
 		linphone_event_set_state(lev, LinphoneSubscriptionTerminated);
-	}else if (st!=SalSubscribeNone){ 
+	}else if (st!=SalSubscribeNone){
 		linphone_event_set_state(lev,linphone_subscription_state_from_sal(st));
 	}
 }
@@ -1534,5 +1538,3 @@ SalCallbacks linphone_sal_callbacks={
 	on_expire,
 	on_notify_response
 };
-
-
