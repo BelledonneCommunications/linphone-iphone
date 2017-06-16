@@ -852,6 +852,8 @@ void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePresenceModel *presence){
 	int err=0;
+	LinphoneAddress *presentity_address = NULL;
+	char* contact = NULL;
 
 	if (proxy->state==LinphoneRegistrationOk || proxy->state==LinphoneRegistrationCleared){
 		LinphoneContent *content;
@@ -869,6 +871,16 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			linphone_presence_model_set_presentity(presence,linphone_proxy_config_get_identity_address(proxy));
 		}
 
+		if (!linphone_address_equal(linphone_presence_model_get_presentity(presence), linphone_proxy_config_get_identity_address(proxy))) {
+			ms_message("Presentity for model [%p] differ proxy config [%p], using proxy", presence, proxy);
+			presentity_address = linphone_address_clone(linphone_presence_model_get_presentity(presence)); /*saved, just in case*/
+			if (linphone_presence_model_get_contact(presence)) {
+				contact = bctbx_strdup(linphone_presence_model_get_contact(presence));
+			}
+			linphone_presence_model_set_presentity(presence,linphone_proxy_config_get_identity_address(proxy));
+			linphone_presence_model_set_contact(presence,NULL); /*it will be automatically computed*/
+			
+		}
 		if (!(presence_body = linphone_presence_model_to_xml(presence))) {
 			ms_error("Cannot publish presence model [%p] for proxy config [%p] because of xml serialization error",presence,proxy);
 			return -1;
@@ -886,6 +898,15 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 		err = linphone_event_send_publish(proxy->presence_publish_event, content);
 		linphone_content_unref(content);
 		ms_free(presence_body);
+		if (presentity_address) {
+			linphone_presence_model_set_presentity(presence,presentity_address);
+			linphone_address_unref(presentity_address);
+		}
+		if (contact) {
+			linphone_presence_model_set_contact(presence,contact);
+			bctbx_free(contact);
+		}
+		
 	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
 }

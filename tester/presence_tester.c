@@ -212,6 +212,31 @@ static void publish_with_expires(void) {
 	simple_publish_with_expire(2);
 }
 
+static void publish_with_dual_identity(void) {
+	LinphoneCoreManager* pauline = linphone_core_manager_new("multi_account_rc");
+	const bctbx_list_t* proxies;
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	
+	linphone_core_cbs_set_publish_state_changed(cbs, linphone_publish_state_changed);
+	_linphone_core_add_callbacks(pauline->lc, cbs, TRUE);
+	linphone_core_cbs_unref(cbs);
+	
+	for (proxies = linphone_core_get_proxy_config_list(pauline->lc); proxies!=NULL; proxies = proxies->next) {
+		LinphoneProxyConfig *proxy = (LinphoneProxyConfig *) proxies->data;
+		linphone_proxy_config_edit(proxy);
+		linphone_proxy_config_enable_publish(proxy,TRUE);
+		linphone_proxy_config_done(proxy);
+	}
+	
+	BC_ASSERT_TRUE(wait_for(pauline->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishProgress,4));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,4));
+	
+	linphone_core_manager_stop(pauline);
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishCleared,4,int,"%i");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishOk,4,int,"%i");
+	linphone_core_manager_destroy(pauline);
+	
+}
 static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
@@ -582,6 +607,7 @@ test_t presence_tests[] = {
 	TEST_ONE_TAG("Simple Subscribe with early NOTIFY", simple_subscribe_with_early_notify,"presence"),
 	TEST_NO_TAG("Simple Subscribe with friend from rc", simple_subscribe_with_friend_from_rc),
 	TEST_NO_TAG("Simple Publish", simple_publish),
+	TEST_NO_TAG("Publish with 2 identities", publish_with_dual_identity),
 	TEST_NO_TAG("Simple Publish with expires", publish_with_expires),
 	/*TEST_ONE_TAG("Call with presence", call_with_presence, "LeaksMemory"),*/
 	TEST_NO_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing),
