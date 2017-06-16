@@ -686,10 +686,10 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	}
 
 	if (associatedKey.sessionIndex != usedSessionIndex) {
-		ms_warning("Line: unexpected session index [%i] received from [%s], [%i] message will discarded"
+		ms_warning("Lime: unexpected session index [%i] received from [%s], [%i] messages will be discarded"
 				   , usedSessionIndex
 				   , peerURI
-				   , associatedKey.sessionIndex - usedSessionIndex);
+				   , usedSessionIndex-associatedKey.sessionIndex);
 	}
 	while (usedSessionIndex>associatedKey.sessionIndex) {
 		lime_deriveKey(&associatedKey);
