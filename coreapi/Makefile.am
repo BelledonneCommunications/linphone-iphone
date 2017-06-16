@@ -13,7 +13,7 @@ GITLOG=`cd $(top_srcdir) && git log -1 --pretty=format:%H configure.ac`
 
 ECHO=/bin/echo
 
-SUBDIRS=. help
+SUBDIRS=.
 
 EXTRA_DIST=linphonecore_jni.cc $(GITVERSION_FILE)
 
