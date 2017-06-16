@@ -4791,6 +4791,9 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			if (ms) handle_ice_events(call, ev);
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
 			linphone_core_dtmf_received(call,evd->info.telephone_event);
+		} else if (evt == ORTP_EVENT_NEW_VIDEO_BANDWIDTH_ESTIMATION_AVAILABLE) {
+			ms_message("Video bandwidth estimation is %i kbit/s", (int)evd->info.video_bandwidth_available / 1000);
+			//TODO
 		}
 		ortp_event_destroy(ev);
 	}

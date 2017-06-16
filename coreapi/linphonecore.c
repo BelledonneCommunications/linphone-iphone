@@ -1054,6 +1054,8 @@ static void net_config_read(LinphoneCore *lc) {
 	linphone_core_set_download_bandwidth(lc,tmp);
 	tmp=lp_config_get_int(config,"net","upload_bw",0);
 	linphone_core_set_upload_bandwidth(lc,tmp);
+	tmp=lp_config_get_int(config, "net", "expected_bw", 0);
+	linphone_core_set_expected_bandwidth(lc, tmp);
 
 	tmpstr=lp_config_get_string(lc->config,"net","nat_address",NULL);
 	if (tmpstr!=NULL && (strlen(tmpstr)<1)) tmpstr=NULL;
@@ -1814,6 +1816,11 @@ void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","upload_bw",bw);
 }
 
+void linphone_core_set_expected_bandwidth(LinphoneCore *lc, int bw){
+	ms_factory_set_expected_bandwidth(lc->factory, bw * 1000); // In linphone we use kbits/s, in ms2 bits/s
+	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","expected_bw",bw);
+}
+
 void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms) {
 	sal_set_transport_timeout(lc->sal, timeout_ms);
 	if (linphone_core_ready(lc))
@@ -1855,6 +1862,7 @@ int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
 int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.upload_bw;
 }
+
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime) {
 	lp_config_set_int(lc->config,"rtp","download_ptime",ptime);
 }
