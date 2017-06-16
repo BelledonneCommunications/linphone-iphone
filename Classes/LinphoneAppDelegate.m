@@ -659,23 +659,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 	} else if ([response.actionIdentifier isEqual:@"Decline"]) {
 		linphone_call_decline(call, LinphoneReasonDeclined);
 	} else if ([response.actionIdentifier isEqual:@"Reply"]) {
-		LinphoneCore *lc = [LinphoneManager getLc];
 		NSString *replyText = [(UNTextInputNotificationResponse *)response userText];
 		NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
-		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
-		if (room) {
-			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
-			linphone_chat_room_send_chat_message(room, msg);
-
-			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
-				[LinphoneManager.instance alertLIME:room];
-			}
-			linphone_chat_room_mark_as_read(room);
-			TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-				getCachedController:NSStringFromClass(TabBarView.class)];
-			[tab update:YES];
-			[PhoneMainView.instance updateApplicationBadgeNumber];
-		}
+		[LinphoneManager.instance send:replyText to:from];
 	} else if ([response.actionIdentifier isEqual:@"Seen"]) {
 		NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
 		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
@@ -870,22 +856,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 		}
 	} else if ([notification.category isEqualToString:@"incoming_msg"] &&
 			   [identifier isEqualToString:@"reply_inline"]) {
-		LinphoneCore *lc = [LinphoneManager getLc];
 		NSString *replyText = [responseInfo objectForKey:UIUserNotificationActionResponseTypedTextKey];
 		NSString *from = [notification.userInfo objectForKey:@"from_addr"];
-		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
-		if (room) {
-			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
-			linphone_chat_room_send_chat_message(room, msg);
-
-			if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
-				[LinphoneManager.instance alertLIME:room];
-			}
-			if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-				linphone_chat_room_mark_as_read(room);
-			}
-			[PhoneMainView.instance updateApplicationBadgeNumber];
-		}
+		[LinphoneManager.instance send:replyText to:from];
 	}
 	completionHandler();
 }

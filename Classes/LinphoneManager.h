@@ -160,6 +160,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString*)cacheDirectory;
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
+- (void)send:(NSString *)replyText to:(NSString *)to;
 - (void)call:(const LinphoneAddress *)address;
 - (BOOL)doCall:(const LinphoneAddress *)iaddr;
 

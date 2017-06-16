@@ -2653,6 +2653,24 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_call_accept_with_params(call, lcallParams);
 }
 
+- (void)send:(NSString *)replyText to:(NSString *)to {
+	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [to UTF8String]);
+	if (room) {
+		LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
+		linphone_chat_room_send_chat_message(room, msg);
+
+		if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
+			[LinphoneManager.instance alertLIME:room];
+		}
+		linphone_chat_room_mark_as_read(room);
+		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+			getCachedController:NSStringFromClass(TabBarView.class)];
+		[tab update:YES];
+		[PhoneMainView.instance updateApplicationBadgeNumber];
+	}
+}
+
 - (void)call:(const LinphoneAddress *)iaddr {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
