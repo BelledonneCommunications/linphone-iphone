@@ -1319,7 +1319,7 @@ static void cancelled_ringing_call(void) {
 	
 	call_history = linphone_core_get_call_history(marie->lc);
 	BC_ASSERT_PTR_NOT_NULL(call_history);
-	BC_ASSERT_EQUAL(bctbx_list_size(call_history),1, int,"%i");
+	BC_ASSERT_EQUAL((int)bctbx_list_size(call_history),1, int,"%i");
 	BC_ASSERT_EQUAL(linphone_call_log_get_status((LinphoneCallLog*)bctbx_list_get_data(call_history)), LinphoneCallMissed, LinphoneCallStatus, "%i");
 	
 	linphone_call_unref(out_call);
@@ -2384,7 +2384,7 @@ static void audio_call_with_ice_no_matching_audio_codecs(void) {
 
 	logs = linphone_core_get_call_logs(pauline->lc);
 
-	BC_ASSERT_EQUAL(bctbx_list_size(logs), 1, int, "%d");
+	BC_ASSERT_EQUAL((int)bctbx_list_size(logs), 1, int, "%d");
 	if (logs){
 		const LinphoneErrorInfo *ei;
 		cl = (LinphoneCallLog*)logs->data;
@@ -3868,7 +3868,7 @@ static void incoming_invite_with_invalid_sdp(void) {
 	BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
 
 	logs = linphone_core_get_call_logs(callee->lc);
-	BC_ASSERT_EQUAL(bctbx_list_size(logs), 1, int, "%i");
+	BC_ASSERT_EQUAL((int)bctbx_list_size(logs), 1, int, "%i");
 	if (logs){
 		const LinphoneErrorInfo *ei;
 		cl = (LinphoneCallLog*)logs->data;

@@ -427,7 +427,7 @@ static void simple_conference_from_scratch(void){
 		
 		/*make sure that the two calls from Marie's standpoint are in conference*/
 		marie_calls = linphone_core_get_calls(marie->lc);
-		BC_ASSERT_EQUAL(bctbx_list_size(marie_calls), 2, int, "%i");
+		BC_ASSERT_EQUAL((int)bctbx_list_size(marie_calls), 2, int, "%i");
 		for (it = marie_calls; it != NULL; it = it->next){
 			BC_ASSERT_TRUE(linphone_call_params_get_local_conference_mode(linphone_call_get_current_params((LinphoneCall*)it->data)) == TRUE);
 		}
