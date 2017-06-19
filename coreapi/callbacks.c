@@ -272,6 +272,7 @@ static void call_received(SalOp *h){
 	SalMediaDescription *md;
 	const char * p_asserted_id;
 	LinphoneErrorInfo *ei = NULL;
+	LinphonePresenceActivity *activity = NULL;
 
 	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
 	replaced_call = look_for_broken_call_to_replace(h, lc);
@@ -302,8 +303,8 @@ static void call_received(SalOp *h){
 	to_addr=linphone_address_new(sal_op_get_to(h));
 
 	/* first check if we can answer successfully to this invite */
-	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
-		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(lc->presence_model);
+	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed
+		&& (activity = linphone_presence_model_get_activity(lc->presence_model))) {
 		switch (linphone_presence_activity_get_type(activity)) {
 			case LinphonePresenceActivityPermanentAbsence:
 				alt_contact = linphone_presence_model_get_contact(lc->presence_model);

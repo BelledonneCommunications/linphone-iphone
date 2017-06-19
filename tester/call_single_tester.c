@@ -1104,8 +1104,8 @@ static void cancel_call_with_error(void) {
 }
 
 static void cancel_other_device_after_accept(void) {
-	LinphoneCall* call_callee;
-	LinphoneCall* call_callee_2;
+	LinphoneCall* call_callee = NULL;
+	LinphoneCall* call_callee_2 = NULL ;
 	const LinphoneErrorInfo *rei = NULL;
 	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *callee_mgr_2 = linphone_core_manager_new("marie_rc");
@@ -1118,44 +1118,45 @@ static void cancel_other_device_after_accept(void) {
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, 1));
 	call_callee = linphone_core_get_current_call(callee_mgr->lc);
-	linphone_call_ref(call_callee);
-	BC_ASSERT_PTR_NOT_NULL(call_callee);
-
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr_2->lc, &callee_mgr_2->stat.number_of_LinphoneCallIncomingReceived, 1));
-	call_callee_2 = linphone_core_get_current_call(callee_mgr_2->lc);
-	linphone_call_ref(call_callee_2);
-	BC_ASSERT_PTR_NOT_NULL(call_callee_2);
-
-	BC_ASSERT_EQUAL( linphone_call_accept(call_callee), 0 , int, "%d");
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,1));
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallReleased,1));
-
-	rei = linphone_call_get_error_info(call_callee_2);
-	BC_ASSERT_PTR_NOT_NULL(rei);
-	if (rei){
-		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),200, int, "%d");
-		BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(rei));
-		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rei), "Call completed elsewhere");
-		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rei), "SIP");
+	if (BC_ASSERT_PTR_NOT_NULL(call_callee)) {
+		
+		linphone_call_ref(call_callee);
+		
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr_2->lc, &callee_mgr_2->stat.number_of_LinphoneCallIncomingReceived, 1));
+		call_callee_2 = linphone_core_get_current_call(callee_mgr_2->lc);
+		linphone_call_ref(call_callee_2);
+		BC_ASSERT_PTR_NOT_NULL(call_callee_2);
+		
+		BC_ASSERT_EQUAL( linphone_call_accept(call_callee), 0 , int, "%d");
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,1));
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallEnd,1));
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallReleased,1));
+		
+		rei = linphone_call_get_error_info(call_callee_2);
+		BC_ASSERT_PTR_NOT_NULL(rei);
+		if (rei){
+			BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),200, int, "%d");
+			BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(rei));
+			BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rei), "Call completed elsewhere");
+			BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rei), "SIP");
+		}
 	}
-
 	linphone_call_terminate(out_call);
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallReleased,1));
 
-	linphone_call_unref(out_call);
-	linphone_call_unref(call_callee);
-	linphone_call_unref(call_callee_2);
+	if (out_call) linphone_call_unref(out_call);
+	if (call_callee) linphone_call_unref(call_callee);
+	if (call_callee_2) linphone_call_unref(call_callee_2);
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(callee_mgr_2);
 	linphone_core_manager_destroy(caller_mgr);
 }
 
 static void cancel_other_device_after_decline(void) {
-	LinphoneCall* call_callee;
-	LinphoneCall* call_callee_2;
+	LinphoneCall* call_callee = NULL;
+	LinphoneCall* call_callee_2 = NULL;
 	const LinphoneErrorInfo *rei = NULL;
 	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *callee_mgr_2 = linphone_core_manager_new("marie_rc");
@@ -1168,32 +1169,32 @@ static void cancel_other_device_after_decline(void) {
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, 1));
 	call_callee = linphone_core_get_current_call(callee_mgr->lc);
-	linphone_call_ref(call_callee);
-	BC_ASSERT_PTR_NOT_NULL(call_callee);
-
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr_2->lc, &callee_mgr_2->stat.number_of_LinphoneCallIncomingReceived, 1));
-	call_callee_2 = linphone_core_get_current_call(callee_mgr_2->lc);
-	linphone_call_ref(call_callee_2);
-	BC_ASSERT_PTR_NOT_NULL(call_callee_2);
-
-	BC_ASSERT_EQUAL(linphone_call_decline(call_callee, LinphoneReasonDeclined), 0 , int, "%d");
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallReleased, 1));
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallReleased,1));
-
-	rei = linphone_call_get_error_info(call_callee_2);
-	BC_ASSERT_PTR_NOT_NULL(rei);
-	if (rei){
-		BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),600, int, "%d");
-		BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(rei));
-		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rei), "Busy Everywhere");
-		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rei), "SIP");
+	if (BC_ASSERT_PTR_NOT_NULL(call_callee)) {
+		linphone_call_ref(call_callee);
+		
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr_2->lc, &callee_mgr_2->stat.number_of_LinphoneCallIncomingReceived, 1));
+		call_callee_2 = linphone_core_get_current_call(callee_mgr_2->lc);
+		linphone_call_ref(call_callee_2);
+		BC_ASSERT_PTR_NOT_NULL(call_callee_2);
+		
+		BC_ASSERT_EQUAL(linphone_call_decline(call_callee, LinphoneReasonDeclined), 0 , int, "%d");
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEnd,1));
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallReleased, 1));
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallEnd,1));
+		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallReleased,1));
+		
+		rei = linphone_call_get_error_info(call_callee_2);
+		BC_ASSERT_PTR_NOT_NULL(rei);
+		if (rei){
+			BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(rei),600, int, "%d");
+			BC_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(rei));
+			BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(rei), "Busy Everywhere");
+			BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(rei), "SIP");
+		}
 	}
-
-	linphone_call_unref(out_call);
-	linphone_call_unref(call_callee);
-	linphone_call_unref(call_callee_2);
+	if (out_call) linphone_call_unref(out_call);
+	if (call_callee) linphone_call_unref(call_callee);
+	if (call_callee_2) linphone_call_unref(call_callee_2);
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(callee_mgr_2);
 	linphone_core_manager_destroy(caller_mgr);
