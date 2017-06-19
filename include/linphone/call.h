@@ -97,6 +97,11 @@ LINPHONE_PUBLIC const LinphoneAddress * linphone_call_get_remote_address(const L
 LINPHONE_PUBLIC const LinphoneAddress * linphone_call_get_to_address(const LinphoneCall * call);
 
 /**
+ * Returns the value of the header name
+**/
+LINPHONE_PUBLIC const char * linphone_call_get_to_header(const LinphoneCall *call, const char *name);
+
+/**
  * Returns the remote address associated to this call as a string.
  * The result string must be freed by user using ms_free().
 **/

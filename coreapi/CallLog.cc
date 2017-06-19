@@ -309,7 +309,11 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 	cl->start_date_time=time(NULL);
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
-	cl->to=to;
+
+	LinphoneAddress * to_tmp = linphone_address_clone(to);
+	linphone_address_clean(to_tmp);
+	cl->to=to_tmp;
+
 	cl->status=LinphoneCallAborted; /*default status*/
 	cl->quality=-1;
 	cl->storage_id=0;

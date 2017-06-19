@@ -126,6 +126,16 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_conference_get_participants(const Linphon
 LINPHONE_PUBLIC LinphoneStatus linphone_conference_invite_participants(LinphoneConference *conf, const bctbx_list_t *addresses, const LinphoneCallParams *params);
 
 /**
+  *Get the conference id as string
+  */
+LINPHONE_PUBLIC const char *linphone_conference_get_ID(const LinphoneConference *obj);
+
+/**
+  *set the conference id as string
+  */
+LINPHONE_PUBLIC void linphone_conference_set_ID(const LinphoneConference *obj, const char *conferenceID);
+
+/**
  * @}
  */
 

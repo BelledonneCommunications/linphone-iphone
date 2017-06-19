@@ -94,17 +94,18 @@ public:
 			m_stateChangedCb = cb;
 			m_userData = userData;
 		}
-		
 	private:
 		bool m_enableVideo;
 		LinphoneConferenceStateChangedCb m_stateChangedCb;
-		void *m_userData;
-		
+    void *m_userData;
 		friend class Conference;
-	};
+  };
 	
 	Conference(LinphoneCore *core, LinphoneConference *conf, const Params *params = NULL);
-	virtual ~Conference() {};
+  virtual ~Conference() {
+    if(m_conferenceID)
+      ms_free(m_conferenceID);
+  }
 	
 	const Params &getCurrentParams() const {return m_currentParams;}
 	
@@ -138,20 +139,28 @@ public:
 		return m_core;
 	}
 	static const char *stateToString(LinphoneConferenceState state);
-	
+
+  void setID(const char *conferenceID) {
+    if (m_conferenceID)
+      ms_free(m_conferenceID);
+    m_conferenceID = ms_strdup(conferenceID);
+  }
+  const char *getID() {return m_conferenceID;}
+
 protected:
 	void setState(LinphoneConferenceState state);
 	Participant *findParticipant(const LinphoneCall *call) const;
 	Participant *findParticipant(const LinphoneAddress *uri) const;
 	
 protected:
+  char *m_conferenceID=NULL;
 	LinphoneCore *m_core;
 	AudioStream *m_localParticipantStream;
 	bool m_isMuted;
 	std::list<Participant *> m_participants;
 	Params m_currentParams;
 	LinphoneConferenceState m_state;
-	LinphoneConference *m_conference;
+  LinphoneConference *m_conference;
 };
 
 class LocalConference: public Conference {
@@ -1169,4 +1178,12 @@ bool_t linphone_conference_check_class(LinphoneConference *obj, LinphoneConferen
 
 LinphoneStatus linphone_conference_invite_participants(LinphoneConference *obj, const bctbx_list_t *addresses, const LinphoneCallParams *params){
 	return obj->conf->inviteAddresses(toStd<const LinphoneAddress*>(addresses), params);
+}
+
+const char * linphone_conference_get_ID(const LinphoneConference *obj) {
+  return obj->conf->getID();
+}
+
+void linphone_conference_set_ID(const LinphoneConference *obj, const char *conferenceID) {
+  obj->conf->setID(conferenceID);
 }
