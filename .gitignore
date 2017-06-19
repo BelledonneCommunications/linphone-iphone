@@ -47,7 +47,6 @@ build/macos/Info-linphone.plist
 coreapi/help/Doxyfile
 coreapi/help/buddy_status
 coreapi/help/chatroom
-coreapi/help/doc/
 coreapi/help/helloworld
 coreapi/help/registration
 coreapi/help/realtimetext_receiver
