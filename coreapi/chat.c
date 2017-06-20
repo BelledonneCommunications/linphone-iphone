@@ -750,6 +750,10 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 			cr->unread_count = 1;
 		else
 			cr->unread_count++;
+		/* Mark the message as pending so that if linphone_core_chat_room_mark_as_read() is called
+		   in the linphone_chat_room_message_received() callback, it will effectively be marked as
+		   being read before being stored. */
+		cr->pending_message = msg;
 	}
 
 	linphone_chat_room_message_received(cr, lc, msg);
@@ -757,6 +761,8 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	if(linphone_chat_message_get_to_be_stored(msg)) {
 		msg->storage_id = linphone_chat_message_store(msg);
 	}
+
+	cr->pending_message = NULL;
 
 end:
 	linphone_address_unref(addr);

@@ -456,6 +456,11 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	sqlite3_free(buf);
 	ms_free(peer);
 
+	if (cr->pending_message) {
+		linphone_chat_message_set_state(cr->pending_message, LinphoneChatMessageStateDisplayed);
+		linphone_chat_message_send_display_notification(cr->pending_message);
+	}
+
 	cr->unread_count = 0;
 }
 
