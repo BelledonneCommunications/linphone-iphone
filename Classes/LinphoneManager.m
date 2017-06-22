@@ -2600,10 +2600,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	if (enable && [self allowSpeaker]) {
 		[[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&err];
+		[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 		_bluetoothEnabled = FALSE;
 	} else {
 		AVAudioSessionPortDescription *builtinPort = [AudioHelper builtinAudioDevice];
 		[[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&err];
+		[[UIDevice currentDevice] setProximityMonitoringEnabled:TRUE];
 	}
 
 	if (err) {

@@ -154,6 +154,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self previewTouchLift];
 	// Enable tap
 	[singleFingerTap setEnabled:TRUE];
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:!_speakerButton.enabled];
 
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(messageReceived:)
@@ -211,6 +212,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		videoDismissTimer = nil;
 	}
 
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 	// Remove observer
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
