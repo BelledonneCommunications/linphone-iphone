@@ -1985,11 +1985,6 @@ static BOOL libStarted = FALSE;
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	}
 
-	// Enable notify policy for all
-	LinphoneImNotifPolicy *im_notif_policy;
-	im_notif_policy = linphone_core_get_im_notif_policy(theLinphoneCore);
-	linphone_im_notif_policy_enable_all(im_notif_policy);
-
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 		// go directly to bg mode
 		[self enterBackgroundMode];
