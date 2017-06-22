@@ -39,8 +39,8 @@
 
 + (Contact *)getContactWithAddress:(const LinphoneAddress *)address;
 
-+ (UIImage *)imageForContact:(Contact *)contact thumbnail:(BOOL)thumbnail;
-+ (UIImage *)imageForAddress:(const LinphoneAddress *)addr thumbnail:(BOOL)thumbnail;
++ (UIImage *)imageForContact:(Contact *)contact;
++ (UIImage *)imageForAddress:(const LinphoneAddress *)addr;
 
 + (BOOL)contactHasValidSipDomain:(Contact *)person;
 + (BOOL)isSipURIValid:(NSString*)addr;

@@ -94,10 +94,9 @@
 }
 
 #pragma mark - Getters
-- (UIImage *)avatar:(BOOL)thumbnail {
+- (UIImage *)avatar {
 	if (_person && ABPersonHasImageData(_person)) {
-		NSData *imgData = CFBridgingRelease(ABPersonCopyImageDataWithFormat(
-			_person, thumbnail ? kABPersonImageFormatThumbnail : kABPersonImageFormatOriginalSize));
+		NSData *imgData = CFBridgingRelease(ABPersonCopyImageDataWithFormat(_person, kABPersonImageFormatThumbnail));
 		return [UIImage imageWithData:imgData];
 	}
 	return nil;

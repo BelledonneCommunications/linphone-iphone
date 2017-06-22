@@ -31,9 +31,9 @@
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
 
-+ (UIImage *)imageForContact:(Contact *)contact thumbnail:(BOOL)thumbnail {
++ (UIImage *)imageForContact:(Contact *)contact {
 	@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
-		UIImage *retImage = [contact avatar:thumbnail];
+		UIImage *retImage = [contact avatar];
 		if (retImage == nil) {
 			retImage = [UIImage imageNamed:@"avatar.png"];
 		}
@@ -44,11 +44,11 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	}
 }
 
-+ (UIImage *)imageForAddress:(const LinphoneAddress *)addr thumbnail:(BOOL)thumbnail {
++ (UIImage *)imageForAddress:(const LinphoneAddress *)addr {
 	if ([LinphoneManager isMyself:addr] && [LinphoneUtils hasSelfAvatar]) {
 		return [LinphoneUtils selfAvatar];
 	}
-	return [FastAddressBook imageForContact:[FastAddressBook getContactWithAddress:addr] thumbnail:thumbnail];
+	return [FastAddressBook imageForContact:[FastAddressBook getContactWithAddress:addr]];
 }
 
 + (Contact *)getContact:(NSString *)address {

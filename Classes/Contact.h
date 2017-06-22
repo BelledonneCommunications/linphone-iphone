@@ -24,7 +24,7 @@
 @property BOOL added;
 
 - (void)setAvatar:(UIImage *)avatar;
-- (UIImage *)avatar:(BOOL)thumbnail;
+- (UIImage *)avatar;
 - (NSString *)displayName;
 
 - (instancetype)initWithPerson:(ABRecordRef)person;

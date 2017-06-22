@@ -124,8 +124,7 @@
 	if (outgoing) {
 		_avatarImage.image = [LinphoneUtils selfAvatar];
 	} else {
-		[_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_peer_address(_message)
-													  thumbnail:YES]
+		[_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_peer_address(_message)]
 					  bordered:NO
 			 withRoundedRadius:YES];
 	}

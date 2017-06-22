@@ -67,7 +67,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	char *uri = linphone_address_as_string_uri_only(addr);
 	_addressLabel.text = [NSString stringWithUTF8String:uri];
 	ms_free(uri);
-	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 
 	[self hideSpeaker:LinphoneManager.instance.bluetoothAvailable];
 

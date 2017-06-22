@@ -40,7 +40,7 @@
 		[_pauseButton setType:UIPauseButtonType_Call call:call];
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
-		[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:YES] bordered:NO withRoundedRadius:YES];
+		[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 		_durationLabel.text = [LinphoneUtils durationToString:linphone_call_get_duration(call)];
 	}
 	[_pauseButton update];
