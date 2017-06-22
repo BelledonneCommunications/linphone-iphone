@@ -42,13 +42,7 @@ INIT_WITH_COMMON_CF {
 #pragma mark - UIToggleButtonDelegate Functions
 
 - (void)audioRouteChangeListenerCallback:(NSNotification *)notif {
-#pragma deploymate push "ignored-api-availability"
-	if (UIDevice.currentDevice.systemVersion.doubleValue < 7 ||
-		[[notif.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue] ==
-			AVAudioSessionRouteChangeReasonRouteConfigurationChange) {
-		[self update];
-	}
-#pragma deploymate pop
+	[self update];
 }
 
 - (void)onOn {
