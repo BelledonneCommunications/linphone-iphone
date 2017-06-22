@@ -6273,7 +6273,7 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_setContent
 	linphone_content_set_type(content, tmp = GetStringUTFChars(env, jtype));
 	ReleaseStringUTFChars(env, jtype, tmp);
 
-	linphone_content_set_type(content, tmp = GetStringUTFChars(env, jsubtype));
+	linphone_content_set_subtype(content, tmp = GetStringUTFChars(env, jsubtype));
 	ReleaseStringUTFChars(env, jsubtype, tmp);
 
 	linphone_content_set_string_buffer(content, tmp = GetStringUTFChars(env, jdata));
