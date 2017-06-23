@@ -962,6 +962,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 			linphone_content_unref(core->log_collection_upload_information);
 			core->log_collection_upload_information = NULL;
 			ms_error("prepare_log_collection_file_to_upload(): error.");
+			linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "Error while preparing log collection upload");
 			return;
 		}
 		linphone_content_set_size(core->log_collection_upload_information, get_size_of_file_to_upload(name));
@@ -975,8 +976,17 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		belle_http_provider_send_request(core->http_provider, req, l);
 		ms_free(name);
 	} else {
+		const char *msg = NULL;
 		ms_warning("Could not upload log collection: log_collection_upload_information=%p, server_url=%s, log_collection_state=%d",
 			core->log_collection_upload_information, linphone_core_get_log_collection_upload_server_url(core), liblinphone_log_collection_state);
+		if (core->log_collection_upload_information != NULL) {
+			msg = "Log collection upload already in progress";
+		} else if (linphone_core_get_log_collection_upload_server_url(core) == NULL) {
+			msg = "Log collection upload server not set";
+		} else if (liblinphone_log_collection_state == LinphoneLogCollectionDisabled) {
+			msg = "Log collection is disabled";
+		}
+		linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, msg);
 	}
 }
 
