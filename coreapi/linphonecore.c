@@ -817,8 +817,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			l = belle_http_request_listener_create_from_callbacks(&cbs, core);
 			belle_sip_object_data_set(BELLE_SIP_OBJECT(req), "http_request_listener", l, belle_sip_object_unref); // Ensure the listener object is destroyed when the request is destroyed
 			belle_http_provider_send_request(core->http_provider, req, l);
-		}
-		if (code == 200) { /* The file has been uploaded correctly, get the server reply */
+		} else if (code == 200) { /* The file has been uploaded correctly, get the server reply */
 			xmlDocPtr xmlMessageBody;
 			xmlNodePtr cur;
 			xmlChar *file_url = NULL;
@@ -849,6 +848,10 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			if (file_url != NULL) {
 				linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateDelivered, (const char *)file_url);
 			}
+			clean_log_collection_upload_context(core);
+		} else {
+			ms_error("Unexpected HTTP response code %i during log collection upload to %s", code, linphone_core_get_log_collection_upload_server_url(core));
+			linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "Unexpected HTTP response");
 			clean_log_collection_upload_context(core);
 		}
 	}
