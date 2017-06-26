@@ -966,6 +966,16 @@ int sal_auth_compute_ha1(const char* userid,const char* realm,const char* passwo
 	return belle_sip_auth_helper_compute_ha1(userid, realm, password, ha1);
 }
 
+SalCustomHeader *sal_custom_header_ref(SalCustomHeader *ch){
+	if (ch == NULL) return NULL;
+	belle_sip_object_ref(ch);
+	return ch;
+}
+
+void sal_custom_header_unref(SalCustomHeader *ch){
+	if (ch == NULL) return;
+	belle_sip_object_unref(ch);
+}
 
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value){
 	belle_sip_message_t *msg=(belle_sip_message_t*)ch;

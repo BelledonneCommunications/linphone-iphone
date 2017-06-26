@@ -817,7 +817,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 }
 
 
-static void call_ack(SalOp *op){
+static void call_ack_received(SalOp *op, SalCustomHeader *ack){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 
@@ -825,6 +825,7 @@ static void call_ack(SalOp *op){
 		ms_warning("call_ack(): no call for which an ack is expected");
 		return;
 	}
+	linphone_call_notify_ack_processing(call, ack, TRUE);
 	if (call->expect_media_in_ack){
 		switch(call->state){
 			case LinphoneCallStreamsRunning:
@@ -836,6 +837,17 @@ static void call_ack(SalOp *op){
 		}
 		process_call_accepted(lc, call, op);
 	}
+}
+
+
+static void call_ack_being_sent(SalOp *op, SalCustomHeader *ack){
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+
+	if (call == NULL){
+		ms_warning("call_ack(): no call for which an ack is supposed to be sent");
+		return;
+	}
+	linphone_call_notify_ack_processing(call, ack, FALSE);
 }
 
 static void call_terminated(SalOp *op, const char *from){
@@ -1508,7 +1520,8 @@ SalCallbacks linphone_sal_callbacks={
 	call_rejected,
 	call_ringing,
 	call_accepted,
-	call_ack,
+	call_ack_received,
+	call_ack_being_sent,
 	call_updating,
 	call_terminated,
 	call_failure,

@@ -666,6 +666,20 @@ LINPHONE_PUBLIC LinphoneCallCbsTransferStateChangedCb linphone_call_cbs_get_tran
 LINPHONE_PUBLIC void linphone_call_cbs_set_transfer_state_changed(LinphoneCallCbs *cbs, LinphoneCallCbsTransferStateChangedCb cb);
 
 /**
+ * Get the ACK processing callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current ack processing callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsAckProcessingCb linphone_call_cbs_get_ack_processing(LinphoneCallCbs *cbs);
+
+/**
+ * Set ACK processing callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The ack processing callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_ack_processing(LinphoneCallCbs *cbs, LinphoneCallCbsAckProcessingCb cb);
+
+/**
  * @}
  */
 

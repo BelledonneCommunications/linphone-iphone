@@ -1676,6 +1676,29 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+static void on_ack_processing(LinphoneCall *call, LinphoneHeaders *ack, bool_t is_received){
+	if (!is_received){
+		linphone_headers_add(ack, "Coucou", "me voila");
+		/*We put something in user_data to indicate that we went through this callback*/
+		linphone_call_set_user_data(call, (void*)1);
+	}else{
+		const char *ack_header;
+		ack_header = linphone_headers_get_value(ack, "Coucou");
+		BC_ASSERT_PTR_NOT_NULL(ack_header);
+		if (ack_header){
+			BC_ASSERT_STRING_EQUAL(ack_header, "me voila");
+		}
+		linphone_call_set_user_data(call, (void*)1);
+	}
+}
+
+static void call_created(LinphoneCore *lc, LinphoneCall *call){
+	LinphoneCallCbs *cbs = linphone_factory_create_call_cbs(linphone_factory_get());
+	linphone_call_cbs_set_ack_processing(cbs, on_ack_processing);
+	linphone_call_add_callbacks(call, cbs);	
+	linphone_call_cbs_unref(cbs);
+}
+
 static void call_with_custom_headers(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -1690,6 +1713,8 @@ static void call_with_custom_headers(void) {
 	LinphoneAddress* marie_identity;
 	char* tmp=linphone_address_as_string_uri_only(marie->identity);
 	char tmp2[256];
+	LinphoneCoreCbs *core_cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	
 	snprintf(tmp2,sizeof(tmp2),"%s?uriHeader=myUriHeader",tmp);
 	marie_identity=linphone_address_new(tmp2);
 	ms_free(tmp);
@@ -1699,6 +1724,10 @@ static void call_with_custom_headers(void) {
 	params=linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_add_custom_header(params,"Weather","bad");
 	linphone_call_params_add_custom_header(params,"Working","yes");
+	
+	linphone_core_cbs_set_call_created(core_cbs, call_created);
+	linphone_core_add_callbacks(marie->lc, core_cbs);
+	linphone_core_add_callbacks(pauline->lc, core_cbs);
 
 	if (!BC_ASSERT_TRUE(call_with_caller_params(pauline,marie,params))) goto end;
 
@@ -1717,7 +1746,6 @@ static void call_with_custom_headers(void) {
 	BC_ASSERT_PTR_NOT_NULL(hvalue);
 	BC_ASSERT_STRING_EQUAL(hvalue,"myUriHeader");
 
-
 	// FIXME: we have to strdup because successive calls to get_remote_params erase the returned const char*!!
 	pauline_remote_contact        = ms_strdup(linphone_call_get_remote_contact(call_pauline));
 	pauline_remote_contact_header = ms_strdup(linphone_call_params_get_custom_header(linphone_call_get_remote_params(call_pauline), "Contact"));
@@ -1731,6 +1759,13 @@ static void call_with_custom_headers(void) {
 	BC_ASSERT_PTR_NOT_NULL(marie_remote_contact_header);
 	BC_ASSERT_STRING_EQUAL(pauline_remote_contact,pauline_remote_contact_header);
 	BC_ASSERT_STRING_EQUAL(marie_remote_contact,marie_remote_contact_header);
+	
+	
+	/*we need to wait for the ack to arrive*/
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 3000);
+	
+	BC_ASSERT_TRUE(linphone_call_get_user_data(call_marie) == (void*)1);
+	BC_ASSERT_TRUE(linphone_call_get_user_data(call_pauline) == (void*)1);
 
 	ms_free(pauline_remote_contact);
 	ms_free(pauline_remote_contact_header);
@@ -1740,6 +1775,7 @@ static void call_with_custom_headers(void) {
 	end_call(pauline, marie);
 
 end:
+	linphone_core_cbs_unref(core_cbs);
 	linphone_call_params_unref(params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

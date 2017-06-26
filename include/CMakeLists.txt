@@ -63,6 +63,7 @@ set(HEADER_FILES
 	video_definition.h
 	wrapper_utils.h
 	xmlrpc.h
+	headers.h
 
 	# Deprecated header files
 	linphonecore.h

@@ -127,6 +127,14 @@ typedef void (*LinphoneCallCbsStatsUpdatedCb)(LinphoneCall *call, const Linphone
 typedef void (*LinphoneCallCbsTransferStateChangedCb)(LinphoneCall *call, LinphoneCallState cstate);
 
 /**
+ * Callback for notifying the processing SIP ACK messages.
+ * @param call LinphoneCall for which an ACK is being received or sent
+ * @param ack the ACK message
+ * @param is_received if TRUE this ACK is an incoming one, otherwise it is an ACK about to be sent.
+ */
+typedef void (*LinphoneCallCbsAckProcessingCb)(LinphoneCall *call, LinphoneHeaders *ack, bool_t is_received);
+
+/**
  * @}
 **/
 

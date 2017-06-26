@@ -1862,3 +1862,28 @@ void linphone_range_set_min(LinphoneRange *range, int min) {
 void linphone_range_set_max(LinphoneRange *range, int max) {
 	range->max = max;
 }
+
+
+
+LinphoneHeaders * linphone_headers_ref(LinphoneHeaders *obj){
+	sal_custom_header_ref((SalCustomHeader*)obj);
+	return obj;
+}
+
+
+void linphone_headers_unref(LinphoneHeaders *obj){
+	sal_custom_header_unref((SalCustomHeader*)obj);
+}
+
+
+const char* linphone_headers_get_value(LinphoneHeaders *obj, const char *header_name){
+	return sal_custom_header_find((SalCustomHeader*)obj, header_name);
+}
+
+void linphone_headers_add(LinphoneHeaders *obj, const char *name, const char *value){
+	sal_custom_header_append((SalCustomHeader*)obj, name, value);
+}
+
+void linphone_headers_remove(LinphoneHeaders *obj, const char *name){
+	sal_custom_header_remove((SalCustomHeader*)obj, name);
+}

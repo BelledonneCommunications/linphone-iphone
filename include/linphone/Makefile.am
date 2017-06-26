@@ -43,6 +43,7 @@ linphone_include_HEADERS=\
 	video_definition.h \
 	wrapper_utils.h \
 	xmlrpc.h \
+	headers.h \
 	linphonecore.h \
 	linphonecore_utils.h \
 	linphonefriend.h \

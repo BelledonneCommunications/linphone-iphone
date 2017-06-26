@@ -64,6 +64,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/vcard.h"
 #include "linphone/video_definition.h"
 #include "linphone/xmlrpc.h"
+#include "linphone/headers.h"
 
 
 #ifdef __cplusplus

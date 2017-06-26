@@ -315,8 +315,9 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 								op->sdp_answer=NULL;
 							}
 							belle_sip_message_add_header(BELLE_SIP_MESSAGE(ack),BELLE_SIP_HEADER(op->base.root->user_agent));
-							belle_sip_dialog_send_ack(op->dialog,ack);
 							op->base.root->callbacks.call_accepted(op); /*INVITE*/
+							op->base.root->callbacks.call_ack_being_sent(op, (SalCustomHeader*)ack);
+							belle_sip_dialog_send_ack(op->dialog,ack);
 							op->state=SalOpStateActive;
 						}else if (code >= 300){
 							call_set_error(op,response, FALSE);
@@ -644,7 +645,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 						}
 					}
 				}
-				op->base.root->callbacks.call_ack(op);
+				op->base.root->callbacks.call_ack_received(op, (SalCustomHeader*)req);
 			}else{
 				ms_message("Ignored received ack since a new client transaction has been started since.");
 			}

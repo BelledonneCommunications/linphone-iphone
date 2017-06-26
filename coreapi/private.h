@@ -307,6 +307,7 @@ struct _LinphoneCallCbs {
 	LinphoneCallCbsStateChangedCb state_changed_cb;
 	LinphoneCallCbsStatsUpdatedCb stats_updated_cb;
 	LinphoneCallCbsTransferStateChangedCb transfer_state_changed_cb;
+	LinphoneCallCbsAckProcessingCb ack_processing;
 };
 
 LinphoneCallCbs * _linphone_call_cbs_new(void);
@@ -417,6 +418,7 @@ void linphone_call_notify_encryption_changed(LinphoneCall *call, bool_t on, cons
 void linphone_call_notify_transfer_state_changed(LinphoneCall *call, LinphoneCallState cstate);
 void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallStats *stats);
 void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg);
+void linphone_call_notify_ack_processing(LinphoneCall *call, void *msg, bool_t is_received);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);

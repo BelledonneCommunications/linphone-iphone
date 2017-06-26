@@ -492,7 +492,8 @@ typedef struct SalAuthInfo{
 typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
-typedef void (*SalOnCallAck)(SalOp *op);
+typedef void (*SalOnCallAckReceived)(SalOp *op, SalCustomHeader *ack);
+typedef void (*SalOnCallAckBeingSent)(SalOp *op, SalCustomHeader *ack);
 typedef void (*SalOnCallUpdating)(SalOp *op, bool_t is_update);/*< Called when a reINVITE/UPDATE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op);
@@ -532,7 +533,8 @@ typedef struct SalCallbacks{
 	SalOnCallReceived call_rejected;
 	SalOnCallRinging call_ringing;
 	SalOnCallAccepted call_accepted;
-	SalOnCallAck call_ack;
+	SalOnCallAckReceived call_ack_received;
+	SalOnCallAckBeingSent call_ack_being_sent;
 	SalOnCallUpdating call_updating;
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
@@ -861,6 +863,8 @@ LINPHONE_PUBLIC SalResolverContext * sal_resolve_a(Sal* sal, const char *name, i
 LINPHONE_PUBLIC SalResolverContext * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, SalResolverCallback cb, void *data);
 void sal_resolve_cancel(SalResolverContext *ctx);
 
+SalCustomHeader *sal_custom_header_ref(SalCustomHeader *ch);
+void sal_custom_header_unref(SalCustomHeader *ch);
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);
 SalCustomHeader *sal_custom_header_remove(SalCustomHeader *ch, const char *name);
