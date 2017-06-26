@@ -6595,6 +6595,9 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 #ifdef SQLITE_STORAGE_ENABLED
 	int ret;
 	const char *errmsg;
+	const char *backupExtension = "_backup";
+	char *backupName = malloc(snprintf(NULL, 0, "%s%s", fileName, backupExtension) + 1);
+	sprintf(backupName, "%s%s", fileName, backupExtension);
 	sqlite3 *db;
 
 	linphone_core_zrtp_cache_close(lc);
@@ -6604,6 +6607,8 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 		errmsg = sqlite3_errmsg(db);
 		ms_error("Error in the opening zrtp_cache_db_file(%s): %s.\n", fileName, errmsg);
 		sqlite3_close(db);
+		unlink(backupName);
+		rename(fileName, backupName);
 		lc->zrtp_cache_db=NULL;
 		return;
 	}
@@ -6617,6 +6622,8 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 	} else if(ret != 0) { /* something went wrong */
 		ms_error("Zrtp cache failed to initialise(returned -%x), run cacheless", -ret);
 		sqlite3_close(db);
+		unlink(backupName);
+		rename(fileName, backupName);
 		lc->zrtp_cache_db = NULL;
 		return;
 	}
