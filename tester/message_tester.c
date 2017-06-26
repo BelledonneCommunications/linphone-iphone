@@ -2298,19 +2298,19 @@ void text_message_with_custom_content_type_and_lime(void) {
 
 
 static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	if (msg->content_type) {
-		if (strcmp(msg->content_type, "cipher/b64") == 0) {
+	if (linphone_chat_message_get_content_type(msg)) {
+		if (strcmp(linphone_chat_message_get_content_type(msg), "cipher/b64") == 0) {
 			size_t b64Size = 0;
 			unsigned char *output;
-			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
+			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
 			output = (unsigned char *)ms_malloc(b64Size+1),
-			bctbx_base64_decode(output, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
-			ms_free (msg->message);
+			bctbx_base64_decode(output, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
 			output[b64Size] = '\0';
-			msg->message = (char *)output;
+			linphone_chat_message_set_text(msg, (char *)output);
+			ms_free(output);
 			linphone_chat_message_set_content_type(msg, "text/plain");
 			return 0;
-		} else if (strcmp(msg->content_type, "text/plain") == 0) {
+		} else if (strcmp(linphone_chat_message_get_content_type(msg), "text/plain") == 0) {
 			return -1; // Not encrypted, nothing to do
 		} else {
 			return 488; // Not acceptable
@@ -2320,15 +2320,15 @@ static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryption
 }
 
 static int im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	if (strcmp(msg->content_type,"text/plain") == 0) {
+	if (strcmp(linphone_chat_message_get_content_type(msg),"text/plain") == 0) {
 		size_t b64Size = 0;
 		unsigned char *output;
-		bctbx_base64_encode(NULL, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
+		bctbx_base64_encode(NULL, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
 		output = (unsigned char *)ms_malloc0(b64Size+1),
-		bctbx_base64_encode(output, &b64Size, (unsigned char *)msg->message, strlen(msg->message));
-		ms_free (msg->message);
+		bctbx_base64_encode(output, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
 		output[b64Size] = '\0';
-		msg->message = (char *)output;
+		linphone_chat_message_set_text(msg,(const char*)output);
+		ms_free(output);
 		linphone_chat_message_set_content_type(msg, "cipher/b64");
 		return 0;
 	}
@@ -2339,10 +2339,10 @@ void im_encryption_engine_b64(void) {
 	LinphoneChatMessage *chat_msg = NULL;
 	LinphoneChatRoom* chat_room = NULL;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	LinphoneImEncryptionEngine *marie_imee = linphone_im_encryption_engine_new(marie->lc);
+	LinphoneImEncryptionEngine *marie_imee = linphone_im_encryption_engine_new();
 	LinphoneImEncryptionEngineCbs *marie_cbs = linphone_im_encryption_engine_get_callbacks(marie_imee);
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneImEncryptionEngine *pauline_imee = linphone_im_encryption_engine_new(pauline->lc);
+	LinphoneImEncryptionEngine *pauline_imee = linphone_im_encryption_engine_new();
 	LinphoneImEncryptionEngineCbs *pauline_cbs = linphone_im_encryption_engine_get_callbacks(pauline_imee);
 	
 	linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, im_encryption_engine_process_incoming_message_cb);

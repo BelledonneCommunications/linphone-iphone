@@ -1609,6 +1609,17 @@ const char *linphone_chat_message_get_text(const LinphoneChatMessage *msg) {
 	return msg->message;
 }
 
+int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
+	if (msg->message)
+		ms_free(msg->message);
+	if (text)
+		msg->message = ms_strdup(text);
+	else
+		msg->message = NULL;
+	
+	return 0;
+}
+
 void linphone_chat_message_add_custom_header(LinphoneChatMessage *msg, const char *header_name,
 											 const char *header_value) {
 	msg->custom_headers = sal_custom_header_append(msg->custom_headers, header_name, header_value);

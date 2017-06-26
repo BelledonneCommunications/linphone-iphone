@@ -1753,8 +1753,6 @@ struct _LinphoneImEncryptionEngine {
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneImEncryptionEngine);
 
-LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(LinphoneCore *lc);
-
 struct _LinphoneRange {
 	belle_sip_object_t base;
 	void *user_data;

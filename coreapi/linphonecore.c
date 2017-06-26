@@ -2410,7 +2410,7 @@ bool_t linphone_core_get_guess_hostname(LinphoneCore *lc){
 }
 
 void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
-	LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new(lc);
+	LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new();
 	LinphoneImEncryptionEngineCbs *cbs = linphone_im_encryption_engine_get_callbacks(imee);
 
 	if(lime_is_available()){
@@ -7259,6 +7259,7 @@ void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncrypti
 		lc->im_encryption_engine = NULL;
 	}
 	if (imee) {
+		imee->lc = lc;
 		lc->im_encryption_engine = linphone_im_encryption_engine_ref(imee);
 	}
 }

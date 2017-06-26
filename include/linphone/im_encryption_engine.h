@@ -183,6 +183,19 @@ LINPHONE_PUBLIC LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb linphone_
 */
 LINPHONE_PUBLIC void linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(LinphoneImEncryptionEngineCbs *cbs, LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb cb);
 
+/** Set a chat message text to be sent by #linphone_chat_room_send_message
+ * @param[in] msg LinphoneChatMessage
+ * @param[in] text Const char *
+ * @returns 0 if succeed.
+*/
+LINPHONE_PUBLIC int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text);
+
+/**
+ * Create the IM encryption engine
+ * @return The created the IM encryption engine
+*/
+LINPHONE_PUBLIC LinphoneImEncryptionEngine *linphone_im_encryption_engine_new(void);
+	
 /**
  * @}
  */
