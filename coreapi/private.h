@@ -278,6 +278,11 @@ struct _LinphoneChatMessage {
 #endif
 };
 
+/*
+ *Gets a Message with a given message id and direction.
+ */
+LINPHONE_PUBLIC LinphoneChatMessage * linphone_chat_room_find_message_with_dir(LinphoneChatRoom *cr, const char *message_id,LinphoneChatMessageDir dir);
+
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessage);
 
 typedef struct StunCandidate{

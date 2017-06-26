@@ -627,25 +627,52 @@ bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message
 	return linphone_chat_room_get_history_range(cr, 0, nb_message-1);
 }
 
-LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, const char *message_id) {
+
+bctbx_list_t* linphone_chat_room_find_messages(LinphoneChatRoom *cr, const char *message_id) {
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	LinphoneChatMessage *cm = NULL;
 	char *buf;
 	char *peer;
-
+	bctbx_list_t* messages;
+	
 	if (lc->db == NULL) return NULL;
 	peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 	cr->messages_hist = NULL;
 	buf = sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q AND messageId = %Q", peer, message_id);
 	linphone_sql_request_message(lc->db, buf, cr);
 	sqlite3_free(buf);
-
-	if (cr->messages_hist) {
-		cm = (LinphoneChatMessage *)bctbx_list_nth_data(cr->messages_hist, 0);
-	}
-
-	cr->messages_hist = NULL;
 	ms_free(peer);
+	messages = cr->messages_hist;
+	cr->messages_hist = NULL;
+	return messages;
+}
+
+LinphoneChatMessage * linphone_chat_room_find_message_with_dir(LinphoneChatRoom *cr, const char *message_id, LinphoneChatMessageDir dir) {
+	bctbx_list_t* messages = linphone_chat_room_find_messages(cr, message_id);
+	bctbx_list_t* it;
+	LinphoneChatMessage *ret = NULL;
+	for (it = messages; it != NULL; it = it->next) {
+		LinphoneChatMessage * cm = (LinphoneChatMessage*)it->data;
+		if (cm->dir == dir) {
+			linphone_chat_message_ref(cm);
+			ret = cm;
+			break;
+		}
+	}
+	if (messages)
+		bctbx_list_free_with_data(messages, (bctbx_list_free_func)linphone_chat_message_unref);
+	
+	return ret;
+
+}
+
+LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, const char *message_id) {
+	bctbx_list_t* messages = linphone_chat_room_find_messages(cr, message_id);
+	LinphoneChatMessage *cm = NULL;
+	if (messages) {
+		cm = (LinphoneChatMessage *)bctbx_list_nth_data(messages, 0);
+		linphone_chat_message_ref(cm);
+		bctbx_list_free_with_data(messages, (bctbx_list_free_func)linphone_chat_message_unref);
+	}
 	return cm;
 }
 

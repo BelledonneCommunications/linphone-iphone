@@ -668,8 +668,9 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 	cr = linphone_core_get_chat_room(lc, addr);
 
 	/* Check if this is a duplicate message */
-	if (linphone_chat_room_find_message(cr, sal_op_get_call_id(op)) != NULL) {
+	if ((msg = linphone_chat_room_find_message_with_dir(cr, sal_op_get_call_id(op), LinphoneChatMessageIncoming))) {
 		reason = lc->chat_deny_code;
+		linphone_chat_message_unref(msg);
 		goto end;
 	}
 
@@ -882,7 +883,7 @@ static void process_imdn(LinphoneChatRoom *cr, xmlparsing_context_t *xml_ctx) {
 	}
 
 	if ((message_id_str != NULL) && (datetime_str != NULL)) {
-		LinphoneChatMessage *cm = linphone_chat_room_find_message(cr, message_id_str);
+		LinphoneChatMessage *cm = linphone_chat_room_find_message_with_dir(cr, message_id_str, LinphoneChatMessageOutgoing);
 		if (cm == NULL) {
 			ms_warning("Received IMDN for unknown message %s", message_id_str);
 		} else {
