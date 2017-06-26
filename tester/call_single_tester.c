@@ -90,6 +90,7 @@ static void rtcp_received(stats* counters, mblk_t *packet) {
 	do{
 		if (rtcp_is_type(packet, RTCP_RTPFB)){
 			if (rtcp_RTPFB_get_type(packet) ==  RTCP_RTPFB_TMMBR) {
+				counters->number_of_tmmbr_received++;
 				counters->last_tmmbr_value_received = (int)rtcp_RTPFB_tmmbr_get_max_bitrate(packet);
 			}
 		}

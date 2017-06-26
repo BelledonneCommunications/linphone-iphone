@@ -259,6 +259,7 @@ typedef struct _stats {
 	int current_bandwidth_index[2] /*audio and video only*/;
 
 	int number_of_rtcp_generic_nack;
+	int number_of_tmmbr_received;
 	int last_tmmbr_value_received;
 }stats;
 
