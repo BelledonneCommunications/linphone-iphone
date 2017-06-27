@@ -38,6 +38,12 @@ namespace Linphone
 		public const string LIB_NAME = "linphone"; // With this, it automatically finds liblinphone.so
 #endif
 
+#if WINDOWS_UWP
+        public const string BELLE_SIP_LIB_NAME = "bellesip";
+#else
+        public const string BELLE_SIP_LIB_NAME = "linphone";
+#endif
+
 #if ANDROID
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern void setAndroidLogHandler();
@@ -63,7 +69,15 @@ namespace Linphone
 	/// <summary>
 	/// All methods that returns a LinphoneStatus with a value != 0 as an error code in C are translated in C# by throwing a LinphoneException
 	/// </summary>
-	[Serializable()]
+#if WINDOWS_UWP
+    public class LinphoneException : System.Exception
+    {
+        public LinphoneException() : base() { }
+        public LinphoneException(string message) : base(message) { }
+        public LinphoneException(string message, System.Exception inner) : base(message, inner) { }
+    }
+#else
+    [Serializable()]
 	public class LinphoneException : System.Exception
 	{
 		public LinphoneException() : base() { }
@@ -71,6 +85,7 @@ namespace Linphone
 		public LinphoneException(string message, System.Exception inner) : base(message, inner) { }
 		protected LinphoneException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
 	}
+#endif
 	
 	[StructLayout(LayoutKind.Sequential)]
 	/// <summary>
@@ -83,28 +98,28 @@ namespace Linphone
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate void OnLinphoneObjectDataDestroyed(IntPtr data);
 
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, OnLinphoneObjectDataDestroyed cb);
 
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr belle_sip_object_data_get(IntPtr ptr, string name);
 		
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr belle_sip_object_ref(IntPtr ptr);
 		
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern void belle_sip_object_unref(IntPtr ptr);
 		
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr bctbx_list_next(IntPtr ptr);
 		
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr bctbx_list_get_data(IntPtr ptr);
 
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, string data);
 
-		[DllImport(LinphoneWrapper.LIB_NAME)]
+		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, IntPtr data);
 
 #if __IOS__
