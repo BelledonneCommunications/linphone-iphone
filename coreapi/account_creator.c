@@ -1035,7 +1035,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_activate_phone_number_link
 	ms_debug("Account creator: activate_phone_number_link (phone number=%s, username=%s, activation code=%s, domain=%s)",
 		creator->phone_number,
 		creator->username,
-		creator->acactivation_code,
+		creator->activation_code,
 		linphone_proxy_config_get_domain(creator->proxy_cfg));
 
 	request = linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgString, "activate_phone_number_link",
