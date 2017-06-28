@@ -79,7 +79,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	private boolean loadingDownloadedOpenH264(Context context) {
-		File file = new File(context.getFilesDir()+"/../lib/libmsopenh264.so");
+		File file = new File(context.getApplicationInfo().nativeLibraryDir+"/libmsopenh264.so");
 
 		if (!file.exists()) {
 			Log.i("LinphoneCoreFactoryImpl"," libmsopenh264 not found, we disable the download of Openh264");
