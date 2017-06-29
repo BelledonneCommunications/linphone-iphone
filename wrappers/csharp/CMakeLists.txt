@@ -21,14 +21,14 @@
 ############################################################################
 
 add_custom_command(OUTPUT LinphoneWrapper.cs
-	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/xml"
+	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml"
 	DEPENDS ${PROJECT_SOURCE_DIR}/tools/genapixml.py
 	${PROJECT_SOURCE_DIR}/tools/metadoc.py
 	${PROJECT_SOURCE_DIR}/tools/abstractapi.py
 	genwrapper.py
 	wrapper_impl.mustache
 	linphone-doc
-	"${PROJECT_BINARY_DIR}/coreapi/help/doc/xml/index.xml"
+	"${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml/index.xml"
 )
 
 add_custom_target(linphonecs ALL DEPENDS LinphoneWrapper.cs)
