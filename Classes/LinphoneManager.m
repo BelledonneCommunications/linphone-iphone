@@ -817,6 +817,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 	// Disable speaker when no more call
 	if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
+		[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 		speaker_already_enabled = FALSE;
 		if (linphone_core_get_calls_nb(theLinphoneCore) == 0) {
 			[self setSpeakerEnabled:FALSE];
@@ -2600,7 +2601,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	} else {
 		AVAudioSessionPortDescription *builtinPort = [AudioHelper builtinAudioDevice];
 		[[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&err];
-		[[UIDevice currentDevice] setProximityMonitoringEnabled:TRUE];
+		[[UIDevice currentDevice] setProximityMonitoringEnabled:(linphone_core_get_calls_nb(LC) > 0)];
 	}
 
 	if (err) {
