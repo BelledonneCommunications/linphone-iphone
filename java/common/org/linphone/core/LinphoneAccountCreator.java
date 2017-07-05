@@ -138,6 +138,38 @@ public interface LinphoneAccountCreator {
 		}
 	}
 
+	public static class DomainCheck {
+		static private Vector<DomainCheck> values = new Vector<DomainCheck>();
+		private final int mValue;
+		private final String mStringValue;
+		public final int value() { return mValue; }
+
+		public final static DomainCheck Ok = new DomainCheck(0, "Ok");
+		public final static DomainCheck Invalid = new DomainCheck(1, "Invalid");
+
+		private DomainCheck(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+
+		public static DomainCheck fromInt(int value) {
+			for (int i=0; i < values.size(); i++) {
+				DomainCheck state = (DomainCheck) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("DomainCheck not found [" + value + "]");
+		}
+
+		public String toString() {
+			return mStringValue;
+		}
+
+		public int toInt() {
+			return mValue;
+		}
+	}
+
 	public static class PasswordCheck {
 		static private Vector<PasswordCheck> values = new Vector<PasswordCheck>();
 		private final int mValue;
@@ -322,6 +354,12 @@ public interface LinphoneAccountCreator {
 	String getEmail();
 
 	String getPrefix(String phone);
+
+	DomainCheck setDomain(String domain);
+
+	String getDomain();
+
+	LinphoneProxyConfig configure();
 
 	RequestStatus isAccountUsed();
 

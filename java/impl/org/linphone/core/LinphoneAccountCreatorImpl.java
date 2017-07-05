@@ -134,6 +134,24 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 		return getPrefix(nativePtr, phone);
 	}
 
+	private native int setDomain(long ptr, String domain);
+	@Override
+	public DomainCheck setDomain(String domain) {
+		return DomainCheck.fromInt(setDomain(nativePtr, domain));
+	}
+
+	private native String getDomain(long ptr);
+	@Override
+	public String getDomain() {
+		return getDomain(nativePtr);
+	}
+
+	private native LinphoneProxyConfig configure(long ptr);
+	@Override
+	public LinphoneProxyConfig configure() {
+		return configure(nativePtr);
+	}
+
 	private native int isAccountUsed(long ptr);
 	@Override
 	public RequestStatus isAccountUsed() {

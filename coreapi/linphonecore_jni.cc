@@ -8761,6 +8761,20 @@ extern "C" jstring Java_org_linphone_core_LinphoneAccountCreatorImpl_getEmail(JN
 	return email ? env->NewStringUTF(email) : NULL;
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_setDomain(JNIEnv *env, jobject thiz, jlong ptr, jstring jdomain) {
+	const char *domain = GetStringUTFChars(env, jdomain);
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	LinphoneAccountCreatorDomainStatus status = linphone_account_creator_set_domain(account_creator, domain);
+	ReleaseStringUTFChars(env, jdomain, domain);
+	return (jint) status;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneAccountCreatorImpl_getDomain(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
+	const char *email = linphone_account_creator_get_domain(account_creator);
+	return email ? env->NewStringUTF(email) : NULL;
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneAccountCreatorImpl_isAccountUsed(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneAccountCreator *account_creator = (LinphoneAccountCreator *)ptr;
 	return (jint) linphone_account_creator_is_account_exist(account_creator);
