@@ -577,8 +577,12 @@ static const struct addrinfo * get_preferred_stun_server_addrinfo(const struct a
 		else if (ai->ai_family == AF_INET6) {
 			struct sockaddr_storage ss;
 			socklen_t sslen = sizeof(ss);
-			bctbx_sockaddr_ipv6_to_ipv4(ai->ai_addr, (struct sockaddr *)&ss, &sslen);
-			if ((ss.ss_family == AF_INET) && (preferred_ai == NULL)) preferred_ai = ai;
+			bctbx_sockaddr_remove_nat64_mapping(ai->ai_addr, (struct sockaddr *)&ss, &sslen);
+			if (ss.ss_family == AF_INET) {
+				preferred_ai = ai;
+				break;
+			}
+			preferred_ai = ai;
 		}
 		ai = ai->ai_next;
 	}
