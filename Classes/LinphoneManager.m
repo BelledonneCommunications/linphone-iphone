@@ -252,6 +252,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_pushDict = [[NSMutableDictionary alloc] init];
 		_database = NULL;
 		_speakerEnabled = FALSE;
+		_speakerBeforePause = FALSE;
 		_bluetoothEnabled = FALSE;
 		_conf = FALSE;
 		_fileTransferDelegates = [[NSMutableArray alloc] init];
@@ -963,6 +964,13 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	if (state == LinphoneCallIncomingReceived || state == LinphoneCallOutgoingInit || state == LinphoneCallConnected ||
 		state == LinphoneCallStreamsRunning) {
 		if (linphone_call_params_video_enabled(linphone_call_get_current_params(call)) && !speaker_already_enabled) {
+			[self setSpeakerEnabled:TRUE];
+			speaker_already_enabled = TRUE;
+		}
+	}
+	if (state == LinphoneCallStreamsRunning) {
+		if (_speakerBeforePause) {
+			_speakerBeforePause = FALSE;
 			[self setSpeakerEnabled:TRUE];
 			speaker_already_enabled = TRUE;
 		}
@@ -2481,6 +2489,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LinphoneCall *c = linphone_core_get_current_call(theLinphoneCore);
 	LOGI(@"Sound interruption detected!");
 	if (c && linphone_call_get_state(c) == LinphoneCallStreamsRunning) {
+		_speakerBeforePause = _speakerEnabled;
 		linphone_call_pause(c);
 	}
 }
@@ -3092,6 +3101,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		if ([ct currentCalls] != nil) {
 			if (call) {
 				LOGI(@"Pausing SIP call because GSM call");
+				_speakerBeforePause = _speakerEnabled;
 				linphone_call_pause(call);
 				[self startCallPausedLongRunningTask];
 			} else if (linphone_core_is_in_conference(theLinphoneCore)) {

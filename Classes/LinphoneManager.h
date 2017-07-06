@@ -210,6 +210,7 @@ typedef struct _LinphoneManagerSounds {
 @property(nonatomic, strong) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
+@property (nonatomic, assign) BOOL speakerBeforePause;
 @property (nonatomic, assign) BOOL speakerEnabled;
 @property (nonatomic, assign) BOOL bluetoothAvailable;
 @property (nonatomic, assign) BOOL bluetoothEnabled;

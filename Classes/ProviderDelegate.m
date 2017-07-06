@@ -171,6 +171,7 @@
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 	if (call) {
 		if (action.isOnHold) {
+			LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
 			linphone_call_pause((LinphoneCall *)call);
 		} else {
 			[self configAudioSession:[AVAudioSession sharedInstance]];

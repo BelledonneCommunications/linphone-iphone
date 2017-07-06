@@ -82,6 +82,7 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
+				LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
 				linphone_call_pause(call);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
@@ -98,6 +99,7 @@
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
 			if (currentCall != nil) {
+				LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
 				linphone_call_pause(currentCall);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
