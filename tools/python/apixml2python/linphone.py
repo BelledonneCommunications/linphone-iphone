@@ -1360,6 +1360,9 @@ class LinphoneModule(object):
 		doc = ''
 		if brief_description is None:
 			brief_description = ''
+		else:
+			brief_description = brief_description.text
+			
 		if detailed_description is None:
 			detailed_description = ''
 		else:
