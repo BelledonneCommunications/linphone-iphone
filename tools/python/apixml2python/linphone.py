@@ -1042,7 +1042,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 
 class LinphoneModule(object):
 	def __init__(self, tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_codes):
-		self.known_types = ['char', 'int', 'int8_t', 'int16_t', 'int32_t', 'int64_t', 'uint8_t', 'uint16_t', 'uint32_t', 'uint64_t', 'bool_t', 'float', 'double', 'size_t', 'time_t', 'MSList', 'bctbx_list_t', 'MSVideoSize', 'LCSipTransports', 'PayloadType', 'LinphoneStatus']
+		self.known_types = ['char', 'int', 'int8_t', 'int16_t', 'int32_t', 'int64_t', 'uint8_t', 'uint16_t', 'uint32_t', 'uint64_t', 'bool_t', 'float', 'double', 'size_t', 'time_t', 'MSList', 'bctbx_list_t', 'MSVideoSize', 'LCSipTransports', 'LinphoneStatus']
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
 		self.bctbxlist_types = set([])

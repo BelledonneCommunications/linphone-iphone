@@ -332,7 +332,6 @@ static PyMethodDef pylinphone_{{enum_name}}_ModuleMethods[] = {
 
 static PyObject * pylinphone_moduleinit(void) {
 	PyObject *m;
-	PyObject *menum_PayloadType;
 
 	PyDateTime_IMPORT;
 	PyEval_InitThreads();
@@ -365,22 +364,6 @@ static PyObject * pylinphone_moduleinit(void) {
 {{/enum_deprecated_values}}
 	}
 {{/enums}}
-
-	MOD_DEF(menum_PayloadType, "PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of :py:class:`linphone.PayloadType`.\n\n.. csv-table::\n   :delim: |\n   :header: Value,Description\n\n   AudioContinuous|\n   AudioPacketized|\n   Video|\n   Text|\n   Other|\n");
-	if (menum_PayloadType == NULL) return NULL;
-	Py_INCREF(menum_PayloadType);
-	if (PyModule_AddObject(m, "PayloadTypeType", menum_PayloadType) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "AudioContinuous", PAYLOAD_AUDIO_CONTINUOUS) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "AudioPacketized", PAYLOAD_AUDIO_PACKETIZED) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "Video", PAYLOAD_VIDEO) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "Text", PAYLOAD_TEXT) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "Other", PAYLOAD_OTHER) < 0) return NULL;
-	// TODO: To remove. Deprecated enum values.
-	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_AUDIO_CONTINUOUS", PAYLOAD_AUDIO_CONTINUOUS) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_AUDIO_PACKETIZED", PAYLOAD_AUDIO_PACKETIZED) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_VIDEO", PAYLOAD_VIDEO) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_TEXT", PAYLOAD_TEXT) < 0) return NULL;
-	if (PyModule_AddIntConstant(menum_PayloadType, "PAYLOAD_OTHER", PAYLOAD_OTHER) < 0) return NULL;
 
 {{#classes}}
 	Py_INCREF(&pylinphone_{{class_name}}Type);
