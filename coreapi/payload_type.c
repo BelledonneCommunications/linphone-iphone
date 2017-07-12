@@ -260,19 +260,7 @@ bool_t linphone_payload_type_is_vbr(const LinphonePayloadType *pt) {
 bool_t _linphone_core_check_payload_type_usability(const LinphoneCore *lc, const OrtpPayloadType *pt) {
 	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
-	bool_t ret=linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, maxbw);
-	if ((pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
-		&& lc->sound_conf.capt_sndcard
-		&& !(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)
-		&& linphone_core_echo_cancellation_enabled(lc)
-		&& (pt->clock_rate!=16000 && pt->clock_rate!=8000)
-		&& strcasecmp(pt->mime_type,"opus")!=0
-		&& ms_factory_lookup_filter_by_name(lc->factory, "MSWebRTCAEC")!=NULL){
-		ms_warning("Payload type %s/%i cannot be used because software echo cancellation is required but is unable to operate at this rate.",
-			   pt->mime_type,pt->clock_rate);
-		ret=FALSE;
-	}
-	return ret;
+	return linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, maxbw);
 }
 
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const OrtpPayloadType *pt) {
