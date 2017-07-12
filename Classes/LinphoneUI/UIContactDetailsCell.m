@@ -56,7 +56,8 @@
 		[NSString stringWithFormat:NSLocalizedString(@"Chat with %@", nil), _addressLabel.text];
 	_callButton.accessibilityLabel = [NSString stringWithFormat:NSLocalizedString(@"Call %@", nil), _addressLabel.text];
 	// Test presence
-	Contact* contact = [FastAddressBook getContactWithAddress:(addr)];
+	Contact *contact;
+	contact = addr ? [FastAddressBook getContactWithAddress:(addr)] : NULL;
 
 	_linphoneImage.hidden = TRUE;
 	if (contact) {
