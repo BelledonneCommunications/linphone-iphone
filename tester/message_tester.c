@@ -21,7 +21,7 @@
 #include "linphone/core.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-#include "lime.h"
+#include "Lime.h"
 #include "bctoolbox/crypto.h"
 
 #ifdef SQLITE_STORAGE_ENABLED

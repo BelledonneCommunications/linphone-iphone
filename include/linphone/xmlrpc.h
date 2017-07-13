@@ -43,14 +43,6 @@ extern "C" {
 LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(LinphoneXmlRpcArgType return_type, const char *method);
 
 /**
- * Create a new LinphoneXmlRpcRequest object giving the arguments to the method call.
- * @param[in] return_type The expected XML-RPC response type.
- * @param[in] method The XML-RPC method to call.
- * @return A new LinphoneXmlRpcRequest object.
-**/
-LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(LinphoneXmlRpcArgType return_type, const char *method, ...);
-
-/**
  * Acquire a reference to the XML-RPC request.
  * @param[in] request LinphoneXmlRpcRequest object.
  * @return The same LinphoneXmlRpcRequest object.

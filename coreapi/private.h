@@ -33,10 +33,10 @@
 #include "linphone/conference.h"
 #include "sal/sal.h"
 #include "linphone/sipsetup.h"
-#include "quality_reporting.h"
+#include "QualityReporting.h"
 #include "linphone/ringtoneplayer.h"
-#include "vcard_private.h"
-#include "carddav.h"
+#include "Vcard.h"
+#include "CardDav.h"
 #include "linphone/player.h"
 
 #include "bctoolbox/port.h"
@@ -418,7 +418,7 @@ void linphone_call_notify_encryption_changed(LinphoneCall *call, bool_t on, cons
 void linphone_call_notify_transfer_state_changed(LinphoneCall *call, LinphoneCallState cstate);
 void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallStats *stats);
 void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg);
-void linphone_call_notify_ack_processing(LinphoneCall *call, void *msg, bool_t is_received);
+void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *msg, bool_t is_received);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
@@ -596,7 +596,7 @@ void linphone_proxy_config_write_to_config_file(LinphoneConfig* config,LinphoneP
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call);
 
-void linphone_call_init_stats(LinphoneCallStats *stats, int type);
+void linphone_call_init_stats(LinphoneCallStats *stats, LinphoneStreamType type);
 void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *rmd);
 void linphone_call_init_audio_stream(LinphoneCall *call);
 void linphone_call_init_video_stream(LinphoneCall *call);

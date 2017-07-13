@@ -92,7 +92,7 @@ typedef struct _BuddyLookupFuncs{
 
 
 struct _SipSetup{
-	char *name;
+	const char *name;
 	unsigned int capabilities;
 	int initialized;
 	bool_t (*init)(void);

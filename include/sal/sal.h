@@ -461,11 +461,6 @@ typedef enum SalAuthMode { /*this enum must be same as belle_sip_auth_mode_t*/
 	SalAuthModeTls /** Client certificate requested*/
 }SalAuthMode;
 
-struct _SalCertificatesChain;
-typedef struct _SalCertificatesChain SalCertificatesChain;
-struct _SalSigningKey;
-typedef struct _SalSigningKey SalSigningKey;
-
 /**
  * Format of certificate buffer
  * */
@@ -484,8 +479,8 @@ typedef struct SalAuthInfo{
 	char *domain;
 	char *ha1;
 	SalAuthMode mode;
-	SalSigningKey *key;
-	SalCertificatesChain *certificates;
+	belle_sip_signing_key_t *key;
+	belle_sip_certificates_chain_t *certificates;
 }SalAuthInfo;
 
 typedef void (*SalOnCallReceived)(SalOp *op);
@@ -572,8 +567,8 @@ SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
 void sal_auth_info_delete(SalAuthInfo* auth_info);
 LINPHONE_PUBLIC int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]);
 SalAuthMode sal_auth_info_get_mode(const SalAuthInfo* auth_info);
-SalSigningKey *sal_auth_info_get_signing_key(const SalAuthInfo* auth_info);
-SalCertificatesChain *sal_auth_info_get_certificates_chain(const SalAuthInfo* auth_info);
+belle_sip_signing_key_t *sal_auth_info_get_signing_key(const SalAuthInfo* auth_info);
+belle_sip_certificates_chain_t *sal_auth_info_get_certificates_chain(const SalAuthInfo* auth_info);
 void sal_auth_info_set_mode(SalAuthInfo* auth_info, SalAuthMode mode);
 
 /** Parse a file containing either a certificate chain order in PEM format or a single DER cert
@@ -616,8 +611,8 @@ void sal_signing_key_parse(SalAuthInfo* auth_info, const char* buffer, const cha
  */
 void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint);
 
-void sal_certificates_chain_delete(SalCertificatesChain *chain);
-void sal_signing_key_delete(SalSigningKey *key);
+void sal_certificates_chain_delete(belle_sip_certificates_chain_t *chain);
+void sal_signing_key_delete(belle_sip_signing_key_t *key);
 
 
 
@@ -841,8 +836,8 @@ typedef enum _SalPrivacy {
 typedef  unsigned int SalPrivacyMask;
 
 const char* sal_privacy_to_string(SalPrivacy  privacy);
-void sal_op_set_privacy(SalOp* op,SalPrivacy privacy);
-SalPrivacy sal_op_get_privacy(const SalOp* op);
+void sal_op_set_privacy(SalOp* op,SalPrivacyMask privacy);
+SalPrivacyMask sal_op_get_privacy(const SalOp* op);
 
 
 

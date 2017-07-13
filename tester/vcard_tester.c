@@ -23,7 +23,7 @@
 
 
 #include "liblinphone_tester.h"
-#include "carddav.h"
+#include "CardDav.h"
 
 #include <time.h>
 #define CARDDAV_SERVER "http://dav.linphone.org/card.php/addressbooks/tester/default"
