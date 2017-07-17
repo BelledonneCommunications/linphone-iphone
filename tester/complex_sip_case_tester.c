@@ -90,7 +90,7 @@ static FILE *sip_start_recv(const char *senario) {
 	return file;
 }
 
-static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list) {
+static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list, uint32_t ttl) {
 	*(struct addrinfo **)data =ai_list;
 }
 
@@ -105,7 +105,7 @@ LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const 
 	 ,linphone_address_get_domain(source)
 	 ,linphone_address_get_port(source)
 	 ,AF_INET
-	 ,(SalResolverCallback)dest_server_server_resolved
+	 ,dest_server_server_resolved
 	 ,&addrinfo);
 	
 	 dest=linphone_address_new(NULL);

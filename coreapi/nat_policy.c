@@ -40,8 +40,8 @@ static void linphone_nat_policy_destroy(LinphoneNatPolicy *policy) {
 	if (policy->stun_server_username) belle_sip_free(policy->stun_server_username);
 	if (policy->stun_addrinfo) bctbx_freeaddrinfo(policy->stun_addrinfo);
 	if (policy->stun_resolver_context) {
-		sal_resolve_cancel(policy->stun_resolver_context);
-		sal_resolver_context_unref(policy->stun_resolver_context);
+		belle_sip_resolver_context_cancel(policy->stun_resolver_context);
+		belle_sip_object_unref(policy->stun_resolver_context);
 	}
 }
 
@@ -204,7 +204,8 @@ void linphone_nat_policy_set_stun_server_username(LinphoneNatPolicy *policy, con
 	if (new_username != NULL) policy->stun_server_username = new_username;
 }
 
-static void stun_server_resolved(LinphoneNatPolicy *policy, const char *name, struct addrinfo *addrinfo) {
+static void stun_server_resolved(void *data, const char *name, struct addrinfo *addrinfo, uint32_t ttl) {
+	LinphoneNatPolicy *policy = (LinphoneNatPolicy *)data;
 	if (policy->stun_addrinfo) {
 		bctbx_freeaddrinfo(policy->stun_addrinfo);
 		policy->stun_addrinfo = NULL;
@@ -216,7 +217,7 @@ static void stun_server_resolved(LinphoneNatPolicy *policy, const char *name, st
 	}
 	policy->stun_addrinfo = addrinfo;
 	if (policy->stun_resolver_context){
-		sal_resolver_context_unref(policy->stun_resolver_context);
+		belle_sip_object_unref(policy->stun_resolver_context);
 		policy->stun_resolver_context = NULL;
 	}
 }
@@ -233,8 +234,8 @@ void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
 		if (service != NULL) {
 			int family = AF_INET;
 			if (linphone_core_ipv6_enabled(policy->lc) == TRUE) family = AF_INET6;
-			policy->stun_resolver_context = sal_resolve(policy->lc->sal, service, "udp", host, port, family, (SalResolverCallback)stun_server_resolved, policy);
-			if (policy->stun_resolver_context) sal_resolver_context_ref(policy->stun_resolver_context);
+			policy->stun_resolver_context = sal_resolve(policy->lc->sal, service, "udp", host, port, family, stun_server_resolved, policy);
+			if (policy->stun_resolver_context) belle_sip_object_ref(policy->stun_resolver_context);
 		}
 	}
 }

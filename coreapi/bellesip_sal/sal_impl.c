@@ -1210,16 +1210,12 @@ void sal_use_no_initial_route(Sal *ctx, bool_t enabled){
 	ctx->no_initial_route=enabled;
 }
 
-SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data){
-	return (SalResolverContext*)belle_sip_stack_resolve_a(sal->stack,name,port,family,(belle_sip_resolver_callback_t)cb,data);
+belle_sip_resolver_context_t * sal_resolve_a(Sal* sal, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data){
+	return belle_sip_stack_resolve_a(sal->stack,name,port,family,cb,data);
 }
 
-SalResolverContext * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, SalResolverCallback cb, void *data) {
-	return (SalResolverContext *)belle_sip_stack_resolve(sal->stack, service, transport, name, port, family, (belle_sip_resolver_callback_t)cb, data);
-}
-
-void sal_resolve_cancel(SalResolverContext* ctx){
-	belle_sip_resolver_context_cancel((belle_sip_resolver_context_t*)ctx);
+belle_sip_resolver_context_t * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data) {
+	return belle_sip_stack_resolve(sal->stack, service, transport, name, port, family, cb, data);
 }
 
 

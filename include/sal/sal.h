@@ -32,8 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "mediastreamer2/mediastream.h"
 #include "ortp/rtpsession.h"
-#include "belle-sip/object.h"
-#include "belle-sip/mainloop.h"
+#include "belle-sip/belle-sip.h"
 
 #ifndef LINPHONE_PUBLIC
 #if defined(_MSC_VER)
@@ -853,15 +852,9 @@ SalPrivacy sal_op_get_privacy(const SalOp* op);
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);
 
-typedef void (*SalResolverCallback)(void *data, const char *name, struct addrinfo *ai_list);
 
-
-typedef struct SalResolverContext SalResolverContext;
-#define sal_resolver_context_ref(obj) belle_sip_object_ref(obj)
-#define sal_resolver_context_unref(obj) belle_sip_object_unref(obj)
-LINPHONE_PUBLIC SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data);
-LINPHONE_PUBLIC SalResolverContext * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, SalResolverCallback cb, void *data);
-void sal_resolve_cancel(SalResolverContext *ctx);
+LINPHONE_PUBLIC belle_sip_resolver_context_t * sal_resolve_a(Sal* sal, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data);
+LINPHONE_PUBLIC belle_sip_resolver_context_t * sal_resolve(Sal *sal, const char *service, const char *transport, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data);
 
 SalCustomHeader *sal_custom_header_ref(SalCustomHeader *ch);
 void sal_custom_header_unref(SalCustomHeader *ch);

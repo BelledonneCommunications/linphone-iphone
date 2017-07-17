@@ -927,6 +927,3 @@ void sal_op_set_entity_tag(SalOp *op, const char* entity_tag) {
 		op_base->entity_tag = NULL;
 }
 
-#ifdef BELLE_SIP_H
-#error "You included belle-sip header other than just belle-sip/object.h in sal.c. This breaks design rules !"
-#endif
