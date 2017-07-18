@@ -595,6 +595,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 
 	/* retrieve selfZID from cache, and convert it to an Hexa buffer to easily match it against hex string containg in xml message as pzid */
 	if (bzrtp_getSelfZID(cachedb, selfURI, selfZid, NULL) != 0) {
+		ms_error("[LIME] Couldn't get self ZID"); 
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 	bctbx_int8_to_str(selfZidHex, selfZid, 12);
@@ -604,11 +605,13 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
 	xml_ctx->doc = xmlReadDoc((const unsigned char*)message, 0, NULL, 0);
 	if (xml_ctx->doc == NULL) {
+		ms_error("[LIME] XML doc is null"); 
 		retval = LIME_INVALID_ENCRYPTED_MESSAGE;
 		goto error;
 	}
 
 	if (linphone_create_xml_xpath_context(xml_ctx) < 0) {
+		ms_error("[LIME] Couldn't create xml xpath context"); 
 		retval = LIME_INVALID_ENCRYPTED_MESSAGE;
 		goto error;
 	}
@@ -623,6 +626,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		/* Get the matching key from cache */
 		retval = lime_getCachedRcvKeyByZid(cachedb, &associatedKey, selfURI, peerURI);
 		if (retval != 0) {
+		ms_error("[LIME] Couldn't get cache rcv key by ZID"); 
 			goto error;
 		}
 
@@ -669,18 +673,21 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 
 	/* do we have retrieved correctly all the needed data */
 	if (encryptedMessage == NULL) {
+		ms_error("[LIME] Encrypted message is null, something went wrong..."); 
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 
 	/* shall we derive our key before going for decryption */
 	if (usedSessionIndex < associatedKey.sessionIndex) {
 		/* something wen't wrong with the cache, this shall never happend */
+		ms_error("[LIME] Session index < associated key's session index, should not happen !"); 
 		ms_free(encryptedMessage);
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 
 	if ((usedSessionIndex - associatedKey.sessionIndex > MAX_DERIVATION_NUMBER) ) {
 		/* we missed to many messages, ask for a cache reset via a ZRTP call */
+		ms_error("[LIME] Too many messages missed, cache should be reset by ZRTP call"); 
 		ms_free(encryptedMessage);
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
@@ -702,6 +709,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	if (retval != 0) {
 		ms_free(*output);
 		*output = NULL;
+		ms_error("[LIME] Couldn't decrypt message"); 
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 
@@ -713,6 +721,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		if (retval != 0) {
 			ms_free(*content_type);
 			*content_type = NULL;
+			ms_error("[LIME] Couldn't decrypt content type"); 
 			return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 		}
 	}
