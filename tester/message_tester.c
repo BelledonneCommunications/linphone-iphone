@@ -1292,6 +1292,40 @@ static void lime_text_message_without_cache(void) {
 	lime_text_message_to_non_lime(TRUE, FALSE);
 }
 
+static void lime_multiple_messages_while_network_unreachable(void) {
+	LinphoneChatRoom* chat_room;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+	if (!linphone_core_lime_available(marie->lc)) {
+		ms_warning("Lime not available, skiping");
+		goto end;
+	}
+
+	if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
+
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+
+	linphone_core_set_network_reachable(pauline->lc, FALSE);
+	linphone_chat_room_send_message(chat_room,"Bla bla 1");
+	linphone_chat_room_send_message(chat_room,"Bla bla 2");
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,2));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedLegacy,2));
+	BC_ASSERT_PTR_NOT_NULL(marie->stat.last_received_chat_message);
+	if (marie->stat.last_received_chat_message) {
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), "Bla bla 2");
+	}
+
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+end:
+	remove("tmpZIDCacheMarie.sqlite");
+	remove("tmpZIDCachePauline.sqlite");
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_stored_msg, bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download) {
 	LinphoneCoreManager *marie, *pauline;
 	LinphoneChatMessage *msg;
@@ -2407,6 +2441,7 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Lime text message to non lime with preferred policy", lime_text_message_to_non_lime_preferred_policy, "LIME"),
 	TEST_ONE_TAG("Lime text message to non lime with preferred policy 2", lime_text_message_to_non_lime_preferred_policy_2, "LIME"),
 	TEST_ONE_TAG("Lime text message without cache", lime_text_message_without_cache, "LIME"),
+	TEST_ONE_TAG("Lime multiple messages while network wasn't reachable", lime_multiple_messages_while_network_unreachable, "LIME"),
 	TEST_ONE_TAG("Lime transfer message", lime_transfer_message, "LIME"),
 	TEST_ONE_TAG("Lime transfer message 2", lime_transfer_message_2, "LIME"),
 	TEST_ONE_TAG("Lime transfer message 3", lime_transfer_message_3, "LIME"),

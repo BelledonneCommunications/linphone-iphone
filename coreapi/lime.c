@@ -580,6 +580,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	char xpath_str[MAX_XPATH_LENGTH];
 	limeKey_t associatedKey;
 	const char *peerZidHex = NULL;
+	const char *sessionIndexHex = NULL;
 	xmlparsing_context_t *xml_ctx;
 	xmlXPathObjectPtr msg_object;
 	uint8_t *encryptedMessage = NULL;
@@ -635,7 +636,6 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		if ((msg_object != NULL) && (msg_object->nodesetval != NULL)) {
 			for (i = 1; i <= msg_object->nodesetval->nodeNr; i++) {
 				const char *currentZidHex;
-				const char *sessionIndexHex;
 				const char *encryptedMessageb64;
 				const char *encryptedContentTypeb64;
 				snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/pzid", i);
@@ -646,7 +646,6 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 					sessionIndexHex = linphone_get_xml_text_content(xml_ctx, xpath_str);
 					if (sessionIndexHex != NULL) {
 						usedSessionIndex = bctbx_str_to_uint32((const unsigned char *)sessionIndexHex);
-						linphone_free_xml_text_content(sessionIndexHex);
 					}
 					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/text", i);
 					encryptedMessageb64 = linphone_get_xml_text_content(xml_ctx, xpath_str);
@@ -674,30 +673,36 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	/* do we have retrieved correctly all the needed data */
 	if (encryptedMessage == NULL) {
 		ms_error("[LIME] Encrypted message is null, something went wrong..."); 
-		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		goto error;
 	}
 
 	/* shall we derive our key before going for decryption */
 	if (usedSessionIndex < associatedKey.sessionIndex) {
-		/* something wen't wrong with the cache, this shall never happend */
-		ms_error("[LIME] Session index < associated key's session index, should not happen !"); 
+		/* something wen't wrong with the cache, this shall never happen */
+		uint8_t associatedKeyIndexHex[9];
+		bctbx_uint32_to_str(associatedKeyIndexHex, associatedKey.sessionIndex);
+		ms_error("[LIME] Session index [%s] < associated key's session index [%s], should not happen !", sessionIndexHex, associatedKeyIndexHex); 
 		ms_free(encryptedMessage);
-		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		goto error;
 	}
 
 	if ((usedSessionIndex - associatedKey.sessionIndex > MAX_DERIVATION_NUMBER) ) {
 		/* we missed to many messages, ask for a cache reset via a ZRTP call */
-		ms_error("[LIME] Too many messages missed, cache should be reset by ZRTP call"); 
+		ms_error("[LIME] Too many messages missed (%i), cache should be reset by ZRTP call", usedSessionIndex - associatedKey.sessionIndex); 
 		ms_free(encryptedMessage);
-		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		goto error;
 	}
 
 	if (associatedKey.sessionIndex != usedSessionIndex) {
-		ms_warning("Lime: unexpected session index [%i] received from [%s], [%i] messages will be discarded"
-				   , usedSessionIndex
-				   , peerURI
-				   , usedSessionIndex-associatedKey.sessionIndex);
+		uint8_t associatedKeyIndexHex[9];
+		bctbx_uint32_to_str(associatedKeyIndexHex, associatedKey.sessionIndex);
+		ms_warning("LIME] unexpected session index [%s] received from [%s] (expected [%s]), [%i] messages will be discarded", 
+			sessionIndexHex, peerURI, associatedKeyIndexHex, usedSessionIndex-associatedKey.sessionIndex);
 	}
+
 	while (usedSessionIndex>associatedKey.sessionIndex) {
 		lime_deriveKey(&associatedKey);
 	}
@@ -710,7 +715,8 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		ms_free(*output);
 		*output = NULL;
 		ms_error("[LIME] Couldn't decrypt message"); 
-		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
+		goto error;
 	}
 
 	/* Decrypt the content-type */
@@ -722,7 +728,8 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 			ms_free(*content_type);
 			*content_type = NULL;
 			ms_error("[LIME] Couldn't decrypt content type"); 
-			return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+			retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
+			goto error;
 		}
 	}
 
@@ -731,6 +738,9 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	lime_setCachedKey(cachedb, &associatedKey, LIME_RECEIVER, validityTimeSpan);
 
 error:
+	if (sessionIndexHex != NULL) {
+		linphone_free_xml_text_content(sessionIndexHex);
+	}
 	linphone_xmlparsing_context_destroy(xml_ctx);
 	return retval;
 }
