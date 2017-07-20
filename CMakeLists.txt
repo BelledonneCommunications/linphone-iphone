@@ -61,7 +61,7 @@ option(ENABLE_DEBUG_LOGS "Turn on or off debug level logs." NO)
 option(ENABLE_NLS "Build with internationalisation support" YES)
 option(ENABLE_VCARD "Turn on compilation of vcard4 support." YES)
 option(ENABLE_ROOTCA_DOWNLOAD "Download rootca.pem at build time." YES)
-option(ENABLE_CXX_WRAPPER "Build the C++ wrapper for Liblinphone." OFF)
+option(ENABLE_CXX_WRAPPER "Build the C++ wrapper for Liblinphone." YES)
 option(ENABLE_CSHARP_WRAPPER "Build the C# wrapper for Liblinphone." OFF)
 
 set(CMAKE_CXX_STANDARD 11)
