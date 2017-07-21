@@ -374,17 +374,4 @@ install(FILES
 	DESTINATION ${CONFIG_PACKAGE_LOCATION}
 )
 
-
-# CPack settings
-set(CPACK_PACKAGE_NAME "linphone")
-set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-set(CPACK_SOURCE_GENERATOR "TGZ")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-set(CPACK_SOURCE_IGNORE_FILES
-        "^${CMAKE_BINARY_DIR}"
-        "/\\\\..+"
-	"^${CMAKE_SOURCE_DIR}/mediastreamer2"
-	"^${CMAKE_SOURCE_DIR}/oRTP"
-)
-
-include(CPack)
+add_subdirectory(build)

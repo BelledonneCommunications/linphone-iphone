@@ -1,12 +1,12 @@
-Linphone
+liblinphone
 ========
 
-This is Linphone, a free (GPL) video softphone based on the SIP protocol.
+This is liblinphone, a free (GPL) video voip library based on the SIP protocol.
 
-**WARNING:** Unless you exactly know what you are doing, you should take at look at *linphone-desktop[1]*.
+This library is used by Linphone. It's source code is available at *linphone-desktop[1]*.
 
 
-Building Linphone
+Building liblinphone
 -----------------
 
 ### Required dependencies
@@ -14,18 +14,16 @@ Building Linphone
 * *BcToolbox[2]*: portability layer
 * *BelleSIP[3]*: SIP stack
 * *Mediastreamer2[4]*: multimedia engine
+* *Belcard[5]*: VCard support
 * libxml2
 * zlib
 * libsqlite3: user data storage (disablable)
-* libnotify: system notification (GNU/Linux only;disablable)
-* libgtk2: graphical interface (disablable)
 * gettext and libintl: internationalization support (disablable)
 
 
 ### Opitonal dependencies
 
-* *Belcard[5]*: VCard support
-* gtkmacintegration: integration with MacOSX menu
+* *Bzrtp[6]*: zrtp stack used for Linphone Instant Messaging Encryption
 
 
 ### Build instructions
@@ -44,13 +42,12 @@ Building Linphone
 * `ENABLE_STATIC=NO`              : do not build the static library
 * `ENABLE_STRICT=NO`              : build without strict compilation flags (-Wall -Werror)
 * `ENABLE_DOC=NO`                 : do not generate the reference documentation of liblinphone
-* `ENABLE_GTK_UI=NO`              : do not build the GTK user interface
 * `ENABLE_UNIT_TESTS=NO`          : do not build testing binaries
 * `ENABLE_VCARD=NO`               : disable VCard support
 * `ENABLE_SQLITE_STORAGE=NO`      : disable SQlite user data storage (message, history, contacts list)
 * `ENABLE_TOOLS=NO`               : do not build tool binaries
 * `ENABLE_NLS=NO`                 : disable internationalization
-* `ENABLE_ASSISTANT=NO`           : disable account creation wizard
+* `ENABLE_LIME=YES`               : disable Linphone Instant Messaging Encryption
 
 ### Note for packagers
 
@@ -58,6 +55,13 @@ Our CMake scripts may automatically add some paths into research paths of genera
 To ensure that the installed binaries are striped of any rpath, use `-DCMAKE_SKIP_INSTALL_RPATH=ON`
 while you invoke cmake.
 
+Rpm packaging
+liblinphone can be generated with cmake3 using the following command:
+mkdir WORK
+cd WORK
+cmake3 ../
+make package_source
+rpmbuild -ta --clean --rmsource --rmspec liblinphone-<version>-<release>.tar.gz
 
 
 Notes for developers
@@ -65,19 +69,10 @@ Notes for developers
 
 Here is a short description of the content of the source tree.
 
-- **oRTP/** is a poweful implementation of the RTP protocol. See the oRTP/README for more details.
-	    It is used by mediastreamer2 to send and receive streams to the network.
-
-- **mediastreamer2/** is one of the important part of linphone. It is a framework for audio
-	              and video processing. It contains several objects for grabing audio and video and outputing
-	              it (through rtp, to file).
-	              It contains also codec objects to compress audio and video streams.
-                      The mediastream.h files contain routines to easyly setup audio streams.
 
 - **coreapi/** is the central point of linphone, which handles relationship between sip signalisation and media
                streaming. It contains an easy to use api to create a sip phone.
 
-- **gtk/** is the directory that contains the gui frontend of linphone. It uses all libraries descibed above.
 
 - **console/**
 	* linphonec.c is the main file for the console version of linphone.
@@ -95,3 +90,4 @@ Here is a short description of the content of the source tree.
 - [3] belle-sip: git://git.linphone.org/belle-sip.git *or* <https://www.linphone.org/releases/sources/belle-sip>
 - [4] mediastreamer2: git://git.linphone.org/mediastreamer2.git *or* <https://www.linphone.org/releases/sources/mediastreamer>
 - [5] belcard: git://git.linphone.org/belcard.git *or* <https://www.linphone.org/releases/sources/belcard>
+- [5] bzrtp: git://git.linphone.org/bzrtp.git *or* <https://www.linphone.org/releases/sources/bzrtp>
