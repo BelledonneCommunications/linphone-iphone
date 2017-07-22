@@ -1171,21 +1171,21 @@ void linphone_call_create_op_to(LinphoneCall *call, LinphoneAddress *to){
 	sal_op_set_user_pointer(call->op,call);
 	if (call->params->referer)
 		sal_call_set_referer(call->op,call->params->referer->op);
-  linphone_configure_op(call->core,call->op,to,call->params->custom_headers,FALSE);
+	linphone_configure_op(call->core,call->op,to,call->params->custom_headers,FALSE);
 	if (call->params->privacy != LinphonePrivacyDefault)
 		sal_op_set_privacy(call->op,(SalPrivacyMask)call->params->privacy);
 	/*else privacy might be set by proxy */
 }
 
 void linphone_call_create_op(LinphoneCall *call){
-  if (call->op) sal_op_release(call->op);
-  call->op=sal_op_new(call->core->sal);
-  sal_op_set_user_pointer(call->op,call);
-  if (call->params->referer)
-    sal_call_set_referer(call->op,call->params->referer->op);
-  linphone_configure_op(call->core,call->op,call->log->to,call->params->custom_headers,FALSE);
-  if (call->params->privacy != LinphonePrivacyDefault)
-    sal_op_set_privacy(call->op,(SalPrivacyMask)call->params->privacy);
+	if (call->op) sal_op_release(call->op);
+	call->op=sal_op_new(call->core->sal);
+	sal_op_set_user_pointer(call->op,call);
+	if (call->params->referer)
+		sal_call_set_referer(call->op,call->params->referer->op);
+	linphone_configure_op(call->core,call->op,call->log->to,call->params->custom_headers,FALSE);
+	if (call->params->privacy != LinphonePrivacyDefault)
+		sal_op_set_privacy(call->op,(SalPrivacyMask)call->params->privacy);
   /*else privacy might be set by proxy */
 }
 
@@ -1378,7 +1378,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 		call->referer=linphone_call_ref(params->referer);
 	}
 
-  linphone_call_create_op_to(call, to);
+	linphone_call_create_op_to(call, to);
 	return call;
 }
 
@@ -2184,7 +2184,7 @@ const LinphoneAddress * linphone_call_get_to_address(const LinphoneCall *call){
 }
 
 const char *linphone_call_get_to_header(const LinphoneCall *call, const char *name){
-  return sal_custom_header_find(sal_op_get_recv_custom_header(call->op),name);
+	return sal_custom_header_find(sal_op_get_recv_custom_header(call->op),name);
 }
 
 char *linphone_call_get_remote_address_as_string(const LinphoneCall *call){
@@ -5969,7 +5969,7 @@ end:
 }
 
 int linphone_call_restart_invite(LinphoneCall *call) {
-  linphone_call_create_op(call);
+	linphone_call_create_op(call);
 	linphone_call_stop_media_streams(call);
 	ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
 	ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
@@ -6204,4 +6204,3 @@ void linphone_call_notify_info_message_received(LinphoneCall *call, const Linpho
 void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *msg, bool_t is_received) {
 	NOTIFY_IF_EXIST(ack_processing, call, msg, is_received)
 }
-

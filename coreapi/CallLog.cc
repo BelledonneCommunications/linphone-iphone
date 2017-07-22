@@ -86,7 +86,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	LpConfig *cfg=lc->config;
 
 	if (linphone_core_get_global_state (lc)==LinphoneGlobalStartup) return;
-	
+
 	if (lc->max_call_logs == LINPHONE_MAX_CALL_HISTORY_UNLIMITED) return;
 
 	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
@@ -310,9 +310,8 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 
-	LinphoneAddress * to_tmp = linphone_address_clone(to);
-	linphone_address_clean(to_tmp);
-	cl->to=to_tmp;
+	cl->to = linphone_address_clone(to);
+	linphone_address_clean(cl->to);
 
 	cl->status=LinphoneCallAborted; /*default status*/
 	cl->quality=-1;
@@ -459,9 +458,9 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 
 	from = linphone_address_new(argv[1]);
 	to = linphone_address_new(argv[2]);
-	
+
 	if (from == NULL || to == NULL) goto error;
-	
+
 	dir = (LinphoneCallDir) atoi(argv[3]);
 	log = linphone_call_log_new(dir, from, to);
 
@@ -485,7 +484,7 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 
 	clsres->result = bctbx_list_append(clsres->result, log);
 	return 0;
-	
+
 error:
 	if (from){
 		linphone_address_unref(from);
