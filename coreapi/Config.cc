@@ -258,7 +258,7 @@ LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 	return NULL;
 }
 
-static LpSection* linphone_config_parse_line(LpConfig* lpconfig, const char* line, LpSection* cur) {
+static LpSection* linphone_config_parse_line(LpConfig* lpconfig, char* line, LpSection* cur) {
 	LpSectionParam *params = NULL;
 	char *pos1,*pos2;
 	int nbs;
@@ -523,7 +523,7 @@ static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt
 		case XML2LPC_DEBUG: bctbx_level = BCTBX_LOG_DEBUG; break;
 		case XML2LPC_MESSAGE: bctbx_level = BCTBX_LOG_MESSAGE;break;
 		case XML2LPC_WARNING: bctbx_level = BCTBX_LOG_WARNING;break;
-		case XML2LPC_ERROR: 
+		case XML2LPC_ERROR:
 		default:
 			bctbx_level = BCTBX_LOG_ERROR;break;
 	}
@@ -631,7 +631,7 @@ bctbx_list_t * linphone_config_get_string_list(const LpConfig *lpconfig, const c
 bool_t linphone_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
 	const char *str = linphone_config_get_string(lpconfig, section, key, NULL);
 	if (str != NULL) {
-		char *minusptr = strchr(str, '-');
+		const char *minusptr = strchr(str, '-');
 		if ((minusptr == NULL) || (minusptr == str)) {
 			*min = default_min;
 			*max = default_max;

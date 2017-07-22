@@ -994,7 +994,7 @@ LinphonePresenceActivity * linphone_presence_activity_new(LinphonePresenceActivi
 char * linphone_presence_activity_to_string(const LinphonePresenceActivity *activity) {
 	LinphonePresenceActivityType acttype = linphone_presence_activity_get_type(activity);
 	const char *description = linphone_presence_activity_get_description(activity);
-	const char *acttype_str = acttype_str = presence_activity_type_to_string(acttype);
+	const char *acttype_str = presence_activity_type_to_string(acttype);
 	return ms_strdup_printf("%s%s%s", acttype_str,
 				(description == NULL) ? "" : ": ",
 				(description == NULL) ? "" : description);
@@ -1535,7 +1535,7 @@ void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *p
 	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(lc);
 	ms_message("Notifying all friends that we are [%s]", activity_str);
 	if (activity_str != NULL) ms_free(activity_str);
-	
+
 	if (lfl) {
 		linphone_friend_list_notify_presence(lfl, presence);
 	} else {
@@ -1922,7 +1922,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	LinphoneFriend *lf = NULL;
 	const LinphoneAddress *lfa=NULL;
 	LinphonePresenceModel *presence;
-	
+
 	if (model != NULL) {
 		presence = (LinphonePresenceModel *)model;
 	} else {

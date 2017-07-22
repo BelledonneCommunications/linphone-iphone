@@ -733,7 +733,7 @@ void __sal_op_free(SalOp *op){
 		sal_custom_header_free(b->recv_custom_headers);
 	if (b->sent_custom_headers)
 		sal_custom_header_free(b->sent_custom_headers);
-	
+
 	if (b->entity_tag != NULL){
 		ms_free(b->entity_tag);
 		b->entity_tag = NULL;
@@ -867,7 +867,7 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 }
 
 static void remove_trailing_spaces(char *line) {
-	size_t size = size = strlen(line);
+	size_t size = strlen(line);
 	char *end = line + size - 1;
 	while (end >= line && isspace(*end)) {
 		end--;
@@ -926,4 +926,3 @@ void sal_op_set_entity_tag(SalOp *op, const char* entity_tag) {
 	else
 		op_base->entity_tag = NULL;
 }
-

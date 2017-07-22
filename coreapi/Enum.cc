@@ -80,7 +80,7 @@ static bool_t is_a_number(const char *str){
 }
 //4970072278724
 bool_t is_enum(const char *sipaddress, char **enum_domain){
-	char *p;
+	const char *p;
 	p=strstr(sipaddress,"sip:");
 	if (p==NULL) return FALSE; /* enum should look like sip:4369959250*/
 	else p+=4;
