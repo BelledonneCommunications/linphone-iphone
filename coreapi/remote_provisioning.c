@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "private.h"
-#include "Xml2Lpc.h"
+#include "xml2lpc.h"
 #include "linphone/lpconfig.h"
 
 #define XML2LPC_CALLBACK_BUFFER_SIZE  1024

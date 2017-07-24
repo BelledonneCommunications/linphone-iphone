@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 
-#include "Enum.h"
+#include "enum.h"
 
 #define DNS_ANSWER_MAX_SIZE 2048
 

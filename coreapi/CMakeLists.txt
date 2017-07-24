@@ -36,93 +36,90 @@ endif()
 
 set(LINPHONE_PRIVATE_HEADER_FILES
 	bellesip_sal/sal_impl.h
-	CardDav.h
-	Conference.h
-	ContactProvider.h
-	Enum.h
-	Lime.h
-	Lpc2Xml.h
-	OfferAnswer.h
+	carddav.h
+	conference_private.h
+	contact_providers_priv.h
+	enum.h
+	lime.h
+	lpc2xml.h
+	offeranswer.h
 	private.h
-	QualityReporting.h
-	Sqlite3BctbxVfs.h
-	Vcard.h
-	Xml2Lpc.h
+	quality_reporting.h
+	sqlite3_bctbx_vfs.h
+	vcard_private.h
+	xml2lpc.h
 )
 
 set(LINPHONE_SOURCE_FILES_C
-	bellesip_sal/sal_address_impl.cc
-	bellesip_sal/sal_impl.cc
-	bellesip_sal/sal_op_call.cc
-	bellesip_sal/sal_op_call_transfer.cc
-	bellesip_sal/sal_op_events.cc
-	bellesip_sal/sal_op_impl.cc
-	bellesip_sal/sal_op_info.cc
-	bellesip_sal/sal_op_message.cc
-	bellesip_sal/sal_op_presence.cc
-	bellesip_sal/sal_op_publish.cc
-	bellesip_sal/sal_op_registration.cc
-	bellesip_sal/sal_sdp.cc
+	account_creator.c
+	account_creator_service.c
+	address.c
+	authentication.c
+	bellesip_sal/sal_address_impl.c
+	bellesip_sal/sal_impl.c
+	bellesip_sal/sal_op_call.c
+	bellesip_sal/sal_op_call_transfer.c
+	bellesip_sal/sal_op_events.c
+	bellesip_sal/sal_op_impl.c
+	bellesip_sal/sal_op_info.c
+	bellesip_sal/sal_op_message.c
+	bellesip_sal/sal_op_presence.c
+	bellesip_sal/sal_op_publish.c
+	bellesip_sal/sal_op_registration.c
+	bellesip_sal/sal_sdp.c
+	buffer.c
+	callbacks.c
+	call_log.c
+	call_params.c
+	carddav.c
+	chat.c
+	chat_file_transfer.c
+	contactprovider.c
+	content.c
+	dial_plan.c
+	dict.c
+	ec-calibrator.c
+	echo-tester.c
+	enum.c
+	error_info.c
+	event.c
+	factory.c
+	friend.c
+	friendlist.c
+	im_notif_policy.c
+	info.c
+	ldapprovider.c
+	lime.c
+	im_encryption_engine.c
+	linphonecall.c
+	linphonecore.c
+	linphone_tunnel_config.c
+	localplayer.c
+	lpc2xml.c
+	lpconfig.c
+	lsd.c
+	message_storage.c
+	misc.c
+	nat_policy.c
+	offeranswer.c
+	payload_type.c
+	player.c
+	presence.c
+	proxy.c
+	quality_reporting.c
+	remote_provisioning.c
+	ringtoneplayer.c
+	sal.c
+	siplogin.c
+	sipsetup.c
+	sqlite3_bctbx_vfs.c
+	video_definition.c
+	xml2lpc.c
+	xml.c
+	xmlrpc.c
+	vtables.c
 )
-set(LINPHONE_SOURCE_FILES_CXX
-	AccountCreator.cc
-	AccountCreatorService.cc
-	Address.cc
-	Authentication.cc
-	Buffer.cc
-	Call.cc
-	Callbacks.cc
-	CallLog.cc
-	CallParams.cc
-	CardDav.cc
-	Chat.cc
-	ChatFileTransfer.cc
-	Conference.cc
-	Config.cc
-	ContactProvider.cc
-	Content.cc
-	Core.cc
-	DialPlan.cc
-	Dict.cc
-	EcCalibrator.cc
-	EchoTester.cc
-	Enum.cc
-	ErrorInfo.cc
-	Event.cc
-	Factory.cc
-	Friend.cc
-	FriendList.cc
-	ImEncryptionEngine.cc
-	ImNotifPolicy.cc
-	Info.cc
-	LdapProvider.cc
-	Lime.cc
-	LocalPlayer.cc
-	Lpc2Xml.cc
-	Lsd.cc
-	MessageStorage.cc
-	Misc.cc
-	NatPolicy.cc
-	OfferAnswer.cc
-	PayloadType.cc
-	Player.cc
-	Presence.cc
-	Proxy.cc
-	QualityReporting.cc
-	RemoteProvisioning.cc
-	RingTonePlayer.cc
-	Sal.cc
-	SipLogin.cc
-	SipSetup.cc
-	Sqlite3BctbxVfs.cc
-	TunnelConfig.cc
-	VideoDefinition.cc
-	Vtables.cc
-	Xml.cc
-	Xml2Lpc.cc
-	XmlRpc.cc
-)
-
+set(LINPHONE_SOURCE_FILES_CXX conference.cc)
 if(ANDROID)
 	list(APPEND LINPHONE_SOURCE_FILES_CXX linphonecore_jni.cc)
 	set_source_files_properties(linphonecore_jni.cc PROPERTIES COMPILE_DEFINITIONS "USE_JAVAH")
@@ -137,12 +134,12 @@ endif()
 
 if(ENABLE_TUNNEL)
 	list(APPEND LINPHONE_SOURCE_FILES_CXX
-		Tunnel.cc
+		linphone_tunnel.cc
 		TunnelManager.cc
 	)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
-	list(APPEND LINPHONE_SOURCE_FILES_CXX TunnelStubs.cc)
+	list(APPEND LINPHONE_SOURCE_FILES_C linphone_tunnel_stubs.c)
 endif()
 
 bc_git_version(liblinphone ${PROJECT_VERSION})
@@ -188,7 +185,7 @@ if(INTL_FOUND)
 endif()
 if(BELCARD_FOUND)
 	list(APPEND LIBS ${BELCARD_LIBRARIES})
-	list(APPEND LINPHONE_SOURCE_FILES_CXX Vcard.cc)
+	list(APPEND LINPHONE_SOURCE_FILES_CXX vcard.cc)
 	if(NOT MSVC)
 		list(APPEND STRICT_OPTIONS_CXX "-std=c++11")
 	endif()
@@ -196,10 +193,11 @@ if(BELCARD_FOUND)
 		list(APPEND STRICT_OPTIONS_CXX "-stdlib=libc++")
 	endif()
 else()
-	list(APPEND LINPHONE_SOURCE_FILES_CXX VcardStubs.c)
+	list(APPEND LINPHONE_SOURCE_FILES_C vcard_stubs.c)
 endif()
 
-bc_apply_compile_flags(LINPHONE_SOURCE_FILES_C STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
+set_source_files_properties(${LINPHONE_SOURCE_FILES_C} PROPERTIES LANGUAGE CXX)
+bc_apply_compile_flags(LINPHONE_SOURCE_FILES_C STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
 bc_apply_compile_flags(LINPHONE_SOURCE_FILES_CXX STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
 bc_apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC STRICT_OPTIONS_CPP STRICT_OPTIONS_OBJC)
 

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/sipsetup.h"
 #include "linphone/lpconfig.h"
 #include "private.h"
-#include "Conference.h"
+#include "conference_private.h"
 
 #include <ortp/event.h>
 #include <ortp/b64.h>
@@ -2733,7 +2733,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		framesize=lp_config_get_int(lc->config,"sound","ec_framesize",0);
 		audio_stream_set_echo_canceller_params(audiostream,len,delay,framesize);
 		if (audiostream->ec) {
-			char *statestr=(char *)ms_malloc0(EC_STATE_MAX_LEN);
+			char *statestr=reinterpret_cast<char *>(ms_malloc0(EC_STATE_MAX_LEN));
 			if (lp_config_relative_file_exists(lc->config, EC_STATE_STORE)
 				 && lp_config_read_relative_file(lc->config, EC_STATE_STORE, statestr, EC_STATE_MAX_LEN) == 0) {
 				ms_filter_call_method(audiostream->ec, MS_ECHO_CANCELLER_SET_STATE_STRING, statestr);

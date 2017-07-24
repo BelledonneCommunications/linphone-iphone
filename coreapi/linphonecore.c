@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/sipsetup.h"
 #include "linphone/lpconfig.h"
 #include "private.h"
-#include "QualityReporting.h"
-#include "Lime.h"
-#include "Conference.h"
+#include "quality_reporting.h"
+#include "lime.h"
+#include "conference_private.h"
 
 #ifdef SQLITE_STORAGE_ENABLED
-#include "Sqlite3BctbxVfs.h"
+#include "sqlite3_bctbx_vfs.h"
 #endif
 
 #include <math.h>
@@ -116,8 +116,8 @@ static void linphone_core_uninit(LinphoneCore *lc);
 static void linphone_core_zrtp_cache_close(LinphoneCore *lc);
 void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName);
 
-#include "Enum.h"
-#include "ContactProvider.h"
+#include "enum.h"
+#include "contact_providers_priv.h"
 
 
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);

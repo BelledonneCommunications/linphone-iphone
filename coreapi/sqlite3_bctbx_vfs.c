@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef SQLITE_STORAGE_ENABLED
 #include "private.h"
 
-#include "Sqlite3BctbxVfs.h"
+#include "sqlite3_bctbx_vfs.h"
 #include <sqlite3.h>
 
 #ifndef _WIN32_WCE

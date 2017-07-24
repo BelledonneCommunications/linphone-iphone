@@ -24,7 +24,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "linphone/lpconfig.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
-#include "Enum.h"
+#include "enum.h"
 #include <ctype.h>
 
 /*store current config related to server location*/

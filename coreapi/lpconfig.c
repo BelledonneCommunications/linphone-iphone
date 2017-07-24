@@ -27,7 +27,7 @@
 #include "private.h"
 #include "bctoolbox/vfs.h"
 #include "belle-sip/object.h"
-#include "Xml2Lpc.h"
+#include "xml2lpc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,7 +59,7 @@
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
 
 #include "linphone/lpconfig.h"
-#include "Lpc2Xml.h"
+#include "lpc2xml.h"
 
 typedef struct _LpItem{
 	char *key;

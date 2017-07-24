@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "Lpc2Xml.h"
+#include "lpc2xml.h"
 #include <string.h>
 #include <libxml/xmlsave.h>
 #include <libxml/xmlversion.h>

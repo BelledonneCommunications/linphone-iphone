@@ -25,7 +25,7 @@
 
 #include "linphone/core.h"
 #include "private.h"
-#include "Conference.h"
+#include "conference_private.h"
 #include <mediastreamer2/msvolume.h>
 #include <typeinfo>
 #include <list>

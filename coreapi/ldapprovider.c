@@ -17,7 +17,7 @@
 #include "linphone/ldapprovider.h"
 #include "private.h"
 #include "linphone/lpconfig.h"
-#include "ContactProvider.h"
+#include "contact_providers_priv.h"
 #include "mediastreamer2/mscommon.h"
 #include <belle-sip/dict.h>
 

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "sal/sal.h"
-#include "OfferAnswer.h"
+#include "offeranswer.h"
 #include "private.h"
 
 static bool_t only_telephone_event(const bctbx_list_t *l){

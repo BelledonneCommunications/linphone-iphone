@@ -33,10 +33,10 @@
 #include "linphone/conference.h"
 #include "sal/sal.h"
 #include "linphone/sipsetup.h"
-#include "QualityReporting.h"
+#include "quality_reporting.h"
 #include "linphone/ringtoneplayer.h"
-#include "Vcard.h"
-#include "CardDav.h"
+#include "vcard_private.h"
+#include "carddav.h"
 #include "linphone/player.h"
 
 #include "bctoolbox/port.h"
