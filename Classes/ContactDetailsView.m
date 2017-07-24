@@ -422,24 +422,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self saveData];
 		[self.tableController.tableView reloadData];
 	} else {
-		BOOL rm = TRUE;
-		for (NSString *sip in _contact.sipAddresses) {
-			if (![sip isEqualToString:@""]) {
-				rm = FALSE;
-				break;
-			}
-		}
-		if (rm) {
-			for (NSString *phone in _contact.phoneNumbers) {
-				if (![phone isEqualToString:@""]) {
-					rm = FALSE;
-					break;
-				}
-			}
-		}
-		if (rm) {
-			[LinphoneManager.instance.fastAddressBook removeContact:_contact];
-		}
+		[LinphoneManager.instance.fastAddressBook removeContact:_contact];
 	}
 	
 	[self setEditing:FALSE];
