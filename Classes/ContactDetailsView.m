@@ -102,6 +102,21 @@
 	}
 }
 
+- (void)modifyTmpContact:(Contact *)acontact {
+	if (_tmpContact) {
+		_tmpContact = nil;
+	}
+	if (!acontact) {
+		return;
+	}
+	_tmpContact = [[Contact alloc] initWithPerson:ABPersonCreate()];
+	_tmpContact.firstName = acontact.firstName.copy;
+	_tmpContact.lastName = acontact.lastName.copy;
+	_tmpContact.sipAddresses = acontact.sipAddresses.copy;
+	_tmpContact.emails = acontact.emails.copy;
+	_tmpContact.phoneNumbers = acontact.phoneNumbers.copy;
+}
+
 - (void)addCurrentContactContactField:(NSString *)address {
 	LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, address.UTF8String);
 	NSString *username =
@@ -136,10 +151,12 @@
 }
 
 - (void)editContact:(Contact *)acontact {
+	[self modifyTmpContact:acontact];
 	[self selectContact:acontact andReload:YES];
 }
 
 - (void)editContact:(Contact *)acontact address:(NSString *)address {
+	[self modifyTmpContact:acontact];
 	[self selectContact:acontact andReload:NO];
 	[self addCurrentContactContactField:address];
 }
@@ -467,12 +484,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_deleteButton.hidden = FALSE;
 		_editButton.hidden = FALSE;
 	} else {
-		_tmpContact = [[Contact alloc] initWithPerson:ABPersonCreate()];
-		_tmpContact.firstName = _contact.firstName.copy;
-		_tmpContact.lastName = _contact.lastName.copy;
-		_tmpContact.sipAddresses = _contact.sipAddresses.copy;
-		_tmpContact.emails = _contact.emails.copy;
-		_tmpContact.phoneNumbers = _contact.phoneNumbers.copy;
+		[self modifyTmpContact:_contact];
 		[self setEditing:TRUE];
 	}
 }
