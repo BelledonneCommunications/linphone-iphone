@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef struct _lpc2xml_context lpc2xml_context;
 
 typedef enum _lpc2xml_log_level {
@@ -41,6 +44,8 @@ LINPHONE_PUBLIC int lpc2xml_set_lpc(lpc2xml_context* context, const LpConfig *lp
 LINPHONE_PUBLIC int lpc2xml_convert_file(lpc2xml_context* context, const char *filename);
 LINPHONE_PUBLIC int lpc2xml_convert_fd(lpc2xml_context* context, int fd);
 LINPHONE_PUBLIC int lpc2xml_convert_string(lpc2xml_context* context, char **content);
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif //LPC2XML_H_
