@@ -39,36 +39,40 @@
 extern "C" {
 #endif
 
-extern test_suite_t setup_test_suite;
-extern test_suite_t register_test_suite;
+extern test_suite_t account_creator_test_suite;
 extern test_suite_t call_test_suite;
 extern test_suite_t call_video_test_suite;
-extern test_suite_t message_test_suite;
-extern test_suite_t presence_test_suite;
-extern test_suite_t presence_server_test_suite;
-extern test_suite_t upnp_test_suite;
+extern test_suite_t cpim_test_suite;
+extern test_suite_t dtmf_test_suite;
 extern test_suite_t event_test_suite;
 extern test_suite_t flexisip_test_suite;
-extern test_suite_t stun_test_suite;
-extern test_suite_t remote_provisioning_test_suite;
-extern test_suite_t quality_reporting_test_suite;
 extern test_suite_t log_collection_test_suite;
-extern test_suite_t tunnel_test_suite;
-extern test_suite_t player_test_suite;
-extern test_suite_t dtmf_test_suite;
-extern test_suite_t offeranswer_test_suite;
-extern test_suite_t video_test_suite;
-extern test_suite_t multicast_call_test_suite;
+extern test_suite_t message_test_suite;
 extern test_suite_t multi_call_test_suite;
+extern test_suite_t multicast_call_test_suite;
+extern test_suite_t offeranswer_test_suite;
+extern test_suite_t player_test_suite;
+extern test_suite_t presence_server_test_suite;
+extern test_suite_t presence_test_suite;
 extern test_suite_t proxy_config_test_suite;
-extern test_suite_t account_creator_test_suite;
+extern test_suite_t quality_reporting_test_suite;
+extern test_suite_t register_test_suite;
+extern test_suite_t remote_provisioning_test_suite;
+extern test_suite_t setup_test_suite;
+extern test_suite_t stun_test_suite;
+extern test_suite_t tunnel_test_suite;
+extern test_suite_t upnp_test_suite;
+extern test_suite_t video_test_suite;
+
 #ifdef VCARD_ENABLED
 extern test_suite_t vcard_test_suite;
 #endif
+
 extern test_suite_t audio_bypass_suite;
 #if HAVE_SIPP
 extern test_suite_t complex_sip_call_test_suite;
 #endif
+
 extern int manager_count;
 
 extern int liblinphone_tester_ipv6_available(void);

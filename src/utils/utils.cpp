@@ -1,5 +1,5 @@
 /*
- * singleton.h
+ * utils.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,36 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SINGLETON_H_
-#define _SINGLETON_H_
+#include "utils.h"
 
-#include "object.h"
+using namespace std;
+
+using namespace LinphonePrivate;
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	template<class T>
-	class Singleton : public Object {
-	public:
-		virtual ~Singleton () = default;
+bool Utils::iequals (const string &a, const string &b) {
+	size_t size = a.size();
+	if (b.size() != size)
+		return false;
 
-		static T *getInstance () {
-			if (!mInstance)
-				mInstance = new T();
-			return mInstance;
-		}
+	for (size_t i = 0; i < size; ++i) {
+		if (tolower(a[i]) != tolower(b[i]))
+			return false;
+	}
 
-	protected:
-		explicit Singleton (ObjectPrivate &p) : Object(p) {}
-
-	private:
-		static T *mInstance;
-
-		L_DISABLE_COPY(Singleton);
-	};
-
-	template<class T>
-	T *Singleton<T>::mInstance = nullptr;
+	return true;
 }
 
-#endif // ifndef _SINGLETON_H_
+vector<string> Utils::split (const string &str, const string &delimiter) {
+	vector<string> out;
+
+	size_t pos = 0, oldPos = 0;
+	for (; (pos = str.find(delimiter, pos)) != string::npos; oldPos = pos + 1, pos = oldPos)
+		out.push_back(str.substr(oldPos, pos - oldPos));
+	out.push_back(str.substr(oldPos));
+
+	return out;
+}

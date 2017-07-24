@@ -1,5 +1,5 @@
 /*
- * singleton.h
+ * cpim-header.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,36 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SINGLETON_H_
-#define _SINGLETON_H_
+#include "cpim-header-p.h"
 
-#include "object.h"
+#include "cpim-header.h"
+
+using namespace std;
+
+using namespace LinphonePrivate;
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	template<class T>
-	class Singleton : public Object {
-	public:
-		virtual ~Singleton () = default;
+Cpim::Header::Header (HeaderPrivate &p) : Object(p) {}
 
-		static T *getInstance () {
-			if (!mInstance)
-				mInstance = new T();
-			return mInstance;
-		}
-
-	protected:
-		explicit Singleton (ObjectPrivate &p) : Object(p) {}
-
-	private:
-		static T *mInstance;
-
-		L_DISABLE_COPY(Singleton);
-	};
-
-	template<class T>
-	T *Singleton<T>::mInstance = nullptr;
+string Cpim::Header::getValue () const {
+	L_D(const Header);
+	return d->value;
 }
 
-#endif // ifndef _SINGLETON_H_
+bool Cpim::Header::setValue (const string &value) {
+	L_D(Header);
+	d->value = value;
+	return true;
+}
+
+string Cpim::Header::asString () const {
+	L_D(const Header);
+	return getName() + ": " + d->value + "\r\n";
+}

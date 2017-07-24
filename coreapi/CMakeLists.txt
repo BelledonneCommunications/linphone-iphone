@@ -35,9 +35,18 @@ endif()
 
 
 set(LINPHONE_PRIVATE_HEADER_FILES
+	../src/cpim/cpim.h
+	../src/cpim/header/cpim-core-headers.h
+	../src/cpim/header/cpim-generic-header.h
+	../src/cpim/header/cpim-header-p.h
+	../src/cpim/header/cpim-header.h
+	../src/cpim/message/cpim-message.h
+	../src/cpim/parser/cpim-grammar.h
+	../src/cpim/parser/cpim-parser.h
 	../src/object/object.h
 	../src/object/singleton.h
 	../src/utils/general.h
+	../src/utils/utils.h
 	bellesip_sal/sal_impl.h
 	carddav.h
 	conference_private.h
@@ -122,7 +131,16 @@ set(LINPHONE_SOURCE_FILES_C
 	xmlrpc.c
 	vtables.c
 )
-set(LINPHONE_SOURCE_FILES_CXX conference.cc)
+set(LINPHONE_SOURCE_FILES_CXX
+	../src/cpim/header/cpim-core-headers.cpp
+	../src/cpim/header/cpim-generic-header.cpp
+	../src/cpim/header/cpim-header.cpp
+	../src/cpim/message/cpim-message.cpp
+	../src/cpim/parser/cpim-grammar.cpp
+	../src/cpim/parser/cpim-parser.cpp
+	../src/utils/utils.cpp
+	conference.cc
+)
 if(ANDROID)
 	list(APPEND LINPHONE_SOURCE_FILES_CXX linphonecore_jni.cc)
 	set_source_files_properties(linphonecore_jni.cc PROPERTIES COMPILE_DEFINITIONS "USE_JAVAH")
@@ -158,6 +176,7 @@ set(LIBS
 	${MEDIASTREAMER2_LIBRARIES}
 	${ORTP_LIBRARIES}
 	${XML2_LIBRARIES}
+	${BELR_LIBRARIES}
 )
 if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	list(APPEND LIBS "Ws2_32")

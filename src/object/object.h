@@ -44,9 +44,8 @@ namespace LinphonePrivate {
 		}
 
 	protected:
-		explicit Object (ObjectPrivate *objectPrivate) : mPrivate(objectPrivate) {
-			if (mPrivate)
-				mPrivate->mPublic = this;
+		explicit Object (ObjectPrivate &p) : mPrivate(&p) {
+			mPrivate->mPublic = this;
 		}
 
 		ObjectPrivate *mPrivate = nullptr;
