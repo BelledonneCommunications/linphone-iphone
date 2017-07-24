@@ -262,7 +262,7 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	
 	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, NULL, 0);
 	if (nChar == 0) return NULL;
-	wideFilename = bctbx_malloc(nChar*sizeof(wideFilename[0]));
+	wideFilename = reinterpret_cast<LPWSTR>(bctbx_malloc(nChar*sizeof(wideFilename[0])));
 	if (wideFilename == NULL) return NULL;
 	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, wideFilename, nChar);
 	if (nChar == 0) {
@@ -272,7 +272,7 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	
 	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, 0, 0, 0, 0);
 	if (nb_byte == 0) return NULL;
-	convertedFilename = bctbx_malloc(nb_byte);
+	convertedFilename = reinterpret_cast<char *>(bctbx_malloc(nb_byte));
 	if (convertedFilename == NULL) return NULL;
 	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, convertedFilename, nb_byte, 0, 0);
 	if (nb_byte == 0) {
