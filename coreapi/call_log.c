@@ -311,7 +311,6 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 	cl->from=from;
 
 	cl->to = linphone_address_clone(to);
-	linphone_address_clean(cl->to);
 
 	cl->status=LinphoneCallAborted; /*default status*/
 	cl->quality=-1;
