@@ -2837,32 +2837,18 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"].lastPathComponent]
 		 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
 		.lastPathComponent;
-        NSString * notif_type;
-        if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
-            //IOS 8 and more
-            notif_type = @".voip";
-        } else {
-            // IOS 7 and below
-            notif_type = @"";
-        }
-        NSString *timeout;
-        if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-            timeout = @";pn-timeout=0";
-        } else {
-            timeout = @"";
-        }
-		
-		NSString *silent;
-		if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_8_0) {
-			silent = @";pn-silent=1";
+
+		NSString *timeout;
+		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+			timeout = @";pn-timeout=0";
 		} else {
-			silent = @"";
+			timeout = @"";
 		}
-		
+
 		NSString *params = [NSString
-			stringWithFormat:@"app-id=%@%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
-							 @"call-snd=%@;pn-msg-snd=msg.caf%@%@",
-							 [[NSBundle mainBundle] bundleIdentifier], notif_type, APPMODE_SUFFIX, tokenString, ring, timeout, silent];
+			stringWithFormat:@"app-id=%@.voip.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
+							 @"call-snd=%@;pn-msg-snd=msg.caf%@;pn-silent=1",
+							 [[NSBundle mainBundle] bundleIdentifier], APPMODE_SUFFIX, tokenString, ring, timeout];
 
 		LOGI(@"Proxy config %s configured for push notifications with contact: %@",
 			 linphone_proxy_config_get_identity(proxyCfg), params);
