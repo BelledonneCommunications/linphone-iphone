@@ -35,6 +35,9 @@ endif()
 
 
 set(LINPHONE_PRIVATE_HEADER_FILES
+	../src/object/object.h
+	../src/object/singleton.h
+	../src/utils/general.h
 	bellesip_sal/sal_impl.h
 	carddav.h
 	conference_private.h
@@ -232,7 +235,7 @@ if(ENABLE_SHARED)
 			MACOSX_FRAMEWORK_IDENTIFIER org.linphone.linphone
   			MACOSX_FRAMEWORK_INFO_PLIST Info.plist.in
 			PUBLIC_HEADER "${LINPHONE_HEADER_FILES}"
-		) 
+		)
 	endif()
 	if(BELCARD_FOUND)
 		if(APPLE)

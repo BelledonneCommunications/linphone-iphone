@@ -198,10 +198,11 @@ endif()
 # include_directories must be called only UNDER THIS LINE in order to use our
 # projects submodules first (we do NOT want to have system headers in first position)
 include_directories(
-	include/
-	coreapi/
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}/coreapi/
+	coreapi/
+	include/
+	src/
 )
 set(LINPHONE_INCLUDE_DIRS
 	${BELLESIP_INCLUDE_DIRS}
