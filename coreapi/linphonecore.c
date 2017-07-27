@@ -472,7 +472,7 @@ void linphone_core_set_log_file(FILE *file) {
 }
 
 void linphone_core_set_log_level(OrtpLogLevel loglevel) {
-	OrtpLogLevel mask = loglevel;
+	unsigned int mask = loglevel;
 	switch (loglevel) {
 		case ORTP_TRACE:
 		case ORTP_DEBUG:
