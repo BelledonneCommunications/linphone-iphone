@@ -23,7 +23,7 @@
 
 // =============================================================================
 
-namespace Linphone {
+namespace LinphonePrivate {
 	class Object;
 
 	class ObjectPrivate {

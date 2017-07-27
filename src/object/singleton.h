@@ -23,7 +23,7 @@
 
 // =============================================================================
 
-namespace Linphone {
+namespace LinphonePrivate {
 	template<class T>
 	class Singleton : public Object {
 	public:
