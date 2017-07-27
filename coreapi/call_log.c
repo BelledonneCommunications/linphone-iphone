@@ -310,7 +310,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 
-	cl->to = linphone_address_clone(to);
+  cl->to=to;
 
 	cl->status=LinphoneCallAborted; /*default status*/
 	cl->quality=-1;
