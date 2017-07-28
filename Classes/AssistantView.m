@@ -705,10 +705,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UIAssistantTextField *domain = [self findTextField:ViewElement_Domain];
 	[domain showError:[AssistantView errorForLinphoneAccountCreatorDomainStatus:LinphoneAccountCreatorDomainInvalid]
 				 when:^BOOL(NSString *inputEntry) {
-				   LinphoneAccountCreatorDomainStatus s =
-					   linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
-				   domain.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorDomainStatus:s];
-				   return s != LinphoneAccountCreatorDomainOk;
+				   if (![inputEntry isEqualToString:@""]) {
+					   LinphoneAccountCreatorDomainStatus s =
+						   linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
+					   domain.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorDomainStatus:s];
+					   return s != LinphoneAccountCreatorDomainOk;
+				   }
+				   return true;
 				 }];
 
 	UIAssistantTextField *url = [self findTextField:ViewElement_URL];
