@@ -205,9 +205,9 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		LinphoneFriend *lf;
 		LinphoneContent *presence_part;
 		xmlXPathObjectPtr resource_object;
-		const char *version_str = NULL;
-		const char *full_state_str = NULL;
-		const char *uri = NULL;
+		char *version_str = NULL;
+		char *full_state_str = NULL;
+		char *uri = NULL;
 		bool_t full_state = FALSE;
 		int version;
 		int i;
@@ -249,7 +249,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		resource_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/rlmi:list/rlmi:resource/rlmi:instance[@state=\"active\"]/..");
 		if ((resource_object != NULL) && (resource_object->nodesetval != NULL)) {
 			for (i = 1; i <= resource_object->nodesetval->nodeNr; i++) {
-				const char *cid = NULL;
+				char *cid = NULL;
 				linphone_xml_xpath_context_set_node(xml_ctx, xmlXPathNodeSetItem(resource_object->nodesetval, i-1));
 				cid = linphone_get_xml_text_content(xml_ctx, "./rlmi:instance/@cid");
 				if (cid != NULL) {

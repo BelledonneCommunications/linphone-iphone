@@ -335,7 +335,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 				} else { /* no encryption key, transfer in plain, just copy the msg sent by server */
 					msg->message = ms_strdup(body);
 				}
-				msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+				linphone_chat_message_set_content_type(msg, "application/vnd.gsma.rcs-ft-http+xml");
 				linphone_chat_message_ref(msg);
 				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 				_release_http_request(msg);

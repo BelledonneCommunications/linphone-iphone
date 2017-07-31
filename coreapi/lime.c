@@ -579,7 +579,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	uint8_t selfZid[12]; /* same data but in byte buffer */
 	char xpath_str[MAX_XPATH_LENGTH];
 	limeKey_t associatedKey;
-	const char *peerZidHex = NULL;
+	char *peerZidHex = NULL;
 	const char *sessionIndexHex = NULL;
 	xmlparsing_context_t *xml_ctx;
 	xmlXPathObjectPtr msg_object;
@@ -635,12 +635,14 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		msg_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/doc/msg");
 		if ((msg_object != NULL) && (msg_object->nodesetval != NULL)) {
 			for (i = 1; i <= msg_object->nodesetval->nodeNr; i++) {
-				const char *currentZidHex;
-				const char *encryptedMessageb64;
-				const char *encryptedContentTypeb64;
+				char *currentZidHex;
+		
+				char *encryptedMessageb64;
+				char *encryptedContentTypeb64;
 				snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/pzid", i);
 				currentZidHex = linphone_get_xml_text_content(xml_ctx, xpath_str);
 				if ((currentZidHex != NULL) && (strcmp(currentZidHex, (char *)selfZidHex) == 0)) {
+					linphone_free_xml_text_content(currentZidHex);
 					/* We found the msg node we are looking for */
 					snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/index", i);
 					sessionIndexHex = linphone_get_xml_text_content(xml_ctx, xpath_str);
@@ -665,9 +667,9 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 					}
 					break;
 				}
-				if (currentZidHex != NULL) linphone_free_xml_text_content(currentZidHex);
 			}
 		}
+		if (msg_object != NULL) xmlXPathFreeObject(msg_object);
 	}
 
 	/* do we have retrieved correctly all the needed data */
@@ -766,6 +768,7 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 					return the list of possible uris and store the selected one in the chatroom ? */
 					res = (lime_getCachedSndKeysByURI(zrtp_cache_db, &associatedKeys) == 0);
 					lime_freeKeys(&associatedKeys);
+					ms_free(peer);
 					return res;
 				}
 			}
@@ -795,7 +798,10 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 		}
 		peerUri = linphone_address_as_string_uri_only(msg->from);
 		selfUri = linphone_address_as_string_uri_only(msg->to);
-		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)msg->message, selfUri, peerUri, &decrypted_body, &decrypted_content_type, bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
+		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)msg->message, selfUri, peerUri, &decrypted_body, &decrypted_content_type, 
+						      bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
+		ms_free(peerUri);
+		ms_free(selfUri);
 		if (retval != 0) {
 			ms_warning("Unable to decrypt message, reason : %s", lime_error_code_to_string(retval));
 			if (decrypted_body) ms_free(decrypted_body);
@@ -809,6 +815,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			msg->message = (char *)decrypted_body;
 			if (decrypted_content_type != NULL) {
 				linphone_chat_message_set_content_type(msg, decrypted_content_type);
+				ms_free(decrypted_content_type);
 			} else {
 				if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
 					linphone_chat_message_set_content_type(msg, "application/vnd.gsma.rcs-ft-http+xml");
@@ -863,7 +870,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 						ms_free(msg->message);
 					}
 					msg->message = (char *)crypted_body;
-					msg->content_type = ms_strdup(new_content_type);
+					linphone_chat_message_set_content_type(msg, new_content_type);
 				}
 				ms_free(peerUri);
 				ms_free(selfUri);

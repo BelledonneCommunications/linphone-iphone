@@ -6614,8 +6614,7 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 	int ret;
 	const char *errmsg;
 	const char *backupExtension = "_backup";
-	char *backupName = reinterpret_cast<char *>(malloc(snprintf(NULL, 0, "%s%s", fileName, backupExtension) + 1));
-	sprintf(backupName, "%s%s", fileName, backupExtension);
+	char *backupName = bctbx_strdup_printf("%s%s", fileName, backupExtension);
 	sqlite3 *db;
 
 	linphone_core_zrtp_cache_close(lc);
@@ -6628,7 +6627,7 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 		unlink(backupName);
 		rename(fileName, backupName);
 		lc->zrtp_cache_db=NULL;
-		return;
+		goto end;
 	}
 
 	ret = ms_zrtp_initCache((void *)db); /* this may perform an update, check return value */
@@ -6643,11 +6642,13 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 		unlink(backupName);
 		rename(fileName, backupName);
 		lc->zrtp_cache_db = NULL;
-		return;
+		goto end;
 	}
 
 	/* everything ok, set the db pointer into core */
 	lc->zrtp_cache_db = db;
+end:
+	if (backupName) bctbx_free(backupName);
 #endif /* SQLITE_STORAGE_ENABLED */
 }
 

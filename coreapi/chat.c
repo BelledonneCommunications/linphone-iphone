@@ -784,8 +784,8 @@ static const char *iscomposing_prefix = "/xsi:isComposing";
 static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsing_context_t *xml_ctx) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr iscomposing_object;
-	const char *state_str = NULL;
-	const char *refresh_str = NULL;
+	char *state_str = NULL;
+	char *refresh_str = NULL;
 	int refresh_duration = lp_config_get_int(cr->lc->config, "sip", "composing_remote_refresh_timeout",
 											 COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT);
 	int i;
@@ -860,8 +860,8 @@ static void process_imdn(LinphoneChatRoom *cr, xmlparsing_context_t *xml_ctx) {
 	xmlXPathObjectPtr imdn_object;
 	xmlXPathObjectPtr delivery_status_object;
 	xmlXPathObjectPtr display_status_object;
-	const char *message_id_str = NULL;
-	const char *datetime_str = NULL;
+	char *message_id_str = NULL;
+	char *datetime_str = NULL;
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
 

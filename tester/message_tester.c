@@ -877,6 +877,7 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 	int ret = 0;
 	char* paulineUri = NULL;
 	char* marieUri = NULL;
+	char *tmp;
 
 	if (!linphone_core_lime_available(marie->lc) || !linphone_core_lime_available(pauline->lc)) {
 		ms_warning("Lime not available, skiping");
@@ -891,8 +892,12 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 	lp_config_set_int(pauline->lc->config, "sip", "zrtp_cache_migration_done", TRUE);
 
 	/* create temporary cache files: setting the database_path will create and initialise the files */
-	remove(bc_tester_file("tmpZIDCacheMarie.sqlite"));
-	remove(bc_tester_file("tmpZIDCachePauline.sqlite"));
+	tmp = bc_tester_file("tmpZIDCacheMarie.sqlite");
+	remove(tmp);
+	bc_free(tmp);
+	tmp = bc_tester_file("tmpZIDCachePauline.sqlite");
+	remove(tmp);
+	bc_free(tmp);
 	filepath = bc_tester_file("tmpZIDCacheMarie.sqlite");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
 	bc_free(filepath);
@@ -920,7 +925,8 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 		sqlite3_free(errmsg);
 		return -1;
 	}
-
+	ms_free(paulineUri);
+	ms_free(marieUri);
 
 	return 0;
 #else /* SQLITE_STORAGE_ENABLED */

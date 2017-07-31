@@ -1201,8 +1201,8 @@ static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr note_object;
 	LinphonePresenceNote *note;
-	const char *note_str;
-	const char *lang;
+	char *note_str;
+	char *lang;
 	int i;
 
 	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note", service_prefix, service_idx);
@@ -1231,10 +1231,10 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 	xmlXPathObjectPtr service_object;
 	xmlXPathObjectPtr pidfonline_object;
 	LinphonePresenceService *service;
-	const char *basic_status_str;
-	const char *service_id_str;
-	const char *timestamp_str;
-	const char *contact_str;
+	char *basic_status_str;
+	char *service_id_str;
+	char *timestamp_str;
+	char *contact_str;
 	LinphonePresenceBasicStatus basic_status;
 	int i;
 
@@ -1306,7 +1306,7 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 	xmlXPathObjectPtr activities_object;
 	xmlNodePtr activity_node;
 	LinphonePresenceActivity *activity;
-	const char *description;
+	char *description;
 	int i, j;
 	int err = 0;
 
@@ -1321,7 +1321,7 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 					activity_node = activities_object->nodesetval->nodeTab[j];
 					if ((activity_node->name != NULL) && (is_valid_activity_name((const char *)activity_node->name) == TRUE)) {
 						LinphonePresenceActivityType acttype;
-						description = (const char *)xmlNodeGetContent(activity_node);
+						description = (char *)xmlNodeGetContent(activity_node);
 						if ((description != NULL) && (description[0] == '\0')) {
 							linphone_free_xml_text_content(description);
 							description = NULL;
@@ -1348,8 +1348,8 @@ static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx,
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr note_object;
 	LinphonePresenceNote *note;
-	const char *note_str;
-	const char *lang;
+	char *note_str;
+	char *lang;
 	int i;
 
 	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities/rpid:note", person_prefix, person_idx);
@@ -1395,8 +1395,8 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr person_object;
 	LinphonePresencePerson *person;
-	const char *person_id_str;
-	const char *person_timestamp_str;
+	char *person_id_str;
+	char *person_timestamp_str;
 	time_t timestamp;
 	int i;
 	int err = 0;
@@ -1444,8 +1444,8 @@ static int process_pidf_xml_presence_notes(xmlparsing_context_t *xml_ctx, Linpho
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr note_object;
 	LinphonePresenceNote *note;
-	const char *note_str;
-	const char *lang;
+	char *note_str;
+	char *lang;
 	int i;
 
 	note_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/pidf:presence/pidf:note");
