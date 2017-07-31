@@ -234,6 +234,7 @@ void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
 		if (service != NULL) {
 			int family = AF_INET;
 			if (linphone_core_ipv6_enabled(policy->lc) == TRUE) family = AF_INET6;
+			ms_message("Starting stun server resolution [%s]", host);
 			policy->stun_resolver_context = sal_resolve(policy->lc->sal, service, "udp", host, port, family, stun_server_resolved, policy);
 			if (policy->stun_resolver_context) belle_sip_object_ref(policy->stun_resolver_context);
 		}
