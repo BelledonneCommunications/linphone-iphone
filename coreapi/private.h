@@ -1371,6 +1371,7 @@ struct _LinphoneNatPolicy {
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneNatPolicy);
 
+bool_t linphone_nat_policy_stun_server_activated(LinphoneNatPolicy *policy);
 void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy);
 
 struct _LinphoneImNotifPolicy {

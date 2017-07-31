@@ -616,9 +616,6 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	IceCheckList *video_cl;
 	IceCheckList *text_cl;
 	LinphoneNatPolicy *nat_policy = call->nat_policy;
-	const char *server = NULL;
-
-	if (nat_policy != NULL) server = linphone_nat_policy_get_stun_server(nat_policy);
 
 	if (call->ice_session == NULL) return -1;
 	audio_cl = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
@@ -626,7 +623,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	text_cl = ice_session_check_list(call->ice_session, call->main_text_stream_index);
 	if ((audio_cl == NULL) && (video_cl == NULL) && (text_cl == NULL)) return -1;
 
-	if ((nat_policy != NULL) && (server != NULL) && (server[0] != '\0')) {
+	if ((nat_policy != NULL) && linphone_nat_policy_stun_server_activated(nat_policy)) {
 		ai=linphone_nat_policy_get_stun_server_addrinfo(nat_policy);
 		if (ai==NULL){
 			ms_warning("Fail to resolve STUN server for ICE gathering, continuing without stun.");
@@ -658,9 +655,9 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 	} else {
 		linphone_core_add_local_ice_candidates(call, AF_INET, local_addr, audio_cl, video_cl, text_cl);
 	}
-	if ((ai != NULL) && (nat_policy != NULL)
-		&& (linphone_nat_policy_stun_enabled(nat_policy) || linphone_nat_policy_turn_enabled(nat_policy))) {
+	if ((ai != NULL) && (nat_policy != NULL) && linphone_nat_policy_stun_server_activated(nat_policy)) {
 		bool_t gathering_in_progress;
+		const char *server = linphone_nat_policy_get_stun_server(nat_policy);
 		ms_message("ICE: gathering candidate from [%s] using %s", server, linphone_nat_policy_turn_enabled(nat_policy) ? "TURN" : "STUN");
 		/* Gather local srflx candidates. */
 		ice_session_enable_turn(call->ice_session, linphone_nat_policy_turn_enabled(nat_policy));

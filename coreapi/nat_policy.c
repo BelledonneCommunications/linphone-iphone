@@ -45,7 +45,7 @@ static void linphone_nat_policy_destroy(LinphoneNatPolicy *policy) {
 	}
 }
 
-static bool_t linphone_nat_policy_stun_server_activated(LinphoneNatPolicy *policy) {
+bool_t linphone_nat_policy_stun_server_activated(LinphoneNatPolicy *policy) {
 	const char *server = linphone_nat_policy_get_stun_server(policy);
 	return (server != NULL) && (server[0] != '\0')
 		&& ((linphone_nat_policy_stun_enabled(policy) == TRUE) || (linphone_nat_policy_turn_enabled(policy) == TRUE));
