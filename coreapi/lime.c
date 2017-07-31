@@ -580,7 +580,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	char xpath_str[MAX_XPATH_LENGTH];
 	limeKey_t associatedKey;
 	char *peerZidHex = NULL;
-	const char *sessionIndexHex = NULL;
+	char *sessionIndexHex = NULL;
 	xmlparsing_context_t *xml_ctx;
 	xmlXPathObjectPtr msg_object;
 	uint8_t *encryptedMessage = NULL;
