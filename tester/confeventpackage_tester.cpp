@@ -413,7 +413,7 @@ static const char *aliceUri = "sip:alice@example.com";
 static const char *frankUri = "sip:frank@example.com";
 static const char *confUri = "sips:conf233@example.com";
 
-void linphone_conf_event_notify(LinphoneEvent *lev) {
+void linphone_conf_event_notify(LinphoneEvent *lev){
 	LinphoneContent* content = linphone_core_create_content(lev->lc);
 	const char* uri = linphone_address_as_string_uri_only((LinphoneAddress*)sal_op_get_to_address(lev->op));
 	char notify[strlen(first_notify) + strlen(uri)];
@@ -423,7 +423,7 @@ void linphone_conf_event_notify(LinphoneEvent *lev) {
 	linphone_content_unref(content);
 }
 
-class ConferenceEventTester : public Conference::ConferenceListener {
+class ConferenceEventTester : public Conference::ConferenceListener{
 public:
   Conference::ConferenceEventPackage *cep;
   map<string, int> *participants;
@@ -436,16 +436,16 @@ public:
   void participantRemoved(LinphoneAddress *addr);
   void participantSetAdmin(LinphoneAddress *addr, bool isAdmin);
 };
-ConferenceEventTester::~ConferenceEventTester() {
+ConferenceEventTester::~ConferenceEventTester(){
 	this->cep->~ConferenceEventPackage();
 }
-ConferenceEventTester::ConferenceEventTester(LinphoneCore *lc, LinphoneAddress *confAddr) {
+ConferenceEventTester::ConferenceEventTester(LinphoneCore *lc, LinphoneAddress *confAddr){
   this->cep = new Conference::ConferenceEventPackage(lc, this, confAddr);
   this->participants = new map<string, int>;
 }
-void ConferenceEventTester::conferenceCreated(LinphoneAddress *confAddress) {}
+void ConferenceEventTester::conferenceCreated(LinphoneAddress *confAddress){}
 void ConferenceEventTester::conferenceTerminated(LinphoneAddress *confAddress){}
-void ConferenceEventTester::participantAdded(LinphoneAddress *addr) {
+void ConferenceEventTester::participantAdded(LinphoneAddress *addr){
 	this->participants->insert(pair<string, int>(linphone_address_as_string(addr),0));
 }
 void ConferenceEventTester::participantRemoved(LinphoneAddress *addr){
@@ -453,7 +453,7 @@ void ConferenceEventTester::participantRemoved(LinphoneAddress *addr){
 }
 void ConferenceEventTester::participantSetAdmin(LinphoneAddress *addr, bool isAdmin){
 const char *addrAsString = linphone_address_as_string(addr);
-  if(this->participants->find(addrAsString) != this->participants->end()) {
+  if(this->participants->find(addrAsString) != this->participants->end()){
     this->participants->erase(addrAsString);
     this->participants->insert(pair<string, int>(addrAsString, isAdmin ? 1 : 0));
   }
@@ -697,7 +697,6 @@ void send_subscribe_receive_first_notify(void){
 	linphone_address_unref(bobAddr);
 	linphone_address_unref(aliceAddr);
 	tester->ConferenceEventTester::~ConferenceEventTester();
-
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
