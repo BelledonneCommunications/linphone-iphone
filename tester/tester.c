@@ -550,11 +550,9 @@ void liblinphone_tester_clear_accounts(void){
 
 void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&setup_test_suite);
-	bc_tester_add_suite(&register_test_suite);
 	bc_tester_add_suite(&tunnel_test_suite);
 	bc_tester_add_suite(&offeranswer_test_suite);
 	bc_tester_add_suite(&call_test_suite);
-	bc_tester_add_suite(&call_video_test_suite);
 	bc_tester_add_suite(&audio_bypass_suite);
 	bc_tester_add_suite(&multi_call_test_suite);
 	bc_tester_add_suite(&message_test_suite);
@@ -567,6 +565,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&stun_test_suite);
 	bc_tester_add_suite(&event_test_suite);
 	bc_tester_add_suite(&conf_event_test_suite);
+	bc_tester_add_suite(&flexisip_test_suite);
 	bc_tester_add_suite(&remote_provisioning_test_suite);
 	bc_tester_add_suite(&quality_reporting_test_suite);
 	bc_tester_add_suite(&log_collection_test_suite);
