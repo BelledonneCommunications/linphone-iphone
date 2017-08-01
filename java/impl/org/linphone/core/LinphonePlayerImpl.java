@@ -10,8 +10,10 @@ package org.linphone.core;
 public class LinphonePlayerImpl implements LinphonePlayer {
 	private long nativePtr = 0;
 
+	private native void init(long nativePtr);
 	LinphonePlayerImpl(long nativePtr) {
 		this.nativePtr = nativePtr;
+		init(nativePtr);
 	}
 
 	private native int open(long nativePtr, String filename);
