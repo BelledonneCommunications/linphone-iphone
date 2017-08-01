@@ -23,9 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 
-#ifndef PRIu64
-#define PRIu64 "I64u"
-#endif
 
 #ifndef _WIN32
 #if !defined(__QNXNTO__) && !defined(__ANDROID__)
@@ -883,7 +880,7 @@ void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
 }
 
 static void _linphone_message_storage_profile(void*data,const char*statement, sqlite3_uint64 duration){
-	ms_warning("SQL statement '%s' took %" PRIu64 " microseconds", statement, (uint64_t)(duration / 1000LL) );
+	ms_warning("SQL statement '%s' took %llu microseconds", statement, (unsigned long long)(duration / 1000LL) );
 }
 
 static void linphone_message_storage_activate_debug(sqlite3* db, bool_t debug){
