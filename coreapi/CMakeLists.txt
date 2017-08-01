@@ -38,6 +38,9 @@ set(LINPHONE_PRIVATE_HEADER_FILES
 	../src/object/object.h
 	../src/object/singleton.h
 	../src/utils/general.h
+	../src/conference/conference-listener.h
+	../src/conference/conference-event-package.h
+	../src/conference/conference-info.hxx
 	bellesip_sal/sal_impl.h
 	carddav.h
 	conference_private.h
@@ -122,7 +125,12 @@ set(LINPHONE_SOURCE_FILES_C
 	xmlrpc.c
 	vtables.c
 )
-set(LINPHONE_SOURCE_FILES_CXX conference.cc)
+set(LINPHONE_SOURCE_FILES_CXX
+	conference.cc
+	../src/conference/conference-event-package.cpp
+	../src/conference/conference-info.cxx
+)
+set(LINPHONE_INCLUDE_DIRS ${LINPHONE_INCLUDE_DIRS} /Users/reisbenjamin/xsd-4.0.0-i686-macosx/libxsd /usr/local/Cellar/xerces-c/3.1.4/include)
 if(ANDROID)
 	list(APPEND LINPHONE_SOURCE_FILES_CXX linphonecore_jni.cc)
 	set_source_files_properties(linphonecore_jni.cc PROPERTIES COMPILE_DEFINITIONS "USE_JAVAH")
@@ -158,6 +166,7 @@ set(LIBS
 	${MEDIASTREAMER2_LIBRARIES}
 	${ORTP_LIBRARIES}
 	${XML2_LIBRARIES}
+	/usr/local/Cellar/xerces-c/3.1.4/lib/libxerces-c.dylib
 )
 if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	list(APPEND LIBS "Ws2_32")

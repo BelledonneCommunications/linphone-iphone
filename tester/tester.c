@@ -566,7 +566,7 @@ void liblinphone_tester_add_suites() {
 #endif
 	bc_tester_add_suite(&stun_test_suite);
 	bc_tester_add_suite(&event_test_suite);
-	bc_tester_add_suite(&flexisip_test_suite);
+	bc_tester_add_suite(&conf_event_test_suite);
 	bc_tester_add_suite(&remote_provisioning_test_suite);
 	bc_tester_add_suite(&quality_reporting_test_suite);
 	bc_tester_add_suite(&log_collection_test_suite);
