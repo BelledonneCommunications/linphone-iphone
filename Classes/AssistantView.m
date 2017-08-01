@@ -102,6 +102,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(configuringUpdate:)
 											   name:kLinphoneConfiguringStateUpdate
 											 object:nil];
+	if (!account_creator) {
+		account_creator = linphone_account_creator_new(
+			LC,
+			[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
+				.UTF8String);
+	}
 
 	if (!mustRestoreView) {
 		new_config = NULL;
@@ -540,7 +546,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// every UITextField subviews with phone keyboard must be tweaked to have a done button
 	[self addDoneButtonRecursivelyInView:self.view];
-
 	[self prepareErrorLabels];
 }
 

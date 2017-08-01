@@ -42,9 +42,12 @@
 	_linkAccountView.hidden = _activateSMSView.userInteractionEnabled = NO;
 	_activateSMSView.hidden = _linkAccountView.userInteractionEnabled = YES;
 
-	account_creator = linphone_account_creator_new(
-		LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
+	if (!account_creator) {
+		account_creator = linphone_account_creator_new(
+			LC,
+			[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
 				.UTF8String);
+	}
 
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
 	linphone_account_creator_cbs_set_link_account(linphone_account_creator_get_callbacks(account_creator),
