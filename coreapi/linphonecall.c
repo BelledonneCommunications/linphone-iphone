@@ -1721,6 +1721,9 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (call->chat_room){
 		call->chat_room->call = NULL;
 	}
+	if (lc->calls == NULL){
+		ms_bandwidth_controller_reset_state(lc->bw_controller);
+	}
 }
 
 /*function to be called at each incoming reINVITE, in order to adjust various local parameters to what is being offered by remote:

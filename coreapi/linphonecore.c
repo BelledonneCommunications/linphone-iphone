@@ -6218,6 +6218,9 @@ static void set_media_network_reachable(LinphoneCore* lc, bool_t is_media_reacha
 			bctbx_list_for_each(lc->calls, (MSIterateFunc)linphone_call_refresh_sockets);
 		}
 		linphone_core_repair_calls(lc);
+		if (lc->bw_controller){
+			ms_bandwidth_controller_reset_state(lc->bw_controller);
+		}
 	}
 }
 
