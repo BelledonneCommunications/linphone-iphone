@@ -3543,9 +3543,9 @@ struct LinphonePlayerData {
 	jmethodID mEndOfFileMethodID;
 };
 
-static void _eof_callback(LinphonePlayer *player, void *user_data) {
+static void _eof_callback(LinphonePlayer *player) {
 	JNIEnv *env;
-	LinphonePlayerData *player_data = (LinphonePlayerData *)user_data;
+	LinphonePlayerData *player_data = (LinphonePlayerData *)linphone_player_get_user_data(player);
 	jvm->AttachCurrentThread(&env, NULL);
 	env->CallVoidMethod(player_data->mListener, player_data->mEndOfFileMethodID, player_data->mJLinphonePlayer);
 }
@@ -3554,6 +3554,7 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_init(JNIEnv *env, jobj
 	LinphonePlayer *player = (LinphonePlayer *)ptr;
 	LinphonePlayerData *data = (LinphonePlayerData *)linphone_player_get_user_data(player);
 	data->setPlayer(jPlayer);
+	linphone_player_cbs_set_eof_reached(linphone_player_get_callbacks(player), _eof_callback);
 }
 
 extern "C" jint Java_org_linphone_core_LinphonePlayerImpl_open(JNIEnv *env, jobject jPlayer, jlong ptr, jstring filename) {
