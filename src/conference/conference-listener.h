@@ -28,7 +28,7 @@ namespace LinphonePrivate {
     // -------------------------------------------------------------------------
     class ConferenceListener {
     public:
-      //virtual ~ConferenceListener() = 0;
+      virtual ~ConferenceListener() = default;
       virtual void conferenceCreated(LinphoneAddress *confAddress) = 0;
       virtual void conferenceTerminated(LinphoneAddress *confAddress) = 0;
       virtual void participantAdded(LinphoneAddress *addr) = 0;
