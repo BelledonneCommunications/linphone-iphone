@@ -44,8 +44,9 @@
 
 
 static int liblinphone_tester_keep_accounts_flag = 0;
-static int liblinphone_tester_keep_record_files = FALSE;
-static int liblinphone_tester_leak_detector_disabled = FALSE;
+static bool_t liblinphone_tester_keep_record_files = FALSE;
+static bool_t liblinphone_tester_leak_detector_disabled = FALSE;
+bool_t liblinphone_tester_keep_uuid = FALSE;
 bool_t liblinphone_tester_tls_support_disabled = FALSE;
 int manager_count = 0;
 int leaked_objects_count = 0;

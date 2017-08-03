@@ -27,6 +27,7 @@ struct _Account{
 	int done;
 	int created;
 	char *phone_alias;
+	char *uuid;
 };
 
 typedef struct _Account Account;
@@ -49,6 +50,7 @@ static Account *account_new(LinphoneAddress *identity, const char *unique_id){
 };
 
 void account_destroy(Account *obj){
+	if (obj->uuid) bctbx_free(obj->uuid);
 	linphone_address_unref(obj->identity);
 	linphone_address_unref(obj->modified_identity);
 	ms_free(obj->password);
@@ -198,7 +200,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	ms_free(chatdb);
 }
 
-static LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyConfig *cfg,const char* phone_alias){
+static LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyConfig *cfg, LinphoneCoreManager *cm){
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
 	const char *identity=linphone_proxy_config_get_identity(cfg);
 	LinphoneAddress *id_addr=linphone_address_new(identity);
@@ -209,6 +211,7 @@ static LinphoneAddress *account_manager_check_account(AccountManager *m, Linphon
 																		,NULL
 																		, linphone_address_get_username(id_addr)
 																		, linphone_address_get_domain(id_addr));
+	const char *phone_alias = cm->phone_alias;
 
 	if (!account||(phone_alias&&(!account->phone_alias||strcmp(phone_alias,account->phone_alias)!=0))){
 		if (account) {
@@ -227,6 +230,16 @@ static LinphoneAddress *account_manager_check_account(AccountManager *m, Linphon
 
 	if (create_account){
 		account_create_on_server(account,cfg,phone_alias);
+	}
+
+	if (liblinphone_tester_keep_uuid) {
+		/* create and/or set uuid */
+		if (account->uuid == NULL) {
+			char tmp[64];
+			sal_create_uuid(cm->lc->sal, tmp, sizeof(tmp));
+			account->uuid = bctbx_strdup(tmp);
+		}
+		sal_set_uuid(cm->lc->sal, account->uuid);
 	}
 
 	/*remove previous auth info to avoid mismatching*/
@@ -251,7 +264,7 @@ void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
 	if (!liblinphonetester_show_account_manager_logs) linphone_core_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
 	for(it=linphone_core_get_proxy_config_list(m->lc);it!=NULL;it=it->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig *)it->data;
-		account_manager_check_account(am,cfg,m->phone_alias);
+		account_manager_check_account(am,cfg,m);
 	}
 	if (!liblinphonetester_show_account_manager_logs) linphone_core_set_log_level_mask(logmask);
 }

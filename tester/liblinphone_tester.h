@@ -115,6 +115,7 @@ extern const char* test_username;
 extern const char* test_password;
 extern const char* test_route;
 extern const char* userhostsfile;
+extern bool_t liblinphone_tester_keep_uuid;
 extern bool_t liblinphone_tester_tls_support_disabled;
 extern const MSAudioDiffParams audio_cmp_params;
 extern const char *liblinphone_tester_mire_id;

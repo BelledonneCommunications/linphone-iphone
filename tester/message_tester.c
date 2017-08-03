@@ -2428,7 +2428,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Transfer message with download io error", transfer_message_with_download_io_error),
 	TEST_NO_TAG("Transfer message upload cancelled", transfer_message_upload_cancelled),
 	TEST_NO_TAG("Transfer message download cancelled", transfer_message_download_cancelled),
-	TEST_ONE_TAG("Transfer message using external body url", file_transfer_using_external_body_url, "LeaksMemory"),
+	TEST_NO_TAG("Transfer message using external body url", file_transfer_using_external_body_url),
 	TEST_NO_TAG("Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously),
 	TEST_NO_TAG("Text message denied", text_message_denied),
 	TEST_NO_TAG("Info message", info_message),
@@ -2488,10 +2488,20 @@ test_t message_tests[] = {
 	TEST_NO_TAG("IM Encryption Engine b64", im_encryption_engine_b64)
 };
 
+static int message_tester_before_suite(void) {
+	liblinphone_tester_keep_uuid = TRUE;
+	return 0;
+}
+
+static int message_tester_after_suite(void) {
+	liblinphone_tester_keep_uuid = FALSE;
+	return 0;
+}
+
 test_suite_t message_test_suite = {
 	"Message",
-	NULL,
-	NULL,
+	message_tester_before_suite,
+	message_tester_after_suite,
 	liblinphone_tester_before_each,
 	liblinphone_tester_after_each,
 	sizeof(message_tests) / sizeof(message_tests[0]), message_tests
