@@ -657,6 +657,7 @@ void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessa
 void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured);
 void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, LinphoneReason reason);
 void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
+void _linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg, bool_t unref);
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);

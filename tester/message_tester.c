@@ -1793,9 +1793,8 @@ void file_transfer_io_error_base(char *server_url, bool_t destroy_room) {
 	linphone_chat_room_send_chat_message(chatroom, msg);
 	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageInProgress, 1, 1000));
 	if (destroy_room) {
-		//since message is orphan, we do not expect to be notified of state change
 		linphone_core_delete_chat_room(marie->lc, chatroom);
-		BC_ASSERT_FALSE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000));
 	} else {
 		BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 3000));
 	}

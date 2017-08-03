@@ -117,13 +117,14 @@ void linphone_chat_message_cbs_set_file_transfer_progress_indication(
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
-	bctbx_list_free_with_data(cr->transient_messages, (void (*)(void *))linphone_chat_message_release);
-	if (cr->received_rtt_characters) {
-		cr->received_rtt_characters = bctbx_list_free_with_data(cr->received_rtt_characters, (void (*)(void *))ms_free);
-	}
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
+	bctbx_list_free_with_data(cr->transient_messages, (bctbx_list_free_func)linphone_chat_message_release);
+	if (cr->weak_messages != NULL) bctbx_list_free(cr->weak_messages);
+	if (cr->received_rtt_characters) {
+		cr->received_rtt_characters = bctbx_list_free_with_data(cr->received_rtt_characters, (bctbx_list_free_func)ms_free);
+	}
 	if (cr->lc != NULL) {
 		if (bctbx_list_find(cr->lc->chatrooms, cr)) {
 			ms_error("LinphoneChatRoom[%p] is destroyed while still being used by the LinphoneCore. This is abnormal."
@@ -138,7 +139,6 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	if (cr->pending_message)
 		linphone_chat_message_destroy(cr->pending_message);
 	ms_free(cr->peer);
-	if (cr->weak_messages != NULL) bctbx_list_free(cr->weak_messages);
 }
 
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
@@ -313,6 +313,7 @@ void linphone_chat_room_release(LinphoneChatRoom *cr) {
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
 	bctbx_list_for_each(cr->weak_messages, (bctbx_list_iterate_func)linphone_chat_message_deactivate);
+	bctbx_list_for_each(cr->transient_messages, (bctbx_list_iterate_func)linphone_chat_message_deactivate);
 	cr->lc = NULL;
 	linphone_chat_room_unref(cr);
 }
@@ -1717,11 +1718,11 @@ void linphone_chat_message_unref(LinphoneChatMessage *msg) {
 }
 
 static void linphone_chat_message_deactivate(LinphoneChatMessage *msg){
+	if (msg->file_transfer_information != NULL) {
+		_linphone_chat_message_cancel_file_transfer(msg, FALSE);
+	}
 	/*mark the chat msg as orphan (it has no chat room anymore)*/
 	msg->chat_room = NULL;
-	if (msg->file_transfer_information != NULL) {
-		linphone_chat_message_cancel_file_transfer(msg);
-	}
 }
 
 static void linphone_chat_message_release(LinphoneChatMessage *msg) {

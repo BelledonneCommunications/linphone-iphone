@@ -613,7 +613,7 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *msg,
 	linphone_chat_message_download_file(msg);
 }
 
-void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
+void _linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg, bool_t unref) {
 	if (msg->http_request) {
 		if (msg->state == LinphoneChatMessageStateInProgress) {
 			linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
@@ -625,7 +625,7 @@ void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 								, msg
 								, msg->chat_room);
 				belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
-				if (msg->dir == LinphoneChatMessageOutgoing) {
+				if ((msg->dir == LinphoneChatMessageOutgoing) && unref) {
 					// must release it
 					linphone_chat_message_unref(msg);
 				}
@@ -637,6 +637,10 @@ void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	} else {
 		ms_message("No existing file transfer - nothing to cancel");
 	}
+}
+
+void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
+	_linphone_chat_message_cancel_file_transfer(msg, TRUE);
 }
 
 void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, const char *filepath) {
