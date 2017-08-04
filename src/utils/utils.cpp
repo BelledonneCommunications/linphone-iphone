@@ -47,3 +47,13 @@ vector<string> Utils::split (const string &str, const string &delimiter) {
 
 	return out;
 }
+
+int Utils::stoi (const string &str, size_t *idx, int base) {
+	char *p;
+	int v = strtol(str.c_str(), &p, base);
+
+	if (idx)
+		*idx = p - str.c_str();
+
+	return v;
+}

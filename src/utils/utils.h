@@ -33,6 +33,8 @@ namespace LinphonePrivate {
 		inline std::vector<std::string> split (const std::string &str, char delimiter) {
 			return split(str, std::string(1, delimiter));
 		}
+
+		int stoi (const std::string &str, size_t *idx = 0, int base = 10);
 	}
 }
 

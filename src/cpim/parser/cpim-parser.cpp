@@ -355,22 +355,22 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 		return false;
 
 	// Check date.
-	const int year = stoi(headerValue.substr(0, 4));
+	const int year = Utils::stoi(headerValue.substr(0, 4));
 	const bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 
-	const int month = stoi(headerValue.substr(5, 2));
+	const int month = Utils::stoi(headerValue.substr(5, 2));
 	if (month < 1 || month > 12)
 		return false;
 
-	const int day = stoi(headerValue.substr(8, 2));
+	const int day = Utils::stoi(headerValue.substr(8, 2));
 	if (day < 1 || (month == 2 && isLeapYear ? day > 29 : day > daysInMonth[month - 1]))
 		return false;
 
 	// Check time.
 	if (
-		stoi(headerValue.substr(11, 2)) > 24 ||
-		stoi(headerValue.substr(14, 2)) > 59 ||
-		stoi(headerValue.substr(17, 2)) > 60
+		Utils::stoi(headerValue.substr(11, 2)) > 24 ||
+		Utils::stoi(headerValue.substr(14, 2)) > 59 ||
+		Utils::stoi(headerValue.substr(17, 2)) > 60
 	)
 		return false;
 
@@ -378,8 +378,8 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 	if (headerValue.back() != 'Z') {
 		size_t length = headerValue.length();
 		if (
-			stoi(headerValue.substr(length - 5, 2)) > 24 ||
-			stoi(headerValue.substr(length - 2, 2)) > 59
+			Utils::stoi(headerValue.substr(length - 5, 2)) > 24 ||
+			Utils::stoi(headerValue.substr(length - 2, 2)) > 59
 		)
 			return false;
 	}
