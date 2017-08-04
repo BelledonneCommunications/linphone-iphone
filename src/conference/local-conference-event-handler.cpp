@@ -55,7 +55,7 @@ void Conference::LocalConferenceEventHandlerPrivate::notifyAllExcept(string noti
 }
 
 // -------- Conference::LocalConferenceEventHandler public methods ---------
-Conference::LocalConferenceEventHandler::LocalConferenceEventHandler(LinphoneCore *core, LocalConference *localConf) : Object(new LocalConferenceEventHandlerPrivate) {
+Conference::LocalConferenceEventHandler::LocalConferenceEventHandler(LinphoneCore *core, LocalConference *localConf) : Object(*new LocalConferenceEventHandlerPrivate) {
 	L_D(LocalConferenceEventHandler);
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = localConf;

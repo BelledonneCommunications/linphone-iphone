@@ -184,11 +184,8 @@ set(LIBS
 	${MEDIASTREAMER2_LIBRARIES}
 	${ORTP_LIBRARIES}
 	${XML2_LIBRARIES}
-<<<<<<< HEAD
-	/usr/local/Cellar/xerces-c/3.1.4/lib/libxerces-c.dylib
-=======
 	${BELR_LIBRARIES}
->>>>>>> origin/master
+	/usr/local/Cellar/xerces-c/3.1.4/lib/libxerces-c.dylib
 )
 if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	list(APPEND LIBS "Ws2_32")

@@ -34,7 +34,7 @@ public:
 };
 
 // -------- Conference::RemoteConferenceEventHandler public methods ---------
-Conference::RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *lc, ConferenceListener *listener, LinphoneAddress *confAddr) : Object(new RemoteConferenceEventHandlerPrivate) {
+Conference::RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *lc, ConferenceListener *listener, LinphoneAddress *confAddr) : Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D(RemoteConferenceEventHandler);
 	xercesc::XMLPlatformUtils::Initialize();
 	d->lc = lc;
