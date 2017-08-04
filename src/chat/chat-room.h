@@ -68,3 +68,4 @@ private:
 LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CHAT_ROOM_H_
+

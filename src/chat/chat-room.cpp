@@ -995,3 +995,4 @@ const LinphoneAddress *ChatRoom::getPeerAddress () const {
 }
 
 LINPHONE_END_NAMESPACE
+

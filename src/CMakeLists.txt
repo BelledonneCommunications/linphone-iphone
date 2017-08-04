@@ -24,8 +24,21 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
 	c-wrapper/c-tools.h
+	call/call.h
 	chat/chat-room-p.h
 	chat/chat-room.h
+	conference/conference.h
+	conference/conference-listener.h
+	conference/conference-p.h
+	conference/local-conference.h
+	conference/params/call-session-params.h
+	conference/params/call-session-params-p.h
+	conference/params/media-session-params.h
+	conference/participant.h
+	conference/remote-conference.h
+	conference/session/call-session.h
+	conference/session/call-session-p.h
+	conference/session/media-session.h
 	content/content.h
 	core/core.h
 	chat/imdn.h
@@ -66,11 +79,20 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	address/address.cpp
 	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-event-log.cpp
+	call/call.cpp
 	chat/chat-room.cpp
 	content/content.cpp
 	core/core.cpp
 	chat/imdn.cpp
 	chat/is-composing.cpp
+	conference/conference.cpp
+	conference/local-conference.cpp
+	conference/params/call-session-params.cpp
+	conference/params/media-session-params.cpp
+	conference/participant.cpp
+	conference/remote-conference.cpp
+	conference/session/call-session.cpp
+	conference/session/media-session.cpp
 	cpim/header/cpim-core-headers.cpp
 	cpim/header/cpim-generic-header.cpp
 	cpim/header/cpim-header.cpp
