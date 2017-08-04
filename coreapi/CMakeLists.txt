@@ -35,13 +35,22 @@ endif()
 
 
 set(LINPHONE_PRIVATE_HEADER_FILES
+	../src/conference/conference-info.hxx
+	../src/conference/conference-listener.h
+	../src/conference/local-conference-event-handler.h
+	../src/conference/remote-conference-event-handler.h
+	../src/cpim/cpim.h
+	../src/cpim/header/cpim-core-headers.h
+	../src/cpim/header/cpim-generic-header.h
+	../src/cpim/header/cpim-header-p.h
+	../src/cpim/header/cpim-header.h
+	../src/cpim/message/cpim-message.h
+	../src/cpim/parser/cpim-grammar.h
+	../src/cpim/parser/cpim-parser.h
 	../src/object/object.h
 	../src/object/singleton.h
 	../src/utils/general.h
-	../src/conference/conference-listener.h
-	../src/conference/remote-conference-event-handler.h
-	../src/conference/local-conference-event-handler.h
-	../src/conference/conference-info.hxx
+	../src/utils/utils.h
 	bellesip_sal/sal_impl.h
 	carddav.h
 	conference_private.h
@@ -128,9 +137,16 @@ set(LINPHONE_SOURCE_FILES_C
 )
 set(LINPHONE_SOURCE_FILES_CXX
 	conference.cc
-	../src/conference/remote-conference-event-handler.cpp
-	../src/conference/local-conference-event-handler.cpp
 	../src/conference/conference-info.cxx
+	../src/conference/local-conference-event-handler.cpp
+	../src/conference/remote-conference-event-handler.cpp
+	../src/cpim/header/cpim-core-headers.cpp
+	../src/cpim/header/cpim-generic-header.cpp
+	../src/cpim/header/cpim-header.cpp
+	../src/cpim/message/cpim-message.cpp
+	../src/cpim/parser/cpim-grammar.cpp
+	../src/cpim/parser/cpim-parser.cpp
+	../src/utils/utils.cpp
 )
 set(LINPHONE_INCLUDE_DIRS ${LINPHONE_INCLUDE_DIRS} /Users/reisbenjamin/xsd-4.0.0-i686-macosx/libxsd /usr/local/Cellar/xerces-c/3.1.4/include)
 if(ANDROID)
@@ -168,7 +184,11 @@ set(LIBS
 	${MEDIASTREAMER2_LIBRARIES}
 	${ORTP_LIBRARIES}
 	${XML2_LIBRARIES}
+<<<<<<< HEAD
 	/usr/local/Cellar/xerces-c/3.1.4/lib/libxerces-c.dylib
+=======
+	${BELR_LIBRARIES}
+>>>>>>> origin/master
 )
 if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	list(APPEND LIBS "Ws2_32")

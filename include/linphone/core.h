@@ -3719,6 +3719,7 @@ LINPHONE_PUBLIC void linphone_core_set_device_rotation(LinphoneCore *lc, int rot
  * This is needed on some mobile platforms to get the number of degrees the camera sensor
  * is rotated relative to the screen.
  * @param lc The linphone core related to the operation
+ * @ingroup media_parameters
  * @return The camera sensor rotation in degrees (0 to 360) or -1 if it could not be retrieved
  */
 LINPHONE_PUBLIC int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);

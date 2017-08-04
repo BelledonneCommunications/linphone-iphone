@@ -337,7 +337,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		size_t namesize;
 		char *machine;
 		sysctlbyname("hw.machine", NULL, &namesize, NULL, 0);
-		machine = malloc(namesize);
+		machine = reinterpret_cast<char *>(malloc(namesize));
 		sysctlbyname("hw.machine", machine, &namesize, NULL, 0);
 		APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "Device: %s\r\n", machine);
 	}

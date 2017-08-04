@@ -1,5 +1,5 @@
 /*
- * singleton.h
+ * cpim-grammar.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,36 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SINGLETON_H_
-#define _SINGLETON_H_
-
-#include "object.h"
+#ifndef _CPIM_GRAMMAR_H_
+#define _CPIM_GRAMMAR_H_
 
 // =============================================================================
 
 namespace LinphonePrivate {
-	template<class T>
-	class Singleton : public Object {
-	public:
-		virtual ~Singleton () = default;
-
-		static T *getInstance () {
-			if (!mInstance)
-				mInstance = new T();
-			return mInstance;
-		}
-
-	protected:
-		explicit Singleton (ObjectPrivate &p) : Object(p) {}
-
-	private:
-		static T *mInstance;
-
-		L_DISABLE_COPY(Singleton);
-	};
-
-	template<class T>
-	T *Singleton<T>::mInstance = nullptr;
+	namespace Cpim {
+		const char *getGrammar ();
+	}
 }
 
-#endif // ifndef _SINGLETON_H_
+#endif // ifndef _CPIM_GRAMMAR_H_

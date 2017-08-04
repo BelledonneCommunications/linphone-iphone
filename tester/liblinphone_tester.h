@@ -39,37 +39,41 @@
 extern "C" {
 #endif
 
-extern test_suite_t setup_test_suite;
-extern test_suite_t register_test_suite;
+extern test_suite_t account_creator_test_suite;
 extern test_suite_t call_test_suite;
 extern test_suite_t call_video_test_suite;
-extern test_suite_t message_test_suite;
-extern test_suite_t presence_test_suite;
-extern test_suite_t presence_server_test_suite;
-extern test_suite_t upnp_test_suite;
+extern test_suite_t cpim_test_suite;
+extern test_suite_t dtmf_test_suite;
 extern test_suite_t event_test_suite;
 extern test_suite_t conf_event_test_suite;
 extern test_suite_t flexisip_test_suite;
-extern test_suite_t stun_test_suite;
-extern test_suite_t remote_provisioning_test_suite;
-extern test_suite_t quality_reporting_test_suite;
 extern test_suite_t log_collection_test_suite;
-extern test_suite_t tunnel_test_suite;
-extern test_suite_t player_test_suite;
-extern test_suite_t dtmf_test_suite;
-extern test_suite_t offeranswer_test_suite;
-extern test_suite_t video_test_suite;
-extern test_suite_t multicast_call_test_suite;
+extern test_suite_t message_test_suite;
 extern test_suite_t multi_call_test_suite;
+extern test_suite_t multicast_call_test_suite;
+extern test_suite_t offeranswer_test_suite;
+extern test_suite_t player_test_suite;
+extern test_suite_t presence_server_test_suite;
+extern test_suite_t presence_test_suite;
 extern test_suite_t proxy_config_test_suite;
-extern test_suite_t account_creator_test_suite;
+extern test_suite_t quality_reporting_test_suite;
+extern test_suite_t register_test_suite;
+extern test_suite_t remote_provisioning_test_suite;
+extern test_suite_t setup_test_suite;
+extern test_suite_t stun_test_suite;
+extern test_suite_t tunnel_test_suite;
+extern test_suite_t upnp_test_suite;
+extern test_suite_t video_test_suite;
+
 #ifdef VCARD_ENABLED
 extern test_suite_t vcard_test_suite;
 #endif
+
 extern test_suite_t audio_bypass_suite;
 #if HAVE_SIPP
 extern test_suite_t complex_sip_call_test_suite;
 #endif
+
 extern int manager_count;
 
 extern int liblinphone_tester_ipv6_available(void);
@@ -112,6 +116,7 @@ extern const char* test_username;
 extern const char* test_password;
 extern const char* test_route;
 extern const char* userhostsfile;
+extern bool_t liblinphone_tester_keep_uuid;
 extern bool_t liblinphone_tester_tls_support_disabled;
 extern const MSAudioDiffParams audio_cmp_params;
 extern const char *liblinphone_tester_mire_id;
@@ -164,6 +169,7 @@ typedef struct _stats {
 	int number_of_LinphoneMessageDelivered;
 	int number_of_LinphoneMessageNotDelivered;
 	int number_of_LinphoneMessageFileTransferDone;
+	int number_of_LinphoneMessageFileTransferError;
 	int number_of_LinphoneMessageDeliveredToUser;
 	int number_of_LinphoneMessageDisplayed;
 	int number_of_LinphoneIsComposingActiveReceived;

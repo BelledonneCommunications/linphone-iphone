@@ -47,6 +47,7 @@
 
 #include <ctype.h>
 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -656,6 +657,7 @@ void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessa
 void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured);
 void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, LinphoneReason reason);
 void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
+void _linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg, bool_t unref);
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
@@ -1371,6 +1373,7 @@ struct _LinphoneNatPolicy {
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneNatPolicy);
 
+bool_t linphone_nat_policy_stun_server_activated(LinphoneNatPolicy *policy);
 void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy);
 
 struct _LinphoneImNotifPolicy {
@@ -1700,8 +1703,8 @@ void linphone_xmlparsing_genericxml_error(void *ctx, const char *fmt, ...);
 int linphone_create_xml_xpath_context(xmlparsing_context_t *xml_ctx);
 void linphone_xml_xpath_context_set_node(xmlparsing_context_t *xml_ctx, xmlNodePtr node);
 char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
-const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name);
-void linphone_free_xml_text_content(const char *text);
+char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name);
+void linphone_free_xml_text_content(char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
 void linphone_xml_xpath_context_init_carddav_ns(xmlparsing_context_t *xml_ctx);
 

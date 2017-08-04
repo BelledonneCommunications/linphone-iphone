@@ -196,7 +196,7 @@ static void parse_valid_xml_rpc_response(LinphoneXmlRpcRequest *request, const c
 	request->status = LinphoneXmlRpcStatusFailed;
 	xml_ctx->doc = xmlReadDoc((const unsigned char*)response_body, 0, NULL, 0);
 	if (xml_ctx->doc != NULL) {
-		const char *response_str = NULL;
+		char *response_str = NULL;
 		if (linphone_create_xml_xpath_context(xml_ctx) < 0) goto end;
 		switch (request->response.type) {
 			case LinphoneXmlRpcArgInt:

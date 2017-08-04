@@ -6227,6 +6227,9 @@ static void set_media_network_reachable(LinphoneCore* lc, bool_t is_media_reacha
 			bctbx_list_for_each(lc->calls, (MSIterateFunc)linphone_call_refresh_sockets);
 		}
 		linphone_core_repair_calls(lc);
+		if (lc->bw_controller){
+			ms_bandwidth_controller_reset_state(lc->bw_controller);
+		}
 	}
 }
 
@@ -6623,8 +6626,7 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 	int ret;
 	const char *errmsg;
 	const char *backupExtension = "_backup";
-	char *backupName = reinterpret_cast<char *>(malloc(snprintf(NULL, 0, "%s%s", fileName, backupExtension) + 1));
-	sprintf(backupName, "%s%s", fileName, backupExtension);
+	char *backupName = bctbx_strdup_printf("%s%s", fileName, backupExtension);
 	sqlite3 *db;
 
 	linphone_core_zrtp_cache_close(lc);
@@ -6637,7 +6639,7 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 		unlink(backupName);
 		rename(fileName, backupName);
 		lc->zrtp_cache_db=NULL;
-		return;
+		goto end;
 	}
 
 	ret = ms_zrtp_initCache((void *)db); /* this may perform an update, check return value */
@@ -6652,11 +6654,13 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName) {
 		unlink(backupName);
 		rename(fileName, backupName);
 		lc->zrtp_cache_db = NULL;
-		return;
+		goto end;
 	}
 
 	/* everything ok, set the db pointer into core */
 	lc->zrtp_cache_db = db;
+end:
+	if (backupName) bctbx_free(backupName);
 #endif /* SQLITE_STORAGE_ENABLED */
 }
 
@@ -7011,9 +7015,9 @@ const char * linphone_core_get_video_preset(const LinphoneCore *lc) {
 static int linphone_core_call_void_method(jobject obj, jmethodID id) {
 	JNIEnv *env=ms_get_jni_env();
 	if (env && obj) {
-		(*env)->CallVoidMethod(env,obj,id);
-		if ((*env)->ExceptionCheck(env)) {
-			(*env)->ExceptionClear(env);
+		env->CallVoidMethod(obj,id);
+		if (env->ExceptionCheck()) {
+			env->ExceptionClear();
 			return -1;
 		} else
 			return 0;

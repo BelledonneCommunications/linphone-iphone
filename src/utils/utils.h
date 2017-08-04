@@ -1,5 +1,5 @@
 /*
- * singleton.h
+ * utils.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,36 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SINGLETON_H_
-#define _SINGLETON_H_
+#ifndef _UTILS_H_
+#define _UTILS_H_
 
-#include "object.h"
+#include <string>
+#include <vector>
 
 // =============================================================================
 
 namespace LinphonePrivate {
-	template<class T>
-	class Singleton : public Object {
-	public:
-		virtual ~Singleton () = default;
+	namespace Utils {
+		bool iequals (const std::string &a, const std::string &b);
 
-		static T *getInstance () {
-			if (!mInstance)
-				mInstance = new T();
-			return mInstance;
+		std::vector<std::string> split (const std::string &str, const std::string &delimiter);
+
+		inline std::vector<std::string> split (const std::string &str, char delimiter) {
+			return split(str, std::string(1, delimiter));
 		}
 
-	protected:
-		explicit Singleton (ObjectPrivate &p) : Object(p) {}
-
-	private:
-		static T *mInstance;
-
-		L_DISABLE_COPY(Singleton);
-	};
-
-	template<class T>
-	T *Singleton<T>::mInstance = nullptr;
+		int stoi (const std::string &str, size_t *idx = 0, int base = 10);
+	}
 }
 
-#endif // ifndef _SINGLETON_H_
+#endif // ifndef _UTILS_H_

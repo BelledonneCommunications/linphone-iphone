@@ -487,8 +487,9 @@ typedef struct belle_sip_dict LinphoneDictionary;
 
 /**
  * Enum describing the result of the echo canceller calibration process.
+ * @ingroup media_parameters
 **/
-typedef enum {
+typedef enum _LinphoneEcCalibratorStatus {
 	LinphoneEcCalibratorInProgress, /**< The echo canceller calibration process is on going */
 	LinphoneEcCalibratorDone, /**< The echo canceller calibration has been performed and produced an echo delay measure */
 	LinphoneEcCalibratorFailed, /**< The echo canceller calibration process has failed */

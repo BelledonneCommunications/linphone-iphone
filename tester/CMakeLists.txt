@@ -194,6 +194,7 @@ set(SOURCE_FILES_C
 
 set(SOURCE_FILES_CXX
 	confeventpackage_tester.cpp
+	cpim_tester.cpp
 )
 
 set(SOURCE_FILES_OBJC )

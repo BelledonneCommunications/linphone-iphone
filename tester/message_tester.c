@@ -190,6 +190,7 @@ void liblinphone_tester_chat_message_msg_state_changed(LinphoneChatMessage *msg,
 			return;
 		case LinphoneChatMessageStateFileTransferError:
 			counters->number_of_LinphoneMessageNotDelivered++;
+			counters->number_of_LinphoneMessageFileTransferError++;
 			return;
 		case LinphoneChatMessageStateFileTransferDone:
 			counters->number_of_LinphoneMessageFileTransferDone++;
@@ -698,10 +699,13 @@ static void file_transfer_using_external_body_url(void) {
 
 		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 		if (marie->stat.last_received_chat_message) {
+			cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
+			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 			linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 		}
 		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageExtBodyReceived, 1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageInProgress, 1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDelivered, 1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageFileTransferError, 1));
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
@@ -877,6 +881,7 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 	int ret = 0;
 	char* paulineUri = NULL;
 	char* marieUri = NULL;
+	char *tmp;
 
 	if (!linphone_core_lime_available(marie->lc) || !linphone_core_lime_available(pauline->lc)) {
 		ms_warning("Lime not available, skiping");
@@ -891,8 +896,12 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 	lp_config_set_int(pauline->lc->config, "sip", "zrtp_cache_migration_done", TRUE);
 
 	/* create temporary cache files: setting the database_path will create and initialise the files */
-	remove(bc_tester_file("tmpZIDCacheMarie.sqlite"));
-	remove(bc_tester_file("tmpZIDCachePauline.sqlite"));
+	tmp = bc_tester_file("tmpZIDCacheMarie.sqlite");
+	remove(tmp);
+	bc_free(tmp);
+	tmp = bc_tester_file("tmpZIDCachePauline.sqlite");
+	remove(tmp);
+	bc_free(tmp);
 	filepath = bc_tester_file("tmpZIDCacheMarie.sqlite");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
 	bc_free(filepath);
@@ -920,7 +929,8 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 		sqlite3_free(errmsg);
 		return -1;
 	}
-
+	ms_free(paulineUri);
+	ms_free(marieUri);
 
 	return 0;
 #else /* SQLITE_STORAGE_ENABLED */
@@ -1787,9 +1797,8 @@ void file_transfer_io_error_base(char *server_url, bool_t destroy_room) {
 	linphone_chat_room_send_chat_message(chatroom, msg);
 	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageInProgress, 1, 1000));
 	if (destroy_room) {
-		//since message is orphan, we do not expect to be notified of state change
 		linphone_core_delete_chat_room(marie->lc, chatroom);
-		BC_ASSERT_FALSE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000));
 	} else {
 		BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 3000));
 	}
@@ -2422,7 +2431,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Transfer message with download io error", transfer_message_with_download_io_error),
 	TEST_NO_TAG("Transfer message upload cancelled", transfer_message_upload_cancelled),
 	TEST_NO_TAG("Transfer message download cancelled", transfer_message_download_cancelled),
-	TEST_ONE_TAG("Transfer message using external body url", file_transfer_using_external_body_url, "LeaksMemory"),
+	TEST_NO_TAG("Transfer message using external body url", file_transfer_using_external_body_url),
 	TEST_NO_TAG("Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously),
 	TEST_NO_TAG("Text message denied", text_message_denied),
 	TEST_NO_TAG("Info message", info_message),
@@ -2482,10 +2491,20 @@ test_t message_tests[] = {
 	TEST_NO_TAG("IM Encryption Engine b64", im_encryption_engine_b64)
 };
 
+static int message_tester_before_suite(void) {
+	liblinphone_tester_keep_uuid = TRUE;
+	return 0;
+}
+
+static int message_tester_after_suite(void) {
+	liblinphone_tester_keep_uuid = FALSE;
+	return 0;
+}
+
 test_suite_t message_test_suite = {
 	"Message",
-	NULL,
-	NULL,
+	message_tester_before_suite,
+	message_tester_after_suite,
 	liblinphone_tester_before_each,
 	liblinphone_tester_after_each,
 	sizeof(message_tests) / sizeof(message_tests[0]), message_tests

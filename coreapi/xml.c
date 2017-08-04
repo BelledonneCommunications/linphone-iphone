@@ -94,7 +94,7 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 	return (char *)text;
 }
 
-const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name) {
+char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name) {
 	xmlXPathObjectPtr xpath_obj;
 	xmlChar *text = NULL;
 
@@ -118,10 +118,10 @@ const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_c
 		xmlXPathFreeObject(xpath_obj);
 	}
 
-	return (const char *)text;
+	return (char*)text;
 }
 
-void linphone_free_xml_text_content(const char *text) {
+void linphone_free_xml_text_content(char *text) {
 	xmlFree((xmlChar *)text);
 }
 

@@ -44,8 +44,9 @@
 
 
 static int liblinphone_tester_keep_accounts_flag = 0;
-static int liblinphone_tester_keep_record_files = FALSE;
-static int liblinphone_tester_leak_detector_disabled = FALSE;
+static bool_t liblinphone_tester_keep_record_files = FALSE;
+static bool_t liblinphone_tester_leak_detector_disabled = FALSE;
+bool_t liblinphone_tester_keep_uuid = FALSE;
 bool_t liblinphone_tester_tls_support_disabled = FALSE;
 int manager_count = 0;
 int leaked_objects_count = 0;
@@ -573,6 +574,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&log_collection_test_suite);
 	bc_tester_add_suite(&player_test_suite);
 	bc_tester_add_suite(&dtmf_test_suite);
+	bc_tester_add_suite(&cpim_test_suite);
 #if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
 	bc_tester_add_suite(&video_test_suite);
 #endif
