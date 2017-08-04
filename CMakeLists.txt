@@ -330,6 +330,7 @@ endif()
 
 add_subdirectory(include)
 add_subdirectory(java)
+add_subdirectory(src)
 add_subdirectory(coreapi)
 add_subdirectory(share)
 if(ENABLE_CONSOLE_UI)

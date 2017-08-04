@@ -34,19 +34,7 @@ if(ANDROID)
 endif()
 
 
-set(LINPHONE_PRIVATE_HEADER_FILES
-	../src/cpim/cpim.h
-	../src/cpim/header/cpim-core-headers.h
-	../src/cpim/header/cpim-generic-header.h
-	../src/cpim/header/cpim-header-p.h
-	../src/cpim/header/cpim-header.h
-	../src/cpim/message/cpim-message.h
-	../src/cpim/parser/cpim-grammar.h
-	../src/cpim/parser/cpim-parser.h
-	../src/object/object.h
-	../src/object/singleton.h
-	../src/utils/general.h
-	../src/utils/utils.h
+list(APPEND LINPHONE_PRIVATE_HEADER_FILES
 	bellesip_sal/sal_impl.h
 	carddav.h
 	conference_private.h
@@ -132,13 +120,6 @@ set(LINPHONE_SOURCE_FILES_C
 	vtables.c
 )
 set(LINPHONE_SOURCE_FILES_CXX
-	../src/cpim/header/cpim-core-headers.cpp
-	../src/cpim/header/cpim-generic-header.cpp
-	../src/cpim/header/cpim-header.cpp
-	../src/cpim/message/cpim-message.cpp
-	../src/cpim/parser/cpim-grammar.cpp
-	../src/cpim/parser/cpim-parser.cpp
-	../src/utils/utils.cpp
 	conference.cc
 )
 if(ANDROID)
@@ -224,7 +205,10 @@ bc_apply_compile_flags(LINPHONE_SOURCE_FILES_CXX STRICT_OPTIONS_CPP STRICT_OPTIO
 bc_apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC STRICT_OPTIONS_CPP STRICT_OPTIONS_OBJC)
 
 if(ENABLE_STATIC)
-	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_PRIVATE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
+	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_PRIVATE_HEADER_FILES}
+		${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC}
+		$<TARGET_OBJECTS:linphone-cxx-objects-static>
+	)
 	set_target_properties(linphone-static PROPERTIES OUTPUT_NAME linphone)
 	add_dependencies(linphone-static liblinphone-git-version)
 	target_include_directories(linphone-static PUBLIC ${LINPHONE_INCLUDE_DIRS})
@@ -241,7 +225,10 @@ if(ENABLE_STATIC)
 	)
 endif()
 if(ENABLE_SHARED)
-	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_PRIVATE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_PRIVATE_HEADER_FILES}
+		${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC}
+		$<TARGET_OBJECTS:linphone-cxx-objects>
+	)
 	if(IOS)
 		if(IOS)
 			set(MIN_OS ${LINPHONE_IOS_DEPLOYMENT_TARGET})
