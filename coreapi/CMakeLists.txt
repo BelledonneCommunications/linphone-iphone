@@ -39,7 +39,8 @@ set(LINPHONE_PRIVATE_HEADER_FILES
 	../src/object/singleton.h
 	../src/utils/general.h
 	../src/conference/conference-listener.h
-	../src/conference/conference-event-package.h
+	../src/conference/remote-conference-event-handler.h
+	../src/conference/local-conference-event-handler.h
 	../src/conference/conference-info.hxx
 	bellesip_sal/sal_impl.h
 	carddav.h
@@ -127,7 +128,8 @@ set(LINPHONE_SOURCE_FILES_C
 )
 set(LINPHONE_SOURCE_FILES_CXX
 	conference.cc
-	../src/conference/conference-event-package.cpp
+	../src/conference/remote-conference-event-handler.cpp
+	../src/conference/local-conference-event-handler.cpp
 	../src/conference/conference-info.cxx
 )
 set(LINPHONE_INCLUDE_DIRS ${LINPHONE_INCLUDE_DIRS} /Users/reisbenjamin/xsd-4.0.0-i686-macosx/libxsd /usr/local/Cellar/xerces-c/3.1.4/include)

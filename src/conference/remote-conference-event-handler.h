@@ -1,5 +1,5 @@
 /*
- * conference-event-package.h
+ * remote-conference-event-handler.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFERENCE_EVENT_PACKAGE_H_
-#define _CONFERENCE_EVENT_PACKAGE_H_
+#ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_H_
+#define _REMOTE_CONFERENCE_EVENT_HANDLER_H_
 
 #include <string>
 
@@ -27,25 +27,24 @@
 
 namespace LinphonePrivate {
   namespace Conference {
-    class ConferenceEventPackagePrivate;
-
     // -------------------------------------------------------------------------
-    // ConferenceEventPackage.
+    // RemoteConferenceEventHandler.
     // -------------------------------------------------------------------------
-    class ConferenceEventPackage : public Object {
+    class RemoteConferenceEventHandlerPrivate;
+    class RemoteConferenceEventHandler : public Object {
     public:
-      ConferenceEventPackage(LinphoneCore *lc, ConferenceListener *listener, LinphoneAddress *confAddr);
-      ~ConferenceEventPackage();
+      RemoteConferenceEventHandler(LinphoneCore *lc, ConferenceListener *listener, LinphoneAddress *confAddr);
+      ~RemoteConferenceEventHandler();
       void subscribe(std::string confId);
       void notifyReceived(const char *xmlBody);
       void unsubscribe();
       std::string getConfId();
 
     private:
-      L_DECLARE_PRIVATE(ConferenceEventPackage);
-      L_DISABLE_COPY(ConferenceEventPackage);
+      L_DECLARE_PRIVATE(RemoteConferenceEventHandler);
+      L_DISABLE_COPY(RemoteConferenceEventHandler);
     };
   }
 }
 
-#endif // ifndef _CONFERENCE_EVENT_PACKAGE_H_
+#endif // ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_H_

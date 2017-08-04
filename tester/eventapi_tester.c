@@ -83,7 +83,7 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 			if (linphone_event_get_subscription_dir(lev)==LinphoneSubscriptionIncoming){
 				mgr->lev=lev;
 				if(strcmp(linphone_event_get_name(lev), "Conference") == 0) {
-					linphone_conf_event_notify(lev);
+					// TODO : Get LocalConfEventHandler and call handler->subscribeReceived(lev)
 				} else {
 					linphone_event_notify(lev,content);
 				}

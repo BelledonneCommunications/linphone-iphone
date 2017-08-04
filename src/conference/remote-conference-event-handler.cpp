@@ -1,5 +1,5 @@
 /*
- * conference-event-package.cpp
+ * remote-conference-event-handler.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "conference-event-package.h"
+#include "remote-conference-event-handler.h"
 #include "conference-info.hxx"
 #include "private.h"
 
@@ -24,7 +24,7 @@ using namespace std;
 using namespace conference_info;
 using namespace LinphonePrivate;
 
-class LinphonePrivate::Conference::ConferenceEventPackagePrivate : public ObjectPrivate {
+class Conference::RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
 public:
 	LinphoneCore *lc;
 	ConferenceListener *listener;
@@ -33,8 +33,9 @@ public:
 	LinphoneEvent *lev;
 };
 
-Conference::ConferenceEventPackage::ConferenceEventPackage(LinphoneCore *lc, ConferenceListener *listener, LinphoneAddress *confAddr) : Object(new Conference::ConferenceEventPackagePrivate) {
-	L_D(ConferenceEventPackage);
+// -------- Conference::RemoteConferenceEventHandler public methods ---------
+Conference::RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *lc, ConferenceListener *listener, LinphoneAddress *confAddr) : Object(new RemoteConferenceEventHandlerPrivate) {
+	L_D(RemoteConferenceEventHandler);
 	xercesc::XMLPlatformUtils::Initialize();
 	d->lc = lc;
 	d->listener = listener;
@@ -43,15 +44,15 @@ Conference::ConferenceEventPackage::ConferenceEventPackage(LinphoneCore *lc, Con
 	d->lev = NULL;
 }
 
-Conference::ConferenceEventPackage::~ConferenceEventPackage() {
-	L_D(ConferenceEventPackage);
+Conference::RemoteConferenceEventHandler::~RemoteConferenceEventHandler() {
+	L_D(RemoteConferenceEventHandler);
 	xercesc::XMLPlatformUtils::Terminate();
 	linphone_address_unref(d->confAddr);
 	if(d->lev) linphone_event_unref(d->lev);
 }
 
-void Conference::ConferenceEventPackage::subscribe(string confId) {
-	L_D(ConferenceEventPackage);
+void Conference::RemoteConferenceEventHandler::subscribe(string confId) {
+	L_D(RemoteConferenceEventHandler);
 	d->confId = confId;
 	d->lev = linphone_core_create_subscribe(d->lc, d->confAddr, "Conference", 600);
 	linphone_event_ref(d->lev);
@@ -61,13 +62,13 @@ void Conference::ConferenceEventPackage::subscribe(string confId) {
 	linphone_event_send_subscribe(d->lev, NULL);
 }
 
-void Conference::ConferenceEventPackage::unsubscribe() {
-	L_D(ConferenceEventPackage);
+void Conference::RemoteConferenceEventHandler::unsubscribe() {
+	L_D(RemoteConferenceEventHandler);
 	linphone_event_terminate(d->lev);
 }
 
-void Conference::ConferenceEventPackage::notifyReceived(const char *xmlBody) {
-	L_D(ConferenceEventPackage);
+void Conference::RemoteConferenceEventHandler::notifyReceived(const char *xmlBody) {
+	L_D(RemoteConferenceEventHandler);
 	istringstream data(xmlBody);
 	unique_ptr<Conference_type> confInfo = parseConference_info(data, xml_schema::Flags::dont_validate);
 	if(strcmp(confInfo->getEntity().c_str(), linphone_address_as_string(d->confAddr)) == 0) {
@@ -95,7 +96,7 @@ void Conference::ConferenceEventPackage::notifyReceived(const char *xmlBody) {
 	}
 }
 
-string Conference::ConferenceEventPackage::getConfId() {
-	L_D(ConferenceEventPackage);
+string Conference::RemoteConferenceEventHandler::getConfId() {
+	L_D(RemoteConferenceEventHandler);
 	return d->confId;
 }

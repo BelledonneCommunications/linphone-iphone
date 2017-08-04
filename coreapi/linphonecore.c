@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
-#include "conference/conference-event-package.h"
+#include "conference/remote-conference-event-handler.h"
 
 #ifdef INET6
 #ifndef _WIN32
@@ -2117,10 +2117,10 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 			friendLists = friendLists->next;
 		}
 	} else if (strcmp(notified_event, "Conference") == 0) {
-		LinphonePrivate::Conference::ConferenceEventPackage *cep = reinterpret_cast<LinphonePrivate::Conference::ConferenceEventPackage *>(linphone_event_get_user_data(lev));
-		if(cep) {
-			ms_message("notify event for conference %s", cep->getConfId().c_str());
-			cep->notifyReceived((char *) linphone_content_get_buffer(body));
+		LinphonePrivate::Conference::RemoteConferenceEventHandler *handler = reinterpret_cast<LinphonePrivate::Conference::RemoteConferenceEventHandler *>(linphone_event_get_user_data(lev));
+		if(handler) {
+			ms_message("notify event for conference %s", handler->getConfId().c_str());
+			handler->notifyReceived((char *) linphone_content_get_buffer(body));
 		}
 	}
 }
@@ -2129,10 +2129,7 @@ static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, 
 	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
 		linphone_friend_list_subscription_state_changed(lc, lev, state);
 	} else if (strcmp(linphone_event_get_name(lev), "Conference") == 0) {
-		LinphonePrivate::Conference::ConferenceEventPackage *cep = reinterpret_cast<LinphonePrivate::Conference::ConferenceEventPackage *>(linphone_event_get_user_data(lev));
-		if(cep) {
-			
-		}
+		
 	}
 }
 
