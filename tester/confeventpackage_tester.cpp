@@ -691,7 +691,6 @@ void send_added_notify(void) {
 	LinphoneAddress *frankAddr = linphone_core_interpret_url(marie->lc, frankUri);
 	Conference::Participant p1(bobAddr, false);
 	Conference::Participant p2(aliceAddr, true);
-	Conference::Participant p3(frankAddr, false);
 	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
 	string notify;
 
@@ -772,7 +771,6 @@ void send_admined_notify(void) {
 	LinphoneAddress *aliceAddr = linphone_core_interpret_url(marie->lc, aliceUri);
 	Conference::Participant p1(bobAddr, false);
 	Conference::Participant p2(aliceAddr, true);
-	Conference::Participant p3(bobAddr, true);
 	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
 	string notify;
 
@@ -812,7 +810,6 @@ void send_unadmined_notify(void) {
 	LinphoneAddress *aliceAddr = linphone_core_interpret_url(marie->lc, aliceUri);
 	Conference::Participant p1(bobAddr, false);
 	Conference::Participant p2(aliceAddr, true);
-	Conference::Participant p3(aliceAddr, false);
 	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
 	string notify;
 
