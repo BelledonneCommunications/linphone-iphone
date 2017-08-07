@@ -32,8 +32,10 @@ using namespace LinphonePrivate;
 
 class Cpim::GenericHeaderPrivate : public HeaderPrivate {
 public:
+	GenericHeaderPrivate() : parameters(make_shared< list< pair<string, string> > >()){
+	}
 	string name;
-	shared_ptr<list<pair<string, string> > > parameters = make_shared<list<pair<string, string> > >();
+	shared_ptr<list<pair<string, string> > > parameters;
 };
 
 Cpim::GenericHeader::GenericHeader () : Header(*new GenericHeaderPrivate) {}
