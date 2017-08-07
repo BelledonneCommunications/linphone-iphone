@@ -579,6 +579,7 @@ static const struct addrinfo * find_nat64_addrinfo(const struct addrinfo *ai) {
 static const struct addrinfo * find_ipv4_addrinfo(const struct addrinfo *ai) {
 	while (ai != NULL) {
 		if (ai->ai_family == AF_INET) break;
+		if (ai->ai_family == AF_INET6 && ai->ai_flags & AI_V4MAPPED) break;
 		ai = ai->ai_next;
 	}
 	return ai;
