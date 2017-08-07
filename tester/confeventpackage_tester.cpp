@@ -665,7 +665,7 @@ void send_first_notify(void) {
 
   localConf.mParticipants.push_back(p1);
   localConf.mParticipants.push_back(p2);
-  notify = localConf.mHandler->subscribeReceived(lev);
+  notify = localConf.getHandler()->subscribeReceived(lev);
   tester.mHandler->notifyReceived(notify.c_str());
 
   BC_ASSERT_EQUAL(tester.mParticipants.size(), 2, int, "%d");
@@ -697,7 +697,7 @@ void send_added_notify(void) {
 
 	localConf.mParticipants.push_back(p1);
 	localConf.mParticipants.push_back(p2);
-	notify = localConf.mHandler->subscribeReceived(lev);
+	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 2, int, "%d");
@@ -706,7 +706,7 @@ void send_added_notify(void) {
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(bobAddr))->second == 0);
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(aliceAddr))->second == 1);
 
-	notify = localConf.mHandler->notifyParticipantAdded(frankAddr);
+	notify = localConf.getHandler()->notifyParticipantAdded(frankAddr);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 3, int, "%d");
@@ -739,7 +739,7 @@ void send_removed_notify(void) {
 
 	localConf.mParticipants.push_back(p1);
 	localConf.mParticipants.push_back(p2);
-	notify = localConf.mHandler->subscribeReceived(lev);
+	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 2, int, "%d");
@@ -748,7 +748,7 @@ void send_removed_notify(void) {
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(bobAddr))->second == 0);
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(aliceAddr))->second == 1);
 
-	notify = localConf.mHandler->notifyParticipantRemoved(bobAddr);
+	notify = localConf.getHandler()->notifyParticipantRemoved(bobAddr);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 1, int, "%d");
@@ -778,7 +778,7 @@ void send_admined_notify(void) {
 
 	localConf.mParticipants.push_back(p1);
 	localConf.mParticipants.push_back(p2);
-	notify = localConf.mHandler->subscribeReceived(lev);
+	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 2, int, "%d");
@@ -787,7 +787,7 @@ void send_admined_notify(void) {
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(bobAddr))->second == 0);
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(aliceAddr))->second == 1);
 
-	notify = localConf.mHandler->notifyParticipantSetAdmin(bobAddr, true);
+	notify = localConf.getHandler()->notifyParticipantSetAdmin(bobAddr, true);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 2, int, "%d");
@@ -818,7 +818,7 @@ void send_unadmined_notify(void) {
 
 	localConf.mParticipants.push_back(p1);
 	localConf.mParticipants.push_back(p2);
-	notify = localConf.mHandler->subscribeReceived(lev);
+	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 2, int, "%d");
@@ -827,7 +827,7 @@ void send_unadmined_notify(void) {
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(bobAddr))->second == 0);
 	BC_ASSERT_TRUE(tester.mParticipants.find(linphone_address_as_string(aliceAddr))->second == 1);
 
-	notify = localConf.mHandler->notifyParticipantSetAdmin(aliceAddr, false);
+	notify = localConf.getHandler()->notifyParticipantSetAdmin(aliceAddr, false);
 	tester.mHandler->notifyReceived(notify.c_str());
 
 	BC_ASSERT_EQUAL(tester.mParticipants.size(), 2, int, "%d");

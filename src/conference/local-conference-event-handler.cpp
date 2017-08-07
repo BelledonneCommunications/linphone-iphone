@@ -42,7 +42,7 @@ void Conference::LocalConferenceEventHandlerPrivate::notifyFullState(string noti
 }
 
 void Conference::LocalConferenceEventHandlerPrivate::notifyAllExcept(string notify, LinphoneAddress *addr) {
-	for(auto participant : conf->getParticipants()) {
+	for(const auto &participant : conf->getParticipants()) {
 		if(!linphone_address_equal(participant.getAddress(), addr)) {
 			LinphoneEvent *lev = linphone_core_create_notify(lc, participant.getAddress(), "Conference");
 			LinphoneContent* content = linphone_core_create_content(lev->lc);
@@ -76,7 +76,7 @@ string Conference::LocalConferenceEventHandler::subscribeReceived(LinphoneEvent 
 	xml_schema::NamespaceInfomap map;
 
 	map[""].name = "urn:ietf:params:xml:ns:conference-info";
-	for(auto participant : d->conf->getParticipants()) {
+	for(const auto &participant : d->conf->getParticipants()) {
 		User_type user = User_type();
 		User_roles_type roles;
 		user.setRoles(roles);

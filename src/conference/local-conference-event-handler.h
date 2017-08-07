@@ -52,9 +52,10 @@ namespace LinphonePrivate {
     public:
       Participant(LinphoneAddress *addr, bool admin);
       ~Participant();
-      bool isAdmin();
-      LinphoneAddress *getAddress();
+      bool isAdmin() const;
+      const LinphoneAddress *getAddress() const;
 
+    private:
       LinphoneAddress *mAddr;
       bool mAdmin;
     };
@@ -63,12 +64,15 @@ namespace LinphonePrivate {
     public:
       LocalConference(LinphoneCore *lc, LinphoneAddress *confAddr);
       ~LocalConference();
-      LinphoneAddress *getAddress();
-      std::list<Participant> getParticipants();
-
-      std::shared_ptr<LocalConferenceEventHandler> mHandler;
+      const LinphoneAddress *getAddress() const;
+      std::list<Participant> getParticipants() const;
+      const std::shared_ptr<LocalConferenceEventHandler> getHandler() const;
+      
       std::list<Participant> mParticipants;
+
+    private:
       LinphoneAddress *mConfAddr;
+      std::shared_ptr<LocalConferenceEventHandler> mHandler;
     };
   }
 }
@@ -84,11 +88,16 @@ LinphonePrivate::Conference::LocalConference::~LocalConference() {
   //linphone_address_unref(mConfAddr);
 }
 
-LinphoneAddress* LinphonePrivate::Conference::LocalConference::getAddress() {
+const LinphoneAddress* LinphonePrivate::Conference::LocalConference::getAddress() const {
   return mConfAddr;
 }
 
-std::list<LinphonePrivate::Conference::Participant> LinphonePrivate::Conference::LocalConference::getParticipants() {
+
+const std::shared_ptr<LinphonePrivate::Conference::LocalConferenceEventHandler> LinphonePrivate::Conference::LocalConference::getHandler() const {
+  return mHandler;
+}
+
+std::list<LinphonePrivate::Conference::Participant> LinphonePrivate::Conference::LocalConference::getParticipants() const {
   return mParticipants;
 }
 
@@ -101,11 +110,11 @@ LinphonePrivate::Conference::Participant::~Participant() {
   //linphone_address_unref(mAddr);
 }
 
-bool LinphonePrivate::Conference::Participant::isAdmin() {
+bool LinphonePrivate::Conference::Participant::isAdmin() const {
   return mAdmin;
 }
 
-LinphoneAddress* LinphonePrivate::Conference::Participant::getAddress() {
+const LinphoneAddress* LinphonePrivate::Conference::Participant::getAddress() const {
   return mAddr;
 }
 
