@@ -67,12 +67,12 @@ namespace LinphonePrivate {
       const LinphoneAddress *getAddress() const;
       std::list<Participant> getParticipants() const;
       const std::shared_ptr<LocalConferenceEventHandler> getHandler() const;
-      
-      std::list<Participant> mParticipants;
+      void addParticipant(Participant p);
 
     private:
       LinphoneAddress *mConfAddr;
       std::shared_ptr<LocalConferenceEventHandler> mHandler;
+      std::list<Participant> mParticipants;
     };
   }
 }
@@ -99,6 +99,10 @@ const std::shared_ptr<LinphonePrivate::Conference::LocalConferenceEventHandler> 
 
 std::list<LinphonePrivate::Conference::Participant> LinphonePrivate::Conference::LocalConference::getParticipants() const {
   return mParticipants;
+}
+
+void LinphonePrivate::Conference::LocalConference::addParticipant(LinphonePrivate::Conference::Participant p) {
+  mParticipants.push_back(p);
 }
 
 LinphonePrivate::Conference::Participant::Participant(LinphoneAddress *addr, bool admin) {

@@ -663,8 +663,8 @@ void send_first_notify(void) {
   LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
   string notify;
 
-  localConf.mParticipants.push_back(p1);
-  localConf.mParticipants.push_back(p2);
+  localConf.addParticipant(p1);
+  localConf.addParticipant(p2);
   notify = localConf.getHandler()->subscribeReceived(lev);
   tester.mHandler->notifyReceived(notify.c_str());
 
@@ -695,8 +695,8 @@ void send_added_notify(void) {
 	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
 	string notify;
 
-	localConf.mParticipants.push_back(p1);
-	localConf.mParticipants.push_back(p2);
+	localConf.addParticipant(p1);
+	localConf.addParticipant(p2);
 	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
@@ -737,8 +737,8 @@ void send_removed_notify(void) {
 	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
 	string notify;
 
-	localConf.mParticipants.push_back(p1);
-	localConf.mParticipants.push_back(p2);
+	localConf.addParticipant(p1);
+	localConf.addParticipant(p2);
 	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
@@ -776,8 +776,8 @@ void send_admined_notify(void) {
 	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
 	string notify;
 
-	localConf.mParticipants.push_back(p1);
-	localConf.mParticipants.push_back(p2);
+	localConf.addParticipant(p1);
+	localConf.addParticipant(p2);
 	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
@@ -816,8 +816,8 @@ void send_unadmined_notify(void) {
 	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
 	string notify;
 
-	localConf.mParticipants.push_back(p1);
-	localConf.mParticipants.push_back(p2);
+	localConf.addParticipant(p1);
+	localConf.addParticipant(p2);
 	notify = localConf.getHandler()->subscribeReceived(lev);
 	tester.mHandler->notifyReceived(notify.c_str());
 
