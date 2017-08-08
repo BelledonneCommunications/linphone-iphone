@@ -1976,10 +1976,11 @@ static BOOL libStarted = FALSE;
 	// init audio session (just getting the instance will init)
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	BOOL bAudioInputAvailable = audioSession.inputAvailable;
-	NSError *err;
+	NSError *err = nil;
 
 	if (![audioSession setActive:NO error:&err] && err) {
 		LOGE(@"audioSession setActive failed: %@", [err description]);
+		err = nil;
 	}
 	if (!bAudioInputAvailable) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"No microphone", nil)
@@ -2601,7 +2602,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)setSpeakerEnabled:(BOOL)enable {
 	_speakerEnabled = enable;
-	NSError *err;
+	NSError *err = nil;
 
 	if (enable && [self allowSpeaker]) {
 		[[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&err];
@@ -2615,6 +2616,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	if (err) {
 		LOGE(@"Failed to change audio route: err %@", err.localizedDescription);
+		err = nil;
 	}
 }
 
@@ -2623,7 +2625,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		// The change of route will be done in setSpeakerEnabled
 		_bluetoothEnabled = enable;
 		if (_bluetoothEnabled) {
-			NSError *err;
+			NSError *err = nil;
 			AVAudioSessionPortDescription *_bluetoothPort = [AudioHelper bluetoothAudioDevice];
 			[[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&err];
 			// if setting bluetooth failed, it must be because the device is not available
@@ -2631,6 +2633,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			if (err) {
 				_bluetoothEnabled = FALSE;
 				LOGE(@"Failed to enable bluetooth: err %@", err.localizedDescription);
+				err = nil;
 			} else {
 				_speakerEnabled = FALSE;
 				return;

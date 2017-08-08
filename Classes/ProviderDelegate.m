@@ -50,19 +50,25 @@
 }
 
 - (void)configAudioSession:(AVAudioSession *)audioSession {
-	NSError *err;
+	NSError *err = nil;
 	[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
 				  withOptions:AVAudioSessionCategoryOptionAllowBluetooth
 						error:&err];
-	if (err)
+	if (err) {
 		LOGE(@"Unable to change audio category because : %@", err.localizedDescription);
+		err = nil;
+	}
 	[audioSession setMode:AVAudioSessionModeVoiceChat error:&err];
-	if (err)
+	if (err) {
 		LOGE(@"Unable to change audio mode because : %@", err.localizedDescription);
+		err = nil;
+	}
 	double sampleRate = 44100.0;
 	[audioSession setPreferredSampleRate:sampleRate error:&err];
-	if (err)
+	if (err) {
 		LOGE(@"Unable to change preferred sample rate because : %@", err.localizedDescription);
+		err = nil;
+	}
 }
 
 - (void)reportIncomingCallwithUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video {
