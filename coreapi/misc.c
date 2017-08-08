@@ -464,13 +464,15 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 
 		if (ping_time_ms>threshold){
 			/* we might be in a 2G network*/
-			params->low_bandwidth=TRUE;
+			linphone_call_params_enable_low_bandwidth(params, TRUE);
 		}/*else use default settings */
 	}
-	if (params->low_bandwidth){
-		params->up_bw=params->down_bw=linphone_core_get_edge_bw(lc);
-		params->up_ptime=params->down_ptime=linphone_core_get_edge_ptime(lc);
-		params->has_video=FALSE;
+	if (linphone_call_params_low_bandwidth_enabled(params)){
+		linphone_call_params_set_up_bandwidth(params, linphone_core_get_edge_bw(lc));
+		linphone_call_params_set_down_bandwidth(params, linphone_core_get_edge_bw(lc));
+		linphone_call_params_set_up_ptime(params, linphone_core_get_edge_ptime(lc));
+		linphone_call_params_set_down_ptime(params, linphone_core_get_edge_ptime(lc));
+		linphone_call_params_enable_video(params, FALSE);
 	}
 }
 
@@ -555,7 +557,7 @@ static void linphone_core_add_local_ice_candidates(LinphoneCall *call, int famil
 		ice_add_local_candidate(video_cl, "host", family, addr, call->media_ports[call->main_video_stream_index].rtcp_port, 2, NULL);
 		call->video_stats->ice_state = LinphoneIceStateInProgress;
 	}
-	if (call->params->realtimetext_enabled && (text_cl != NULL)
+	if (linphone_call_params_realtime_text_enabled(call->params) && (text_cl != NULL)
 		&& (ice_check_list_state(text_cl) != ICL_Completed) && (ice_check_list_candidates_gathered(text_cl) == FALSE)) {
 		ice_add_local_candidate(text_cl, "host", family, addr, call->media_ports[call->main_text_stream_index].rtp_port, 1, NULL);
 		ice_add_local_candidate(text_cl, "host", family, addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
@@ -706,7 +708,7 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 
 	session_state = ice_session_state(call->ice_session);
 	if ((session_state == IS_Completed) || ((session_state == IS_Failed) && (ice_session_has_completed_check_list(call->ice_session) == TRUE))) {
-		if (call->params->has_audio && (audio_check_list != NULL)) {
+		if (linphone_call_params_audio_enabled(call->params) && (audio_check_list != NULL)) {
 			if (ice_check_list_state(audio_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
 					case ICT_HostCandidate:
@@ -729,7 +731,7 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 			}
 		}else call->audio_stats->ice_state = LinphoneIceStateNotActivated;
 
-		if (call->params->has_video && (video_check_list != NULL)) {
+		if (linphone_call_params_video_enabled(call->params) && (video_check_list != NULL)) {
 			if (ice_check_list_state(video_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
 					case ICT_HostCandidate:
@@ -752,7 +754,7 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 			}
 		}else call->video_stats->ice_state = LinphoneIceStateNotActivated;
 
-		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
+		if (linphone_call_params_realtime_text_enabled(call->params) && (text_check_list != NULL)) {
 			if (ice_check_list_state(text_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(text_check_list)) {
 					case ICT_HostCandidate:
@@ -776,18 +778,18 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 		}else call->text_stats->ice_state = LinphoneIceStateNotActivated;
 	} else if (session_state == IS_Running) {
 		call->audio_stats->ice_state = LinphoneIceStateInProgress;
-		if (call->params->has_video && (video_check_list != NULL)) {
+		if (linphone_call_params_video_enabled(call->params) && (video_check_list != NULL)) {
 			call->video_stats->ice_state = LinphoneIceStateInProgress;
 		}
-		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
+		if (linphone_call_params_realtime_text_enabled(call->params) && (text_check_list != NULL)) {
 			call->text_stats->ice_state = LinphoneIceStateInProgress;
 		}
 	} else {
 		call->audio_stats->ice_state = LinphoneIceStateFailed;
-		if (call->params->has_video && (video_check_list != NULL)) {
+		if (linphone_call_params_video_enabled(call->params) && (video_check_list != NULL)) {
 			call->video_stats->ice_state = LinphoneIceStateFailed;
 		}
-		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
+		if (linphone_call_params_realtime_text_enabled(call->params) && (text_check_list != NULL)) {
 			call->text_stats->ice_state = LinphoneIceStateFailed;
 		}
 	}

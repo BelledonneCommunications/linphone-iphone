@@ -545,15 +545,15 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	/*yet we use the same payload config for local and remote, since this is the largest use case*/
 	if (stats_type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL) {
 		stream = &call->audiostream->ms;
-		local_payload = current_params->audio_codec;
+		local_payload = linphone_call_params_get_used_audio_codec(current_params);
 		remote_payload = local_payload;
 	} else if (stats_type == LINPHONE_CALL_STATS_VIDEO && call->videostream != NULL) {
 		stream = &call->videostream->ms;
-		local_payload = current_params->video_codec;
+		local_payload = linphone_call_params_get_used_video_codec(current_params);
 		remote_payload = local_payload;
 	} else if (stats_type == LINPHONE_CALL_STATS_TEXT && call->textstream != NULL) {
 		stream = &call->textstream->ms;
-		local_payload = current_params->text_codec;
+		local_payload = linphone_call_params_get_used_text_codec(current_params);
 		remote_payload = local_payload;
 	}
 

@@ -34,6 +34,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/params/call-session-params.h
 	conference/params/call-session-params-p.h
 	conference/params/media-session-params.h
+	conference/params/media-session-params-p.h
 	conference/participant.h
 	conference/remote-conference.h
 	conference/session/call-session.h

@@ -131,54 +131,6 @@ extern "C" {
 #define STRING_SET(field, value)	do{ if (field){bctbx_free(field);field=NULL;}; field=bctbx_strdup(value); }while(0)
 #define STRING_TRANSFER(field, newvalue)	do{ if (field){bctbx_free(field);field=NULL;}; field=newvalue; }while(0)
 
-struct _LinphoneCallParams{
-	belle_sip_object_t base;
-	void *user_data;
-	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
-	int audio_bw; /* bandwidth limit for audio stream */
-	LinphoneMediaEncryption media_encryption;
-	PayloadType *audio_codec; /*audio codec currently in use */
-	PayloadType *video_codec; /*video codec currently in use */
-	PayloadType *text_codec; /*text codec currently in use */
-	MSVideoSize sent_vsize; /* DEPRECATED: Size of the video currently being sent */
-	MSVideoSize recv_vsize; /* DEPRECATED: Size of the video currently being received */
-	LinphoneVideoDefinition *sent_vdef; /* Definition of the video currently being sent */
-	LinphoneVideoDefinition *recv_vdef; /* Definition of the video currrently being received */
-	float received_fps,sent_fps;
-	int down_bw;
-	int up_bw;
-	int down_ptime;
-	int up_ptime;
-	char *record_file;
-	char *session_name;
-	SalCustomHeader *custom_headers;
-	SalCustomSdpAttribute *custom_sdp_attributes;
-	SalCustomSdpAttribute *custom_sdp_media_attributes[LinphoneStreamTypeUnknown];
-	LinphonePrivacyMask privacy;
-	LinphoneMediaDirection audio_dir;
-	LinphoneMediaDirection video_dir;
-	bool_t has_audio;
-	bool_t has_video;
-	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
-	bool_t implicit_rtcp_fb;
-
-	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
-	bool_t in_conference; /*in conference mode */
-	bool_t low_bandwidth;
-	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
-
-	uint16_t avpf_rr_interval; /*in milliseconds*/
-	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice) - unused for the moment*/
-	bool_t video_multicast_enabled;
-
-	bool_t audio_multicast_enabled;
-	bool_t realtimetext_enabled;
-	bool_t update_call_when_ice_completed;
-	bool_t encryption_mandatory;
-};
-
-BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallParams);
-
 
 typedef enum _ImdnType {
 	ImdnTypeDelivery,
@@ -445,6 +397,38 @@ SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params);
 void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const SalCustomHeader *ch);
 void linphone_call_params_set_custom_sdp_attributes(LinphoneCallParams *params, const SalCustomSdpAttribute *csa);
 void linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa);
+bool_t linphone_call_params_get_in_conference(const LinphoneCallParams *params);
+void linphone_call_params_set_in_conference(LinphoneCallParams *params, bool_t value);
+bool_t linphone_call_params_get_internal_call_update(const LinphoneCallParams *params);
+void linphone_call_params_set_internal_call_update(LinphoneCallParams *params, bool_t value);
+bool_t linphone_call_params_implicit_rtcp_fb_enabled(const LinphoneCallParams *params);
+void linphone_call_params_enable_implicit_rtcp_fb(LinphoneCallParams *params, bool_t value);
+int linphone_call_params_get_down_bandwidth(const LinphoneCallParams *params);
+void linphone_call_params_set_down_bandwidth(LinphoneCallParams *params, int value);
+int linphone_call_params_get_up_bandwidth(const LinphoneCallParams *params);
+void linphone_call_params_set_up_bandwidth(LinphoneCallParams *params, int value);
+int linphone_call_params_get_down_ptime(const LinphoneCallParams *params);
+void linphone_call_params_set_down_ptime(LinphoneCallParams *params, int value);
+int linphone_call_params_get_up_ptime(const LinphoneCallParams *params);
+void linphone_call_params_set_up_ptime(LinphoneCallParams *params, int value);
+SalCustomHeader * linphone_call_params_get_custom_headers(const LinphoneCallParams *params);
+SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_attributes(const LinphoneCallParams *params);
+SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_media_attributes(const LinphoneCallParams *params, LinphoneStreamType type);
+LinphoneCall * linphone_call_params_get_referer(const LinphoneCallParams *params);
+void linphone_call_params_set_referer(LinphoneCallParams *params, LinphoneCall *referer);
+bool_t linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params);
+void linphone_call_params_set_update_call_when_ice_completed(LinphoneCallParams *params, bool_t value);
+void linphone_call_params_set_sent_vsize(LinphoneCallParams *params, MSVideoSize vsize);
+void linphone_call_params_set_recv_vsize(LinphoneCallParams *params, MSVideoSize vsize);
+void linphone_call_params_set_sent_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef);
+void linphone_call_params_set_received_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef);
+void linphone_call_params_set_sent_fps(LinphoneCallParams *params, float value);
+void linphone_call_params_set_received_fps(LinphoneCallParams *params, float value);
+void linphone_call_params_set_used_audio_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
+void linphone_call_params_set_used_video_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
+void linphone_call_params_set_used_text_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
+bool_t linphone_call_params_get_no_user_consent(const LinphoneCallParams *params);
+void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t value);
 
 void linphone_auth_info_write_config(LinphoneConfig *config, LinphoneAuthInfo *obj, int pos);
 LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);

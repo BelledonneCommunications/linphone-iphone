@@ -16,28 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFERENCE_CALL_SESSION_PARAMS_P_H_
-#define _CONFERENCE_CALL_SESSION_PARAMS_P_H_
+#ifndef _CALL_SESSION_PARAMS_P_H_
+#define _CALL_SESSION_PARAMS_P_H_
 
-#include "object/object-p.h"
+#include "object/clonable-object-p.h"
 
 #include "call-session-params.h"
 
-#include "linphone/types.h"
-
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Conference {
-		class CallSessionParamsPrivate : public ObjectPrivate {
-		public:
-			virtual ~CallSessionParamsPrivate () = default;
+LINPHONE_BEGIN_NAMESPACE
 
-			LinphonePrivacyMask privacy = LinphonePrivacyNone;
+class CallSessionParamsPrivate : public ClonableObjectPrivate {
+public:
+	CallSessionParamsPrivate () = default;
+	CallSessionParamsPrivate (const CallSessionParamsPrivate &src);
+	virtual ~CallSessionParamsPrivate ();
 
-			L_DECLARE_PUBLIC(CallSessionParams);
-		};
-	}
-}
+	bool getInConference () const { return inConference; }
+	void setInConference (bool value) { inConference = value; }
+	bool getInternalCallUpdate () const { return internalCallUpdate; }
+	void setInternalCallUpdate (bool value) { internalCallUpdate = value; }
+	bool getNoUserConsent () const { return noUserConsent; }
+	void setNoUserConsent (bool value) { noUserConsent = value; }
 
-#endif // ifndef _CONFERENCE_CALL_SESSION_PARAMS_P_H_
+	SalCustomHeader * getCustomHeaders () const;
+	void setCustomHeaders (const SalCustomHeader *ch);
+	SalCustomSdpAttribute * getCustomSdpAttributes () const;
+	void setCustomSdpAttributes (const SalCustomSdpAttribute *csa);
+	SalCustomSdpAttribute * getCustomSdpMediaAttributes (LinphoneStreamType lst) const;
+	void setCustomSdpMediaAttributes (LinphoneStreamType lst, const SalCustomSdpAttribute *csa);
+
+	LinphoneCall *getReferer () const { return referer; }
+	void setReferer (LinphoneCall *call) { referer = call; }
+
+public:
+	std::string sessionName;
+
+	LinphonePrivacyMask privacy = LinphonePrivacyNone;
+
+private:
+	bool inConference = false;
+	bool internalCallUpdate = false;
+	bool noUserConsent = false; /* When set to true an UPDATE request will be used instead of reINVITE */
+	SalCustomHeader *customHeaders = nullptr;
+	SalCustomSdpAttribute *customSdpAttributes = nullptr;
+	SalCustomSdpAttribute *customSdpMediaAttributes[LinphoneStreamTypeUnknown];
+	LinphoneCall *referer = nullptr; /* In case call creation is consecutive to an incoming transfer, this points to the original call */
+
+public:
+	L_DECLARE_PUBLIC(CallSessionParams);
+};
+
+LINPHONE_END_NAMESPACE
+
+#endif // ifndef _CALL_SESSION_PARAMS_P_H_

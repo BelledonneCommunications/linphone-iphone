@@ -338,6 +338,16 @@ LINPHONE_PUBLIC void linphone_call_params_set_audio_direction(LinphoneCallParams
 LINPHONE_PUBLIC void linphone_call_params_set_video_direction(LinphoneCallParams *cp, LinphoneMediaDirection dir);
 
 
+int linphone_call_params_get_audio_bandwidth_limit(const LinphoneCallParams *params);
+bool_t linphone_call_params_real_early_media_enabled(const LinphoneCallParams *params);
+bool_t linphone_call_params_avpf_enabled(const LinphoneCallParams *params);
+void linphone_call_params_enable_avpf(LinphoneCallParams *params, bool_t enable);
+bool_t linphone_call_params_mandatory_media_encryption_enabled(const LinphoneCallParams *params);
+void linphone_call_params_enable_mandatory_media_encryption(LinphoneCallParams *params, bool_t value);
+uint16_t linphone_call_params_get_avpf_rr_interval(const LinphoneCallParams *params);
+void linphone_call_params_set_avpf_rr_interval(LinphoneCallParams *params, uint16_t value);
+
+
 /*******************************************************************************
  * Reference and user data handling functions                                  *
  ******************************************************************************/

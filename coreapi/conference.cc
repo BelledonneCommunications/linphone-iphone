@@ -415,7 +415,7 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 			LinphoneCallParams * new_params = params ? linphone_call_params_copy(params) : linphone_core_create_call_params(m_core, NULL);
 			LinphoneCall *call;
 			/*toggle this flag so the call is immediately added to the conference upon acceptance*/
-			new_params->in_conference = TRUE;
+			linphone_call_params_set_in_conference(new_params, TRUE);
 			linphone_call_params_enable_video(new_params, FALSE); /*turn off video as it is not supported for conferencing at this time*/
 			call = linphone_core_invite_address_with_params(m_core, addr, new_params);
 			if (!call){
@@ -424,7 +424,7 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 			linphone_call_params_unref(new_params);
 		}else{
 			/*there is already a call to this address, so simply join it to the local conference if not already done*/
-			if (!call->current_params->in_conference)
+			if (!linphone_call_params_get_in_conference(call->current_params))
 				addParticipant(call);
 		}
 		/*if the local participant is not yet created, created it and it to the conference */
@@ -434,19 +434,19 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 }
 
 int LocalConference::addParticipant(LinphoneCall *call) {
-	if (call->current_params->in_conference){
+	if (linphone_call_params_get_in_conference(call->current_params)){
 		ms_error("Already in conference");
 		return -1;
 	}
 
 	if (call->state==LinphoneCallPaused){
-		call->params->in_conference=TRUE;
-		call->params->has_video=FALSE;
+		linphone_call_params_set_in_conference(call->params, TRUE);
+		linphone_call_params_enable_video(call->params, FALSE);
 		linphone_call_resume(call);
 	}else if (call->state==LinphoneCallStreamsRunning){
 		LinphoneCallParams *params = linphone_core_create_call_params(m_core, call);
-		params->in_conference=TRUE;
-		params->has_video=FALSE;
+		linphone_call_params_set_in_conference(params, TRUE);
+		linphone_call_params_enable_video(params, FALSE);
 
 		if (call->audiostream || call->videostream){
 			linphone_call_stop_media_streams(call); /*free the audio & video local resources*/
@@ -471,8 +471,8 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 	int err=0;
 	char *str;
 
-	if (!call->current_params->in_conference){
-		if (call->params->in_conference){
+	if (!linphone_call_params_get_in_conference(call->current_params)){
+		if (linphone_call_params_get_in_conference(call->params)){
 			ms_warning("Not (yet) in conference, be patient");
 			return -1;
 		}else{
@@ -480,14 +480,14 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 			return -1;
 		}
 	}
-	call->params->in_conference=FALSE;
+	linphone_call_params_set_in_conference(call->params, FALSE);
 
 	str=linphone_call_get_remote_address_as_string(call);
 	ms_message("%s will be removed from conference", str);
 	ms_free(str);
 	if (active){
 		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
-		params->in_conference=FALSE;
+		linphone_call_params_set_in_conference(params, FALSE);
 		// reconnect local audio with this call
 		if (isIn()){
 			ms_message("Leaving conference for reconnecting with unique call.");
@@ -522,7 +522,7 @@ int LocalConference::convertConferenceToCall(){
 	while (calls) {
 		LinphoneCall *rc=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		if (rc->params->in_conference) { // not using current_param
+		if (linphone_call_params_get_in_conference(rc->params)) { // not using current_param
 			bool_t active_after_removed=isIn();
 			err=removeFromConference(rc, active_after_removed);
 			break;
@@ -566,7 +566,7 @@ int LocalConference::terminate() {
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		if (call->current_params->in_conference) {
+		if (linphone_call_params_get_in_conference(call->current_params)) {
 			linphone_call_terminate(call);
 		}
 	}
@@ -639,7 +639,7 @@ int LocalConference::stopRecording() {
 }
 
 void LocalConference::onCallStreamStarting(LinphoneCall *call, bool isPausedByRemote) {
-	call->params->has_video = FALSE;
+	linphone_call_params_enable_video(call->params, FALSE);
 	call->camera_enabled = FALSE;
 	ms_message("LocalConference::onCallStreamStarting(): joining AudioStream [%p] of call [%p] into conference.", call->audiostream, call);
 	MSAudioEndpoint *ep=ms_audio_endpoint_get_from_stream(call->audiostream,TRUE);

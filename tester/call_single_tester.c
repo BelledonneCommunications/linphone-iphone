@@ -3733,7 +3733,7 @@ static void call_with_in_dialog_update(void) {
 
 	liblinphone_tester_check_rtcp(marie,pauline);
 	params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
-	params->no_user_consent=TRUE;
+	linphone_call_params_set_no_user_consent(params, TRUE);
 	linphone_call_update(linphone_core_get_current_call(marie->lc),params);
 	linphone_call_params_unref(params);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));

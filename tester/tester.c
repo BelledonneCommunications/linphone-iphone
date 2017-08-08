@@ -710,7 +710,7 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 
 		const LinphoneCallParams *cp1 = linphone_call_get_current_params(c1);
 		const LinphoneCallParams *cp2 = linphone_call_get_current_params(c2);
-		if (cp1->update_call_when_ice_completed && cp2->update_call_when_ice_completed) {
+		if (linphone_call_params_get_update_call_when_ice_completed(cp1) && linphone_call_params_get_update_call_when_ice_completed(cp2)) {
 			memset(&remaddr, 0, remaddrlen);
 			result_desc = sal_call_get_final_media_description(c2->op);
 			expected_addr = result_desc->streams[0].rtp_addr;

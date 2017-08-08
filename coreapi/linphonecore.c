@@ -3340,10 +3340,10 @@ LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *
 	}
 
 	if (!params){
-		cp->has_audio = call->current_params->has_audio;
-		cp->has_video = call->current_params->has_video; /*start the call to refer-target with video enabled if original call had video*/
+		linphone_call_params_enable_audio(cp, linphone_call_params_audio_enabled(call->current_params));
+		linphone_call_params_enable_video(cp, linphone_call_params_video_enabled(call->current_params)); /*start the call to refer-target with video enabled if original call had video*/
 	}
-	cp->referer=call;
+	linphone_call_params_set_referer(cp, call);
 	ms_message("Starting new call to refered address %s",call->refer_to);
 	call->refer_pending=FALSE;
 	newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
@@ -3456,7 +3456,7 @@ const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAdd
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneCall *call;
 	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
-	p->has_video &= !!lc->video_policy.automatically_initiate;
+	linphone_call_params_enable_video(p, linphone_call_params_video_enabled(p) & !!lc->video_policy.automatically_initiate);
 	call=linphone_core_invite_with_params(lc,url,p);
 	linphone_call_params_unref(p);
 	return call;
@@ -3476,7 +3476,7 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
 LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneCall *call;
 	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
-	p->has_video &= !!lc->video_policy.automatically_initiate;
+	linphone_call_params_enable_video(p, linphone_call_params_video_enabled(p) & !!lc->video_policy.automatically_initiate);
 	call=linphone_core_invite_address_with_params (lc,addr,p);
 	linphone_call_params_unref(p);
 	return call;
@@ -3554,11 +3554,11 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
-		cp->avpf_enabled = linphone_proxy_config_avpf_enabled(proxy);
-		cp->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(proxy) * 1000;
+		linphone_call_params_enable_avpf(cp, linphone_proxy_config_avpf_enabled(proxy));
+		linphone_call_params_set_avpf_rr_interval(cp, linphone_proxy_config_get_avpf_rr_interval(proxy) * 1000);
 	}else{
-		cp->avpf_enabled=linphone_core_get_avpf_mode(lc)==LinphoneAVPFEnabled;
-		if (cp->avpf_enabled) cp->avpf_rr_interval=linphone_core_get_avpf_rr_interval(lc) * 1000;
+		linphone_call_params_enable_avpf(cp, linphone_core_get_avpf_mode(lc)==LinphoneAVPFEnabled);
+		if (linphone_call_params_avpf_enabled(cp)) linphone_call_params_set_avpf_rr_interval(cp, linphone_core_get_avpf_rr_interval(lc) * 1000);
 	}
 
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
@@ -6808,26 +6808,26 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 }
 
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
-	params->has_audio = TRUE;
-	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
+	linphone_call_params_enable_audio(params, TRUE);
+	linphone_call_params_enable_video(params, linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate);
 	if (!linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate){
 		ms_error("LinphoneCore has video disabled for both capture and display, but video policy is to start the call with video. "
 			"This is a possible mis-use of the API. In this case, video is disabled in default LinphoneCallParams");
 	}
-	params->media_encryption=linphone_core_get_media_encryption(lc);
-	params->in_conference=FALSE;
-	params->realtimetext_enabled = linphone_core_realtime_text_enabled(lc);
-	params->privacy=LinphonePrivacyDefault;
-	params->avpf_enabled=linphone_core_get_avpf_mode(lc);
-	params->implicit_rtcp_fb = lp_config_get_int(lc->config,"rtp","rtcp_fb_implicit_rtcp_fb",TRUE);
-	params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(lc);
-	params->audio_dir=LinphoneMediaDirectionSendRecv;
-	params->video_dir=LinphoneMediaDirectionSendRecv;
-	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
-	params->audio_multicast_enabled=linphone_core_audio_multicast_enabled(lc);
-	params->video_multicast_enabled=linphone_core_video_multicast_enabled(lc);
-	params->update_call_when_ice_completed = lp_config_get_int(lc->config, "sip", "update_call_when_ice_completed", TRUE);
-	params->encryption_mandatory = linphone_core_is_media_encryption_mandatory(lc);
+	linphone_call_params_set_media_encryption(params, linphone_core_get_media_encryption(lc));
+	linphone_call_params_set_in_conference(params, FALSE);
+	linphone_call_params_enable_realtime_text(params, linphone_core_realtime_text_enabled(lc));
+	linphone_call_params_set_privacy(params, LinphonePrivacyDefault);
+	linphone_call_params_enable_avpf(params, linphone_core_get_avpf_mode(lc));
+	linphone_call_params_enable_implicit_rtcp_fb(params, lp_config_get_int(lc->config,"rtp","rtcp_fb_implicit_rtcp_fb",TRUE));
+	linphone_call_params_set_avpf_rr_interval(params, linphone_core_get_avpf_rr_interval(lc));
+	linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendRecv);
+	linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendRecv);
+	linphone_call_params_enable_early_media_sending(params, lp_config_get_int(lc->config,"misc","real_early_media",FALSE));
+	linphone_call_params_enable_audio_multicast(params, linphone_core_audio_multicast_enabled(lc));
+	linphone_call_params_enable_video_multicast(params, linphone_core_video_multicast_enabled(lc));
+	linphone_call_params_set_update_call_when_ice_completed(params, lp_config_get_int(lc->config, "sip", "update_call_when_ice_completed", TRUE));
+	linphone_call_params_enable_mandatory_media_encryption(params, linphone_core_is_media_encryption_mandatory(lc));
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
