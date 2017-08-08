@@ -2630,6 +2630,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			// anymore (disconnected), so deactivate bluetooth.
 			if (err) {
 				_bluetoothEnabled = FALSE;
+				LOGE(@"Failed to enable bluetooth: err %@", err.localizedDescription);
 			} else {
 				_speakerEnabled = FALSE;
 				return;
