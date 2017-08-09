@@ -55,7 +55,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object-p.h
 	object/object.h
 	object/singleton.h
+<<<<<<< HEAD
 	utils/enum-generator.h
+=======
+	utils/content-type.h
+>>>>>>> b7c744ef8... Use ChatRoom C++ class.
 	utils/general.h
 	utils/magic-macros.h
 	utils/utils.h
@@ -84,6 +88,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	message/message.cpp
 	object/clonable-object.cpp
 	object/object.cpp
+	utils/content-type.cpp
 	utils/general.cpp
 	utils/utils.cpp
 )

@@ -161,7 +161,7 @@ void file_transfer_progress_indication(LinphoneChatMessage *msg, const LinphoneC
 
 void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 	stats *counters = get_stats(lc);
-	if (room->remote_is_composing == LinphoneIsComposingActive) {
+	if (linphone_chat_room_is_remote_composing(room)) {
 		counters->number_of_LinphoneIsComposingActiveReceived++;
 	} else {
 		counters->number_of_LinphoneIsComposingIdleReceived++;
@@ -236,7 +236,7 @@ LinphoneChatMessage* create_message_from_sintel_trailer(LinphoneChatRoom *chat_r
 	file_size = ftell(file_to_send);
 	fseek(file_to_send, 0, SEEK_SET);
 
-	content = linphone_core_create_content(chat_room->lc);
+	content = linphone_core_create_content(linphone_chat_room_get_core(chat_room));
 	belle_sip_object_set_name(&content->base, "sintel trailer content");
 	linphone_content_set_type(content,"video");
 	linphone_content_set_subtype(content,"mkv");
@@ -262,7 +262,7 @@ LinphoneChatMessage* create_file_transfer_message_from_sintel_trailer(LinphoneCh
 	LinphoneChatMessage* msg;
 	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 
-	content = linphone_core_create_content(chat_room->lc);
+	content = linphone_core_create_content(linphone_chat_room_get_core(chat_room));
 	belle_sip_object_set_name(&content->base, "sintel trailer content");
 	linphone_content_set_type(content,"video");
 	linphone_content_set_subtype(content,"mkv");
@@ -413,15 +413,15 @@ static void text_message_with_send_error(void) {
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* check transient msg list: the msg should be in it, and should be the only one */
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 1, unsigned int, "%u");
-	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(chat_room->transient_messages,0), msg);
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 1, unsigned int, "%u");
+	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(linphone_chat_room_get_transient_messages(chat_room),0), msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
 	/*BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageInProgress,1, int, "%d");*/
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0, int, "%d");
 
 	/* the msg should have been discarded from transient list after an error */
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 0, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 0, unsigned int, "%u");
 
 	sal_set_send_error(marie->lc->sal, 0);
 
@@ -446,8 +446,8 @@ static void text_message_with_external_body(void) {
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* check transient msg list: the msg should be in it, and should be the only one */
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 1, unsigned int, "%u");
-	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(chat_room->transient_messages,0), msg);
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 1, unsigned int, "%u");
+	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(linphone_chat_room_get_transient_messages(chat_room),0), msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
@@ -455,7 +455,7 @@ static void text_message_with_external_body(void) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1, int, "%d");
 
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(chat_room->transient_messages), 0, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 0, unsigned int, "%u");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

@@ -1,5 +1,5 @@
 /*
- * utils.h
+ * content-type.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _UTILS_H_
-#define _UTILS_H_
+#ifndef _CONTENT_TYPE_H_
+#define _CONTENT_TYPE_H_
 
 #include <string>
-#include <vector>
 
 #include "general.h"
 
@@ -28,21 +27,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-namespace Utils {
-	LINPHONE_PUBLIC bool iequals (const std::string &a, const std::string &b);
-
-	LINPHONE_PUBLIC std::vector<std::string> split (const std::string &str, const std::string &delimiter);
-
-	LINPHONE_PUBLIC inline std::vector<std::string> split (const std::string &str, char delimiter) {
-		return split(str, std::string(1, delimiter));
-	}
-
-	LINPHONE_PUBLIC int stoi (const std::string &str, size_t *idx = 0, int base = 10);
-
-	// Return a buffer allocated with new.
-	LINPHONE_PUBLIC char *utf8ToChar (uint32_t ic);
+namespace ContentType {
+	bool isFileTransfer (const std::string &contentType);
+	bool isImIsComposing (const std::string &contentType);
+	bool isImdn (const std::string &contentType);
+	bool isText (const std::string &contentType);
 }
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _UTILS_H_
+#endif // ifndef _CONTENT_TYPE_H_

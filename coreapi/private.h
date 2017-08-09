@@ -180,6 +180,12 @@ struct _LinphoneCallParams{
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallParams);
 
 
+typedef enum _ImdnType {
+	ImdnTypeDelivery,
+	ImdnTypeDisplay
+} ImdnType;
+
+
 struct _LinphoneQualityReporting{
 	reporting_session_report_t * reports[3]; /**Store information on audio and video media streams (RFC 6035) */
 	bool_t was_video_running; /*Keep video state since last check in order to detect its (de)activation*/
@@ -278,11 +284,6 @@ struct _LinphoneChatMessage {
 #pragma GCC diagnostic pop
 #endif
 };
-
-/*
- *Gets a Message with a given message id and direction.
- */
-LINPHONE_PUBLIC LinphoneChatMessage * linphone_chat_room_find_message_with_dir(LinphoneChatRoom *cr, const char *message_id,LinphoneChatMessageDir dir);
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessage);
 
@@ -594,7 +595,7 @@ LINPHONE_PUBLIC void linphone_core_get_local_ip(LinphoneCore *lc, int af, const 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc, int index);
 void linphone_proxy_config_write_to_config_file(LinphoneConfig* config,LinphoneProxyConfig *obj, int index);
 
-LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
+int linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call);
 
 void linphone_call_init_stats(LinphoneCallStats *stats, LinphoneStreamType type);
@@ -650,7 +651,8 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
-void linphone_chat_room_add_weak_message(LinphoneChatRoom *cr, LinphoneChatMessage *cm);
+void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call);
+bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
@@ -659,11 +661,14 @@ void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, L
 void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
 void _linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg, bool_t unref);
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
-void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
-void linphone_chat_room_add_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+void linphone_chat_message_deactivate(LinphoneChatMessage *msg);
+void linphone_chat_message_release(LinphoneChatMessage *msg);
+void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChatMessage *msg);
+void linphone_chat_message_fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *message, int content_id);
+void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason);
 /**/
 
 struct _LinphoneProxyConfig
@@ -740,32 +745,10 @@ typedef enum _LinphoneIsComposingState {
 	LinphoneIsComposingActive
 } LinphoneIsComposingState;
 
-struct _LinphoneChatRoom{
-	belle_sip_object_t base;
-	void *user_data;
-	struct _LinphoneCore *lc;
-	char  *peer;
-	LinphoneAddress *peer_url;
-	MSList *messages_hist;
-	MSList *transient_messages;
-	bctbx_list_t *weak_messages;
-	int unread_count;
-	LinphoneIsComposingState remote_is_composing;
-	LinphoneIsComposingState is_composing;
-	belle_sip_source_t *remote_composing_refresh_timer;
-	belle_sip_source_t *composing_idle_timer;
-	belle_sip_source_t *composing_refresh_timer;
-	LinphoneCall *call;
-	LinphoneChatMessage *pending_message;
-	MSList *received_rtt_characters;
-};
-
 typedef struct _LinphoneChatMessageCharacter {
 	uint32_t value;
 	bool_t has_been_read;
 } LinphoneChatMessageCharacter;
-
-BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatRoom);
 
 
 typedef struct _LinphoneFriendPresence {

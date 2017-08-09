@@ -1719,7 +1719,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		call->ringing_beep=FALSE;
 	}
 	if (call->chat_room){
-		call->chat_room->call = NULL;
+		linphone_chat_room_set_call(call->chat_room, NULL);
 	}
 	if (lc->calls == NULL){
 		ms_bandwidth_controller_reset_state(lc->bw_controller);
