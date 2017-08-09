@@ -30,8 +30,10 @@ namespace LinphonePrivate {
 		virtual ~Singleton () = default;
 
 		static T *getInstance () {
-			if (!mInstance)
+			if (!mInstance) {
 				mInstance = new T();
+				static SingletonDeleter deleter;
+			}
 			return mInstance;
 		}
 
@@ -39,6 +41,12 @@ namespace LinphonePrivate {
 		explicit Singleton (ObjectPrivate &p) : Object(p) {}
 
 	private:
+		struct SingletonDeleter {
+			~SingletonDeleter () {
+				delete mInstance;
+			}
+		};
+
 		static T *mInstance;
 
 		L_DISABLE_COPY(Singleton);
