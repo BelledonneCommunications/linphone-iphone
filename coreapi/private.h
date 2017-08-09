@@ -1946,27 +1946,6 @@ SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
 /*****************************************************************************
  * LINPHONE CONTENT PRIVATE ACCESSORS                                        *
  ****************************************************************************/
-/**
- * Get the key associated with a RCS file transfer message if encrypted
- * @param[in] content LinphoneContent object.
- * @return The key to encrypt/decrypt the file associated to this content.
- */
-LINPHONE_PUBLIC const char *linphone_content_get_key(const LinphoneContent *content);
-
-/**
- * Get the size of key associated with a RCS file transfer message if encrypted
- * @param[in] content LinphoneContent object.
- * @return The key size in bytes
- */
-size_t linphone_content_get_key_size(const LinphoneContent *content);
-
-/**
- * Set the key associated with a RCS file transfer message if encrypted
- * @param[in] content LinphoneContent object.
- * @param[in] key The key to be used to encrypt/decrypt file associated to this content.
- * @param[in] keyLength The lengh of the key.
- */
-void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength);
 
 /**
  * Get the address of the crypto context associated with a RCS file transfer message if encrypted
