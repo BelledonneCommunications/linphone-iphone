@@ -1323,8 +1323,9 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		NSString *displayName = [self findTextField:ViewElement_DisplayName].text;
 		NSString *pwd = [self findTextField:ViewElement_Password].text;
 		LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
-		LinphoneAddress *addr =
-			linphone_address_new([NSString stringWithFormat:@"sip:%@@%@", username, domain].UTF8String);
+		LinphoneAddress *addr = linphone_address_new(NULL);
+		linphone_address_set_username(addr, username.UTF8String);
+		linphone_address_set_domain(addr, domain.UTF8String);
 		if (displayName && ![displayName isEqualToString:@""]) {
 			linphone_address_set_display_name(addr, displayName.UTF8String);
 		}
