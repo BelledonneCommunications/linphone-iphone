@@ -30,6 +30,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	cpim/parser/cpim-grammar.h
 	cpim/parser/cpim-parser.h
 	object/object.h
+	object/object-p.h
 	object/singleton.h
 	utils/general.h
 	utils/utils.h
@@ -42,6 +43,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	cpim/message/cpim-message.cpp
 	cpim/parser/cpim-grammar.cpp
 	cpim/parser/cpim-parser.cpp
+	object/object.cpp
 	utils/utils.cpp
 )
 

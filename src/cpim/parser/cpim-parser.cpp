@@ -24,6 +24,7 @@
 #include "linphone/core.h"
 
 #include "cpim-grammar.h"
+#include "object/object-p.h"
 #include "utils/utils.h"
 
 #include "cpim-parser.h"

@@ -1,5 +1,5 @@
 /*
- * cpim-header-p.h
+ * object.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,26 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CPIM_HEADER_P_H_
-#define _CPIM_HEADER_P_H_
+#include "object-p.h"
 
-#include "cpim-header.h"
-#include "object/object-p.h"
+#include "object.h"
+
+using namespace LinphonePrivate;
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		class HeaderPrivate : public ObjectPrivate {
-		public:
-			virtual ~HeaderPrivate () = default;
-
-		private:
-			std::string value;
-
-			L_DECLARE_PUBLIC(Header);
-		};
-	}
+Object::~Object () {
+	delete mPrivate;
 }
 
-#endif // ifndef _CPIM_HEADER_P_H_
+Object::Object (ObjectPrivate &p) : mPrivate(&p) {
+	mPrivate->mPublic = this;
+}
