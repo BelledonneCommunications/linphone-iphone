@@ -346,7 +346,7 @@ int sal_media_description_get_nb_active_streams(const SalMediaDescription *md);
 
 struct SalOpBase;
 typedef void (*SalOpReleaseCb)(struct SalOpBase *op);
-	
+
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/
 typedef struct SalOpBase{
 	Sal *root;
@@ -658,7 +658,7 @@ void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 void sal_verify_server_cn(Sal *ctx, bool_t verify);
 void sal_set_ssl_config(Sal *ctx, void *ssl_config);
 LINPHONE_PUBLIC void sal_set_uuid(Sal*ctx, const char *uuid);
-int sal_create_uuid(Sal*ctx, char *uuid, size_t len);
+LINPHONE_PUBLIC int sal_create_uuid(Sal*ctx, char *uuid, size_t len);
 int sal_generate_uuid(char *uuid, size_t len);
 LINPHONE_PUBLIC void sal_enable_test_features(Sal*ctx, bool_t enabled);
 void sal_use_no_initial_route(Sal *ctx, bool_t enabled);
@@ -963,5 +963,3 @@ int sal_get_http_proxy_port(const Sal *sal);
 #endif
 
 #endif
-
-
