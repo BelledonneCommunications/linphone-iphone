@@ -19,6 +19,7 @@
 #include "local-conference-event-handler.h"
 #include "conference-info.hxx"
 #include "private.h"
+#include "object/object-p.h"
 
 using namespace std;
 using namespace conference_info;

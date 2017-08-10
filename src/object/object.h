@@ -24,29 +24,14 @@
 // =============================================================================
 
 namespace LinphonePrivate {
-	class Object;
+	class ObjectPrivate;
 
-	class ObjectPrivate {
+	class LINPHONE_PUBLIC Object {
 	public:
-		virtual ~ObjectPrivate () = default;
+		virtual ~Object ();
 
 	protected:
-		Object *mPublic = nullptr;
-
-	private:
-		L_DECLARE_PUBLIC(Object);
-	};
-
-	class Object {
-	public:
-		virtual ~Object () {
-			delete mPrivate;
-		}
-
-	protected:
-		explicit Object (ObjectPrivate &p) : mPrivate(&p) {
-			mPrivate->mPublic = this;
-		}
+		explicit Object (ObjectPrivate &p);
 
 		ObjectPrivate *mPrivate = nullptr;
 

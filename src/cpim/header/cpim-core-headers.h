@@ -24,7 +24,7 @@
 // =============================================================================
 
 #define MAKE_CORE_HEADER(CLASS_PREFIX, NAME) \
-	class CLASS_PREFIX ## Header : public CoreHeader { \
+	class LINPHONE_PUBLIC CLASS_PREFIX ## Header : public CoreHeader { \
 	public: \
 		CLASS_PREFIX ## Header() = default; \
 		inline std::string getName() const override { \
@@ -43,7 +43,7 @@ namespace LinphonePrivate {
 		// Generic core header.
 		// -------------------------------------------------------------------------
 
-		class CoreHeader : public Header {
+		class LINPHONE_PUBLIC CoreHeader : public Header {
 			friend class HeaderNode;
 
 		public:
@@ -79,7 +79,7 @@ namespace LinphonePrivate {
 
 		class SubjectHeaderPrivate;
 
-		class SubjectHeader : public CoreHeader {
+		class LINPHONE_PUBLIC SubjectHeader : public CoreHeader {
 			friend class HeaderNode;
 
 		public:

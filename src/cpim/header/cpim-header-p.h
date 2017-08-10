@@ -20,6 +20,7 @@
 #define _CPIM_HEADER_P_H_
 
 #include "cpim-header.h"
+#include "object/object-p.h"
 
 // =============================================================================
 

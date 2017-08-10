@@ -2492,12 +2492,12 @@ test_t message_tests[] = {
 };
 
 static int message_tester_before_suite(void) {
-	liblinphone_tester_keep_uuid = TRUE;
+	//liblinphone_tester_keep_uuid = TRUE;
 	return 0;
 }
 
 static int message_tester_after_suite(void) {
-	liblinphone_tester_keep_uuid = FALSE;
+	//liblinphone_tester_keep_uuid = FALSE;
 	return 0;
 }
 

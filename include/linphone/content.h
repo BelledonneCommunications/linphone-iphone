@@ -193,6 +193,28 @@ LINPHONE_PUBLIC LinphoneContent * linphone_content_find_part_by_header(const Lin
 LINPHONE_PUBLIC const char * linphone_content_get_custom_header(const LinphoneContent *content, const char *header_name);
 
 /**
+ * Get the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key to encrypt/decrypt the file associated to this content.
+ */
+LINPHONE_PUBLIC const char *linphone_content_get_key(const LinphoneContent *content);
+
+/**
+ * Get the size of key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key size in bytes
+ */
+LINPHONE_PUBLIC size_t linphone_content_get_key_size(const LinphoneContent *content);
+
+/**
+ * Set the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @param[in] key The key to be used to encrypt/decrypt file associated to this content.
+ * @param[in] keyLength The lengh of the key.
+ */
+LINPHONE_PUBLIC void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength);
+
+/**
  * @}
  */
 
