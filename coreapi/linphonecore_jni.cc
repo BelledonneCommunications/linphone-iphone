@@ -3515,22 +3515,24 @@ extern "C" jint Java_org_linphone_core_PayloadTypeImpl_getRate(JNIEnv*  env,jobj
 /* Linphone Player */
 struct LinphonePlayerData {
 	LinphonePlayerData(JNIEnv *env, jobject listener, jobject window) :
-		mListener(env->NewGlobalRef(listener)),
-		mWindow(env->NewGlobalRef(window))
+		mListener(listener ? env->NewGlobalRef(listener) : NULL), mListenerClass(NULL),
+		mWindow(window ? env->NewGlobalRef(window) : NULL)
 	{
-		mListenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass(listener));
-		mEndOfFileMethodID = env->GetMethodID(mListenerClass, "endOfFile", "(Lorg/linphone/core/LinphonePlayer;)V");
-		if(mEndOfFileMethodID == NULL) {
-			ms_error("Could not get endOfFile method ID");
-			env->ExceptionClear();
+		if (mListener){
+			mListenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass(listener));
+			mEndOfFileMethodID = env->GetMethodID(mListenerClass, "endOfFile", "(Lorg/linphone/core/LinphonePlayer;)V");
+			if(mEndOfFileMethodID == NULL) {
+				ms_error("Could not get endOfFile method ID");
+				env->ExceptionClear();
+			}
 		}
 	}
 
 	~LinphonePlayerData() {
 		JNIEnv *env;
 		jvm->AttachCurrentThread(&env, NULL);
-		env->DeleteGlobalRef(mListener);
-		env->DeleteGlobalRef(mListenerClass);
+		if (mListener) env->DeleteGlobalRef(mListener);
+		if (mListenerClass) env->DeleteGlobalRef(mListenerClass);
 		if (mWindow) env->DeleteGlobalRef(mWindow);
 	}
 
@@ -3546,8 +3548,10 @@ struct LinphonePlayerData {
 static void _eof_callback(LinphonePlayer *player) {
 	JNIEnv *env;
 	LinphonePlayerData *player_data = (LinphonePlayerData *)linphone_player_get_user_data(player);
-	jvm->AttachCurrentThread(&env, NULL);
-	env->CallVoidMethod(player_data->mListener, player_data->mEndOfFileMethodID, player_data->mJLinphonePlayer);
+	if (player_data->mListener){
+		jvm->AttachCurrentThread(&env, NULL);
+		env->CallVoidMethod(player_data->mListener, player_data->mEndOfFileMethodID, player_data->mJLinphonePlayer);
+	}
 }
 
 extern "C" void Java_org_linphone_core_LinphonePlayerImpl_init(JNIEnv *env, jobject jPlayer, jlong ptr) {
@@ -3804,7 +3808,7 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getAverageQuality(	JNI
 
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getPlayer(JNIEnv *env, jobject thiz, jlong callPtr) {
 	LinphonePlayer *player = linphone_call_get_player((LinphoneCall *)callPtr);
-	LinphonePlayerData *data = new LinphonePlayerData(env, thiz, NULL);
+	LinphonePlayerData *data = new LinphonePlayerData(env, NULL, NULL);
 	linphone_player_set_user_data(player, data);
 	return (jlong)linphone_player_ref(player);
 }
@@ -7609,7 +7613,7 @@ JNIEXPORT void JNICALL Java_org_linphone_core_ErrorInfoImpl_unref(JNIEnv *env, j
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createLocalPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {
 	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, NULL, "MSAndroidDisplay", (void *)window);
-	LinphonePlayerData *data = new LinphonePlayerData(env, jobj, window);
+	LinphonePlayerData *data = new LinphonePlayerData(env, NULL, window);
 	linphone_player_set_user_data(player, data);
 	if(player == NULL) {
 		ms_error("Fails to create a player");
