@@ -37,7 +37,7 @@ namespace LinphonePrivate {
 		L_DECLARE_PUBLIC(Object);
 	};
 
-	class Object {
+	class LINPHONE_PUBLIC Object {
 	public:
 		virtual ~Object () {
 			delete mPrivate;

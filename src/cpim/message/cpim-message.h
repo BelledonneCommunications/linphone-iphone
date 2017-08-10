@@ -28,7 +28,7 @@ namespace LinphonePrivate {
 	namespace Cpim {
 		class MessagePrivate;
 
-		class Message : public Object {
+		class LINPHONE_PUBLIC Message : public Object {
 		public:
 			Message ();
 

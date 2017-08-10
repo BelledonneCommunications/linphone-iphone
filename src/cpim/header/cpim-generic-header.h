@@ -31,7 +31,7 @@ namespace LinphonePrivate {
 		class GenericHeaderPrivate;
 		class HeaderNode;
 
-		class GenericHeader : public Header {
+		class LINPHONE_PUBLIC GenericHeader : public Header {
 			friend class HeaderNode;
 
 		public:

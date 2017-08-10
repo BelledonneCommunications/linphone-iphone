@@ -29,7 +29,7 @@ namespace LinphonePrivate {
 	namespace Cpim {
 		class HeaderPrivate;
 
-		class Header : public Object {
+		class LINPHONE_PUBLIC Header : public Object {
 		public:
 			virtual ~Header () = default;
 

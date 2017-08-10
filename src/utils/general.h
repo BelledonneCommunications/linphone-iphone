@@ -21,6 +21,24 @@
 #ifndef _GENERAL_H_
 #define _GENERAL_H_
 
+#ifndef LINPHONE_PUBLIC
+	#if defined(_MSC_VER)
+		#ifdef LINPHONE_STATIC
+			#define LINPHONE_PUBLIC
+		#else
+			#ifdef LINPHONE_EXPORTS
+				#define LINPHONE_PUBLIC	__declspec(dllexport)
+			#else
+				#define LINPHONE_PUBLIC	__declspec(dllimport)
+			#endif
+		#endif
+	#else
+		#define LINPHONE_PUBLIC
+	#endif
+#endif
+
+// -----------------------------------------------------------------------------
+
 #define L_DECLARE_PRIVATE(CLASS) \
 	inline CLASS ## Private * getPrivate() { \
 		return reinterpret_cast<CLASS ## Private *>(mPrivate); \
