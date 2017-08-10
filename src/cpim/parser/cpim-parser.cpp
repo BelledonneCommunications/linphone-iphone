@@ -21,9 +21,8 @@
 #include <belr/abnf.h>
 #include <belr/grammarbuilder.h>
 
-#include "linphone/core.h"
-
 #include "cpim-grammar.h"
+#include "logger/logger.h"
 #include "object/object-p.h"
 #include "utils/utils.h"
 
@@ -100,7 +99,7 @@ namespace LinphonePrivate {
 				if (force)
 					header->force(mValue);
 				else if (!header->setValue(mValue)) {
-					ms_fatal("Unable to set value on core header: `%s` => `%s`.", mName.c_str(), mValue.c_str());
+					lWarning() << "Unable to set value on core header: `" << mName << "` => `" << mValue << "`.";
 					return nullptr;
 				}
 
@@ -120,7 +119,8 @@ namespace LinphonePrivate {
 			if (force)
 				header->force(mValue, language);
 			else if (!header->setValue(mValue) || (!language.empty() && !header->setLanguage(language))) {
-				ms_fatal("Unable to set value on subject header: `%s` => `%s`, `%s`.", mName.c_str(), mValue.c_str(), language.c_str());
+				lWarning() << "Unable to set value on subject header: `" <<
+					mName << "` => `" << mValue << "`, `" << language << "`.";
 				return nullptr;
 			}
 
@@ -167,7 +167,7 @@ namespace LinphonePrivate {
 			shared_ptr<Message> createMessage () const {
 				size_t size = mHeaders->size();
 				if (size != 2) {
-					ms_fatal("Bad headers lists size.");
+					lWarning() << "Bad headers lists size.";
 					return nullptr;
 				}
 
@@ -178,7 +178,7 @@ namespace LinphonePrivate {
 							[](const shared_ptr<const HeaderNode> &headerNode) {
 								return Utils::iequals(headerNode->getName(), "content-type") && headerNode->getValue() == "Message/CPIM";
 							}) == cpimHeaders->cend()) {
-					ms_fatal("No MIME `Content-Type` found!");
+					lWarning() << "No MIME `Content-Type` found!";
 					return nullptr;
 				}
 
@@ -219,7 +219,7 @@ Cpim::Parser::Parser () : Singleton(*new ParserPrivate) {
 
 	d->grammar = builder.createFromAbnf(getGrammar(), make_shared<belr::CoreRules>());
 	if (!d->grammar)
-		ms_fatal("Unable to build CPIM grammar.");
+		lFatal() << "Unable to build CPIM grammar.";
 }
 
 // -----------------------------------------------------------------------------
@@ -255,13 +255,13 @@ shared_ptr<Cpim::Message> Cpim::Parser::parseMessage (const string &input) {
 	size_t parsedSize;
 	shared_ptr<Node> node = parser.parseInput("Message", input, &parsedSize);
 	if (!node) {
-		ms_fatal("Unable to parse message.");
+		lWarning() << "Unable to parse message.";
 		return nullptr;
 	}
 
 	shared_ptr<MessageNode> messageNode = dynamic_pointer_cast<MessageNode>(node);
 	if (!messageNode) {
-		ms_fatal("Unable to cast belr result to message node.");
+		lWarning() << "Unable to cast belr result to message node.";
 		return nullptr;
 	}
 
