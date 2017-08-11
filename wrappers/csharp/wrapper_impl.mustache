@@ -40,8 +40,10 @@ namespace Linphone
 
 #if WINDOWS_UWP
         public const string BELLE_SIP_LIB_NAME = "bellesip";
+				public const string BCTOOLBOX_LIB_NAME = "bctoolbox";
 #else
         public const string BELLE_SIP_LIB_NAME = "linphone";
+				public const string BCTOOLBOX_LIB_NAME = "linphone";
 #endif
 
 #if ANDROID
@@ -95,11 +97,17 @@ namespace Linphone
 	{
 		internal IntPtr nativePtr;
 
+		internal GCHandle handle;
+
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate void OnLinphoneObjectDataDestroyed(IntPtr data);
 
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+#if WINDOWS_UWP
+		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, IntPtr cb);
+#else
 		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, OnLinphoneObjectDataDestroyed cb);
+#endif
 
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr belle_sip_object_data_get(IntPtr ptr, string name);
@@ -111,36 +119,32 @@ namespace Linphone
 		static extern void belle_sip_object_unref(IntPtr ptr);
 
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+		static extern void belle_sip_object_data_remove(IntPtr ptr, string data);
+
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_next(IntPtr ptr);
 
-		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_get_data(IntPtr ptr);
 
-		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, string data);
 
-		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, IntPtr data);
 
 #if __IOS__
 		[MonoPInvokeCallback(typeof(OnLinphoneObjectDataDestroyed))]
 #endif
-		private static void onDataDestroyed(IntPtr data)
-		{
-			if (data != IntPtr.Zero)
-			{
-				//Console.WriteLine("Freeing C# handle");
-				GCHandle handle = GCHandle.FromIntPtr(data);
-				handle.Free();
-			}
-		}
 
 		~LinphoneObject()
 		{
 			//Console.WriteLine("Destroying " + this.ToString());
 			if (nativePtr != IntPtr.Zero) {
 				//Console.WriteLine("Unreffing " + this.ToString());
+				belle_sip_object_data_remove(nativePtr, "cs_obj");
 				belle_sip_object_unref(nativePtr);
+				handle.Free();
 			}
 		}
 
@@ -177,9 +181,10 @@ namespace Linphone
 					//Console.WriteLine("Reffing " + obj.ToString());
 				}
 				obj.nativePtr = ptr;
-				GCHandle handle = GCHandle.Alloc(obj, GCHandleType.WeakTrackResurrection);
-				objPtr = GCHandle.ToIntPtr(handle);
-				belle_sip_object_data_set(ptr, "cs_obj", objPtr, onDataDestroyed);
+				obj.handle = GCHandle.Alloc(obj, GCHandleType.WeakTrackResurrection);
+				objPtr = GCHandle.ToIntPtr(obj.handle);
+				belle_sip_object_data_set(ptr, "cs_obj", objPtr, IntPtr.Zero);
+
 				return obj;
 			}
 			return null;
