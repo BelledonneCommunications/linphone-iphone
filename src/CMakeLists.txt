@@ -30,6 +30,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	cpim/parser/cpim-grammar.h
 	cpim/parser/cpim-parser.h
 	logger/logger.h
+	object/clonable-object.h
+	object/clonable-object-p.h
 	object/object-p.h
 	object/object.h
 	object/singleton.h
@@ -45,6 +47,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	cpim/parser/cpim-grammar.cpp
 	cpim/parser/cpim-parser.cpp
 	logger/logger.cpp
+	object/clonable-object.cpp
 	object/object.cpp
 	utils/utils.cpp
 )
