@@ -19,6 +19,9 @@
 #include <algorithm>
 
 #include "chat-room-p.h"
+
+#include "chat-room.h"
+#include "imdn.h"
 #include "logger/logger.h"
 #include "utils/content-type.h"
 #include "utils/utils.h"
@@ -31,15 +34,12 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-const string ChatRoomPrivate::imdnPrefix = "/imdn:imdn";
-const string ChatRoomPrivate::isComposingPrefix = "/xsi:isComposing";
+// =============================================================================
 
-// -----------------------------------------------------------------------------
+ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
+	: core(core), isComposingHandler(core, this) {}
 
 ChatRoomPrivate::~ChatRoomPrivate () {
-	deleteComposingIdleTimer();
-	deleteComposingRefreshTimer();
-	deleteRemoteComposingRefreshTimer();
 	for (auto it = transientMessages.begin(); it != transientMessages.end(); it++) {
 		linphone_chat_message_release(*it);
 	}
@@ -58,23 +58,6 @@ ChatRoomPrivate::~ChatRoomPrivate () {
 	linphone_address_unref(peerAddress);
 	if (pendingMessage)
 		linphone_chat_message_destroy(pendingMessage);
-}
-
-// -----------------------------------------------------------------------------
-
-int ChatRoomPrivate::refreshComposing (void *data, unsigned int revents) {
-	ChatRoomPrivate *d = reinterpret_cast<ChatRoomPrivate *>(data);
-	return d->refreshComposing(revents);
-}
-
-int ChatRoomPrivate::remoteRefreshComposing (void *data, unsigned int revents) {
-	ChatRoomPrivate *d = reinterpret_cast<ChatRoomPrivate *>(data);
-	return d->remoteRefreshComposing(revents);
-}
-
-int ChatRoomPrivate::stopComposing (void *data, unsigned int revents) {
-	ChatRoomPrivate *d = reinterpret_cast<ChatRoomPrivate *>(data);
-	return d->stopComposing(revents);
 }
 
 // -----------------------------------------------------------------------------
@@ -125,9 +108,7 @@ void ChatRoomPrivate::removeTransientMessage (LinphoneChatMessage *msg) {
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::release () {
-	deleteComposingIdleTimer();
-	deleteComposingRefreshTimer();
-	deleteRemoteComposingRefreshTimer();
+	isComposingHandler.stopTimers();
 	for (auto it = weakMessages.begin(); it != weakMessages.end(); it++) {
 		linphone_chat_message_deactivate(*it);
 	}
@@ -214,97 +195,6 @@ int ChatRoomPrivate::getMessagesCount (bool unreadOnly) {
 
 // -----------------------------------------------------------------------------
 
-string ChatRoomPrivate::createIsComposingXml () const {
-	string content;
-
-	xmlBufferPtr buf = xmlBufferCreate();
-	if (!buf) {
-		lError() << "Error creating the XML buffer";
-		return content;
-	}
-	xmlTextWriterPtr writer = xmlNewTextWriterMemory(buf, 0);
-	if (!writer) {
-		lError() << "Error creating the XML writer";
-		return content;
-	}
-
-	int err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", nullptr);
-	if (err >= 0) {
-		err = xmlTextWriterStartElementNS(writer, nullptr, (const xmlChar *)"isComposing",
-				(const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"xsi", nullptr,
-				(const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xsi", (const xmlChar *)"schemaLocation", nullptr,
-				(const xmlChar *)"urn:ietf:params:xml:ns:im-composing iscomposing.xsd");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"state",
-				isComposing ? (const xmlChar *)"active" : (const xmlChar *)"idle");
-	}
-	if ((err >= 0) && isComposing) {
-		int refreshTimeout = lp_config_get_int(core->config, "sip", "composing_refresh_timeout", composingDefaultRefreshTimeout);
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)Utils::toString(refreshTimeout).c_str());
-	}
-	if (err >= 0) {
-		/* Close the "isComposing" element. */
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		err = xmlTextWriterEndDocument(writer);
-	}
-	if (err > 0) {
-		/* xmlTextWriterEndDocument returns the size of the content. */
-		content = (char *)buf->content;
-	}
-	xmlFreeTextWriter(writer);
-	xmlBufferFree(buf);
-	return content;
-}
-
-void ChatRoomPrivate::deleteComposingIdleTimer () {
-	if (composingIdleTimer) {
-		if (core && core->sal)
-			sal_cancel_timer(core->sal, composingIdleTimer);
-		belle_sip_object_unref(composingIdleTimer);
-		composingIdleTimer = nullptr;
-	}
-}
-
-void ChatRoomPrivate::deleteComposingRefreshTimer () {
-	if (composingRefreshTimer) {
-		if (core && core->sal)
-			sal_cancel_timer(core->sal, composingRefreshTimer);
-		belle_sip_object_unref(composingRefreshTimer);
-		composingRefreshTimer = nullptr;
-	}
-}
-
-void ChatRoomPrivate::deleteRemoteComposingRefreshTimer () {
-	if (remoteComposingRefreshTimer) {
-		if (core && core->sal)
-			sal_cancel_timer(core->sal, remoteComposingRefreshTimer);
-		belle_sip_object_unref(remoteComposingRefreshTimer);
-		remoteComposingRefreshTimer = nullptr;
-	}
-}
-
-int ChatRoomPrivate::refreshComposing (unsigned int revents) {
-	sendIsComposingNotification();
-	return BELLE_SIP_CONTINUE;
-}
-
-int ChatRoomPrivate::remoteRefreshComposing (unsigned int revents) {
-	belle_sip_object_unref(remoteComposingRefreshTimer);
-	remoteComposingRefreshTimer = nullptr;
-	remoteIsComposing = false;
-	linphone_core_notify_is_composing_received(core, cBackPointer);
-	return BELLE_SIP_STOP;
-}
-
 void ChatRoomPrivate::sendIsComposingNotification () {
 	L_Q(ChatRoom);
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core);
@@ -320,7 +210,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 		/* Sending out of call */
 		SalOp *op = sal_op_new(core->sal);
 		linphone_configure_op(core, op, peerAddress, nullptr, lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
-		string content = createIsComposingXml();
+		string content = isComposingHandler.marshal(isComposing);
 		if (!content.empty()) {
 			int retval = -1;
 			LinphoneAddress *fromAddr = linphone_address_new(identity);
@@ -347,127 +237,6 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 			sal_op_unref(op);
 		}
 	}
-}
-
-int ChatRoomPrivate::stopComposing (unsigned int revents) {
-	isComposing = false;
-	sendIsComposingNotification();
-	deleteComposingRefreshTimer();
-	belle_sip_object_unref(composingIdleTimer);
-	composingIdleTimer = nullptr;
-	return BELLE_SIP_STOP;
-}
-
-void ChatRoomPrivate::processImdn (xmlparsing_context_t *xmlCtx) {
-	char xpathStr[MAX_XPATH_LENGTH];
-	char *messageIdStr = nullptr;
-	char *datetimeStr = nullptr;
-	if (linphone_create_xml_xpath_context(xmlCtx) < 0)
-		return;
-
-	xmlXPathRegisterNs(xmlCtx->xpath_ctx, (const xmlChar *)"imdn", (const xmlChar *)"urn:ietf:params:xml:ns:imdn");
-	xmlXPathObjectPtr imdnObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, imdnPrefix.c_str());
-	if (imdnObject) {
-		if (imdnObject->nodesetval && (imdnObject->nodesetval->nodeNr >= 1)) {
-			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:message-id", imdnPrefix.c_str());
-			messageIdStr = linphone_get_xml_text_content(xmlCtx, xpathStr);
-			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:datetime", imdnPrefix.c_str());
-			datetimeStr = linphone_get_xml_text_content(xmlCtx, xpathStr);
-		}
-		xmlXPathFreeObject(imdnObject);
-	}
-
-	if (messageIdStr && datetimeStr) {
-		LinphoneChatMessage *cm = findMessageWithDirection(messageIdStr, LinphoneChatMessageOutgoing);
-		if (!cm) {
-			lWarning() << "Received IMDN for unknown message " << messageIdStr;
-		} else {
-			LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core);
-			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:delivery-notification/imdn:status", imdnPrefix.c_str());
-			xmlXPathObjectPtr deliveryStatusObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, xpathStr);
-			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:display-notification/imdn:status", imdnPrefix.c_str());
-			xmlXPathObjectPtr displayStatusObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, xpathStr);
-			if (deliveryStatusObject && linphone_im_notif_policy_get_recv_imdn_delivered(policy)) {
-				if (deliveryStatusObject->nodesetval && (deliveryStatusObject->nodesetval->nodeNr >= 1)) {
-					xmlNodePtr node = deliveryStatusObject->nodesetval->nodeTab[0];
-					if (node->children && node->children->name) {
-						if (strcmp((const char *)node->children->name, "delivered") == 0) {
-							linphone_chat_message_update_state(cm, LinphoneChatMessageStateDeliveredToUser);
-						} else if (strcmp((const char *)node->children->name, "error") == 0) {
-							linphone_chat_message_update_state(cm, LinphoneChatMessageStateNotDelivered);
-						}
-					}
-				}
-				xmlXPathFreeObject(deliveryStatusObject);
-			}
-			if (displayStatusObject && linphone_im_notif_policy_get_recv_imdn_displayed(policy)) {
-				if (displayStatusObject->nodesetval && (displayStatusObject->nodesetval->nodeNr >= 1)) {
-					xmlNodePtr node = displayStatusObject->nodesetval->nodeTab[0];
-					if (node->children && node->children->name) {
-						if (strcmp((const char *)node->children->name, "displayed") == 0) {
-							linphone_chat_message_update_state(cm, LinphoneChatMessageStateDisplayed);
-						}
-					}
-				}
-				xmlXPathFreeObject(displayStatusObject);
-			}
-			linphone_chat_message_unref(cm);
-		}
-	}
-	if (messageIdStr)
-		linphone_free_xml_text_content(messageIdStr);
-	if (datetimeStr)
-		linphone_free_xml_text_content(datetimeStr);
-}
-
-void ChatRoomPrivate::processIsComposingNotification (xmlparsing_context_t *xmlCtx) {
-	char xpathStr[MAX_XPATH_LENGTH];
-	char *stateStr = nullptr;
-	char *refreshStr = nullptr;
-	int i;
-	bool state = false;
-
-	if (linphone_create_xml_xpath_context(xmlCtx) < 0)
-		return;
-
-	xmlXPathRegisterNs(xmlCtx->xpath_ctx, (const xmlChar *)"xsi", (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
-	xmlXPathObjectPtr isComposingObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, isComposingPrefix.c_str());
-	if (isComposingObject) {
-		if (isComposingObject->nodesetval) {
-			for (i = 1; i <= isComposingObject->nodesetval->nodeNr; i++) {
-				snprintf(xpathStr, sizeof(xpathStr), "%s[%i]/xsi:state", isComposingPrefix.c_str(), i);
-				stateStr = linphone_get_xml_text_content(xmlCtx, xpathStr);
-				if (!stateStr)
-					continue;
-				snprintf(xpathStr, sizeof(xpathStr), "%s[%i]/xsi:refresh", isComposingPrefix.c_str(), i);
-				refreshStr = linphone_get_xml_text_content(xmlCtx, xpathStr);
-			}
-		}
-		xmlXPathFreeObject(isComposingObject);
-	}
-
-	if (stateStr) {
-		if (strcmp(stateStr, "active") == 0) {
-			int refreshDuration = lp_config_get_int(core->config, "sip", "composing_remote_refresh_timeout", composingDefaultRemoteRefreshTimeout);
-			state = true;
-			if (refreshStr)
-				refreshDuration = atoi(refreshStr);
-			if (!remoteComposingRefreshTimer) {
-				remoteComposingRefreshTimer = sal_create_timer(core->sal, remoteRefreshComposing, this,
-						refreshDuration * 1000, "composing remote refresh timeout");
-			} else {
-				belle_sip_source_set_timeout(remoteComposingRefreshTimer, refreshDuration * 1000);
-			}
-		} else {
-			deleteRemoteComposingRefreshTimer();
-		}
-
-		remoteIsComposing = state;
-		linphone_core_notify_is_composing_received(core, cBackPointer);
-		linphone_free_xml_text_content(stateStr);
-	}
-	if (refreshStr)
-		linphone_free_xml_text_content(refreshStr);
 }
 
 // -----------------------------------------------------------------------------
@@ -603,24 +372,6 @@ list<LinphoneChatMessage *> ChatRoomPrivate::findMessages (const string &message
 	return result;
 }
 
-LinphoneChatMessage *ChatRoomPrivate::findMessageWithDirection (const string &messageId, LinphoneChatMessageDir direction) {
-	LinphoneChatMessage *ret = nullptr;
-	list<LinphoneChatMessage *> l = findMessages(messageId);
-	for (auto it = l.begin(); it != l.end(); it++) {
-		LinphoneChatMessage *cm = *it;
-		if (cm->dir == direction) {
-			linphone_chat_message_ref(cm);
-			ret = cm;
-			break;
-		}
-	}
-	if (!l.empty()) {
-		for (auto it = l.begin(); it != l.end(); it++)
-			linphone_chat_message_unref(*it);
-	}
-	return ret;
-}
-
 /**
  * TODO: Should be handled directly by the LinphoneChatMessage object!
  */
@@ -644,7 +395,7 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	LinphoneChatMessage *msg;
 
 	/* Check if this is a duplicate message */
-	if ((msg = findMessageWithDirection(sal_op_get_call_id(op), LinphoneChatMessageIncoming))) {
+	if ((msg = q->findMessageWithDirection(sal_op_get_call_id(op), LinphoneChatMessageIncoming))) {
 		reason = core->chat_deny_code;
 		if (msg)
 			linphone_chat_message_unref(msg);
@@ -815,32 +566,34 @@ void ChatRoomPrivate::chatMessageReceived (LinphoneChatMessage *msg) {
 }
 
 void ChatRoomPrivate::imdnReceived (const string &text) {
-	xmlparsing_context_t *xmlCtx = linphone_xmlparsing_context_new();
-	xmlSetGenericErrorFunc(xmlCtx, linphone_xmlparsing_genericxml_error);
-	xmlCtx->doc = xmlReadDoc((const unsigned char *)text.c_str(), 0, nullptr, 0);
-	if (xmlCtx->doc)
-		processImdn(xmlCtx);
-	else
-		lWarning() << "Wrongly formatted IMDN XML: " << xmlCtx->errorBuffer;
-	linphone_xmlparsing_context_destroy(xmlCtx);
+	L_Q(ChatRoom);
+	Imdn::parse(*q, text);
 }
 
 void ChatRoomPrivate::isComposingReceived (const string &text) {
-	xmlparsing_context_t *xmlCtx = linphone_xmlparsing_context_new();
-	xmlSetGenericErrorFunc(xmlCtx, linphone_xmlparsing_genericxml_error);
-	xmlCtx->doc = xmlReadDoc((const unsigned char *)text.c_str(), 0, nullptr, 0);
-	if (xmlCtx->doc)
-		processIsComposingNotification(xmlCtx);
-	else
-		lWarning() << "Wrongly formatted presence XML: " << xmlCtx->errorBuffer;
-	linphone_xmlparsing_context_destroy(xmlCtx);
+	isComposingHandler.parse(text);
+}
+
+// -----------------------------------------------------------------------------
+
+void ChatRoomPrivate::isComposingStateChanged (bool isComposing) {
+	this->isComposing = isComposing;
+	sendIsComposingNotification();
+}
+
+void ChatRoomPrivate::isRemoteComposingStateChanged (bool isComposing) {
+	remoteIsComposing = isComposing;
+	linphone_core_notify_is_composing_received(core, cBackPointer);
+}
+
+void ChatRoomPrivate::isComposingRefreshNeeded () {
+	sendIsComposingNotification();
 }
 
 // =============================================================================
 
-ChatRoom::ChatRoom (LinphoneCore *core, LinphoneAddress *peerAddress) : Object(*new ChatRoomPrivate) {
+ChatRoom::ChatRoom (LinphoneCore *core, LinphoneAddress *peerAddress) : Object(*new ChatRoomPrivate(core)) {
 	L_D(ChatRoom);
-	d->core = core;
 	d->peerAddress = peerAddress;
 	char *peerStr = linphone_address_as_string(d->peerAddress);
 	d->peer = peerStr;
@@ -851,23 +604,12 @@ ChatRoom::ChatRoom (LinphoneCore *core, LinphoneAddress *peerAddress) : Object(*
 
 void ChatRoom::compose () {
 	L_D(ChatRoom);
-	int idleTimeout = lp_config_get_int(getCore()->config, "sip", "composing_idle_timeout", ChatRoomPrivate::composingDefaultIdleTimeout);
-	int refreshTimeout = lp_config_get_int(getCore()->config, "sip", "composing_refresh_timeout", ChatRoomPrivate::composingDefaultRefreshTimeout);
 	if (!d->isComposing) {
 		d->isComposing = true;
 		d->sendIsComposingNotification();
-		if (!d->composingRefreshTimer) {
-			d->composingRefreshTimer = sal_create_timer(getCore()->sal, ChatRoomPrivate::refreshComposing, d,
-					refreshTimeout * 1000, "composing refresh timeout");
-		} else {
-			belle_sip_source_set_timeout(d->composingRefreshTimer, refreshTimeout * 1000);
-		}
-		if (!d->composingIdleTimer) {
-			d->composingIdleTimer = sal_create_timer(getCore()->sal, ChatRoomPrivate::stopComposing, d,
-					idleTimeout * 1000, "composing idle timeout");
-		}
+		d->isComposingHandler.startRefreshTimer();
 	}
-	belle_sip_source_set_timeout(d->composingIdleTimer, idleTimeout * 1000);
+	d->isComposingHandler.startIdleTimer();
 }
 
 LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
@@ -937,6 +679,25 @@ LinphoneChatMessage *ChatRoom::findMessage (const string &messageId) {
 			linphone_chat_message_unref(*it);
 	}
 	return cm;
+}
+
+LinphoneChatMessage * ChatRoom::findMessageWithDirection (const string &messageId, LinphoneChatMessageDir direction) {
+	L_D(ChatRoom);
+	LinphoneChatMessage *ret = nullptr;
+	list<LinphoneChatMessage *> l = d->findMessages(messageId);
+	for (auto it = l.begin(); it != l.end(); it++) {
+		LinphoneChatMessage *cm = *it;
+		if (cm->dir == direction) {
+			linphone_chat_message_ref(cm);
+			ret = cm;
+			break;
+		}
+	}
+	if (!l.empty()) {
+		for (auto it = l.begin(); it != l.end(); it++)
+			linphone_chat_message_unref(*it);
+	}
+	return ret;
 }
 
 uint32_t ChatRoom::getChar () const {
@@ -1188,8 +949,8 @@ void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
 
 		if (d->isComposing)
 			d->isComposing = false;
-		d->deleteComposingIdleTimer();
-		d->deleteComposingRefreshTimer();
+		d->isComposingHandler.stopIdleTimer();
+		d->isComposingHandler.stopRefreshTimer();
 
 		if (clearTextMessage) {
 			ms_free(clearTextMessage);

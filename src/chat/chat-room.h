@@ -19,6 +19,9 @@
 #ifndef _CHAT_ROOM_H_
 #define _CHAT_ROOM_H_
 
+// From coreapi
+#include "private.h"
+
 #include <list>
 
 #include "object/object.h"
@@ -41,7 +44,8 @@ public:
 	LinphoneChatMessage *createMessage (const std::string &msg);
 	void deleteHistory ();
 	void deleteMessage (LinphoneChatMessage *msg);
-	LinphoneChatMessage *findMessage (const std::string &messageId);
+	LinphoneChatMessage * findMessage (const std::string& messageId);
+	LinphoneChatMessage * findMessageWithDirection (const std::string &messageId, LinphoneChatMessageDir direction);
 	uint32_t getChar () const;
 	std::list<LinphoneChatMessage *> getHistory (int nbMessages);
 	int getHistorySize ();

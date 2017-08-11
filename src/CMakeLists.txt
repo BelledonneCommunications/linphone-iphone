@@ -30,6 +30,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/chat-room.h
 	content/content.h
 	core/core.h
+	chat/imdn.h
+	chat/is-composing.h
 	cpim/cpim.h
 	cpim/header/cpim-core-headers.h
 	cpim/header/cpim-generic-header.h
@@ -73,6 +75,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/chat-room.cpp
 	content/content.cpp
 	core/core.cpp
+	chat/imdn.cpp
+	chat/is-composing.cpp
 	cpim/header/cpim-core-headers.cpp
 	cpim/header/cpim-generic-header.cpp
 	cpim/header/cpim-header.cpp
