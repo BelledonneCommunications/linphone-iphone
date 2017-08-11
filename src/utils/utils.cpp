@@ -20,11 +20,11 @@
 
 #include "utils.h"
 
+// =============================================================================
+
 using namespace std;
 
-using namespace LinphonePrivate;
-
-// =============================================================================
+LINPHONE_BEGIN_NAMESPACE
 
 bool Utils::iequals (const string &a, const string &b) {
 	size_t size = a.size();
@@ -59,3 +59,5 @@ int Utils::stoi (const string &str, size_t *idx, int base) {
 
 	return v;
 }
+
+LINPHONE_END_NAMESPACE

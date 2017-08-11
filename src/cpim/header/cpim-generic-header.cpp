@@ -24,11 +24,11 @@
 
 #include "cpim-generic-header.h"
 
+// =============================================================================
+
 using namespace std;
 
-using namespace LinphonePrivate;
-
-// =============================================================================
+LINPHONE_BEGIN_NAMESPACE
 
 class Cpim::GenericHeaderPrivate : public HeaderPrivate {
 public:
@@ -117,3 +117,5 @@ void Cpim::GenericHeader::force (const string &name, const string &value, const 
 			d->parameters->push_back(make_pair(parameter.substr(0, equalIndex), parameter.substr(equalIndex + 1)));
 	}
 }
+
+LINPHONE_END_NAMESPACE

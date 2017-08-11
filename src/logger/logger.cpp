@@ -22,19 +22,17 @@
 
 #include "logger.h"
 
-using namespace std;
-
-using namespace LinphonePrivate;
-
 // =============================================================================
 
-namespace LinphonePrivate {
-	class LoggerPrivate : public ObjectPrivate {
-	public:
-		Logger::Level level;
-		ostringstream os;
-	};
-}
+using namespace std;
+
+LINPHONE_BEGIN_NAMESPACE
+
+class LoggerPrivate : public ObjectPrivate {
+public:
+	Logger::Level level;
+	ostringstream os;
+};
 
 // -----------------------------------------------------------------------------
 
@@ -72,3 +70,5 @@ ostringstream &Logger::getOutput () {
 	L_D(Logger);
 	return d->os;
 }
+
+LINPHONE_END_NAMESPACE

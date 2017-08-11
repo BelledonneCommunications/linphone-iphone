@@ -26,40 +26,42 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		class GenericHeaderPrivate;
-		class HeaderNode;
+LINPHONE_BEGIN_NAMESPACE
 
-		class LINPHONE_PUBLIC GenericHeader : public Header {
-			friend class HeaderNode;
+namespace Cpim {
+	class GenericHeaderPrivate;
+	class HeaderNode;
 
-		public:
-			GenericHeader ();
+	class LINPHONE_PUBLIC GenericHeader : public Header {
+		friend class HeaderNode;
 
-			std::string getName () const override;
-			bool setName (const std::string &name);
+	public:
+		GenericHeader ();
 
-			bool setValue (const std::string &value) override;
+		std::string getName () const override;
+		bool setName (const std::string &name);
 
-			typedef std::shared_ptr<const std::list<std::pair<std::string, std::string> > > ParameterList;
+		bool setValue (const std::string &value) override;
 
-			ParameterList getParameters () const;
-			bool addParameter (const std::string &key, const std::string &value);
-			void removeParameter (const std::string &key, const std::string &value);
+		typedef std::shared_ptr<const std::list<std::pair<std::string, std::string> > > ParameterList;
 
-			bool isValid () const override;
+		ParameterList getParameters () const;
+		bool addParameter (const std::string &key, const std::string &value);
+		void removeParameter (const std::string &key, const std::string &value);
 
-			std::string asString () const override;
+		bool isValid () const override;
 
-		protected:
-			void force (const std::string &name, const std::string &value, const std::string &parameters);
+		std::string asString () const override;
 
-		private:
-			L_DECLARE_PRIVATE(GenericHeader);
-			L_DISABLE_COPY(GenericHeader);
-		};
-	}
+	protected:
+		void force (const std::string &name, const std::string &value, const std::string &parameters);
+
+	private:
+		L_DECLARE_PRIVATE(GenericHeader);
+		L_DISABLE_COPY(GenericHeader);
+	};
 }
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CPIM_GENERIC_HEADER_H_

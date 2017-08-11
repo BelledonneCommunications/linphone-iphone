@@ -25,31 +25,33 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		class HeaderPrivate;
+LINPHONE_BEGIN_NAMESPACE
 
-		class LINPHONE_PUBLIC Header : public Object {
-		public:
-			virtual ~Header () = default;
+namespace Cpim {
+	class HeaderPrivate;
 
-			virtual std::string getName () const = 0;
+	class LINPHONE_PUBLIC Header : public Object {
+	public:
+		virtual ~Header () = default;
 
-			std::string getValue () const;
-			virtual bool setValue (const std::string &value);
+		virtual std::string getName () const = 0;
 
-			virtual bool isValid () const = 0;
+		std::string getValue () const;
+		virtual bool setValue (const std::string &value);
 
-			virtual std::string asString () const;
+		virtual bool isValid () const = 0;
 
-		protected:
-			explicit Header (HeaderPrivate &p);
+		virtual std::string asString () const;
 
-		private:
-			L_DECLARE_PRIVATE(Header);
-			L_DISABLE_COPY(Header);
-		};
-	}
+	protected:
+		explicit Header (HeaderPrivate &p);
+
+	private:
+		L_DECLARE_PRIVATE(Header);
+		L_DISABLE_COPY(Header);
+	};
 }
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CPIM_HEADER_H_

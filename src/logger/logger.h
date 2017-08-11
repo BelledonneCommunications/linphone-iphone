@@ -25,34 +25,36 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	class LoggerPrivate;
+LINPHONE_BEGIN_NAMESPACE
 
-	class LINPHONE_PUBLIC Logger : public Object {
-	public:
-		enum Level {
-			Debug,
-			Info,
-			Warning,
-			Error,
-			Fatal
-		};
+class LoggerPrivate;
 
-		Logger (Level level);
-		~Logger ();
-
-		std::ostringstream &getOutput ();
-
-	private:
-		L_DECLARE_PRIVATE(Logger);
-		L_DISABLE_COPY(Logger);
+class LINPHONE_PUBLIC Logger : public Object {
+public:
+	enum Level {
+		Debug,
+		Info,
+		Warning,
+		Error,
+		Fatal
 	};
-}
 
-#define lDebug() LinphonePrivate::Logger(Logger::Debug).getOutput()
-#define lInfo() LinphonePrivate::Logger(Logger::Info).getOutput()
-#define lWarning() LinphonePrivate::Logger(Logger::Warning).getOutput()
-#define lError() LinphonePrivate::Logger(Logger::Error).getOutput()
-#define lFatal() LinphonePrivate::Logger(Logger::Fatal).getOutput()
+	Logger (Level level);
+	~Logger ();
+
+	std::ostringstream &getOutput ();
+
+private:
+	L_DECLARE_PRIVATE(Logger);
+	L_DISABLE_COPY(Logger);
+};
+
+LINPHONE_END_NAMESPACE
+
+#define lDebug() LINPHONE_NAMESPACE::Logger(Logger::Debug).getOutput()
+#define lInfo() LINPHONE_NAMESPACE::Logger(Logger::Info).getOutput()
+#define lWarning() LINPHONE_NAMESPACE::Logger(Logger::Warning).getOutput()
+#define lError() LINPHONE_NAMESPACE::Logger(Logger::Error).getOutput()
+#define lFatal() LINPHONE_NAMESPACE::Logger(Logger::Fatal).getOutput()
 
 #endif // ifndef _LOGGER_H_

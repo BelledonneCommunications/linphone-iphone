@@ -20,9 +20,9 @@
 
 #include "object.h"
 
-using namespace LinphonePrivate;
-
 // =============================================================================
+
+LINPHONE_BEGIN_NAMESPACE
 
 Object::~Object () {
 	delete mPrivate;
@@ -31,3 +31,5 @@ Object::~Object () {
 Object::Object (ObjectPrivate &p) : mPrivate(&p) {
 	mPrivate->mPublic = this;
 }
+
+LINPHONE_END_NAMESPACE

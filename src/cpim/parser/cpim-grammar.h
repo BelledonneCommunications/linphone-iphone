@@ -19,12 +19,16 @@
 #ifndef _CPIM_GRAMMAR_H_
 #define _CPIM_GRAMMAR_H_
 
+#include "utils/general.h"
+
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		const char *getGrammar ();
-	}
+LINPHONE_BEGIN_NAMESPACE
+
+namespace Cpim {
+	const char *getGrammar ();
 }
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CPIM_GRAMMAR_H_

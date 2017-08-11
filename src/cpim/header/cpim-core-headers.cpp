@@ -21,11 +21,11 @@
 
 #include "cpim-core-headers.h"
 
+// =============================================================================
+
 using namespace std;
 
-using namespace LinphonePrivate;
-
-// =============================================================================
+LINPHONE_BEGIN_NAMESPACE
 
 Cpim::CoreHeader::CoreHeader () : Header(*new HeaderPrivate) {}
 
@@ -56,7 +56,7 @@ MAKE_CORE_HEADER_IMPL(Require);
 
 // -----------------------------------------------------------------------------
 
-void Cpim::CoreHeader::force (const std::string &value) {
+void Cpim::CoreHeader::force (const string &value) {
 	Header::setValue(value);
 }
 
@@ -103,3 +103,5 @@ void Cpim::SubjectHeader::force (const string &value, const string &language) {
 	CoreHeader::force(value);
 	d->language = language;
 }
+
+LINPHONE_END_NAMESPACE

@@ -24,38 +24,40 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		class MessagePrivate;
+LINPHONE_BEGIN_NAMESPACE
 
-		class LINPHONE_PUBLIC Message : public Object {
-		public:
-			Message ();
+namespace Cpim {
+	class MessagePrivate;
 
-			typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header> > > HeaderList;
+	class LINPHONE_PUBLIC Message : public Object {
+	public:
+		Message ();
 
-			HeaderList getCpimHeaders () const;
-			bool addCpimHeader (const Header &cpimHeader);
-			void removeCpimHeader (const Header &cpimHeader);
+		typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header> > > HeaderList;
 
-			HeaderList getMessageHeaders () const;
-			bool addMessageHeader (const Header &messageHeader);
-			void removeMessageHeader (const Header &messageHeader);
+		HeaderList getCpimHeaders () const;
+		bool addCpimHeader (const Header &cpimHeader);
+		void removeCpimHeader (const Header &cpimHeader);
 
-			std::string getContent () const;
-			bool setContent (const std::string &content);
+		HeaderList getMessageHeaders () const;
+		bool addMessageHeader (const Header &messageHeader);
+		void removeMessageHeader (const Header &messageHeader);
 
-			bool isValid () const;
+		std::string getContent () const;
+		bool setContent (const std::string &content);
 
-			std::string asString () const;
+		bool isValid () const;
 
-			static std::shared_ptr<const Message> createFromString (const std::string &str);
+		std::string asString () const;
 
-		private:
-			L_DECLARE_PRIVATE(Message);
-			L_DISABLE_COPY(Message);
-		};
-	}
+		static std::shared_ptr<const Message> createFromString (const std::string &str);
+
+	private:
+		L_DECLARE_PRIVATE(Message);
+		L_DISABLE_COPY(Message);
+	};
 }
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CPIM_MESSAGE_H_

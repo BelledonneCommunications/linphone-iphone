@@ -23,37 +23,39 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	template<class T>
-	class Singleton : public Object {
-	public:
-		virtual ~Singleton () = default;
+LINPHONE_BEGIN_NAMESPACE
 
-		static T *getInstance () {
-			if (!mInstance) {
-				mInstance = new T();
-				static SingletonDeleter deleter;
-			}
-			return mInstance;
+template<class T>
+class Singleton : public Object {
+public:
+	virtual ~Singleton () = default;
+
+	static T *getInstance () {
+		if (!mInstance) {
+			mInstance = new T();
+			static SingletonDeleter deleter;
 		}
+		return mInstance;
+	}
 
-	protected:
-		explicit Singleton (ObjectPrivate &p) : Object(p) {}
+protected:
+	explicit Singleton (ObjectPrivate &p) : Object(p) {}
 
-	private:
-		struct SingletonDeleter {
-			~SingletonDeleter () {
-				delete mInstance;
-			}
-		};
-
-		static T *mInstance;
-
-		L_DISABLE_COPY(Singleton);
+private:
+	struct SingletonDeleter {
+		~SingletonDeleter () {
+			delete mInstance;
+		}
 	};
 
-	template<class T>
-	T *Singleton<T>::mInstance = nullptr;
-}
+	static T *mInstance;
+
+	L_DISABLE_COPY(Singleton);
+};
+
+template<class T>
+T *Singleton<T>::mInstance = nullptr;
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _SINGLETON_H_

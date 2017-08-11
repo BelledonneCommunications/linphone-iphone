@@ -22,20 +22,24 @@
 #include <string>
 #include <vector>
 
+#include "general.h"
+
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Utils {
-		bool iequals (const std::string &a, const std::string &b);
+LINPHONE_BEGIN_NAMESPACE
 
-		std::vector<std::string> split (const std::string &str, const std::string &delimiter);
+namespace Utils {
+	bool iequals (const std::string &a, const std::string &b);
 
-		inline std::vector<std::string> split (const std::string &str, char delimiter) {
-			return split(str, std::string(1, delimiter));
-		}
+	std::vector<std::string> split (const std::string &str, const std::string &delimiter);
 
-		int stoi (const std::string &str, size_t *idx = 0, int base = 10);
+	inline std::vector<std::string> split (const std::string &str, char delimiter) {
+		return split(str, std::string(1, delimiter));
 	}
+
+	int stoi (const std::string &str, size_t *idx = 0, int base = 10);
 }
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _UTILS_H_

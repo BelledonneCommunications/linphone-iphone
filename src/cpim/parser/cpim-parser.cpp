@@ -28,181 +28,179 @@
 
 #include "cpim-parser.h"
 
-using namespace std;
-
-using namespace LinphonePrivate;
-
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		class Node {
-		public:
-			virtual ~Node () = default;
-		};
+using namespace std;
 
-		class HeaderNode : public Node {
-		public:
-			HeaderNode () = default;
+LINPHONE_BEGIN_NAMESPACE
 
-			explicit HeaderNode (const Header &header) {
-				mName = header.getName();
-				mValue = header.getValue();
+namespace Cpim {
+	class Node {
+	public:
+		virtual ~Node () = default;
+	};
 
-				// Generic header.
-				const GenericHeader *genericHeader = dynamic_cast<const GenericHeader *>(&header);
-				if (genericHeader) {
-					for (const auto &parameter : *genericHeader->getParameters())
-						mParameters += ";" + parameter.first + "=" + parameter.second;
-					return;
-				}
+	class HeaderNode : public Node {
+	public:
+		HeaderNode () = default;
 
-				// Subject header.
-				const SubjectHeader *subjectHeader = dynamic_cast<const SubjectHeader *>(&header);
-				if (subjectHeader) {
-					const string language = subjectHeader->getLanguage();
-					if (!language.empty())
-						mParameters = ";lang=" + language;
-				}
+		explicit HeaderNode (const Header &header) {
+			mName = header.getName();
+			mValue = header.getValue();
+
+			// Generic header.
+			const GenericHeader *genericHeader = dynamic_cast<const GenericHeader *>(&header);
+			if (genericHeader) {
+				for (const auto &parameter : *genericHeader->getParameters())
+					mParameters += ";" + parameter.first + "=" + parameter.second;
+				return;
 			}
 
-			string getName () const {
-				return mName;
+			// Subject header.
+			const SubjectHeader *subjectHeader = dynamic_cast<const SubjectHeader *>(&header);
+			if (subjectHeader) {
+				const string language = subjectHeader->getLanguage();
+				if (!language.empty())
+					mParameters = ";lang=" + language;
 			}
+		}
 
-			void setName (const string &name) {
-				mName = name;
-			}
+		string getName () const {
+			return mName;
+		}
 
-			string getParameters () const {
-				return mParameters;
-			}
+		void setName (const string &name) {
+			mName = name;
+		}
 
-			void setParameters (const string &parameters) {
-				mParameters = parameters;
-			}
+		string getParameters () const {
+			return mParameters;
+		}
 
-			string getValue () const {
-				return mValue;
-			}
+		void setParameters (const string &parameters) {
+			mParameters = parameters;
+		}
 
-			void setValue (const string &value) {
-				mValue = value;
-			}
+		string getValue () const {
+			return mValue;
+		}
 
-			shared_ptr<Header> createHeader (bool force) const;
+		void setValue (const string &value) {
+			mValue = value;
+		}
 
-		private:
-			template<typename T>
-			shared_ptr<Header> createCoreHeader (bool force) const {
-				shared_ptr<T> header = make_shared<T>();
-				if (force)
-					header->force(mValue);
-				else if (!header->setValue(mValue)) {
-					lWarning() << "Unable to set value on core header: `" << mName << "` => `" << mValue << "`.";
-					return nullptr;
-				}
+		shared_ptr<Header> createHeader (bool force) const;
 
-				return header;
-			}
-
-			string mValue;
-			string mName;
-			string mParameters;
-		};
-
-		template<>
-		shared_ptr<Header> HeaderNode::createCoreHeader<SubjectHeader>(bool force) const {
-			shared_ptr<SubjectHeader> header = make_shared<SubjectHeader>();
-			const string language = mParameters.length() >= 6 ? mParameters.substr(6) : "";
-
+	private:
+		template<typename T>
+		shared_ptr<Header> createCoreHeader (bool force) const {
+			shared_ptr<T> header = make_shared<T>();
 			if (force)
-				header->force(mValue, language);
-			else if (!header->setValue(mValue) || (!language.empty() && !header->setLanguage(language))) {
-				lWarning() << "Unable to set value on subject header: `" <<
-					mName << "` => `" << mValue << "`, `" << language << "`.";
+				header->force(mValue);
+			else if (!header->setValue(mValue)) {
+				lWarning() << "Unable to set value on core header: `" << mName << "` => `" << mValue << "`.";
 				return nullptr;
 			}
 
 			return header;
 		}
 
-		shared_ptr<Header> HeaderNode::createHeader (bool force = false) const {
-			static const unordered_map<string, shared_ptr<Header>(HeaderNode::*)(bool)const> reservedHandlers = {
-				{ "From", &HeaderNode::createCoreHeader<FromHeader> },
-				{ "To", &HeaderNode::createCoreHeader<ToHeader> },
-				{ "cc", &HeaderNode::createCoreHeader<CcHeader> },
-				{ "DateTime", &HeaderNode::createCoreHeader<DateTimeHeader> },
-				{ "Subject", &HeaderNode::createCoreHeader<SubjectHeader> },
-				{ "NS", &HeaderNode::createCoreHeader<NsHeader> },
-				{ "Require", &HeaderNode::createCoreHeader<RequireHeader> }
-			};
+		string mValue;
+		string mName;
+		string mParameters;
+	};
 
-			// Core Header.
-			const auto it = reservedHandlers.find(mName);
-			if (it != reservedHandlers.cend())
-				return (this->*it->second)(force);
+	template<>
+	shared_ptr<Header> HeaderNode::createCoreHeader<SubjectHeader>(bool force) const {
+		shared_ptr<SubjectHeader> header = make_shared<SubjectHeader>();
+		const string language = mParameters.length() >= 6 ? mParameters.substr(6) : "";
 
-			// Generic Header
-			shared_ptr<GenericHeader> genericHeader = make_shared<GenericHeader>();
-			genericHeader->force(mName, mValue, mParameters);
-			return genericHeader;
+		if (force)
+			header->force(mValue, language);
+		else if (!header->setValue(mValue) || (!language.empty() && !header->setLanguage(language))) {
+			lWarning() << "Unable to set value on subject header: `" <<
+				mName << "` => `" << mValue << "`, `" << language << "`.";
+			return nullptr;
 		}
 
-		// -------------------------------------------------------------------------
-
-		class ListHeaderNode :
-			public Node,
-			public list<shared_ptr<HeaderNode> > {};
-
-		// -------------------------------------------------------------------------
-
-		class MessageNode : public Node {
-		public:
-			void addHeaders (const shared_ptr<ListHeaderNode> &headers) {
-				mHeaders->push_back(headers);
-			}
-
-			// Warning: Call this function one time!
-			shared_ptr<Message> createMessage () const {
-				size_t size = mHeaders->size();
-				if (size != 2) {
-					lWarning() << "Bad headers lists size.";
-					return nullptr;
-				}
-
-				const shared_ptr<Message> message = make_shared<Message>();
-				const shared_ptr<ListHeaderNode> cpimHeaders = mHeaders->front();
-
-				if (find_if(cpimHeaders->cbegin(), cpimHeaders->cend(),
-							[](const shared_ptr<const HeaderNode> &headerNode) {
-								return Utils::iequals(headerNode->getName(), "content-type") && headerNode->getValue() == "Message/CPIM";
-							}) == cpimHeaders->cend()) {
-					lWarning() << "No MIME `Content-Type` found!";
-					return nullptr;
-				}
-
-				// Add MIME headers.
-				for (const auto &headerNode : *cpimHeaders) {
-					const shared_ptr<const Header> header = headerNode->createHeader();
-					if (!header || !message->addCpimHeader(*header))
-						return nullptr;
-				}
-
-				// Add message headers.
-				for (const auto &headerNode : *mHeaders->back()) {
-					const shared_ptr<const Header> header = headerNode->createHeader();
-					if (!header || !message->addMessageHeader(*header))
-						return nullptr;
-				}
-
-				return message;
-			}
-
-		private:
-			shared_ptr<list<shared_ptr<ListHeaderNode> > > mHeaders = make_shared<list<shared_ptr<ListHeaderNode> > >();
-		};
+		return header;
 	}
+
+	shared_ptr<Header> HeaderNode::createHeader (bool force = false) const {
+		static const unordered_map<string, shared_ptr<Header>(HeaderNode::*)(bool)const> reservedHandlers = {
+			{ "From", &HeaderNode::createCoreHeader<FromHeader> },
+			{ "To", &HeaderNode::createCoreHeader<ToHeader> },
+			{ "cc", &HeaderNode::createCoreHeader<CcHeader> },
+			{ "DateTime", &HeaderNode::createCoreHeader<DateTimeHeader> },
+			{ "Subject", &HeaderNode::createCoreHeader<SubjectHeader> },
+			{ "NS", &HeaderNode::createCoreHeader<NsHeader> },
+			{ "Require", &HeaderNode::createCoreHeader<RequireHeader> }
+		};
+
+		// Core Header.
+		const auto it = reservedHandlers.find(mName);
+		if (it != reservedHandlers.cend())
+			return (this->*it->second)(force);
+
+		// Generic Header
+		shared_ptr<GenericHeader> genericHeader = make_shared<GenericHeader>();
+		genericHeader->force(mName, mValue, mParameters);
+		return genericHeader;
+	}
+
+	// -------------------------------------------------------------------------
+
+	class ListHeaderNode :
+		public Node,
+		public list<shared_ptr<HeaderNode> > {};
+
+	// -------------------------------------------------------------------------
+
+	class MessageNode : public Node {
+	public:
+		void addHeaders (const shared_ptr<ListHeaderNode> &headers) {
+			mHeaders->push_back(headers);
+		}
+
+		// Warning: Call this function one time!
+		shared_ptr<Message> createMessage () const {
+			size_t size = mHeaders->size();
+			if (size != 2) {
+				lWarning() << "Bad headers lists size.";
+				return nullptr;
+			}
+
+			const shared_ptr<Message> message = make_shared<Message>();
+			const shared_ptr<ListHeaderNode> cpimHeaders = mHeaders->front();
+
+			if (find_if(cpimHeaders->cbegin(), cpimHeaders->cend(),
+						[](const shared_ptr<const HeaderNode> &headerNode) {
+							return Utils::iequals(headerNode->getName(), "content-type") && headerNode->getValue() == "Message/CPIM";
+						}) == cpimHeaders->cend()) {
+				lWarning() << "No MIME `Content-Type` found!";
+				return nullptr;
+			}
+
+			// Add MIME headers.
+			for (const auto &headerNode : *cpimHeaders) {
+				const shared_ptr<const Header> header = headerNode->createHeader();
+				if (!header || !message->addCpimHeader(*header))
+					return nullptr;
+			}
+
+			// Add message headers.
+			for (const auto &headerNode : *mHeaders->back()) {
+				const shared_ptr<const Header> header = headerNode->createHeader();
+				if (!header || !message->addMessageHeader(*header))
+					return nullptr;
+			}
+
+			return message;
+		}
+
+	private:
+		shared_ptr<list<shared_ptr<ListHeaderNode> > > mHeaders = make_shared<list<shared_ptr<ListHeaderNode> > >();
+	};
 }
 
 // -----------------------------------------------------------------------------
@@ -294,17 +292,17 @@ inline bool headerIsValid (const shared_ptr<belr::Grammar> &grammar, const strin
 
 bool Cpim::Parser::headerNameIsValid (const string &headerName) const {
 	L_D(const Parser);
-	return ::headerIsValid(d->grammar, headerName + ": value\r\n");
+	return headerIsValid(d->grammar, headerName + ": value\r\n");
 }
 
 bool Cpim::Parser::headerValueIsValid (const string &headerValue) const {
 	L_D(const Parser);
-	return ::headerIsValid(d->grammar, "key: " + headerValue + "\r\n");
+	return headerIsValid(d->grammar, "key: " + headerValue + "\r\n");
 }
 
-bool Cpim::Parser::headerParameterIsValid (const std::string &headerParameter) const {
+bool Cpim::Parser::headerParameterIsValid (const string &headerParameter) const {
 	L_D(const Parser);
-	return ::headerIsValid(d->grammar, "key:;" + headerParameter + " value\r\n");
+	return headerIsValid(d->grammar, "key:;" + headerParameter + " value\r\n");
 }
 
 // -----------------------------------------------------------------------------
@@ -332,19 +330,19 @@ inline bool coreHeaderIsValid (
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::FromHeader>(const string &headerValue) const {
 	L_D(const Parser);
-	return ::coreHeaderIsValid(d->grammar, "From", headerValue);
+	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "From", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::ToHeader>(const string &headerValue) const {
 	L_D(const Parser);
-	return ::coreHeaderIsValid(d->grammar, "To", headerValue);
+	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "To", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::CcHeader>(const string &headerValue) const {
 	L_D(const Parser);
-	return ::coreHeaderIsValid(d->grammar, "cc", headerValue);
+	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "cc", headerValue);
 }
 
 template<>
@@ -352,7 +350,7 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 	static const int daysInMonth[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 	L_D(const Parser);
-	if (!::coreHeaderIsValid(d->grammar, "DateTime", headerValue))
+	if (!LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "DateTime", headerValue))
 		return false;
 
 	// Check date.
@@ -391,24 +389,26 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::SubjectHeader>(const string &headerValue) const {
 	L_D(const Parser);
-	return ::coreHeaderIsValid(d->grammar, "Subject", headerValue);
+	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Subject", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::NsHeader>(const string &headerValue) const {
 	L_D(const Parser);
-	return ::coreHeaderIsValid(d->grammar, "NS", headerValue);
+	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "NS", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::RequireHeader>(const string &headerValue) const {
 	L_D(const Parser);
-	return ::coreHeaderIsValid(d->grammar, "Require", headerValue);
+	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Require", headerValue);
 }
 
 // -----------------------------------------------------------------------------
 
 bool Cpim::Parser::subjectHeaderLanguageIsValid (const string &language) const {
 	L_D(const Parser);
-	return ::coreHeaderIsValid(d->grammar, "Subject", "SubjectValue", ";lang=" + language);
+	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Subject", "SubjectValue", ";lang=" + language);
 }
+
+LINPHONE_END_NAMESPACE

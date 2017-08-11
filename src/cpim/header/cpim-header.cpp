@@ -20,11 +20,11 @@
 
 #include "cpim-header.h"
 
+// =============================================================================
+
 using namespace std;
 
-using namespace LinphonePrivate;
-
-// =============================================================================
+LINPHONE_BEGIN_NAMESPACE
 
 Cpim::Header::Header (HeaderPrivate &p) : Object(p) {}
 
@@ -43,3 +43,5 @@ string Cpim::Header::asString () const {
 	L_D(const Header);
 	return getName() + ": " + d->value + "\r\n";
 }
+
+LINPHONE_END_NAMESPACE

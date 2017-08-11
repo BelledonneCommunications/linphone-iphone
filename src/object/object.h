@@ -23,22 +23,24 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	class ObjectPrivate;
+LINPHONE_BEGIN_NAMESPACE
 
-	class LINPHONE_PUBLIC Object {
-	public:
-		virtual ~Object ();
+class ObjectPrivate;
 
-	protected:
-		explicit Object (ObjectPrivate &p);
+class LINPHONE_PUBLIC Object {
+public:
+	virtual ~Object ();
 
-		ObjectPrivate *mPrivate = nullptr;
+protected:
+	explicit Object (ObjectPrivate &p);
 
-	private:
-		L_DECLARE_PRIVATE(Object);
-		L_DISABLE_COPY(Object);
-	};
-}
+	ObjectPrivate *mPrivate = nullptr;
+
+private:
+	L_DECLARE_PRIVATE(Object);
+	L_DISABLE_COPY(Object);
+};
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _OBJECT_H_
