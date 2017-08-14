@@ -158,7 +158,7 @@ set(LIBS
 	${ORTP_LIBRARIES}
 	${XML2_LIBRARIES}
 	${BELR_LIBRARIES}
-	/usr/local/Cellar/xerces-c/3.1.4/lib/libxerces-c.dylib
+	${LIBXSD_LIBRARIES}
 )
 if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	list(APPEND LIBS "Ws2_32")

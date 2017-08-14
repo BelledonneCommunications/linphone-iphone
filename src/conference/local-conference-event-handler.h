@@ -20,6 +20,7 @@
 #define _LOCAL_CONFERENCE_EVENT_HANDLER_H_
 
 #include <map>
+#include <memory>
 #include <list>
 #include <string>
 
