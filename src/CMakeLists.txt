@@ -21,7 +21,6 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
-	conference/conference-info.hxx
 	conference/conference-listener.h
 	conference/local-conference-event-handler.h
 	conference/remote-conference-event-handler.h
@@ -38,10 +37,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/singleton.h
 	utils/general.h
 	utils/utils.h
+	xml/conference-info.h
+	xml/xml.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
-	conference/conference-info.cxx
 	conference/local-conference-event-handler.cpp
 	conference/remote-conference-event-handler.cpp
 	cpim/header/cpim-core-headers.cpp
@@ -52,7 +52,12 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	cpim/parser/cpim-parser.cpp
 	object/object.cpp
 	utils/utils.cpp
+	xml/conference-info.cpp
+	xml/xml.cpp
 )
+
+ADD_XSD_WRAPPERS(xml/xml "XML XSD - xml.xsd")
+ADD_XSD_WRAPPERS(xml/conference-info "Conference info XSD - conference-info.xsd")
 
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})

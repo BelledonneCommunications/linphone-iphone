@@ -38,7 +38,7 @@
 
 #include <xsd/cxx/pre.hxx>
 
-#include "xml.hxx"
+#include "xml.h"
 
 namespace namespace_
 {

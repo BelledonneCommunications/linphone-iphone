@@ -31,8 +31,8 @@
 // in the accompanying FLOSSE file.
 //
 
-#ifndef CXX_USERS_REISBENJAMIN_DEVELOPPEMENT_LINPHONE_DESKTOP_SUBMODULES_LINPHONE_SRC_XML_CONFERENCE_INFO_HXX
-#define CXX_USERS_REISBENJAMIN_DEVELOPPEMENT_LINPHONE_DESKTOP_SUBMODULES_LINPHONE_SRC_XML_CONFERENCE_INFO_HXX
+#ifndef XML_CONFERENCE_INFO_H
+#define XML_CONFERENCE_INFO_H
 
 #ifndef XSD_CXX11
 #define XSD_CXX11
@@ -299,7 +299,7 @@ namespace conference_info
 
 #include <xsd/cxx/tree/containers-wildcard.hxx>
 
-#include "xml.hxx"
+#include "xml.h"
 
 namespace conference_info
 {
@@ -3859,4 +3859,4 @@ namespace conference_info
 //
 // End epilogue.
 
-#endif // CXX_USERS_REISBENJAMIN_DEVELOPPEMENT_LINPHONE_DESKTOP_SUBMODULES_LINPHONE_SRC_XML_CONFERENCE_INFO_HXX
+#endif // XML_CONFERENCE_INFO_H

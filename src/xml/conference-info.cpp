@@ -38,7 +38,7 @@
 
 #include <xsd/cxx/pre.hxx>
 
-#include "conference-info.hxx"
+#include "conference-info.h"
 
 namespace conference_info
 {
