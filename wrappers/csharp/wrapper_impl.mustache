@@ -400,7 +400,7 @@ namespace Linphone
 				return Marshal.PtrToStringAnsi(stringPtr);
 				{{/is_string}}
 				{{#is_bool}}
-				return {{getter_c_name}}({{getter_nativePtr}}) == 0;
+				return {{getter_c_name}}({{getter_nativePtr}}) == 1;
 				{{/is_bool}}
 				{{#is_class}}
 				IntPtr ptr = {{getter_c_name}}({{getter_nativePtr}});
