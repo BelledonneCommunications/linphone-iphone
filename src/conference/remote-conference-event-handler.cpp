@@ -17,7 +17,7 @@
  */
 
 #include "remote-conference-event-handler.h"
-#include "conference-info.hxx"
+#include "xml/conference-info.hxx"
 #include "private.h"
 #include "object/object-p.h"
 
