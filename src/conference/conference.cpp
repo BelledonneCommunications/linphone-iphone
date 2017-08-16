@@ -17,13 +17,101 @@
  */
 
 #include "conference-p.h"
+#include "participant-p.h"
 
 #include "conference.h"
+
+using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-Conference::Conference (ConferencePrivate &p) : Object(p) {}
+void ConferencePrivate::ackBeingSent (const CallSession &session, LinphoneHeaders *headers) {
+	if (callListener)
+		callListener->ackBeingSent(headers);
+}
+
+void ConferencePrivate::ackReceived (const CallSession &session, LinphoneHeaders *headers) {
+	if (callListener)
+		callListener->ackReceived(headers);
+}
+
+void ConferencePrivate::callSessionAccepted (const CallSession &session) {
+	if (callListener)
+		callListener->incomingCallToBeAdded();
+}
+
+void ConferencePrivate::callSessionSetReleased (const CallSession &session) {
+	if (callListener)
+		callListener->callSetReleased();
+}
+
+void ConferencePrivate::callSessionSetTerminated (const CallSession &session) {
+	if (callListener)
+		callListener->callSetTerminated();
+}
+
+void ConferencePrivate::callSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) {
+	if (callListener)
+		callListener->callStateChanged(state, message);
+}
+
+void ConferencePrivate::incomingCallSessionStarted (const CallSession &session) {
+	if (callListener)
+		callListener->incomingCallStarted();
+}
+
+void ConferencePrivate::encryptionChanged (const CallSession &session, bool activated, const std::string &authToken) {
+	if (callListener)
+		callListener->encryptionChanged(activated, authToken);
+}
+
+void ConferencePrivate::statsUpdated (const LinphoneCallStats *stats) {
+	if (callListener)
+		callListener->statsUpdated(stats);
+}
+
+void ConferencePrivate::setCurrentSession (const CallSession &session) {
+	if (callListener)
+		callListener->setCurrentCall();
+}
+
+void ConferencePrivate::firstVideoFrameDecoded (const CallSession &session) {
+	if (callListener)
+		callListener->firstVideoFrameDecoded();
+}
+
+void ConferencePrivate::resetFirstVideoFrameDecoded (const CallSession &session) {
+	if (callListener)
+		callListener->resetFirstVideoFrameDecoded();
+}
+
+// =============================================================================
+
+Conference::Conference (ConferencePrivate &p, LinphoneCore *core, const Address &myAddress, CallListener *listener)
+	: Object(p) {
+	L_D(Conference);
+	d->core = core;
+	d->callListener = listener;
+	d->me = make_shared<Participant>(myAddress);
+}
+
+shared_ptr<Participant> Conference::addParticipant (const Address &addr, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+	L_D(Conference);
+	d->activeParticipant = make_shared<Participant>(addr);
+	d->activeParticipant->getPrivate()->createSession(*this, params, hasMedia, d);
+	return d->activeParticipant;
+}
+
+shared_ptr<Participant> Conference::getActiveParticipant () const {
+	L_D(const Conference);
+	return d->activeParticipant;
+}
+
+shared_ptr<Participant> Conference::getMe () const {
+	L_D(const Conference);
+	return d->me;
+}
 
 LINPHONE_END_NAMESPACE

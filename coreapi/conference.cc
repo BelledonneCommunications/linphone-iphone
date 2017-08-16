@@ -54,8 +54,9 @@ public:
 
 		~Participant() {
 			linphone_address_unref(m_uri);
+#if 0
 			if(m_call) m_call->conf_ref = NULL;
-
+#endif
 		}
 
 		const LinphoneAddress *getUri() const {
@@ -257,7 +258,9 @@ Conference::Conference(LinphoneCore *core, LinphoneConference *conf, const Confe
 int Conference::addParticipant(LinphoneCall *call) {
 	Participant *p =new Participant(call);
 	m_participants.push_back(p);
+#if 0
 	call->conf_ref = m_conference;
+#endif
 	return 0;
 }
 
@@ -424,7 +427,7 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 			linphone_call_params_unref(new_params);
 		}else{
 			/*there is already a call to this address, so simply join it to the local conference if not already done*/
-			if (!linphone_call_params_get_in_conference(call->current_params))
+			if (!linphone_call_params_get_in_conference(linphone_call_get_current_params(call)))
 				addParticipant(call);
 		}
 		/*if the local participant is not yet created, created it and it to the conference */
@@ -434,6 +437,7 @@ int LocalConference::inviteAddresses(const std::list<const LinphoneAddress*> &ad
 }
 
 int LocalConference::addParticipant(LinphoneCall *call) {
+#if 0
 	if (linphone_call_params_get_in_conference(call->current_params)){
 		ms_error("Already in conference");
 		return -1;
@@ -465,9 +469,13 @@ int LocalConference::addParticipant(LinphoneCall *call) {
 		return -1;
 	}
 	return 0;
+#else
+	return 0;
+#endif
 }
 
 int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
+#if 0
 	int err=0;
 	char *str;
 
@@ -501,6 +509,9 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 		err=_linphone_call_pause(call);
 	}
 	return err;
+#else
+	return 0;
+#endif
 }
 
 int LocalConference::remoteParticipantsCount() {
@@ -522,7 +533,7 @@ int LocalConference::convertConferenceToCall(){
 	while (calls) {
 		LinphoneCall *rc=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		if (linphone_call_params_get_in_conference(rc->params)) { // not using current_param
+		if (linphone_call_params_get_in_conference(linphone_call_get_params(rc))) { // not using current_param
 			bool_t active_after_removed=isIn();
 			err=removeFromConference(rc, active_after_removed);
 			break;
@@ -566,7 +577,7 @@ int LocalConference::terminate() {
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		if (linphone_call_params_get_in_conference(call->current_params)) {
+		if (linphone_call_params_get_in_conference(linphone_call_get_current_params(call))) {
 			linphone_call_terminate(call);
 		}
 	}
@@ -639,6 +650,7 @@ int LocalConference::stopRecording() {
 }
 
 void LocalConference::onCallStreamStarting(LinphoneCall *call, bool isPausedByRemote) {
+#if 0
 	linphone_call_params_enable_video(call->params, FALSE);
 	call->camera_enabled = FALSE;
 	ms_message("LocalConference::onCallStreamStarting(): joining AudioStream [%p] of call [%p] into conference.", call->audiostream, call);
@@ -648,16 +660,20 @@ void LocalConference::onCallStreamStarting(LinphoneCall *call, bool isPausedByRe
 	call->endpoint=ep;
 	setState(LinphoneConferenceRunning);
 	Conference::addParticipant(call);
+#endif
 }
 
 void LocalConference::onCallStreamStopping(LinphoneCall *call) {
+#if 0
 	ms_audio_conference_remove_member(m_conf,call->endpoint);
 	ms_audio_endpoint_release_from_stream(call->endpoint);
 	call->endpoint=NULL;
 	Conference::removeParticipant(call);
+#endif
 }
 
 void LocalConference::onCallTerminating(LinphoneCall *call) {
+#if 0
 	int remote_count=remoteParticipantsCount();
 	ms_message("conference_check_uninit(): size=%i", getSize());
 	if (remote_count==1 && !m_terminating){
@@ -672,6 +688,7 @@ void LocalConference::onCallTerminating(LinphoneCall *call) {
 		}
 		setState(LinphoneConferenceStopped);
 	}
+#endif
 }
 
 
@@ -701,6 +718,7 @@ int RemoteConference::inviteAddresses(const std::list<const LinphoneAddress *> &
 }
 
 int RemoteConference::addParticipant(LinphoneCall *call) {
+#if 0
 	LinphoneAddress *addr;
 	LinphoneCallParams *params;
 
@@ -742,6 +760,9 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 			ms_error("Could not add call %p to the conference. Bad conference state (%s)", call, stateToString(m_state));
 			return -1;
 	}
+#else
+	return -1;
+#endif
 }
 
 int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
@@ -762,7 +783,7 @@ int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
 			linphone_address_set_method_param(refer_to_addr, "BYE");
 			refer_to = linphone_address_as_string(refer_to_addr);
 			linphone_address_unref(refer_to_addr);
-			res = sal_call_refer(m_focusCall->op, refer_to);
+			res = sal_call_refer(linphone_call_get_op(m_focusCall), refer_to);
 			ms_free(refer_to);
 
 			if(res == 0) {

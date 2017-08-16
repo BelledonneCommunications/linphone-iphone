@@ -1,5 +1,5 @@
 /*
- * conference-listener.h
+ * call-listener.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFERENCE_LISTENER_H_
-#define _CONFERENCE_LISTENER_H_
+#ifndef _CALL_LISTENER_H_
+#define _CALL_LISTENER_H_
+
+#include <string>
+
+#include "linphone/types.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceListener {
+class CallListener {
 public:
-	virtual void conferenceCreated (LinphoneAddress *addr) = 0;
-	virtual void conferenceTerminated (LinphoneAddress *addr) = 0;
-	virtual void participantAdded (LinphoneAddress *addr) = 0;
-	virtual void participantRemoved (LinphoneAddress *addr) = 0;
-	virtual void participantSetAdmin (LinphoneAddress *addr, bool isAdmin) = 0;
+	virtual void ackBeingSent (LinphoneHeaders *headers) = 0;
+	virtual void ackReceived (LinphoneHeaders *headers) = 0;
+	virtual void callSetReleased () = 0;
+	virtual void callSetTerminated () = 0;
+	virtual void callStateChanged (LinphoneCallState state, const std::string &message) = 0;
+	virtual void incomingCallStarted () = 0;
+	virtual void incomingCallToBeAdded () = 0;
+
+	virtual void encryptionChanged (bool activated, const std::string &authToken) = 0;
+
+	virtual void statsUpdated (const LinphoneCallStats *stats) = 0;
+
+	virtual void setCurrentCall () = 0;
+
+	virtual void firstVideoFrameDecoded () = 0;
+	virtual void resetFirstVideoFrameDecoded () = 0;
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CONFERENCE_LISTENER_H_
+#endif // ifndef _CALL_LISTENER_H_

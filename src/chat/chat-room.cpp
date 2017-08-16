@@ -523,8 +523,8 @@ void ChatRoomPrivate::realtimeTextReceived (uint32_t character, LinphoneCall *ca
 			linphone_chat_message_set_from(pendingMessage, peerAddress);
 			if (pendingMessage->to)
 				linphone_address_unref(pendingMessage->to);
-			pendingMessage->to = call->dest_proxy
-				? linphone_address_clone(call->dest_proxy->identity_address)
+			pendingMessage->to = linphone_call_get_dest_proxy(call)
+				? linphone_address_clone(linphone_call_get_dest_proxy(call)->identity_address)
 				: linphone_address_new(linphone_core_get_identity(core));
 			pendingMessage->time = ms_time(0);
 			pendingMessage->state = LinphoneChatMessageStateDelivered;
@@ -868,11 +868,11 @@ void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
 		if (lp_config_get_int(d->core->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 			call = linphone_core_get_call_by_remote_address(d->core, d->peer.c_str());
 			if (call) {
-				if (call->state == LinphoneCallConnected || call->state == LinphoneCallStreamsRunning ||
-						call->state == LinphoneCallPaused || call->state == LinphoneCallPausing ||
-						call->state == LinphoneCallPausedByRemote) {
+				if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
+					linphone_call_get_state(call) == LinphoneCallPaused || linphone_call_get_state(call) == LinphoneCallPausing ||
+					linphone_call_get_state(call) == LinphoneCallPausedByRemote) {
 					ms_message("send SIP msg through the existing call.");
-					op = call->op;
+					op = linphone_call_get_op(call);
 					identity = linphone_core_find_best_identity(d->core, linphone_call_get_remote_address(call));
 				}
 			}
@@ -960,7 +960,7 @@ void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
 			ms_free(clearTextContentType);
 		}
 
-		if (call && call->op == op) {
+		if (call && linphone_call_get_op(call) == op) {
 			/* In this case, chat delivery status is not notified, so unrefing chat message right now */
 			/* Might be better fixed by delivering status, but too costly for now */
 			linphone_chat_room_remove_transient_message(msg->chat_room, msg);

@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "offeranswer.h"
 #include "private.h"
 
+#include "utils/payload-type-handler.h"
+
 static bool_t only_telephone_event(const bctbx_list_t *l){
 	for(;l!=NULL;l=l->next){
 		PayloadType *p=(PayloadType*)l->data;

@@ -78,8 +78,8 @@ LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
 
 LinphoneStatus linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(info->content);
-	sal_op_set_sent_custom_header(call->op, info->headers);
-	return sal_send_info(call->op,NULL, NULL, body_handler);
+	sal_op_set_sent_custom_header(linphone_call_get_op(call), info->headers);
+	return sal_send_info(linphone_call_get_op(call), NULL, NULL, body_handler);
 }
 
 void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name, const char *value){

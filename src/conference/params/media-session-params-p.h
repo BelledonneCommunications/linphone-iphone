@@ -19,7 +19,16 @@
 #ifndef _MEDIA_SESSION_PARAMS_P_H_
 #define _MEDIA_SESSION_PARAMS_P_H_
 
+#include <memory>
+
+#include "call-session-params-p.h"
+
 #include "media-session-params.h"
+
+// =============================================================================
+
+extern std::shared_ptr<LinphonePrivate::MediaSessionParams> linphone_call_params_get_cpp_obj(const LinphoneCallParams *params);
+extern LinphoneCallParams * linphone_call_params_new_for_wrapper(void);
 
 // =============================================================================
 
@@ -27,9 +36,17 @@ LINPHONE_BEGIN_NAMESPACE
 
 class MediaSessionParamsPrivate : public CallSessionParamsPrivate {
 public:
-	MediaSessionParamsPrivate () = default;
+	MediaSessionParamsPrivate ();
 	MediaSessionParamsPrivate (const MediaSessionParamsPrivate &src);
 	virtual ~MediaSessionParamsPrivate ();
+
+	static SalStreamDir mediaDirectionToSalStreamDir (LinphoneMediaDirection direction);
+	static LinphoneMediaDirection salStreamDirToMediaDirection (SalStreamDir dir);
+
+	void adaptToNetwork (LinphoneCore *core, int pingTimeMs);
+
+	SalStreamDir getSalAudioDirection () const;
+	SalStreamDir getSalVideoDirection () const;
 
 	void enableImplicitRtcpFb (bool value) { _implicitRtcpFbEnabled = value; }
 	bool implicitRtcpFbEnabled () const { return _implicitRtcpFbEnabled; }
@@ -51,6 +68,11 @@ public:
 	void setUsedAudioCodec (OrtpPayloadType *pt) { usedAudioCodec = pt; }
 	void setUsedVideoCodec (OrtpPayloadType *pt) { usedVideoCodec = pt; }
 	void setUsedRealtimeTextCodec (OrtpPayloadType *pt) { usedRealtimeTextCodec = pt; }
+
+	SalCustomSdpAttribute * getCustomSdpAttributes () const;
+	void setCustomSdpAttributes (const SalCustomSdpAttribute *csa);
+	SalCustomSdpAttribute * getCustomSdpMediaAttributes (LinphoneStreamType lst) const;
+	void setCustomSdpMediaAttributes (LinphoneStreamType lst, const SalCustomSdpAttribute *csa);
 
 public:
 	bool audioEnabled = true;
@@ -90,6 +112,8 @@ private:
 	int downPtime = 0;
 	int upPtime = 0;
 	bool updateCallWhenIceCompleted = true;
+	SalCustomSdpAttribute *customSdpAttributes = nullptr;
+	SalCustomSdpAttribute *customSdpMediaAttributes[LinphoneStreamTypeUnknown];
 
 public:
 	L_DECLARE_PUBLIC(MediaSessionParams);

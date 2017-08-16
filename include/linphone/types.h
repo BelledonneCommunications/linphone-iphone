@@ -257,6 +257,9 @@ typedef struct _LinphoneCall LinphoneCall;
  */
 typedef struct _LinphoneCallCbs LinphoneCallCbs;
 
+/** Callback prototype */
+typedef void (*LinphoneCallCbFunc)(LinphoneCall *call, void *user_data);
+
 /**
  * Enum representing the direction of a call.
  * @ingroup call_logs

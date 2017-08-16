@@ -35,24 +35,12 @@ CallSessionParamsPrivate::CallSessionParamsPrivate (const CallSessionParamsPriva
 	/* The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient. */
 	if (src.customHeaders)
 		customHeaders = sal_custom_header_clone(src.customHeaders);
-	if (src.customSdpAttributes)
-		customSdpAttributes = sal_custom_sdp_attribute_clone(src.customSdpAttributes);
-	for (unsigned int i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
-		if (src.customSdpMediaAttributes[i])
-			customSdpMediaAttributes[i] = sal_custom_sdp_attribute_clone(src.customSdpMediaAttributes[i]);
-	}
 	referer = src.referer;
 }
 
 CallSessionParamsPrivate::~CallSessionParamsPrivate () {
 	if (customHeaders)
 		sal_custom_header_free(customHeaders);
-	if (customSdpAttributes)
-		sal_custom_sdp_attribute_free(customSdpAttributes);
-	for (unsigned int i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
-		if (customSdpMediaAttributes[i])
-			sal_custom_sdp_attribute_free(customSdpMediaAttributes[i]);
-	}
 }
 
 // -----------------------------------------------------------------------------
@@ -70,47 +58,22 @@ void CallSessionParamsPrivate::setCustomHeaders (const SalCustomHeader *ch) {
 		customHeaders = sal_custom_header_clone(ch);
 }
 
-// -----------------------------------------------------------------------------
-
-SalCustomSdpAttribute * CallSessionParamsPrivate::getCustomSdpAttributes () const {
-	return customSdpAttributes;
-}
-
-void CallSessionParamsPrivate::setCustomSdpAttributes (const SalCustomSdpAttribute *csa) {
-	if (customSdpAttributes) {
-		sal_custom_sdp_attribute_free(customSdpAttributes);
-		customSdpAttributes = nullptr;
-	}
-	if (csa)
-		customSdpAttributes = sal_custom_sdp_attribute_clone(csa);
-}
-
-// -----------------------------------------------------------------------------
-
-SalCustomSdpAttribute * CallSessionParamsPrivate::getCustomSdpMediaAttributes (LinphoneStreamType lst) const {
-	return customSdpMediaAttributes[lst];
-}
-
-void CallSessionParamsPrivate::setCustomSdpMediaAttributes (LinphoneStreamType lst, const SalCustomSdpAttribute *csa) {
-	if (customSdpMediaAttributes[lst]) {
-		sal_custom_sdp_attribute_free(customSdpMediaAttributes[lst]);
-		customSdpMediaAttributes[lst] = nullptr;
-	}
-	if (csa)
-		customSdpMediaAttributes[lst] = sal_custom_sdp_attribute_clone(csa);
-}
-
 // =============================================================================
 
 CallSessionParams::CallSessionParams () : ClonableObject(*new CallSessionParamsPrivate) {}
 
-CallSessionParams::CallSessionParams (CallSessionParamsPrivate &p) : ClonableObject(p) {
-	L_D(CallSessionParams);
-	memset(d->customSdpMediaAttributes, 0, sizeof(d->customSdpMediaAttributes));
-}
+CallSessionParams::CallSessionParams (CallSessionParamsPrivate &p) : ClonableObject(p) {}
 
 CallSessionParams::CallSessionParams (const CallSessionParams &src)
 	: ClonableObject(*new CallSessionParamsPrivate(*src.getPrivate())) {}
+
+// -----------------------------------------------------------------------------
+
+void CallSessionParams::initDefault (LinphoneCore *core) {
+	L_D(CallSessionParams);
+	d->inConference = false;
+	d->privacy = LinphonePrivacyDefault;
+}
 
 // -----------------------------------------------------------------------------
 
@@ -151,40 +114,6 @@ void CallSessionParams::clearCustomHeaders () {
 const char * CallSessionParams::getCustomHeader (const string &headerName) const {
 	L_D(const CallSessionParams);
 	return sal_custom_header_find(d->customHeaders, headerName.c_str());
-}
-
-// -----------------------------------------------------------------------------
-
-void CallSessionParams::addCustomSdpAttribute (const string &attributeName, const string &attributeValue) {
-	L_D(CallSessionParams);
-	d->customSdpAttributes = sal_custom_sdp_attribute_append(d->customSdpAttributes, attributeName.c_str(), attributeValue.c_str());
-}
-
-void CallSessionParams::clearCustomSdpAttributes () {
-	L_D(CallSessionParams);
-	d->setCustomSdpAttributes(nullptr);
-}
-
-const char * CallSessionParams::getCustomSdpAttribute (const string &attributeName) const {
-	L_D(const CallSessionParams);
-	return sal_custom_sdp_attribute_find(d->customSdpAttributes, attributeName.c_str());
-}
-
-// -----------------------------------------------------------------------------
-
-void CallSessionParams::addCustomSdpMediaAttribute (LinphoneStreamType lst, const string &attributeName, const string &attributeValue) {
-	L_D(CallSessionParams);
-	d->customSdpMediaAttributes[lst] = sal_custom_sdp_attribute_append(d->customSdpMediaAttributes[lst], attributeName.c_str(), attributeValue.c_str());
-}
-
-void CallSessionParams::clearCustomSdpMediaAttributes (LinphoneStreamType lst) {
-	L_D(CallSessionParams);
-	d->setCustomSdpMediaAttributes(lst, nullptr);
-}
-
-const char * CallSessionParams::getCustomSdpMediaAttribute (LinphoneStreamType lst, const string &attributeName) const {
-	L_D(const CallSessionParams);
-	return sal_custom_sdp_attribute_find(d->customSdpMediaAttributes[lst], attributeName.c_str());
 }
 
 LINPHONE_END_NAMESPACE

@@ -124,9 +124,11 @@ void JitterBufferResetCommand::exec(Daemon *app, const string& args) {
 		}
 		istr >> streamtype;
 		if (streamtype == "video") {
-			rtprecv = call->videostream ? call->videostream->ms.rtprecv : NULL;
+			VideoStream *vstream = reinterpret_cast<VideoStream *>(linphone_call_get_stream(call, LinphoneStreamTypeVideo));
+			rtprecv = vstream ? vstream->ms.rtprecv : NULL;
 		} else {
-			rtprecv = call->audiostream ? call->audiostream->ms.rtprecv : NULL;
+			AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+			rtprecv = astream ? astream->ms.rtprecv : NULL;
 		}
 	} else {
 		AudioStream *stream = app->findAudioStream(arg2);

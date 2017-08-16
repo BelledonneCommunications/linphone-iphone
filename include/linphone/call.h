@@ -28,10 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * @{
  */
 
-/** Callback prototype */
-typedef void (*LinphoneCallCbFunc)(LinphoneCall *call, void *user_data);
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -245,7 +241,7 @@ LINPHONE_PUBLIC const char * linphone_call_get_authentication_token(LinphoneCall
  * @param call the LinphoneCall
  * @return TRUE if authentication token is verifed, false otherwise.
 **/
-LINPHONE_PUBLIC bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
+LINPHONE_PUBLIC bool_t linphone_call_get_authentication_token_verified(const LinphoneCall *call);
 
 /**
  * Set the result of ZRTP short code verification by user.
@@ -345,7 +341,7 @@ LINPHONE_PUBLIC void linphone_call_set_audio_route(LinphoneCall *call, LinphoneA
  * @param call
  * @return 2
 **/
-LINPHONE_PUBLIC int linphone_call_get_stream_count(LinphoneCall *call);
+LINPHONE_PUBLIC int linphone_call_get_stream_count(const LinphoneCall *call);
 
 /**
  * Returns the type of stream for the given stream index.
@@ -353,7 +349,7 @@ LINPHONE_PUBLIC int linphone_call_get_stream_count(LinphoneCall *call);
  * @param stream_index
  * @return the type (MSAudio, MSVideo, MSText) of the stream of given index.
 **/
-LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index);
+LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(const LinphoneCall *call, int stream_index);
 
 /**
  * Returns the meta rtp transport for the given stream index.
@@ -361,7 +357,7 @@ LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(LinphoneCall *call, i
  * @param stream_index
  * @return a pointer to the meta rtp transport if it exists, NULL otherwise
 **/
-LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index);
+LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtp_transport(const LinphoneCall *call, int stream_index);
 
 /**
  * Returns the meta rtcp transport for the given stream index.
@@ -369,7 +365,7 @@ LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtp_transport(LinphoneCall
  * @param stream_index
  * @return a pointer to the meta rtcp transport if it exists, NULL otherwise
 **/
-LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stream_index);
+LINPHONE_PUBLIC RtpTransport * linphone_call_get_meta_rtcp_transport(const LinphoneCall *call, int stream_index);
 
 /**
  * Pauses the call. If a music file has been setup using linphone_core_set_play_file(),
@@ -715,7 +711,7 @@ LINPHONE_PUBLIC void linphone_call_enable_echo_cancellation(LinphoneCall *call, 
 /**
  * Returns TRUE if echo cancellation is enabled.
 **/
-LINPHONE_PUBLIC bool_t linphone_call_echo_cancellation_enabled(LinphoneCall *lc);
+LINPHONE_PUBLIC bool_t linphone_call_echo_cancellation_enabled(const LinphoneCall *call);
 
 /**
  * Enables or disable echo limiter for this call
@@ -751,14 +747,14 @@ LINPHONE_PUBLIC LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *cal
  * @param call The call.
  * @return float Volume level in percentage.
  */
-LINPHONE_PUBLIC float linphone_call_get_play_volume(LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_play_volume(const LinphoneCall *call);
 
 /**
  * Get the mesured record volume level (sent to remote) in dbm0.
  * @param call The call.
  * @return float Volume level in percentage.
  */
-LINPHONE_PUBLIC float linphone_call_get_record_volume(LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_record_volume(const LinphoneCall *call);
 
 /**
  * Get speaker volume gain.
@@ -813,14 +809,14 @@ LINPHONE_PUBLIC void linphone_call_set_microphone_volume_gain(LinphoneCall *call
  * @return The function returns -1 if no quality measurement is available, for example if no
  * active audio stream exist. Otherwise it returns the quality rating.
 **/
-LINPHONE_PUBLIC float linphone_call_get_current_quality(LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_current_quality(const LinphoneCall *call);
 
 /**
  * Returns call quality averaged over all the duration of the call.
  *
  * See linphone_call_get_current_quality() for more details about quality measurement.
 **/
-LINPHONE_PUBLIC float linphone_call_get_average_quality(LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_average_quality(const LinphoneCall *call);
 
 /**
  * Start call recording.
@@ -849,7 +845,7 @@ LINPHONE_PUBLIC LinphonePlayer * linphone_call_get_player(LinphoneCall *call);
  * @param call the call
  * @return TRUE if media is busy in establishing the connection, FALSE otherwise.
 **/
-LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
+LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(const LinphoneCall *call);
 
 /**
  * Call generic OpenGL render for a given call.

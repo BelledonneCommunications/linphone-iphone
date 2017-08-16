@@ -23,63 +23,24 @@
 
 #include <ortp/payloadtype.h>
 
-extern "C" {
-	bool_t linphone_call_params_implicit_rtcp_fb_enabled(const LinphoneCallParams *params);
-	void linphone_call_params_enable_implicit_rtcp_fb(LinphoneCallParams *params, bool_t value);
-	int linphone_call_params_get_down_bandwidth(const LinphoneCallParams *params);
-	void linphone_call_params_set_down_bandwidth(LinphoneCallParams *params, int value);
-	int linphone_call_params_get_up_bandwidth(const LinphoneCallParams *params);
-	void linphone_call_params_set_up_bandwidth(LinphoneCallParams *params, int value);
-	int linphone_call_params_get_down_ptime(const LinphoneCallParams *params);
-	void linphone_call_params_set_down_ptime(LinphoneCallParams *params, int value);
-	int linphone_call_params_get_up_ptime(const LinphoneCallParams *params);
-	void linphone_call_params_set_up_ptime(LinphoneCallParams *params, int value);
-	bool_t linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params);
-	void linphone_call_params_set_update_call_when_ice_completed(LinphoneCallParams *params, bool_t value);
-	void linphone_call_params_set_received_fps(LinphoneCallParams *params, float value);
-	void linphone_call_params_set_received_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef);
-	void linphone_call_params_set_recv_vsize(LinphoneCallParams *params, MSVideoSize vsize);
-	void linphone_call_params_set_sent_fps(LinphoneCallParams *params, float value);
-	void linphone_call_params_set_sent_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef);
-	void linphone_call_params_set_sent_vsize(LinphoneCallParams *params, MSVideoSize vsize);
-	void linphone_call_params_set_used_audio_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
-	void linphone_call_params_set_used_video_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
-	void linphone_call_params_set_used_text_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
-}
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class MediaSession;
+class MediaSessionPrivate;
 class MediaSessionParamsPrivate;
 
 class MediaSessionParams : public CallSessionParams {
-	friend unsigned char ::linphone_call_params_implicit_rtcp_fb_enabled(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_enable_implicit_rtcp_fb(LinphoneCallParams *params, unsigned char value);
-	friend int ::linphone_call_params_get_down_bandwidth(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_down_bandwidth(LinphoneCallParams *params, int value);
-	friend int ::linphone_call_params_get_up_bandwidth(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_up_bandwidth(LinphoneCallParams *params, int value);
-	friend int ::linphone_call_params_get_down_ptime(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_down_ptime(LinphoneCallParams *params, int value);
-	friend int ::linphone_call_params_get_up_ptime(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_up_ptime(LinphoneCallParams *params, int value);
-	friend unsigned char ::linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_update_call_when_ice_completed(LinphoneCallParams *params, unsigned char value);
-	friend void ::linphone_call_params_set_received_fps(LinphoneCallParams *params, float value);
-	friend void ::linphone_call_params_set_received_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef);
-	friend void ::linphone_call_params_set_recv_vsize(LinphoneCallParams *params, MSVideoSize vsize);
-	friend void ::linphone_call_params_set_sent_fps(LinphoneCallParams *params, float value);
-	friend void ::linphone_call_params_set_sent_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef);
-	friend void ::linphone_call_params_set_sent_vsize(LinphoneCallParams *params, MSVideoSize vsize);
-	friend void ::linphone_call_params_set_used_audio_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
-	friend void ::linphone_call_params_set_used_video_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
-	friend void ::linphone_call_params_set_used_text_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
+	friend class MediaSession;
+	friend class MediaSessionPrivate;
 
 public:
 	MediaSessionParams ();
 	MediaSessionParams (const MediaSessionParams &src);
 	virtual ~MediaSessionParams () = default;
+
+	void initDefault (LinphoneCore *core);
 
 	bool audioEnabled () const;
 	bool audioMulticastEnabled () const;
@@ -131,6 +92,14 @@ public:
 
 	SalMediaProto getMediaProto () const;
 	const char * getRtpProfile () const;
+
+	void addCustomSdpAttribute (const std::string &attributeName, const std::string &attributeValue);
+	void clearCustomSdpAttributes ();
+	const char * getCustomSdpAttribute (const std::string &attributeName) const;
+
+	void addCustomSdpMediaAttribute (LinphoneStreamType lst, const std::string &attributeName, const std::string &attributeValue);
+	void clearCustomSdpMediaAttributes (LinphoneStreamType lst);
+	const char * getCustomSdpMediaAttribute (LinphoneStreamType lst, const std::string &attributeName) const;
 
 private:
 	L_DECLARE_PRIVATE(MediaSessionParams);

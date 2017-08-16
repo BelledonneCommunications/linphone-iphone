@@ -163,12 +163,7 @@ bool_t linphone_nat_policy_upnp_enabled(const LinphoneNatPolicy *policy) {
 void linphone_nat_policy_enable_upnp(LinphoneNatPolicy *policy, bool_t enable) {
 	policy->upnp_enabled = enable;
 	if (enable) {
-#ifdef BUILD_UPNP
-		policy->stun_enabled = policy->turn_enabled = policy->ice_enabled = FALSE;
-		ms_warning("Enabling uPnP NAT policy has disabled any other previously enabled policies");
-#else
-		ms_warning("Cannot enable the uPnP NAT policy because the uPnP support is not compiled in");
-#endif
+		ms_warning("uPnP NAT policy is no longer supported");
 	}
 }
 

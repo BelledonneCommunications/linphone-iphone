@@ -1,5 +1,5 @@
 /*
- * remote-conference.cpp
+ * c-private-types.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,21 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "conference-p.h"
+#ifndef _C_PRIVATE_TYPES_H_
+#define _C_PRIVATE_TYPES_H_
 
-#include "remote-conference.h"
+#include <memory>
 
-LINPHONE_BEGIN_NAMESPACE
+#include "conference/params/media-session-params.h"
 
 // =============================================================================
 
-class RemoteConferencePrivate : public ConferencePrivate {
-public:
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
+// =============================================================================
+// C Structures.
+// =============================================================================
+
+struct _LinphoneCallParams{
+	belle_sip_object_t base;
+	void *user_data;
+	std::shared_ptr<LinphonePrivate::MediaSessionParams> msp;
 };
 
-// =============================================================================
+#ifdef __cplusplus
+	}
+#endif
 
-RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(*new RemoteConferencePrivate, core, myAddress, listener) {}
-
-LINPHONE_END_NAMESPACE
+#endif // ifndef _C_PRIVATE_TYPES_H_

@@ -26,49 +26,24 @@
 #include "linphone/types.h"
 #include "sal/sal.h"
 
-extern "C" {
-	bool_t linphone_call_params_get_in_conference(const LinphoneCallParams *params);
-	void linphone_call_params_set_in_conference(LinphoneCallParams *params, bool_t value);
-	bool_t linphone_call_params_get_internal_call_update(const LinphoneCallParams *params);
-	void linphone_call_params_set_internal_call_update(LinphoneCallParams *params, bool_t value);
-	bool_t linphone_call_params_get_no_user_consent(const LinphoneCallParams *params);
-	void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t value);
-	SalCustomHeader * linphone_call_params_get_custom_headers(const LinphoneCallParams *params);
-	void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const SalCustomHeader *ch);
-	SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_attributes(const LinphoneCallParams *params);
-	void linphone_call_params_set_custom_sdp_attributes(LinphoneCallParams *params, const SalCustomSdpAttribute *csa);
-	SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_media_attributes(const LinphoneCallParams *params, LinphoneStreamType type);
-	void linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa);
-	LinphoneCall * linphone_call_params_get_referer(const LinphoneCallParams *params);
-	void linphone_call_params_set_referer(LinphoneCallParams *params, LinphoneCall *referer);
-}
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class CallSession;
 class CallSessionParamsPrivate;
+class CallSessionPrivate;
 
 class CallSessionParams : public ClonableObject {
-	friend unsigned char ::linphone_call_params_get_in_conference(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_in_conference(LinphoneCallParams *params, unsigned char value);
-	friend unsigned char ::linphone_call_params_get_internal_call_update(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_internal_call_update(LinphoneCallParams *params, unsigned char value);
-	friend unsigned char ::linphone_call_params_get_no_user_consent(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_no_user_consent(LinphoneCallParams *params, unsigned char value);
-	friend SalCustomHeader * ::linphone_call_params_get_custom_headers(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_custom_headers(LinphoneCallParams *params, const SalCustomHeader *ch);
-	friend SalCustomSdpAttribute * ::linphone_call_params_get_custom_sdp_attributes(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_custom_sdp_attributes(LinphoneCallParams *params, const SalCustomSdpAttribute *csa);
-	friend SalCustomSdpAttribute * ::linphone_call_params_get_custom_sdp_media_attributes(const LinphoneCallParams *params, LinphoneStreamType type);
-	friend void ::linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa);
-	friend LinphoneCall * ::linphone_call_params_get_referer(const LinphoneCallParams *params);
-	friend void ::linphone_call_params_set_referer(LinphoneCallParams *params, LinphoneCall *referer);
+	friend class CallSession;
+	friend class CallSessionPrivate;
 
 public:
 	CallSessionParams ();
 	CallSessionParams (const CallSessionParams &src);
 	virtual ~CallSessionParams () = default;
+
+	virtual void initDefault (LinphoneCore *core);
 
 	const std::string& getSessionName () const;
 	void setSessionName (const std::string &sessionName);
@@ -79,14 +54,6 @@ public:
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void clearCustomHeaders ();
 	const char * getCustomHeader (const std::string &headerName) const;
-
-	void addCustomSdpAttribute (const std::string &attributeName, const std::string &attributeValue);
-	void clearCustomSdpAttributes ();
-	const char * getCustomSdpAttribute (const std::string &attributeName) const;
-
-	void addCustomSdpMediaAttribute (LinphoneStreamType lst, const std::string &attributeName, const std::string &attributeValue);
-	void clearCustomSdpMediaAttributes (LinphoneStreamType lst);
-	const char * getCustomSdpMediaAttribute (LinphoneStreamType lst, const std::string &attributeName) const;
 
 protected:
 	explicit CallSessionParams (CallSessionParamsPrivate &p);

@@ -19,17 +19,54 @@
 #ifndef _CALL_SESSION_H_
 #define _CALL_SESSION_H_
 
+#include <memory>
+
 #include "object/object.h"
+#include "address/address.h"
+#include "conference/conference.h"
+#include "conference/params/call-session-params.h"
+#include "conference/session/call-session-listener.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class CallPrivate;
 class CallSessionPrivate;
 
-class CallSession : public Object {
+class CallSession : public Object, public std::enable_shared_from_this<CallSession> {
+	friend class CallPrivate;
+
 public:
-	CallSession ();
+	CallSession (const Conference &conference, const std::shared_ptr<CallSessionParams> params, CallSessionListener *listener);
+
+	LinphoneStatus accept (const std::shared_ptr<CallSessionParams> csp = nullptr);
+	LinphoneStatus acceptUpdate (const std::shared_ptr<CallSessionParams> csp);
+	virtual void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalOp *op, const Address &from, const Address &to);
+	LinphoneStatus decline (LinphoneReason reason);
+	LinphoneStatus decline (const LinphoneErrorInfo *ei);
+	virtual void initiateIncoming ();
+	virtual bool initiateOutgoing ();
+	virtual void iterate (time_t currentRealTime, bool oneSecondElapsed);
+	virtual void startIncomingNotification ();
+	virtual int startInvite (const Address *destination);
+	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
+	LinphoneStatus update (const std::shared_ptr<CallSessionParams> csp);
+
+	std::shared_ptr<CallSessionParams> getCurrentParams ();
+	LinphoneCallDir getDirection () const;
+	int getDuration () const;
+	const LinphoneErrorInfo * getErrorInfo () const;
+	LinphoneCallLog * getLog () const;
+	virtual const std::shared_ptr<CallSessionParams> getParams () const;
+	LinphoneReason getReason () const;
+	const Address& getRemoteAddress () const;
+	std::string getRemoteAddressAsString () const;
+	std::string getRemoteContact () const;
+	const std::shared_ptr<CallSessionParams> getRemoteParams ();
+	LinphoneCallState getState () const;
+
+	std::string getRemoteUserAgent () const;
 
 protected:
 	explicit CallSession (CallSessionPrivate &p);

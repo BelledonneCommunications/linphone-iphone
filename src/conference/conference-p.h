@@ -19,9 +19,13 @@
 #ifndef _CONFERENCE_P_H_
 #define _CONFERENCE_P_H_
 
+#include <memory>
+
 #include "object/object-p.h"
 
-#include "conference.h"
+#include "conference/conference.h"
+#include "conference/participant.h"
+#include "conference/session/call-session-listener.h"
 
 #include <string>
 
@@ -29,11 +33,35 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferencePrivate : public ObjectPrivate {
+class ConferencePrivate : public ObjectPrivate, CallSessionListener {
 public:
 	virtual ~ConferencePrivate () = default;
 
-	std::string confId;
+	LinphoneCore * getCore () const { return core; }
+
+	virtual void ackBeingSent (const CallSession &session, LinphoneHeaders *headers);
+	virtual void ackReceived (const CallSession &session, LinphoneHeaders *headers);
+	virtual void callSessionAccepted (const CallSession &session);
+	virtual void callSessionSetReleased (const CallSession &session);
+	virtual void callSessionSetTerminated (const CallSession &session);
+	virtual void callSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message);
+	virtual void incomingCallSessionStarted (const CallSession &session);
+
+	virtual void encryptionChanged (const CallSession &session, bool activated, const std::string &authToken);
+
+	virtual void statsUpdated (const LinphoneCallStats *stats);
+
+	virtual void setCurrentSession (const CallSession &session);
+
+	virtual void firstVideoFrameDecoded (const CallSession &session);
+	virtual void resetFirstVideoFrameDecoded (const CallSession &session);
+
+private:
+	LinphoneCore *core = nullptr;
+	CallListener *callListener = nullptr;
+
+	std::shared_ptr<Participant> me = nullptr;
+	std::shared_ptr<Participant> activeParticipant = nullptr;
 
 	L_DECLARE_PUBLIC(Conference);
 };

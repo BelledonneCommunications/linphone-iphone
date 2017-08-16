@@ -81,14 +81,14 @@ char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics,
 void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char*)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
-	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
+	reporting_session_report_t * report = linphone_call_get_log(call)->reporting.reports[stream_type];
 	on_report_send_mandatory(call,stream_type,content);
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalMetrics:"));
 	BC_ASSERT_TRUE(!remote_metrics_start || on_report_send_verify_metrics(&report->local_metrics,body) < remote_metrics_start);
 }
 void on_report_send_with_rtcp_xr_remote(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char*)linphone_content_get_buffer(content);
-	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
+	reporting_session_report_t * report = linphone_call_get_log(call)->reporting.reports[stream_type];
 
 	on_report_send_mandatory(call,stream_type,content);
 	if (report->remote_metrics.rtcp_sr_count+report->remote_metrics.rtcp_xr_count>0){
@@ -135,14 +135,14 @@ static void quality_reporting_not_used_without_config(void) {
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, NULL, NULL))  {
 		// marie has stats collection enabled but pauline has not
-		BC_ASSERT_TRUE(linphone_proxy_config_quality_reporting_enabled(call_marie->dest_proxy));
-		BC_ASSERT_FALSE(linphone_proxy_config_quality_reporting_enabled(call_pauline->dest_proxy));
+		BC_ASSERT_TRUE(linphone_proxy_config_quality_reporting_enabled(linphone_call_get_dest_proxy(call_marie)));
+		BC_ASSERT_FALSE(linphone_proxy_config_quality_reporting_enabled(linphone_call_get_dest_proxy(call_pauline)));
 
 		// this field should be already filled
-		BC_ASSERT_PTR_NOT_NULL(call_marie->log->reporting.reports[0]->info.local_addr.ip);
+		BC_ASSERT_PTR_NOT_NULL(linphone_call_get_log(call_marie)->reporting.reports[0]->info.local_addr.ip);
 
 		// but not this one since it is updated at the end of call
-		BC_ASSERT_PTR_NULL(call_marie->log->reporting.reports[0]->dialog_id);
+		BC_ASSERT_PTR_NULL(linphone_call_get_log(call_marie)->reporting.reports[0]->dialog_id);
 		end_call(marie, pauline);
 	}
 
@@ -240,7 +240,7 @@ static void quality_reporting_at_call_termination(void) {
 		linphone_core_terminate_all_calls(marie->lc);
 
 		// now dialog id should be filled
-		BC_ASSERT_PTR_NOT_NULL(call_marie->log->reporting.reports[0]->dialog_id);
+		BC_ASSERT_PTR_NOT_NULL(linphone_call_get_log(call_marie)->reporting.reports[0]->dialog_id);
 
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1, 10000));
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1, 10000));
@@ -265,7 +265,7 @@ static void quality_reporting_interval_report(void) {
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, NULL, NULL))  {
 		linphone_reporting_set_on_report_send(call_marie, on_report_send_mandatory);
-		linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 1);
+		linphone_proxy_config_set_quality_reporting_interval(linphone_call_get_dest_proxy(call_marie), 1);
 
 		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc));
 		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
@@ -387,7 +387,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, marie_params, pauline_params))  {
 		linphone_reporting_set_on_report_send(call_marie, on_report_send_mandatory);
-		linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 3);
+		linphone_proxy_config_set_quality_reporting_interval(linphone_call_get_dest_proxy(call_marie), 3);
 
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,NULL,0,3000));
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));

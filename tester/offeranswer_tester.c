@@ -425,6 +425,7 @@ static void check_avpf_features(LinphoneCore *lc, unsigned char expected_feature
 	LinphoneCall *lcall = linphone_core_get_current_call(lc);
 	BC_ASSERT_PTR_NOT_NULL(lcall);
 	if (lcall != NULL) {
+#if 0
 		SalStreamDescription *desc = sal_media_description_find_stream(lcall->resultdesc, SalProtoRtpAvpf, SalVideo);
 		BC_ASSERT_PTR_NOT_NULL(desc);
 		if (desc != NULL) {
@@ -435,6 +436,7 @@ static void check_avpf_features(LinphoneCore *lc, unsigned char expected_feature
 				BC_ASSERT_EQUAL(pt->avpf.features, expected_features, int, "%d");
 			}
 		}
+#endif
 	}
 }
 

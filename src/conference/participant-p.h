@@ -1,5 +1,5 @@
 /*
- * remote-conference.cpp
+ * participant-p.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,21 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "conference-p.h"
+#ifndef _PARTICIPANT_P_H_
+#define _PARTICIPANT_P_H_
 
-#include "remote-conference.h"
+#include <memory>
+
+#include "object/object-p.h"
+
+#include "conference/participant.h"
+#include "conference/session/call-session.h"
+#include "conference/session/call-session-listener.h"
+#include "conference/params/call-session-params.h"
+
+#include "linphone/types.h"
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-// =============================================================================
-
-class RemoteConferencePrivate : public ConferencePrivate {
+class ParticipantPrivate : public ObjectPrivate {
 public:
+	virtual ~ParticipantPrivate () = default;
+
+	void createSession (const Conference &conference, const std::shared_ptr<CallSessionParams> params, bool hasMedia, CallSessionListener *listener);
+	std::shared_ptr<CallSession> getSession () const;
+
+	Address addr;
+	bool isAdmin = false;
+	std::shared_ptr<CallSession> session = nullptr;
+
+	L_DECLARE_PUBLIC(Participant);
 };
 
-// =============================================================================
-
-RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(*new RemoteConferencePrivate, core, myAddress, listener) {}
-
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _PARTICIPANT_P_H_

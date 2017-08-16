@@ -4680,6 +4680,8 @@ LINPHONE_PUBLIC const char * linphone_core_get_video_preset(const LinphoneCore *
  */
 LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
 
+LINPHONE_PUBLIC void linphone_core_enable_realtime_text(LinphoneCore *lc, bool_t value);
+
 /**
  * Set http proxy address to be used for signaling during next channel connection. Use #linphone_core_set_network_reachable FASLE/TRUE to force channel restart.
  * @param[in] lc LinphoneCore object

@@ -23,10 +23,15 @@
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
+	c-wrapper/c-private-types.h
 	c-wrapper/c-tools.h
 	call/call.h
+	call/call-listener.h
+	call/call-p.h
 	chat/chat-room-p.h
 	chat/chat-room.h
+	chat/imdn.h
+	chat/is-composing.h
 	conference/conference.h
 	conference/conference-listener.h
 	conference/conference-p.h
@@ -36,14 +41,15 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/params/media-session-params.h
 	conference/params/media-session-params-p.h
 	conference/participant.h
+	conference/participant-p.h
 	conference/remote-conference.h
 	conference/session/call-session.h
+	conference/session/call-session-listener.h
 	conference/session/call-session-p.h
 	conference/session/media-session.h
+	conference/session/port-config.h
 	content/content.h
 	core/core.h
-	chat/imdn.h
-	chat/is-composing.h
 	cpim/cpim.h
 	cpim/header/cpim-core-headers.h
 	cpim/header/cpim-generic-header.h
@@ -68,12 +74,15 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	event-log/message-event.h
 	logger/logger.h
 	message/message.h
+	nat/ice-agent.h
+	nat/stun-client.h
 	object/clonable-object-p.h
 	object/clonable-object.h
 	object/object-p.h
 	object/object.h
 	object/singleton.h
 	utils/content-type.h
+	utils/payload-type-handler.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
@@ -111,10 +120,13 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	event-log/message-event.cpp
 	logger/logger.cpp
 	message/message.cpp
+	nat/ice-agent.cpp
+	nat/stun-client.cpp
 	object/clonable-object.cpp
 	object/object.cpp
 	utils/content-type.cpp
 	utils/general.cpp
+	utils/payload-type-handler.cpp
 	utils/utils.cpp
 )
 

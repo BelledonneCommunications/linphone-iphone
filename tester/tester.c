@@ -369,7 +369,7 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 
 	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
 	/*for now, we need the periodical updates facility to compute bandwidth measurements correctly during tests*/
-	lp_config_set_int(linphone_core_get_config(mgr->lc), "misc", "send_call_stats_periodical_updates", 1);
+	mgr->lc->send_call_stats_periodical_updates = TRUE;
 
 	if (rc_path) ms_free(rc_path);
 }
@@ -562,9 +562,6 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&presence_test_suite);
 	bc_tester_add_suite(&presence_server_test_suite);
 	bc_tester_add_suite(&account_creator_test_suite);
-#ifdef UPNP
-	bc_tester_add_suite(&upnp_test_suite);
-#endif
 	bc_tester_add_suite(&stun_test_suite);
 	bc_tester_add_suite(&event_test_suite);
 	bc_tester_add_suite(&flexisip_test_suite);
@@ -685,13 +682,13 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 	LinphoneCallStats *stats;
 	switch (stream_type) {
 	case LinphoneStreamTypeAudio:
-		ms=&c1->audiostream->ms;
+		ms=linphone_call_get_stream(c1, LinphoneStreamTypeAudio);
 		break;
 	case LinphoneStreamTypeVideo:
-		ms=&c1->videostream->ms;
+		ms=linphone_call_get_stream(c1, LinphoneStreamTypeVideo);
 		break;
 	case LinphoneStreamTypeText:
-		ms=&c1->textstream->ms;
+		ms=linphone_call_get_stream(c1, LinphoneStreamTypeText);
 		break;
 	default:
 		ms_error("Unknown stream type [%s]",  linphone_stream_type_to_string(stream_type));
@@ -707,18 +704,20 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 		int port = 0;
 		SalMediaDescription *result_desc;
 		char *expected_addr = NULL;
+		AudioStream *astream;
 
 		const LinphoneCallParams *cp1 = linphone_call_get_current_params(c1);
 		const LinphoneCallParams *cp2 = linphone_call_get_current_params(c2);
 		if (linphone_call_params_get_update_call_when_ice_completed(cp1) && linphone_call_params_get_update_call_when_ice_completed(cp2)) {
 			memset(&remaddr, 0, remaddrlen);
-			result_desc = sal_call_get_final_media_description(c2->op);
+			result_desc = sal_call_get_final_media_description(linphone_call_get_op(c2));
 			expected_addr = result_desc->streams[0].rtp_addr;
 			if (expected_addr[0] == '\0') expected_addr = result_desc->addr;
-			if ((strchr(expected_addr, ':') == NULL) && (c1->audiostream->ms.sessions.rtp_session->rtp.gs.rem_addr.ss_family == AF_INET6)) {
-				bctbx_sockaddr_ipv6_to_ipv4((struct sockaddr *)&c1->audiostream->ms.sessions.rtp_session->rtp.gs.rem_addr, (struct sockaddr *)&remaddr, &remaddrlen);
+			astream = (AudioStream *)linphone_call_get_stream(c1, LinphoneStreamTypeAudio);
+			if ((strchr(expected_addr, ':') == NULL) && (astream->ms.sessions.rtp_session->rtp.gs.rem_addr.ss_family == AF_INET6)) {
+				bctbx_sockaddr_ipv6_to_ipv4((struct sockaddr *)&astream->ms.sessions.rtp_session->rtp.gs.rem_addr, (struct sockaddr *)&remaddr, &remaddrlen);
 			} else {
-				memcpy(&remaddr, &c1->audiostream->ms.sessions.rtp_session->rtp.gs.rem_addr, c1->audiostream->ms.sessions.rtp_session->rtp.gs.rem_addrlen);
+				memcpy(&remaddr, &astream->ms.sessions.rtp_session->rtp.gs.rem_addr, astream->ms.sessions.rtp_session->rtp.gs.rem_addrlen);
 			}
 			bctbx_sockaddr_to_ip_address((struct sockaddr *)&remaddr, remaddrlen, ip, sizeof(ip), &port);
 

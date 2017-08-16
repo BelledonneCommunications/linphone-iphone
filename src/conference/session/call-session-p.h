@@ -19,11 +19,12 @@
 #ifndef _CALL_SESSION_P_H_
 #define _CALL_SESSION_P_H_
 
+#include <memory>
+#include <string>
+
 #include "object/object-p.h"
 
 #include "call-session.h"
-
-#include "bellesip_sal/sal_impl.h"
 
 // =============================================================================
 
@@ -31,9 +32,78 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionPrivate : public ObjectPrivate {
 public:
-	virtual ~CallSessionPrivate () = default;
+	CallSessionPrivate (const Conference &conference, const std::shared_ptr<CallSessionParams> params, CallSessionListener *listener);
+	virtual ~CallSessionPrivate ();
 
-	SalOp *op;
+	int computeDuration () const;
+	virtual void initializeParamsAccordingToIncomingCallParams ();
+	virtual void setState (LinphoneCallState newState, const std::string &message);
+	bool startPing ();
+	void setPingTime (int value) { pingTime = value; }
+
+	LinphoneProxyConfig * getDestProxy () const { return destProxy; }
+	SalOp * getOp () const { return op; }
+
+	virtual void accepted ();
+	void ackBeingSent (LinphoneHeaders *headers);
+	virtual void ackReceived (LinphoneHeaders *headers);
+	virtual bool failure ();
+	void pingReply ();
+	virtual void remoteRinging ();
+	virtual void terminated ();
+	void updated (bool isUpdate);
+	void updatedByRemote ();
+	void updating (bool isUpdate);
+
+protected:
+	void accept (const std::shared_ptr<CallSessionParams> params);
+	virtual LinphoneStatus acceptUpdate (const std::shared_ptr<CallSessionParams> csp, LinphoneCallState nextState, const std::string &stateInfo);
+	LinphoneStatus checkForAcceptation () const;
+	virtual void handleIncomingReceivedStateInIncomingNotification ();
+	virtual bool isReadyForInvite () const;
+	bool isUpdateAllowed (LinphoneCallState &nextState) const;
+	virtual void setReleased ();
+	virtual void setTerminated ();
+	virtual LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo);
+	virtual LinphoneStatus startUpdate ();
+	virtual void terminate ();
+	virtual void updateCurrentParams ();
+
+	void setContactOp ();
+
+private:
+	void completeLog ();
+	void createOpTo (const LinphoneAddress *to);
+
+	LinphoneAddress * getFixedContact () const;
+
+protected:
+	const Conference &conference;
+	LinphoneCore *core = nullptr;
+	CallSessionListener *listener = nullptr;
+
+	std::shared_ptr<CallSessionParams> params = nullptr;
+	std::shared_ptr<CallSessionParams> currentParams = nullptr;
+	std::shared_ptr<CallSessionParams> remoteParams = nullptr;
+
+	LinphoneCallDir direction = LinphoneCallOutgoing;
+	LinphoneCallState state = LinphoneCallIdle;
+	LinphoneCallState prevState = LinphoneCallIdle;
+	//LinphoneCallState transferState = LinphoneCallIdle;
+	LinphoneProxyConfig *destProxy = nullptr;
+	LinphoneErrorInfo *ei = nullptr;
+	LinphoneCallLog *log = nullptr;
+	LinphoneNatPolicy *natPolicy = nullptr;
+
+	SalOp *op = nullptr;
+
+	SalOp *pingOp = nullptr;
+	bool pingReplied = false;
+	int pingTime = 0;
+
+	bool deferIncomingNotification = false;
+	bool deferUpdate = false;
+	bool nonOpError = false; /* Set when the LinphoneErrorInfo was set at higher level than sal */
 
 	L_DECLARE_PUBLIC(CallSession);
 };

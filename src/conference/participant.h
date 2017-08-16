@@ -22,6 +22,7 @@
 #include "address/address.h"
 
 #include "object/object.h"
+#include "conference/params/call-session-params.h"
 
 // =============================================================================
 
@@ -30,6 +31,11 @@ LINPHONE_BEGIN_NAMESPACE
 class ParticipantPrivate;
 
 class Participant : public Object {
+	friend class Call;
+	friend class CallPrivate;
+	friend class Conference;
+	friend class MediaSessionPrivate;
+
 public:
 	Participant (const Address &addr);
 

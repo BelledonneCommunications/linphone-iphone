@@ -42,10 +42,6 @@ public:
 
 	SalCustomHeader * getCustomHeaders () const;
 	void setCustomHeaders (const SalCustomHeader *ch);
-	SalCustomSdpAttribute * getCustomSdpAttributes () const;
-	void setCustomSdpAttributes (const SalCustomSdpAttribute *csa);
-	SalCustomSdpAttribute * getCustomSdpMediaAttributes (LinphoneStreamType lst) const;
-	void setCustomSdpMediaAttributes (LinphoneStreamType lst, const SalCustomSdpAttribute *csa);
 
 	LinphoneCall *getReferer () const { return referer; }
 	void setReferer (LinphoneCall *call) { referer = call; }
@@ -60,8 +56,6 @@ private:
 	bool internalCallUpdate = false;
 	bool noUserConsent = false; /* When set to true an UPDATE request will be used instead of reINVITE */
 	SalCustomHeader *customHeaders = nullptr;
-	SalCustomSdpAttribute *customSdpAttributes = nullptr;
-	SalCustomSdpAttribute *customSdpMediaAttributes[LinphoneStreamTypeUnknown];
 	LinphoneCall *referer = nullptr; /* In case call creation is consecutive to an incoming transfer, this points to the original call */
 
 public:

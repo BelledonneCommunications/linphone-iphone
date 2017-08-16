@@ -59,6 +59,12 @@ public:
 		return static_cast<const WrappedObject<const T> *>(object)->cppPtr;
 	}
 
+	template<typename T>
+	static inline void setCppPtrFromC (void *object, std::shared_ptr<T> &cppPtr) {
+		L_ASSERT(object);
+		static_cast<WrappedObject<T> *>(object)->cppPtr = cppPtr;
+	}
+
 private:
 	Wrapper ();
 
@@ -107,6 +113,9 @@ LINPHONE_END_NAMESPACE
 
 #define L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC<LINPHONE_NAMESPACE::TYPE>(OBJECT)
+
+#define L_SET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_PTR) \
+	LINPHONE_NAMESPACE::Wrapper::setCppPtrFromC(OBJECT, CPP_PTR)
 
 #define L_GET_PRIVATE(OBJECT) \
 	LINPHONE_NAMESPACE::Wrapper::getPrivate(OBJECT)

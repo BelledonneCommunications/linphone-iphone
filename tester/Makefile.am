@@ -77,7 +77,6 @@ RCFILES = \
 					rcfiles/pauline_zrtp_srtpsuite_aes256_rc\
 					rcfiles/remote_zero_length_params_rc\
 					rcfiles/stun_rc\
-					rcfiles/upnp_rc\
 					rcfiles/zero_length_params_rc
 
 
@@ -149,7 +148,6 @@ liblinphonetester_la_SOURCES = \
 				stun_tester.c \
 				tester.c \
 				tunnel_tester.c \
-				upnp_tester.c \
 				vcard_tester.c \
 				video_tester.c
 

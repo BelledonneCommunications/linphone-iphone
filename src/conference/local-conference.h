@@ -29,7 +29,7 @@ class LocalConferencePrivate;
 
 class LocalConference : public Conference {
 public:
-	LocalConference ();
+	LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 
 private:
 	L_DECLARE_PRIVATE(LocalConference);

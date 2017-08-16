@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/payload_type.h"
 #include "private.h"
 
+#include "utils/payload-type-handler.h"
+
 struct _LinphonePayloadType {
 	belle_sip_object_t base;
 	OrtpPayloadType *pt;
@@ -134,16 +136,16 @@ const char *linphone_payload_type_get_encoder_description(const LinphonePayloadT
 }
 
 static int _linphone_core_get_payload_type_normal_bitrate(const LinphoneCore *lc, const OrtpPayloadType *pt) {
-	int maxbw = get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
+	int maxbw = LinphonePrivate::PayloadTypeHandler::getMinBandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
 	if (pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED){
-		return get_audio_payload_bandwidth(lc, pt, maxbw);
+		return LinphonePrivate::PayloadTypeHandler::getAudioPayloadTypeBandwidth(pt, maxbw);
 	}else if (pt->type==PAYLOAD_VIDEO){
 		int video_bw;
 		if (maxbw<=0) {
 			video_bw=1500; /*default bitrate for video stream when no bandwidth limit is set, around 1.5 Mbit/s*/
 		}else{
-			video_bw=get_remaining_bandwidth_for_video(maxbw,lc->audio_bw);
+			video_bw=LinphonePrivate::PayloadTypeHandler::getRemainingBandwidthForVideo(maxbw,lc->audio_bw);
 		}
 		return video_bw;
 	}
@@ -258,7 +260,7 @@ bool_t linphone_payload_type_is_vbr(const LinphonePayloadType *pt) {
 }
 
 bool_t _linphone_core_check_payload_type_usability(const LinphoneCore *lc, const OrtpPayloadType *pt) {
-	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
+	int maxbw=LinphonePrivate::PayloadTypeHandler::getMinBandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
 	return linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, maxbw);
 }
@@ -293,3 +295,15 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphonePayloadType, belle_sip_object_t,
 	NULL, // marshale
 	TRUE // unown
 );
+
+
+void payload_type_set_enable(OrtpPayloadType *pt, bool_t value) {
+	if (value)
+		payload_type_set_flag(pt, PAYLOAD_TYPE_ENABLED);
+	else
+		payload_type_unset_flag(pt, PAYLOAD_TYPE_ENABLED);
+}
+
+bool_t payload_type_enabled(const OrtpPayloadType *pt) {
+	return (pt->flags & PAYLOAD_TYPE_ENABLED);
+}

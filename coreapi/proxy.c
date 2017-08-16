@@ -467,13 +467,6 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *cfg){
 		if (cfg->contact_uri_params){
 			linphone_address_set_uri_params(contact,cfg->contact_uri_params);
 		}
-#ifdef BUILD_UPNP
-		if (cfg->lc->upnp != NULL && linphone_core_get_firewall_policy(cfg->lc)==LinphonePolicyUseUpnp &&
-			linphone_upnp_context_get_state(cfg->lc->upnp) == LinphoneUpnpStateOk) {
-			localip = linphone_upnp_context_get_external_ipaddress(cfg->lc->upnp);
-			localport = linphone_upnp_context_get_external_port(cfg->lc->upnp);
-		}
-#endif //BUILD_UPNP
 		linphone_address_set_port(contact,localport);
 		linphone_address_set_domain(contact,localip);
 		linphone_address_set_display_name(contact,NULL);
@@ -1274,14 +1267,6 @@ SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg){
 
 static bool_t can_register(LinphoneProxyConfig *cfg){
 	LinphoneCore *lc=cfg->lc;
-#ifdef BUILD_UPNP
-	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp){
-		if(lc->sip_conf.register_only_when_upnp_is_ok &&
-			(lc->upnp == NULL || !linphone_upnp_context_is_ready_for_register(lc->upnp))) {
-			return FALSE;
-		}
-	}
-#endif //BUILD_UPNP
 	if (lc->sip_conf.register_only_when_network_is_up){
 		return lc->sip_network_reachable;
 	}

@@ -17,8 +17,11 @@
  */
 
 #include "object/object-p.h"
+#include "participant-p.h"
 
 #include "participant.h"
+#include "params/media-session-params.h"
+#include "session/media-session.h"
 
 using namespace std;
 
@@ -26,15 +29,17 @@ LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-class ParticipantPrivate : public ObjectPrivate {
-public:
-	~ParticipantPrivate ();
+void ParticipantPrivate::createSession (const Conference &conference, const shared_ptr<CallSessionParams> params, bool hasMedia, CallSessionListener *listener) {
+	if (hasMedia && (!params || dynamic_cast<const MediaSessionParams *>(params.get()))) {
+		session = make_shared<MediaSession>(conference, params, listener);
+	} else {
+		session = make_shared<CallSession>(conference, params, listener);
+	}
+}
 
-	Address addr;
-	bool isAdmin = false;
-};
-
-ParticipantPrivate::~ParticipantPrivate() {}
+shared_ptr<CallSession> ParticipantPrivate::getSession () const {
+	return session;
+}
 
 // =============================================================================
 

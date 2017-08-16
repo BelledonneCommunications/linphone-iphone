@@ -192,7 +192,7 @@ static LinphoneChatRoom *_linphone_core_create_chat_room(LinphoneCore *lc, Linph
 }
 
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call){
-	LinphoneChatRoom *cr = _linphone_core_create_chat_room_base(call->core,
+	LinphoneChatRoom *cr = _linphone_core_create_chat_room_base(linphone_call_get_core(call),
 		linphone_address_clone(linphone_call_get_remote_address(call)));
 	linphone_chat_room_set_call(cr, call);
 	return cr;
@@ -614,7 +614,7 @@ LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t
 	const uint32_t crlf = 0x0D0A;
 	const uint32_t lf = 0x0A;
 
-	if (!call || !call->textstream) {
+	if (!call || !linphone_call_get_stream(call, LinphoneStreamTypeText)) {
 		return -1;
 	}
 
@@ -637,7 +637,7 @@ LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t
 		delete value;
 	}
 
-	text_stream_putchar32(call->textstream, character);
+	text_stream_putchar32(reinterpret_cast<TextStream *>(linphone_call_get_stream(call, LinphoneStreamTypeText)), character);
 	return 0;
 }
 

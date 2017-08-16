@@ -29,7 +29,7 @@ class RemoteConferencePrivate;
 
 class RemoteConference : public Conference {
 public:
-	RemoteConference ();
+	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 
 private:
 	L_DECLARE_PRIVATE(RemoteConference);

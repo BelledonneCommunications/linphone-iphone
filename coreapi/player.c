@@ -112,15 +112,16 @@ void _linphone_player_destroy(LinphonePlayer *player) {
 
 static bool_t call_player_check_state(LinphonePlayer *player, bool_t check_player){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
-	if (call->state!=LinphoneCallStreamsRunning){
-		ms_warning("Call [%p]: in-call player not usable in state [%s]",call,linphone_call_state_to_string(call->state));
+	if (linphone_call_get_state(call)!=LinphoneCallStreamsRunning){
+		ms_warning("Call [%p]: in-call player not usable in state [%s]",call,linphone_call_state_to_string(linphone_call_get_state(call)));
 		return FALSE;
 	}
-	if (call->audiostream==NULL) {
+	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+	if (astream==NULL) {
 		ms_error("call_player_check_state(): no audiostream.");
 		return FALSE;
 	}
-	if (check_player && call->audiostream->av_player.player==NULL){
+	if (check_player && astream->av_player.player==NULL){
 		ms_error("call_player_check_state(): no player.");
 		return FALSE;
 	}
@@ -138,7 +139,8 @@ static int call_player_open(LinphonePlayer* player, const char *filename){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	MSFilter *filter;
 	if (!call_player_check_state(player,FALSE)) return -1;
-	filter=audio_stream_open_remote_play(call->audiostream,filename);
+	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+	filter=audio_stream_open_remote_play(astream,filename);
 	if (!filter) return -1;
 	ms_filter_add_notify_callback(filter,&on_eof,player,FALSE);
 	return 0;
@@ -147,33 +149,38 @@ static int call_player_open(LinphonePlayer* player, const char *filename){
 static int call_player_start(LinphonePlayer *player){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	if (!call_player_check_state(player,TRUE)) return -1;
-	return ms_filter_call_method_noarg(call->audiostream->av_player.player,MS_PLAYER_START);
+	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+	return ms_filter_call_method_noarg(astream->av_player.player,MS_PLAYER_START);
 }
 
 static int call_player_pause(LinphonePlayer *player){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	if (!call_player_check_state(player,TRUE)) return -1;
-	return ms_filter_call_method_noarg(call->audiostream->av_player.player,MS_PLAYER_PAUSE);
+	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+	return ms_filter_call_method_noarg(astream->av_player.player,MS_PLAYER_PAUSE);
 }
 
 static MSPlayerState call_player_get_state(LinphonePlayer *player){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	MSPlayerState state=MSPlayerClosed;
 	if (!call_player_check_state(player,TRUE)) return MSPlayerClosed;
-	ms_filter_call_method(call->audiostream->av_player.player,MS_PLAYER_GET_STATE,&state);
+	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+	ms_filter_call_method(astream->av_player.player,MS_PLAYER_GET_STATE,&state);
 	return state;
 }
 
 static int call_player_seek(LinphonePlayer *player, int time_ms){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	if (!call_player_check_state(player,TRUE)) return -1;
-	return ms_filter_call_method(call->audiostream->av_player.player,MS_PLAYER_SEEK_MS,&time_ms);
+	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+	return ms_filter_call_method(astream->av_player.player,MS_PLAYER_SEEK_MS,&time_ms);
 }
 
 static void call_player_close(LinphonePlayer *player){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	if (!call_player_check_state(player,TRUE)) return;
-	audio_stream_close_remote_play(call->audiostream);
+	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+	audio_stream_close_remote_play(astream);
 	
 }
 

@@ -45,53 +45,46 @@ static void linphone_stun_test_encode(void)
 	ms_message("STUN message encoded in %i bytes", (int)len);
 }
 
-static void linphone_stun_test_grab_ip(void)
-{
-	
+static void linphone_stun_test_grab_ip(void) {
 	LinphoneCoreManager* lc_stun = linphone_core_manager_new2("stun_rc", FALSE);
-	LinphoneCall dummy_call;
 	int ping_time;
 	int tmp = 0;
+	char audio_addr[LINPHONE_IPADDR_SIZE] = { 0 };
+	char video_addr[LINPHONE_IPADDR_SIZE] = { 0 };
+	char text_addr[LINPHONE_IPADDR_SIZE] = { 0 };
+	int audio_port = 0;
+	int video_port = 0;
+	int text_port = 0;
 
-	/*this test verifies the very basic STUN support of liblinphone, which is deprecated.
-	 * It works only in IPv4 mode and there is no plan to make it work over ipv6.*/
-	if (liblinphone_tester_ipv4_available()){
+	/* This test verifies the very basic STUN support of liblinphone, which is deprecated.
+	 * It works only in IPv4 mode and there is no plan to make it work over ipv6. */
+	if (liblinphone_tester_ipv4_available())
 		goto end;
-	}
 	linphone_core_enable_ipv6(lc_stun->lc, FALSE);
-	
-	memset(&dummy_call, 0, sizeof(LinphoneCall));
-	dummy_call.main_audio_stream_index = 0;
-	dummy_call.main_video_stream_index = 1;
-	dummy_call.main_text_stream_index = 2;
-	dummy_call.media_ports[dummy_call.main_audio_stream_index].rtp_port = 7078;
-	dummy_call.media_ports[dummy_call.main_video_stream_index].rtp_port = 9078;
-	dummy_call.media_ports[dummy_call.main_text_stream_index].rtp_port = 11078;
-
+	linphone_core_enable_realtime_text(lc_stun->lc, TRUE);
 	linphone_core_set_stun_server(lc_stun->lc, stun_address);
 	BC_ASSERT_STRING_EQUAL(stun_address, linphone_core_get_stun_server(lc_stun->lc));
-
 	wait_for(lc_stun->lc, lc_stun->lc, &tmp, 1);
 
-	ping_time = linphone_core_run_stun_tests(lc_stun->lc, &dummy_call);
+	ping_time = linphone_run_stun_tests(lc_stun->lc, 7078, 9078, 11078, audio_addr, &audio_port, video_addr, &video_port, text_addr, &text_port);
 	BC_ASSERT(ping_time != -1);
 
 	ms_message("Round trip to STUN: %d ms", ping_time);
 
-	BC_ASSERT(dummy_call.ac.addr[0] != '\0');
-	BC_ASSERT(dummy_call.ac.port != 0);
+	BC_ASSERT(audio_addr[0] != '\0');
+	BC_ASSERT(audio_port != 0);
 #ifdef VIDEO_ENABLED
-	BC_ASSERT(dummy_call.vc.addr[0] != '\0');
-	BC_ASSERT(dummy_call.vc.port != 0);
+	BC_ASSERT(video_addr[0] != '\0');
+	BC_ASSERT(video_port != 0);
 #endif
-	BC_ASSERT(dummy_call.tc.addr[0] != '\0');
-	BC_ASSERT(dummy_call.tc.port != 0);
+	BC_ASSERT(text_addr[0] != '\0');
+	BC_ASSERT(text_port != 0);
 
-	ms_message("STUN test result: local audio port maps to %s:%i", dummy_call.ac.addr, dummy_call.ac.port);
+	ms_message("STUN test result: local audio port maps to %s:%i", audio_addr, audio_port);
 #ifdef VIDEO_ENABLED
-	ms_message("STUN test result: local video port maps to %s:%i", dummy_call.vc.addr, dummy_call.vc.port);
+	ms_message("STUN test result: local video port maps to %s:%i", video_addr, video_port);
 #endif
-	ms_message("STUN test result: local text port maps to %s:%i", dummy_call.tc.addr, dummy_call.tc.port);
+	ms_message("STUN test result: local text port maps to %s:%i", text_addr, text_port);
 
 end:
 	linphone_core_manager_destroy(lc_stun);
@@ -190,9 +183,10 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 	lcall = linphone_core_get_current_call(marie->lc);
 	BC_ASSERT_PTR_NOT_NULL(lcall);
 	if (lcall != NULL) {
-		BC_ASSERT_PTR_NOT_NULL(lcall->ice_session);
-		if (lcall->ice_session != NULL) {
-			IceCheckList *cl = ice_session_check_list(lcall->ice_session, 0);
+		IceSession *ice_session = linphone_call_get_ice_session(lcall);
+		BC_ASSERT_PTR_NOT_NULL(ice_session);
+		if (ice_session != NULL) {
+			IceCheckList *cl = ice_session_check_list(ice_session, 0);
 			BC_ASSERT_PTR_NOT_NULL(cl);
 			if (cl != NULL) {
 				check_turn_context_statistics(cl->rtp_turn_context, forced_relay);

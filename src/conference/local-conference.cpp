@@ -30,6 +30,7 @@ public:
 
 // =============================================================================
 
-LocalConference::LocalConference () : Conference(*new LocalConferencePrivate) {}
+LocalConference::LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
+	: Conference(*new LocalConferencePrivate, core, myAddress, listener) {}
 
 LINPHONE_END_NAMESPACE

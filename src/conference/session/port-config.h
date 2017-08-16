@@ -1,5 +1,5 @@
 /*
- * remote-conference.cpp
+ * port-config.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,21 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "conference-p.h"
+#ifndef _PORT_CONFIG_H_
+#define _PORT_CONFIG_H_
 
-#include "remote-conference.h"
+#include <string>
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-// =============================================================================
-
-class RemoteConferencePrivate : public ConferencePrivate {
-public:
+struct PortConfig {
+	std::string multicastIp;
+	std::string multicastBindIp;
+	int rtpPort = -1;
+	int rtcpPort = -1;
 };
 
-// =============================================================================
-
-RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(*new RemoteConferencePrivate, core, myAddress, listener) {}
-
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _PORT_CONFIG_H_
