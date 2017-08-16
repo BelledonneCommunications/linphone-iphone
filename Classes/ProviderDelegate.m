@@ -89,6 +89,17 @@
 									  }];
 }
 
+- (void)setPendingCall:(LinphoneCall *)pendingCall {
+	if (pendingCall) {
+		_pendingCall = pendingCall;
+		if (_pendingCall)
+			linphone_call_ref(_pendingCall);
+	} else if (_pendingCall) {
+		linphone_call_unref(_pendingCall);
+		_pendingCall = NULL;
+	}
+}
+
 #pragma mark - CXProdiverDelegate Protocol
 
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action {
@@ -125,7 +136,7 @@
 		call = [LinphoneManager.instance callByCallId:callID];
 	}
 	if (call != NULL) {
-		_pendingCall = call;
+		self.pendingCall = call;
 	}
 }
 
@@ -192,7 +203,7 @@
 				linphone_core_enter_conference(LC);
 				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			} else {
-				_pendingCall = call;
+				self.pendingCall = call;
 			}
 		}
 	}
@@ -211,14 +222,14 @@
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
 	LOGD(@"CallKit : Audio session activated");
 	// Now we can (re)start the call
-	if (_pendingCall) {
-		LinphoneCallState state = linphone_call_get_state(_pendingCall);
+	if (self.pendingCall) {
+		LinphoneCallState state = linphone_call_get_state(self.pendingCall);
 		switch (state) {
 			case LinphoneCallIncomingReceived:
-				[LinphoneManager.instance acceptCall:(LinphoneCall *)_pendingCall evenWithVideo:_pendingCallVideo];
+				[LinphoneManager.instance acceptCall:(LinphoneCall *)self.pendingCall evenWithVideo:_pendingCallVideo];
 				break;
 			case LinphoneCallPaused:
-				linphone_call_resume((LinphoneCall *)_pendingCall);
+				linphone_call_resume((LinphoneCall *)self.pendingCall);
 				break;
 			case LinphoneCallStreamsRunning:
 				// May happen when multiple calls
@@ -234,7 +245,9 @@
 		}
 	}
 
-	_pendingCall = NULL;
+	self.pendingCall = NULL;
+	if (_pendingAddr)
+		linphone_address_unref(_pendingAddr);
 	_pendingAddr = NULL;
 	_pendingCallVideo = FALSE;
 }
@@ -242,7 +255,9 @@
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(nonnull AVAudioSession *)audioSession {
 	LOGD(@"CallKit : Audio session deactivated");
 
-	_pendingCall = NULL;
+	self.pendingCall = NULL;
+	if (_pendingAddr)
+		linphone_address_unref(_pendingAddr);
 	_pendingAddr = NULL;
 	_pendingCallVideo = FALSE;
 }

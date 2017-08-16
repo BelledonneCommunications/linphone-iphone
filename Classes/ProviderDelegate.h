@@ -18,7 +18,7 @@
 @property CXCallController *controller;
 @property NSMutableDictionary *calls;
 @property NSMutableDictionary *uuids;
-@property LinphoneCall *pendingCall;
+@property(nonatomic) LinphoneCall *pendingCall;
 @property LinphoneAddress *pendingAddr;
 @property BOOL pendingCallVideo;
 @property int callKitCalls;
