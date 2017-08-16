@@ -31,30 +31,16 @@ public:
 	virtual ~Singleton () = default;
 
 	static T *getInstance () {
-		if (!mInstance) {
-			mInstance = new T();
-			static SingletonDeleter deleter;
-		}
-		return mInstance;
+		static T instance;
+		return &instance;
 	}
 
 protected:
 	explicit Singleton (ObjectPrivate &p) : Object(p) {}
 
 private:
-	struct SingletonDeleter {
-		~SingletonDeleter () {
-			delete mInstance;
-		}
-	};
-
-	static T *mInstance;
-
 	L_DISABLE_COPY(Singleton);
 };
-
-template<class T>
-T *Singleton<T>::mInstance = nullptr;
 
 LINPHONE_END_NAMESPACE
 
