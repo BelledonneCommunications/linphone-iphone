@@ -30,7 +30,7 @@ namespace Linphone
 	/// <summary>
 	/// Only contains the LIB_NAME value that represents the library in which all DllImport are made
 	/// </summary>
-	public class LinphoneWrapper 
+	public class LinphoneWrapper
 	{
 #if __IOS__
 		public const string LIB_NAME = "linphone.framework/linphone";
@@ -40,8 +40,10 @@ namespace Linphone
 
 #if WINDOWS_UWP
         public const string BELLE_SIP_LIB_NAME = "bellesip";
+				public const string BCTOOLBOX_LIB_NAME = "bctoolbox";
 #else
         public const string BELLE_SIP_LIB_NAME = "linphone";
+				public const string BCTOOLBOX_LIB_NAME = "linphone";
 #endif
 
 #if ANDROID
@@ -86,7 +88,7 @@ namespace Linphone
 		protected LinphoneException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
 	}
 #endif
-	
+
 	[StructLayout(LayoutKind.Sequential)]
 	/// <summary>
 	/// Parent class for a Linphone public objects
@@ -94,56 +96,58 @@ namespace Linphone
 	public class LinphoneObject
 	{
 		internal IntPtr nativePtr;
-		
+
+		internal GCHandle handle;
+
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate void OnLinphoneObjectDataDestroyed(IntPtr data);
 
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+#if WINDOWS_UWP
+		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, IntPtr cb);
+#else
 		static extern int belle_sip_object_data_set(IntPtr ptr, string name, IntPtr data, OnLinphoneObjectDataDestroyed cb);
+#endif
 
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr belle_sip_object_data_get(IntPtr ptr, string name);
-		
+
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern IntPtr belle_sip_object_ref(IntPtr ptr);
-		
+
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
 		static extern void belle_sip_object_unref(IntPtr ptr);
-		
+
 		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+		static extern void belle_sip_object_data_remove(IntPtr ptr, string data);
+
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_next(IntPtr ptr);
-		
-		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_get_data(IntPtr ptr);
 
-		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, string data);
 
-		[DllImport(LinphoneWrapper.BELLE_SIP_LIB_NAME)]
+		[DllImport(LinphoneWrapper.BCTOOLBOX_LIB_NAME)]
 		static extern IntPtr bctbx_list_append(IntPtr elem, IntPtr data);
 
 #if __IOS__
 		[MonoPInvokeCallback(typeof(OnLinphoneObjectDataDestroyed))]
 #endif
-		private static void onDataDestroyed(IntPtr data)
-		{
-			if (data != IntPtr.Zero)
-			{
-				//Console.WriteLine("Freeing C# handle");
-				GCHandle handle = GCHandle.FromIntPtr(data);
-				handle.Free();
-			}
-		}
-		
+
 		~LinphoneObject()
 		{
 			//Console.WriteLine("Destroying " + this.ToString());
 			if (nativePtr != IntPtr.Zero) {
 				//Console.WriteLine("Unreffing " + this.ToString());
+				belle_sip_object_data_remove(nativePtr, "cs_obj");
 				belle_sip_object_unref(nativePtr);
+				handle.Free();
 			}
 		}
-		
+
 		internal static T fromNativePtr<T>(IntPtr ptr, bool takeRef=true) where T : LinphoneObject, new()
 		{
 			if (ptr == IntPtr.Zero) return null;
@@ -177,14 +181,15 @@ namespace Linphone
 					//Console.WriteLine("Reffing " + obj.ToString());
 				}
 				obj.nativePtr = ptr;
-				GCHandle handle = GCHandle.Alloc(obj, GCHandleType.WeakTrackResurrection);
-				objPtr = GCHandle.ToIntPtr(handle);
-				belle_sip_object_data_set(ptr, "cs_obj", objPtr, onDataDestroyed);
+				obj.handle = GCHandle.Alloc(obj, GCHandleType.WeakTrackResurrection);
+				objPtr = GCHandle.ToIntPtr(obj.handle);
+				belle_sip_object_data_set(ptr, "cs_obj", objPtr, IntPtr.Zero);
+
 				return obj;
 			}
 			return null;
 		}
-		
+
 		internal static IEnumerable<string> MarshalStringArray(IntPtr arrayPtr)
 		{
 			if (arrayPtr != IntPtr.Zero)
@@ -199,7 +204,7 @@ namespace Linphone
 				}
 			}
 		}
-		
+
 		internal static IEnumerable<T> MarshalBctbxList<T>(IntPtr listPtr) where T : LinphoneObject, new()
 		{
 			if (listPtr != IntPtr.Zero)
@@ -239,7 +244,7 @@ namespace Linphone
 			return bctbx_list;
 		}
 	}
-	
+
 #if ANDROID
 	/// <summary>
 	/// Methods that are only found in Android version of Linphone libraries and related to JNI
@@ -251,7 +256,7 @@ namespace Linphone
 
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern void setMediastreamerAndroidContext(IntPtr jnienv, IntPtr context);
-		
+
 		/// <summary>
 		/// Sets the JVM and JNI pointers in Linphone, required to be able to make JAVA upcalls.
 		/// Calling this method is mandatory and must be done as soon as possible !
@@ -264,7 +269,7 @@ namespace Linphone
 	}
 #endif
 #endregion
-	
+
 #region Enums
 	{{#enums}}
 	{{#enum}}
@@ -284,11 +289,11 @@ namespace Linphone
 		{{name}} = {{value}},
 		{{/values}}
 	}
-	
+
 	{{/enum}}
 	{{/enums}}
 #endregion
-	
+
 #region Listeners
 	{{#interfaces}}
 	{{#interface}}
@@ -298,14 +303,19 @@ namespace Linphone
 		{{#methods}}
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		{{#cb_setter}}
+#if WINDOWS_UWP
+		static extern void {{name}}(IntPtr thiz, IntPtr cb);
+#else
 		static extern void {{name}}(IntPtr thiz, {{name_private}} cb);
+#endif
 		{{/cb_setter}}
-		
+
 		{{#delegate}}
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate void {{name_private}}({{params_private}});
-		
+
 		public delegate void {{name_public}}({{params_public}});
+		private {{name_private}} {{var_private}};
 		private {{name_public}} {{var_public}};
 
 #if __IOS__
@@ -328,17 +338,23 @@ namespace Linphone
 			set
 			{
 				{{var_public}} = value;
+#if WINDOWS_UWP
+				{{var_private}} = {{cb_name}};
+				IntPtr cb = Marshal.GetFunctionPointerForDelegate({{var_private}});
+				{{c_name_setter}}(nativePtr, cb);
+#else
 				{{c_name_setter}}(nativePtr, {{cb_name}});
+#endif
 			}
 		}
-		{{/delegate}}		
+		{{/delegate}}
 		{{/methods}}
 	}
-	
+
 	{{/interface}}
 	{{/interfaces}}
 #endregion
-	
+
 #region Classes
 	{{#classes}}
 	{{#_class}}
@@ -353,21 +369,21 @@ namespace Linphone
 		{{#isLinphoneFactory}}
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		static extern IntPtr linphone_factory_create_core_cbs(IntPtr factory);
-		
+
 		public CoreListener CreateCoreListener()
 		{
 			IntPtr coreCbsPtr = linphone_factory_create_core_cbs(nativePtr);
 			return fromNativePtr<CoreListener>(coreCbsPtr, false);
 		}
-		{{/isLinphoneFactory}}		
-		{{#dllImports}}		
+		{{/isLinphoneFactory}}
+		{{#dllImports}}
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		{{{prototype}}}
 		{{#has_second_prototype}}
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		{{second_prototype}}
 		{{/has_second_prototype}}
-		
+
 		{{#has_property}}
 		{{#doc}}
 		{{#lines}}
@@ -384,7 +400,7 @@ namespace Linphone
 				return Marshal.PtrToStringAnsi(stringPtr);
 				{{/is_string}}
 				{{#is_bool}}
-				return {{getter_c_name}}({{getter_nativePtr}}) == 0;
+				return {{getter_c_name}}({{getter_nativePtr}}) == 1;
 				{{/is_bool}}
 				{{#is_class}}
 				IntPtr ptr = {{getter_c_name}}({{getter_nativePtr}});
@@ -478,7 +494,7 @@ namespace Linphone
 		{{/has_impl}}
 		{{/dllImports}}
 	}
-	{{/_class}}	
+	{{/_class}}
 	{{/classes}}
 #endregion
 }

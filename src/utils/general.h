@@ -39,6 +39,12 @@
 
 // -----------------------------------------------------------------------------
 
+#define LINPHONE_NAMESPACE LinphonePrivate
+#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
+#define LINPHONE_END_NAMESPACE }
+
+// -----------------------------------------------------------------------------
+
 #define L_DECLARE_PRIVATE(CLASS) \
 	inline CLASS ## Private * getPrivate() { \
 		return reinterpret_cast<CLASS ## Private *>(mPrivate); \

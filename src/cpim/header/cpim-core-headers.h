@@ -23,6 +23,8 @@
 
 // =============================================================================
 
+LINPHONE_BEGIN_NAMESPACE
+
 #define MAKE_CORE_HEADER(CLASS_PREFIX, NAME) \
 	class LINPHONE_PUBLIC CLASS_PREFIX ## Header : public CoreHeader { \
 	public: \
@@ -35,77 +37,77 @@
 		L_DISABLE_COPY(CLASS_PREFIX ## Header); \
 	};
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		class HeaderNode;
+namespace Cpim {
+	class HeaderNode;
 
-		// -------------------------------------------------------------------------
-		// Generic core header.
-		// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// Generic core header.
+	// -------------------------------------------------------------------------
 
-		class LINPHONE_PUBLIC CoreHeader : public Header {
-			friend class HeaderNode;
+	class LINPHONE_PUBLIC CoreHeader : public Header {
+		friend class HeaderNode;
 
-		public:
-			CoreHeader ();
+	public:
+		CoreHeader ();
 
-			virtual ~CoreHeader () = 0;
+		virtual ~CoreHeader () = 0;
 
-			bool isValid () const override;
+		bool isValid () const override;
 
-		protected:
-			explicit CoreHeader (HeaderPrivate &p);
+	protected:
+		explicit CoreHeader (HeaderPrivate &p);
 
-			void force (const std::string &value);
+		void force (const std::string &value);
 
-		private:
-			L_DISABLE_COPY(CoreHeader);
-		};
+	private:
+		L_DISABLE_COPY(CoreHeader);
+	};
 
-		// -------------------------------------------------------------------------
-		// Core headers.
-		// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// Core headers.
+	// -------------------------------------------------------------------------
 
-		MAKE_CORE_HEADER(From, "From");
-		MAKE_CORE_HEADER(To, "To");
-		MAKE_CORE_HEADER(Cc, "cc");
-		MAKE_CORE_HEADER(DateTime, "DateTime");
-		MAKE_CORE_HEADER(Ns, "NS");
-		MAKE_CORE_HEADER(Require, "Require");
+	MAKE_CORE_HEADER(From, "From");
+	MAKE_CORE_HEADER(To, "To");
+	MAKE_CORE_HEADER(Cc, "cc");
+	MAKE_CORE_HEADER(DateTime, "DateTime");
+	MAKE_CORE_HEADER(Ns, "NS");
+	MAKE_CORE_HEADER(Require, "Require");
 
-		// -------------------------------------------------------------------------
-		// Specific Subject declaration.
-		// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// Specific Subject declaration.
+	// -------------------------------------------------------------------------
 
-		class SubjectHeaderPrivate;
+	class SubjectHeaderPrivate;
 
-		class LINPHONE_PUBLIC SubjectHeader : public CoreHeader {
-			friend class HeaderNode;
+	class LINPHONE_PUBLIC SubjectHeader : public CoreHeader {
+		friend class HeaderNode;
 
-		public:
-			SubjectHeader ();
+	public:
+		SubjectHeader ();
 
-			inline std::string getName () const override {
-				return "Subject";
-			}
+		inline std::string getName () const override {
+			return "Subject";
+		}
 
-			bool setValue (const std::string &value) override;
+		bool setValue (const std::string &value) override;
 
-			std::string getLanguage () const;
-			bool setLanguage (const std::string &language);
+		std::string getLanguage () const;
+		bool setLanguage (const std::string &language);
 
-			std::string asString () const override;
+		std::string asString () const override;
 
-		protected:
-			void force (const std::string &value, const std::string &language);
+	protected:
+		void force (const std::string &value, const std::string &language);
 
-		private:
-			L_DECLARE_PRIVATE(SubjectHeader);
-			L_DISABLE_COPY(SubjectHeader);
-		};
-	}
+	private:
+		L_DECLARE_PRIVATE(SubjectHeader);
+		L_DISABLE_COPY(SubjectHeader);
+	};
 }
 
 #undef MAKE_CORE_HEADER
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CPIM_CORE_HEADERS_H_

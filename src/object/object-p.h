@@ -23,19 +23,21 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	class Object;
+LINPHONE_BEGIN_NAMESPACE
 
-	class ObjectPrivate {
-	public:
-		virtual ~ObjectPrivate () = default;
+class Object;
 
-	protected:
-		Object *mPublic = nullptr;
+class ObjectPrivate {
+public:
+	virtual ~ObjectPrivate () = default;
 
-	private:
-		L_DECLARE_PUBLIC(Object);
-	};
-}
+protected:
+	Object *mPublic = nullptr;
+
+private:
+	L_DECLARE_PUBLIC(Object);
+};
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _OBJECT_P_H_

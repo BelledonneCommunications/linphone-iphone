@@ -24,11 +24,11 @@
 
 #include "cpim-message.h"
 
+// =============================================================================
+
 using namespace std;
 
-using namespace LinphonePrivate;
-
-// =============================================================================
+LINPHONE_BEGIN_NAMESPACE
 
 class Cpim::MessagePrivate : public ObjectPrivate {
 public:
@@ -139,3 +139,5 @@ string Cpim::Message::asString () const {
 shared_ptr<const Cpim::Message> Cpim::Message::createFromString (const string &str) {
 	return Parser::getInstance()->parseMessage(str);
 }
+
+LINPHONE_END_NAMESPACE

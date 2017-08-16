@@ -24,18 +24,20 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	namespace Cpim {
-		class HeaderPrivate : public ObjectPrivate {
-		public:
-			virtual ~HeaderPrivate () = default;
+LINPHONE_BEGIN_NAMESPACE
 
-		private:
-			std::string value;
+namespace Cpim {
+	class HeaderPrivate : public ObjectPrivate {
+	public:
+		virtual ~HeaderPrivate () = default;
 
-			L_DECLARE_PUBLIC(Header);
-		};
-	}
+	private:
+		std::string value;
+
+		L_DECLARE_PUBLIC(Header);
+	};
 }
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CPIM_HEADER_P_H_

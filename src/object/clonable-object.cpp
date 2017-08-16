@@ -1,5 +1,5 @@
 /*
- * cpim-header.cpp
+ * clonable-object.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,32 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cpim-header-p.h"
+#include "clonable-object-p.h"
 
-#include "cpim-header.h"
-
-// =============================================================================
-
-using namespace std;
+#include "clonable-object.h"
 
 LINPHONE_BEGIN_NAMESPACE
 
-Cpim::Header::Header (HeaderPrivate &p) : Object(p) {}
+// =============================================================================
 
-string Cpim::Header::getValue () const {
-	L_D(const Header);
-	return d->value;
+ClonableObject::~ClonableObject () {
+	delete mPrivate;
 }
 
-bool Cpim::Header::setValue (const string &value) {
-	L_D(Header);
-	d->value = value;
-	return true;
-}
-
-string Cpim::Header::asString () const {
-	L_D(const Header);
-	return getName() + ": " + d->value + "\r\n";
+ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
+	mPrivate->mPublic = this;
 }
 
 LINPHONE_END_NAMESPACE

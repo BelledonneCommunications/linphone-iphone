@@ -20,8 +20,9 @@
 
 // =============================================================================
 
-namespace LinphonePrivate {
-	static const char *grammar =
+LINPHONE_BEGIN_NAMESPACE
+
+static const char *grammar =
 // See: https://tools.ietf.org/html/rfc3862
 R"==GRAMMAR==(
 Message = Headers CRLF Headers CRLF
@@ -200,8 +201,9 @@ full-time = partial-time time-offset
 
 date-time = full-date "T" full-time
 )==GRAMMAR==";
-}
 
-const char *LinphonePrivate::Cpim::getGrammar () {
+const char *Cpim::getGrammar () {
 	return grammar;
 }
+
+LINPHONE_END_NAMESPACE

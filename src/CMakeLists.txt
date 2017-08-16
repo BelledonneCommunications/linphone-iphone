@@ -32,8 +32,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	cpim/message/cpim-message.h
 	cpim/parser/cpim-grammar.h
 	cpim/parser/cpim-parser.h
-	object/object.h
+	logger/logger.h
+	object/clonable-object.h
+	object/clonable-object-p.h
 	object/object-p.h
+	object/object.h
 	object/singleton.h
 	utils/general.h
 	utils/utils.h
@@ -50,6 +53,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	cpim/message/cpim-message.cpp
 	cpim/parser/cpim-grammar.cpp
 	cpim/parser/cpim-parser.cpp
+	logger/logger.cpp
+	object/clonable-object.cpp
 	object/object.cpp
 	utils/utils.cpp
 	xml/conference-info.cpp
@@ -59,8 +64,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 ADD_XSD_WRAPPERS(xml/xml "XML XSD - xml.xsd")
 ADD_XSD_WRAPPERS(xml/conference-info "Conference info XSD - conference-info.xsd")
 
-set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
-set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
+set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${SOCI_INCLUDE_DIRS} ${SOCI_MYSQL_INCLUDES} ${LIBXSD_INCLUDE_DIRS})
 
 set(LINPHONE_PRIVATE_HEADER_FILES)
 foreach(header ${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES})

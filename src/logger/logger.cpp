@@ -1,5 +1,5 @@
 /*
- * cpim-header.cpp
+ * logger.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cpim-header-p.h"
+#include "linphone/core.h"
 
-#include "cpim-header.h"
+#include "object/object-p.h"
+
+#include "logger.h"
 
 // =============================================================================
 
@@ -26,22 +28,47 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-Cpim::Header::Header (HeaderPrivate &p) : Object(p) {}
+class LoggerPrivate : public ObjectPrivate {
+public:
+	Logger::Level level;
+	ostringstream os;
+};
 
-string Cpim::Header::getValue () const {
-	L_D(const Header);
-	return d->value;
+// -----------------------------------------------------------------------------
+
+Logger::Logger (Level level) : Object(*new LoggerPrivate) {
+	L_D(Logger);
+	d->level = level;
 }
 
-bool Cpim::Header::setValue (const string &value) {
-	L_D(Header);
-	d->value = value;
-	return true;
+Logger::~Logger () {
+	L_D(Logger);
+
+	d->os << endl;
+	const string str = d->os.str();
+
+	switch (d->level) {
+		case Debug:
+			ms_debug("%s", str.c_str());
+			break;
+		case Info:
+			ms_message("%s", str.c_str());
+			break;
+		case Warning:
+			ms_warning("%s", str.c_str());
+			break;
+		case Error:
+			ms_error("%s", str.c_str());
+			break;
+		case Fatal:
+			ms_fatal("%s", str.c_str());
+			break;
+	}
 }
 
-string Cpim::Header::asString () const {
-	L_D(const Header);
-	return getName() + ": " + d->value + "\r\n";
+ostringstream &Logger::getOutput () {
+	L_D(Logger);
+	return d->os;
 }
 
 LINPHONE_END_NAMESPACE
