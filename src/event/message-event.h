@@ -33,7 +33,7 @@ class ErrorInfo;
 class Message;
 class MessageEventPrivate;
 
-class MessageEvent : public Event {
+class LINPHONE_PUBLIC MessageEvent : public Event {
 public:
 	typedef std::pair<std::string, std::string> CustomHeader;
 

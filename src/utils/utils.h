@@ -29,15 +29,15 @@
 LINPHONE_BEGIN_NAMESPACE
 
 namespace Utils {
-  bool iequals (const std::string &a, const std::string &b);
+  LINPHONE_PUBLIC bool iequals (const std::string &a, const std::string &b);
 
-  std::vector<std::string> split (const std::string &str, const std::string &delimiter);
+  LINPHONE_PUBLIC std::vector<std::string> split (const std::string &str, const std::string &delimiter);
 
-  inline std::vector<std::string> split (const std::string &str, char delimiter) {
+  LINPHONE_PUBLIC inline std::vector<std::string> split (const std::string &str, char delimiter) {
     return split(str, std::string(1, delimiter));
   }
 
-  int stoi (const std::string &str, size_t *idx = 0, int base = 10);
+  LINPHONE_PUBLIC int stoi (const std::string &str, size_t *idx = 0, int base = 10);
 }
 
 LINPHONE_END_NAMESPACE

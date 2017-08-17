@@ -27,7 +27,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class EventPrivate;
 
-class Event : public ClonableObject {
+class LINPHONE_PUBLIC Event : public ClonableObject {
 public:
 	enum Type {
 		None,

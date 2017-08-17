@@ -28,7 +28,7 @@ LINPHONE_BEGIN_NAMESPACE
 class Call;
 class CallEventPrivate;
 
-class CallEvent : public Event {
+class LINPHONE_PUBLIC CallEvent : public Event {
 public:
 	CallEvent (const Call &message);
 	CallEvent (const CallEvent &src);
