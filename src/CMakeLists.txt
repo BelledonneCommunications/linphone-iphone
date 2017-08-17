@@ -32,6 +32,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
 	db/events-db.h
+	enums.h
 	event/call-event.h
 	event/event.h
 	event/message-event.h
@@ -42,7 +43,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object.h
 	object/singleton.h
 	utils/general.h
-	utils/linphone.h
 	utils/utils.h
 )
 

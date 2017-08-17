@@ -22,8 +22,8 @@
 #include <list>
 #include <string>
 
+#include "enums.h"
 #include "event.h"
-#include "utils/linphone.h"
 
 // =============================================================================
 

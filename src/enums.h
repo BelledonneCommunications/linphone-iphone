@@ -1,5 +1,5 @@
 /*
- * linphone.h
+ * enums.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LINPHONE_H_
-#define _LINPHONE_H_
+#ifndef _ENUMS_H_
+#define _ENUMS_H_
 
-#include "general.h"
+#include "utils/general.h"
 
 // =============================================================================
 
@@ -43,4 +43,4 @@ enum MessageState {
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _LINPHONE_H_
+#endif // ifndef _ENUMS_H_
