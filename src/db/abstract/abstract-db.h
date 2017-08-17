@@ -1,5 +1,5 @@
 /*
- * clonable-object.cpp
+ * abstract-db.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "clonable-object-p.h"
+#ifndef _ABSTRACT_DB_H_
+#define _ABSTRACT_DB_H_
 
-#include "clonable-object.h"
+#include <string>
 
-LINPHONE_BEGIN_NAMESPACE
+#include "object/object.h"
 
 // =============================================================================
 
-ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
-}
+LINPHONE_BEGIN_NAMESPACE
 
-ClonableObject::~ClonableObject () {
-	delete mPrivate;
-}
+class AbstractDbPrivate;
+
+class LINPHONE_PUBLIC AbstractDb : public Object {
+public:
+	enum Backend {
+		Mysql,
+		Sqlite3
+	};
+
+	virtual ~AbstractDb () = default;
+
+	bool connect (Backend backend, const std::string &parameters);
+	bool disconnect ();
+
+	bool isConnected () const;
+
+	Backend getBackend () const;
+
+protected:
+	explicit AbstractDb (AbstractDbPrivate &p);
+
+	virtual void init ();
+
+	std::string primaryKeyAutoIncrementStr () const;
+
+private:
+	L_DECLARE_PRIVATE(AbstractDb);
+	L_DISABLE_COPY(AbstractDb);
+};
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _ABSTRACT_DB_H_

@@ -29,13 +29,20 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	cpim/message/cpim-message.h
 	cpim/parser/cpim-grammar.h
 	cpim/parser/cpim-parser.h
+	db/abstract/abstract-db-p.h
+	db/abstract/abstract-db.h
+	db/events-db.h
+	event/call-event.h
+	event/event.h
+	event/message-event.h
 	logger/logger.h
-	object/clonable-object.h
 	object/clonable-object-p.h
+	object/clonable-object.h
 	object/object-p.h
 	object/object.h
 	object/singleton.h
 	utils/general.h
+	utils/linphone.h
 	utils/utils.h
 )
 
@@ -46,6 +53,11 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	cpim/message/cpim-message.cpp
 	cpim/parser/cpim-grammar.cpp
 	cpim/parser/cpim-parser.cpp
+	db/abstract/abstract-db.cpp
+	db/events-db.cpp
+	event/call-event.cpp
+	event/event.cpp
+	event/message-event.cpp
 	logger/logger.cpp
 	object/clonable-object.cpp
 	object/object.cpp
@@ -57,6 +69,7 @@ set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS})
 
 if(SOCI_FOUND)
 	list(APPEND LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${SOCI_INCLUDE_DIRS} ${SOCI_MYSQL_INCLUDES})
+	add_definitions(-DSOCI_ENABLED)
 endif()
 
 set(LINPHONE_PRIVATE_HEADER_FILES)

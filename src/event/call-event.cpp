@@ -1,5 +1,5 @@
 /*
- * clonable-object.cpp
+ * call-event.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "clonable-object-p.h"
-
-#include "clonable-object.h"
-
-LINPHONE_BEGIN_NAMESPACE
+#include "call-event.h"
 
 // =============================================================================
 
-ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
-}
-
-ClonableObject::~ClonableObject () {
-	delete mPrivate;
-}
-
-LINPHONE_END_NAMESPACE
+// TODO.

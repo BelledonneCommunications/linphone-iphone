@@ -1,5 +1,5 @@
 /*
- * clonable-object.cpp
+ * events-db.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "clonable-object-p.h"
+#ifndef _EVENTS_DB_H_
+#define _EVENTS_DB_H_
 
-#include "clonable-object.h"
-
-LINPHONE_BEGIN_NAMESPACE
+#include "abstract/abstract-db.h"
 
 // =============================================================================
 
-ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
-}
+LINPHONE_BEGIN_NAMESPACE
 
-ClonableObject::~ClonableObject () {
-	delete mPrivate;
-}
+class Event;
+class EventsDbPrivate;
+
+class LINPHONE_PUBLIC EventsDb : public AbstractDb {
+public:
+	EventsDb ();
+
+	bool writeEvent (const Event &event);
+
+protected:
+	void init () override;
+
+private:
+	L_DECLARE_PRIVATE(EventsDb);
+	L_DISABLE_COPY(EventsDb);
+};
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _EVENTS_DB_H_

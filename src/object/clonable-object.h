@@ -38,6 +38,10 @@ protected:
 
 private:
 	L_DECLARE_PRIVATE(ClonableObject);
+
+	// Yeah, it's a `ClonableObject` that cannot be copied.
+	// Only inherited classes must implement copy.
+	L_DISABLE_COPY(ClonableObject);
 };
 
 LINPHONE_END_NAMESPACE

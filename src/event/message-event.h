@@ -1,5 +1,5 @@
 /*
- * clonable-object.cpp
+ * message-event.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "clonable-object-p.h"
+#ifndef _MESSAGE_EVENT_H_
+#define _MESSAGE_EVENT_H_
 
-#include "clonable-object.h"
+#include <list>
+#include <string>
 
-LINPHONE_BEGIN_NAMESPACE
+#include "event.h"
+#include "utils/linphone.h"
 
 // =============================================================================
 
-ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
-}
+LINPHONE_BEGIN_NAMESPACE
 
-ClonableObject::~ClonableObject () {
-	delete mPrivate;
-}
+class ErrorInfo;
+class Message;
+class MessageEventPrivate;
+
+class MessageEvent : public Event {
+public:
+	typedef std::pair<std::string, std::string> CustomHeader;
+
+	MessageEvent (const Message &message);
+	MessageEvent (const MessageEvent &src);
+
+	std::string getText () const;
+	MessageState getState () const;
+
+	MessageDirection getDirection () const;
+	ErrorInfo getErrorInfo () const;
+	std::string getImdnMessageId () const;
+	std::list<CustomHeader> getCustomHeaders () const;
+
+private:
+	L_DECLARE_PRIVATE(MessageEvent);
+};
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _MESSAGE_EVENT_H_

@@ -1,5 +1,5 @@
 /*
- * clonable-object.cpp
+ * abstract-db-p.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "clonable-object-p.h"
+#ifndef _ABSTRACT_DB_P_H_
+#define _ABSTRACT_DB_P_H_
 
-#include "clonable-object.h"
+#include <soci/soci.h>
 
-LINPHONE_BEGIN_NAMESPACE
+#include "abstract-db.h"
+#include "object/object-p.h"
 
 // =============================================================================
 
-ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
-}
+LINPHONE_BEGIN_NAMESPACE
 
-ClonableObject::~ClonableObject () {
-	delete mPrivate;
-}
+class AbstractDbPrivate : public ObjectPrivate {
+public:
+	#ifdef SOCI_ENABLED
+		soci::session session;
+	#endif // ifndef SOCI_ENABLED
+
+private:
+	AbstractDb::Backend backend;
+	bool isConnected = false;
+
+	L_DECLARE_PUBLIC(AbstractDb);
+};
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _ABSTRACT_DB_P_H_

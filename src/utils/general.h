@@ -21,6 +21,14 @@
 #ifndef _GENERAL_H_
 #define _GENERAL_H_
 
+#define LINPHONE_NAMESPACE LinphonePrivate
+#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
+#define LINPHONE_END_NAMESPACE }
+
+// -----------------------------------------------------------------------------
+
+LINPHONE_BEGIN_NAMESPACE
+
 #ifndef LINPHONE_PUBLIC
 	#if defined(_MSC_VER)
 		#ifdef LINPHONE_STATIC
@@ -36,12 +44,6 @@
 		#define LINPHONE_PUBLIC
 	#endif
 #endif
-
-// -----------------------------------------------------------------------------
-
-#define LINPHONE_NAMESPACE LinphonePrivate
-#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
-#define LINPHONE_END_NAMESPACE }
 
 // -----------------------------------------------------------------------------
 
@@ -69,5 +71,7 @@
 
 #define L_D(CLASS) CLASS ## Private * const d = getPrivate();
 #define L_Q(CLASS) CLASS * const q = getPublic();
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _GENERAL_H_

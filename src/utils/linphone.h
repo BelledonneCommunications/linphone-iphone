@@ -1,5 +1,5 @@
 /*
- * clonable-object.cpp
+ * linphone.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "clonable-object-p.h"
+#ifndef _LINPHONE_H_
+#define _LINPHONE_H_
 
-#include "clonable-object.h"
-
-LINPHONE_BEGIN_NAMESPACE
+#include "general.h"
 
 // =============================================================================
 
-ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
-}
+LINPHONE_BEGIN_NAMESPACE
 
-ClonableObject::~ClonableObject () {
-	delete mPrivate;
-}
+enum MessageDirection {
+	IncomingMessage,
+	OutgoingMessage
+};
+
+enum MessageState {
+	IdleMessageState,
+	InProgressMessageState,
+	DeliveredMessageState,
+	NotDeliveredMessageState,
+	FileTransferErrorMessageState,
+	FileTransferDoneMessageState,
+	DeliveredToUserMessageState,
+	DisplayedMessageState
+};
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _LINPHONE_H_
