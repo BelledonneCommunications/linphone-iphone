@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
 
-#define DEBUG 1
+#define DEBUG_LOGS 1
 
 #include "linphone/core.h"
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]){
 
 	signal(SIGINT,stop);
 
-#ifdef DEBUG
+#ifdef DEBUG_LOGS
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
 	/*

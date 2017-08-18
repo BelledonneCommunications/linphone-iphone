@@ -17,7 +17,6 @@
  */
 
 #include "event-p.h"
-#include "message/message.h"
 
 #include "message-event.h"
 
@@ -36,6 +35,7 @@ public:
 
 MessageEvent::MessageEvent (const shared_ptr<Message> &message) : Event(*new MessageEventPrivate, Event::MessageEvent) {
 	L_D(MessageEvent);
+	L_ASSERT(message);
 	d->message = message;
 }
 

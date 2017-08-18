@@ -26,9 +26,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 Event::Event () : ClonableObject(*new EventPrivate) {}
 
-Event::Event (const Event &) : ClonableObject(*new EventPrivate) {
-	// `src` parameter is useless.
-}
+Event::Event (const Event &) : ClonableObject(*new EventPrivate) {}
 
 Event::Event (EventPrivate &p, Type type) : ClonableObject(p) {
 	L_D(Event);

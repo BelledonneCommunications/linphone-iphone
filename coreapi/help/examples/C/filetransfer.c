@@ -133,8 +133,8 @@ int main(int argc, char *argv[]){
 	big_file[sizeof(big_file)-1]=*"E";
 
 	signal(SIGINT,stop);
-//#define DEBUG
-#ifdef DEBUG
+//#define DEBUG_LOGS
+#ifdef DEBUG_LOGS
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
 	vtable.message_received=message_received;

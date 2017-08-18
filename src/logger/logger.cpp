@@ -49,7 +49,9 @@ Logger::~Logger () {
 
 	switch (d->level) {
 		case Debug:
-			ms_debug("%s", str.c_str());
+			#if DEBUG_LOGS
+				ms_debug("%s", str.c_str());
+			#endif // if DEBUG_LOGS
 			break;
 		case Info:
 			ms_message("%s", str.c_str());

@@ -1,5 +1,5 @@
 /*
- * call-event.cpp
+ * general.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,34 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event-p.h"
+#include "logger/logger.h"
 
-#include "call-event.h"
+#include "general.h"
 
 // =============================================================================
 
-using namespace std;
-
 LINPHONE_BEGIN_NAMESPACE
 
-class CallEventPrivate : public EventPrivate {
-public:
-	shared_ptr<Call> call;
-};
-
-// -----------------------------------------------------------------------------
-
-CallEvent::CallEvent (Type type, const shared_ptr<Call> &call) : Event(*new CallEventPrivate, type) {
-	L_D(CallEvent);
-	L_ASSERT(call);
-	d->call = call;
-}
-
-CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getCall()) {}
-
-shared_ptr<Call> CallEvent::getCall () const {
-	L_D(const CallEvent);
-	return d->call;
+void l_assert (const char *condition, const char *file, int line) {
+	lFatal() << "ASSERT: " << condition << " in " << file << " line " << line << ".";
 }
 
 LINPHONE_END_NAMESPACE

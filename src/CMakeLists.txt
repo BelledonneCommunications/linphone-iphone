@@ -63,6 +63,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	message/message.cpp
 	object/clonable-object.cpp
 	object/object.cpp
+	utils/general.cpp
 	utils/utils.cpp
 )
 

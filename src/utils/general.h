@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// =============================================================================
-
 #ifndef _GENERAL_H_
 #define _GENERAL_H_
+
+// =============================================================================
 
 #define LINPHONE_NAMESPACE LinphonePrivate
 #define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
@@ -71,6 +71,14 @@ LINPHONE_BEGIN_NAMESPACE
 
 #define L_D(CLASS) CLASS ## Private * const d = getPrivate();
 #define L_Q(CLASS) CLASS * const q = getPublic();
+
+void l_assert (const char *condition, const char *file, int line);
+
+#ifdef DEBUG
+	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
+#else
+	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : l_assert(#CONDITION, __FILE__, __LINE__))
+#endif
 
 LINPHONE_END_NAMESPACE
 

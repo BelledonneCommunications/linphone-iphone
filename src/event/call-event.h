@@ -19,6 +19,8 @@
 #ifndef _CALL_EVENT_H_
 #define _CALL_EVENT_H_
 
+#include <memory>
+
 #include "event.h"
 
 // =============================================================================
@@ -30,8 +32,10 @@ class CallEventPrivate;
 
 class LINPHONE_PUBLIC CallEvent : public Event {
 public:
-	CallEvent (const Call &message);
+	CallEvent (Type type, const std::shared_ptr<Call> &message);
 	CallEvent (const CallEvent &src);
+
+	std::shared_ptr<Call> getCall () const;
 
 private:
 	L_DECLARE_PRIVATE(CallEvent);

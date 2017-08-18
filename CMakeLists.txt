@@ -69,6 +69,13 @@ cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENAB
 
 set(CMAKE_CXX_STANDARD 11)
 
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -DDEBUG")
+
 if(ENABLE_STATIC)
 	set(LINPHONE_LIBS_FOR_TOOLS linphone-static)
 else()
@@ -259,7 +266,7 @@ if(LINPHONE_CPPFLAGS)
 endif()
 
 if(ENABLE_DEBUG_LOGS)
-	add_definitions("-DDEBUG")
+	add_definitions("-DDEBUG_LOGS")
 endif()
 
 set(STRICT_OPTIONS_CPP )
