@@ -37,6 +37,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	event/event.h
 	event/message-event.h
 	logger/logger.h
+	message/message.h
 	object/clonable-object-p.h
 	object/clonable-object.h
 	object/object-p.h
@@ -59,6 +60,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	event/event.cpp
 	event/message-event.cpp
 	logger/logger.cpp
+	message/message.cpp
 	object/clonable-object.cpp
 	object/object.cpp
 	utils/utils.cpp

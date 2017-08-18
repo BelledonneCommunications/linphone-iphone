@@ -32,8 +32,8 @@ public:
 	enum Type {
 		None,
 		MessageEvent,
-		FileMessageEvent,
-		CallEvent
+		CallStartEvent,
+		CallEndEvent
 	};
 
 	Event ();
@@ -43,7 +43,7 @@ public:
 	Type getType () const;
 
 protected:
-	Event (EventPrivate &p);
+	Event (EventPrivate &p, Type type);
 
 private:
 	L_DECLARE_PRIVATE(Event);

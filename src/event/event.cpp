@@ -30,7 +30,10 @@ Event::Event (const Event &) : ClonableObject(*new EventPrivate) {
 	// `src` parameter is useless.
 }
 
-Event::Event (EventPrivate &p) : ClonableObject(p) {}
+Event::Event (EventPrivate &p, Type type) : ClonableObject(p) {
+	L_D(Event);
+	d->type = type;
+}
 
 Event::Type Event::getType () const {
 	L_D(const Event);

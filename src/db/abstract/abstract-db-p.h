@@ -19,7 +19,9 @@
 #ifndef _ABSTRACT_DB_P_H_
 #define _ABSTRACT_DB_P_H_
 
-#include <soci/soci.h>
+#ifdef SOCI_ENABLED
+	#include <soci/soci.h>
+#endif // ifdef SOCI_ENABLED
 
 #include "abstract-db.h"
 #include "object/object-p.h"

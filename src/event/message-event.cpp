@@ -16,8 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "event-p.h"
+#include "message/message.h"
+
 #include "message-event.h"
 
 // =============================================================================
 
-// TODO.
+using namespace std;
+
+LINPHONE_BEGIN_NAMESPACE
+
+class MessageEventPrivate : public EventPrivate {
+public:
+	shared_ptr<Message> message;
+};
+
+// -----------------------------------------------------------------------------
+
+MessageEvent::MessageEvent (const shared_ptr<Message> &message) : Event(*new MessageEventPrivate, Event::MessageEvent) {
+	L_D(MessageEvent);
+	d->message = message;
+}
+
+MessageEvent::MessageEvent (const MessageEvent &src) : MessageEvent(src.getMessage()) {}
+
+shared_ptr<Message> MessageEvent::getMessage () const {
+	L_D(const MessageEvent);
+	return d->message;
+}
+
+LINPHONE_END_NAMESPACE
