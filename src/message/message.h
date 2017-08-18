@@ -32,6 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Address;
 class ChatRoom;
+class Content;
 class ErrorInfo;
 class MessagePrivate;
 
@@ -39,51 +40,42 @@ class LINPHONE_PUBLIC Message : public Object {
 	friend class ChatRoom;
 
 public:
+	MessageDirection getDirection () const;
+
+	std::shared_ptr<const Address> getFromAddress () const;
+	std::shared_ptr<const Address> getToAddress () const;
+	std::shared_ptr<const Address> getLocalAddress () const;
+	std::shared_ptr<const Address> getRemoteAddress () const;
+
+	std::shared_ptr<ChatRoom> getChatRoom () const;
+
+	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
+
+	std::string getContentType () const;
+
 	std::string getText () const;
+	void setText (const std::string &text);
 
-	/**
-	 * @brief Set a chat message text to be sent by linphone_chat_room_send_message.
-	 */
-	int setText (const std::string &text);
+	void send () const;
 
-	/**
-	 * @brief Get the state of the message.
-	 */
-	// ChatMessageState getState () const;
+	bool containsReadableText () const;
 
-	/**
-	 * @brief Get if the message was encrypted when transfered.
-	 */
-	bool isSecured ();
+	bool isSecured () const;
 
-	/**
-	 * @brief Get the time the message was sent.
-	 */
 	time_t getTime () const;
 
-	std::shared_ptr<ChatRoom> getChatRoom ();
-
-	std::string getMessageId () const;
+	std::string getId () const;
 
 	std::string getAppdata () const;
 	void setAppdata (const std::string &data);
 
-	std::shared_ptr<const Address> getPeerAddress () const;
-
-	std::shared_ptr<const Address> getFromAddress () const;
-	void setFromAddress (const std::shared_ptr<const Address> &address);
-
-	std::shared_ptr<const Address> getToAddress () const;
-	void setToAddress (const std::shared_ptr<const Address> &addr);
-
-	std::shared_ptr<const Address> getLocalAddress () const;
+	std::list<const std::shared_ptr<Content> > getContents () const;
+	void addContent (std::shared_ptr<Content> &content);
+	void removeContent (std::shared_ptr<Content> &content);
 
 	std::string getCustomHeaderValue (const std::string &headerName);
-
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
-
-	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
 
 protected:
 	Message ();
