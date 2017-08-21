@@ -30,30 +30,25 @@ LINPHONE_BEGIN_NAMESPACE
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(*new AbstractDbPrivate) {}
 
 bool AbstractDb::connect (Backend backend, const std::string &parameters) {
-	L_D(AbstractDb);
-
 	#ifdef SOCI_ENABLED
+		L_D(AbstractDb);
+		try {
+			if (d->isConnected) {
+				d->session.close();
+				d->isConnected = false;
+			}
 
-	try {
-		if (d->isConnected) {
-			d->session.close();
-			d->isConnected = false;
+			d->session.open(backend == Mysql ? "mysql" : "sqlite3", parameters);
+			init();
+		} catch (const exception &e) {
+			return false;
 		}
 
-		d->session.open(backend == Mysql ? "mysql" : "sqlite3", parameters);
-		init();
-	} catch (const exception &e) {
-		return false;
-	}
-
-	return true;
-
+		return true;
 	#else
-
-	lWarning() << "Cannot use AbstractDb. Soci is not enabled.";
-	return false;
-
-	#endif // ifndef SOCI_ENABLED
+		lWarning() << "Cannot use AbstractDb. Soci is not enabled.";
+		return false;
+	#endif     // ifndef SOCI_ENABLED
 }
 
 bool AbstractDb::isConnected () const {
