@@ -40,6 +40,8 @@ class LINPHONE_PUBLIC Message : public Object {
 	friend class ChatRoom;
 
 public:
+	std::shared_ptr<ChatRoom> getChatRoom () const;
+
 	MessageDirection getDirection () const;
 
 	std::shared_ptr<const Address> getFromAddress () const;
@@ -47,7 +49,7 @@ public:
 	std::shared_ptr<const Address> getLocalAddress () const;
 	std::shared_ptr<const Address> getRemoteAddress () const;
 
-	std::shared_ptr<ChatRoom> getChatRoom () const;
+	MessageState getState () const;
 
 	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
 
@@ -67,20 +69,19 @@ public:
 	std::string getId () const;
 
 	std::string getAppdata () const;
-	void setAppdata (const std::string &data);
+	void setAppdata (const std::string &appData);
 
-	std::list<const std::shared_ptr<Content> > getContents () const;
-	void addContent (std::shared_ptr<Content> &content);
-	void removeContent (std::shared_ptr<Content> &content);
+	std::list<const std::shared_ptr<const Content> > getContents () const;
+	void addContent (const std::shared_ptr<Content> &content);
+	void removeContent (const std::shared_ptr<const Content> &content);
 
-	std::string getCustomHeaderValue (const std::string &headerName);
+	std::string getCustomHeaderValue (const std::string &headerName) const;
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
 
-protected:
-	Message ();
-
 private:
+	Message (MessagePrivate &p);
+
 	L_DECLARE_PRIVATE(Message);
 	L_DISABLE_COPY(Message);
 };
