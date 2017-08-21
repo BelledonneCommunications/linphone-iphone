@@ -7846,6 +7846,21 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallImpl_setListener(JNIEn
 	linphone_call_set_next_video_frame_decoded_callback(call, _next_video_frame_decoded_callback, listener);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(JNIEnv* env
+																		,jobject thiz
+																		,jlong lc
+																		,jobject obj) {
+	jobject oldWindow = (jobject) linphone_call_get_native_video_window_id((LinphoneCall*)lc);
+	if (obj != NULL) {
+		obj = env->NewGlobalRef(obj);
+		ms_message("Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(): NewGlobalRef(%p)",obj);
+	}else ms_message("Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(): setting to NULL");
+	linphone_call_set_native_video_window_id((LinphoneCall*)lc,(void *)obj);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(): DeleteGlobalRef(%p)",oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
 
 /*
  * returns the java TunnelConfig associated with a C LinphoneTunnelConfig.

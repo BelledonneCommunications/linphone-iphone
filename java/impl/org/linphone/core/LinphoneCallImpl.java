@@ -45,6 +45,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native float getAverageQuality(long nativePtr);
 	private native boolean mediaInProgress(long nativePtr);
 	private native void setListener(long ptr, LinphoneCallListener listener);
+	private native void setVideoWindowId(long nativePtr, Object wid);
 	native private long getDiversionAddress(long nativePtr);
 	native private Object getStats(long nativePtr, int stream_type);
 	native private LinphoneCore getCore(long nativePtr);
@@ -294,6 +295,11 @@ class LinphoneCallImpl implements LinphoneCall {
 		synchronized(mCore){
 			setListener(nativePtr, listener);
 		}
+	}
+
+	@Override
+	public synchronized void setVideoWindow(Object w) {
+		setVideoWindowId(nativePtr, w);
 	}
     
 	public LinphoneAddress getDiversionAddress() {
