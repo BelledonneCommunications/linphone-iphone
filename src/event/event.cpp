@@ -24,13 +24,22 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 Event::Event () : ClonableObject(*new EventPrivate) {}
 
 Event::Event (const Event &) : ClonableObject(*new EventPrivate) {}
 
-Event::Event (EventPrivate &p, Type type) : ClonableObject(p) {
+Event::Event (EventPrivate &p, Type type) : ClonableObject(*new EventPrivate) {
 	L_D(Event);
 	d->type = type;
+}
+
+Event &Event::operator= (const Event &src) {
+	L_D(Event);
+	if (this != &src)
+		d->type = src.getPrivate()->type;
+	return *this;
 }
 
 Event::Type Event::getType () const {

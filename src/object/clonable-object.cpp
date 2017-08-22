@@ -20,16 +20,67 @@
 
 #include "clonable-object.h"
 
-LINPHONE_BEGIN_NAMESPACE
-
 // =============================================================================
 
+using namespace std;
+
+LINPHONE_BEGIN_NAMESPACE
+
+// TODO: Use atomic counter?
+
+void ClonableObjectPrivate::ref () {
+	++nRefs;
+}
+
+void ClonableObjectPrivate::unref () {
+	if (--nRefs == 0) {
+		delete mPublic;
+		delete this;
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
+	// Q-pointer must be empty. It's a constructor that takes a new private data.
+	L_ASSERT(!mPrivate->mPublic);
+
+	mPrivate->mPublic = new remove_pointer<decltype(mPrivate->mPublic)>::type;
+	(*mPrivate->mPublic)[mPrivate] = this;
+	mPrivate->ref();
+}
+
+ClonableObject::ClonableObject (const ClonableObjectPrivate &p) {
+	// Cannot access to Q-pointer. It's a copy constructor from private data.
+	L_ASSERT(!mPrivate);
+
+	setRef(p);
 }
 
 ClonableObject::~ClonableObject () {
-	delete mPrivate;
+	mPrivate->mPublic->erase(mPrivate);
+	mPrivate->unref();
+}
+
+void ClonableObject::setRef (const ClonableObjectPrivate &p) {
+	// Q-pointer must exist.
+	L_ASSERT(mPrivate);
+	L_ASSERT(mPrivate->mPublic);
+
+	// Nothing, same reference.
+	if (&p == mPrivate)
+		return;
+
+	// Unref previous private data.
+	if (mPrivate) {
+		mPrivate->mPublic->erase(mPrivate);
+		mPrivate->unref();
+	}
+
+	// Add and reference new private data.
+	mPrivate = const_cast<ClonableObjectPrivate *>(&p);
+	(*mPrivate->mPublic)[mPrivate] = this;
+	mPrivate->ref();
 }
 
 LINPHONE_END_NAMESPACE

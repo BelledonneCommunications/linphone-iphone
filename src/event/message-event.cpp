@@ -41,6 +41,16 @@ MessageEvent::MessageEvent (const shared_ptr<Message> &message) : Event(*new Mes
 
 MessageEvent::MessageEvent (const MessageEvent &src) : MessageEvent(src.getMessage()) {}
 
+MessageEvent &MessageEvent::operator= (const MessageEvent &src) {
+	L_D(MessageEvent);
+	if (this != &src) {
+		Event::operator=(src);
+		d->message = src.getPrivate()->message;
+	}
+
+	return *this;
+}
+
 shared_ptr<Message> MessageEvent::getMessage () const {
 	L_D(const MessageEvent);
 	return d->message;

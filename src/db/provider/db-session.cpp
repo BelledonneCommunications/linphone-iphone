@@ -1,5 +1,5 @@
 /*
- * event.h
+ * db-session.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,41 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_H_
-#define _EVENT_H_
+#include "db-session-p.h"
 
-#include "object/clonable-object.h"
+#include "db-session.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-class EventPrivate;
+L_USE_DEFAULT_SHARE_IMPL(DbSession, ClonableObject);
 
-class LINPHONE_PUBLIC Event : public ClonableObject {
-public:
-	enum Type {
-		None,
-		MessageEvent,
-		CallStartEvent,
-		CallEndEvent
-	};
-
-	Event ();
-	Event (const Event &src);
-	virtual ~Event () = default;
-
-	Event &operator= (const Event &src);
-
-	Type getType () const;
-
-protected:
-	Event (EventPrivate &p, Type type);
-
-private:
-	L_DECLARE_PRIVATE(Event);
-};
+DbSession::operator bool () const {
+	L_D(const DbSession);
+	return d->isValid;
+}
 
 LINPHONE_END_NAMESPACE
-
-#endif // ifndef _EVENT_H_

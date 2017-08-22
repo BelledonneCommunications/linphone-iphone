@@ -17,43 +17,34 @@
  */
 
 #include "abstract-db-p.h"
+#include "db/provider/db-session-provider.h"
 #include "logger/logger.h"
 
 #include "abstract-db.h"
 
-using namespace std;
-
 // =============================================================================
+
+using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(*new AbstractDbPrivate) {}
 
-bool AbstractDb::connect (Backend backend, const std::string &parameters) {
-	#ifdef SOCI_ENABLED
-		L_D(AbstractDb);
-		try {
-			if (d->isConnected) {
-				d->session.close();
-				d->isConnected = false;
-			}
+bool AbstractDb::connect (Backend backend, const string &parameters) {
+	L_D(AbstractDb);
 
-			d->session.open(backend == Mysql ? "mysql" : "sqlite3", parameters);
-			init();
-		} catch (const exception &e) {
-			return false;
-		}
+	d->dbSession = DbSessionProvider::getInstance()->getSession(
+		(backend == Mysql ? "mysql://" : "sqlite3://") + parameters
+	);
 
-		return true;
-	#else
-		lWarning() << "Cannot use AbstractDb. Soci is not enabled.";
-		return false;
-	#endif     // ifndef SOCI_ENABLED
+	if (d->dbSession)
+		init();
+	return d->dbSession;
 }
 
 bool AbstractDb::isConnected () const {
 	L_D(const AbstractDb);
-	return d->isConnected;
+	return d->dbSession;
 }
 
 AbstractDb::Backend AbstractDb::getBackend () const {

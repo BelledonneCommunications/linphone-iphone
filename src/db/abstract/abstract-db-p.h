@@ -19,11 +19,8 @@
 #ifndef _ABSTRACT_DB_P_H_
 #define _ABSTRACT_DB_P_H_
 
-#ifdef SOCI_ENABLED
-	#include <soci/soci.h>
-#endif // ifdef SOCI_ENABLED
-
 #include "abstract-db.h"
+#include "db/provider/db-session.h"
 #include "object/object-p.h"
 
 // =============================================================================
@@ -32,13 +29,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 class AbstractDbPrivate : public ObjectPrivate {
 public:
-	#ifdef SOCI_ENABLED
-		soci::session session;
-	#endif // ifndef SOCI_ENABLED
+	DbSession dbSession;
 
 private:
 	AbstractDb::Backend backend;
-	bool isConnected = false;
 
 	L_DECLARE_PUBLIC(AbstractDb);
 };

@@ -35,6 +35,8 @@ public:
 	MessageEvent (const std::shared_ptr<Message> &message);
 	MessageEvent (const MessageEvent &src);
 
+	MessageEvent &operator= (const MessageEvent &src);
+
 	std::shared_ptr<Message> getMessage () const;
 
 private:

@@ -41,6 +41,16 @@ CallEvent::CallEvent (Type type, const shared_ptr<Call> &call) : Event(*new Call
 
 CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getCall()) {}
 
+CallEvent &CallEvent::operator= (const CallEvent &src) {
+	L_D(CallEvent);
+	if (this != &src) {
+		Event::operator=(src);
+		d->call = src.getPrivate()->call;
+	}
+
+	return *this;
+}
+
 shared_ptr<Call> CallEvent::getCall () const {
 	L_D(const CallEvent);
 	return d->call;

@@ -20,6 +20,11 @@
 
 #include "events-db.h"
 
+// TODO: Remove me.
+#ifdef SOCI_ENABLED
+	#undef SOCI_ENABLED
+#endif
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
@@ -61,10 +66,10 @@ void EventsDb::init () {
 
 		d->session <<
 			"CREATE TABLE IF NOT EXISTS dialog ("
-			"  local_sip_address_id BIGINT UNSIGNED NOT NULL,"   // Sip address used to communicate.
-			"  remote_sip_address_id BIGINT UNSIGNED NOT NULL,"   // Server (for conference) or user sip address.
-			"  creation_timestamp TIMESTAMP NOT NULL,"   // Dialog creation date.
-			"  last_update_timestamp TIMESTAMP NOT NULL,"   // Last event timestamp (call, message...).
+			"  local_sip_address_id BIGINT UNSIGNED NOT NULL," // Sip address used to communicate.
+			"  remote_sip_address_id BIGINT UNSIGNED NOT NULL," // Server (for conference) or user sip address.
+			"  creation_timestamp TIMESTAMP NOT NULL," // Dialog creation date.
+			"  last_update_timestamp TIMESTAMP NOT NULL," // Last event timestamp (call, message...).
 			"  FOREIGN KEY (local_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE,"
@@ -79,7 +84,7 @@ void EventsDb::init () {
 			"  dialog_id BIGINT UNSIGNED NOT NULL,"
 			"  status_id TINYINT UNSIGNED NOT NULL,"
 			"  direction_id TINYINT UNSIGNED NOT NULL,"
-			"  imdn_message_id VARCHAR(255) NOT NULL,"   // See: https://tools.ietf.org/html/rfc5438#section-6.3
+			"  imdn_message_id VARCHAR(255) NOT NULL," // See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  content_type VARCHAR(255) NOT NULL,"
 			"  is_secured BOOLEAN NOT NULL,"
 			"  app_data VARCHAR(2048),"

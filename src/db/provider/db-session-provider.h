@@ -1,5 +1,5 @@
 /*
- * event.h
+ * db-session-provider.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,41 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_H_
-#define _EVENT_H_
+#ifndef _DB_SESSION_PROVIDER_H_
+#define _DB_SESSION_PROVIDER_H_
 
-#include "object/clonable-object.h"
+#include <string>
+
+#include "db-session.h"
+#include "object/singleton.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventPrivate;
+class DbSessionProviderPrivate;
 
-class LINPHONE_PUBLIC Event : public ClonableObject {
+class DbSessionProvider : public Singleton<DbSessionProvider> {
+	friend class Singleton<DbSessionProvider>;
+
 public:
-	enum Type {
-		None,
-		MessageEvent,
-		CallStartEvent,
-		CallEndEvent
-	};
-
-	Event ();
-	Event (const Event &src);
-	virtual ~Event () = default;
-
-	Event &operator= (const Event &src);
-
-	Type getType () const;
-
-protected:
-	Event (EventPrivate &p, Type type);
+	DbSession getSession (const std::string &uri);
 
 private:
-	L_DECLARE_PRIVATE(Event);
+	DbSessionProvider ();
+
+	L_DECLARE_PRIVATE(DbSessionProvider);
+	L_DISABLE_COPY(DbSessionProvider);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_H_
+#endif // ifndef _DB_SESSION_PROVIDER_H_

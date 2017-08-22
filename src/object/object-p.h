@@ -25,8 +25,6 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Object;
-
 class ObjectPrivate {
 public:
 	virtual ~ObjectPrivate () = default;

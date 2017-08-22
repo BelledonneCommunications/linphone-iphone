@@ -35,6 +35,8 @@ public:
 	CallEvent (Type type, const std::shared_ptr<Call> &message);
 	CallEvent (const CallEvent &src);
 
+	CallEvent &operator= (const CallEvent &src);
+
 	std::shared_ptr<Call> getCall () const;
 
 private:

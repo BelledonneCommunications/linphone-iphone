@@ -1,5 +1,5 @@
 /*
- * event.h
+ * db-session-p.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,41 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_H_
-#define _EVENT_H_
+#ifndef _DB_SESSION_P_H_
+#define _DB_SESSION_P_H_
 
-#include "object/clonable-object.h"
+#ifdef SOCI_ENABLED
+	#include <memory>
+#endif // ifdef SOCI_ENABLED
+
+#include "db-session.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
+#ifdef SOCI_ENABLED
+	namespace soci {
+		class session;
+	}
+#endif // ifdef SOCI_ENABLED
+
 LINPHONE_BEGIN_NAMESPACE
 
-class EventPrivate;
-
-class LINPHONE_PUBLIC Event : public ClonableObject {
-public:
-	enum Type {
-		None,
-		MessageEvent,
-		CallStartEvent,
-		CallEndEvent
-	};
-
-	Event ();
-	Event (const Event &src);
-	virtual ~Event () = default;
-
-	Event &operator= (const Event &src);
-
-	Type getType () const;
-
-protected:
-	Event (EventPrivate &p, Type type);
+class DbSessionPrivate : public ClonableObjectPrivate {
+	friend class DbSessionProvider;
 
 private:
-	L_DECLARE_PRIVATE(Event);
+	bool isValid = false;
+
+	#ifdef SOCI_ENABLED
+		std::shared_ptr<soci::session> session;
+	#endif // ifndef SOCI_ENABLED
+
+	L_DECLARE_PUBLIC(DbSession);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_H_
+#endif // ifndef _DB_SESSION_P_H_
