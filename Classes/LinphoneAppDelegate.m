@@ -633,147 +633,179 @@ didInvalidatePushTokenForType:(NSString *)type {
 	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
 }
 
+#ifdef __IPHONE_11_0
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
-didReceiveNotificationResponse:(UNNotificationResponse *)response
-         withCompletionHandler:(void (^)())completionHandler {
-	LOGD(@"UN : response received");
-	LOGD(response.description);
+    didReceiveNotificationResponse:(UNNotificationResponse *)response
+             withCompletionHandler:(void (^)(void))completionHandler {
 
-	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
-	if (!callId) {
-		return;
-	}
-	LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
-	if (call) {
-		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-		if (data->timer) {
-			[data->timer invalidate];
-			data->timer = nil;
-		}
-	}
+#else
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+    didReceiveNotificationResponse:(UNNotificationResponse *)response
+             withCompletionHandler:(void (^)())completionHandler {
+#endif
 
-	if ([response.actionIdentifier isEqual:@"Answer"]) {
-		// use the standard handler
-		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-		linphone_call_accept(call);
-	} else if ([response.actionIdentifier isEqual:@"Decline"]) {
-		linphone_call_decline(call, LinphoneReasonDeclined);
-	} else if ([response.actionIdentifier isEqual:@"Reply"]) {
-		NSString *replyText = [(UNTextInputNotificationResponse *)response userText];
-		NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
-		[LinphoneManager.instance send:replyText to:from];
-	} else if ([response.actionIdentifier isEqual:@"Seen"]) {
-		NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
-		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
-		if (room) {
-			linphone_chat_room_mark_as_read(room);
-			TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-				getCachedController:NSStringFromClass(TabBarView.class)];
-			[tab update:YES];
-			[PhoneMainView.instance updateApplicationBadgeNumber];
-		}
+  LOGD(@"UN : response received");
+  LOGD(response.description);
 
-	} else if ([response.actionIdentifier isEqual:@"Cancel"]) {
-		LOGI(@"User declined video proposal");
-		if (call == linphone_core_get_current_call(LC)) {
-			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-			linphone_call_accept_update(call, params);
-			linphone_call_params_destroy(params);
-		}
-	} else if ([response.actionIdentifier isEqual:@"Accept"]) {
-		LOGI(@"User accept video proposal");
-		if (call == linphone_core_get_current_call(LC)) {
-			[[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-			LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-			linphone_call_params_enable_video(params, TRUE);
-			linphone_call_accept_update(call, params);
-			linphone_call_params_destroy(params);
-		}
-	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
-		if (linphone_core_get_current_call(LC) == call) {
-			linphone_call_set_authentication_token_verified(call, YES);
-		}
-	} else if ([response.actionIdentifier isEqual:@"Deny"]) {
-		if (linphone_core_get_current_call(LC) == call) {
-			linphone_call_set_authentication_token_verified(call, NO);
-		}
-	} else if ([response.actionIdentifier isEqual:@"Call"]) {
+  NSString *callId = (NSString *)[response.notification.request.content.userInfo
+      objectForKey:@"CallId"];
+  if (!callId) {
+    return;
+  }
+  LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
+  if (call) {
+    LinphoneCallAppData *data =
+        (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+    if (data->timer) {
+      [data->timer invalidate];
+      data->timer = nil;
+    }
+  }
 
-	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
-		if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
-			[PhoneMainView.instance displayIncomingCall:call];
-		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
-			[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
-		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
-			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-			NSTimer *videoDismissTimer = nil;
+  if ([response.actionIdentifier isEqual:@"Answer"]) {
+    // use the standard handler
+    [PhoneMainView.instance
+        changeCurrentView:CallView.compositeViewDescription];
+    linphone_call_accept(call);
+  } else if ([response.actionIdentifier isEqual:@"Decline"]) {
+    linphone_call_decline(call, LinphoneReasonDeclined);
+  } else if ([response.actionIdentifier isEqual:@"Reply"]) {
+    NSString *replyText =
+        [(UNTextInputNotificationResponse *)response userText];
+    NSString *from = [response.notification.request.content.userInfo
+        objectForKey:@"from_addr"];
+    [LinphoneManager.instance send:replyText to:from];
+  } else if ([response.actionIdentifier isEqual:@"Seen"]) {
+    NSString *from = [response.notification.request.content.userInfo
+        objectForKey:@"from_addr"];
+    LinphoneChatRoom *room =
+        linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
+    if (room) {
+      linphone_chat_room_mark_as_read(room);
+      TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+          getCachedController:NSStringFromClass(TabBarView.class)];
+      [tab update:YES];
+      [PhoneMainView.instance updateApplicationBadgeNumber];
+    }
 
-			UIConfirmationDialog *sheet =
-				[UIConfirmationDialog ShowWithMessage:response.notification.request.content.body
-					cancelMessage:nil
-					confirmMessage:NSLocalizedString(@"ACCEPT", nil)
-					onCancelClick:^() {
-					  LOGI(@"User declined video proposal");
-					  if (call == linphone_core_get_current_call(LC)) {
-						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-						  linphone_call_accept_update(call, params);
-						  linphone_call_params_destroy(params);
-						  [videoDismissTimer invalidate];
-					  }
-					}
-					onConfirmationClick:^() {
-					  LOGI(@"User accept video proposal");
-					  if (call == linphone_core_get_current_call(LC)) {
-						  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-						  linphone_call_params_enable_video(params, TRUE);
-						  linphone_call_accept_update(call, params);
-						  linphone_call_params_destroy(params);
-						  [videoDismissTimer invalidate];
-					  }
-					}
-					inController:PhoneMainView.instance];
+  } else if ([response.actionIdentifier isEqual:@"Cancel"]) {
+    LOGI(@"User declined video proposal");
+    if (call == linphone_core_get_current_call(LC)) {
+      LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
+      linphone_call_accept_update(call, params);
+      linphone_call_params_destroy(params);
+    }
+  } else if ([response.actionIdentifier isEqual:@"Accept"]) {
+    LOGI(@"User accept video proposal");
+    if (call == linphone_core_get_current_call(LC)) {
+      [[UNUserNotificationCenter currentNotificationCenter]
+          removeAllDeliveredNotifications];
+      [PhoneMainView.instance
+          changeCurrentView:CallView.compositeViewDescription];
+      LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
+      linphone_call_params_enable_video(params, TRUE);
+      linphone_call_accept_update(call, params);
+      linphone_call_params_destroy(params);
+    }
+  } else if ([response.actionIdentifier isEqual:@"Confirm"]) {
+    if (linphone_core_get_current_call(LC) == call) {
+      linphone_call_set_authentication_token_verified(call, YES);
+    }
+  } else if ([response.actionIdentifier isEqual:@"Deny"]) {
+    if (linphone_core_get_current_call(LC) == call) {
+      linphone_call_set_authentication_token_verified(call, NO);
+    }
+  } else if ([response.actionIdentifier isEqual:@"Call"]) {
 
-			videoDismissTimer = [NSTimer scheduledTimerWithTimeInterval:30
-																 target:self
-															   selector:@selector(dismissVideoActionSheet:)
-															   userInfo:sheet
-																repeats:NO];
-		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"zrtp_request"]) {
-			NSString *code = [NSString stringWithUTF8String:linphone_call_get_authentication_token(call)];
-			NSString *myCode;
-			NSString *correspondantCode;
-			if (linphone_call_get_dir(call) == LinphoneCallIncoming) {
-				myCode = [code substringToIndex:2];
-				correspondantCode = [code substringFromIndex:2];
-			} else {
-				correspondantCode = [code substringToIndex:2];
-				myCode = [code substringFromIndex:2];
-			}
-			NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n"
-																			 @"Say : %@\n"
-																			 @"Your correspondant should say : %@",
-																			 nil),
-														   myCode, correspondantCode];
-			[UIConfirmationDialog ShowWithMessage:message
-				cancelMessage:NSLocalizedString(@"DENY", nil)
-				confirmMessage:NSLocalizedString(@"ACCEPT", nil)
-				onCancelClick:^() {
-				  if (linphone_core_get_current_call(LC) == call) {
-					  linphone_call_set_authentication_token_verified(call, NO);
-				  }
-				}
-				onConfirmationClick:^() {
-				  if (linphone_core_get_current_call(LC) == call) {
-					  linphone_call_set_authentication_token_verified(call, YES);
-				  }
-				}];
-		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"lime"]) {
-			return;
-		} else { // Missed call
-			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
-		}
-	}
+  } else { // in this case the value is :
+           // com.apple.UNNotificationDefaultActionIdentifier
+    if ([response.notification.request.content.categoryIdentifier
+            isEqual:@"call_cat"]) {
+      [PhoneMainView.instance displayIncomingCall:call];
+    } else if ([response.notification.request.content.categoryIdentifier
+                   isEqual:@"msg_cat"]) {
+      [PhoneMainView.instance
+          changeCurrentView:ChatsListView.compositeViewDescription];
+    } else if ([response.notification.request.content.categoryIdentifier
+                   isEqual:@"video_request"]) {
+      [PhoneMainView.instance
+          changeCurrentView:CallView.compositeViewDescription];
+      NSTimer *videoDismissTimer = nil;
+
+      UIConfirmationDialog *sheet = [UIConfirmationDialog
+          ShowWithMessage:response.notification.request.content.body
+          cancelMessage:nil
+          confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+          onCancelClick:^() {
+            LOGI(@"User declined video proposal");
+            if (call == linphone_core_get_current_call(LC)) {
+              LinphoneCallParams *params =
+                  linphone_core_create_call_params(LC, call);
+              linphone_call_accept_update(call, params);
+              linphone_call_params_destroy(params);
+              [videoDismissTimer invalidate];
+            }
+          }
+          onConfirmationClick:^() {
+            LOGI(@"User accept video proposal");
+            if (call == linphone_core_get_current_call(LC)) {
+              LinphoneCallParams *params =
+                  linphone_core_create_call_params(LC, call);
+              linphone_call_params_enable_video(params, TRUE);
+              linphone_call_accept_update(call, params);
+              linphone_call_params_destroy(params);
+              [videoDismissTimer invalidate];
+            }
+          }
+          inController:PhoneMainView.instance];
+
+      videoDismissTimer = [NSTimer
+          scheduledTimerWithTimeInterval:30
+                                  target:self
+                                selector:@selector(dismissVideoActionSheet:)
+                                userInfo:sheet
+                                 repeats:NO];
+    } else if ([response.notification.request.content.categoryIdentifier
+                   isEqual:@"zrtp_request"]) {
+      NSString *code = [NSString
+          stringWithUTF8String:linphone_call_get_authentication_token(call)];
+      NSString *myCode;
+      NSString *correspondantCode;
+      if (linphone_call_get_dir(call) == LinphoneCallIncoming) {
+        myCode = [code substringToIndex:2];
+        correspondantCode = [code substringFromIndex:2];
+      } else {
+        correspondantCode = [code substringToIndex:2];
+        myCode = [code substringFromIndex:2];
+      }
+      NSString *message = [NSString
+          stringWithFormat:NSLocalizedString(
+                               @"Confirm the following SAS with peer:\n"
+                               @"Say : %@\n"
+                               @"Your correspondant should say : %@",
+                               nil),
+                           myCode, correspondantCode];
+      [UIConfirmationDialog ShowWithMessage:message
+          cancelMessage:NSLocalizedString(@"DENY", nil)
+          confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+          onCancelClick:^() {
+            if (linphone_core_get_current_call(LC) == call) {
+              linphone_call_set_authentication_token_verified(call, NO);
+            }
+          }
+          onConfirmationClick:^() {
+            if (linphone_core_get_current_call(LC) == call) {
+              linphone_call_set_authentication_token_verified(call, YES);
+            }
+          }];
+    } else if ([response.notification.request.content.categoryIdentifier
+                   isEqual:@"lime"]) {
+      return;
+    } else { // Missed call
+      [PhoneMainView.instance
+          changeCurrentView:HistoryListView.compositeViewDescription];
+    }
+  }
 }
 
 - (void)dismissVideoActionSheet:(NSTimer *)timer {
