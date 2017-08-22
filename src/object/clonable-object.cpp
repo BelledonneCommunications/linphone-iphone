@@ -63,9 +63,8 @@ ClonableObject::~ClonableObject () {
 }
 
 void ClonableObject::setRef (const ClonableObjectPrivate &p) {
-	// Q-pointer must exist.
-	L_ASSERT(mPrivate);
-	L_ASSERT(mPrivate->mPublic);
+	// Q-pointer must exist if private data is defined.
+	L_ASSERT(!mPrivate || mPrivate->mPublic);
 
 	// Nothing, same reference.
 	if (&p == mPrivate)
