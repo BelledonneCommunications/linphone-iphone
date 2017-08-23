@@ -4284,6 +4284,15 @@ extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getCore(JNIEnv*  en
 	return NULL;
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getVcardToString(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneFriend *lf = (LinphoneFriend*)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	const char* vcard = linphone_vcard_as_vcard4_string(lvc);
+	return vcard ? env->NewStringUTF(vcard) : NULL;
+}
+
 extern "C" jobject Java_org_linphone_core_LinphoneFriendListImpl_getCore(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {

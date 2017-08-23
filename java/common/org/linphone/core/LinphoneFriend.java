@@ -165,6 +165,12 @@ public interface LinphoneFriend {
 	 * @return The reference key of the friend.
 	 **/
 	String getRefKey();
+
+/**
+	 * return a the string value of the vcard corresponding to the given friend
+	 */
+	String getVcardToString();
+
 	/**
 	 * Set a name for this friend
 	 * @param name

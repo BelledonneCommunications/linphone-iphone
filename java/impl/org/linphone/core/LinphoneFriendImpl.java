@@ -40,6 +40,7 @@ public class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native Object getCore(long ptr);
 	private native void setRefKey(long nativePtr, String key);
 	private native String getRefKey(long nativePtr);
+	private native String getVcardToString(long nativePtr);
 	
 	private Object userdData;
 	public Object getUserData() {
@@ -141,6 +142,12 @@ public class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	public String getRefKey(){
 		return getRefKey(nativePtr);
 	}
+
+
+	public synchronized String getVcardToString() {
+		return getVcardToString(nativePtr);
+	}
+
 	
 	private native void setName(long nativePtr, String name);
 	@Override
