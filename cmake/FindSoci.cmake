@@ -29,8 +29,7 @@ SET(_SOCI_REQUIRED_VARS  SOCI_INCLUDE_DIRS SOCI_LIBRARIES)
 #
 ### FIRST STEP: Find the soci headers.
 #
-FIND_PATH(SOCI_INCLUDE_DIRS soci.h
-    PATH_SUFFIXES "soci"
+FIND_PATH(SOCI_INCLUDE_DIRS soci/soci.h
     DOC "Soci (http://soci.sourceforge.net) include directory")
 MARK_AS_ADVANCED(SOCI_INCLUDE_DIRS)
 
