@@ -25,6 +25,12 @@
 
 // =============================================================================
 
+#ifdef SOCI_ENABLED
+	namespace soci {
+		class session;
+	}
+#endif // ifdef SOCI_ENABLED
+
 LINPHONE_BEGIN_NAMESPACE
 
 class DbSessionPrivate;
@@ -33,16 +39,53 @@ class DbSession : public ClonableObject {
 	friend class DbSessionProvider;
 
 public:
-	DbSession ();
+	enum Type {
+		None,
+		Soci
+	};
+
+	DbSession (Type type = None);
 	DbSession (const DbSession &src);
 
 	DbSession &operator= (const DbSession &src);
 
 	operator bool () const;
 
+	Type getBackendType () const;
+
+	template<typename T>
+	T *getBackendSession () const;
+
 private:
+	void *getBackendSession () const;
+
 	L_DECLARE_PRIVATE(DbSession);
 };
+
+// -----------------------------------------------------------------------------
+
+template<typename T>
+struct TypeOfDbSession {
+	static const DbSession::Type type = DbSession::None;
+};
+
+#ifdef SOCI_ENABLED
+
+	template<>
+	struct TypeOfDbSession<::soci::session> {
+		static const DbSession::Type type = DbSession::Soci;
+	};
+
+#endif // ifdef SOCI_ENABLED
+
+template<typename T>
+T *DbSession::getBackendSession () const {
+	typedef TypeOfDbSession<T> Type;
+	static_assert(Type::type != DbSession::None, "Unable to get backend session, invalid type.");
+	if (getBackendType() != Type::type)
+		return nullptr;
+	return static_cast<T *>(getBackendSession());
+}
 
 LINPHONE_END_NAMESPACE
 

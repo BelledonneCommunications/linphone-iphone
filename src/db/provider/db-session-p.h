@@ -19,22 +19,16 @@
 #ifndef _DB_SESSION_P_H_
 #define _DB_SESSION_P_H_
 
-#ifdef SOCI_ENABLED
-	#include <memory>
-#endif // ifdef SOCI_ENABLED
+#include <memory>
 
 #include "db-session.h"
 #include "object/clonable-object-p.h"
 
 // =============================================================================
 
-#ifdef SOCI_ENABLED
-	namespace soci {
-		class session;
-	}
-#endif // ifdef SOCI_ENABLED
-
 LINPHONE_BEGIN_NAMESPACE
+
+// -----------------------------------------------------------------------------
 
 class DbSessionPrivate : public ClonableObjectPrivate {
 	friend class DbSessionProvider;
@@ -42,9 +36,8 @@ class DbSessionPrivate : public ClonableObjectPrivate {
 private:
 	bool isValid = false;
 
-	#ifdef SOCI_ENABLED
-		std::shared_ptr<soci::session> session;
-	#endif // ifndef SOCI_ENABLED
+	DbSession::Type type = DbSession::None;
+	std::shared_ptr<void> backendSession;
 
 	L_DECLARE_PUBLIC(DbSession);
 };

@@ -110,8 +110,7 @@ inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
 #define L_Q(CLASS) CLASS * const q = getPublic();
 
 #define L_USE_DEFAULT_SHARE_IMPL(CLASS, PARENT_CLASS) \
-	CLASS::CLASS () : PARENT_CLASS(*new CLASS ## Private) {} \
-	CLASS::CLASS (const CLASS &src) : ClonableObject(*src.getPrivate()) {} \
+	CLASS::CLASS (const CLASS &src) : PARENT_CLASS(*src.getPrivate()) {} \
 	CLASS &CLASS::operator= (const CLASS &src) { \
 		if (this != &src) \
 			setRef(*src.getPrivate()); \

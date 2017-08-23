@@ -26,11 +26,26 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+DbSession::DbSession (Type type) : ClonableObject(*new DbSessionPrivate) {
+	L_D(DbSession);
+	d->type = type;
+}
+
 L_USE_DEFAULT_SHARE_IMPL(DbSession, ClonableObject);
 
 DbSession::operator bool () const {
 	L_D(const DbSession);
 	return d->isValid;
+}
+
+DbSession::Type DbSession::getBackendType () const {
+	L_D(const DbSession);
+	return d->type;
+}
+
+void *DbSession::getBackendSession () const {
+	L_D(const DbSession);
+	return d->backendSession.get();
 }
 
 LINPHONE_END_NAMESPACE

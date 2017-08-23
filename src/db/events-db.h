@@ -19,6 +19,8 @@
 #ifndef _EVENTS_DB_H_
 #define _EVENTS_DB_H_
 
+#include <list>
+
 #include "abstract/abstract-db.h"
 
 // =============================================================================
@@ -30,9 +32,29 @@ class EventsDbPrivate;
 
 class LINPHONE_PUBLIC EventsDb : public AbstractDb {
 public:
+	enum Filter {
+		NoFilter = 0x0,
+		MessageFilter = 0x1,
+		CallFilter = 0x2,
+		ConferenceFilter = 0x4
+	};
+
+	typedef int FilterMask;
+
 	EventsDb ();
 
-	bool writeEvent (const Event &event);
+	// Generic.
+	bool addEvent (const Event &event);
+	bool deleteEvent (const Event &event);
+	void cleanEvents (FilterMask mask = NoFilter);
+	int getEventsCount (FilterMask mask = NoFilter);
+
+	// Messages, calls and conferences.
+	int getMessagesCount (const std::string &remoteAddress);
+	int getUnreadMessagesCount (const std::string &remoteAddress);
+	std::list<Event> getHistory (const std::string &remoteAddress, int nLast, FilterMask mask = NoFilter);
+	std::list<Event> getHistory (const std::string &remoteAddress, int begin, int end, FilterMask mask = NoFilter);
+	void cleanHistory (const std::string &remoteAddress);
 
 protected:
 	void init () override;

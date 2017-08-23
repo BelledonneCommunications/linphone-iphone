@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef SOCI_ENABLED
-	#include <unordered_map>
+#include <unordered_map>
 
+#ifdef SOCI_ENABLED
 	#include <soci/soci.h>
 #endif // ifdef SOCI_ENABLED
 
@@ -37,45 +37,45 @@ LINPHONE_BEGIN_NAMESPACE
 
 class DbSessionProviderPrivate : public ObjectPrivate {
 public:
-	#ifdef SOCI_ENABLED
-		typedef pair<weak_ptr<soci::session>, DbSessionPrivate *> InternalSession;
-		unordered_map<string, InternalSession> sessions;
-	#endif // ifdef SOCI_ENABLED
-
+	typedef pair<weak_ptr<void>, DbSessionPrivate *> InternalSession;
+	unordered_map<string, InternalSession> sessions;
 	int cleanCounter = 0;
 };
 
 DbSessionProvider::DbSessionProvider () : Singleton(*new DbSessionProviderPrivate) {}
 
 DbSession DbSessionProvider::getSession (const string &uri) {
-	DbSession session;
+	L_D(DbSessionProvider);
 
 	#ifdef SOCI_ENABLED
-		L_D(DbSessionProvider);
+		DbSession session(DbSession::Soci);
 		try {
-			shared_ptr<soci::session> sociSession = d->sessions[uri].first.lock();
-			if (!sociSession) { // Create new session.
-				sociSession = make_shared<soci::session>(uri);
+			shared_ptr<void> backendSession = d->sessions[uri].first.lock();
+			++d->cleanCounter;
+			if (!backendSession) { // Create new session.
+				backendSession = make_shared<soci::session>(uri);
 				DbSessionPrivate *p = session.getPrivate();
-				p->session = sociSession;
+				p->backendSession = backendSession;
 				p->isValid = true;
-				d->sessions[uri] = make_pair(sociSession, p);
+				d->sessions[uri] = make_pair(backendSession, p);
 			} else // Share session.
 				session.setRef(*d->sessions[uri].second);
 		} catch (const exception &) {}
+	#else
+		DbSession session(DbSession::None);
+	#endif // ifdef SOCI_ENABLED
 
-		// Remove invalid weak ptrs.
-		if (++d->cleanCounter >= CLEAN_COUNTER_MAX) {
-			d->cleanCounter = 0;
+	// Remove invalid weak ptrs.
+	if (d->cleanCounter >= CLEAN_COUNTER_MAX) {
+		d->cleanCounter = 0;
 
-			for (auto it = d->sessions.begin(), itEnd = d->sessions.end(); it != itEnd;) {
-				if (it->second.first.expired())
-					it = d->sessions.erase(it);
-				else
-					++it;
-			}
+		for (auto it = d->sessions.begin(), itEnd = d->sessions.end(); it != itEnd;) {
+			if (it->second.first.expired())
+				it = d->sessions.erase(it);
+			else
+				++it;
 		}
-	#endif // ifndef SOCI_ENABLED
+	}
 
 	return session;
 }

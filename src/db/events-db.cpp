@@ -16,16 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef SOCI_ENABLED
+	#include <soci/soci.h>
+#endif // ifdef SOCI_ENABLED
+
 #include "abstract/abstract-db-p.h"
+#include "event/call-event.h"
+#include "event/event.h"
+#include "event/message-event.h"
 
 #include "events-db.h"
 
-// TODO: Remove me.
-#ifdef SOCI_ENABLED
-	#undef SOCI_ENABLED
-#endif
-
 // =============================================================================
+
+using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -37,34 +41,34 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 void EventsDb::init () {
 	#ifdef SOCI_ENABLED
-
 		L_D(EventsDb);
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 
-		d->session <<
+		*session <<
 			"CREATE TABLE IF NOT EXISTS sip_address ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  value VARCHAR(255) NOT NULL"
 			")";
 
-		d->session <<
+		*session <<
 			"CREATE TABLE IF NOT EXISTS event ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  timestamp TIMESTAMP NOT NULL"
 			")";
 
-		d->session <<
+		*session <<
 			"CREATE TABLE IF NOT EXISTS message_status ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  status VARCHAR(255) NOT NULL"
 			")";
 
-		d->session <<
+		*session <<
 			"CREATE TABLE IF NOT EXISTS message_direction ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  direction VARCHAR(255) NOT NULL"
 			")";
 
-		d->session <<
+		*session <<
 			"CREATE TABLE IF NOT EXISTS dialog ("
 			"  local_sip_address_id BIGINT UNSIGNED NOT NULL," // Sip address used to communicate.
 			"  remote_sip_address_id BIGINT UNSIGNED NOT NULL," // Server (for conference) or user sip address.
@@ -78,7 +82,7 @@ void EventsDb::init () {
 			"    ON DELETE CASCADE"
 			")";
 
-		d->session <<
+		*session <<
 			"CREATE TABLE IF NOT EXISTS message_event ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  dialog_id BIGINT UNSIGNED NOT NULL,"
@@ -99,7 +103,74 @@ void EventsDb::init () {
 			"    ON DELETE CASCADE"
 			")";
 
-	#endif   // ifndef SOCI_ENABLED
+	#endif // ifdef SOCI_ENABLED
+}
+
+// -----------------------------------------------------------------------------
+
+bool EventsDb::addEvent (const Event &event) {
+	// TODO.
+	switch (event.getType()) {
+		case Event::None:
+			return false;
+		case Event::MessageEvent:
+		case Event::CallStartEvent:
+		case Event::CallEndEvent:
+			break;
+	}
+
+	return true;
+}
+
+bool EventsDb::deleteEvent (const Event &event) {
+	// TODO.
+	(void)event;
+	return true;
+}
+
+void EventsDb::cleanEvents (FilterMask mask) {
+	// TODO.
+	(void)mask;
+}
+
+int EventsDb::getEventsCount (FilterMask mask) {
+	// TODO.
+	(void)mask;
+	return 0;
+}
+
+int EventsDb::getMessagesCount (const string &remoteAddress) {
+	// TODO.
+	(void)remoteAddress;
+	return 0;
+}
+
+int EventsDb::getUnreadMessagesCount (const string &remoteAddress) {
+	// TODO.
+	(void)remoteAddress;
+	return 0;
+}
+
+list<Event> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) {
+	// TODO.
+	(void)remoteAddress;
+	(void)nLast;
+	(void)mask;
+	return list<Event>();
+}
+
+list<Event> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) {
+	// TODO.
+	(void)remoteAddress;
+	(void)begin;
+	(void)end;
+	(void)mask;
+	return list<Event>();
+}
+
+void EventsDb::cleanHistory (const string &remoteAddress) {
+	// TODO.
+	(void)remoteAddress;
 }
 
 LINPHONE_END_NAMESPACE
