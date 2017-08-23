@@ -47,13 +47,13 @@ public:
 	bool addEvent (const Event &event);
 	bool deleteEvent (const Event &event);
 	void cleanEvents (FilterMask mask = NoFilter);
-	int getEventsCount (FilterMask mask = NoFilter);
+	int getEventsCount (FilterMask mask = NoFilter) const;
 
 	// Messages, calls and conferences.
-	int getMessagesCount (const std::string &remoteAddress);
-	int getUnreadMessagesCount (const std::string &remoteAddress);
-	std::list<Event> getHistory (const std::string &remoteAddress, int nLast, FilterMask mask = NoFilter);
-	std::list<Event> getHistory (const std::string &remoteAddress, int begin, int end, FilterMask mask = NoFilter);
+	int getMessagesCount (const std::string &remoteAddress) const;
+	int getUnreadMessagesCount (const std::string &remoteAddress) const;
+	std::list<Event> getHistory (const std::string &remoteAddress, int nLast, FilterMask mask = NoFilter) const;
+	std::list<Event> getHistory (const std::string &remoteAddress, int begin, int end, FilterMask mask = NoFilter) const;
 	void cleanHistory (const std::string &remoteAddress);
 
 protected:

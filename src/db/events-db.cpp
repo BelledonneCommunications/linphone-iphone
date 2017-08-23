@@ -24,6 +24,7 @@
 #include "event/call-event.h"
 #include "event/event.h"
 #include "event/message-event.h"
+#include "logger/logger.h"
 
 #include "events-db.h"
 
@@ -39,8 +40,50 @@ class EventsDbPrivate : public AbstractDbPrivate {};
 
 EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
-void EventsDb::init () {
-	#ifdef SOCI_ENABLED
+// -----------------------------------------------------------------------------
+// Helpers.
+// -----------------------------------------------------------------------------
+
+inline string mapFilterToSqlEvent (EventsDb::Filter filter) {
+	switch (filter) {
+		case EventsDb::NoFilter:
+			break;
+		case EventsDb::MessageFilter:
+			return "0";
+		case EventsDb::CallFilter:
+			return "1";
+		case EventsDb::ConferenceFilter:
+			return "2";
+	}
+
+	return "";
+}
+
+static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, EventsDb::FilterMask mask) {
+	bool isStart = true;
+	string sql;
+	for (const auto &filter : filters) {
+		if (!(mask & filter))
+			continue;
+
+		if (isStart) {
+			isStart = false;
+			sql += " WHERE ";
+		} else
+			sql += " OR ";
+		sql += " type = " + mapFilterToSqlEvent(filter);
+	}
+
+	return sql;
+}
+
+// -----------------------------------------------------------------------------
+// Soci backend.
+// -----------------------------------------------------------------------------
+
+#ifdef SOCI_ENABLED
+
+	void EventsDb::init () {
 		L_D(EventsDb);
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 
@@ -102,75 +145,124 @@ void EventsDb::init () {
 			"    REFERENCES message_direction(id)"
 			"    ON DELETE CASCADE"
 			")";
-
-	#endif // ifdef SOCI_ENABLED
-}
-
-// -----------------------------------------------------------------------------
-
-bool EventsDb::addEvent (const Event &event) {
-	// TODO.
-	switch (event.getType()) {
-		case Event::None:
-			return false;
-		case Event::MessageEvent:
-		case Event::CallStartEvent:
-		case Event::CallEndEvent:
-			break;
 	}
 
-	return true;
-}
+	bool EventsDb::addEvent (const Event &event) {
+		// TODO.
+		switch (event.getType()) {
+			case Event::None:
+				return false;
+			case Event::MessageEvent:
+			case Event::CallStartEvent:
+			case Event::CallEndEvent:
+				break;
+		}
 
-bool EventsDb::deleteEvent (const Event &event) {
-	// TODO.
-	(void)event;
-	return true;
-}
+		return true;
+	}
 
-void EventsDb::cleanEvents (FilterMask mask) {
-	// TODO.
-	(void)mask;
-}
+	bool EventsDb::deleteEvent (const Event &event) {
+		// TODO.
+		(void)event;
+		return true;
+	}
 
-int EventsDb::getEventsCount (FilterMask mask) {
-	// TODO.
-	(void)mask;
-	return 0;
-}
+	void EventsDb::cleanEvents (FilterMask mask) {
+		// TODO.
+		(void)mask;
+	}
 
-int EventsDb::getMessagesCount (const string &remoteAddress) {
-	// TODO.
-	(void)remoteAddress;
-	return 0;
-}
+	int EventsDb::getEventsCount (FilterMask mask) const {
+		L_D(const EventsDb);
 
-int EventsDb::getUnreadMessagesCount (const string &remoteAddress) {
-	// TODO.
-	(void)remoteAddress;
-	return 0;
-}
+		string query = "SELECT COUNT(*) FROM event" +
+			buildSqlEventFilter({ MessageFilter, CallFilter, ConferenceFilter }, mask);
+		int count = 0;
 
-list<Event> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) {
-	// TODO.
-	(void)remoteAddress;
-	(void)nLast;
-	(void)mask;
-	return list<Event>();
-}
+		L_BEGIN_LOG_EXCEPTION
 
-list<Event> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) {
-	// TODO.
-	(void)remoteAddress;
-	(void)begin;
-	(void)end;
-	(void)mask;
-	return list<Event>();
-}
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << query, soci::into(count);
 
-void EventsDb::cleanHistory (const string &remoteAddress) {
-	// TODO.
-	(void)remoteAddress;
-}
+		L_END_LOG_EXCEPTION
+
+		return count;
+	}
+
+	int EventsDb::getMessagesCount (const string &remoteAddress) const {
+		// TODO.
+		(void)remoteAddress;
+		return 0;
+	}
+
+	int EventsDb::getUnreadMessagesCount (const string &remoteAddress) const {
+		// TODO.
+		(void)remoteAddress;
+		return 0;
+	}
+
+	list<Event> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) const {
+		// TODO.
+		(void)remoteAddress;
+		(void)nLast;
+		(void)mask;
+		return list<Event>();
+	}
+
+	list<Event> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) const {
+		// TODO.
+		(void)remoteAddress;
+		(void)begin;
+		(void)end;
+		(void)mask;
+		return list<Event>();
+	}
+
+	void EventsDb::cleanHistory (const string &remoteAddress) {
+		// TODO.
+		(void)remoteAddress;
+	}
+
+// -----------------------------------------------------------------------------
+// No backend.
+// -----------------------------------------------------------------------------
+
+#else
+
+	void EventsDb::init () {}
+
+	bool EventsDb::addEvent (const Event &) {
+		return false;
+	}
+
+	bool EventsDb::deleteEvent (const Event &) {
+		return false;
+	}
+
+	void EventsDb::cleanEvents (FilterMask) {}
+
+	int EventsDb::getEventsCount (FilterMask) const {
+		return 0;
+	}
+
+	int EventsDb::getMessagesCount (const string &) const {
+		return 0;
+	}
+
+	int EventsDb::getUnreadMessagesCount (const string &) const {
+		return 0;
+	}
+
+	list<Event> EventsDb::getHistory (const string &, int, FilterMask) const {
+		return list<Event>();
+	}
+
+	list<Event> EventsDb::getHistory (const string &, int, int, FilterMask) const {
+		return list<Event>();
+	}
+
+	void EventsDb::cleanHistory (const string &) {}
+
+#endif // ifdef SOCI_ENABLED
 
 LINPHONE_END_NAMESPACE
