@@ -168,7 +168,7 @@ static LinphoneDialPlan const dial_plans[]={
 	{"Montserrat"                   ,"MS"		, "664"     , 10	, "011" },
 	{"Morocco"                      ,"MA"		, "212"     , 9     , "00"	},
 	{"Mozambique"                   ,"MZ"		, "258"     , 9     , "00"  },
-	{"Myanmar"                      ,"MM"		, "95"      , 8		, "00"  },
+	{"Myanmar"                      ,"MM"		, "95"      , 10	, "00"  },
 	{"Namibia"                      ,"NA"		, "264"     , 9		, "00"	},
 	{"Nauru"                        ,"NR"		, "674"     , 7	    , "00"  },
 	{"Nepal"                        ,"NP"		, "43"      , 10	, "00"  },
