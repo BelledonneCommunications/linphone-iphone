@@ -101,8 +101,9 @@ void linphone_video_definition_set_name(LinphoneVideoDefinition *vdef, const cha
 }
 
 bool_t linphone_video_definition_equals(const LinphoneVideoDefinition *vdef1, const LinphoneVideoDefinition *vdef2) {
-	return (((vdef1->width == vdef2->width) && (vdef1->height == vdef2->height))
-		|| ((vdef1->width == vdef2->height) && (vdef1->height == vdef2->width)));
+	return ((vdef1 != NULL && vdef2 != NULL)
+		&& (((vdef1->width == vdef2->width) && (vdef1->height == vdef2->height))
+		|| ((vdef1->width == vdef2->height) && (vdef1->height == vdef2->width))));
 }
 
 bool_t linphone_video_definition_strict_equals(const LinphoneVideoDefinition *vdef1, const LinphoneVideoDefinition *vdef2) {
