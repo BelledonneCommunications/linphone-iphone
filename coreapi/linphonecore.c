@@ -468,7 +468,9 @@ void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
 
 void linphone_core_set_log_file(FILE *file) {
 	if (file == NULL) file = stdout;
-	ortp_set_log_file(file);
+	bctbx_set_log_file(file); /*gather everythings*/
+	sal_set_log_handler(NULL); /*disable default log handler*/
+	ortp_set_log_handler(NULL); /*disable default log handler*/
 }
 
 void linphone_core_set_log_level(OrtpLogLevel loglevel) {
@@ -497,15 +499,13 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 }
 
 void linphone_core_set_log_level_mask(unsigned int loglevel) {
-	ortp_set_log_level_mask(NULL, loglevel);
-	bctbx_set_log_level_mask(NULL, loglevel);
-	if (loglevel == 0) {
-		sal_disable_log();
-	} else {
-		sal_enable_log();
-	}
+	//we only have 2 domain for now ortp and belle-sip
+	bctbx_set_log_level_mask(ORTP_LOG_DOMAIN, loglevel);
+	sal_set_log_level((OrtpLogLevel)loglevel);
 }
-
+unsigned int linphone_core_get_log_level_mask(void) {
+	return bctbx_get_log_level_mask(ORTP_LOG_DOMAIN);
+}
 static int _open_log_collection_file_with_idx(int idx) {
 	struct stat statbuf;
 	char *log_filename;

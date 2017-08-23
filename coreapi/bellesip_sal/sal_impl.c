@@ -59,31 +59,6 @@ void sal_op_set_privacy_from_message(SalOp* op,belle_sip_message_t* msg) {
 }
 static void set_tls_properties(Sal *ctx);
 
-void _belle_sip_log(const char *domain, belle_sip_log_level lev, const char *fmt, va_list args) {
-	OrtpLogLevel ortp_level;
-	switch(lev) {
-		case BELLE_SIP_LOG_FATAL:
-			ortp_level=ORTP_FATAL;
-		break;
-		case BELLE_SIP_LOG_ERROR:
-			ortp_level=ORTP_ERROR;
-		break;
-		case BELLE_SIP_LOG_WARNING:
-			ortp_level=ORTP_WARNING;
-		break;
-		case BELLE_SIP_LOG_MESSAGE:
-			ortp_level=ORTP_MESSAGE;
-		break;
-		case BELLE_SIP_LOG_DEBUG:
-		default:
-			ortp_level=ORTP_DEBUG;
-			break;
-	}
-	if (ortp_log_level_enabled("belle-sip", ortp_level)){
-		ortp_logv("belle-sip", ortp_level,fmt,args);
-	}
-}
-
 void sal_enable_log(){
 	sal_set_log_level(ORTP_MESSAGE);
 }
@@ -93,24 +68,31 @@ void sal_disable_log() {
 }
 
 void sal_set_log_level(OrtpLogLevel level) {
-	belle_sip_log_level belle_sip_level;
+	belle_sip_log_level  belle_sip_level = BELLE_SIP_LOG_MESSAGE;
 	if ((level&ORTP_FATAL) != 0) {
 		belle_sip_level = BELLE_SIP_LOG_FATAL;
-	} else if ((level&ORTP_ERROR) != 0) {
+	}
+	if ((level&ORTP_ERROR) != 0) {
 		belle_sip_level = BELLE_SIP_LOG_ERROR;
-	} else if ((level&ORTP_WARNING) != 0) {
+	}
+	if ((level&ORTP_WARNING) != 0) {
 		belle_sip_level = BELLE_SIP_LOG_WARNING;
-	} else if ((level&ORTP_MESSAGE) != 0) {
-		belle_sip_level = BELLE_SIP_LOG_MESSAGE;
-	} else if (((level&ORTP_DEBUG) != 0) || ((level&ORTP_TRACE) != 0)) {
-		belle_sip_level = BELLE_SIP_LOG_DEBUG;
-	} else {
-		//well, this should never occurs but...
+	}
+	if ((level&ORTP_MESSAGE) != 0) {
 		belle_sip_level = BELLE_SIP_LOG_MESSAGE;
 	}
+	if (((level&ORTP_DEBUG) != 0) || ((level&ORTP_TRACE) != 0)) {
+		belle_sip_level = BELLE_SIP_LOG_DEBUG;
+	}
+	
 	belle_sip_set_log_level(belle_sip_level);
 }
+static BctbxLogFunc _belle_sip_log_handler = bctbx_logv_out;
 
+void sal_set_log_handler(BctbxLogFunc log_handler) {
+	_belle_sip_log_handler = log_handler;
+	belle_sip_set_log_handler(log_handler);
+}
 void sal_add_pending_auth(Sal *sal, SalOp *op){
 	if (bctbx_list_find(sal->pending_auths,op)==NULL){
 		sal->pending_auths=bctbx_list_append(sal->pending_auths,op);
@@ -505,7 +487,7 @@ Sal * sal_init(MSFactory *factory){
 	sal->auto_contacts=TRUE;
 	sal->factory = factory;
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
-	belle_sip_set_log_handler(_belle_sip_log);
+	belle_sip_set_log_handler(_belle_sip_log_handler); //printf by default
 	sal->stack = belle_sip_stack_new(NULL);
 
 	sal->user_agent=belle_sip_header_user_agent_new();

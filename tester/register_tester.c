@@ -684,6 +684,11 @@ static void proxy_transport_change(void){
 	linphone_core_manager_destroy(lcm);
 
 }
+/*
+ * On ios, some firewal require to disable flow label (livebox with default firewall level).
+ *  sudo sysctl net.inet6.ip6.auto_flowlabel=0
+ *  It might be possible to found a sockopt for such purpose.
+ */
 static void proxy_transport_change_with_wrong_port(void) {
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;

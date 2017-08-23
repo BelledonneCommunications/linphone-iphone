@@ -148,6 +148,8 @@ const char *sal_address_get_header(const SalAddress *addr, const char *name);
 
 LINPHONE_PUBLIC Sal * sal_init(MSFactory *factory);
 LINPHONE_PUBLIC void sal_uninit(Sal* sal);
+
+void sal_set_log_handler(BctbxLogFunc log_handler);
 void sal_set_user_pointer(Sal *sal, void *user_data);
 void *sal_get_user_pointer(const Sal *sal);
 

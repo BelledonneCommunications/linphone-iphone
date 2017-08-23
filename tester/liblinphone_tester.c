@@ -195,8 +195,7 @@ int liblinphone_tester_set_log_file(const char *filename) {
 		return -1;
 	}
 	ms_message("Redirecting traces to file [%s]", filename);
-	bctbx_set_log_file(log_file);
-	ortp_set_log_file(log_file);
+	linphone_core_set_log_file(log_file); 
 	return 0;
 }
 
