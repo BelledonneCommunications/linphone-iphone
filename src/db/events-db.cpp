@@ -48,17 +48,14 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 // Helpers.
 // -----------------------------------------------------------------------------
 
+static constexpr pair<EventsDb::Filter, const char *> eventFilterToSql[] = {
+	{ EventsDb::MessageFilter, "1" },
+	{ EventsDb::CallFilter, "2" },
+	{ EventsDb::ConferenceFilter, "3" }
+};
+
 inline constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
-	// Ugly. Yes. But constexpr...
-	return filter == EventsDb::MessageFilter
-				 ? "1"
-				 : (filter == EventsDb::CallFilter
-						? "2"
-						: (filter == EventsDb::ConferenceFilter
-							 ? "3"
-							 : ""
-						)
-				 );
+	return eventFilterToSql[filter].second;
 }
 
 inline constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
@@ -77,7 +74,7 @@ static constexpr pair<Message::State, const char *> messageStateToSql[] = {
 };
 
 inline constexpr const char *mapMessageStateToSql (Message::State state) {
-	return mapMessageStateToSql(state);
+	return messageStateToSql[state].second;
 }
 
 // -----------------------------------------------------------------------------
@@ -189,6 +186,52 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 			"    REFERENCES message_direction(id)"
 			"    ON DELETE CASCADE"
 			")";
+
+		{
+			string query = getBackend() == Mysql
+				? "INSERT INTO event_type (id, value)"
+				: "INSERT OR IGNORE INTO event_type (id, value)";
+			query += "VALUES"
+				"(1, \"Message\"),"
+				"(2, \"Call\"),"
+				"(3, \"Conference\")";
+			if (getBackend() == Mysql)
+				query += "ON DUPLICATE KEY UPDATE value = VALUES(value)";
+
+			*session << query;
+		}
+
+		{
+			string query = getBackend() == Mysql
+				? "INSERT INTO message_direction (id, value)"
+				: "INSERT OR IGNORE INTO message_direction (id, value)";
+			query += "VALUES"
+				"(1, \"Incoming\"),"
+				"(2, \"Outgoing\")";
+			if (getBackend() == Mysql)
+				query += "ON DUPLICATE KEY UPDATE value = VALUES(value)";
+
+			*session << query;
+		}
+
+		{
+			string query = getBackend() == Mysql
+				? "INSERT INTO message_state (id, value)"
+				: "INSERT OR IGNORE INTO message_state (id, value)";
+			query += "VALUES"
+				"(1, \"Idle\"),"
+				"(2, \"InProgress\"),"
+				"(3, \"Delivered\"),"
+				"(4, \"NotDelivered\"),"
+				"(5, \"FileTransferError\"),"
+				"(6, \"FileTransferDone\"),"
+				"(7, \"DeliveredToUser\"),"
+				"(8, \"Displayed\")";
+			if (getBackend() == Mysql)
+				query += "ON DUPLICATE KEY UPDATE value = VALUES(value)";
+
+			*session << query;
+		}
 	}
 
 	bool EventsDb::addEvent (const Event &event) {
