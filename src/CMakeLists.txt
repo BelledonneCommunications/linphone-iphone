@@ -39,6 +39,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/provider/db-session.h
 	enums.h
 	event/call-event.h
+	event/conference-event.h
 	event/event.h
 	event/message-event.h
 	logger/logger.h
@@ -66,6 +67,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	db/provider/db-session-provider.cpp
 	db/provider/db-session.cpp
 	event/call-event.cpp
+	event/conference-event.cpp
 	event/event.cpp
 	event/message-event.cpp
 	logger/logger.cpp
