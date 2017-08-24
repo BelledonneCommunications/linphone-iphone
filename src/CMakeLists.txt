@@ -21,6 +21,7 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
+	content/content.h
 	cpim/cpim.h
 	cpim/header/cpim-core-headers.h
 	cpim/header/cpim-generic-header.h
@@ -51,6 +52,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
+	content/content.cpp
 	cpim/header/cpim-core-headers.cpp
 	cpim/header/cpim-generic-header.cpp
 	cpim/header/cpim-header.cpp
