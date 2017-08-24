@@ -71,7 +71,7 @@ public:
 	std::string getAppdata () const;
 	void setAppdata (const std::string &appData);
 
-	std::list<const std::shared_ptr<const Content> > getContents () const;
+	std::list<std::shared_ptr<const Content> > getContents () const;
 	void addContent (const std::shared_ptr<Content> &content);
 	void removeContent (const std::shared_ptr<const Content> &content);
 

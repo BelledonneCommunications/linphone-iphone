@@ -147,9 +147,9 @@ void Message::setAppdata (const string &appData) {
 	d->appData = appData;
 }
 
-list<const shared_ptr<const Content> > Message::getContents () const {
+list<shared_ptr<const Content> > Message::getContents () const {
 	L_D(const Message);
-	list<const shared_ptr<const Content> > contents;
+	list<shared_ptr<const Content> > contents;
 	for (const auto &content : d->contents)
 		contents.push_back(content);
 	return contents;
