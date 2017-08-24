@@ -22,6 +22,7 @@
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	content/content.h
+	core/core.h
 	cpim/cpim.h
 	cpim/header/cpim-core-headers.h
 	cpim/header/cpim-generic-header.h
@@ -53,6 +54,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	content/content.cpp
+	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
 	cpim/header/cpim-generic-header.cpp
 	cpim/header/cpim-header.cpp
