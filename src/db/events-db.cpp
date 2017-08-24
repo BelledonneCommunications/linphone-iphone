@@ -17,6 +17,7 @@
  */
 
 #include <algorithm>
+#include <utility>
 
 #ifdef SOCI_ENABLED
 	#include <soci/soci.h>
@@ -27,6 +28,7 @@
 #include "event/event.h"
 #include "event/message-event.h"
 #include "logger/logger.h"
+#include "message/message.h"
 
 #include "events-db.h"
 
@@ -46,18 +48,39 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 // Helpers.
 // -----------------------------------------------------------------------------
 
-inline constexpr const char *mapFilterToSqlEvent (EventsDb::Filter filter) {
+inline constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
 	// Ugly. Yes. But constexpr...
 	return filter == EventsDb::MessageFilter
-				 ? "0"
+				 ? "1"
 				 : (filter == EventsDb::CallFilter
-						? "1"
+						? "2"
 						: (filter == EventsDb::ConferenceFilter
-							 ? "2"
+							 ? "3"
 							 : ""
 						)
 				 );
 }
+
+inline constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
+	return direction == Message::Direction::Incoming ? "1" : "2";
+}
+
+static constexpr pair<Message::State, const char *> messageStateToSql[] = {
+	{ Message::Idle, "1" },
+	{ Message::InProgress, "2" },
+	{ Message::Delivered, "3" },
+	{ Message::NotDelivered, "4" },
+	{ Message::FileTransferError, "5" },
+	{ Message::FileTransferDone, "6" },
+	{ Message::DeliveredToUser, "7" },
+	{ Message::Displayed, "8" }
+};
+
+inline constexpr const char *mapMessageStateToSql (Message::State state) {
+	return mapMessageStateToSql(state);
+}
+
+// -----------------------------------------------------------------------------
 
 static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, EventsDb::FilterMask mask) {
 	L_ASSERT(
@@ -81,7 +104,7 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 		} else
 			sql += " OR ";
 		sql += " event_type_id = ";
-		sql += mapFilterToSqlEvent(filter);
+		sql += mapEventFilterToSql(filter);
 	}
 
 	return sql;
@@ -120,9 +143,9 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 			")";
 
 		*session <<
-			"CREATE TABLE IF NOT EXISTS message_status ("
+			"CREATE TABLE IF NOT EXISTS message_state ("
 			"  id" + primaryKeyAutoIncrementStr("TINYINT") + ","
-			"  status VARCHAR(255) NOT NULL"
+			"  state VARCHAR(255) NOT NULL"
 			")";
 
 		*session <<
@@ -150,7 +173,7 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 			"CREATE TABLE IF NOT EXISTS message_event ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  dialog_id INT UNSIGNED NOT NULL,"
-			"  status_id TINYINT UNSIGNED NOT NULL,"
+			"  state_id TINYINT UNSIGNED NOT NULL,"
 			"  direction_id TINYINT UNSIGNED NOT NULL,"
 			"  imdn_message_id VARCHAR(255) NOT NULL," // See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  content_type VARCHAR(255) NOT NULL,"
@@ -159,8 +182,8 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 			"  FOREIGN KEY (dialog_id)"
 			"    REFERENCES dialog(id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (status_id)"
-			"    REFERENCES message_status(id)"
+			"  FOREIGN KEY (state_id)"
+			"    REFERENCES message_state(id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (direction_id)"
 			"    REFERENCES message_direction(id)"
@@ -219,13 +242,13 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 				"    SELECT id FROM dialog WHERE remote_sip_address_id =("
 				"      SELECT id FROM sip_address WHERE value = :remote_address"
 				"    )"
-				"  )", soci::use(remoteAddress);
+				"  )";
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << query, soci::into(count);
+		*session << query, soci::use(remoteAddress), soci::into(count);
 
 		L_END_LOG_EXCEPTION
 
@@ -233,9 +256,27 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 	}
 
 	int EventsDb::getUnreadMessagesCount (const string &remoteAddress) const {
-		// TODO.
-		(void)remoteAddress;
-		return 0;
+		L_D(const EventsDb);
+
+		string query = "SELECT COUNT(*) FROM message_event";
+		if (!remoteAddress.empty())
+			query += "  WHERE dialog_id = ("
+				"    SELECT id FROM dialog WHERE remote_sip_address_id = ("
+				"      SELECT id FROM sip_address WHERE value = :remote_address"
+				"    )"
+				"  )"
+				"  AND direction_id = " + string(mapMessageDirectionToSql(Message::Incoming)) +
+				"  AND state_id = " + string(mapMessageStateToSql(Message::Displayed));
+		int count = 0;
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << query, soci::use(remoteAddress), soci::into(count);
+
+		L_END_LOG_EXCEPTION
+
+		return count;
 	}
 
 	list<Event> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) const {
