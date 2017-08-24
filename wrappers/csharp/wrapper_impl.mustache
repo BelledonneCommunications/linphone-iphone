@@ -532,12 +532,12 @@ namespace Linphone
 			return fromNativePtr<{{type}}>(ptr, {{takeRef}});
 			{{/is_class}}
 			{{#is_enum}}
-			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{c_args}});
+			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{{c_args}}});
 			{{#exception}}if (exception_result != 0) throw new LinphoneException("{{name}} returned value " + exception_result);{{/exception}}
 			{{/is_enum}}
 			{{#is_generic}}
-			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{c_args}});
-			{{#exception}}if (exception_result != 0) throw new LinphoneException("{{name}} returned value " + exception_result);{{/exception}}
+			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{{c_args}}});
+			{{#exception}}if (exception_result != 0) throw new LinphoneException("{{name}} returned value" + exception_result);{{/exception}}
 			{{/is_generic}}
 			{{#is_string_list}}
 			return MarshalStringArray({{c_name}}({{nativePtr}}{{c_args}}));
