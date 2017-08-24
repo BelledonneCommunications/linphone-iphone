@@ -31,9 +31,19 @@ class LINPHONE_PUBLIC Event : public ClonableObject {
 public:
 	enum Type {
 		None,
+		// MessageEvent.
 		MessageEvent,
+		// CallEvent.
 		CallStartEvent,
-		CallEndEvent
+		CallEndEvent,
+		// ConferenceEvent.
+		ConferenceCreatedEvent,
+		ConferenceDestroyedEvent,
+		// ConferenceParticipantEvent.
+		ConferenceParticipantAddedEvent,
+		ConferenceParticipantRemovedEvent,
+		ConferenceParticipantSetAdminEvent,
+		ConferenceParticipantUnsetAdminEvent
 	};
 
 	Event ();

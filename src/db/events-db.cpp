@@ -242,6 +242,12 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 			case Event::MessageEvent:
 			case Event::CallStartEvent:
 			case Event::CallEndEvent:
+			case Event::ConferenceCreatedEvent:
+			case Event::ConferenceDestroyedEvent:
+			case Event::ConferenceParticipantAddedEvent:
+			case Event::ConferenceParticipantRemovedEvent:
+			case Event::ConferenceParticipantSetAdminEvent:
+			case Event::ConferenceParticipantUnsetAdminEvent:
 				break;
 		}
 
