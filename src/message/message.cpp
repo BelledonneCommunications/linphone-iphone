@@ -32,7 +32,7 @@ using namespace std;
 class MessagePrivate : public ObjectPrivate {
 private:
 	weak_ptr<ChatRoom> chatRoom;
-	MessageDirection direction = MessageDirection::Incoming;
+	Message::Direction direction = Message::Incoming;
 	// LinphoneAddress *from;
 	// LinphoneAddress *to;
 	shared_ptr<ErrorInfo> errorInfo;
@@ -44,7 +44,7 @@ private:
 	string appData;
 	list<shared_ptr<Content> > contents;
 	unordered_map<string, string> customHeaders;
-	MessageState state = MessageState::Idle;
+	Message::State state = Message::Idle;
 	shared_ptr<EventsDb> eventsDb;
 
 	L_DECLARE_PUBLIC(Message);
@@ -63,7 +63,7 @@ shared_ptr<ChatRoom> Message::getChatRoom () const {
 	return chatRoom;
 }
 
-MessageDirection Message::getDirection () const {
+Message::Direction Message::getDirection () const {
 	L_D(const Message);
 	return d->direction;
 }
@@ -88,7 +88,7 @@ shared_ptr<const Address> Message::getRemoteAddress () const {
 	return nullptr;
 }
 
-MessageState Message::getState () const {
+Message::State Message::getState () const {
 	L_D(const Message);
 	return d->state;
 }

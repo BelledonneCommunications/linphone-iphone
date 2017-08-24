@@ -213,12 +213,13 @@ static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, Events
 	int EventsDb::getMessagesCount (const string &remoteAddress) const {
 		L_D(const EventsDb);
 
-		string query = "SELECT COUNT(*) FROM message_event"
-			"  WHERE dialog_id = ("
-			"    SELECT id FROM dialog WHERE remote_sip_address_id =("
-			"      SELECT id FROM sip_address WHERE value = :remote_address"
-			"    )"
-			"  )", use(remoteAddress);
+		string query = "SELECT COUNT(*) FROM message_event";
+		if (!remoteAddress.empty())
+			query += "  WHERE dialog_id = ("
+				"    SELECT id FROM dialog WHERE remote_sip_address_id =("
+				"      SELECT id FROM sip_address WHERE value = :remote_address"
+				"    )"
+				"  )", soci::use(remoteAddress);
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION

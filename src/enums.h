@@ -25,21 +25,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-enum class MessageDirection {
-	Incoming,
-	Outgoing
-};
-
-enum class MessageState {
-	Idle,
-	InProgress,
-	Delivered,
-	NotDelivered,
-	FileTransferError,
-	FileTransferDone,
-	DeliveredToUser,
-	Displayed
-};
+// Nothing. for the moment.
 
 LINPHONE_END_NAMESPACE
 

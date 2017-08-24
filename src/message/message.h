@@ -40,16 +40,32 @@ class LINPHONE_PUBLIC Message : public Object {
 	friend class ChatRoom;
 
 public:
+	enum Direction {
+		Incoming,
+		Outgoing
+	};
+
+	enum State {
+		Idle,
+		InProgress,
+		Delivered,
+		NotDelivered,
+		FileTransferError,
+		FileTransferDone,
+		DeliveredToUser,
+		Displayed
+	};
+
 	std::shared_ptr<ChatRoom> getChatRoom () const;
 
-	MessageDirection getDirection () const;
+	Direction getDirection () const;
 
 	std::shared_ptr<const Address> getFromAddress () const;
 	std::shared_ptr<const Address> getToAddress () const;
 	std::shared_ptr<const Address> getLocalAddress () const;
 	std::shared_ptr<const Address> getRemoteAddress () const;
 
-	MessageState getState () const;
+	State getState () const;
 
 	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
 
