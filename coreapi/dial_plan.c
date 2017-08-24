@@ -60,7 +60,7 @@ static LinphoneDialPlan const dial_plans[]={
 	{"Burkina Faso"                 ,"BF"		, "226"     , 8		, "00"  },
 	{"Burundi"                      ,"BI"		, "257"     , 8     , "011" },
 	{"Cambodia"                     ,"KH"		, "855"     , 9		, "00"  },
-	{"Cameroon"                     ,"CM"		, "237"     , 8		, "00"  },
+	{"Cameroon"                     ,"CM"		, "237"     , 9		, "00"  },
 	{"Canada"                       ,"CA"		, "1"       , 10	, "011" },
 	{"Cape Verde"                   ,"CV"		, "238"     , 7		, "00"	},
 	{"Cayman Islands"               ,"KY"		, "1"       , 10	, "011" },
