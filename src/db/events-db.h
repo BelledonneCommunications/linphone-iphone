@@ -50,11 +50,11 @@ public:
 	int getEventsCount (FilterMask mask = NoFilter) const;
 
 	// Messages, calls and conferences.
-	int getMessagesCount (const std::string &remoteAddress) const;
-	int getUnreadMessagesCount (const std::string &remoteAddress) const;
+	int getMessagesCount (const std::string &remoteAddress = "") const;
+	int getUnreadMessagesCount (const std::string &remoteAddress = "") const;
 	std::list<Event> getHistory (const std::string &remoteAddress, int nLast, FilterMask mask = NoFilter) const;
 	std::list<Event> getHistory (const std::string &remoteAddress, int begin, int end, FilterMask mask = NoFilter) const;
-	void cleanHistory (const std::string &remoteAddress);
+	void cleanHistory (const std::string &remoteAddress = "");
 
 protected:
 	void init () override;

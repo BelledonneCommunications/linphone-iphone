@@ -18,7 +18,6 @@
 
 #include "abstract-db-p.h"
 #include "db/provider/db-session-provider.h"
-#include "logger/logger.h"
 
 #include "abstract-db.h"
 
@@ -60,12 +59,12 @@ void AbstractDb::init () {
 
 // -----------------------------------------------------------------------------
 
-string AbstractDb::primaryKeyAutoIncrementStr () const {
+string AbstractDb::primaryKeyAutoIncrementStr (const string &type) const {
 	L_D(const AbstractDb);
 
 	switch (d->backend) {
 		case Mysql:
-			return " BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT";
+			return type + "UNSIGNED PRIMARY KEY AUTO_INCREMENT";
 		case Sqlite3:
 			return " INTEGER PRIMARY KEY AUTOINCREMENT";
 	}

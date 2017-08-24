@@ -50,7 +50,7 @@ protected:
 
 	virtual void init ();
 
-	std::string primaryKeyAutoIncrementStr () const;
+	std::string primaryKeyAutoIncrementStr (const std::string &type = "INT") const;
 
 private:
 	L_DECLARE_PRIVATE(AbstractDb);
