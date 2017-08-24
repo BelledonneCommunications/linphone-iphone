@@ -35,6 +35,7 @@ public:
 
 ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<Address> &address) : Event(*new ConferenceEventPrivate, type) {
 	L_D(ConferenceEvent);
+	L_ASSERT(type == ConferenceCreatedEvent || type == ConferenceDestroyedEvent);
 	L_ASSERT(address);
 	d->address = address;
 }
