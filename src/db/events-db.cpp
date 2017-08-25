@@ -55,6 +55,15 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		const char *second;
 	};
 
+	template<typename T>
+	static constexpr const char *mapEnumToSql (const EnumToSql<T> enumToSql[], size_t n, T key) {
+		return n == 0 ? "" : (
+			enumToSql[n - 1].first == key ? enumToSql[n - 1].second : mapEnumToSql(enumToSql, n - 1, key)
+		);
+	}
+
+// -----------------------------------------------------------------------------
+
 	static constexpr EnumToSql<EventsDb::Filter> eventFilterToSql[] = {
 		{ EventsDb::MessageFilter, "1" },
 		{ EventsDb::CallFilter, "2" },
@@ -62,11 +71,9 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	};
 
 	static constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
-		return eventFilterToSql[filter].second;
-	}
-
-	static constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
-		return direction == Message::Direction::Incoming ? "1" : "2";
+		return mapEnumToSql(
+			eventFilterToSql, sizeof eventFilterToSql / sizeof eventFilterToSql[0], filter
+		);
 	}
 
 	static constexpr EnumToSql<Message::State> messageStateToSql[] = {
@@ -81,7 +88,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	};
 
 	static constexpr const char *mapMessageStateToSql (Message::State state) {
-		return messageStateToSql[state].second;
+		return mapEnumToSql(
+			messageStateToSql, sizeof messageStateToSql / sizeof messageStateToSql[0], state
+		);
+	}
+
+	static constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
+		return direction == Message::Direction::Incoming ? "1" : "2";
 	}
 
 // -----------------------------------------------------------------------------
