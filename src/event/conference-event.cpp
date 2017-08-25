@@ -52,4 +52,9 @@ ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
 	return *this;
 }
 
+shared_ptr<Address> ConferenceEvent::getAddress () const {
+	// TODO.
+	return nullptr;
+}
+
 LINPHONE_END_NAMESPACE

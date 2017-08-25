@@ -28,17 +28,20 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class Address;
-class Conference;
 class ConferenceEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceEvent : public Event {
 public:
 	ConferenceEvent (Type type, const std::shared_ptr<Address> &address);
 	ConferenceEvent (const ConferenceEvent &src);
+	virtual ~ConferenceEvent () = default;
 
 	ConferenceEvent &operator= (const ConferenceEvent &src);
 
 	std::shared_ptr<Address> getAddress () const;
+
+protected:
+	ConferenceEvent (ConferenceEventPrivate &p, Type type);
 
 private:
 	L_DECLARE_PRIVATE(ConferenceEvent);
