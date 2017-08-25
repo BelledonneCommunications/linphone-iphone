@@ -48,21 +48,21 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 // Helpers.
 // -----------------------------------------------------------------------------
 
-static constexpr pair<EventsDb::Filter, const char *> eventFilterToSql[] = {
+constexpr pair<EventsDb::Filter, const char *> eventFilterToSql[]{
 	{ EventsDb::MessageFilter, "1" },
 	{ EventsDb::CallFilter, "2" },
 	{ EventsDb::ConferenceFilter, "3" }
 };
 
-inline constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
+constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
 	return eventFilterToSql[filter].second;
 }
 
-inline constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
+constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
 	return direction == Message::Direction::Incoming ? "1" : "2";
 }
 
-static constexpr pair<Message::State, const char *> messageStateToSql[] = {
+constexpr pair<Message::State, const char *> messageStateToSql[]{
 	{ Message::Idle, "1" },
 	{ Message::InProgress, "2" },
 	{ Message::Delivered, "3" },
@@ -73,7 +73,7 @@ static constexpr pair<Message::State, const char *> messageStateToSql[] = {
 	{ Message::Displayed, "8" }
 };
 
-inline constexpr const char *mapMessageStateToSql (Message::State state) {
+constexpr const char *mapMessageStateToSql (Message::State state) {
 	return messageStateToSql[state].second;
 }
 
