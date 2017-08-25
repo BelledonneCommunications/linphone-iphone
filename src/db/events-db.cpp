@@ -17,7 +17,6 @@
  */
 
 #include <algorithm>
-#include <utility>
 
 #ifdef SOCI_ENABLED
 	#include <soci/soci.h>
@@ -48,7 +47,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 // Helpers.
 // -----------------------------------------------------------------------------
 
-static constexpr pair<EventsDb::Filter, const char *> eventFilterToSql[] = {
+template<typename T>
+struct ToSqlPair {
+	T first;
+	const char *second;
+};
+
+static constexpr ToSqlPair<EventsDb::Filter> eventFilterToSql[] = {
 	{ EventsDb::MessageFilter, "1" },
 	{ EventsDb::CallFilter, "2" },
 	{ EventsDb::ConferenceFilter, "3" }
@@ -62,7 +67,7 @@ static constexpr const char *mapMessageDirectionToSql (Message::Direction direct
 	return direction == Message::Direction::Incoming ? "1" : "2";
 }
 
-static constexpr pair<Message::State, const char *> messageStateToSql[] = {
+static constexpr ToSqlPair<Message::State> messageStateToSql[] = {
 	{ Message::Idle, "1" },
 	{ Message::InProgress, "2" },
 	{ Message::Delivered, "3" },
