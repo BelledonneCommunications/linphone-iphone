@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event-p.h"
+#include "conference-event-p.h"
 
 #include "conference-event.h"
 
@@ -26,14 +26,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceEventPrivate : public EventPrivate {
-public:
-	shared_ptr<Address> address;
-};
-
-// -----------------------------------------------------------------------------
-
-ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<Address> &address) : Event(*new ConferenceEventPrivate, type) {
+ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<Address> &address) :
+	Event(*new ConferenceEventPrivate, type) {
 	L_D(ConferenceEvent);
 	L_ASSERT(type == ConferenceCreatedEvent || type == ConferenceDestroyedEvent);
 	L_ASSERT(address);
@@ -41,6 +35,13 @@ ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<Address> &address)
 }
 
 ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) : ConferenceEvent(src.getType(), src.getAddress()) {}
+
+ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const shared_ptr<Address> &address) :
+	Event(p, type) {
+	L_D(ConferenceEvent);
+	L_ASSERT(address);
+	d->address = address;
+}
 
 ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
 	L_D(ConferenceEvent);
