@@ -1387,7 +1387,7 @@ static void sip_config_read(LinphoneCore *lc) {
 	sal_enable_sip_update_method(lc->sal,lp_config_get_int(lc->config,"sip","sip_update",1));
 	lc->sip_conf.vfu_with_info=lp_config_get_int(lc->config,"sip","vfu_with_info",1);
 	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
-	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound"));
+	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound, gruu"));
 	lc->sip_conf.save_auth_info = lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
 	linphone_core_create_im_notif_policy(lc);
 }
@@ -3503,14 +3503,9 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 	sal_op_set_realm(op,linphone_proxy_config_get_realm(proxy));
 	if (with_contact && proxy && proxy->op){
 		const SalAddress *contact;
-		if ((contact=sal_op_get_contact_address(proxy->op))){
-			SalTransport tport=sal_address_get_transport((SalAddress*)contact);
-			SalAddress *new_contact=sal_address_clone(contact);
-			sal_address_clean(new_contact); /* clean out contact_params that come from proxy config*/
-			sal_address_set_transport(new_contact,tport);
-			sal_op_set_contact_address(op,new_contact);
-			sal_address_destroy(new_contact);
-		}
+		contact=sal_op_get_contact_address(proxy->op);
+		SalAddress *new_contact = contact ? sal_address_clone(contact) : NULL;
+		sal_op_set_and_clean_contact_address(proxy->op, new_contact);
 	}
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }

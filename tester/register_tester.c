@@ -1185,6 +1185,16 @@ static void tls_auth_info_client_cert_cb_2(void) {
 	}
 }
 
+static void register_get_gruu(void) {
+	LinphoneCoreManager *marie=linphone_core_manager_new("marie_rc");
+	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
+	if(cfg) {
+		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
+		BC_ASSERT_PTR_NOT_NULL(addr);
+		BC_ASSERT_PTR_NOT_NULL(strstr(linphone_address_as_string_uri_only(addr), "gr"));
+	}
+	linphone_core_manager_destroy(marie);
+}
 
 test_t register_tests[] = {
 	TEST_NO_TAG("Simple register", simple_register),
@@ -1231,6 +1241,7 @@ test_t register_tests[] = {
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication using API 2", tls_auth_info_client_cert_api_path),
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication in callback", tls_auth_info_client_cert_cb),
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication in callback 2", tls_auth_info_client_cert_cb_2),
+	TEST_NO_TAG("Register get GRUU", register_get_gruu)
 };
 
 test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

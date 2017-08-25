@@ -4983,13 +4983,7 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 void linphone_call_set_contact_op(LinphoneCall* call) {
 	LinphoneAddress *contact;
 	contact=get_fixed_contact(call->core,call,call->dest_proxy);
-	if (contact){
-		SalTransport tport=sal_address_get_transport((SalAddress*)contact);
-		sal_address_clean((SalAddress*)contact); /* clean out contact_params that come from proxy config*/
-		sal_address_set_transport((SalAddress*)contact,tport);
-		sal_op_set_contact_address(call->op, contact);
-		linphone_address_unref(contact);
-	}
+	sal_op_set_and_clean_contact_address(call->op, (SalAddress *)contact);
 }
 
 LinphonePlayer *linphone_call_get_player(LinphoneCall *call){
