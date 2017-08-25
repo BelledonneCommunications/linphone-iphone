@@ -44,79 +44,77 @@ class EventsDbPrivate : public AbstractDbPrivate {};
 EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 // -----------------------------------------------------------------------------
-// Helpers.
-// -----------------------------------------------------------------------------
-
-template<typename T>
-struct ToSqlPair {
-	T first;
-	const char *second;
-};
-
-static constexpr ToSqlPair<EventsDb::Filter> eventFilterToSql[] = {
-	{ EventsDb::MessageFilter, "1" },
-	{ EventsDb::CallFilter, "2" },
-	{ EventsDb::ConferenceFilter, "3" }
-};
-
-static constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
-	return eventFilterToSql[filter].second;
-}
-
-static constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
-	return direction == Message::Direction::Incoming ? "1" : "2";
-}
-
-static constexpr ToSqlPair<Message::State> messageStateToSql[] = {
-	{ Message::Idle, "1" },
-	{ Message::InProgress, "2" },
-	{ Message::Delivered, "3" },
-	{ Message::NotDelivered, "4" },
-	{ Message::FileTransferError, "5" },
-	{ Message::FileTransferDone, "6" },
-	{ Message::DeliveredToUser, "7" },
-	{ Message::Displayed, "8" }
-};
-
-static constexpr const char *mapMessageStateToSql (Message::State state) {
-	return messageStateToSql[state].second;
-}
-
-// -----------------------------------------------------------------------------
-
-static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, EventsDb::FilterMask mask) {
-	L_ASSERT(
-		find_if(filters.cbegin(), filters.cend(), [](const EventsDb::Filter &filter) {
-				return filter == EventsDb::NoFilter;
-			}) == filters.cend()
-	);
-
-	if (mask == EventsDb::NoFilter)
-		return "";
-
-	bool isStart = true;
-	string sql;
-	for (const auto &filter : filters) {
-		if (!(mask & filter))
-			continue;
-
-		if (isStart) {
-			isStart = false;
-			sql += " WHERE ";
-		} else
-			sql += " OR ";
-		sql += " event_type_id = ";
-		sql += mapEventFilterToSql(filter);
-	}
-
-	return sql;
-}
-
-// -----------------------------------------------------------------------------
 // Soci backend.
 // -----------------------------------------------------------------------------
 
 #ifdef SOCI_ENABLED
+
+	template<typename T>
+	struct EnumToSql {
+		T first;
+		const char *second;
+	};
+
+	static constexpr EnumToSql<EventsDb::Filter> eventFilterToSql[] = {
+		{ EventsDb::MessageFilter, "1" },
+		{ EventsDb::CallFilter, "2" },
+		{ EventsDb::ConferenceFilter, "3" }
+	};
+
+	static constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
+		return eventFilterToSql[filter].second;
+	}
+
+	static constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
+		return direction == Message::Direction::Incoming ? "1" : "2";
+	}
+
+	static constexpr EnumToSql<Message::State> messageStateToSql[] = {
+		{ Message::Idle, "1" },
+		{ Message::InProgress, "2" },
+		{ Message::Delivered, "3" },
+		{ Message::NotDelivered, "4" },
+		{ Message::FileTransferError, "5" },
+		{ Message::FileTransferDone, "6" },
+		{ Message::DeliveredToUser, "7" },
+		{ Message::Displayed, "8" }
+	};
+
+	static constexpr const char *mapMessageStateToSql (Message::State state) {
+		return messageStateToSql[state].second;
+	}
+
+// -----------------------------------------------------------------------------
+
+	static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, EventsDb::FilterMask mask) {
+		L_ASSERT(
+			find_if(filters.cbegin(), filters.cend(), [](const EventsDb::Filter &filter) {
+					return filter == EventsDb::NoFilter;
+				}) == filters.cend()
+		);
+
+		if (mask == EventsDb::NoFilter)
+			return "";
+
+		bool isStart = true;
+		string sql;
+		for (const auto &filter : filters) {
+			if (!(mask & filter))
+				continue;
+
+			if (isStart) {
+				isStart = false;
+				sql += " WHERE ";
+			} else
+				sql += " OR ";
+			sql += " event_type_id = ";
+			sql += mapEventFilterToSql(filter);
+		}
+
+		return sql;
+	}
+
+// -----------------------------------------------------------------------------
 
 	void EventsDb::init () {
 		L_D(EventsDb);
