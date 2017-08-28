@@ -25,8 +25,6 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ObjectPrivate;
-
 class LINPHONE_PUBLIC Object {
 public:
 	virtual ~Object ();

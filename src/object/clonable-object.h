@@ -25,19 +25,28 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ClonableObjectPrivate;
-
 class LINPHONE_PUBLIC ClonableObject {
 public:
 	virtual ~ClonableObject ();
 
 protected:
+	// Use a new ClonableObjectPrivate without owner.
 	explicit ClonableObject (ClonableObjectPrivate &p);
+
+	// If you want share an existing ClonableObjectPrivate, call this function.
+	explicit ClonableObject (const ClonableObjectPrivate &p);
+
+	// Change the ClonableObjectPrivate, it can be shared.
+	void setRef (const ClonableObjectPrivate &p);
 
 	ClonableObjectPrivate *mPrivate = nullptr;
 
 private:
 	L_DECLARE_PRIVATE(ClonableObject);
+
+	// Yeah, it's a `ClonableObject` that cannot be copied.
+	// Only inherited classes must implement copy.
+	L_DISABLE_COPY(ClonableObject);
 };
 
 LINPHONE_END_NAMESPACE

@@ -4284,6 +4284,15 @@ extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getCore(JNIEnv*  en
 	return NULL;
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getVcardToString(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneFriend *lf = (LinphoneFriend*)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	const char* vcard = linphone_vcard_as_vcard4_string(lvc);
+	return vcard ? env->NewStringUTF(vcard) : NULL;
+}
+
 extern "C" jobject Java_org_linphone_core_LinphoneFriendListImpl_getCore(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -7846,6 +7855,21 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallImpl_setListener(JNIEn
 	linphone_call_set_next_video_frame_decoded_callback(call, _next_video_frame_decoded_callback, listener);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(JNIEnv* env
+																		,jobject thiz
+																		,jlong lc
+																		,jobject obj) {
+	jobject oldWindow = (jobject) linphone_call_get_native_video_window_id((LinphoneCall*)lc);
+	if (obj != NULL) {
+		obj = env->NewGlobalRef(obj);
+		ms_message("Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(): NewGlobalRef(%p)",obj);
+	}else ms_message("Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(): setting to NULL");
+	linphone_call_set_native_video_window_id((LinphoneCall*)lc,(void *)obj);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(): DeleteGlobalRef(%p)",oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
 
 /*
  * returns the java TunnelConfig associated with a C LinphoneTunnelConfig.

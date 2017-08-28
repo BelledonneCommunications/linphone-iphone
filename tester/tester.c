@@ -461,7 +461,7 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 }
 
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
-	int old_log_level = ortp_get_log_level_mask(NULL);
+	int old_log_level = linphone_core_get_log_level_mask();
 	linphone_core_set_log_level(ORTP_ERROR);
 	if (mgr->phone_alias) {
 		ms_free(mgr->phone_alias);

@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
 
 	signal(SIGINT,stop);
 
-#ifdef DEBUG
+#ifdef DEBUG_LOGS
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
 

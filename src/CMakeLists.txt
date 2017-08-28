@@ -24,6 +24,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/conference-listener.h
 	conference/local-conference-event-handler.h
 	conference/remote-conference-event-handler.h
+	content/content.h
+	core/core.h
 	cpim/cpim.h
 	cpim/header/cpim-core-headers.h
 	cpim/header/cpim-generic-header.h
@@ -32,9 +34,23 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	cpim/message/cpim-message.h
 	cpim/parser/cpim-grammar.h
 	cpim/parser/cpim-parser.h
+	db/abstract/abstract-db-p.h
+	db/abstract/abstract-db.h
+	db/events-db.h
+	db/provider/db-session-p.h
+	db/provider/db-session-provider.h
+	db/provider/db-session.h
+	enums.h
+	event/call-event.h
+	event/conference-event-p.h
+	event/conference-event.h
+	event/conference-participant-event.h
+	event/event.h
+	event/message-event.h
 	logger/logger.h
-	object/clonable-object.h
+	message/message.h
 	object/clonable-object-p.h
+	object/clonable-object.h
 	object/object-p.h
 	object/object.h
 	object/singleton.h
@@ -47,15 +63,28 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/local-conference-event-handler.cpp
 	conference/remote-conference-event-handler.cpp
+	content/content.cpp
+	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
 	cpim/header/cpim-generic-header.cpp
 	cpim/header/cpim-header.cpp
 	cpim/message/cpim-message.cpp
 	cpim/parser/cpim-grammar.cpp
 	cpim/parser/cpim-parser.cpp
+	db/abstract/abstract-db.cpp
+	db/events-db.cpp
+	db/provider/db-session-provider.cpp
+	db/provider/db-session.cpp
+	event/call-event.cpp
+	event/conference-event.cpp
+	event/conference-participant-event.cpp
+	event/event.cpp
+	event/message-event.cpp
 	logger/logger.cpp
+	message/message.cpp
 	object/clonable-object.cpp
 	object/object.cpp
+	utils/general.cpp
 	utils/utils.cpp
 	xml/conference-info.cpp
 	xml/xml.cpp
@@ -64,7 +93,14 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 ADD_XSD_WRAPPERS(xml/xml "XML XSD - xml.xsd")
 ADD_XSD_WRAPPERS(xml/conference-info "Conference info XSD - conference-info.xsd")
 
-set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${SOCI_INCLUDE_DIRS} ${SOCI_MYSQL_INCLUDES} ${LIBXSD_INCLUDE_DIRS})
+set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
+set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
+set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS})
+
+if(SOCI_FOUND)
+	list(APPEND LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${SOCI_INCLUDE_DIRS} ${SOCI_MYSQL_INCLUDES})
+	add_definitions(-DSOCI_ENABLED)
+endif()
 
 set(LINPHONE_PRIVATE_HEADER_FILES)
 foreach(header ${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES})
@@ -77,12 +113,12 @@ bc_apply_compile_flags(LINPHONE_CXX_OBJECTS_SOURCE_FILES STRICT_OPTIONS_CPP STRI
 if(ENABLE_STATIC)
 	add_library(linphone-cxx-objects-static OBJECT ${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES})
 	target_compile_definitions(linphone-cxx-objects-static PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
-	target_include_directories(linphone-cxx-objects-static PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})
+	target_include_directories(linphone-cxx-objects-static SYSTEM PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})
 endif()
 
 if(ENABLE_SHARED)
 	add_library(linphone-cxx-objects OBJECT ${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES})
 	target_compile_definitions(linphone-cxx-objects PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
-	target_include_directories(linphone-cxx-objects PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})
+	target_include_directories(linphone-cxx-objects SYSTEM PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})
 	target_compile_options(linphone-cxx-objects PRIVATE "-fPIC")
 endif()

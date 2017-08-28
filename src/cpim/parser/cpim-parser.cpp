@@ -279,7 +279,7 @@ shared_ptr<Cpim::Header> Cpim::Parser::cloneHeader (const Header &header) {
 
 class EmptyObject {};
 
-inline bool headerIsValid (const shared_ptr<belr::Grammar> &grammar, const string &input) {
+static bool headerIsValid (const shared_ptr<belr::Grammar> &grammar, const string &input) {
 	belr::Parser<shared_ptr<EmptyObject> > parser(grammar);
 	parser.setHandler(
 		"Header", belr::make_fn(make_shared<EmptyObject> )
@@ -307,7 +307,7 @@ bool Cpim::Parser::headerParameterIsValid (const string &headerParameter) const 
 
 // -----------------------------------------------------------------------------
 
-inline bool coreHeaderIsValid (
+static bool coreHeaderIsValid (
 	const shared_ptr<belr::Grammar> &grammar,
 	const string &headerName,
 	const string &headerValue,

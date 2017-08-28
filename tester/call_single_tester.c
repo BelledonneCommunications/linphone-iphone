@@ -6158,6 +6158,101 @@ static void recreate_zrtpdb_when_corrupted(void) {
 #endif /* SQLITE_STORAGE_ENABLED */
 }
 
+static void simple_call_with_gruu(void) {
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	const LinphoneAddress *addr;
+	LinphoneCall *marie_call = NULL;
+	LinphoneCall *pauline_call = NULL;
+	LinphoneProxyConfig* pauline_cfg;
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+
+	pauline_cfg = linphone_core_get_default_proxy_config(pauline->lc);
+	addr = linphone_proxy_config_get_contact(pauline_cfg);
+	BC_ASSERT_PTR_NOT_NULL(addr);
+	BC_ASSERT_PTR_NOT_NULL(strstr(linphone_address_as_string_uri_only(addr), "gr"));
+
+	marie_call = linphone_core_invite_address(marie->lc, addr);
+	BC_ASSERT_PTR_NOT_NULL(marie_call);
+	if(!marie_call) goto end;
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1));
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	BC_ASSERT_PTR_NOT_NULL(pauline_call);
+	if(!pauline_call) goto end;
+	linphone_call_accept(pauline_call);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	linphone_call_terminate(pauline_call);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+
+end:
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
+static void simple_call_with_gruu_only_one_device_ring(void) {
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCoreManager* pauline2;
+	const LinphoneAddress *pauline_addr;
+	const LinphoneAddress *pauline_addr2;
+	LinphoneCall *marie_call = NULL;
+	LinphoneCall *pauline_call = NULL;
+	LinphoneProxyConfig* pauline_cfg;
+	LinphoneProxyConfig* pauline_cfg2;
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline2->stat.number_of_LinphoneRegistrationOk, 1));
+
+	pauline_cfg = linphone_core_get_default_proxy_config(pauline->lc);
+	pauline_addr = linphone_proxy_config_get_contact(pauline_cfg);
+	BC_ASSERT_PTR_NOT_NULL(pauline_addr);
+	BC_ASSERT_PTR_NOT_NULL(strstr(linphone_address_as_string_uri_only(pauline_addr), "gr"));
+	pauline_cfg2 = linphone_core_get_default_proxy_config(pauline2->lc);
+	pauline_addr2 = linphone_proxy_config_get_contact(pauline_cfg2);
+	BC_ASSERT_PTR_NOT_NULL(pauline_addr2);
+	BC_ASSERT_PTR_NOT_NULL(strstr(linphone_address_as_string_uri_only(pauline_addr2), "gr"));
+	BC_ASSERT_NOT_EQUAL(linphone_address_as_string_uri_only(pauline_addr), linphone_address_as_string_uri_only(pauline_addr2), char*, "%s"); // Not same GRUU
+
+	marie_call = linphone_core_invite_address(marie->lc, pauline_addr);
+	BC_ASSERT_PTR_NOT_NULL(marie_call);
+	if(!marie_call) goto end;
+	BC_ASSERT_FALSE(wait_for(marie->lc, pauline2->lc, &pauline2->stat.number_of_LinphoneCallIncomingReceived, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1));
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	BC_ASSERT_PTR_NOT_NULL(pauline_call);
+	if(!pauline_call) goto end;
+
+	linphone_call_accept(pauline_call);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+
+	linphone_call_terminate(pauline_call);
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+
+end:
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(pauline2);
+	linphone_core_manager_destroy(marie);
+}
+
 test_t call_tests[] = {
 	TEST_NO_TAG("Early declined call", early_declined_call),
 	TEST_NO_TAG("Call declined", call_declined),
@@ -6309,7 +6404,9 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call cancelled with reason", cancel_call_with_error),
 	TEST_NO_TAG("Call accepted, other ringing device receive CANCEL with reason", cancel_other_device_after_accept),
 	TEST_NO_TAG("Call declined, other ringing device receive CANCEL with reason", cancel_other_device_after_decline),
-	TEST_NO_TAG("Recreate ZRTP db file when corrupted", recreate_zrtpdb_when_corrupted)
+	TEST_NO_TAG("Recreate ZRTP db file when corrupted", recreate_zrtpdb_when_corrupted),
+	TEST_NO_TAG("Simple call with GRUU", simple_call_with_gruu),
+	TEST_NO_TAG("Simple call with GRUU only one device ring", simple_call_with_gruu_only_one_device_ring)
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

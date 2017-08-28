@@ -376,6 +376,62 @@ namespace Linphone
 			return fromNativePtr<CoreListener>(coreCbsPtr, false);
 		}
 		{{/isLinphoneFactory}}
+		{{#isLinphoneCall}}
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern IntPtr linphone_call_get_native_video_window_id(IntPtr thiz);
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern void linphone_call_set_native_video_window_id(IntPtr thiz, IntPtr id);
+
+		/// Get the native window handle of the video window, casted as an unsigned long.
+		public string NativeVideoWindowId
+		{
+			get
+			{
+				return Marshal.PtrToStringUni(linphone_call_get_native_video_window_id(nativePtr));
+			}
+			set
+			{
+				linphone_call_set_native_video_window_id(nativePtr, Marshal.StringToHGlobalUni(value));
+			}
+		}
+		{{/isLinphoneCall}}
+		{{#isLinphoneCore}}
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern IntPtr linphone_core_get_native_video_window_id(IntPtr thiz);
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern void linphone_core_set_native_video_window_id(IntPtr thiz, IntPtr id);
+
+		/// Get the native window handle of the video window.
+		public string NativeVideoWindowId
+		{
+			get
+			{
+				return Marshal.PtrToStringUni(linphone_core_get_native_video_window_id(nativePtr));
+			}
+			set
+			{
+				linphone_core_set_native_video_window_id(nativePtr, Marshal.StringToHGlobalUni(value));
+			}
+		}
+
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern IntPtr linphone_core_get_native_preview_window_id(IntPtr thiz);
+		[DllImport(LinphoneWrapper.LIB_NAME)]
+		static extern void linphone_core_set_native_preview_window_id(IntPtr thiz, IntPtr id);
+
+		/// Get the native window handle of the video preview window.
+		public string NativePreviewWindowId
+		{
+			get
+			{
+				return Marshal.PtrToStringUni(linphone_core_get_native_preview_window_id(nativePtr));
+			}
+			set
+			{
+				linphone_core_set_native_preview_window_id(nativePtr, Marshal.StringToHGlobalUni(value));
+			}
+		}
+		{{/isLinphoneCore}}
 		{{#dllImports}}
 		[DllImport(LinphoneWrapper.LIB_NAME)]
 		{{{prototype}}}
@@ -400,7 +456,7 @@ namespace Linphone
 				return Marshal.PtrToStringAnsi(stringPtr);
 				{{/is_string}}
 				{{#is_bool}}
-				return {{getter_c_name}}({{getter_nativePtr}}) == 1;
+				return {{getter_c_name}}({{getter_nativePtr}}) != 0;
 				{{/is_bool}}
 				{{#is_class}}
 				IntPtr ptr = {{getter_c_name}}({{getter_nativePtr}});
@@ -476,12 +532,12 @@ namespace Linphone
 			return fromNativePtr<{{type}}>(ptr, {{takeRef}});
 			{{/is_class}}
 			{{#is_enum}}
-			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{c_args}});
+			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{{c_args}}});
 			{{#exception}}if (exception_result != 0) throw new LinphoneException("{{name}} returned value " + exception_result);{{/exception}}
 			{{/is_enum}}
 			{{#is_generic}}
-			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{c_args}});
-			{{#exception}}if (exception_result != 0) throw new LinphoneException("{{name}} returned value " + exception_result);{{/exception}}
+			{{#exception}}int exception_result = {{/exception}}{{return}}{{c_name}}({{nativePtr}}{{{c_args}}});
+			{{#exception}}if (exception_result != 0) throw new LinphoneException("{{name}} returned value" + exception_result);{{/exception}}
 			{{/is_generic}}
 			{{#is_string_list}}
 			return MarshalStringArray({{c_name}}({{nativePtr}}{{c_args}}));

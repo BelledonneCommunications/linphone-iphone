@@ -132,6 +132,14 @@ static void phone_normalization_with_proxy(void) {
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+5217227718184"), "+5217227718184"); /*this is a mobile phone number */
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+528127718184"), "+528127718184"); /*this is a landline phone number from Monterrey*/
 	
+	// Phone normalization for myanmar dial plans
+	linphone_proxy_config_set_dial_prefix(proxy, "95");
+	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "9965066691"), "+959965066691");
+	
+	// Phone normalization for cameroon dial plans
+	linphone_proxy_config_set_dial_prefix(proxy, "237");
+	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "674788175"), "+237674788175");
+	
 	linphone_proxy_config_unref(proxy);
 }
 

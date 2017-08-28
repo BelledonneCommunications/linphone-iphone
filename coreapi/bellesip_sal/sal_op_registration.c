@@ -48,8 +48,17 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		if (service_route_address) belle_sip_object_unref(service_route_address);
 
 		sal_remove_pending_auth(op->base.root,op); /*just in case*/
+
 		if (contact) {
-			sal_op_set_contact_address(op,(SalAddress*)(BELLE_SIP_HEADER_ADDRESS(contact))); /*update contact with real value*/
+			const char *gruu;
+			belle_sip_parameters_t* p = (BELLE_SIP_PARAMETERS(contact));
+			if((gruu = belle_sip_parameters_get_parameter(p, "pub-gruu"))) {
+				char *unquoted = belle_sip_unquote_strdup(gruu);
+				sal_op_set_contact_address(op, (SalAddress*)belle_sip_header_address_parse(unquoted));
+				belle_sip_parameters_remove_parameter(p, "pub-gruu");
+			} else {
+				sal_op_set_contact_address(op, (SalAddress*)(BELLE_SIP_HEADER_ADDRESS(contact))); /*update contact with real value*/
+			}
 		}
 		op->base.root->callbacks.register_success(op,belle_sip_refresher_get_expires(op->refresher)>0);
 	} else if (status_code>=400) {

@@ -57,4 +57,10 @@ LINPHONE_END_NAMESPACE
 #define lError() LINPHONE_NAMESPACE::Logger(Logger::Error).getOutput()
 #define lFatal() LINPHONE_NAMESPACE::Logger(Logger::Fatal).getOutput()
 
+#define L_BEGIN_LOG_EXCEPTION try {
+	#define L_END_LOG_EXCEPTION \
+} catch (const exception &e) { \
+	lWarning() << "Error: " << e.what(); \
+}
+
 #endif // ifndef _LOGGER_H_

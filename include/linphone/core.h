@@ -804,6 +804,14 @@ LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 LINPHONE_PUBLIC void linphone_core_set_log_level_mask(unsigned int loglevel);
 
 /**
+ * Get defined log level mask.
+ *
+ * @return The loglevel parameter is a bitmask parameter. Therefore to enable only warning and error
+ * messages, use ORTP_WARNING | ORTP_ERROR. To disable logs, simply set loglevel to 0.
+ */
+LINPHONE_PUBLIC unsigned int linphone_core_get_log_level_mask(void);
+
+/**
  * Enable logs in supplied FILE*.
  * @param file a C FILE* where to fprintf logs. If null stdout is used.
  * @deprecated Use #linphone_core_set_log_file and #linphone_core_set_log_level instead.

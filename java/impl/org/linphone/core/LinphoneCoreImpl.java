@@ -195,7 +195,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native Object createFriend(long nativePtr);
 	private native Object createFriendWithAddress(long nativePtr, String address);
 	private native int getIncomingTimeout(long nativePtr);
-
+	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
 		String user = userConfig == null ? null : userConfig.getCanonicalPath();

@@ -16,10 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// =============================================================================
-
 #ifndef _GENERAL_H_
 #define _GENERAL_H_
+
+// =============================================================================
+
+#define LINPHONE_NAMESPACE LinphonePrivate
+#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
+#define LINPHONE_END_NAMESPACE }
+
+// -----------------------------------------------------------------------------
+
+LINPHONE_BEGIN_NAMESPACE
 
 #ifndef LINPHONE_PUBLIC
 	#if defined(_MSC_VER)
@@ -39,11 +47,13 @@
 
 // -----------------------------------------------------------------------------
 
-#define LINPHONE_NAMESPACE LinphonePrivate
-#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
-#define LINPHONE_END_NAMESPACE }
+void l_assert (const char *condition, const char *file, int line);
 
-// -----------------------------------------------------------------------------
+#ifdef DEBUG
+	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
+#else
+	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : l_assert(#CONDITION, __FILE__, __LINE__))
+#endif
 
 #define L_DECLARE_PRIVATE(CLASS) \
 	inline CLASS ## Private * getPrivate() { \
@@ -54,12 +64,41 @@
 	} \
 	friend class CLASS ## Private;
 
+class ClonableObject;
+class ClonableObjectPrivate;
+class Object;
+class ObjectPrivate;
+
+template<typename T>
+inline ClonableObject *getPublicHelper (T *object, ClonableObjectPrivate *context) {
+	auto it = object->find(context);
+	L_ASSERT(it != object->end());
+	return it->second;
+}
+
+template<typename T>
+inline const ClonableObject *getPublicHelper (const T *object, const ClonableObjectPrivate *context) {
+	auto it = object->find(context);
+	L_ASSERT(it != object->cend());
+	return it->second;
+}
+
+template<typename T>
+inline Object *getPublicHelper (T *object, ObjectPrivate *) {
+	return object;
+}
+
+template<typename T>
+inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
+	return object;
+}
+
 #define L_DECLARE_PUBLIC(CLASS) \
-	inline CLASS * getPublic() { \
-		return static_cast<CLASS *>(mPublic); \
+	inline CLASS * getPublic () { \
+		return static_cast<CLASS *>(getPublicHelper(mPublic, this)); \
 	} \
-	inline const CLASS *getPublic() const { \
-		return static_cast<const CLASS *>(mPublic); \
+	inline const CLASS *getPublic () const { \
+		return static_cast<const CLASS *>(getPublicHelper(mPublic, this)); \
 	} \
 	friend class CLASS;
 
@@ -69,5 +108,15 @@
 
 #define L_D(CLASS) CLASS ## Private * const d = getPrivate();
 #define L_Q(CLASS) CLASS * const q = getPublic();
+
+#define L_USE_DEFAULT_SHARE_IMPL(CLASS, PARENT_CLASS) \
+	CLASS::CLASS (const CLASS &src) : PARENT_CLASS(*src.getPrivate()) {} \
+	CLASS &CLASS::operator= (const CLASS &src) { \
+		if (this != &src) \
+			setRef(*src.getPrivate()); \
+		return *this; \
+	}
+
+LINPHONE_END_NAMESPACE
 
 #endif // ifndef _GENERAL_H_

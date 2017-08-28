@@ -19,22 +19,27 @@
 #ifndef _CLONABLE_OBJECT_P_H_
 #define _CLONABLE_OBJECT_P_H_
 
+#include <unordered_map>
+
 #include "utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ClonableObject;
-
 class ClonableObjectPrivate {
 public:
 	virtual ~ClonableObjectPrivate () = default;
 
 protected:
-	ClonableObject *mPublic = nullptr;
+	std::unordered_map<const ClonableObjectPrivate *, ClonableObject *> *mPublic = nullptr;
 
 private:
+	void ref ();
+	void unref ();
+
+	int nRefs = 0;
+
 	L_DECLARE_PUBLIC(ClonableObject);
 };
 
