@@ -1031,6 +1031,7 @@ void linphone_core_reset_log_collection(void) {
 	ms_free(filename);
 	liblinphone_log_collection_file = NULL;
 	liblinphone_log_collection_file_size = 0;
+	liblinphone_log_collection_max_file_size = LOG_COLLECTION_DEFAULT_MAX_FILE_SIZE; /*also reset size*/
 	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
 }
 
