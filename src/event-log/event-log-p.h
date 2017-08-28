@@ -1,5 +1,5 @@
 /*
- * event.h
+ * event-log-p.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,51 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_H_
-#define _EVENT_H_
+#ifndef _EVENT_LOG_P_H_
+#define _EVENT_LOG_P_H_
 
-#include "object/clonable-object.h"
+#include "event-log.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventPrivate;
-
-class LINPHONE_PUBLIC Event : public ClonableObject {
-public:
-	enum Type {
-		None,
-		// MessageEvent.
-		MessageEvent,
-		// CallEvent.
-		CallStartEvent,
-		CallEndEvent,
-		// ConferenceEvent.
-		ConferenceCreatedEvent,
-		ConferenceDestroyedEvent,
-		// ConferenceParticipantEvent.
-		ConferenceParticipantAddedEvent,
-		ConferenceParticipantRemovedEvent,
-		ConferenceParticipantSetAdminEvent,
-		ConferenceParticipantUnsetAdminEvent
-	};
-
-	Event ();
-	Event (const Event &src);
-	virtual ~Event () = default;
-
-	Event &operator= (const Event &src);
-
-	Type getType () const;
-
-protected:
-	Event (EventPrivate &p, Type type);
-
+class EventLogPrivate : public ClonableObjectPrivate {
 private:
-	L_DECLARE_PRIVATE(Event);
+	EventLog::Type type = EventLog::None;
+
+	L_DECLARE_PUBLIC(EventLog);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_H_
+#endif // ifndef _EVENT_LOG_P_H_

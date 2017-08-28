@@ -1,5 +1,5 @@
 /*
- * call-event.cpp
+ * message-event.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event-p.h"
+#include "event-log-p.h"
 
-#include "call-event.h"
+#include "message-event.h"
 
 // =============================================================================
 
@@ -26,35 +26,35 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallEventPrivate : public EventPrivate {
+class MessageEventPrivate : public EventLogPrivate {
 public:
-	shared_ptr<Call> call;
+	shared_ptr<Message> message;
 };
 
 // -----------------------------------------------------------------------------
 
-CallEvent::CallEvent (Type type, const shared_ptr<Call> &call) : Event(*new CallEventPrivate, type) {
-	L_D(CallEvent);
-	L_ASSERT(call);
-	L_ASSERT(type == CallStartEvent || type == CallEndEvent);
-	d->call = call;
+MessageEvent::MessageEvent (const shared_ptr<Message> &message) :
+	EventLog(*new MessageEventPrivate, EventLog::MessageEvent) {
+	L_D(MessageEvent);
+	L_ASSERT(message);
+	d->message = message;
 }
 
-CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getCall()) {}
+MessageEvent::MessageEvent (const MessageEvent &src) : MessageEvent(src.getMessage()) {}
 
-CallEvent &CallEvent::operator= (const CallEvent &src) {
-	L_D(CallEvent);
+MessageEvent &MessageEvent::operator= (const MessageEvent &src) {
+	L_D(MessageEvent);
 	if (this != &src) {
-		Event::operator=(src);
-		d->call = src.getPrivate()->call;
+		EventLog::operator=(src);
+		d->message = src.getPrivate()->message;
 	}
 
 	return *this;
 }
 
-shared_ptr<Call> CallEvent::getCall () const {
-	L_D(const CallEvent);
-	return d->call;
+shared_ptr<Message> MessageEvent::getMessage () const {
+	L_D(const MessageEvent);
+	return d->message;
 }
 
 LINPHONE_END_NAMESPACE

@@ -23,9 +23,8 @@
 #endif // ifdef SOCI_ENABLED
 
 #include "abstract/abstract-db-p.h"
-#include "event/call-event.h"
-#include "event/event.h"
-#include "event/message-event.h"
+#include "event-log/call-event.h"
+#include "event-log/message-event.h"
 #include "logger/logger.h"
 #include "message/message.h"
 
@@ -250,29 +249,29 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		}
 	}
 
-	bool EventsDb::addEvent (const Event &event) {
+	bool EventsDb::addEvent (const EventLog &eventLog) {
 		// TODO.
-		switch (event.getType()) {
-			case Event::None:
+		switch (eventLog.getType()) {
+			case EventLog::None:
 				return false;
-			case Event::MessageEvent:
-			case Event::CallStartEvent:
-			case Event::CallEndEvent:
-			case Event::ConferenceCreatedEvent:
-			case Event::ConferenceDestroyedEvent:
-			case Event::ConferenceParticipantAddedEvent:
-			case Event::ConferenceParticipantRemovedEvent:
-			case Event::ConferenceParticipantSetAdminEvent:
-			case Event::ConferenceParticipantUnsetAdminEvent:
+			case EventLog::MessageEvent:
+			case EventLog::CallStartEvent:
+			case EventLog::CallEndEvent:
+			case EventLog::ConferenceCreatedEvent:
+			case EventLog::ConferenceDestroyedEvent:
+			case EventLog::ConferenceParticipantAddedEvent:
+			case EventLog::ConferenceParticipantRemovedEvent:
+			case EventLog::ConferenceParticipantSetAdminEvent:
+			case EventLog::ConferenceParticipantUnsetAdminEvent:
 				break;
 		}
 
 		return true;
 	}
 
-	bool EventsDb::deleteEvent (const Event &event) {
+	bool EventsDb::deleteEvent (const EventLog &eventLog) {
 		// TODO.
-		(void)event;
+		(void)eventLog;
 		return true;
 	}
 
@@ -344,21 +343,21 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return count;
 	}
 
-	list<Event> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) const {
+	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) const {
 		// TODO.
 		(void)remoteAddress;
 		(void)nLast;
 		(void)mask;
-		return list<Event>();
+		return list<shared_ptr<EventLog>>();
 	}
 
-	list<Event> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) const {
+	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) const {
 		// TODO.
 		(void)remoteAddress;
 		(void)begin;
 		(void)end;
 		(void)mask;
-		return list<Event>();
+		return list<shared_ptr<EventLog>>();
 	}
 
 	void EventsDb::cleanHistory (const string &remoteAddress) {
@@ -374,11 +373,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 	void EventsDb::init () {}
 
-	bool EventsDb::addEvent (const Event &) {
+	bool EventsDb::addEvent (const EventLog &) {
 		return false;
 	}
 
-	bool EventsDb::deleteEvent (const Event &) {
+	bool EventsDb::deleteEvent (const EventLog &) {
 		return false;
 	}
 
@@ -396,12 +395,12 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return 0;
 	}
 
-	list<Event> EventsDb::getHistory (const string &, int, FilterMask) const {
-		return list<Event>();
+	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &, int, FilterMask) const {
+		return list<shared_ptr<EventLog>>();
 	}
 
-	list<Event> EventsDb::getHistory (const string &, int, int, FilterMask) const {
-		return list<Event>();
+	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &, int, int, FilterMask) const {
+		return list<shared_ptr<EventLog>>();
 	}
 
 	void EventsDb::cleanHistory (const string &) {}

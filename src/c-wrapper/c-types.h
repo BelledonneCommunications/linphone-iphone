@@ -1,5 +1,5 @@
 /*
- * event-p.h
+ * c-types.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,23 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_P_H_
-#define _EVENT_P_H_
-
-#include "event.h"
-#include "object/clonable-object-p.h"
+#ifndef _C_TYPES_H_
+#define _C_TYPES_H_
 
 // =============================================================================
 
-LINPHONE_BEGIN_NAMESPACE
+#ifdef __cplusplus
+	extern "C" {
+#endif
 
-class EventPrivate : public ClonableObjectPrivate {
-private:
-	Event::Type type = Event::None;
+#define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
 
-	L_DECLARE_PUBLIC(Event);
-};
+L_DECLARE_C_STRUCT(EventLog)
 
-LINPHONE_END_NAMESPACE
+#undef L_DECLARE_C_STRUCT
 
-#endif // ifndef _EVENT_P_H_
+#ifdef __cplusplus
+	}
+#endif
+
+#endif // ifndef _C_TYPES_H_

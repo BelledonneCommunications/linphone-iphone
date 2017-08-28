@@ -27,7 +27,7 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<Address> &address) :
-	Event(*new ConferenceEventPrivate, type) {
+	EventLog(*new ConferenceEventPrivate, type) {
 	L_D(ConferenceEvent);
 	L_ASSERT(type == ConferenceCreatedEvent || type == ConferenceDestroyedEvent);
 	L_ASSERT(address);
@@ -37,7 +37,7 @@ ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<Address> &address)
 ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) : ConferenceEvent(src.getType(), src.getAddress()) {}
 
 ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const shared_ptr<Address> &address) :
-	Event(p, type) {
+	EventLog(p, type) {
 	L_D(ConferenceEvent);
 	L_ASSERT(address);
 	d->address = address;
@@ -46,7 +46,7 @@ ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const sh
 ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
 	L_D(ConferenceEvent);
 	if (this != &src) {
-		Event::operator=(src);
+		EventLog::operator=(src);
 		d->address = src.getPrivate()->address;
 	}
 

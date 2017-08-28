@@ -20,6 +20,7 @@
 #define _EVENTS_DB_H_
 
 #include <list>
+#include <memory>
 
 #include "abstract/abstract-db.h"
 
@@ -27,7 +28,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Event;
+class EventLog;
 class EventsDbPrivate;
 
 class LINPHONE_PUBLIC EventsDb : public AbstractDb {
@@ -44,16 +45,16 @@ public:
 	EventsDb ();
 
 	// Generic.
-	bool addEvent (const Event &event);
-	bool deleteEvent (const Event &event);
+	bool addEvent (const EventLog &eventLog);
+	bool deleteEvent (const EventLog &eventLog);
 	void cleanEvents (FilterMask mask = NoFilter);
 	int getEventsCount (FilterMask mask = NoFilter) const;
 
 	// Messages, calls and conferences.
 	int getMessagesCount (const std::string &remoteAddress = "") const;
 	int getUnreadMessagesCount (const std::string &remoteAddress = "") const;
-	std::list<Event> getHistory (const std::string &remoteAddress, int nLast, FilterMask mask = NoFilter) const;
-	std::list<Event> getHistory (const std::string &remoteAddress, int begin, int end, FilterMask mask = NoFilter) const;
+	std::list<std::shared_ptr<EventLog> > getHistory (const std::string &remoteAddress, int nLast, FilterMask mask = NoFilter) const;
+	std::list<std::shared_ptr<EventLog> > getHistory (const std::string &remoteAddress, int begin, int end, FilterMask mask = NoFilter) const;
 	void cleanHistory (const std::string &remoteAddress = "");
 
 protected:
