@@ -30,11 +30,6 @@
 
 using namespace std;
 
-void toto () {
-  LinphonePrivate::EventLog titi;
-  LinphonePrivate::EventLog machin(titi);
-}
-
 extern "C" {
 #define L_DECLARE_C_STRUCT_IMPL(STRUCT) \
   struct _Linphone ## STRUCT { \
