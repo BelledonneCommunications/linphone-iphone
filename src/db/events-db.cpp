@@ -252,7 +252,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	bool EventsDb::addEvent (const EventLog &eventLog) {
 		// TODO.
 		switch (eventLog.getType()) {
-			case EventLog::None:
+			case EventLog::NoneEvent:
 				return false;
 			case EventLog::MessageEvent:
 			case EventLog::CallStartEvent:

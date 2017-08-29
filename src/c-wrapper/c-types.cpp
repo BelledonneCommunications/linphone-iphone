@@ -22,9 +22,10 @@
 // From coreapi.
 #include "private.h"
 
-#include "event-log/event-log.h"
-
+// Must be included before cpp headers.
 #include "c-types.h"
+
+#include "event-log/event-log.h"
 
 // ================================================================²=============
 
@@ -32,27 +33,36 @@ using namespace std;
 
 extern "C" {
 #define L_DECLARE_C_STRUCT_IMPL(STRUCT) \
-  struct _Linphone ## STRUCT { \
-    belle_sip_object_t base; \
-    shared_ptr<LINPHONE_NAMESPACE::STRUCT> cppPtr; \
-  }; \
-  static void _linphone_ ## STRUCT ## _uninit(Linphone ## STRUCT * object) { \
-    object->cppPtr.reset(); \
-    object->cppPtr->~STRUCT (); \
-  } \
-  static void _linphone_ ## STRUCT ## _clone(Linphone ## STRUCT * dest, const Linphone ## STRUCT * src) { \
-    new(&dest->cppPtr) shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
-    dest->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>(*src->cppPtr.get()); \
-  } \
-  BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
-  BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## STRUCT); \
-  BELLE_SIP_INSTANCIATE_VPTR(Linphone ## STRUCT, belle_sip_object_t, \
-  _linphone_ ## STRUCT ## _uninit, \
-  _linphone_ ## STRUCT ## _clone, \
-  NULL, \
-  FALSE \
-  );
+	struct _Linphone ## STRUCT { \
+		belle_sip_object_t base; \
+		shared_ptr<LINPHONE_NAMESPACE::STRUCT> cppPtr; \
+	}; \
+	static void _linphone_ ## STRUCT ## _uninit(Linphone ## STRUCT * object) { \
+		object->cppPtr.reset(); \
+		object->cppPtr->~STRUCT (); \
+	} \
+	static void _linphone_ ## STRUCT ## _clone(Linphone ## STRUCT * dest, const Linphone ## STRUCT * src) { \
+		new(&dest->cppPtr) shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
+		dest->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>(*src->cppPtr.get()); \
+	} \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
+	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## STRUCT); \
+	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## STRUCT, belle_sip_object_t, \
+	_linphone_ ## STRUCT ## _uninit, \
+	_linphone_ ## STRUCT ## _clone, \
+	NULL, \
+	FALSE \
+	);
 
 // -----------------------------------------------------------------------------
-L_DECLARE_C_STRUCT_IMPL(EventLog);
+
+ L_DECLARE_C_STRUCT_IMPL(EventLog);
+
+LinphoneEventLog *event_log_new () {
+	return nullptr;
+}
+
+LinphoneEventLogType event_log_get_type (const LinphoneEventLog *eventLog) {
+	return LinphoneEventLogType::NoneEvent;
+}
 }

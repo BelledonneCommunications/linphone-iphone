@@ -22,8 +22,14 @@
 // =============================================================================
 
 #define LINPHONE_NAMESPACE LinphonePrivate
-#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
-#define LINPHONE_END_NAMESPACE }
+
+#ifdef __cplusplus
+	#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
+	#define LINPHONE_END_NAMESPACE }
+#else
+	#define LINPHONE_BEGIN_NAMESPACE
+	#define LINPHONE_END_NAMESPACE
+#endif
 
 // -----------------------------------------------------------------------------
 
@@ -46,6 +52,12 @@ LINPHONE_BEGIN_NAMESPACE
 #endif
 
 // -----------------------------------------------------------------------------
+
+#ifdef __cplusplus
+
+#ifndef L_DECLARE_ENUM
+	#define L_DECLARE_ENUM(CLASS, ENUM) enum CLASS::ENUM : int
+#endif
 
 void l_assert (const char *condition, const char *file, int line);
 
@@ -116,6 +128,8 @@ inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
 			setRef(*src.getPrivate()); \
 		return *this; \
 	}
+
+#endif
 
 LINPHONE_END_NAMESPACE
 

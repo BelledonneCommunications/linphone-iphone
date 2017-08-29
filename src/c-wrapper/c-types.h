@@ -19,17 +19,27 @@
 #ifndef _C_TYPES_H_
 #define _C_TYPES_H_
 
+#define L_DECLARE_ENUM(CLASS, ENUM) enum Linphone ## CLASS ## ENUM
+#define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
+
+#include "event-log/event-log-enums.h"
+
 // =============================================================================
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
 
-#define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
+// -----------------------------------------------------------------------------
+// Event log.
+// -----------------------------------------------------------------------------
 
-L_DECLARE_C_STRUCT(EventLog)
+L_DECLARE_C_STRUCT(EventLog);
 
-#undef L_DECLARE_C_STRUCT
+LINPHONE_PUBLIC LinphoneEventLog *event_log_new ();
+LINPHONE_PUBLIC LinphoneEventLogType event_log_get_type (const LinphoneEventLog *eventLog);
+
+// -----------------------------------------------------------------------------
 
 #ifdef __cplusplus
 	}

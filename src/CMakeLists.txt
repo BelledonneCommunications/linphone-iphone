@@ -43,6 +43,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	event-log/conference-event-p.h
 	event-log/conference-event.h
 	event-log/conference-participant-event.h
+	event-log/event-log-enums.h
 	event-log/event-log-p.h
 	event-log/event-log.h
 	event-log/message-event.h
