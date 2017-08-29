@@ -1,5 +1,5 @@
 /*
- * types.cpp
+ * c-tools.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,19 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _C_TOOLS_H_
+#define _C_TOOLS_H_
+
 // From coreapi.
 #include "private.h"
 
-// Must be included before cpp headers.
-#include "c-types.h"
+// =============================================================================
 
-#include "event-log/message-event.h"
-
-// ================================================================²=============
-
-using namespace std;
-
-extern "C" {
 #define L_DECLARE_C_STRUCT_IMPL(STRUCT, C_NAME) \
 	struct _Linphone ## STRUCT { \
 		belle_sip_object_t base; \
@@ -63,32 +58,4 @@ extern "C" {
 		return object; \
 	}
 
-// -----------------------------------------------------------------------------
-// Event log.
-// -----------------------------------------------------------------------------
-
-L_DECLARE_C_STRUCT_IMPL(EventLog, event_log);
-L_DECLARE_C_STRUCT_NEW_DEFAULT(EventLog, event_log);
-
-LinphoneEventLogType event_log_get_type (const LinphoneEventLog *eventLog) {
-	return static_cast<LinphoneEventLogType>(eventLog->cppPtr->getType());
-}
-
-// -----------------------------------------------------------------------------
-// Message Event.
-// -----------------------------------------------------------------------------
-
-L_DECLARE_C_STRUCT_IMPL(MessageEvent, message_event);
-
-LinphoneMessageEvent *message_event_new (LinphoneMessage *message) {
-	LinphoneMessageEvent *object = _linphone_message_event_init();
-	// TODO: call make_shared with cppPtr.
-	object->cppPtr = make_shared<LINPHONE_NAMESPACE::MessageEvent>(nullptr);
-	return object;
-}
-
-LinphoneMessage *message_event_get_message (const LinphoneMessageEvent *messageEvent) {
-	// TODO.
-	return nullptr;
-}
-}
+#endif // ifndef _C_TOOLS_H_

@@ -21,6 +21,8 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
+	c-wrapper/api/c-event-log.h
+	c-wrapper/c-tools.h
 	c-wrapper/c-types.h
 	content/content.h
 	core/core.h
@@ -59,7 +61,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
-	c-wrapper/c-types.cpp
+	c-wrapper/api/c-event-log.cpp
 	content/content.cpp
 	core/core.cpp
 	cpim/header/cpim-core-headers.cpp

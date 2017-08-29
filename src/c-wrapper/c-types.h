@@ -42,52 +42,6 @@ L_DECLARE_C_STRUCT(MessageEvent);
 // TODO: Remove me in the future.
 typedef struct SalAddress LinphoneAddress;
 
-// -----------------------------------------------------------------------------
-// Call Event.
-// -----------------------------------------------------------------------------
-
-LINPHONE_PUBLIC LinphoneCallEvent *call_event_new (LinphoneEventLogType type, LinphoneCall *call);
-LINPHONE_PUBLIC LinphoneCall *call_event_get_call (const LinphoneCallEvent *call_event);
-
-// -----------------------------------------------------------------------------
-// Conference Event.
-// -----------------------------------------------------------------------------
-
-LINPHONE_PUBLIC LinphoneConferenceEvent *conference_event_new (
-	LinphoneEventLogType type,
-	const LinphoneAddress *address
-);
-
-LINPHONE_PUBLIC const LinphoneAddress *conference_event_get_address ();
-
-// -----------------------------------------------------------------------------
-// Conference Participant Event.
-// -----------------------------------------------------------------------------
-
-LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *conference_participant_event_new (
-	LinphoneEventLogType type,
-	const LinphoneAddress *conferenceAddress,
-	const LinphoneAddress *participantAddress
-);
-
-LINPHONE_PUBLIC const LinphoneAddress *conference_participant_event_get_participant_address ();
-
-// -----------------------------------------------------------------------------
-// Event log.
-// -----------------------------------------------------------------------------
-
-LINPHONE_PUBLIC LinphoneEventLog *event_log_new ();
-LINPHONE_PUBLIC LinphoneEventLogType event_log_get_type (const LinphoneEventLog *event_log);
-
-// -----------------------------------------------------------------------------
-// Message Event.
-// -----------------------------------------------------------------------------
-
-LINPHONE_PUBLIC LinphoneMessageEvent *message_event_new (LinphoneMessage *message);
-LINPHONE_PUBLIC LinphoneMessage *message_event_get_message (const LinphoneMessageEvent *message_event);
-
-// -----------------------------------------------------------------------------
-
 #ifdef __cplusplus
 	}
 #endif
