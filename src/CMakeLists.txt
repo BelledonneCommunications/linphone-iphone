@@ -92,6 +92,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 
 ADD_XSD_WRAPPERS(xml/xml "XML XSD - xml.xsd")
 ADD_XSD_WRAPPERS(xml/conference-info "Conference info XSD - conference-info.xsd")
+ADD_XSD_WRAPPERS(xml/resource-lists "Resourece lists XSD - resource-lists.xsd")
 
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
