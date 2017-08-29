@@ -31,14 +31,14 @@ class LINPHONE_PUBLIC ConferenceParticipantEvent : public ConferenceEvent {
 public:
 	ConferenceParticipantEvent (
 		Type type,
-		const std::shared_ptr<Address> &conferenceAddress,
-		const std::shared_ptr<Address> &participantAddress
+		const std::shared_ptr<const Address> &conferenceAddress,
+		const std::shared_ptr<const Address> &participantAddress
 	);
 	ConferenceParticipantEvent (const ConferenceParticipantEvent &src);
 
 	ConferenceParticipantEvent &operator= (const ConferenceParticipantEvent &src);
 
-	std::shared_ptr<Address> getParticipantAddress () const;
+	std::shared_ptr<const Address> getParticipantAddress () const;
 
 private:
 	L_DECLARE_PRIVATE(ConferenceParticipantEvent);

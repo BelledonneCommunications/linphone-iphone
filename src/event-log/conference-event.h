@@ -32,16 +32,16 @@ class ConferenceEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
 public:
-	ConferenceEvent (Type type, const std::shared_ptr<Address> &address);
+	ConferenceEvent (Type type, const std::shared_ptr<const Address> &address);
 	ConferenceEvent (const ConferenceEvent &src);
 	virtual ~ConferenceEvent () = default;
 
 	ConferenceEvent &operator= (const ConferenceEvent &src);
 
-	std::shared_ptr<Address> getAddress () const;
+	std::shared_ptr<const Address> getAddress () const;
 
 protected:
-	ConferenceEvent (ConferenceEventPrivate &p, Type type, const std::shared_ptr<Address> &address);
+	ConferenceEvent (ConferenceEventPrivate &p, Type type, const std::shared_ptr<const Address> &address);
 
 private:
 	L_DECLARE_PRIVATE(ConferenceEvent);

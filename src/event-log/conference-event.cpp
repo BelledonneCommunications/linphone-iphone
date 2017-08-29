@@ -26,20 +26,22 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<Address> &address) :
+ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<const Address> &address) :
 	EventLog(*new ConferenceEventPrivate, type) {
 	L_D(ConferenceEvent);
 	L_ASSERT(type == ConferenceCreatedEvent || type == ConferenceDestroyedEvent);
 	L_ASSERT(address);
+	// TODO: Duplicate address.
 	d->address = address;
 }
 
 ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) : ConferenceEvent(src.getType(), src.getAddress()) {}
 
-ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const shared_ptr<Address> &address) :
+ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const shared_ptr<const Address> &address) :
 	EventLog(p, type) {
 	L_D(ConferenceEvent);
 	L_ASSERT(address);
+	// TODO: Duplicate address.
 	d->address = address;
 }
 
@@ -47,13 +49,14 @@ ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
 	L_D(ConferenceEvent);
 	if (this != &src) {
 		EventLog::operator=(src);
+		// TODO: Duplicate address.
 		d->address = src.getPrivate()->address;
 	}
 
 	return *this;
 }
 
-shared_ptr<Address> ConferenceEvent::getAddress () const {
+shared_ptr<const Address> ConferenceEvent::getAddress () const {
 	// TODO.
 	return nullptr;
 }

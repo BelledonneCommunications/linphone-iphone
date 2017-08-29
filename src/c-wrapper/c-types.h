@@ -30,9 +30,25 @@
 	extern "C" {
 #endif
 
+L_DECLARE_C_STRUCT(ConferenceParticipantEvent);
 L_DECLARE_C_STRUCT(EventLog);
 L_DECLARE_C_STRUCT(Message);
 L_DECLARE_C_STRUCT(MessageEvent);
+
+// TODO: Remove me in the future.
+typedef struct SalAddress LinphoneAddress;
+
+// -----------------------------------------------------------------------------
+// Conference Participant Event.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *conference_participant_event_new (
+	LinphoneEventLogType type,
+	const LinphoneAddress *conferenceAddress,
+	const LinphoneAddress *participantAddress
+);
+
+LINPHONE_PUBLIC const LinphoneAddress *conference_participant_event_get_participant_address ();
 
 // -----------------------------------------------------------------------------
 // Event log.

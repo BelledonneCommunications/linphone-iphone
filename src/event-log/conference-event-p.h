@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceEventPrivate : public EventLogPrivate {
 private:
-	std::shared_ptr<Address> address;
+	std::shared_ptr<const Address> address;
 
 	L_DECLARE_PUBLIC(ConferenceEvent);
 };
