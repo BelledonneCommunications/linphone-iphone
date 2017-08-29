@@ -54,15 +54,22 @@ extern "C" {
 	FALSE \
 	);
 
+#define L_DECLARE_C_STRUCT_NEW_DEFAULT(STRUCT, C_NAME) \
+	Linphone ## STRUCT * CNAME ## _new() { \
+		Linphone ## STRUCT * object = belle_sip_object_new(Linphone ## STRUCT); \
+		return object; \
+	}
+
+// -----------------------------------------------------------------------------
+// Event log.
 // -----------------------------------------------------------------------------
 
- L_DECLARE_C_STRUCT_IMPL(EventLog);
-
-LinphoneEventLog *event_log_new () {
-	return nullptr;
-}
+L_DECLARE_C_STRUCT_IMPL(EventLog);
+L_DECLARE_C_STRUCT_NEW_DEFAULT(EventLog, event_log)
 
 LinphoneEventLogType event_log_get_type (const LinphoneEventLog *eventLog) {
-	return LinphoneEventLogType::NoneEvent;
+	return static_cast<LinphoneEventLogType>(eventLog->cppPtr->getType());
 }
+
+// -----------------------------------------------------------------------------
 }
