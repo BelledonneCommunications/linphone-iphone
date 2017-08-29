@@ -36,7 +36,7 @@ public:
 CallEvent::CallEvent (Type type, const shared_ptr<Call> &call) : EventLog(*new CallEventPrivate, type) {
 	L_D(CallEvent);
 	L_ASSERT(call);
-	L_ASSERT(type == CallStartEvent || type == CallEndEvent);
+	L_ASSERT(type == TypeCallStart || type == TypeCallEnd);
 	d->call = call;
 }
 

@@ -1,5 +1,5 @@
 /*
- * enums.h
+ * enum-generator.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ENUMS_H_
-#define _ENUMS_H_
+#ifndef _ENUM_GENERATOR_H_
+#define _ENUM_GENERATOR_H_
 
-#include "utils/general.h"
+#include "magic-macros.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-// Nothing. for the moment.
+#define L_ENUM_VALUE(C, VALUE) C ## VALUE
+
+#ifndef L_USE_C_ENUM
+	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
+		MM_APPLY_COMMA(L_ENUM_VALUE, ENUM_NAME, __VA_ARGS__)
+#else
+	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
+		MM_APPLY_COMMA(L_ENUM_VALUE, Linphone ## CLASS_NAME ## ENUM_NAME, __VA_ARGS__)
+#endif // ifndef L_USE_C_ENUM
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _ENUMS_H_
+#endif // ifndef _ENUM_GENERATOR_H_

@@ -19,25 +19,22 @@
 #ifndef _EVENT_LOG_ENUMS_H_
 #define _EVENT_LOG_ENUMS_H_
 
-#include "utils/general.h"
+#include "utils/enum-generator.h"
 
 // =============================================================================
 
-L_DECLARE_ENUM(EventLog, Type) {
-	NoneEvent,
-	// MessageEvent.
-	MessageEvent,
-	// CallEvent.
-	CallStartEvent,
-	CallEndEvent,
-	// ConferenceEvent.
-	ConferenceCreatedEvent,
-	ConferenceDestroyedEvent,
-	// ConferenceParticipantEvent.
-	ConferenceParticipantAddedEvent,
-	ConferenceParticipantRemovedEvent,
-	ConferenceParticipantSetAdminEvent,
-	ConferenceParticipantUnsetAdminEvent
-};
+#define L_ENUM_VALUES_EVENT_LOG_TYPE \
+	L_DECLARE_ENUM_VALUES(EventLog, Type, \
+		None, \
+		Message, \
+		CallStart, \
+		CallEnd, \
+		ConferenceCreated, \
+		ConferenceDestroyed, \
+		ConferenceParticipantAdded, \
+		ConferenceParticipantRemoved, \
+		ConferenceParticipantSetAdmin, \
+		ConferenceParticipantUnsetAdmin \
+	)
 
 #endif // ifndef _EVENT_LOG_ENUMS_H_

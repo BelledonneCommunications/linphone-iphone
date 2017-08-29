@@ -40,7 +40,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/provider/db-session-p.h
 	db/provider/db-session-provider.h
 	db/provider/db-session.h
-	enums.h
 	event-log/call-event.h
 	event-log/conference-event-p.h
 	event-log/conference-event.h
@@ -56,7 +55,9 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object-p.h
 	object/object.h
 	object/singleton.h
+	utils/enum-generator.h
 	utils/general.h
+	utils/magic-macros.h
 	utils/utils.h
 )
 

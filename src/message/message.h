@@ -23,7 +23,6 @@
 #include <memory>
 #include <string>
 
-#include "enums.h"
 #include "object/object.h"
 
 // =============================================================================

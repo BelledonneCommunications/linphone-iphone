@@ -252,17 +252,17 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	bool EventsDb::addEvent (const EventLog &eventLog) {
 		// TODO.
 		switch (eventLog.getType()) {
-			case EventLog::NoneEvent:
+			case EventLog::TypeNone:
 				return false;
-			case EventLog::MessageEvent:
-			case EventLog::CallStartEvent:
-			case EventLog::CallEndEvent:
-			case EventLog::ConferenceCreatedEvent:
-			case EventLog::ConferenceDestroyedEvent:
-			case EventLog::ConferenceParticipantAddedEvent:
-			case EventLog::ConferenceParticipantRemovedEvent:
-			case EventLog::ConferenceParticipantSetAdminEvent:
-			case EventLog::ConferenceParticipantUnsetAdminEvent:
+			case EventLog::TypeMessage:
+			case EventLog::TypeCallStart:
+			case EventLog::TypeCallEnd:
+			case EventLog::TypeConferenceCreated:
+			case EventLog::TypeConferenceDestroyed:
+			case EventLog::TypeConferenceParticipantAdded:
+			case EventLog::TypeConferenceParticipantRemoved:
+			case EventLog::TypeConferenceParticipantSetAdmin:
+			case EventLog::TypeConferenceParticipantUnsetAdmin:
 				break;
 		}
 

@@ -55,10 +55,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 #ifdef __cplusplus
 
-#ifndef L_DECLARE_ENUM
-	#define L_DECLARE_ENUM(CLASS, ENUM) enum CLASS::ENUM : int
-#endif
-
 void l_assert (const char *condition, const char *file, int line);
 
 #ifdef DEBUG
