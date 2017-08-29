@@ -30,14 +30,23 @@
 	extern "C" {
 #endif
 
+L_DECLARE_C_STRUCT(EventLog);
+L_DECLARE_C_STRUCT(Message);
+L_DECLARE_C_STRUCT(MessageEvent);
+
 // -----------------------------------------------------------------------------
 // Event log.
 // -----------------------------------------------------------------------------
 
-L_DECLARE_C_STRUCT(EventLog);
-
 LINPHONE_PUBLIC LinphoneEventLog *event_log_new ();
-LINPHONE_PUBLIC LinphoneEventLogType event_log_get_type (const LinphoneEventLog *eventLog);
+LINPHONE_PUBLIC LinphoneEventLogType event_log_get_type (const LinphoneEventLog *event_log);
+
+// -----------------------------------------------------------------------------
+// Message Event.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneMessageEvent *message_event_new (LinphoneMessage *message);
+LINPHONE_PUBLIC LinphoneMessage *message_event_get_message (const LinphoneMessageEvent *message_event);
 
 // -----------------------------------------------------------------------------
 

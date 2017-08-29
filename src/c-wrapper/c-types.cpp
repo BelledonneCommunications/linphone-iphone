@@ -25,38 +25,44 @@
 // Must be included before cpp headers.
 #include "c-types.h"
 
-#include "event-log/event-log.h"
+#include "event-log/message-event.h"
 
 // ================================================================²=============
 
 using namespace std;
 
 extern "C" {
-#define L_DECLARE_C_STRUCT_IMPL(STRUCT) \
+#define L_DECLARE_C_STRUCT_IMPL(STRUCT, C_NAME) \
 	struct _Linphone ## STRUCT { \
 		belle_sip_object_t base; \
 		shared_ptr<LINPHONE_NAMESPACE::STRUCT> cppPtr; \
 	}; \
-	static void _linphone_ ## STRUCT ## _uninit(Linphone ## STRUCT * object) { \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
+	static Linphone ## STRUCT *_linphone_ ## C_NAME ## _init() { \
+		Linphone ## STRUCT * object = belle_sip_object_new(Linphone ## STRUCT); \
+		new(&object->cppPtr) shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
+		return object; \
+	} \
+	static void _linphone_ ## C_NAME ## _uninit(Linphone ## STRUCT * object) { \
 		object->cppPtr.reset(); \
 		object->cppPtr->~STRUCT (); \
 	} \
-	static void _linphone_ ## STRUCT ## _clone(Linphone ## STRUCT * dest, const Linphone ## STRUCT * src) { \
+	static void _linphone_ ## C_NAME ## _clone(Linphone ## STRUCT * dest, const Linphone ## STRUCT * src) { \
 		new(&dest->cppPtr) shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
 		dest->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>(*src->cppPtr.get()); \
 	} \
-	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
 	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## STRUCT); \
 	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## STRUCT, belle_sip_object_t, \
-	_linphone_ ## STRUCT ## _uninit, \
-	_linphone_ ## STRUCT ## _clone, \
+	_linphone_ ## C_NAME ## _uninit, \
+	_linphone_ ## C_NAME ## _clone, \
 	NULL, \
 	FALSE \
 	);
 
 #define L_DECLARE_C_STRUCT_NEW_DEFAULT(STRUCT, C_NAME) \
 	Linphone ## STRUCT * CNAME ## _new() { \
-		Linphone ## STRUCT * object = belle_sip_object_new(Linphone ## STRUCT); \
+		Linphone ## STRUCT * object = _linphone_ ## C_NAME ## _init(); \
+		object->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>(); \
 		return object; \
 	}
 
@@ -64,12 +70,23 @@ extern "C" {
 // Event log.
 // -----------------------------------------------------------------------------
 
-L_DECLARE_C_STRUCT_IMPL(EventLog);
-L_DECLARE_C_STRUCT_NEW_DEFAULT(EventLog, event_log)
+L_DECLARE_C_STRUCT_IMPL(EventLog, event_log);
+L_DECLARE_C_STRUCT_NEW_DEFAULT(EventLog, event_log);
 
 LinphoneEventLogType event_log_get_type (const LinphoneEventLog *eventLog) {
 	return static_cast<LinphoneEventLogType>(eventLog->cppPtr->getType());
 }
 
 // -----------------------------------------------------------------------------
+// Message Event.
+// -----------------------------------------------------------------------------
+
+// L_DECLARE_C_STRUCT_IMPL(MessageEvent, message_event);
+//
+// LinphoneMessageEvent *message_event_new (LinphoneMessage *message) {
+// LinphoneMessageEvent *object = object->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>();
+// return object;
+// }
+//
+// LinphoneMessage *message_event_get_message (const LinphoneMessageEvent *messageEvent);
 }
