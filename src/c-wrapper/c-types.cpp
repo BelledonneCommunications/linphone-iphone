@@ -16,9 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <belle-sip/belle-sip.h>
-#include <memory>
-
 // From coreapi.
 #include "private.h"
 
@@ -81,12 +78,17 @@ LinphoneEventLogType event_log_get_type (const LinphoneEventLog *eventLog) {
 // Message Event.
 // -----------------------------------------------------------------------------
 
-// L_DECLARE_C_STRUCT_IMPL(MessageEvent, message_event);
-//
-// LinphoneMessageEvent *message_event_new (LinphoneMessage *message) {
-// LinphoneMessageEvent *object = object->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>();
-// return object;
-// }
-//
-// LinphoneMessage *message_event_get_message (const LinphoneMessageEvent *messageEvent);
+L_DECLARE_C_STRUCT_IMPL(MessageEvent, message_event);
+
+LinphoneMessageEvent *message_event_new (LinphoneMessage *message) {
+	LinphoneMessageEvent *object = _linphone_message_event_init();
+	// TODO: call make_shared with cppPtr.
+	object->cppPtr = make_shared<LINPHONE_NAMESPACE::MessageEvent>(nullptr);
+	return object;
+}
+
+LinphoneMessage *message_event_get_message (const LinphoneMessageEvent *messageEvent) {
+	// TODO.
+	return nullptr;
+}
 }
