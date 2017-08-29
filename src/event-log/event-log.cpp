@@ -1,5 +1,5 @@
 /*
- * event.h
+ * event-log.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,51 +16,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_H_
-#define _EVENT_H_
+#include "event-log-p.h"
 
-#include "object/clonable-object.h"
+#include "event-log.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventPrivate;
+// -----------------------------------------------------------------------------
 
-class LINPHONE_PUBLIC Event : public ClonableObject {
-public:
-	enum Type {
-		None,
-		// MessageEvent.
-		MessageEvent,
-		// CallEvent.
-		CallStartEvent,
-		CallEndEvent,
-		// ConferenceEvent.
-		ConferenceCreatedEvent,
-		ConferenceDestroyedEvent,
-		// ConferenceParticipantEvent.
-		ConferenceParticipantAddedEvent,
-		ConferenceParticipantRemovedEvent,
-		ConferenceParticipantSetAdminEvent,
-		ConferenceParticipantUnsetAdminEvent
-	};
+EventLog::EventLog () : ClonableObject(*new EventLogPrivate) {}
 
-	Event ();
-	Event (const Event &src);
-	virtual ~Event () = default;
+EventLog::EventLog (const EventLog &) : ClonableObject(*new EventLogPrivate) {}
 
-	Event &operator= (const Event &src);
+EventLog::EventLog (EventLogPrivate &p, Type type) : ClonableObject(*new EventLogPrivate) {
+	L_D(EventLog);
+	d->type = type;
+}
 
-	Type getType () const;
+EventLog &EventLog::operator= (const EventLog &src) {
+	L_D(EventLog);
+	if (this != &src)
+		d->type = src.getPrivate()->type;
+	return *this;
+}
 
-protected:
-	Event (EventPrivate &p, Type type);
-
-private:
-	L_DECLARE_PRIVATE(Event);
-};
+EventLog::Type EventLog::getType () const {
+	L_D(const EventLog);
+	return d->type;
+}
 
 LINPHONE_END_NAMESPACE
-
-#endif // ifndef _EVENT_H_

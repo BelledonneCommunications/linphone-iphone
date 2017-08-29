@@ -24,6 +24,9 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/conference-listener.h
 	conference/local-conference-event-handler.h
 	conference/remote-conference-event-handler.h
+	c-wrapper/api/c-event-log.h
+	c-wrapper/c-tools.h
+	c-wrapper/c-types.h
 	content/content.h
 	core/core.h
 	cpim/cpim.h
@@ -41,12 +44,14 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/provider/db-session-provider.h
 	db/provider/db-session.h
 	enums.h
-	event/call-event.h
-	event/conference-event-p.h
-	event/conference-event.h
-	event/conference-participant-event.h
-	event/event.h
-	event/message-event.h
+	event-log/call-event.h
+	event-log/conference-event-p.h
+	event-log/conference-event.h
+	event-log/conference-participant-event.h
+	event-log/event-log-enums.h
+	event-log/event-log-p.h
+	event-log/event-log.h
+	event-log/message-event.h
 	logger/logger.h
 	message/message.h
 	object/clonable-object-p.h
@@ -63,6 +68,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/local-conference-event-handler.cpp
 	conference/remote-conference-event-handler.cpp
+	c-wrapper/api/c-event-log.cpp
 	content/content.cpp
 	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
@@ -75,11 +81,11 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	db/events-db.cpp
 	db/provider/db-session-provider.cpp
 	db/provider/db-session.cpp
-	event/call-event.cpp
-	event/conference-event.cpp
-	event/conference-participant-event.cpp
-	event/event.cpp
-	event/message-event.cpp
+	event-log/call-event.cpp
+	event-log/conference-event.cpp
+	event-log/conference-participant-event.cpp
+	event-log/event-log.cpp
+	event-log/message-event.cpp
 	logger/logger.cpp
 	message/message.cpp
 	object/clonable-object.cpp

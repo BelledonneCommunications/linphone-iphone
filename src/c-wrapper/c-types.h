@@ -1,5 +1,5 @@
 /*
- * message-event.h
+ * c-types.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,33 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MESSAGE_EVENT_H_
-#define _MESSAGE_EVENT_H_
+#ifndef _C_TYPES_H_
+#define _C_TYPES_H_
 
-#include <memory>
+// Do not move these defines.
+#define L_DECLARE_ENUM(CLASS, ENUM) enum Linphone ## CLASS ## ENUM
+#define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
 
-#include "event.h"
+#include "event-log/event-log-enums.h"
 
 // =============================================================================
 
-LINPHONE_BEGIN_NAMESPACE
+#ifdef __cplusplus
+	extern "C" {
+#endif
 
-class Message;
-class MessageEventPrivate;
+L_DECLARE_C_STRUCT(Call);
+L_DECLARE_C_STRUCT(CallEvent);
+L_DECLARE_C_STRUCT(ConferenceEvent);
+L_DECLARE_C_STRUCT(ConferenceParticipantEvent);
+L_DECLARE_C_STRUCT(EventLog);
+L_DECLARE_C_STRUCT(Message);
+L_DECLARE_C_STRUCT(MessageEvent);
 
-class LINPHONE_PUBLIC MessageEvent : public Event {
-public:
-	MessageEvent (const std::shared_ptr<Message> &message);
-	MessageEvent (const MessageEvent &src);
+// TODO: Remove me in the future.
+typedef struct SalAddress LinphoneAddress;
 
-	MessageEvent &operator= (const MessageEvent &src);
+#ifdef __cplusplus
+	}
+#endif
 
-	std::shared_ptr<Message> getMessage () const;
-
-private:
-	L_DECLARE_PRIVATE(MessageEvent);
-};
-
-LINPHONE_END_NAMESPACE
-
-#endif // ifndef _MESSAGE_EVENT_H_
+#endif // ifndef _C_TYPES_H_

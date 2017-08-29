@@ -1890,7 +1890,10 @@ BELLE_SIP_TYPE_ID(LinphoneTransports),
 BELLE_SIP_TYPE_ID(LinphoneVideoActivationPolicy),
 BELLE_SIP_TYPE_ID(LinphoneCallStats),
 BELLE_SIP_TYPE_ID(LinphonePlayer),
-BELLE_SIP_TYPE_ID(LinphonePlayerCbs)
+BELLE_SIP_TYPE_ID(LinphonePlayerCbs),
+BELLE_SIP_TYPE_ID(LinphoneEventLog),
+BELLE_SIP_TYPE_ID(LinphoneMessage),
+BELLE_SIP_TYPE_ID(LinphoneMessageEvent)
 BELLE_SIP_DECLARE_TYPES_END
 
 

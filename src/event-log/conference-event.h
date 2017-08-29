@@ -1,5 +1,5 @@
 /*
- * conference-event-p.h
+ * conference-event.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONFERENCE_EVENT_P_H_
-#define _CONFERENCE_EVENT_P_H_
+#ifndef _CONFERENCE_EVENT_H_
+#define _CONFERENCE_EVENT_H_
 
-#include "conference-event.h"
+#include <memory>
 
-#include "event-p.h"
+#include "event-log.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceEventPrivate : public EventPrivate {
-private:
-	std::shared_ptr<Address> address;
+class Address;
+class ConferenceEventPrivate;
 
-	L_DECLARE_PUBLIC(ConferenceEvent);
+class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
+public:
+	ConferenceEvent (Type type, const std::shared_ptr<const Address> &address);
+	ConferenceEvent (const ConferenceEvent &src);
+	virtual ~ConferenceEvent () = default;
+
+	ConferenceEvent &operator= (const ConferenceEvent &src);
+
+	std::shared_ptr<const Address> getAddress () const;
+
+protected:
+	ConferenceEvent (ConferenceEventPrivate &p, Type type, const std::shared_ptr<const Address> &address);
+
+private:
+	L_DECLARE_PRIVATE(ConferenceEvent);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CONFERENCE_EVENT_P_H_
+#endif // ifndef _CONFERENCE_EVENT_H_
