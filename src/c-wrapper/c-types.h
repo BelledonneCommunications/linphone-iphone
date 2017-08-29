@@ -19,6 +19,7 @@
 #ifndef _C_TYPES_H_
 #define _C_TYPES_H_
 
+// Do not move these defines.
 #define L_DECLARE_ENUM(CLASS, ENUM) enum Linphone ## CLASS ## ENUM
 #define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
 
@@ -30,6 +31,8 @@
 	extern "C" {
 #endif
 
+L_DECLARE_C_STRUCT(Call);
+L_DECLARE_C_STRUCT(CallEvent);
 L_DECLARE_C_STRUCT(ConferenceEvent);
 L_DECLARE_C_STRUCT(ConferenceParticipantEvent);
 L_DECLARE_C_STRUCT(EventLog);
@@ -38,6 +41,13 @@ L_DECLARE_C_STRUCT(MessageEvent);
 
 // TODO: Remove me in the future.
 typedef struct SalAddress LinphoneAddress;
+
+// -----------------------------------------------------------------------------
+// Call Event.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneCallEvent *call_event_new (LinphoneEventLogType type, LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCall *call_event_get_call (const LinphoneCallEvent *call_event);
 
 // -----------------------------------------------------------------------------
 // Conference Event.
