@@ -24,6 +24,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	c-wrapper/api/c-event-log.h
 	c-wrapper/c-tools.h
 	c-wrapper/c-types.h
+	chat/chat-room-p.h
+	chat/chat-room.h
 	content/content.h
 	core/core.h
 	cpim/cpim.h
@@ -55,11 +57,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object-p.h
 	object/object.h
 	object/singleton.h
-<<<<<<< HEAD
-	utils/enum-generator.h
-=======
 	utils/content-type.h
->>>>>>> b7c744ef8... Use ChatRoom C++ class.
+	utils/enum-generator.h
 	utils/general.h
 	utils/magic-macros.h
 	utils/utils.h
@@ -67,6 +66,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-event-log.cpp
+	chat/chat-room.cpp
 	content/content.cpp
 	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
