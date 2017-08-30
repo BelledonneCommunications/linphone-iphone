@@ -19,7 +19,6 @@
 #ifndef _ADDRESS_H_
 #define _ADDRESS_H_
 
-#include <memory>
 #include <string>
 
 #include "enums.h"
@@ -33,8 +32,9 @@ class AddressPrivate;
 
 class LINPHONE_PUBLIC Address : public ClonableObject {
 public:
-	Address (const std::string &address);
+	Address (const std::string &address = "");
 	Address (const Address &src);
+	~Address ();
 
 	Address &operator= (const Address &src);
 
@@ -51,7 +51,7 @@ public:
 	bool setUsername (const std::string &username);
 
 	std::string getDomain () const;
-	bool setDomain (const std::string &host);
+	bool setDomain (const std::string &domain);
 
 	int getPort () const;
 	bool setPort (int port);
@@ -60,27 +60,26 @@ public:
 	bool setTransport (Transport transport);
 
 	bool getSecure () const;
-	void setSecure (bool enabled);
+	bool setSecure (bool enabled);
 
 	bool isSip () const;
 
 	std::string getMethodParam () const;
-	void setMethodParam (const std::string &method);
+	bool setMethodParam (const std::string &methodParam);
 
 	std::string getPassword () const;
-	void setPassword (const std::string &passwd);
+	bool setPassword (const std::string &password);
 
-	void clean ();
+	bool clean ();
 
 	std::string asString () const;
 	std::string asStringUriOnly () const;
 
-	bool equal (const std::shared_ptr<const Address> &address) const;
-	bool weakEqual (const std::shared_ptr<const Address> &a2) const;
+	bool equal (const Address &address) const;
+	bool weakEqual (const Address &address) const;
 
 	std::string getHeaderValue (const std::string &headerName) const;
-	void addHeader (const std::string &headerName, const std::string &headerValue);
-	void removeHeader (const std::string &headerName);
+	bool setHeader (const std::string &headerName, const std::string &headerValue);
 
 private:
 	L_DECLARE_PRIVATE(Address);
