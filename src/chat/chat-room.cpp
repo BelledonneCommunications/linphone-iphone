@@ -19,17 +19,17 @@
 #include <algorithm>
 
 #include "chat-room-p.h"
-
-#include "chat-room.h"
 #include "logger/logger.h"
 #include "utils/content-type.h"
 #include "utils/utils.h"
 
+#include "chat-room.h"
+
+// =============================================================================
+
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// =============================================================================
 
 const string ChatRoomPrivate::imdnPrefix = "/imdn:imdn";
 const string ChatRoomPrivate::isComposingPrefix = "/xsi:isComposing";

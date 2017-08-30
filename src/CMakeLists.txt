@@ -24,6 +24,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	c-wrapper/api/c-event-log.h
 	c-wrapper/c-tools.h
 	c-wrapper/c-types.h
+	c-wrapper/wrapper.h
 	chat/chat-room-p.h
 	chat/chat-room.h
 	content/content.h

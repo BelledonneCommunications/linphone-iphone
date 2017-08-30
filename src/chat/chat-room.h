@@ -20,28 +20,10 @@
 #define _CHAT_ROOM_H_
 
 #include <list>
-#include <string>
 
 #include "object/object.h"
 
 #include "linphone/types.h"
-#include "sal/sal.h"
-
-#include "private.h"
-
-#include <bctoolbox/port.h>
-
-extern "C" {
-LinphoneChatRoom *_linphone_core_create_chat_room_base (LinphoneCore *lc, LinphoneAddress *addr);
-int linphone_core_message_received (LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg);
-void linphone_core_real_time_text_received (LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call);
-bctbx_list_t *linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr);
-void linphone_chat_room_remove_transient_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg);
-void linphone_chat_room_set_call (LinphoneChatRoom *cr, LinphoneCall *call);
-void linphone_chat_room_release (LinphoneChatRoom *cr);
-void linphone_chat_message_send_imdn (LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason);
-void linphone_chat_message_update_state (LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
-}
 
 // =============================================================================
 
@@ -50,16 +32,6 @@ LINPHONE_BEGIN_NAMESPACE
 class ChatRoomPrivate;
 
 class ChatRoom : public Object {
-	friend LinphoneChatRoom *::_linphone_core_create_chat_room_base (LinphoneCore *lc, LinphoneAddress *addr);
-	friend int ::linphone_core_message_received(LinphoneCore * lc, SalOp * op, const SalMessage * sal_msg);
-	friend void ::linphone_core_real_time_text_received(LinphoneCore * lc, LinphoneChatRoom * cr, uint32_t character, LinphoneCall * call);
-	friend bctbx_list_t *::linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr);
-	friend void ::linphone_chat_room_remove_transient_message(LinphoneChatRoom * cr, LinphoneChatMessage * msg);
-	friend void ::linphone_chat_room_set_call(LinphoneChatRoom * cr, LinphoneCall * call);
-	friend void ::linphone_chat_room_release(LinphoneChatRoom * cr);
-	friend void ::linphone_chat_message_send_imdn(LinphoneChatMessage * cm, ImdnType imdn_type, LinphoneReason reason);
-	friend void ::linphone_chat_message_update_state(LinphoneChatMessage * msg, LinphoneChatMessageState new_state);
-
 public:
 	ChatRoom (LinphoneCore *core, LinphoneAddress *peerAddress);
 	virtual ~ChatRoom () = default;

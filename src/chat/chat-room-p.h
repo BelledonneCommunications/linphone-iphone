@@ -19,15 +19,11 @@
 #ifndef _CHAT_ROOM_P_H_
 #define _CHAT_ROOM_P_H_
 
-#include <list>
-
-#include "object/object-p.h"
-
-#include "chat-room.h"
-
+// From coreapi.
 #include "private.h"
 
-#include <belle-sip/belle-sip.h>
+#include "chat-room.h"
+#include "object/object-p.h"
 
 // =============================================================================
 
@@ -122,7 +118,7 @@ public:
 	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
 	LinphoneChatMessage *pendingMessage = nullptr;
 
-public:
+private:
 	L_DECLARE_PUBLIC(ChatRoom);
 };
 

@@ -22,6 +22,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlwriter.h>
+
 #include "linphone/core.h"
 #include "private.h"
 #include "linphone/lpconfig.h"
@@ -29,14 +33,12 @@
 #include "ortp/b64.h"
 #include "linphone/wrapper_utils.h"
 
-#include "chat/chat-room.h"
+#include "c-wrapper/wrapper.h"
 #include "chat/chat-room-p.h"
+#include "chat/chat-room.h"
 #include "utils/content-type.h"
 #include "utils/utils.h"
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xmlwriter.h>
 
 struct _LinphoneChatRoom{
 	belle_sip_object_t base;
@@ -179,7 +181,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
 LinphoneChatRoom *_linphone_core_create_chat_room_base(LinphoneCore *lc, LinphoneAddress *addr){
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
 	cr->cr = new LinphonePrivate::ChatRoom(lc, addr);
-	cr->cr->getPrivate()->setCBackPointer(cr);
+	L_GET_PRIVATE(cr->cr)->setCBackPointer(cr);
 	return cr;
 }
 
@@ -260,7 +262,7 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 }
 
 void linphone_chat_room_release(LinphoneChatRoom *cr) {
-	cr->cr->getPrivate()->release();
+	L_GET_PRIVATE(cr->cr)->release();
 }
 
 LinphoneChatRoom *linphone_chat_room_ref(LinphoneChatRoom *cr) {
@@ -281,7 +283,7 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
 }
 
 void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	cr->cr->getPrivate()->removeTransientMessage(msg);
+	L_GET_PRIVATE(cr->cr)->removeTransientMessage(msg);
 }
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
@@ -289,7 +291,7 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 	linphone_chat_message_store_state(msg);
 
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
-		msg->chat_room->cr->getPrivate()->moveTransientMessageToWeakMessages(msg);
+		L_GET_PRIVATE(msg->chat_room->cr)->moveTransientMessageToWeakMessages(msg);
 	}
 }
 
@@ -346,7 +348,7 @@ void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChat
 							file_url = xmlGetProp(cur, (const xmlChar *)"url");
 						}
 
-						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) { 
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) {
 							/* there is a key in the msg: file has been encrypted */
 							/* convert the key from base 64 */
 							xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
@@ -354,7 +356,7 @@ void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChat
 							uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
 							/* decode the key into local key buffer */
 							b64::b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
-							linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength); 
+							linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength);
 							/* duplicate key value into the linphone content private structure */
 							xmlFree(keyb64);
 							free(keyBuffer);
@@ -380,7 +382,7 @@ int linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage
 	LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);
-	LinphoneReason reason = cr->cr->getPrivate()->messageReceived(op, sal_msg);
+	LinphoneReason reason = L_GET_PRIVATE(cr->cr)->messageReceived(op, sal_msg);
 	linphone_address_unref(addr);
 	return reason;
 }
@@ -573,7 +575,7 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, Imdn
 void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason) {
 	char *content = linphone_chat_message_create_imdn_xml(cm, imdn_type, reason);
 	if (content) {
-		linphone_chat_message_get_chat_room(cm)->cr->getPrivate()->sendImdn(content, reason);
+		L_GET_PRIVATE(linphone_chat_message_get_chat_room(cm)->cr)->sendImdn(content, reason);
 		ms_free(content);
 	}
 }
@@ -597,7 +599,7 @@ void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm) {
 }
 
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
-	cr->cr->getPrivate()->realtimeTextReceived(character, call);
+	L_GET_PRIVATE(cr->cr)->realtimeTextReceived(character, call);
 }
 
 uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
@@ -652,11 +654,11 @@ LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room) {
 }
 
 void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call) {
-	cr->cr->getPrivate()->setCall(call);
+	L_GET_PRIVATE(cr->cr)->setCall(call);
 }
 
 bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr) {
-	std::list<LinphoneChatMessage *> l = cr->cr->getPrivate()->getTransientMessages();
+	std::list<LinphoneChatMessage *> l = L_GET_PRIVATE(cr->cr)->getTransientMessages();
 	bctbx_list_t *result = nullptr;
 	for (auto it = l.begin(); it != l.end(); it++)
 		result = bctbx_list_append(result, *it);
@@ -807,7 +809,7 @@ int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 		msg->message = ms_strdup(text);
 	else
 		msg->message = NULL;
-	
+
 	return 0;
 }
 
