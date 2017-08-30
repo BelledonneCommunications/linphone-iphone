@@ -23,7 +23,10 @@
 
 // =============================================================================
 
-extern "C" {
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_new ();
 LINPHONE_PUBLIC LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_log);
 
@@ -47,6 +50,9 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_event_get
 
 LINPHONE_PUBLIC LinphoneMessageEvent *linphone_message_event_new (LinphoneMessage *message);
 LINPHONE_PUBLIC LinphoneMessage *linphone_message_event_get_message (const LinphoneMessageEvent *message_event);
-}
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif // ifndef _C_EVENT_LOG_H_

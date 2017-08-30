@@ -20,6 +20,8 @@
 
 #include "c-event-log.h"
 
+#include "event-log/call-event.h"
+#include "event-log/conference-participant-event.h"
 #include "event-log/message-event.h"
 
 // =============================================================================
