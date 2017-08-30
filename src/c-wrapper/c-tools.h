@@ -52,7 +52,7 @@
 	);
 
 #define L_DECLARE_C_STRUCT_NEW_DEFAULT(STRUCT, C_NAME) \
-	Linphone ## STRUCT * CNAME ## _new() { \
+	Linphone ## STRUCT * linphone_ ## C_NAME ## _new() { \
 		Linphone ## STRUCT * object = _linphone_ ## C_NAME ## _init(); \
 		object->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>(); \
 		return object; \
