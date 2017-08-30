@@ -247,7 +247,7 @@ string ChatRoomPrivate::createIsComposingXml () const {
 	}
 	if ((err >= 0) && isComposing) {
 		int refreshTimeout = lp_config_get_int(core->config, "sip", "composing_refresh_timeout", composingDefaultRefreshTimeout);
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)to_string(refreshTimeout).c_str());
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)Utils::toString(refreshTimeout).c_str());
 	}
 	if (err >= 0) {
 		/* Close the "isComposing" element. */

@@ -37,6 +37,16 @@ namespace Utils {
 		return split(str, std::string(1, delimiter));
 	}
 
+	LINPHONE_PUBLIC std::string toString (int val);
+	LINPHONE_PUBLIC std::string toString (long val);
+	LINPHONE_PUBLIC std::string toString (long long val);
+	LINPHONE_PUBLIC std::string toString (unsigned val);
+	LINPHONE_PUBLIC std::string toString (unsigned long val);
+	LINPHONE_PUBLIC std::string toString (unsigned long long val);
+	LINPHONE_PUBLIC std::string toString (float val);
+	LINPHONE_PUBLIC std::string toString (double val);
+	LINPHONE_PUBLIC std::string toString (long double val);
+
 	LINPHONE_PUBLIC int stoi (const std::string &str, size_t *idx = 0, int base = 10);
 
 	// Return a buffer allocated with new.

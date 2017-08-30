@@ -17,6 +17,7 @@
  */
 
 #include <cstdlib>
+#include <sstream>
 
 #include <bctoolbox/port.h>
 
@@ -51,6 +52,30 @@ vector<string> Utils::split (const string &str, const string &delimiter) {
 
 	return out;
 }
+
+#ifndef __ANDROID__
+#define TO_STRING_IMPL(TYPE) \
+	string Utils::toString(TYPE val) { \
+		return to_string(val); \
+	}
+#else
+#define TO_STRING_IMPL(TYPE) \
+	string Utils::toString(TYPE val) { \
+		ostringstream os; \
+		os << val; \
+		return os.str(); \
+	}
+#endif // ifndef __ANDROID__
+
+TO_STRING_IMPL(int)
+TO_STRING_IMPL(long)
+TO_STRING_IMPL(long long)
+TO_STRING_IMPL(unsigned)
+TO_STRING_IMPL(unsigned long)
+TO_STRING_IMPL(unsigned long long)
+TO_STRING_IMPL(float)
+TO_STRING_IMPL(double)
+TO_STRING_IMPL(long double)
 
 int Utils::stoi (const string &str, size_t *idx, int base) {
 	char *p;
