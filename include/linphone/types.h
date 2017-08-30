@@ -343,7 +343,9 @@ typedef enum _LinphoneCallStatus {
 	LinphoneCallAborted, /**< The call was aborted */
 	LinphoneCallMissed, /**< The call was missed (unanswered) */
 	LinphoneCallDeclined, /**< The call was declined, either locally or by remote end */
-	LinphoneCallEarlyAborted /**<The call was aborted before being advertised to the application - for protocol reasons*/
+	LinphoneCallEarlyAborted, /**<The call was aborted before being advertised to the application - for protocol reasons*/
+	LinphoneCallAcceptedElsewhere, /**<The call was answered on another device*/
+	LinphoneCallDeclinedElsewhere /**<The call was declined on another device*/
 } LinphoneCallStatus;
 
 /**

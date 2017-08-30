@@ -238,6 +238,12 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl){
 		case LinphoneCallMissed:
 			status=_("missed");
 			break;
+		case LinphoneCallAcceptedElsewhere:
+			status=_("answered elsewhere");
+			break;
+		case LinphoneCallDeclinedElsewhere:
+			status=_("declined elsewhere");
+			break;
 		default:
 			status=_("unknown");
 	}

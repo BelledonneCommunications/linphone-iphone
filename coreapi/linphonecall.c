@@ -1864,6 +1864,32 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 					call->log->status=LinphoneCallMissed;
 				}
 				break;
+			case LinphoneReasonNone:
+				if (call->log->dir == LinphoneCallIncoming){
+					const LinphoneErrorInfo *ei = linphone_call_get_error_info(call);
+					if (ei) {
+						int code = linphone_error_info_get_protocol_code(ei);
+						if((code >= 200 && code < 300)) {
+							// error between 200-299 means accepted elsewhere
+							call->log->status=LinphoneCallAcceptedElsewhere;
+							break;
+						}
+					}
+				}
+				break;
+			case LinphoneReasonDoNotDisturb:
+				if (call->log->dir == LinphoneCallIncoming){
+					const LinphoneErrorInfo *ei = linphone_call_get_error_info(call);
+					if (ei) {
+						int code = linphone_error_info_get_protocol_code(ei);
+						if(code >= 600 && code < 700) {
+							// error between 600-699 means declined elsewhere
+							call->log->status=LinphoneCallDeclinedElsewhere;
+							break;
+						}
+					}
+				}
+				break;
 			default:
 				break;
 			}
