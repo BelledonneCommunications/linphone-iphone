@@ -21,6 +21,7 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
+	address/address.h
 	c-wrapper/api/c-event-log.h
 	c-wrapper/c-tools.h
 	c-wrapper/c-types.h
@@ -43,6 +44,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/provider/db-session-p.h
 	db/provider/db-session-provider.h
 	db/provider/db-session.h
+	enums.h
 	event-log/call-event.h
 	event-log/conference-event-p.h
 	event-log/conference-event.h
@@ -66,6 +68,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
+	address/address.cpp
 	c-wrapper/api/c-event-log.cpp
 	chat/chat-room.cpp
 	content/content.cpp
