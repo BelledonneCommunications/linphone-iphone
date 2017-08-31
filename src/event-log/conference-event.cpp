@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<const Address> &address) :
 	EventLog(*new ConferenceEventPrivate, type) {
 	L_D(ConferenceEvent);
-	L_ASSERT(type == ConferenceCreatedEvent || type == ConferenceDestroyedEvent);
+	L_ASSERT(type == TypeConferenceCreated || type == TypeConferenceDestroyed);
 	L_ASSERT(address);
 	// TODO: Duplicate address.
 	d->address = address;

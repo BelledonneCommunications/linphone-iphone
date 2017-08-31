@@ -20,12 +20,18 @@
 
 #include "c-event-log.h"
 
+#include "event-log/call-event.h"
+#include "event-log/conference-participant-event.h"
 #include "event-log/message-event.h"
 
 // =============================================================================
 
 using namespace std;
 
+extern "C" {
+// -----------------------------------------------------------------------------
+// Event log.
+// -----------------------------------------------------------------------------
 
 L_DECLARE_C_STRUCT_IMPL(EventLog, event_log);
 L_DECLARE_C_STRUCT_NEW_DEFAULT(EventLog, event_log);
@@ -33,6 +39,10 @@ L_DECLARE_C_STRUCT_NEW_DEFAULT(EventLog, event_log);
 LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *eventLog) {
 	return static_cast<LinphoneEventLogType>(eventLog->cppPtr->getType());
 }
+
+// -----------------------------------------------------------------------------
+// Message event.
+// -----------------------------------------------------------------------------
 
 L_DECLARE_C_STRUCT_IMPL(MessageEvent, message_event);
 
@@ -46,4 +56,60 @@ LinphoneMessageEvent *linphone_message_event_new (LinphoneMessage *message) {
 LinphoneMessage *linphone_message_event_get_message (const LinphoneMessageEvent *messageEvent) {
 	// TODO.
 	return nullptr;
+}
+
+// -----------------------------------------------------------------------------
+// Call event.
+// -----------------------------------------------------------------------------
+
+// L_DECLARE_C_STRUCT_IMPL(CallEvent, call_event);
+
+LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneCall *call) {
+	// TODO.
+	return nullptr;
+}
+
+LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event) {
+	// TODO.
+	return nullptr;
+}
+
+// -----------------------------------------------------------------------------
+// Conference event.
+// -----------------------------------------------------------------------------
+
+// L_DECLARE_C_STRUCT_IMPL(ConferenceEvent, conference_event);
+
+LinphoneConferenceEvent *linphone_conference_event_new (
+	LinphoneEventLogType type,
+	const LinphoneAddress *address
+) {
+	// TODO.
+	return nullptr;
+}
+
+const LinphoneAddress *linphone_conference_event_get_address (const LinphoneConferenceEvent *conference_event) {
+	// TODO.
+	return nullptr;
+}
+
+// -----------------------------------------------------------------------------
+// Conference participant event.
+// -----------------------------------------------------------------------------
+
+// L_DECLARE_C_STRUCT_IMPL(ConferenceParticipantEvent, conference_participant_event);
+
+LinphoneConferenceParticipantEvent *linphone_conference_participant_event_new (
+	LinphoneEventLogType type,
+	const LinphoneAddress *conference_address,
+	const LinphoneAddress *participant_address
+) {
+	// TODO.
+	return nullptr;
+}
+
+const LinphoneAddress *linphone_conference_participant_event_get_participant_address (const LinphoneConferenceParticipantEvent *conference_participant_event) {
+	// TODO.
+	return nullptr;
+}
 }

@@ -749,11 +749,11 @@ error:
 
 bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 	if (cr) {
-		switch (linphone_core_lime_enabled(cr->lc)) {
+		switch (linphone_core_lime_enabled(linphone_chat_room_get_core(cr))) {
 			case LinphoneLimeDisabled: return FALSE;
 			case LinphoneLimeMandatory:
 			case LinphoneLimePreferred: {
-				void *zrtp_cache_db = linphone_core_get_zrtp_cache_db(cr->lc);
+				void *zrtp_cache_db = linphone_core_get_zrtp_cache_db(linphone_chat_room_get_core(cr));
 				if (zrtp_cache_db != NULL) {
 					bool_t res;
 					limeURIKeys_t associatedKeys;
@@ -832,7 +832,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	const char *new_content_type = "xml/cipher";
-	if(linphone_core_lime_enabled(room->lc)) {
+	if(linphone_core_lime_enabled(linphone_chat_room_get_core(room))) {
 		if (linphone_chat_room_lime_available(room)) {
 			void *zrtp_cache_db = NULL; /* use a void * instead of sqlite3 * to avoid problems and ifdef when SQLITE is not available(the get function shall return NULL in that case) */
 			if (msg->content_type) {
@@ -862,7 +862,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 
 				retval = lime_createMultipartMessage(zrtp_cache_db, msg->content_type, (uint8_t *)msg->message, selfUri, peerUri, &crypted_body);
 				if (retval != 0) { /* fail to encrypt */
-					ms_warning("Unable to encrypt message for %s : %s", room->peer, lime_error_code_to_string(retval));
+					ms_warning("Unable to encrypt message for %s : %s", peerUri, lime_error_code_to_string(retval));
 					if (crypted_body) ms_free(crypted_body);
 					errcode = 488;
 				} else { /* encryption ok, swap plain text message body by encrypted one */

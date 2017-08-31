@@ -20,6 +20,7 @@
 #define _EVENT_LOG_H_
 
 #include "object/clonable-object.h"
+#include "event-log-enums.h"
 
 // =============================================================================
 
@@ -29,7 +30,9 @@ class EventLogPrivate;
 
 class LINPHONE_PUBLIC EventLog : public ClonableObject {
 public:
-	enum Type : int;
+	enum Type {
+		L_ENUM_VALUES_EVENT_LOG_TYPE
+	};
 
 	EventLog ();
 	EventLog (const EventLog &src);
@@ -45,8 +48,6 @@ protected:
 private:
 	L_DECLARE_PRIVATE(EventLog);
 };
-
-#include "event-log-enums.h"
 
 LINPHONE_END_NAMESPACE
 

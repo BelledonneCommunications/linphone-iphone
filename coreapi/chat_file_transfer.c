@@ -26,8 +26,12 @@
 #include "private.h"
 #include "ortp/b64.h"
 
+#include "chat/chat-room.h"
+
+extern LinphonePrivate::ChatRoom& linphone_chat_room_get_cpp_obj(LinphoneChatRoom *cr);
+
 static bool_t file_transfer_in_progress_and_valid(LinphoneChatMessage* msg) {
-	return (msg->chat_room && msg->chat_room->lc && msg->http_request && !belle_http_request_is_cancelled(msg->http_request));
+	return (msg->chat_room && linphone_chat_room_get_core(msg->chat_room) && msg->http_request && !belle_http_request_is_cancelled(msg->http_request));
 }
 
 static void _release_http_request(LinphoneChatMessage* msg) {
@@ -88,7 +92,7 @@ static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handl
 			msg, msg->file_transfer_information, offset, total);
 	} else {
 		/* Legacy: call back given by application level */
-		linphone_core_notify_file_transfer_progress_indication(msg->chat_room->lc, msg, msg->file_transfer_information,
+		linphone_core_notify_file_transfer_progress_indication(linphone_chat_room_get_core(msg->chat_room), msg, msg->file_transfer_information,
 															offset, total);
 	}
 }
@@ -108,7 +112,7 @@ static int on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *
 		return BELLE_SIP_STOP;
 	}
 
-	lc = msg->chat_room->lc;
+	lc = linphone_chat_room_get_core(msg->chat_room);
 	/* if we've not reach the end of file yet, ask for more data */
 	/* in case of file body handler, won't be called */
 	if (msg->file_transfer_filepath == NULL && offset < linphone_content_get_size(msg->file_transfer_information)) {
@@ -153,7 +157,7 @@ static int on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *
 
 static void on_send_end(belle_sip_user_body_handler_t *bh, void *data) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
-	LinphoneCore *lc = msg->chat_room->lc;
+	LinphoneCore *lc = linphone_chat_room_get_core(msg->chat_room);
 	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
 	
 	if (imee) {
@@ -185,8 +189,7 @@ static void file_upload_begin_background_task(LinphoneChatMessage *obj){
 	}
 }
 
-static void linphone_chat_message_process_response_from_post_file(void *data,
-																  const belle_http_response_event_t *event) {
+static void linphone_chat_message_process_response_from_post_file(void *data, const belle_http_response_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 
 	if (msg->http_request && !file_transfer_in_progress_and_valid(msg)) {
@@ -205,7 +208,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			belle_sip_body_handler_t *first_part_bh;
 
 			bool_t is_file_encryption_enabled = FALSE;
-			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(msg->chat_room->lc);
+			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(linphone_chat_room_get_core(msg->chat_room));
 			if (imee) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 				LinphoneImEncryptionEngineCbsIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer_cb = 
@@ -339,7 +342,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 				linphone_chat_message_ref(msg);
 				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 				_release_http_request(msg);
-				_linphone_chat_room_send_message(msg->chat_room, msg);
+				linphone_chat_room_get_cpp_obj(msg->chat_room).sendMessage(msg);
 				file_upload_end_background_task(msg);
 				linphone_chat_message_unref(msg);
 			} else {
@@ -374,7 +377,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 		linphone_chat_message_cancel_file_transfer(msg);
 		return;
 	}
-	lc = msg->chat_room->lc;
+	lc = linphone_chat_room_get_core(msg->chat_room);
 
 	if (lc == NULL){
 		return; /*might happen during linphone_core_destroy()*/
@@ -425,7 +428,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 
 static void on_recv_end(belle_sip_user_body_handler_t *bh, void *data) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
-	LinphoneCore *lc = msg->chat_room->lc;
+	LinphoneCore *lc = linphone_chat_room_get_core(msg->chat_room);
 	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(lc);
 	int retval = -1;
 	
@@ -536,7 +539,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 
 int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char* url, const char* action, const belle_http_request_listener_callbacks_t *cbs) {
 	belle_generic_uri_t *uri = NULL;
-	const char* ua = linphone_core_get_user_agent(msg->chat_room->lc);
+	const char* ua = linphone_core_get_user_agent(linphone_chat_room_get_core(msg->chat_room));
 
 	if (url == NULL) {
 		ms_warning("Cannot process file transfer msg: no file remote URI configured.");
@@ -559,7 +562,7 @@ int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char
 
 	/* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
 	msg->http_listener = belle_http_request_listener_create_from_callbacks(cbs, linphone_chat_message_ref(msg));
-	belle_http_provider_send_request(msg->chat_room->lc->http_provider, msg->http_request, msg->http_listener);
+	belle_http_provider_send_request(linphone_chat_room_get_core(msg->chat_room)->http_provider, msg->http_request, msg->http_listener);
 	return 0;
 error:
 	if (uri) {
@@ -580,7 +583,7 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
 	cbs.process_response = linphone_chat_message_process_response_from_post_file;
 	cbs.process_io_error = linphone_chat_message_process_io_error_upload;
 	cbs.process_auth_requested = linphone_chat_message_process_auth_requested_upload;
-	err = _linphone_chat_room_start_http_transfer(msg, linphone_core_get_file_transfer_server(msg->chat_room->lc), "POST", &cbs);
+	err = _linphone_chat_room_start_http_transfer(msg, linphone_core_get_file_transfer_server(linphone_chat_room_get_core(msg->chat_room)), "POST", &cbs);
 	if (err == -1){
 		linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
 	}
@@ -621,10 +624,10 @@ void _linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg, bool_
 		if (!belle_http_request_is_cancelled(msg->http_request)) {
 			if (msg->chat_room) {
 				ms_message("Canceling file transfer %s - msg [%p] chat room[%p]"
-								, (msg->external_body_url == NULL) ? linphone_core_get_file_transfer_server(msg->chat_room->lc) : msg->external_body_url
+								, (msg->external_body_url == NULL) ? linphone_core_get_file_transfer_server(linphone_chat_room_get_core(msg->chat_room)) : msg->external_body_url
 								, msg
 								, msg->chat_room);
-				belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
+				belle_http_provider_cancel_request(linphone_chat_room_get_core(msg->chat_room)->http_provider, msg->http_request);
 				if ((msg->dir == LinphoneChatMessageOutgoing) && unref) {
 					// must release it
 					linphone_chat_message_unref(msg);
@@ -654,20 +657,6 @@ const char *linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage
 	return msg->file_transfer_filepath;
 }
 
-LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr,
-																	 const LinphoneContent *initial_content) {
-	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
-	msg->callbacks = linphone_chat_message_cbs_new();
-	msg->chat_room = (LinphoneChatRoom *)cr;
-	msg->message = NULL;
-	msg->file_transfer_information = linphone_content_copy(initial_content);
-	msg->dir = LinphoneChatMessageOutgoing;
-	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
-	msg->from = linphone_address_new(linphone_core_get_identity(cr->lc)); /*direct assignment*/
-	/* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
-	msg->content_type = NULL;
-	/* this will store the http request during file upload to the server */
-	msg->http_request = NULL;
-	msg->time = ms_time(0);
-	return msg;
+LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
+	return linphone_chat_room_get_cpp_obj(cr).createFileTransferMessage(initial_content);
 }

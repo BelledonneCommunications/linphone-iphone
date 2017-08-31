@@ -21,12 +21,16 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
+	address/address.h
 	conference/conference-listener.h
 	conference/local-conference-event-handler.h
 	conference/remote-conference-event-handler.h
 	c-wrapper/api/c-event-log.h
 	c-wrapper/c-tools.h
 	c-wrapper/c-types.h
+	c-wrapper/wrapper.h
+	chat/chat-room-p.h
+	chat/chat-room.h
 	content/content.h
 	core/core.h
 	cpim/cpim.h
@@ -59,16 +63,21 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object-p.h
 	object/object.h
 	object/singleton.h
+	utils/content-type.h
+	utils/enum-generator.h
 	utils/general.h
+	utils/magic-macros.h
 	utils/utils.h
 	xml/conference-info.h
 	xml/xml.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
+	address/address.cpp
 	conference/local-conference-event-handler.cpp
 	conference/remote-conference-event-handler.cpp
 	c-wrapper/api/c-event-log.cpp
+	chat/chat-room.cpp
 	content/content.cpp
 	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
@@ -90,6 +99,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	message/message.cpp
 	object/clonable-object.cpp
 	object/object.cpp
+	utils/content-type.cpp
 	utils/general.cpp
 	utils/utils.cpp
 	xml/conference-info.cpp

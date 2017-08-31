@@ -1,5 +1,5 @@
 /*
- * event-log-p.h
+ * content-type.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,23 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_LOG_P_H_
-#define _EVENT_LOG_P_H_
+#ifndef _CONTENT_TYPE_H_
+#define _CONTENT_TYPE_H_
 
-#include "event-log.h"
-#include "object/clonable-object-p.h"
+#include <string>
+
+#include "general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventLogPrivate : public ClonableObjectPrivate {
-private:
-	EventLog::Type type = EventLog::TypeNone;
-
-	L_DECLARE_PUBLIC(EventLog);
-};
+namespace ContentType {
+	bool isFileTransfer (const std::string &contentType);
+	bool isImIsComposing (const std::string &contentType);
+	bool isImdn (const std::string &contentType);
+	bool isText (const std::string &contentType);
+}
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_P_H_
+#endif // ifndef _CONTENT_TYPE_H_

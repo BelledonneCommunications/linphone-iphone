@@ -1719,7 +1719,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		call->ringing_beep=FALSE;
 	}
 	if (call->chat_room){
-		call->chat_room->call = NULL;
+		linphone_chat_room_set_call(call->chat_room, NULL);
 	}
 	if (lc->calls == NULL){
 		ms_bandwidth_controller_reset_state(lc->bw_controller);
@@ -1862,6 +1862,32 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			case LinphoneReasonNotAnswered:
 				if (call->log->dir == LinphoneCallIncoming){
 					call->log->status=LinphoneCallMissed;
+				}
+				break;
+			case LinphoneReasonNone:
+				if (call->log->dir == LinphoneCallIncoming){
+					const LinphoneErrorInfo *ei = linphone_call_get_error_info(call);
+					if (ei) {
+						int code = linphone_error_info_get_protocol_code(ei);
+						if((code >= 200 && code < 300)) {
+							// error between 200-299 means accepted elsewhere
+							call->log->status=LinphoneCallAcceptedElsewhere;
+							break;
+						}
+					}
+				}
+				break;
+			case LinphoneReasonDoNotDisturb:
+				if (call->log->dir == LinphoneCallIncoming){
+					const LinphoneErrorInfo *ei = linphone_call_get_error_info(call);
+					if (ei) {
+						int code = linphone_error_info_get_protocol_code(ei);
+						if(code >= 600 && code < 700) {
+							// error between 600-699 means declined elsewhere
+							call->log->status=LinphoneCallDeclinedElsewhere;
+							break;
+						}
+					}
 				}
 				break;
 			default:

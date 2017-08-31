@@ -463,8 +463,10 @@ void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
 	if (ortp_get_log_handler() == linphone_core_log_collection_handler) {
 		ms_message("There is already a log collection handler, keep it");
 		liblinphone_log_func = logfunc;
-	} else
+	} else {
 		ortp_set_log_handler(logfunc);
+		sal_set_log_handler(logfunc);
+	}
 }
 
 void linphone_core_set_log_file(FILE *file) {
@@ -696,8 +698,10 @@ void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 			liblinphone_log_func = ortp_get_log_handler();
 		}
 		ortp_set_log_handler(linphone_core_log_collection_handler);
+		sal_set_log_handler(linphone_core_log_collection_handler);
 	} else {
 		ortp_set_log_handler(liblinphone_log_func);
+		sal_set_log_handler(liblinphone_log_func);
 	}
 }
 

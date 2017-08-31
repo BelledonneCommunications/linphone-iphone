@@ -1,5 +1,5 @@
 /*
- * call-event.cpp
+ * content-type.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event-log-p.h"
-
-#include "call-event.h"
+#include "content-type.h"
 
 // =============================================================================
 
@@ -26,35 +24,20 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallEventPrivate : public EventLogPrivate {
-public:
-	shared_ptr<Call> call;
-};
-
-// -----------------------------------------------------------------------------
-
-CallEvent::CallEvent (Type type, const shared_ptr<Call> &call) : EventLog(*new CallEventPrivate, type) {
-	L_D(CallEvent);
-	L_ASSERT(call);
-	L_ASSERT(type == TypeCallStart || type == TypeCallEnd);
-	d->call = call;
+bool ContentType::isFileTransfer (const string &contentType) {
+	return "application/vnd.gsma.rcs-ft-http+xml" == contentType;
 }
 
-CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getCall()) {}
-
-CallEvent &CallEvent::operator= (const CallEvent &src) {
-	L_D(CallEvent);
-	if (this != &src) {
-		EventLog::operator=(src);
-		d->call = src.getPrivate()->call;
-	}
-
-	return *this;
+bool ContentType::isImIsComposing (const string &contentType) {
+	return "application/im-iscomposing+xml" == contentType;
 }
 
-shared_ptr<Call> CallEvent::getCall () const {
-	L_D(const CallEvent);
-	return d->call;
+bool ContentType::isImdn (const string &contentType) {
+	return "message/imdn+xml" == contentType;
+}
+
+bool ContentType::isText (const string &contentType) {
+	return "text/plain" == contentType;
 }
 
 LINPHONE_END_NAMESPACE

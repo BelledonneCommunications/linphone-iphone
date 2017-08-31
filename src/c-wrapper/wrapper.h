@@ -1,5 +1,5 @@
 /*
- * event-log-p.h
+ * wrapper.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,23 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_LOG_P_H_
-#define _EVENT_LOG_P_H_
+#ifndef _WRAPPER_H_
+#define _WRAPPER_H_
 
-#include "event-log.h"
-#include "object/clonable-object-p.h"
+#include <utility>
+
+#include "object/object.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventLogPrivate : public ClonableObjectPrivate {
-private:
-	EventLog::Type type = EventLog::TypeNone;
+class Wrapper {
+public:
+	template<typename T>
+	static decltype(std::declval<T>().getPrivate()) getPrivate (T *object) {
+		return object->getPrivate();
+	}
 
-	L_DECLARE_PUBLIC(EventLog);
+private:
+	Wrapper ();
+
+	L_DISABLE_COPY(Wrapper);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_P_H_
+#define L_GET_PRIVATE(OBJECT) \
+	LINPHONE_NAMESPACE::Wrapper::getPrivate(OBJECT)
+
+#endif // ifndef _WRAPPER_H_

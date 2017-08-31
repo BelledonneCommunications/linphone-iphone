@@ -1,5 +1,5 @@
 /*
- * call-event.cpp
+ * enum-generator.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,45 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event-log-p.h"
+#ifndef _ENUM_GENERATOR_H_
+#define _ENUM_GENERATOR_H_
 
-#include "call-event.h"
+#include "magic-macros.h"
 
 // =============================================================================
 
-using namespace std;
-
 LINPHONE_BEGIN_NAMESPACE
 
-class CallEventPrivate : public EventLogPrivate {
-public:
-	shared_ptr<Call> call;
-};
+#define L_ENUM_VALUE(C, VALUE) C ## VALUE
 
-// -----------------------------------------------------------------------------
-
-CallEvent::CallEvent (Type type, const shared_ptr<Call> &call) : EventLog(*new CallEventPrivate, type) {
-	L_D(CallEvent);
-	L_ASSERT(call);
-	L_ASSERT(type == TypeCallStart || type == TypeCallEnd);
-	d->call = call;
-}
-
-CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getCall()) {}
-
-CallEvent &CallEvent::operator= (const CallEvent &src) {
-	L_D(CallEvent);
-	if (this != &src) {
-		EventLog::operator=(src);
-		d->call = src.getPrivate()->call;
-	}
-
-	return *this;
-}
-
-shared_ptr<Call> CallEvent::getCall () const {
-	L_D(const CallEvent);
-	return d->call;
-}
+#ifndef L_USE_C_ENUM
+	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
+		MM_APPLY_COMMA(L_ENUM_VALUE, ENUM_NAME, __VA_ARGS__)
+#else
+	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
+		MM_APPLY_COMMA(L_ENUM_VALUE, Linphone ## CLASS_NAME ## ENUM_NAME, __VA_ARGS__)
+#endif // ifndef L_USE_C_ENUM
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _ENUM_GENERATOR_H_

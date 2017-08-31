@@ -19,17 +19,24 @@
 #ifndef _C_TYPES_H_
 #define _C_TYPES_H_
 
-// Do not move these defines.
-#define L_DECLARE_ENUM(CLASS, ENUM) enum Linphone ## CLASS ## ENUM
-#define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
+// Do not move this define.
+// Enable C enums.
+#define L_USE_C_ENUM
 
 #include "event-log/event-log-enums.h"
+
+#define L_DECLARE_C_ENUM(CLASS, ENUM, VALUES) enum Linphone ## CLASS ## ENUM { VALUES }
+#define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
 
 // =============================================================================
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
+
+// =============================================================================
+// C Structures.
+// =============================================================================
 
 L_DECLARE_C_STRUCT(Call);
 L_DECLARE_C_STRUCT(CallEvent);
@@ -41,6 +48,12 @@ L_DECLARE_C_STRUCT(MessageEvent);
 
 // TODO: Remove me in the future.
 typedef struct SalAddress LinphoneAddress;
+
+// =============================================================================
+// C Enums.
+// =============================================================================
+
+L_DECLARE_C_ENUM(EventLog, Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
 
 #ifdef __cplusplus
 	}

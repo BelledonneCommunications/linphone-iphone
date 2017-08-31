@@ -40,10 +40,10 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 ) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, conferenceAddress) {
 	L_D(ConferenceParticipantEvent);
 	L_ASSERT(
-		type == ConferenceParticipantAddedEvent ||
-		type == ConferenceParticipantRemovedEvent ||
-		type == ConferenceParticipantSetAdminEvent ||
-		type == ConferenceParticipantUnsetAdminEvent
+		type == TypeConferenceParticipantAdded ||
+		type == TypeConferenceParticipantRemoved ||
+		type == TypeConferenceParticipantSetAdmin ||
+		type == TypeConferenceParticipantUnsetAdmin
 	);
 	L_ASSERT(participantAddress);
 	// TODO: Duplicate address.

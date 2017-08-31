@@ -61,6 +61,16 @@ public interface LinphoneCallLog {
 		 */
 		public final static CallStatus EarlyAborted = new CallStatus(4,"Early Aborted");
 
+		/**
+		 * The call was answered on another device
+		 */
+		public final static CallStatus AcceptedElsewhere = new CallStatus(5,"Accepted Elsewhere");
+
+		/**
+		 * The call was declined on another device
+		 */
+		public final static CallStatus DeclinedElsewhere = new CallStatus(6,"Declined Elsewhere");
+
 
 		private CallStatus(int value,String stringValue) {
 			mValue = value;
