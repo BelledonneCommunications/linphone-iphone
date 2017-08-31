@@ -843,26 +843,18 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					data->timer = nil;
 				}
 				LinphoneCallLog *UNlog = linphone_call_get_call_log(call);
-                                if ((UNlog == NULL ||
-                                     linphone_call_log_get_status(UNlog) ==
-                                         LinphoneCallMissed ||
-                                     linphone_call_log_get_status(UNlog) ==
-                                         LinphoneCallAborted ||
-                                     linphone_call_log_get_status(UNlog) ==
-                                         LinphoneCallEarlyAborted)) {
-                                  UNMutableNotificationContent *missed_content =
-                                      [[UNMutableNotificationContent alloc]
-                                          init];
-                                  missed_content.title =
-                                      NSLocalizedString(@"Missed call", nil);
-                                  missed_content.body = address;
-                                  UNNotificationRequest *missed_req =
-                                      [UNNotificationRequest
-                                          requestWithIdentifier:@"call_request"
-                                                        content:missed_content
-                                                        trigger:NULL];
-                                  [[UNUserNotificationCenter
-                                      currentNotificationCenter]
+                if ((UNlog == NULL
+						|| linphone_call_log_get_status(UNlog) == LinphoneCallMissed
+						|| linphone_call_log_get_status(UNlog) == LinphoneCallAborted
+						|| linphone_call_log_get_status(UNlog) == LinphoneCallEarlyAborted)) {
+					UNMutableNotificationContent *missed_content =
+						[[UNMutableNotificationContent alloc] init];
+                    missed_content.title = NSLocalizedString(@"Missed call", nil);
+                    missed_content.body = address;
+                    UNNotificationRequest *missed_req = [UNNotificationRequest requestWithIdentifier:@"call_request"
+																							 content:missed_content
+																							 trigger:NULL];
+                    [[UNUserNotificationCenter currentNotificationCenter]
                                       addNotificationRequest:missed_req
                                        withCompletionHandler:^(
                                            NSError *_Nullable error) {
@@ -874,179 +866,121 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                                            LOGD(error.description);
                                          }
                                        }];
-                                }
-                                linphone_core_set_network_reachable(LC, FALSE);
-                                LinphoneManager.instance.connectivity = none;
-                        }
-                        LinphoneCallLog *callLog2 =
-                            linphone_call_get_call_log(call);
-                        const char *call_id2 =
-                            linphone_call_log_get_call_id(callLog2);
-                        NSString *callId2 =
-                            call_id2 ? [NSString stringWithUTF8String:call_id2]
-                                     : @"";
-                        NSUUID *uuid = (NSUUID *)[self.providerDelegate.uuids
-                            objectForKey:callId2];
-                        if (uuid) {
-                          // For security reasons do not display name
-                          // CXCallUpdate *update = [[CXCallUpdate alloc] init];
-                          // update.remoteHandle = [[CXHandle alloc]
-                          // initWithType:CXHandleTypeGeneric value:@"Unknown"];
-                          //[LinphoneManager.instance.providerDelegate.provider
-                          // reportCallWithUUID:uuid updated:update];
+				}
+                linphone_core_set_network_reachable(LC, FALSE);
+                LinphoneManager.instance.connectivity = none;
+			}
+            LinphoneCallLog *callLog2 = linphone_call_get_call_log(call);
+            const char *call_id2 = linphone_call_log_get_call_id(callLog2);
+            NSString *callId2 = call_id2
+								? [NSString stringWithUTF8String:call_id2]
+								: @"";
+            NSUUID *uuid = (NSUUID *)[self.providerDelegate.uuids objectForKey:callId2];
+            if (uuid) {
+				if (linphone_core_get_calls_nb(LC) > 0 && !_conf) {
+					// Create a CallKit call because there's not !
+                    _conf = FALSE;
+                    LinphoneCall *callKit_call = (LinphoneCall *)linphone_core_get_calls(LC)->data;
+                    NSString *callKit_callId = [NSString stringWithUTF8String:
+						linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))];
+                    NSUUID *callKit_uuid = [NSUUID UUID];
+                    [LinphoneManager.instance.providerDelegate.uuids setObject:callKit_uuid
+																		forKey:callKit_callId];
+					[LinphoneManager.instance.providerDelegate.calls setObject:callKit_callId
+																		forKey:callKit_uuid];
+                    NSString *address = [FastAddressBook displayNameForAddress:
+						linphone_call_get_remote_address(callKit_call)];
+					CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric
+																 value:address];
+					CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:callKit_uuid
+																				  handle:handle];
+                    CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
+                    [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
+																				  completion:^(NSError *err){}];
+					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid
+																		   startedConnectingAtDate:nil];
+                    [LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid
+																				   connectedAtDate:nil];
+				}
 
-                          if (linphone_core_get_calls_nb(LC) > 0 && !_conf) {
-                            // Create a CallKit call because there's not !
-                            _conf = FALSE;
-                            LinphoneCall *callKit_call =
-                                (LinphoneCall *)linphone_core_get_calls(LC)
-                                    ->data;
-                            NSString *callKit_callId =
-                                [NSString stringWithUTF8String:
-                                              linphone_call_log_get_call_id(
-                                                  linphone_call_get_call_log(
-                                                      callKit_call))];
-                            NSUUID *callKit_uuid = [NSUUID UUID];
-                            [LinphoneManager.instance.providerDelegate.uuids
-                                setObject:callKit_uuid
-                                   forKey:callKit_callId];
-                            [LinphoneManager.instance.providerDelegate.calls
-                                setObject:callKit_callId
-                                   forKey:callKit_uuid];
-                            NSString *address = [FastAddressBook
-                                displayNameForAddress:
-                                    linphone_call_get_remote_address(
-                                        callKit_call)];
-                            CXHandle *handle = [[CXHandle alloc]
-                                initWithType:CXHandleTypeGeneric
-                                       value:address];
-                            CXStartCallAction *act = [[CXStartCallAction alloc]
-                                initWithCallUUID:callKit_uuid
-                                          handle:handle];
-                            CXTransaction *tr =
-                                [[CXTransaction alloc] initWithAction:act];
-                            [LinphoneManager.instance.providerDelegate
-                                    .controller
-                                requestTransaction:tr
-                                        completion:^(NSError *err){
-                                        }];
-                            [LinphoneManager.instance.providerDelegate.provider
-                                reportOutgoingCallWithUUID:callKit_uuid
-                                   startedConnectingAtDate:nil];
-                            [LinphoneManager.instance.providerDelegate.provider
-                                reportOutgoingCallWithUUID:callKit_uuid
-                                           connectedAtDate:nil];
-                          }
+				CXEndCallAction *act = [[CXEndCallAction alloc] initWithCallUUID:uuid];
+                CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
+                [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
+																			  completion:^(NSError *err){}];
+			} else { // Can happen when Call-ID changes (Replaces header)
+				if (linphone_core_get_calls_nb(LC) ==0) { // Need to clear all CK calls
+					for (NSUUID *myUuid in self.providerDelegate.calls) {
+						[self.providerDelegate.provider reportCallWithUUID:myUuid
+															   endedAtDate:NULL
+																	reason:(state == LinphoneCallError
+																			? CXCallEndedReasonFailed
+																			: CXCallEndedReasonRemoteEnded)];
+					}
+                    [self.providerDelegate.uuids removeAllObjects];
+                    [self.providerDelegate.calls removeAllObjects];
+				}
+			}
+		} else {
+			if (data != nil && data->notification != nil) {
+				LinphoneCallLog *log = linphone_call_get_call_log(call);
+				// cancel local notif if needed
+				if (data->timer) {
+					[data->timer invalidate];
+					data->timer = nil;
+				}
+                [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
+				data->notification = nil;
 
-                          CXEndCallAction *act =
-                              [[CXEndCallAction alloc] initWithCallUUID:uuid];
-                          CXTransaction *tr =
-                              [[CXTransaction alloc] initWithAction:act];
-                          [LinphoneManager.instance.providerDelegate.controller
-                              requestTransaction:tr
-                                      completion:^(NSError *err){
-                                      }];
-                        } else { // Can happen when Call-ID changes (Replaces
-                                 // header)
-                          if (linphone_core_get_calls_nb(LC) ==
-                              0) { // Need to clear all CK calls
-                            for (NSUUID *myUuid in self.providerDelegate
-                                     .calls) {
-                              [self.providerDelegate.provider
-                                  reportCallWithUUID:myUuid
-                                         endedAtDate:NULL
-                                              reason:
-                                                  (state == LinphoneCallError
-                                                       ? CXCallEndedReasonFailed
-                                                       : CXCallEndedReasonRemoteEnded)];
-                            }
-                            [self.providerDelegate.uuids removeAllObjects];
-                            [self.providerDelegate.calls removeAllObjects];
-                          }
-                        }
-                } else {
-                  if (data != nil && data->notification != nil) {
-                    LinphoneCallLog *log = linphone_call_get_call_log(call);
-
-                    // cancel local notif if needed
-                    if (data->timer) {
-                      [data->timer invalidate];
-                      data->timer = nil;
-                    }
-                    [[UIApplication sharedApplication]
-                        cancelLocalNotification:data->notification];
-
-                    data->notification = nil;
-
-                    if (log == NULL ||
-                        linphone_call_log_get_status(log) ==
-                            LinphoneCallMissed) {
-                      UILocalNotification *notification =
-                          [[UILocalNotification alloc] init];
-                      notification.repeatInterval = 0;
-                      notification.alertBody = [NSString
-                          stringWithFormat:NSLocalizedString(
-                                               @"You missed a call from %@",
-                                               nil),
-                                           address];
-                      notification.alertAction =
-                          NSLocalizedString(@"Show", nil);
-                      notification.userInfo = [NSDictionary
-                          dictionaryWithObject:
-                              [NSString stringWithUTF8String:
-                                            linphone_call_log_get_call_id(log)]
-                                        forKey:@"callLog"];
-                      [[UIApplication sharedApplication]
-                          presentLocalNotificationNow:notification];
-                    }
-                  }
-                }
-                if (state == LinphoneCallError) {
-                  [PhoneMainView.instance popCurrentView];
-                }
-        }
-
-        if (state == LinphoneCallReleased) {
-          if (data != NULL) {
-            linphone_call_set_user_data(call, NULL);
-            CFBridgingRelease((__bridge CFTypeRef)(data));
-          }
-        }
-
-        // Enable speaker when video
-        if (state == LinphoneCallIncomingReceived ||
-            state == LinphoneCallOutgoingInit ||
-            state == LinphoneCallConnected ||
-            state == LinphoneCallStreamsRunning) {
-          if (linphone_call_params_video_enabled(
-                  linphone_call_get_current_params(call)) &&
+				if (log == NULL || linphone_call_log_get_status(log) == LinphoneCallMissed) {
+					UILocalNotification *notification = [[UILocalNotification alloc] init];
+                    notification.repeatInterval = 0;
+                    notification.alertBody = [NSString stringWithFormat:
+						NSLocalizedString(@"You missed a call from %@",nil), address];
+					notification.alertAction = NSLocalizedString(@"Show", nil);
+                    notification.userInfo = [NSDictionary dictionaryWithObject: [NSString stringWithUTF8String:linphone_call_log_get_call_id(log)]
+																		forKey:@"callLog"];
+					[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+				}
+			}
+		}
+        if (state == LinphoneCallError)
+			[PhoneMainView.instance popCurrentView];
+	}
+	if (state == LinphoneCallReleased) {
+		if (data != NULL) {
+			linphone_call_set_user_data(call, NULL);
+			CFBridgingRelease((__bridge CFTypeRef)(data));
+		}
+	}
+    // Enable speaker when video
+    if (state == LinphoneCallIncomingReceived || state == LinphoneCallOutgoingInit ||
+			state == LinphoneCallConnected || state == LinphoneCallStreamsRunning) {
+		if (linphone_call_params_video_enabled( linphone_call_get_current_params(call)) &&
               !speaker_already_enabled) {
-            [self setSpeakerEnabled:TRUE];
-            speaker_already_enabled = TRUE;
-          }
-        }
-        if (state == LinphoneCallStreamsRunning) {
-          if (_speakerBeforePause) {
-            _speakerBeforePause = FALSE;
-            [self setSpeakerEnabled:TRUE];
-            speaker_already_enabled = TRUE;
-          }
-        }
+			[self setSpeakerEnabled:TRUE];
+			speaker_already_enabled = TRUE;
+		}
+	}
+	if (state == LinphoneCallStreamsRunning) {
+		if (_speakerBeforePause) {
+			_speakerBeforePause = FALSE;
+			[self setSpeakerEnabled:TRUE];
+			speaker_already_enabled = TRUE;
+		}
+	}
+	if (state == LinphoneCallConnected && !mCallCenter) {
+		/*only register CT call center CB for connected call*/
+		[self setupGSMInteraction];
+	}
 
-        if (state == LinphoneCallConnected && !mCallCenter) {
-          /*only register CT call center CB for connected call*/
-          [self setupGSMInteraction];
-        }
-        // Post event
-        NSDictionary *dict = @{
-          @"call" : [NSValue valueWithPointer:call],
-          @"state" : [NSNumber numberWithInt:state],
-          @"message" : [NSString stringWithUTF8String:message]
-        };
-        [NSNotificationCenter.defaultCenter
-            postNotificationName:kLinphoneCallUpdate
-                          object:self
-                        userInfo:dict];
+	// Post event
+    NSDictionary *dict = @{@"call" : [NSValue valueWithPointer:call],
+						   @"state" : [NSNumber numberWithInt:state],
+						   @"message" : [NSString stringWithUTF8String:message]};
+
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate
+													  object:self
+													userInfo:dict];
 }
 
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state,
