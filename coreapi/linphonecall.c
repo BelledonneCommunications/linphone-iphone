@@ -1362,7 +1362,8 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 	linphone_call_check_ice_session(call, IR_Controlling, FALSE);
 
-	if (linphone_nat_policy_ice_enabled(call->nat_policy)) {
+	if (linphone_nat_policy_stun_enabled(call->nat_policy) && !(linphone_nat_policy_ice_enabled(call->nat_policy)
+		|| linphone_nat_policy_turn_enabled(call->nat_policy))) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
 #ifdef BUILD_UPNP
