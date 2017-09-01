@@ -27,13 +27,23 @@ static void linphone_video_definition_destroy(LinphoneVideoDefinition *vdef) {
 	if (vdef->name) bctbx_free(vdef->name);
 }
 
+static void _linphone_video_definition_clone(LinphoneVideoDefinition *obj, const LinphoneVideoDefinition *orig){
+	obj->name = bctbx_strdup(orig->name);
+	obj->width = orig->width;
+	obj->height = orig->height;
+}
+
+belle_sip_error_code _linphone_video_definition_marshal(const LinphoneVideoDefinition* obj, char* buff, size_t buff_size, size_t *offset){
+	return belle_sip_snprintf(buff,buff_size,offset,"%s",obj->name);
+}
+
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneVideoDefinition);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneVideoDefinition, belle_sip_object_t,
 	(belle_sip_object_destroy_t)linphone_video_definition_destroy,
-	NULL, // clone
-	NULL, // marshal
-	TRUE
+	(belle_sip_object_clone_t)_linphone_video_definition_clone, // clone
+	(belle_sip_object_marshal_t)_linphone_video_definition_marshal, // marshal
+	FALSE
 );
 
 
@@ -67,7 +77,7 @@ void linphone_video_definition_set_user_data(LinphoneVideoDefinition *vdef, void
 }
 
 LinphoneVideoDefinition * linphone_video_definition_clone(const LinphoneVideoDefinition *vdef) {
-	return linphone_video_definition_new(linphone_video_definition_get_width(vdef), linphone_video_definition_get_height(vdef), linphone_video_definition_get_name(vdef));
+	return (LinphoneVideoDefinition*)belle_sip_object_clone((belle_sip_object_t*)vdef);
 }
 
 unsigned int linphone_video_definition_get_width(const LinphoneVideoDefinition *vdef) {

@@ -94,7 +94,7 @@ static void _linphone_factory_destroying_cb(void) {
 
 #define ADD_SUPPORTED_VIDEO_DEFINITION(factory, width, height, name) \
 	(factory)->supported_video_definitions = bctbx_list_append((factory)->supported_video_definitions, \
-		linphone_video_definition_ref(linphone_video_definition_new(width, height, name)))
+		linphone_video_definition_new(width, height, name))
 
 static void initialize_supported_video_definitions(LinphoneFactory *factory) {
 #if !defined(__ANDROID__) && !TARGET_OS_IPHONE
@@ -179,7 +179,8 @@ LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
 }
 
 LinphoneVideoDefinition * linphone_factory_create_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height) {
-	return linphone_video_definition_ref(linphone_video_definition_new(width, height, NULL));
+	LinphoneVideoDefinition *supported = linphone_factory_find_supported_video_definition(factory, width, height);
+	return supported ? linphone_video_definition_clone(supported) : linphone_video_definition_new(width, height, NULL);
 }
 
 LinphoneVideoDefinition * linphone_factory_create_video_definition_from_name(const LinphoneFactory *factory, const char *name) {
@@ -201,16 +202,17 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const
 	const bctbx_list_t *item;
 	const bctbx_list_t *supported = linphone_factory_get_supported_video_definitions(factory);
 	LinphoneVideoDefinition *searched_vdef = linphone_video_definition_new(width, height, NULL);
+	LinphoneVideoDefinition *found = NULL;
 
 	for (item = supported; item != NULL; item = bctbx_list_next(item)) {
 		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
 		if (linphone_video_definition_equals(svdef, searched_vdef)) {
-			linphone_video_definition_unref(searched_vdef);
-			return linphone_video_definition_clone(svdef);
+			found = svdef;
+			break;
 		}
 	}
-
-	return searched_vdef;
+	linphone_video_definition_unref(searched_vdef);
+	return found;
 }
 
 LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_name(const LinphoneFactory *factory, const char *name) {
@@ -220,7 +222,7 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_na
 	for (item = supported; item != NULL; item = bctbx_list_next(item)) {
 		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
 		if (strcmp(linphone_video_definition_get_name(svdef), name) == 0) {
-			return linphone_video_definition_clone(svdef);
+			return svdef;
 		}
 	}
 	return NULL;
