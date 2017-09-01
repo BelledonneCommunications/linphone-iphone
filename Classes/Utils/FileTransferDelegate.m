@@ -187,8 +187,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	if (url) {
 		// internal url is saved in the appdata for display and later save
 		[LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:_message];
-		[LinphoneManager setValueInMessageAppData:[NSNumber numberWithFloat:quality]forKey:@"uploadQuality" inMessage:_message];
-
+		[LinphoneManager setValueInMessageAppData:[NSNumber numberWithFloat:quality] forKey:@"uploadQuality" inMessage:_message];
 	}
 
 	LOGI(@"%p Uploading content from message %p", self, _message);
