@@ -39,7 +39,7 @@ public:
 	void parse (const std::string &content);
 	void startIdleTimer ();
 	void startRefreshTimer ();
-	void startRemoteRefreshTimer ();
+	void startRemoteRefreshTimer (const char *refreshStr);
 	void stopComposing ();
 	void stopIdleTimer ();
 	void stopRefreshTimer ();

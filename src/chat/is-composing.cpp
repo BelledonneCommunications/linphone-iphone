@@ -123,8 +123,10 @@ void IsComposing::startRefreshTimer () {
 	}
 }
 
-void IsComposing::startRemoteRefreshTimer () {
+void IsComposing::startRemoteRefreshTimer (const char *refreshStr) {
 	int duration = getRemoteRefreshTimerDuration();
+	if (refreshStr)
+		duration = atoi(refreshStr);
 	if (!remoteRefreshTimer) {
 		remoteRefreshTimer = sal_create_timer(core->sal, remoteRefreshTimerExpired, this,
 			duration * 1000, "composing remote refresh timeout");
@@ -217,11 +219,8 @@ void IsComposing::parse (xmlparsing_context_t *xmlCtx) {
 
 	if (stateStr) {
 		if (strcmp(stateStr, "active") == 0) {
-			//int refreshDuration = getRefreshTimerDuration();
 			state = true;
-			//if (refreshStr)
-			//	refreshDuration = atoi(refreshStr);
-			startRemoteRefreshTimer();
+			startRemoteRefreshTimer(refreshStr);
 		} else {
 			stopRemoteRefreshTimer();
 		}
