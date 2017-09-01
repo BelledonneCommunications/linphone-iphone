@@ -24,7 +24,7 @@
 
 @protocol ChatConversationDelegate <NSObject>
 
-- (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url;
+- (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url withQuality:(float)quality;
 - (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url;
 - (void)tableViewIsScrolling;
 

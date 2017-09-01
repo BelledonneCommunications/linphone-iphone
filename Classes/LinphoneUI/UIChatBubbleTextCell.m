@@ -218,6 +218,8 @@
 	if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
 		if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 			NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
+			NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
+			
 			NSURL *imageUrl = [NSURL URLWithString:localImage];
 
 			[self onDeleteClick:nil];
@@ -226,8 +228,8 @@
 				resultBlock:^(ALAsset *asset) {
 				  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
 								 ^(void) {
-								   UIImage *image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
-								   [_chatRoomDelegate startImageUpload:image url:imageUrl];
+									 UIImage *image = [[UIImage alloc] initWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+									 [_chatRoomDelegate startImageUpload:image url:imageUrl withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
 								 });
 				}
 				failureBlock:^(NSError *error) {

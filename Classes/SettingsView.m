@@ -765,6 +765,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 				LinphoneChatMessage *msg = messages->data;
 				if (!linphone_chat_message_is_outgoing(msg)) {
 					[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:messages->data];
+					[LinphoneManager setValueInMessageAppData:nil forKey:@"uploadQuality" inMessage:messages->data];
 				}
 				messages = messages->next;
 			}

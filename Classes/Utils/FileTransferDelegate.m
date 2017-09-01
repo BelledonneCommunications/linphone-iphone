@@ -166,11 +166,11 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	return NULL;
 }
 
-- (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom {
+- (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
 	[LinphoneManager.instance.fileTransferDelegates addObject:self];
 
 	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
-	_data = [NSMutableData dataWithData:UIImageJPEGRepresentation(image, 1.0)];
+	_data = [NSMutableData dataWithData:UIImageJPEGRepresentation(image, quality)];
 	linphone_content_set_type(content, "image");
 	linphone_content_set_subtype(content, "jpeg");
 	linphone_content_set_name(
@@ -187,6 +187,8 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	if (url) {
 		// internal url is saved in the appdata for display and later save
 		[LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:_message];
+		[LinphoneManager setValueInMessageAppData:[NSNumber numberWithFloat:quality]forKey:@"uploadQuality" inMessage:_message];
+
 	}
 
 	LOGI(@"%p Uploading content from message %p", self, _message);

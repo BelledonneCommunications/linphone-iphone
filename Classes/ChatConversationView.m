@@ -259,7 +259,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return TRUE;
 }
 
-- (void)saveAndSend:(UIImage *)image url:(NSURL *)url {
+- (void)saveAndSend:(UIImage *)image url:(NSURL *)url withQuality:(float)quality{
 	// photo from Camera, must be saved first
 	if (url == nil) {
 		[LinphoneManager.instance.photoLibrary
@@ -282,11 +282,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 							   [self presentViewController:errView animated:YES completion:nil];
 						   } else {
 							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-							   [self startImageUpload:image url:assetURL];
+							   [self startImageUpload:image url:assetURL withQuality:quality];
 						   }
 						 }];
 	} else {
-		[self startImageUpload:image url:url];
+		[self startImageUpload:image url:url withQuality:quality];
 	}
 }
 
@@ -294,14 +294,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 	  for (NSString *key in [imageQualities allKeys]) {
-		  NSNumber *number = [imageQualities objectForKey:key];
-		  NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);
+		  NSNumber *quality = [imageQualities objectForKey:key];
+		  NSData *data = UIImageJPEGRepresentation(image, [quality floatValue]);
 		  NSNumber *size = [NSNumber numberWithInteger:[data length]];
-
 		  NSString *text = [NSString stringWithFormat:@"%@ (%@)", key, [size toHumanReadableSize]];
 		  [sheet addButtonWithTitle:text
 							  block:^() {
-								[self saveAndSend:[UIImage imageWithData:data] url:url];
+								[self saveAndSend:image url:url withQuality:[quality floatValue]];
 							  }];
 	  }
 	  [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -572,9 +571,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark ChatRoomDelegate
 
-- (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url {
+- (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url withQuality:(float)quality {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
-	[fileTransfer upload:image withURL:url forChatRoom:_chatRoom];
+	[fileTransfer upload:image withURL:url forChatRoom:_chatRoom withQuality:quality];
 	[_tableController addChatEntry:linphone_chat_message_ref(fileTransfer.message)];
 	[_tableController scrollToBottom:true];
 	return TRUE;
