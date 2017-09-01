@@ -3427,7 +3427,7 @@ static void call_redirect(void){
 	LinphoneCoreManager* laure   = linphone_core_manager_new("laure_rc_udp");
 	bctbx_list_t* lcs = NULL;
 	char *laure_url = NULL;
-	LinphoneCall* marie_call;
+	LinphoneCall* marie_call, *laure_call;
 
 	lcs = bctbx_list_append(lcs,marie->lc);
 	lcs = bctbx_list_append(lcs,pauline->lc);
@@ -3452,16 +3452,20 @@ static void call_redirect(void){
 		/* the call should still be ringing on marie's side */
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingRinging, 1, int, "%i");
 
-		linphone_call_accept(linphone_core_get_current_call(laure->lc));
+		laure_call = linphone_core_get_current_call(laure->lc);
+		BC_ASSERT_PTR_NOT_NULL(laure_call);
+		if (laure_call) {
+			linphone_call_accept(laure_call);
 
-		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,5000));
-		BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallStreamsRunning, 1,5000));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,5000));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallStreamsRunning, 1,5000));
 
-		BC_ASSERT_PTR_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+			BC_ASSERT_PTR_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
 
-		liblinphone_tester_check_rtcp(marie, laure);
+			liblinphone_tester_check_rtcp(marie, laure);
 
-		end_call(laure, marie);
+			end_call(laure, marie);
+		}
 	}
 
 	bctbx_list_free(lcs);
