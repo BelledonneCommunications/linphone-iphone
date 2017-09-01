@@ -217,10 +217,10 @@ void IsComposing::parse (xmlparsing_context_t *xmlCtx) {
 
 	if (stateStr) {
 		if (strcmp(stateStr, "active") == 0) {
-			int refreshDuration = getRefreshTimerDuration();
+			//int refreshDuration = getRefreshTimerDuration();
 			state = true;
-			if (refreshStr)
-				refreshDuration = atoi(refreshStr);
+			//if (refreshStr)
+			//	refreshDuration = atoi(refreshStr);
 			startRemoteRefreshTimer();
 		} else {
 			stopRemoteRefreshTimer();
