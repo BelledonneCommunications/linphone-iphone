@@ -19,13 +19,13 @@
 #ifndef _C_EVENT_LOG_H_
 #define _C_EVENT_LOG_H_
 
-#include "c-wrapper/c-types.h"
+#include "linphone/api/c-types.h"
 
 // =============================================================================
 
 #ifdef __cplusplus
 	extern "C" {
-#endif
+#endif // ifdef __cplusplus
 
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_new ();
 LINPHONE_PUBLIC LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_log);

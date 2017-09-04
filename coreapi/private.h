@@ -721,6 +721,10 @@ struct _LinphoneProxyConfig
 
 	char *refkey;
 	char *sip_etag; /*publish context*/
+
+	// For migration purpose. (Do not use directly!)
+	// Cache.
+	LinphoneAddress *contact_address;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneProxyConfig);
@@ -1824,6 +1828,7 @@ BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
 BELLE_SIP_TYPE_ID(LinphoneAccountCreator),
 BELLE_SIP_TYPE_ID(LinphoneAccountCreatorCbs),
 BELLE_SIP_TYPE_ID(LinphoneAccountCreatorService),
+BELLE_SIP_TYPE_ID(LinphoneAddress),
 BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),

@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "c-wrapper/c-tools.h"
+#include "linphone/api/c-event-log.h"
 
-#include "c-event-log.h"
+#include "c-wrapper/c-tools.h"
 
 #include "event-log/call-event.h"
 #include "event-log/conference-participant-event.h"
@@ -28,7 +28,6 @@
 
 using namespace std;
 
-extern "C" {
 // -----------------------------------------------------------------------------
 // Event log.
 // -----------------------------------------------------------------------------
@@ -111,5 +110,4 @@ LinphoneConferenceParticipantEvent *linphone_conference_participant_event_new (
 const LinphoneAddress *linphone_conference_participant_event_get_participant_address (const LinphoneConferenceParticipantEvent *conference_participant_event) {
 	// TODO.
 	return nullptr;
-}
 }

@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-#include "general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
@@ -51,6 +51,12 @@ namespace Utils {
 
 	// Return a buffer allocated with new.
 	LINPHONE_PUBLIC char *utf8ToChar (uint32_t ic);
+
+	template<typename T>
+	LINPHONE_PUBLIC const T &getEmptyConstRefObject () {
+		static const T object;
+		return object;
+	}
 }
 
 LINPHONE_END_NAMESPACE

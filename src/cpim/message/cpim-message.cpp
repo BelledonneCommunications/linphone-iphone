@@ -18,9 +18,10 @@
 
 #include <algorithm>
 
+#include "linphone/utils/utils.h"
+
 #include "cpim/parser/cpim-parser.h"
 #include "object/object-p.h"
-#include "utils/utils.h"
 
 #include "cpim-message.h"
 

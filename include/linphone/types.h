@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msvideo.h"
 #include "linphone/defs.h"
 
+// For migration purpose.
+#include "linphone/api/c-types.h"
 
 /**
  * The LinphoneAccountCreator object used to configure an account on a server via XML-RPC.
@@ -168,22 +170,6 @@ typedef enum _LinphoneAccountCreatorStatus {
 	/** Server **/
 	LinphoneAccountCreatorStatusServerError /**< Error server */
 } LinphoneAccountCreatorStatus;
-
-struct SalAddress;
-
-/**
- * Object that represents a SIP address.
- *
- * The LinphoneAddress is an opaque object to represents SIP addresses, ie
- * the content of SIP's 'from' and 'to' headers.
- * A SIP address is made of display name, username, domain name, port, and various
- * uri headers (such as tags). It looks like 'Alice <sip:alice@example.net>'.
- * The LinphoneAddress has methods to extract and manipulate all parts of the address.
- * When some part of the address (for example the username) is empty, the accessor methods
- * return NULL.
- * @ingroup linphone_address
- */
-typedef struct SalAddress LinphoneAddress;
 
 /**
  * Enum describing Ip family.

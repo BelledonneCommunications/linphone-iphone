@@ -42,15 +42,15 @@ public:
 
 	bool operator== (const Address &address) const;
 
-	std::string getScheme () const;
+	const std::string &getScheme () const;
 
-	std::string getDisplayName () const;
+	const std::string &getDisplayName () const;
 	bool setDisplayName (const std::string &displayName);
 
-	std::string getUsername () const;
+	const std::string &getUsername () const;
 	bool setUsername (const std::string &username);
 
-	std::string getDomain () const;
+	const std::string &getDomain () const;
 	bool setDomain (const std::string &domain);
 
 	int getPort () const;
@@ -64,10 +64,10 @@ public:
 
 	bool isSip () const;
 
-	std::string getMethodParam () const;
+	const std::string &getMethodParam () const;
 	bool setMethodParam (const std::string &methodParam);
 
-	std::string getPassword () const;
+	const std::string &getPassword () const;
 	bool setPassword (const std::string &password);
 
 	bool clean ();
@@ -78,8 +78,18 @@ public:
 	bool equal (const Address &address) const;
 	bool weakEqual (const Address &address) const;
 
-	std::string getHeaderValue (const std::string &headerName) const;
+	const std::string &getHeaderValue (const std::string &headerName) const;
 	bool setHeader (const std::string &headerName, const std::string &headerValue);
+
+	bool hasParam (const std::string &paramName) const;
+	const std::string &getParamValue (const std::string &paramName) const;
+	bool setParam (const std::string &paramName, const std::string &paramValue);
+	bool setParams (const std::string &params);
+
+	bool hasUriParam (const std::string &uriParamName) const;
+	const std::string &getUriParamValue (const std::string &uriParamName) const;
+	bool setUriParam (const std::string &uriParamName, const std::string &uriParamValue);
+	bool setUriParams (const std::string &params);
 
 private:
 	L_DECLARE_PRIVATE(Address);

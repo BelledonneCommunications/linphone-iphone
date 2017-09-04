@@ -3410,7 +3410,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	/*return default proxy if it is matching the destination uri*/
 	if (default_cfg){
 		const char *domain=linphone_proxy_config_get_domain(default_cfg);
-		if (strcmp(domain,linphone_address_get_domain(uri))==0){
+		if (domain && !strcmp(domain,linphone_address_get_domain(uri))){
 			found_cfg=default_cfg;
 			goto end;
 		}
@@ -3502,7 +3502,9 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		routes=make_routes_for_proxy(proxy,dest);
 		linphone_transfer_routes_to_op(routes,op);
 	}
-	sal_op_set_to_address(op,dest);
+	char *addr = linphone_address_as_string(dest);
+	sal_op_set_to(op,addr);
+	ms_free(addr);
 	sal_op_set_from(op,identity);
 	sal_op_set_sent_custom_header(op,headers);
 	sal_op_set_realm(op,linphone_proxy_config_get_realm(proxy));
@@ -6035,6 +6037,10 @@ LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename
 
 LinphoneConfig * linphone_core_create_config(LinphoneCore *lc, const char *filename) {
 	return lp_config_new(filename);
+}
+
+LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {
+	return linphone_address_new(address);
 }
 
 static void linphone_core_uninit(LinphoneCore *lc)

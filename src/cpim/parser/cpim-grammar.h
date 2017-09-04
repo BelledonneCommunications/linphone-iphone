@@ -19,7 +19,7 @@
 #ifndef _CPIM_GRAMMAR_H_
 #define _CPIM_GRAMMAR_H_
 
-#include "utils/general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 

@@ -21,10 +21,11 @@
 #include <belr/abnf.h>
 #include <belr/grammarbuilder.h>
 
+#include "linphone/utils/utils.h"
+
 #include "cpim-grammar.h"
 #include "logger/logger.h"
 #include "object/object-p.h"
-#include "utils/utils.h"
 
 #include "cpim-parser.h"
 

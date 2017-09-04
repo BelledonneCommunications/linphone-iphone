@@ -21,7 +21,7 @@
 
 #include <unordered_map>
 
-#include "utils/general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 

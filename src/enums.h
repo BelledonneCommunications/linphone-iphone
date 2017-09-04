@@ -19,7 +19,7 @@
 #ifndef _ENUMS_H_
 #define _ENUMS_H_
 
-#include "utils/general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 

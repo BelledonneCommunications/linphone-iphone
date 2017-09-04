@@ -1,5 +1,5 @@
 /*
- * wrapper.h
+ * c-api.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,33 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WRAPPER_H_
-#define _WRAPPER_H_
+#ifndef _C_API_H_
+#define _C_API_H_
 
-#include <utility>
+#include "linphone/api/c-address.h"
+#include "linphone/api/c-event-log.h"
 
-#include "object/object.h"
-
-// =============================================================================
-
-LINPHONE_BEGIN_NAMESPACE
-
-class Wrapper {
-public:
-	template<typename T>
-	static decltype(std::declval<T>().getPrivate()) getPrivate (T *object) {
-		return object->getPrivate();
-	}
-
-private:
-	Wrapper ();
-
-	L_DISABLE_COPY(Wrapper);
-};
-
-LINPHONE_END_NAMESPACE
-
-#define L_GET_PRIVATE(OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getPrivate(OBJECT)
-
-#endif // ifndef _WRAPPER_H_
+#endif // ifndef _C_API_H_

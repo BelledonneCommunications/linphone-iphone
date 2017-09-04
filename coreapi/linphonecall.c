@@ -43,6 +43,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <bctoolbox/defs.h>
 
+// For migration purpose.
+#include "address/address-p.h"
+#include "c-wrapper/c-tools.h"
 
 inline OrtpRtcpXrStatSummaryFlag operator|(OrtpRtcpXrStatSummaryFlag a, OrtpRtcpXrStatSummaryFlag b) {
 	return static_cast<OrtpRtcpXrStatSummaryFlag>(static_cast<int>(a) | static_cast<int>(b));
@@ -1199,7 +1202,7 @@ void linphone_call_create_op(LinphoneCall *call){
 **/
 static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, LinphoneAddress *to, LinphoneProxyConfig *cfg){
 	if (linphone_core_ipv6_enabled(call->core)){
-		if (sal_address_is_ipv6((SalAddress*)to)){
+		if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_STRUCT(to, Address)->getInternalAddress())) {
 			call->af=AF_INET6;
 		}else if (cfg && cfg->op){
 			call->af=sal_op_get_address_family(cfg->op);
@@ -4986,14 +4989,19 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 		/* if already choosed, don't change it */
 		return NULL;
 	} else if (call->ping_op && sal_op_get_contact_address(call->ping_op)) {
+		char *addr = sal_address_as_string(sal_op_get_contact_address(call->ping_op));
 		/* if the ping OPTIONS request succeeded use the contact guessed from the
 		 received, rport*/
 		ms_message("Contact has been fixed using OPTIONS"/* to %s",guessed*/);
-		ret=linphone_address_clone(sal_op_get_contact_address(call->ping_op));;
+		ret=linphone_address_new(addr);
+		ms_free(addr);
 	} else 	if (dest_proxy && dest_proxy->op && sal_op_get_contact_address(dest_proxy->op)){
+		char *addr = sal_address_as_string(sal_op_get_contact_address(dest_proxy->op));
+
 	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
 		ms_message("Contact has been fixed using proxy" /*to %s",fixed_contact*/);
-		ret=linphone_address_clone(sal_op_get_contact_address(dest_proxy->op));
+		ret=linphone_address_new(addr);
+		ms_free(addr);
 	} else {
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		if (ctt!=NULL){

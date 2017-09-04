@@ -1,5 +1,5 @@
 /*
- * event-log.h
+ * address-p.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,40 +16,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENT_LOG_H_
-#define _EVENT_LOG_H_
+#ifndef _ADDRESS_P_H_
+#define _ADDRESS_P_H_
 
-#include "linphone/enums/event-log-enums.h"
-
-#include "object/clonable-object.h"
+#include "address.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
+struct SalAddress;
+
 LINPHONE_BEGIN_NAMESPACE
 
-class EventLogPrivate;
-
-class LINPHONE_PUBLIC EventLog : public ClonableObject {
+class AddressPrivate : public ClonableObjectPrivate {
 public:
-	enum Type {
-		L_ENUM_VALUES_EVENT_LOG_TYPE
-	};
-
-	EventLog ();
-	EventLog (const EventLog &src);
-	virtual ~EventLog () = default;
-
-	EventLog &operator= (const EventLog &src);
-
-	Type getType () const;
-
-protected:
-	EventLog (EventLogPrivate &p, Type type);
+	inline const SalAddress *getInternalAddress () const {
+		return internalAddress;
+	}
 
 private:
-	L_DECLARE_PRIVATE(EventLog);
+	struct AddressCache {
+		std::string scheme;
+		std::string displayName;
+		std::string username;
+		std::string domain;
+		std::string methodParam;
+		std::string password;
+
+		mutable std::unordered_map<std::string, std::string> headers;
+		mutable std::unordered_map<std::string, std::string> params;
+		mutable std::unordered_map<std::string, std::string> uriParams;
+	};
+
+	SalAddress *internalAddress = nullptr;
+	AddressCache cache;
+
+	L_DECLARE_PUBLIC(Address);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_H_
+#endif

@@ -23,31 +23,63 @@
 // Enable C enums.
 #define L_USE_C_ENUM
 
-#include "event-log/event-log-enums.h"
+// TODO: Remove me in the future.
+#include "linphone/types.h"
+
+#include "linphone/enums/event-log-enums.h"
 
 #define L_DECLARE_C_ENUM(CLASS, ENUM, VALUES) enum Linphone ## CLASS ## ENUM { VALUES }
-#define L_DECLARE_C_STRUCT(STRUCT) typedef struct _Linphone ## STRUCT Linphone ## STRUCT;
 
 // =============================================================================
 
 #ifdef __cplusplus
 	extern "C" {
+#endif // ifdef __cplusplus
+
+// =============================================================================
+// Misc.
+// =============================================================================
+
+typedef int LinphoneStatus;
+
+typedef unsigned char bool_t;
+
+#ifdef TRUE
+	#undef TRUE
 #endif
+
+#ifdef FALSE
+	#undef FALSE
+#endif
+
+#define TRUE 1
+#define FALSE 0
 
 // =============================================================================
 // C Structures.
 // =============================================================================
 
-L_DECLARE_C_STRUCT(Call);
-L_DECLARE_C_STRUCT(CallEvent);
-L_DECLARE_C_STRUCT(ConferenceEvent);
-L_DECLARE_C_STRUCT(ConferenceParticipantEvent);
-L_DECLARE_C_STRUCT(EventLog);
-L_DECLARE_C_STRUCT(Message);
-L_DECLARE_C_STRUCT(MessageEvent);
+/**
+ * Object that represents a SIP address.
+ *
+ * The LinphoneAddress is an opaque object to represents SIP addresses, ie
+ * the content of SIP's 'from' and 'to' headers.
+ * A SIP address is made of display name, username, domain name, port, and various
+ * uri headers (such as tags). It looks like 'Alice <sip:alice@example.net>'.
+ * The LinphoneAddress has methods to extract and manipulate all parts of the address.
+ * When some part of the address (for example the username) is empty, the accessor methods
+ * return NULL.
+ * @ingroup linphone_address
+ */
+typedef struct _LinphoneAddress LinphoneAddress;
 
-// TODO: Remove me in the future.
-typedef struct SalAddress LinphoneAddress;
+typedef struct _LinphoneCall LinphoneCall;
+typedef struct _LinphoneCallEvent LinphoneCallEvent;
+typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
+typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
+typedef struct _LinphoneEventLog LinphoneEventLog;
+typedef struct _LinphoneMessage LinphoneMessage;
+typedef struct _LinphoneMessageEvent LinphoneMessageEvent;
 
 // =============================================================================
 // C Enums.
@@ -57,6 +89,6 @@ L_DECLARE_C_ENUM(EventLog, Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
 
 #ifdef __cplusplus
 	}
-#endif
+#endif // ifdef __cplusplus
 
 #endif // ifndef _C_TYPES_H_

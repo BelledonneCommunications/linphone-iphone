@@ -26,6 +26,8 @@
 #include <libxml/tree.h>
 #include <libxml/xmlwriter.h>
 
+#include <linphone/utils/utils.h>
+
 #include "linphone/core.h"
 #include "private.h"
 #include "linphone/lpconfig.h"
@@ -33,12 +35,10 @@
 #include "ortp/b64.h"
 #include "linphone/wrapper_utils.h"
 
-#include "c-wrapper/wrapper.h"
+#include "c-wrapper/c-tools.h"
 #include "chat/chat-room-p.h"
 #include "chat/chat-room.h"
 #include "utils/content-type.h"
-#include "utils/utils.h"
-
 
 struct _LinphoneChatRoom{
 	belle_sip_object_t base;

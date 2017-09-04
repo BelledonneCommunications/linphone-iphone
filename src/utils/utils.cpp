@@ -21,7 +21,7 @@
 
 #include <bctoolbox/port.h>
 
-#include "utils.h"
+#include "linphone/utils/utils.h"
 
 // =============================================================================
 

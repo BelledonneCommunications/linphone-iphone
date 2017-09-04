@@ -19,29 +19,66 @@
 #ifndef _C_TOOLS_H_
 #define _C_TOOLS_H_
 
+#include <memory>
+#include <string>
+
 // From coreapi.
 #include "private.h"
 
 // =============================================================================
 
+LINPHONE_BEGIN_NAMESPACE
+
+class Wrapper {
+private:
+	template<typename T>
+	struct WrappedObject {
+		belle_sip_object_t base;
+		std::shared_ptr<T> cppPtr;
+	};
+
+public:
+	template<typename T>
+	static inline decltype (std::declval<T>().getPrivate()) getPrivate (T *object) {
+		if (!object)
+			return nullptr;
+		return object->getPrivate();
+	}
+
+	template<typename T>
+	static inline std::shared_ptr<T> getCppPtrFromC (void *object) {
+		if (!object)
+			return std::shared_ptr<T>();
+		return static_cast<WrappedObject<T> *>(object)->cppPtr;
+	}
+
+private:
+	Wrapper ();
+
+	L_DISABLE_COPY(Wrapper);
+};
+
+LINPHONE_END_NAMESPACE
+
+// -----------------------------------------------------------------------------
+
 #define L_DECLARE_C_STRUCT_IMPL(STRUCT, C_NAME) \
 	struct _Linphone ## STRUCT { \
 		belle_sip_object_t base; \
-		shared_ptr<LINPHONE_NAMESPACE::STRUCT> cppPtr; \
+		std::shared_ptr<LINPHONE_NAMESPACE::STRUCT> cppPtr; \
 	}; \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
 	static Linphone ## STRUCT *_linphone_ ## C_NAME ## _init() { \
 		Linphone ## STRUCT * object = belle_sip_object_new(Linphone ## STRUCT); \
-		new(&object->cppPtr) shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
+		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
 		return object; \
 	} \
 	static void _linphone_ ## C_NAME ## _uninit(Linphone ## STRUCT * object) { \
-		object->cppPtr.reset(); \
-		object->cppPtr->~STRUCT (); \
+		object->cppPtr.~shared_ptr (); \
 	} \
 	static void _linphone_ ## C_NAME ## _clone(Linphone ## STRUCT * dest, const Linphone ## STRUCT * src) { \
-		new(&dest->cppPtr) shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
-		dest->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>(*src->cppPtr.get()); \
+		new(&dest->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
+		dest->cppPtr = std::make_shared<LINPHONE_NAMESPACE::STRUCT>(*src->cppPtr.get()); \
 	} \
 	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## STRUCT); \
 	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## STRUCT, belle_sip_object_t, \
@@ -54,8 +91,20 @@
 #define L_DECLARE_C_STRUCT_NEW_DEFAULT(STRUCT, C_NAME) \
 	Linphone ## STRUCT * linphone_ ## C_NAME ## _new() { \
 		Linphone ## STRUCT * object = _linphone_ ## C_NAME ## _init(); \
-		object->cppPtr = make_shared<LINPHONE_NAMESPACE::STRUCT>(); \
+		object->cppPtr = std::make_shared<LINPHONE_NAMESPACE::STRUCT>(); \
 		return object; \
 	}
+
+#define L_STRING_TO_C(STR) ((STR).empty() ? NULL : (STR).c_str())
+#define L_C_TO_STRING(STR) ((STR) == NULL ? std::string() : (STR))
+
+#define L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC<LINPHONE_NAMESPACE::TYPE>(OBJECT)
+
+#define L_GET_PRIVATE(OBJECT) \
+	LINPHONE_NAMESPACE::Wrapper::getPrivate(OBJECT)
+
+#define L_GET_PRIVATE_FROM_C_STRUCT(OBJECT, TYPE) \
+	L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, TYPE).get())
 
 #endif // ifndef _C_TOOLS_H_

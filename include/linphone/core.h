@@ -34,7 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/account_creator.h"
 #include "linphone/account_creator_service.h"
-#include "linphone/address.h"
 #include "linphone/auth_info.h"
 #include "linphone/buffer.h"
 #include "linphone/call.h"
@@ -66,6 +65,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/xmlrpc.h"
 #include "linphone/headers.h"
 
+// For migration purpose.
+#include "linphone/api/c-api.h"
 
 #ifdef __cplusplus
 extern "C" {

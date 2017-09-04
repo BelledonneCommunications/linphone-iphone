@@ -18,14 +18,20 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "linphone/core.h"
-#include "linphone/core_utils.h"
-#include "linphone/sipsetup.h"
-#include "linphone/lpconfig.h"
-#include "private.h"
-#include "mediastreamer2/mediastream.h"
-#include "enum.h"
 #include <ctype.h>
+
+#include "linphone/core_utils.h"
+#include "linphone/core.h"
+#include "linphone/lpconfig.h"
+#include "linphone/sipsetup.h"
+#include "mediastreamer2/mediastream.h"
+
+#include "enum.h"
+#include "private.h"
+
+// For migration purpose.
+#include "address/address-p.h"
+#include "c-wrapper/c-tools.h"
 
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
@@ -422,7 +428,7 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 			linphone_event_unref(cfg->presence_publish_event); /*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
 			cfg->presence_publish_event=NULL;
 		}
-		
+
 	}
 	if (cfg->op){
 		sal_op_release(cfg->op);
@@ -446,10 +452,10 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *cfg){
 
 		if (cfg->contact_params) {
 			// We want to add a list of contacts params to the linphone address
-			sal_address_set_params(contact,cfg->contact_params);
+			linphone_address_set_params(contact,cfg->contact_params);
 		}
 		if (cfg->contact_uri_params){
-			sal_address_set_uri_params(contact,cfg->contact_uri_params);
+			linphone_address_set_uri_params(contact,cfg->contact_uri_params);
 		}
 #ifdef BUILD_UPNP
 		if (cfg->lc->upnp != NULL && linphone_core_get_firewall_policy(cfg->lc)==LinphonePolicyUseUpnp &&
@@ -491,14 +497,19 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 		linphone_configure_op(cfg->lc, cfg->op, cfg->identity_address, cfg->sent_headers, FALSE);
 
 		if ((contact=guess_contact_for_register(cfg))) {
-			sal_op_set_contact_address(cfg->op,contact);
+			sal_op_set_contact_address(cfg->op, L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress());
 			linphone_address_unref(contact);
 		}
 
 		sal_op_set_user_pointer(cfg->op,cfg);
 
-
-		if (sal_register(cfg->op,proxy_string, cfg->reg_identity, cfg->expires, cfg->pending_contact)==0) {
+		if (sal_register(
+			cfg->op,
+			proxy_string,
+			cfg->reg_identity,
+			cfg->expires,
+			cfg->pending_contact ? L_GET_PRIVATE_FROM_C_STRUCT(cfg->pending_contact, Address)->getInternalAddress() : NULL
+		)==0) {
 			if (cfg->pending_contact) {
 				linphone_address_unref(cfg->pending_contact);
 				cfg->pending_contact=NULL;
@@ -879,7 +890,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			}
 			linphone_presence_model_set_presentity(presence,linphone_proxy_config_get_identity_address(proxy));
 			linphone_presence_model_set_contact(presence,NULL); /*it will be automatically computed*/
-			
+
 		}
 		if (!(presence_body = linphone_presence_model_to_xml(presence))) {
 			ms_error("Cannot publish presence model [%p] for proxy config [%p] because of xml serialization error",presence,proxy);
@@ -906,7 +917,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			linphone_presence_model_set_contact(presence,contact);
 			bctbx_free(contact);
 		}
-		
+
 	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
 }
@@ -1450,7 +1461,15 @@ uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cf
 }
 
 const LinphoneAddress* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg) {
-	return sal_op_get_contact_address(cfg->op);
+	// Workaround for wrapping.
+	if (cfg->contact_address)
+		linphone_address_unref(cfg->contact_address);
+
+	char *buf = sal_address_as_string(sal_op_get_contact_address(cfg->op));
+	const_cast<LinphoneProxyConfig *>(cfg)->contact_address = linphone_address_new(buf);
+	ms_free(buf);
+
+	return cfg->contact_address;
 }
 
 const struct _LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg) {

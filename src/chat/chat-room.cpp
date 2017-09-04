@@ -18,13 +18,14 @@
 
 #include <algorithm>
 
+#include "linphone/utils/utils.h"
+
 #include "chat-room-p.h"
 
 #include "chat-room.h"
 #include "imdn.h"
 #include "logger/logger.h"
 #include "utils/content-type.h"
-#include "utils/utils.h"
 
 #include "chat-room.h"
 

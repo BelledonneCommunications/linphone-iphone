@@ -19,7 +19,7 @@
 #ifndef _MAGIC_MACROS_H_
 #define _MAGIC_MACROS_H_
 
-#include "general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 // Original header.

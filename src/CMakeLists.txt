@@ -21,11 +21,9 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
+	address/address-p.h
 	address/address.h
-	c-wrapper/api/c-event-log.h
 	c-wrapper/c-tools.h
-	c-wrapper/c-types.h
-	c-wrapper/wrapper.h
 	chat/chat-room-p.h
 	chat/chat-room.h
 	content/content.h
@@ -51,7 +49,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	event-log/conference-event-p.h
 	event-log/conference-event.h
 	event-log/conference-participant-event.h
-	event-log/event-log-enums.h
 	event-log/event-log-p.h
 	event-log/event-log.h
 	event-log/message-event.h
@@ -63,14 +60,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object.h
 	object/singleton.h
 	utils/content-type.h
-	utils/enum-generator.h
-	utils/general.h
-	utils/magic-macros.h
-	utils/utils.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	address/address.cpp
+	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-event-log.cpp
 	chat/chat-room.cpp
 	content/content.cpp

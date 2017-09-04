@@ -1,5 +1,5 @@
 /*
- * enum-generator.h
+ * event-log-enums.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,25 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ENUM_GENERATOR_H_
-#define _ENUM_GENERATOR_H_
+#ifndef _EVENT_LOG_ENUMS_H_
+#define _EVENT_LOG_ENUMS_H_
 
-#include "magic-macros.h"
+#include "linphone/utils/enum-generator.h"
 
 // =============================================================================
 
-LINPHONE_BEGIN_NAMESPACE
+#define L_ENUM_VALUES_EVENT_LOG_TYPE \
+	L_DECLARE_ENUM_VALUES(EventLog, Type, \
+		None, \
+		Message, \
+		CallStart, \
+		CallEnd, \
+		ConferenceCreated, \
+		ConferenceDestroyed, \
+		ConferenceParticipantAdded, \
+		ConferenceParticipantRemoved, \
+		ConferenceParticipantSetAdmin, \
+		ConferenceParticipantUnsetAdmin \
+	)
 
-#define L_ENUM_VALUE(C, VALUE) C ## VALUE
-
-#ifndef L_USE_C_ENUM
-	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
-		MM_APPLY_COMMA(L_ENUM_VALUE, ENUM_NAME, __VA_ARGS__)
-#else
-	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
-		MM_APPLY_COMMA(L_ENUM_VALUE, Linphone ## CLASS_NAME ## ENUM_NAME, __VA_ARGS__)
-#endif // ifndef L_USE_C_ENUM
-
-LINPHONE_END_NAMESPACE
-
-#endif // ifndef _ENUM_GENERATOR_H_
+#endif // ifndef _EVENT_LOG_ENUMS_H_

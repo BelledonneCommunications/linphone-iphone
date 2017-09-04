@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 

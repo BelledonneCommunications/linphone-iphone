@@ -19,7 +19,7 @@
 #ifndef _OBJECT_P_H_
 #define _OBJECT_P_H_
 
-#include "utils/general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
