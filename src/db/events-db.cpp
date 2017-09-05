@@ -250,6 +250,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	bool EventsDb::addEvent (const EventLog &eventLog) {
+		if (!isConnected()) {
+			lWarning() << "Unable to add event. Not connected.";
+		  return false;
+		}
+
 		// TODO.
 		switch (eventLog.getType()) {
 			case EventLog::TypeNone:
@@ -270,18 +275,33 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	bool EventsDb::deleteEvent (const EventLog &eventLog) {
+		if (!isConnected()) {
+			lWarning() << "Unable to delete event. Not connected.";
+			return false;
+		}
+
 		// TODO.
 		(void)eventLog;
 		return true;
 	}
 
 	void EventsDb::cleanEvents (FilterMask mask) {
+		if (!isConnected()) {
+			lWarning() << "Unable to clean events. Not connected.";
+			return;
+		}
+
 		// TODO.
 		(void)mask;
 	}
 
 	int EventsDb::getEventsCount (FilterMask mask) const {
 		L_D(const EventsDb);
+
+		if (!isConnected()) {
+			lWarning() << "Unable to get events count. Not connected.";
+			return 0;
+		}
 
 		string query = "SELECT COUNT(*) FROM event" +
 			buildSqlEventFilter({ MessageFilter, CallFilter, ConferenceFilter }, mask);
@@ -299,6 +319,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 	int EventsDb::getMessagesCount (const string &remoteAddress) const {
 		L_D(const EventsDb);
+
+		if (!isConnected()) {
+			lWarning() << "Unable to get messages count. Not connected.";
+			return 0;
+		}
 
 		string query = "SELECT COUNT(*) FROM message_event";
 		if (!remoteAddress.empty())
@@ -322,6 +347,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	int EventsDb::getUnreadMessagesCount (const string &remoteAddress) const {
 		L_D(const EventsDb);
 
+		if (!isConnected()) {
+			lWarning() << "Unable to get unread messages count. Not connected.";
+			return 0;
+		}
+
 		string query = "SELECT COUNT(*) FROM message_event";
 		if (!remoteAddress.empty())
 			query += "  WHERE dialog_id = ("
@@ -344,6 +374,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) const {
+		if (!isConnected()) {
+			lWarning() << "Unable to get history. Not connected.";
+			return list<shared_ptr<EventLog>>();
+		}
+
 		// TODO.
 		(void)remoteAddress;
 		(void)nLast;
@@ -352,6 +387,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) const {
+		if (!isConnected()) {
+			lWarning() << "Unable to get history. Not connected.";
+			return list<shared_ptr<EventLog>>();
+		}
+
 		// TODO.
 		(void)remoteAddress;
 		(void)begin;
@@ -361,6 +401,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	void EventsDb::cleanHistory (const string &remoteAddress) {
+		if (!isConnected()) {
+			lWarning() << "Unable to clean history. Not connected.";
+			return;
+		}
+
 		// TODO.
 		(void)remoteAddress;
 	}

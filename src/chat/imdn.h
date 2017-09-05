@@ -21,8 +21,9 @@
 
 #include <string>
 
+#include "linphone/utils/general.h"
+
 #include "chat-room.h"
-#include "utils/general.h"
 
 #include "private.h"
 

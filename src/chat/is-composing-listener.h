@@ -19,7 +19,7 @@
 #ifndef _IS_COMPOSING_LISTENER_H_
 #define _IS_COMPOSING_LISTENER_H_
 
-#include "utils/general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 

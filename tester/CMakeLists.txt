@@ -193,7 +193,7 @@ set(SOURCE_FILES_C
 )
 
 set(SOURCE_FILES_CXX
-	cpim_tester.cpp
+	cpim-tester.cpp
 )
 
 set(SOURCE_FILES_OBJC )
