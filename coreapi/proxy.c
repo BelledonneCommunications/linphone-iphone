@@ -246,6 +246,9 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->ei){
 		linphone_error_info_unref(cfg->ei);
 	}
+
+	if (cfg->contact_address) linphone_address_unref(cfg->contact_address);
+
 	_linphone_proxy_config_release_ops(cfg);
 }
 
