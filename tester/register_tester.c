@@ -612,7 +612,7 @@ static void transport_dont_bind(void){
 	LinphoneTransports *tr = linphone_transports_new();
 	linphone_transports_set_tcp_port(tr, LC_SIP_TRANSPORT_DONTBIND);
 	linphone_transports_set_tls_port(tr, LC_SIP_TRANSPORT_DONTBIND);
-	
+
 	linphone_core_set_transports(pauline->lc, tr);
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&counters->number_of_LinphoneRegistrationOk,2,15000));
 	linphone_transports_unref(tr);
@@ -627,14 +627,14 @@ static void transport_dont_bind(void){
 static void transport_busy(void){
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LCSipTransports tr;
-	
+
 	memset(&tr, 0, sizeof(tr));
 	tr.udp_port = 5070;
 	tr.tcp_port = 5070;
 	tr.tls_port = 5071;
-	
+
 	linphone_core_set_sip_transports(pauline->lc, &tr);
-	
+
 	{
 		LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 		linphone_core_set_sip_transports(marie->lc, &tr);
@@ -645,7 +645,7 @@ static void transport_busy(void){
 		BC_ASSERT_EQUAL(tr.tls_port, 0, int, "%i");*/
 		linphone_core_manager_destroy(marie);
 	}
-	
+
 	linphone_core_manager_destroy(pauline);
 }
 
@@ -914,7 +914,7 @@ char *read_file(const char *path) {
 	size_t readbytes;
 	char *buffer = NULL;
 	FILE *infile = fopen(path, "rb");
-	
+
 	BC_ASSERT_PTR_NOT_NULL(infile);
 	if (infile) {
 		fseek(infile, 0L, SEEK_END);

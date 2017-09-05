@@ -425,8 +425,6 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	/*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/
 	if (contact_addr) {
 		if (linphone_address_get_transport(contact_addr) != LinphoneTransportUdp) {
-			/*need to save current contact in order to reset is later*/
-			linphone_address_ref(contact_addr);
 			if (cfg->pending_contact)
 				linphone_address_unref(cfg->pending_contact);
 			cfg->pending_contact=contact_addr;
