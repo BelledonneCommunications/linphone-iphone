@@ -950,19 +950,20 @@ static void call_failure(SalOp *op){
 		case SalReasonRedirect:
 		{
 			linphone_call_stop_media_streams(call);
-			if (	call->state==LinphoneCallOutgoingInit
-					|| call->state==LinphoneCallOutgoingProgress
-					|| call->state==LinphoneCallOutgoingRinging /*push case*/
-					|| call->state==LinphoneCallOutgoingEarlyMedia){
-				LinphoneAddress* redirection_to = (LinphoneAddress*)sal_op_get_remote_contact_address(call->op);
-				if( redirection_to ){
-					char* url = linphone_address_as_string(redirection_to);
+			if (
+				call->state == LinphoneCallOutgoingInit ||
+				call->state == LinphoneCallOutgoingProgress ||
+				call->state == LinphoneCallOutgoingRinging ||
+				call->state == LinphoneCallOutgoingEarlyMedia
+			) {
+				const SalAddress* redirection_to = sal_op_get_remote_contact_address(call->op);
+				if (redirection_to) {
+					char *url = sal_address_as_string(redirection_to);
 					ms_warning("Redirecting call [%p] to %s",call, url);
-					ms_free(url);
-					if( call->log->to != NULL ) {
+					if (call->log->to)
 						linphone_address_unref(call->log->to);
-					}
-					call->log->to = linphone_address_ref(redirection_to);
+					call->log->to = linphone_address_new(url);
+					ms_free(url);
 					linphone_call_restart_invite(call);
 					return;
 				}

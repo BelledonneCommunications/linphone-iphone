@@ -1159,6 +1159,11 @@ struct _LinphoneEvent{
 	bool_t is_out_of_dialog_op; /*used for out of dialog notify*/
 	bool_t internal;
 	bool_t oneshot;
+
+	// For migration purpose. (Do not use directly!)
+	// Cache.
+	LinphoneAddress *to_address;
+	LinphoneAddress *from_address;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneEvent);

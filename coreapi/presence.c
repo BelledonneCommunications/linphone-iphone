@@ -1933,8 +1933,11 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	if (linphone_core_get_default_friend_list(lc) != NULL)
 		lf=linphone_core_find_friend_by_out_subscribe(lc, op);
 	if (lf==NULL && lp_config_get_int(lc->config,"sip","allow_out_of_subscribe_presence",0)){
-		const SalAddress *addr=sal_op_get_from_address(op);
-		lf = linphone_core_find_friend(lc, (LinphoneAddress *)addr);
+		char *buf = sal_address_as_string_uri_only(sal_op_get_from_address(op));
+		LinphoneAddress *addr = linphone_address_new(buf);
+		lf = linphone_core_find_friend(lc, addr);
+		ms_free(buf);
+		linphone_address_unref(addr);
 	}
 	if (lf!=NULL){
 		LinphonePresenceActivity *activity = NULL;

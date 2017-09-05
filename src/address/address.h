@@ -89,7 +89,7 @@ public:
 	bool hasUriParam (const std::string &uriParamName) const;
 	const std::string &getUriParamValue (const std::string &uriParamName) const;
 	bool setUriParam (const std::string &uriParamName, const std::string &uriParamValue);
-	bool setUriParams (const std::string &params);
+	bool setUriParams (const std::string &uriParams);
 
 private:
 	L_DECLARE_PRIVATE(Address);

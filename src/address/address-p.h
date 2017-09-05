@@ -36,12 +36,12 @@ public:
 
 private:
 	struct AddressCache {
-		std::string scheme;
-		std::string displayName;
-		std::string username;
-		std::string domain;
-		std::string methodParam;
-		std::string password;
+		mutable std::string scheme;
+		mutable std::string displayName;
+		mutable std::string username;
+		mutable std::string domain;
+		mutable std::string methodParam;
+		mutable std::string password;
 
 		mutable std::unordered_map<std::string, std::string> headers;
 		mutable std::unordered_map<std::string, std::string> params;

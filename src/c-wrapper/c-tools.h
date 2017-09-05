@@ -52,6 +52,13 @@ public:
 		return static_cast<WrappedObject<T> *>(object)->cppPtr;
 	}
 
+	template<typename T>
+	static inline std::shared_ptr<const T> getCppPtrFromC (const void *object) {
+		if (!object)
+			return std::shared_ptr<const T>();
+		return static_cast<const WrappedObject<const T> *>(object)->cppPtr;
+	}
+
 private:
 	Wrapper ();
 

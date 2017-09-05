@@ -32,6 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/sysctl.h>
 #endif
 
+// For migration purpose.
+#include "address/address-p.h"
+#include "c-wrapper/c-tools.h"
+
 #define STR_REASSIGN(dest, src) {\
 	if (dest != NULL) \
 		ms_free(dest); \
@@ -272,6 +276,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	LinphoneAddress *request_uri;
 	const char* collector_uri;
 	char *collector_uri_allocated = NULL;
+	const SalAddress *salAddress;
 
 	/*if we are on a low bandwidth network, do not send reports to not overload it*/
 	if (linphone_call_params_low_bandwidth_enabled(linphone_call_get_current_params(call))){
@@ -362,8 +367,9 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	 * (port, transport, maddr), then it is sent directly.
 	 * Otherwise it is routed as any LinphoneEvent publish, following proxy config policy.
 	 **/
-	if (sal_address_has_uri_param((SalAddress*)request_uri, "transport") || 
-		sal_address_has_uri_param((SalAddress*)request_uri, "maddr") ||
+	salAddress = L_GET_PRIVATE_FROM_C_STRUCT(request_uri, Address)->getInternalAddress();
+	if (sal_address_has_uri_param(salAddress, "transport") ||
+		sal_address_has_uri_param(salAddress, "maddr") ||
 		linphone_address_get_port(request_uri) != 0) {
 		ms_message("Publishing report with custom route %s", collector_uri);
 		sal_op_set_route(lev->op, collector_uri);

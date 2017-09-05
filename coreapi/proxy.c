@@ -410,26 +410,39 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
 }
 
 void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
-	LinphoneAddress *contact_addr=NULL;
-	if (	cfg->op
-			&& cfg->state == LinphoneRegistrationOk
-			&& (contact_addr = (LinphoneAddress*)sal_op_get_contact_address(cfg->op))
-			&& linphone_address_get_transport(contact_addr) != LinphoneTransportUdp /*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/) {
-		/*need to save current contact in order to reset is later*/
-		linphone_address_ref(contact_addr);
-		if (cfg->pending_contact)
-			linphone_address_unref(cfg->pending_contact);
-		cfg->pending_contact=contact_addr;
-
+	LinphoneAddress *contact_addr = NULL;
+	{
+		const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk
+			? sal_op_get_contact_address(cfg->op)
+			: NULL;
+		if (sal_addr) {
+			char *buf = sal_address_as_string(sal_addr);
+			contact_addr = buf ? linphone_address_new(buf) : NULL;
+			ms_free(buf);
+		}
 	}
-	if (cfg->presence_publish_event){ /*might probably do better*/
+
+	/*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/
+	if (contact_addr) {
+		if (linphone_address_get_transport(contact_addr) != LinphoneTransportUdp) {
+			/*need to save current contact in order to reset is later*/
+			linphone_address_ref(contact_addr);
+			if (cfg->pending_contact)
+				linphone_address_unref(cfg->pending_contact);
+			cfg->pending_contact=contact_addr;
+		} else
+			linphone_address_unref(contact_addr);
+	}
+
+	if (cfg->presence_publish_event) { /*might probably do better*/
 		linphone_event_terminate(cfg->presence_publish_event);
 		if (cfg->presence_publish_event) {
-			linphone_event_unref(cfg->presence_publish_event); /*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
-			cfg->presence_publish_event=NULL;
+			/*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
+			linphone_event_unref(cfg->presence_publish_event);
+			cfg->presence_publish_event = NULL;
 		}
-
 	}
+
 	if (cfg->op){
 		sal_op_release(cfg->op);
 		cfg->op=NULL;
@@ -1394,9 +1407,11 @@ const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphonePro
 const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) {
 	const char* addr=NULL;
 	const char* ret="udp"; /*default value*/
-	SalAddress* route_addr=NULL;
+	const SalAddress* route_addr=NULL;
+	bool_t destroy_route_addr = FALSE;
+
 	if (linphone_proxy_config_get_service_route(cfg)) {
-		route_addr=(SalAddress*)linphone_proxy_config_get_service_route(cfg);
+		route_addr = L_GET_PRIVATE_FROM_C_STRUCT(linphone_proxy_config_get_service_route(cfg), Address)->getInternalAddress();
 	} else if (linphone_proxy_config_get_route(cfg)) {
 		addr=linphone_proxy_config_get_route(cfg);
 	} else if(linphone_proxy_config_get_addr(cfg)) {
@@ -1406,12 +1421,15 @@ const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) 
 		return NULL;
 	}
 
-	if (route_addr || (route_addr=sal_address_new(addr))) {
-		ret=sal_transport_to_string(sal_address_get_transport(route_addr));
-		if (!linphone_proxy_config_get_service_route(cfg)) {
-			sal_address_destroy(route_addr);
-		}
+	if (!route_addr) {
+		if (!((*(SalAddress **)&route_addr) = sal_address_new(addr)))
+			return NULL;
+		destroy_route_addr = TRUE;
 	}
+
+	ret=sal_transport_to_string(sal_address_get_transport(route_addr));
+	if (destroy_route_addr)
+		sal_address_destroy((SalAddress *)route_addr);
 
 	return ret;
 }

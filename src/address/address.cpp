@@ -40,23 +40,13 @@ Address::Address (const string &address) : ClonableObject(*new AddressPrivate) {
 		lWarning() << "Cannot create address, bad uri [" << address << "].";
 		return;
 	}
-
-	AddressPrivate::AddressCache &cache = d->cache;
-	cache.scheme = L_C_TO_STRING(sal_address_get_scheme(d->internalAddress));
-	cache.displayName = L_C_TO_STRING(sal_address_get_display_name(d->internalAddress));
-	cache.username = L_C_TO_STRING(sal_address_get_username(d->internalAddress));
-	cache.domain = L_C_TO_STRING(sal_address_get_domain(d->internalAddress));
-	cache.methodParam = L_C_TO_STRING(sal_address_get_method_param(d->internalAddress));
-	cache.password = L_C_TO_STRING(sal_address_get_password(d->internalAddress));
 }
 
 Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
 	L_D(Address);
 	SalAddress *salAddress = src.getPrivate()->internalAddress;
-	if (salAddress) {
+	if (salAddress)
 		d->internalAddress = sal_address_clone(salAddress);
-		d->cache = src.getPrivate()->cache;
-	}
 }
 
 Address::~Address () {
@@ -72,7 +62,6 @@ Address &Address::operator= (const Address &src) {
 			sal_address_destroy(d->internalAddress);
 		SalAddress *salAddress = src.getPrivate()->internalAddress;
 		d->internalAddress = salAddress ? sal_address_clone(salAddress) : nullptr;
-		d->cache = src.getPrivate()->cache;
 	}
 
 	return *this;
@@ -89,11 +78,13 @@ bool Address::operator== (const Address &address) const {
 
 const string &Address::getScheme () const {
 	L_D(const Address);
+	d->cache.scheme = L_C_TO_STRING(sal_address_get_scheme(d->internalAddress));
 	return d->cache.scheme;
 }
 
 const string &Address::getDisplayName () const {
 	L_D(const Address);
+	d->cache.displayName = L_C_TO_STRING(sal_address_get_display_name(d->internalAddress));
 	return d->cache.displayName;
 }
 
@@ -104,13 +95,12 @@ bool Address::setDisplayName (const string &displayName) {
 		return false;
 
 	sal_address_set_display_name(d->internalAddress, L_STRING_TO_C(displayName));
-	d->cache.displayName = L_C_TO_STRING(sal_address_get_display_name(d->internalAddress));
-
 	return true;
 }
 
 const string &Address::getUsername () const {
 	L_D(const Address);
+	d->cache.username = L_C_TO_STRING(sal_address_get_username(d->internalAddress));
 	return d->cache.username;
 }
 
@@ -121,13 +111,12 @@ bool Address::setUsername (const string &username) {
 		return false;
 
 	sal_address_set_username(d->internalAddress, L_STRING_TO_C(username));
-	d->cache.username = L_C_TO_STRING(sal_address_get_username(d->internalAddress));
-
 	return true;
 }
 
 const string &Address::getDomain () const {
 	L_D(const Address);
+	d->cache.domain = L_C_TO_STRING(sal_address_get_domain(d->internalAddress));
 	return d->cache.domain;
 }
 
@@ -138,8 +127,6 @@ bool Address::setDomain (const string &domain) {
 		return false;
 
 	sal_address_set_domain(d->internalAddress, L_STRING_TO_C(domain));
-	d->cache.domain = L_C_TO_STRING(sal_address_get_domain(d->internalAddress));
-
 	return true;
 }
 
@@ -195,6 +182,7 @@ bool Address::isSip () const {
 
 const string &Address::getMethodParam () const {
 	L_D(const Address);
+	d->cache.methodParam = L_C_TO_STRING(sal_address_get_method_param(d->internalAddress));
 	return d->cache.methodParam;
 }
 
@@ -205,13 +193,12 @@ bool Address::setMethodParam (const string &methodParam) {
 		return false;
 
 	sal_address_set_method_param(d->internalAddress, L_STRING_TO_C(methodParam));
-	d->cache.methodParam = L_C_TO_STRING(sal_address_get_method_param(d->internalAddress));
-
 	return true;
 }
 
 const string &Address::getPassword () const {
 	L_D(const Address);
+	d->cache.password = L_C_TO_STRING(sal_address_get_password(d->internalAddress));
 	return d->cache.password;
 }
 
@@ -222,8 +209,6 @@ bool Address::setPassword (const string &password) {
 		return false;
 
 	sal_address_set_password(d->internalAddress, L_STRING_TO_C(password));
-	d->cache.password = L_C_TO_STRING(sal_address_get_password(d->internalAddress));
-
 	return true;
 }
 
@@ -274,14 +259,10 @@ bool Address::weakEqual (const Address &address) const {
 const string &Address::getHeaderValue (const string &headerName) const {
 	L_D(const Address);
 
-	try {
-		return d->cache.headers.at(headerName);
-	} catch (const exception &) {
-		const char *value = sal_address_get_header(d->internalAddress, L_STRING_TO_C(headerName));
-		if (value) {
-			d->cache.headers[headerName] = value;
-			return d->cache.headers[headerName];
-		}
+	const char *value = sal_address_get_header(d->internalAddress, L_STRING_TO_C(headerName));
+	if (value) {
+		d->cache.headers[headerName] = value;
+		return d->cache.headers[headerName];
 	}
 
 	return Utils::getEmptyConstRefObject<string>();
@@ -294,27 +275,21 @@ bool Address::setHeader (const string &headerName, const string &headerValue) {
 		return false;
 
 	sal_address_set_header(d->internalAddress, L_STRING_TO_C(headerName), L_STRING_TO_C(headerValue));
-	d->cache.headers[headerName] = L_C_TO_STRING(sal_address_get_header(d->internalAddress, L_STRING_TO_C(headerName)));
-
 	return true;
 }
 
 bool Address::hasParam (const string &paramName) const {
 	L_D(const Address);
-	return d->cache.params.find(paramName) != d->cache.params.cend();
+	return sal_address_has_param(d->internalAddress, L_STRING_TO_C(paramName));
 }
 
 const string &Address::getParamValue (const string &paramName) const {
 	L_D(const Address);
 
-	try {
-		return d->cache.params.at(paramName);
-	} catch (const exception &) {
-		const char *value = sal_address_get_param(d->internalAddress, L_STRING_TO_C(paramName));
-		if (value) {
-			d->cache.params[paramName] = value;
-			return d->cache.params[paramName];
-		}
+	const char *value = sal_address_get_param(d->internalAddress, L_STRING_TO_C(paramName));
+	if (value) {
+		d->cache.params[paramName] = value;
+		return d->cache.params[paramName];
 	}
 
 	return Utils::getEmptyConstRefObject<string>();
@@ -327,32 +302,31 @@ bool Address::setParam (const string &paramName, const string &paramValue) {
 		return false;
 
 	sal_address_set_param(d->internalAddress, L_STRING_TO_C(paramName), L_STRING_TO_C(paramValue));
-	d->cache.params[paramName] = L_C_TO_STRING(sal_address_get_param(d->internalAddress, L_STRING_TO_C(paramName)));
-
 	return true;
 }
 
 bool Address::setParams (const string &params) {
-	// TODO.
-	return false;
+	L_D(Address);
+
+	if (!d->internalAddress)
+		return false;
+
+	sal_address_set_params(d->internalAddress, L_STRING_TO_C(params));
+	return true;
 }
 
 bool Address::hasUriParam (const string &uriParamName) const {
 	L_D(const Address);
-	return d->cache.uriParams.find(uriParamName) != d->cache.uriParams.cend();
+	return sal_address_has_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
 }
 
 const string &Address::getUriParamValue (const string &uriParamName) const {
 	L_D(const Address);
 
-	try {
-		return d->cache.uriParams.at(uriParamName);
-	} catch (const exception &) {
-		const char *value = sal_address_get_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
-		if (value) {
-			d->cache.uriParams[uriParamName] = value;
-			return d->cache.uriParams[uriParamName];
-		}
+	const char *value = sal_address_get_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
+	if (value) {
+		d->cache.uriParams[uriParamName] = value;
+		return d->cache.uriParams[uriParamName];
 	}
 
 	return Utils::getEmptyConstRefObject<string>();
@@ -365,14 +339,17 @@ bool Address::setUriParam (const string &uriParamName, const string &uriParamVal
 		return false;
 
 	sal_address_set_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName), L_STRING_TO_C(uriParamValue));
-	d->cache.params[uriParamName] = L_C_TO_STRING(sal_address_get_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName)));
-
 	return true;
 }
 
-bool Address::setUriParams (const string &params) {
-	// TODO.
-	return false;
+bool Address::setUriParams (const string &uriParams) {
+	L_D(Address);
+
+	if (!d->internalAddress)
+		return false;
+
+	sal_address_set_uri_params(d->internalAddress, L_STRING_TO_C(uriParams));
+	return true;
 }
 
 LINPHONE_END_NAMESPACE

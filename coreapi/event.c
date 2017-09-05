@@ -275,7 +275,7 @@ LinphoneStatus linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *
 static LinphoneEvent *_linphone_core_create_publish(LinphoneCore *core, LinphoneProxyConfig *cfg, const LinphoneAddress *resource, const char *event, int expires){
 	LinphoneCore *lc = core;
 	LinphoneEvent *lev;
-	
+
 	if (!lc && cfg) {
 		if (cfg->lc)
 			lc = cfg->lc;
@@ -286,7 +286,7 @@ static LinphoneEvent *_linphone_core_create_publish(LinphoneCore *core, Linphone
 	}
 	if (!resource && cfg)
 		resource = linphone_proxy_config_get_identity_address(cfg);
-	
+
 	lev = linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event,expires);
 	linphone_configure_op_with_proxy(lc,lev->op,resource,NULL,lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0),cfg);
 	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
@@ -296,10 +296,10 @@ LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddr
 	return _linphone_core_create_publish(lc, NULL, resource, event, expires);
 }
 LinphoneEvent *linphone_proxy_config_create_publish(LinphoneProxyConfig *cfg, const char *event, int expires) {
-	
+
 	return _linphone_core_create_publish(NULL, cfg,NULL, event, expires);
-	
-		
+
+
 }
 LinphoneEvent *linphone_core_create_one_shot_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event){
 	LinphoneEvent *lev = linphone_core_create_publish(lc, resource, event, -1);
@@ -439,20 +439,34 @@ const char *linphone_event_get_name(const LinphoneEvent *lev){
 	return lev->name;
 }
 
-const LinphoneAddress *linphone_event_get_from(const LinphoneEvent *lev){
-	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing){
-		return (LinphoneAddress*)sal_op_get_to_address(lev->op);
-	}else{
-		return (LinphoneAddress*)sal_op_get_from_address(lev->op);
-	}
+static const LinphoneAddress *_linphone_event_cache_to (const LinphoneEvent *lev) {
+	if (lev->to_address)
+		linphone_address_unref(lev->to_address);
+	char *buf = sal_address_as_string(sal_op_get_to_address(lev->op));
+	((LinphoneEvent *)lev)->to_address = linphone_address_new(buf);
+	ms_free(buf);
+	return lev->to_address;
+}
+
+static const LinphoneAddress *_linphone_event_cache_from (const LinphoneEvent *lev) {
+	if (lev->from_address)
+		linphone_address_unref(lev->from_address);
+	char *buf = sal_address_as_string(sal_op_get_from_address(lev->op));
+	((LinphoneEvent *)lev)->from_address = linphone_address_new(buf);
+	ms_free(buf);
+	return lev->from_address;
+}
+
+const LinphoneAddress *linphone_event_get_from (const LinphoneEvent *lev) {
+	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing)
+		return _linphone_event_cache_to(lev);
+	return _linphone_event_cache_from(lev);
 }
 
 const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev){
-	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing){
-		return (LinphoneAddress*)sal_op_get_from_address(lev->op);
-	}else{
-		return (LinphoneAddress*)sal_op_get_to_address(lev->op);
-	}
+	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing)
+		return _linphone_event_cache_from(lev);
+	return _linphone_event_cache_to(lev);
 }
 
 LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev){
@@ -477,4 +491,3 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneEvent, belle_sip_object_t,
 	_linphone_event_marshall,
 	FALSE
 );
-

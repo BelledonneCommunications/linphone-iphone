@@ -46,6 +46,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
 
+// For migration purpose.
+#include "address/address-p.h"
+#include "c-wrapper/c-tools.h"
+
 #ifdef INET6
 #ifndef _WIN32
 #include <netdb.h>
@@ -3383,7 +3387,7 @@ static bctbx_list_t *make_routes_for_proxy(LinphoneProxyConfig *proxy, const Lin
 		ret=bctbx_list_append(ret,sal_address_new(local_route));
 	}
 	if (srv_route){
-		ret=bctbx_list_append(ret,sal_address_clone((SalAddress*)srv_route));
+		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_STRUCT(srv_route, Address)->getInternalAddress()));
 	}
 	if (ret==NULL){
 		/*if the proxy address matches the domain part of the destination, then use the same transport
