@@ -193,6 +193,7 @@ set(SOURCE_FILES_C
 )
 
 set(SOURCE_FILES_CXX
+	clonable-object-tester.cpp
 	cpim-tester.cpp
 )
 
