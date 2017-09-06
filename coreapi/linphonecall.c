@@ -5020,7 +5020,7 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 	contact=get_fixed_contact(call->core,call,call->dest_proxy);
 	sal_op_set_and_clean_contact_address(
 		call->op,
-		(SalAddress *)L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress()
+		contact ? (SalAddress *)L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress() : nullptr
 	);
 }
 
