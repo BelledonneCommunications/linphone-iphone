@@ -37,7 +37,7 @@ static const string getDatabasePath () {
 
 static void open_database () {
 	EventsDb eventsDb;
-	eventsDb.connect(EventsDb::Sqlite3, getDatabasePath());
+	BC_ASSERT_TRUE(eventsDb.connect(EventsDb::Sqlite3, getDatabasePath()));
 }
 
 test_t events_db_tests[] = {

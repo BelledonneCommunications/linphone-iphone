@@ -135,13 +135,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		*session <<
 			"CREATE TABLE IF NOT EXISTS sip_address ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  value VARCHAR(255) NOT NULL"
+			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS event_type ("
 			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) NOT NULL"
+			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
@@ -157,13 +157,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_state ("
 			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) NOT NULL"
+			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_direction ("
 			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) NOT NULL"
+			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
