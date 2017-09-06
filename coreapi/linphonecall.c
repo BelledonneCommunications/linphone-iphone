@@ -5016,12 +5016,17 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 }
 
 void linphone_call_set_contact_op(LinphoneCall* call) {
-	LinphoneAddress *contact;
-	contact=get_fixed_contact(call->core,call,call->dest_proxy);
-	sal_op_set_and_clean_contact_address(
-		call->op,
-		contact ? (SalAddress *)L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress() : nullptr
-	);
+	SalAddress *sal_address = nullptr;
+	{
+		LinphoneAddress *contact = get_fixed_contact(call->core,call,call->dest_proxy);
+		if (contact) {
+			sal_address = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress());
+			sal_address_ref(sal_address);
+			linphone_address_unref(contact);
+		}
+	}
+
+	sal_op_set_and_clean_contact_address(call->op, sal_address);
 }
 
 LinphonePlayer *linphone_call_get_player(LinphoneCall *call){
