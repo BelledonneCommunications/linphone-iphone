@@ -6165,6 +6165,8 @@ static void stop_refreshing_proxy_config(bool_t is_sip_reachable, LinphoneProxyC
 			linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
 		}else{
 			cfg->commit=TRUE;
+			if (linphone_proxy_config_publish_enabled(cfg))
+				cfg->send_publish=TRUE; /*not sure if really the best place*/
 		}
 	}
 }

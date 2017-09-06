@@ -553,6 +553,7 @@ static void network_state_change(void){
 		linphone_core_set_network_reachable(lc,FALSE);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_NetworkReachableFalse,1));
 		BC_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationNone,register_ok));
+		BC_ASSERT_FALSE(wait_for_until(lc,lc,&counters->number_of_LinphoneRegistrationProgress,register_ok+1,1000)); /*make sure no register is tried*/
 		linphone_core_set_network_reachable(lc,TRUE);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_NetworkReachableTrue,1));
 		wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,2*register_ok);
