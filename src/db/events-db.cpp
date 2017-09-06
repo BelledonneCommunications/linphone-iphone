@@ -140,7 +140,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS event_type ("
-			"  id" + primaryKeyAutoIncrementStr("TINYINT") + ","
+			"  id TINYINT UNSIGNED,"
 			"  value VARCHAR(255) NOT NULL"
 			")";
 
@@ -156,14 +156,14 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_state ("
-			"  id" + primaryKeyAutoIncrementStr("TINYINT") + ","
-			"  state VARCHAR(255) NOT NULL"
+			"  id TINYINT UNSIGNED,"
+			"  value VARCHAR(255) NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_direction ("
-			"  id" + primaryKeyAutoIncrementStr("TINYINT") + ","
-			"  direction VARCHAR(255) NOT NULL"
+			"  id TINYINT UNSIGNED,"
+			"  value VARCHAR(255) NOT NULL"
 			")";
 
 		*session <<
@@ -188,9 +188,9 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  state_id TINYINT UNSIGNED NOT NULL,"
 			"  direction_id TINYINT UNSIGNED NOT NULL,"
 			"  imdn_message_id VARCHAR(255) NOT NULL," // See: https://tools.ietf.org/html/rfc5438#section-6.3
-			"  content_type VARCHAR(255) NOT NULL,"
+			"  content_type VARCHAR(255) NOT NULL," // Content type of text. (Html or text for example.)
 			"  is_secured BOOLEAN NOT NULL,"
-			"  app_data VARCHAR(2048),"
+			"  app_data VARCHAR(2048)," // App user data.
 			"  FOREIGN KEY (dialog_id)"
 			"    REFERENCES dialog(id)"
 			"    ON DELETE CASCADE,"

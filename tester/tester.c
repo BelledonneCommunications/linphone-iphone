@@ -575,6 +575,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&dtmf_test_suite);
 	bc_tester_add_suite(&cpim_test_suite);
 	bc_tester_add_suite(&clonable_object_test_suite);
+	bc_tester_add_suite(&events_db_test_suite);
 #if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
 	bc_tester_add_suite(&video_test_suite);
 #endif
