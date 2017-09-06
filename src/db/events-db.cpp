@@ -184,13 +184,18 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_event ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  event_id INT UNSIGNED NOT NULL,"
 			"  dialog_id INT UNSIGNED NOT NULL,"
 			"  state_id TINYINT UNSIGNED NOT NULL,"
 			"  direction_id TINYINT UNSIGNED NOT NULL,"
 			"  imdn_message_id VARCHAR(255) NOT NULL," // See: https://tools.ietf.org/html/rfc5438#section-6.3
-			"  content_type VARCHAR(255) NOT NULL," // Content type of text. (Html or text for example.)
 			"  is_secured BOOLEAN NOT NULL,"
+			"  content_type VARCHAR(255) NOT NULL," // Content type of text. (Html or text for example.)
+			"  text TEXT,"
 			"  app_data VARCHAR(2048)," // App user data.
+			"  FOREIGN KEY (event_id)"
+			"    REFERENCES event(id)"
+			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (dialog_id)"
 			"    REFERENCES dialog(id)"
 			"    ON DELETE CASCADE,"
@@ -199,6 +204,21 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (direction_id)"
 			"    REFERENCES message_direction(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS message_file_info ("
+			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  message_id INT UNSIGNED NOT NULL,"
+			"  content_type VARCHAR(255) NOT NULL," // File content type.
+			"  name VARCHAR(255) NOT NULL," // File name.
+			"  size INT UNSIGNED NOT NULL," // File size.
+			"  url VARCHAR(255) NOT NULL," // File url.
+			"  key VARCHAR(4096),"
+			"  key_size INT UNSIGNED,"
+			"  FOREIGN KEY (message_id)"
+			"    REFERENCES message(id)"
 			"    ON DELETE CASCADE"
 			")";
 
@@ -252,7 +272,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	bool EventsDb::addEvent (const EventLog &eventLog) {
 		if (!isConnected()) {
 			lWarning() << "Unable to add event. Not connected.";
-		  return false;
+			return false;
 		}
 
 		// TODO.
