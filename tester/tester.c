@@ -675,6 +675,7 @@ void liblinphone_tester_uninit(void) {
 		all_leaks_buffer = NULL;
 	}
 	bc_tester_uninit();
+	bctbx_uninit_logger();
 }
 
 static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStreamType stream_type) {

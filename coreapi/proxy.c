@@ -417,12 +417,9 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 
 	}
 	if (cfg->presence_publish_event){ /*might probably do better*/
-		linphone_event_terminate(cfg->presence_publish_event);
-		if (cfg->presence_publish_event) {
-			linphone_event_unref(cfg->presence_publish_event); /*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
-			cfg->presence_publish_event=NULL;
-		}
-		
+		linphone_event_set_publish_state(cfg->presence_publish_event,LinphonePublishNone);
+		linphone_event_unref(cfg->presence_publish_event); /*probably useless as cfg->long_term_event is already unref in linphone_proxy_config_notify_publish_state_changed. To be check with Ghislain*/
+		cfg->presence_publish_event=NULL;
 	}
 	if (cfg->op){
 		sal_op_release(cfg->op);
