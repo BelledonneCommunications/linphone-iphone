@@ -1,5 +1,5 @@
 /*
- * message.cpp
+ * chat-message.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 #include "db/events-db.h"
 #include "object/object-p.h"
 
-#include "message.h"
+#include "chat-message.h"
 
 // =============================================================================
 
@@ -29,10 +29,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 using namespace std;
 
-class MessagePrivate : public ObjectPrivate {
+class ChatMessagePrivate : public ObjectPrivate {
 private:
 	weak_ptr<ChatRoom> chatRoom;
-	Message::Direction direction = Message::Incoming;
+	ChatMessage::Direction direction = ChatMessage::Incoming;
 	// LinphoneAddress *from;
 	// LinphoneAddress *to;
 	shared_ptr<ErrorInfo> errorInfo;
@@ -44,18 +44,18 @@ private:
 	string appData;
 	list<shared_ptr<Content> > contents;
 	unordered_map<string, string> customHeaders;
-	Message::State state = Message::Idle;
+	ChatMessage::State state = ChatMessage::Idle;
 	shared_ptr<EventsDb> eventsDb;
 
-	L_DECLARE_PUBLIC(Message);
+	L_DECLARE_PUBLIC(ChatMessage);
 };
 
 // -----------------------------------------------------------------------------
 
-Message::Message (MessagePrivate &p) : Object(p) {}
+ChatMessage::ChatMessage (ChatMessagePrivate &p) : Object(p) {}
 
-shared_ptr<ChatRoom> Message::getChatRoom () const {
-	L_D(const Message);
+shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
+	L_D(const ChatMessage);
 	shared_ptr<ChatRoom> chatRoom = d->chatRoom.lock();
 	if (!chatRoom) {
 		// TODO.
@@ -63,110 +63,110 @@ shared_ptr<ChatRoom> Message::getChatRoom () const {
 	return chatRoom;
 }
 
-Message::Direction Message::getDirection () const {
-	L_D(const Message);
+ChatMessage::Direction ChatMessage::getDirection () const {
+	L_D(const ChatMessage);
 	return d->direction;
 }
 
-shared_ptr<const Address> Message::getFromAddress () const {
+shared_ptr<const Address> ChatMessage::getFromAddress () const {
 	// TODO.
 	return nullptr;
 }
 
-shared_ptr<const Address> Message::getToAddress () const {
+shared_ptr<const Address> ChatMessage::getToAddress () const {
 	// TODO.
 	return nullptr;
 }
 
-shared_ptr<const Address> Message::getLocalAddress () const {
+shared_ptr<const Address> ChatMessage::getLocalAddress () const {
 	// TODO.
 	return nullptr;
 }
 
-shared_ptr<const Address> Message::getRemoteAddress () const {
+shared_ptr<const Address> ChatMessage::getRemoteAddress () const {
 	// TODO.
 	return nullptr;
 }
 
-Message::State Message::getState () const {
-	L_D(const Message);
+ChatMessage::State ChatMessage::getState () const {
+	L_D(const ChatMessage);
 	return d->state;
 }
 
-shared_ptr<const ErrorInfo> Message::getErrorInfo () const {
-	L_D(const Message);
+shared_ptr<const ErrorInfo> ChatMessage::getErrorInfo () const {
+	L_D(const ChatMessage);
 	return d->errorInfo;
 }
 
-string Message::getContentType () const {
-	L_D(const Message);
+string ChatMessage::getContentType () const {
+	L_D(const ChatMessage);
 	return d->contentType;
 }
 
-string Message::getText () const {
-	L_D(const Message);
+string ChatMessage::getText () const {
+	L_D(const ChatMessage);
 	return d->text;
 }
 
-void Message::setText (const string &text) {
-	L_D(Message);
+void ChatMessage::setText (const string &text) {
+	L_D(ChatMessage);
 	d->text = text;
 }
 
-void Message::send () const {
+void ChatMessage::send () const {
 	// TODO.
 }
 
-bool Message::containsReadableText () const {
+bool ChatMessage::containsReadableText () const {
 	// TODO: Check content type.
 	return true;
 }
 
-bool Message::isSecured () const {
-	L_D(const Message);
+bool ChatMessage::isSecured () const {
+	L_D(const ChatMessage);
 	return d->isSecured;
 }
 
-time_t Message::getTime () const {
-	L_D(const Message);
+time_t ChatMessage::getTime () const {
+	L_D(const ChatMessage);
 	return d->time;
 }
 
-string Message::getId () const {
-	L_D(const Message);
+string ChatMessage::getId () const {
+	L_D(const ChatMessage);
 	return d->id;
 }
 
-string Message::getAppdata () const {
-	L_D(const Message);
+string ChatMessage::getAppdata () const {
+	L_D(const ChatMessage);
 	return d->appData;
 }
 
-void Message::setAppdata (const string &appData) {
-	L_D(Message);
+void ChatMessage::setAppdata (const string &appData) {
+	L_D(ChatMessage);
 	d->appData = appData;
 }
 
-list<shared_ptr<const Content> > Message::getContents () const {
-	L_D(const Message);
+list<shared_ptr<const Content> > ChatMessage::getContents () const {
+	L_D(const ChatMessage);
 	list<shared_ptr<const Content> > contents;
 	for (const auto &content : d->contents)
 		contents.push_back(content);
 	return contents;
 }
 
-void Message::addContent (const shared_ptr<Content> &content) {
-	L_D(Message);
+void ChatMessage::addContent (const shared_ptr<Content> &content) {
+	L_D(ChatMessage);
 	d->contents.push_back(content);
 }
 
-void Message::removeContent (const shared_ptr<const Content> &content) {
-	L_D(Message);
+void ChatMessage::removeContent (const shared_ptr<const Content> &content) {
+	L_D(ChatMessage);
 	d->contents.remove(const_pointer_cast<Content>(content));
 }
 
-string Message::getCustomHeaderValue (const string &headerName) const {
-	L_D(const Message);
+string ChatMessage::getCustomHeaderValue (const string &headerName) const {
+	L_D(const ChatMessage);
 	try {
 		return d->customHeaders.at(headerName);
 	} catch (const exception &) {
@@ -175,13 +175,13 @@ string Message::getCustomHeaderValue (const string &headerName) const {
 	return "";
 }
 
-void Message::addCustomHeader (const string &headerName, const string &headerValue) {
-	L_D(Message);
+void ChatMessage::addCustomHeader (const string &headerName, const string &headerValue) {
+	L_D(ChatMessage);
 	d->customHeaders[headerName] = headerValue;
 }
 
-void Message::removeCustomHeader (const string &headerName) {
-	L_D(Message);
+void ChatMessage::removeCustomHeader (const string &headerName) {
+	L_D(ChatMessage);
 	d->customHeaders.erase(headerName);
 }
 
