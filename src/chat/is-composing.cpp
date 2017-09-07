@@ -21,6 +21,7 @@
 #include "chat-room-p.h"
 
 #include "logger/logger.h"
+#include "linphone/utils/utils.h"
 
 using namespace std;
 
@@ -74,7 +75,7 @@ std::string IsComposing::marshal (bool isComposing) {
 	}
 	if ((err >= 0) && isComposing) {
 		int refreshTimeout = lp_config_get_int(core->config, "sip", "composing_refresh_timeout", defaultRefreshTimeout);
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)to_string(refreshTimeout).c_str());
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)Utils::toString(refreshTimeout).c_str());
 	}
 	if (err >= 0) {
 		/* Close the "isComposing" element. */
