@@ -18,7 +18,6 @@
 
 #include "abstract-db-p.h"
 #include "db/provider/db-session-provider.h"
-#include "logger/logger.h"
 
 #include "abstract-db.h"
 
@@ -33,22 +32,12 @@ AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(*new AbstractDbPrivate) {
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D(AbstractDb);
 
-	d->backend = backend;
 	d->dbSession = DbSessionProvider::getInstance()->getSession(
 			(backend == Mysql ? "mysql://" : "sqlite3://") + parameters
 		);
 
-	if (d->dbSession) {
-		try {
-			init();
-		} catch (const exception &e) {
-			lWarning() << "Unable to init database: " << e.what();
-
-			// Reset session.
-			d->dbSession = DbSession();
-		}
-	}
-
+	if (d->dbSession)
+		init();
 	return d->dbSession;
 }
 

@@ -1,5 +1,5 @@
 /*
- * is-composing-listener.h
+ * utils.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _IS_COMPOSING_LISTENER_H_
-#define _IS_COMPOSING_LISTENER_H_
+#ifndef _UTILS_H_
+#define _UTILS_H_
 
-#include "linphone/utils/general.h"
+#include <string>
+#include <vector>
+
+#include "general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class IsComposingListener {
-public:
-	virtual void isComposingStateChanged (bool isComposing) = 0;
-	virtual void isRemoteComposingStateChanged (bool isComposing) = 0;
-	virtual void isComposingRefreshNeeded () = 0;
-};
+namespace Utils {
+	LINPHONE_PUBLIC bool iequals (const std::string &a, const std::string &b);
+
+	LINPHONE_PUBLIC std::vector<std::string> split (const std::string &str, const std::string &delimiter);
+
+	LINPHONE_PUBLIC inline std::vector<std::string> split (const std::string &str, char delimiter) {
+		return split(str, std::string(1, delimiter));
+	}
+
+	LINPHONE_PUBLIC int stoi (const std::string &str, size_t *idx = 0, int base = 10);
+}
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _IS_COMPOSING_LISTENER_H_
+#endif // ifndef _UTILS_H_

@@ -48,7 +48,7 @@ struct _LinphoneFactory {
 	char *ring_resources_dir;
 	char *image_resources_dir;
 	char *msplugins_dir;
-
+	
 	/*these are the cached result computed from directories set by the application*/
 	char *cached_data_resources_dir;
 	char *cached_sound_resources_dir;
@@ -67,7 +67,7 @@ static void linphone_factory_uninit(LinphoneFactory *obj){
 	STRING_RESET(obj->ring_resources_dir);
 	STRING_RESET(obj->image_resources_dir);
 	STRING_RESET(obj->msplugins_dir);
-
+	
 	STRING_RESET(obj->cached_data_resources_dir);
 	STRING_RESET(obj->cached_sound_resources_dir);
 	STRING_RESET(obj->cached_ring_resources_dir);
@@ -94,7 +94,7 @@ static void _linphone_factory_destroying_cb(void) {
 
 #define ADD_SUPPORTED_VIDEO_DEFINITION(factory, width, height, name) \
 	(factory)->supported_video_definitions = bctbx_list_append((factory)->supported_video_definitions, \
-		linphone_video_definition_new(width, height, name))
+		linphone_video_definition_ref(linphone_video_definition_new(width, height, name)))
 
 static void initialize_supported_video_definitions(LinphoneFactory *factory) {
 #if !defined(__ANDROID__) && !TARGET_OS_IPHONE
@@ -163,7 +163,7 @@ LinphoneCoreCbs *linphone_factory_create_core_cbs(const LinphoneFactory *factory
 }
 
 LinphoneAddress *linphone_factory_create_address(const LinphoneFactory *factory, const char *addr) {
-	return linphone_address_new(addr);
+	return _linphone_address_new(addr);
 }
 
 LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *factory, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain) {
@@ -179,8 +179,7 @@ LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
 }
 
 LinphoneVideoDefinition * linphone_factory_create_video_definition(const LinphoneFactory *factory, unsigned int width, unsigned int height) {
-	LinphoneVideoDefinition *supported = linphone_factory_find_supported_video_definition(factory, width, height);
-	return supported ? linphone_video_definition_clone(supported) : linphone_video_definition_new(width, height, NULL);
+	return linphone_video_definition_ref(linphone_video_definition_new(width, height, NULL));
 }
 
 LinphoneVideoDefinition * linphone_factory_create_video_definition_from_name(const LinphoneFactory *factory, const char *name) {
@@ -202,17 +201,16 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition(const
 	const bctbx_list_t *item;
 	const bctbx_list_t *supported = linphone_factory_get_supported_video_definitions(factory);
 	LinphoneVideoDefinition *searched_vdef = linphone_video_definition_new(width, height, NULL);
-	LinphoneVideoDefinition *found = NULL;
 
 	for (item = supported; item != NULL; item = bctbx_list_next(item)) {
 		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
 		if (linphone_video_definition_equals(svdef, searched_vdef)) {
-			found = svdef;
-			break;
+			linphone_video_definition_unref(searched_vdef);
+			return linphone_video_definition_clone(svdef);
 		}
 	}
-	linphone_video_definition_unref(searched_vdef);
-	return found;
+
+	return searched_vdef;
 }
 
 LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_name(const LinphoneFactory *factory, const char *name) {
@@ -222,7 +220,7 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_na
 	for (item = supported; item != NULL; item = bctbx_list_next(item)) {
 		LinphoneVideoDefinition *svdef = (LinphoneVideoDefinition *)bctbx_list_get_data(item);
 		if (strcmp(linphone_video_definition_get_name(svdef), name) == 0) {
-			return svdef;
+			return linphone_video_definition_clone(svdef);
 		}
 	}
 	return NULL;
@@ -303,9 +301,9 @@ void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *pa
 }
 
 LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory){
-
+	
 	return linphone_error_info_new();
-
+	
 }
 
 LinphoneRange *linphone_factory_create_range(LinphoneFactory *factory) {

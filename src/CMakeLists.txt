@@ -21,14 +21,9 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
-	address/address-p.h
-	address/address.h
+	c-wrapper/api/c-event-log.h
 	c-wrapper/c-tools.h
-	chat/chat-message.h
-	chat/chat-room-p.h
-	chat/chat-room.h
-	chat/imdn.h
-	chat/is-composing.h
+	c-wrapper/c-types.h
 	content/content.h
 	core/core.h
 	cpim/cpim.h
@@ -45,31 +40,29 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/provider/db-session-p.h
 	db/provider/db-session-provider.h
 	db/provider/db-session.h
-	enums.h
 	event-log/call-event.h
 	event-log/conference-event-p.h
 	event-log/conference-event.h
 	event-log/conference-participant-event.h
+	event-log/event-log-enums.h
 	event-log/event-log-p.h
 	event-log/event-log.h
 	event-log/message-event.h
 	logger/logger.h
+	message/message.h
 	object/clonable-object-p.h
 	object/clonable-object.h
 	object/object-p.h
 	object/object.h
 	object/singleton.h
-	utils/content-type.h
+	utils/enum-generator.h
+	utils/general.h
+	utils/magic-macros.h
+	utils/utils.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
-	address/address.cpp
-	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-event-log.cpp
-	chat/chat-message.cpp
-	chat/chat-room.cpp
-	chat/imdn.cpp
-	chat/is-composing.cpp
 	content/content.cpp
 	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
@@ -88,9 +81,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	event-log/event-log.cpp
 	event-log/message-event.cpp
 	logger/logger.cpp
+	message/message.cpp
 	object/clonable-object.cpp
 	object/object.cpp
-	utils/content-type.cpp
 	utils/general.cpp
 	utils/utils.cpp
 )

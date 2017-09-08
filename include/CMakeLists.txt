@@ -1,8 +1,8 @@
-################################################################################
+############################################################################
 # CMakeLists.txt
-# Copyright (C) 2017  Belledonne Communications, Grenoble France
+# Copyright (C) 2010-2016  Belledonne Communications, Grenoble France
 #
-################################################################################
+############################################################################
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,24 +18,25 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-################################################################################
+############################################################################
 
-set(ROOT_HEADER_FILES
-	account_creator_service.h
+set(HEADER_FILES
 	account_creator.h
+	account_creator_service.h
+	address.h
 	auth_info.h
 	buffer.h
+	call.h
+	callbacks.h
 	call_log.h
 	call_params.h
 	call_stats.h
-	call.h
-	callbacks.h
 	chat.h
 	conference.h
 	contactprovider.h
 	content.h
-	core_utils.h
 	core.h
+	core_utils.h
 	defs.h
 	dictionary.h
 	error_info.h
@@ -43,7 +44,6 @@ set(ROOT_HEADER_FILES
 	factory.h
 	friend.h
 	friendlist.h
-	headers.h
 	im_encryption_engine.h
 	im_notif_policy.h
 	info_message.h
@@ -63,74 +63,24 @@ set(ROOT_HEADER_FILES
 	video_definition.h
 	wrapper_utils.h
 	xmlrpc.h
+	headers.h
 
 	# Deprecated header files
-	linphone_proxy_config.h
-	linphone_tunnel.h
-	linphonecore_utils.h
 	linphonecore.h
+	linphonecore_utils.h
 	linphonefriend.h
 	linphonepresence.h
+	linphone_proxy_config.h
+	linphone_tunnel.h
 )
 
-set(C_API_HEADER_FILES
-	c-address.h
-	c-api.h
-	c-event-log.h
-	c-types.h
-)
+set(LINPHONE_HEADER_FILES )
+foreach(HEADER_FILE ${HEADER_FILES})
+	list(APPEND LINPHONE_HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/linphone/${HEADER_FILE}")
+endforeach()
+set(LINPHONE_HEADER_FILES ${LINPHONE_HEADER_FILES} PARENT_SCOPE)
 
-set(ENUMS_HEADER_FILES
-	event-log-enums.h
-)
-
-set(UTILS_HEADER_FILES
-	enum-generator.h
-	general.h
-	magic-macros.h
-	utils.h
-)
-
-# ------------------------------------------------------------------------------
-
-function (PREPEND OUT_LIST PREFIX)
-	set(TMP_LIST )
-	foreach (FILENAME ${ARGN})
-		list(APPEND TMP_LIST "${PREFIX}/${FILENAME}")
-	endforeach ()
-	set(${OUT_LIST} "${TMP_LIST}" PARENT_SCOPE)
-endfunction ()
-
-# ------------------------------------------------------------------------------
-
-set(SRC_ROOT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/linphone")
-
-PREPEND(ROOT_HEADER_FILES "${SRC_ROOT_DIRECTORY}" ${ROOT_HEADER_FILES})
-PREPEND(C_API_HEADER_FILES "${SRC_ROOT_DIRECTORY}/api" ${C_API_HEADER_FILES})
-PREPEND(ENUMS_HEADER_FILES "${SRC_ROOT_DIRECTORY}/enums" ${ENUMS_HEADER_FILES})
-PREPEND(UTILS_HEADER_FILES "${SRC_ROOT_DIRECTORY}/utils" ${UTILS_HEADER_FILES})
-
-set(LINPHONE_HEADER_FILES ${ROOT_HEADER_FILES} ${C_API_HEADER_FILES} ${ENUMS_HEADER_FILES} ${UTILS_HEADER_FILES} PARENT_SCOPE)
-
-# ------------------------------------------------------------------------------
-
-set(DEST_ROOT_DIRECTORY "${CMAKE_INSTALL_INCLUDEDIR}/linphone")
-
-install(FILES ${ROOT_HEADER_FILES}
-	DESTINATION "${DEST_ROOT_DIRECTORY}"
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
-
-install(FILES ${C_API_HEADER_FILES}
-	DESTINATION "${DEST_ROOT_DIRECTORY}/api"
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
-install(FILES ${ENUMS_HEADER_FILES}
-	DESTINATION "${DEST_ROOT_DIRECTORY}/enums"
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
-
-install(FILES ${UTILS_HEADER_FILES}
-	DESTINATION "${DEST_ROOT_DIRECTORY}/utils"
+install(FILES ${LINPHONE_HEADER_FILES}
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )

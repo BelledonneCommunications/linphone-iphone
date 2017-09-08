@@ -1,5 +1,5 @@
 /*
- * imdn.h
+ * event-log-enums.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,32 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _IMDN_H_
-#define _IMDN_H_
+#ifndef _EVENT_LOG_ENUMS_H_
+#define _EVENT_LOG_ENUMS_H_
 
-#include <string>
-
-#include "linphone/utils/general.h"
-
-#include "chat-room.h"
-
-#include "private.h"
+#include "utils/enum-generator.h"
 
 // =============================================================================
 
-LINPHONE_BEGIN_NAMESPACE
+#define L_ENUM_VALUES_EVENT_LOG_TYPE \
+	L_DECLARE_ENUM_VALUES(EventLog, Type, \
+		None, \
+		Message, \
+		CallStart, \
+		CallEnd, \
+		ConferenceCreated, \
+		ConferenceDestroyed, \
+		ConferenceParticipantAdded, \
+		ConferenceParticipantRemoved, \
+		ConferenceParticipantSetAdmin, \
+		ConferenceParticipantUnsetAdmin \
+	)
 
-class Imdn {
-public:
-	static void parse (ChatRoom &cr, const std::string &content);
-
-private:
-	static void parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx);
-
-private:
-	static const std::string imdnPrefix;
-};
-
-LINPHONE_END_NAMESPACE
-
-#endif // ifndef _IMDN_H_
+#endif // ifndef _EVENT_LOG_ENUMS_H_

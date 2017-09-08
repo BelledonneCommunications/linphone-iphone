@@ -574,8 +574,6 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&player_test_suite);
 	bc_tester_add_suite(&dtmf_test_suite);
 	bc_tester_add_suite(&cpim_test_suite);
-	bc_tester_add_suite(&clonable_object_test_suite);
-	bc_tester_add_suite(&events_db_test_suite);
 #if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
 	bc_tester_add_suite(&video_test_suite);
 #endif
@@ -677,7 +675,6 @@ void liblinphone_tester_uninit(void) {
 		all_leaks_buffer = NULL;
 	}
 	bc_tester_uninit();
-	bctbx_uninit_logger();
 }
 
 static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStreamType stream_type) {

@@ -1141,9 +1141,6 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 					 * The state is passed to Terminating to remember to terminate later.
 					 */
 					op->state=SalOpStateTerminating;
-					/* However, even if the transaction is kept alive, we can stop sending retransmissions to avoid flowing the network with no longer
-					 * necessary messages and avoid confusion in logs.*/
-					belle_sip_client_transaction_stop_retransmissions(op->pending_client_trans);
 				}
 			}
 			break;

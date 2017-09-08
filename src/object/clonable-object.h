@@ -19,7 +19,7 @@
 #ifndef _CLONABLE_OBJECT_H_
 #define _CLONABLE_OBJECT_H_
 
-#include "linphone/utils/general.h"
+#include "utils/general.h"
 
 // =============================================================================
 

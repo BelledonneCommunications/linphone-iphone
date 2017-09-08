@@ -17,11 +17,8 @@
  */
 
 #include <cstdlib>
-#include <sstream>
 
-#include <bctoolbox/port.h>
-
-#include "linphone/utils/utils.h"
+#include "utils.h"
 
 // =============================================================================
 
@@ -53,30 +50,6 @@ vector<string> Utils::split (const string &str, const string &delimiter) {
 	return out;
 }
 
-#ifndef __ANDROID__
-#define TO_STRING_IMPL(TYPE) \
-	string Utils::toString(TYPE val) { \
-		return to_string(val); \
-	}
-#else
-#define TO_STRING_IMPL(TYPE) \
-	string Utils::toString(TYPE val) { \
-		ostringstream os; \
-		os << val; \
-		return os.str(); \
-	}
-#endif // ifndef __ANDROID__
-
-TO_STRING_IMPL(int)
-TO_STRING_IMPL(long)
-TO_STRING_IMPL(long long)
-TO_STRING_IMPL(unsigned)
-TO_STRING_IMPL(unsigned long)
-TO_STRING_IMPL(unsigned long long)
-TO_STRING_IMPL(float)
-TO_STRING_IMPL(double)
-TO_STRING_IMPL(long double)
-
 int Utils::stoi (const string &str, size_t *idx, int base) {
 	char *p;
 	int v = strtol(str.c_str(), &p, base);
@@ -85,32 +58,6 @@ int Utils::stoi (const string &str, size_t *idx, int base) {
 		*idx = p - str.c_str();
 
 	return v;
-}
-
-char *Utils::utf8ToChar (uint32_t ic) {
-	char *result = new char[5];
-	int size = 0;
-	if (ic < 0x80) {
-		result[0] = ic;
-		size = 1;
-	} else if (ic < 0x800) {
-		result[1] = 0x80 + ((ic & 0x3F));
-		result[0] = 0xC0 + ((ic >> 6) & 0x1F);
-		size = 2;
-	} else if (ic < 0x100000) {
-		result[2] = 0x80 + (ic & 0x3F);
-		result[1] = 0x80 + ((ic >> 6) & 0x3F);
-		result[0] = 0xE0 + ((ic >> 12) & 0xF);
-		size = 3;
-	} else if (ic < 0x110000) {
-		result[3] = 0x80 + (ic & 0x3F);
-		result[2] = 0x80 + ((ic >> 6) & 0x3F);
-		result[1] = 0x80 + ((ic >> 12) & 0x3F);
-		result[0] = 0xF0 + ((ic >> 18) & 0x7);
-		size = 4;
-	}
-	result[size] = '\0';
-	return result;
 }
 
 LINPHONE_END_NAMESPACE

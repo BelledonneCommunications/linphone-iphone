@@ -33,7 +33,7 @@ SalAddress * sal_address_new(const char *uri){
 }
 
 SalAddress * sal_address_clone(const SalAddress *addr){
-	return (SalAddress *) belle_sip_object_ref(belle_sip_header_address_clone(BELLE_SIP_HEADER_ADDRESS(addr)));
+	return (SalAddress *) belle_sip_object_ref(belle_sip_object_clone(BELLE_SIP_OBJECT(addr)));
 }
 
 const char *sal_address_get_scheme(const SalAddress *addr){
@@ -277,3 +277,4 @@ bool_t sal_address_is_ipv6(const SalAddress *addr){
 void sal_address_destroy(SalAddress *addr){
 	sal_address_unref(addr);
 }
+

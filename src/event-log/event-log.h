@@ -19,9 +19,8 @@
 #ifndef _EVENT_LOG_H_
 #define _EVENT_LOG_H_
 
-#include "linphone/enums/event-log-enums.h"
-
 #include "object/clonable-object.h"
+#include "event-log-enums.h"
 
 // =============================================================================
 

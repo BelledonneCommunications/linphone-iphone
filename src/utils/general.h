@@ -51,14 +51,6 @@ LINPHONE_BEGIN_NAMESPACE
 	#endif
 #endif
 
-#ifndef LINPHONE_DEPRECATED
-	#if defined(_MSC_VER)
-		#define LINPHONE_DEPRECATED __declspec(deprecated)
-	#else
-		#define LINPHONE_DEPRECATED __attribute__ ((deprecated))
-	#endif
-#endif
-
 // -----------------------------------------------------------------------------
 
 #ifdef __cplusplus
@@ -71,8 +63,6 @@ void l_assert (const char *condition, const char *file, int line);
 	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : l_assert(#CONDITION, __FILE__, __LINE__))
 #endif
 
-// Allows access to private internal data.
-// Gives a control to C Wrapper.
 #define L_DECLARE_PRIVATE(CLASS) \
 	inline CLASS ## Private * getPrivate() { \
 		return reinterpret_cast<CLASS ## Private *>(mPrivate); \
@@ -80,8 +70,7 @@ void l_assert (const char *condition, const char *file, int line);
 	inline const CLASS ## Private *getPrivate() const { \
 		return reinterpret_cast<const CLASS ## Private *>(mPrivate); \
 	} \
-	friend class CLASS ## Private; \
-	friend class Wrapper;
+	friend class CLASS ## Private;
 
 class ClonableObject;
 class ClonableObjectPrivate;

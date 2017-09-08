@@ -42,11 +42,9 @@ extern "C" {
 extern test_suite_t account_creator_test_suite;
 extern test_suite_t call_test_suite;
 extern test_suite_t call_video_test_suite;
-extern test_suite_t clonable_object_test_suite;
 extern test_suite_t cpim_test_suite;
 extern test_suite_t dtmf_test_suite;
 extern test_suite_t event_test_suite;
-extern test_suite_t events_db_test_suite;
 extern test_suite_t flexisip_test_suite;
 extern test_suite_t log_collection_test_suite;
 extern test_suite_t message_test_suite;

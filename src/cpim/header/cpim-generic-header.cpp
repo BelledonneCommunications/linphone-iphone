@@ -18,10 +18,9 @@
 
 #include <set>
 
-#include "linphone/utils/utils.h"
-
 #include "cpim-header-p.h"
 #include "cpim/parser/cpim-parser.h"
+#include "utils/utils.h"
 
 #include "cpim-generic-header.h"
 

@@ -342,12 +342,6 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			case LinphoneCallDeclined:
 				status=_("Declined");
 			break;
-			case LinphoneCallAnsweredElsewhere:
-				status=_("Answered elsewhere");
-				break;
-			case LinphoneCallDeclinedElsewhere:
-				status=_("Declined elsewhere");
-				break;
 			default:
 			break;
 		}

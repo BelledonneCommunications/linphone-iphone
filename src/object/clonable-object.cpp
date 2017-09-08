@@ -45,7 +45,7 @@ ClonableObject::ClonableObject (ClonableObjectPrivate &p) : mPrivate(&p) {
 	// Q-pointer must be empty. It's a constructor that takes a new private data.
 	L_ASSERT(!mPrivate->mPublic);
 
-	mPrivate->mPublic = new remove_pointer<decltype(mPrivate->mPublic)>::type();
+	mPrivate->mPublic = new remove_pointer<decltype(mPrivate->mPublic)>::type;
 	(*mPrivate->mPublic)[mPrivate] = this;
 	mPrivate->ref();
 }

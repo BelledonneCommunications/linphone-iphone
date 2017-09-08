@@ -43,9 +43,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <bctoolbox/defs.h>
 
-// For migration purpose.
-#include "address/address-p.h"
-#include "c-wrapper/c-tools.h"
 
 inline OrtpRtcpXrStatSummaryFlag operator|(OrtpRtcpXrStatSummaryFlag a, OrtpRtcpXrStatSummaryFlag b) {
 	return static_cast<OrtpRtcpXrStatSummaryFlag>(static_cast<int>(a) | static_cast<int>(b));
@@ -1202,7 +1199,7 @@ void linphone_call_create_op(LinphoneCall *call){
 **/
 static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, LinphoneAddress *to, LinphoneProxyConfig *cfg){
 	if (linphone_core_ipv6_enabled(call->core)){
-		if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_STRUCT(to, Address)->getInternalAddress())) {
+		if (sal_address_is_ipv6((SalAddress*)to)){
 			call->af=AF_INET6;
 		}else if (cfg && cfg->op){
 			call->af=sal_op_get_address_family(cfg->op);
@@ -1365,8 +1362,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 
 	linphone_call_check_ice_session(call, IR_Controlling, FALSE);
 
-	if (linphone_nat_policy_stun_enabled(call->nat_policy) && !(linphone_nat_policy_ice_enabled(call->nat_policy)
-		|| linphone_nat_policy_turn_enabled(call->nat_policy))) {
+	if (linphone_nat_policy_ice_enabled(call->nat_policy)) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
 #ifdef BUILD_UPNP
@@ -1723,7 +1719,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		call->ringing_beep=FALSE;
 	}
 	if (call->chat_room){
-		linphone_chat_room_set_call(call->chat_room, NULL);
+		call->chat_room->call = NULL;
 	}
 	if (lc->calls == NULL){
 		ms_bandwidth_controller_reset_state(lc->bw_controller);
@@ -1866,32 +1862,6 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			case LinphoneReasonNotAnswered:
 				if (call->log->dir == LinphoneCallIncoming){
 					call->log->status=LinphoneCallMissed;
-				}
-				break;
-			case LinphoneReasonNone:
-				if (call->log->dir == LinphoneCallIncoming){
-					const LinphoneErrorInfo *ei = linphone_call_get_error_info(call);
-					if (ei) {
-						int code = linphone_error_info_get_protocol_code(ei);
-						if((code >= 200 && code < 300)) {
-							// error between 200-299 means accepted elsewhere
-							call->log->status=LinphoneCallAcceptedElsewhere;
-							break;
-						}
-					}
-				}
-				break;
-			case LinphoneReasonDoNotDisturb:
-				if (call->log->dir == LinphoneCallIncoming){
-					const LinphoneErrorInfo *ei = linphone_call_get_error_info(call);
-					if (ei) {
-						int code = linphone_error_info_get_protocol_code(ei);
-						if(code >= 600 && code < 700) {
-							// error between 600-699 means declined elsewhere
-							call->log->status=LinphoneCallDeclinedElsewhere;
-							break;
-						}
-					}
 				}
 				break;
 			default:
@@ -2070,10 +2040,10 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 	if (vstream != NULL) {
 		call->current_params->sent_vsize = video_stream_get_sent_video_size(vstream);
 		call->current_params->recv_vsize = video_stream_get_received_video_size(vstream);
-		call->current_params->sent_vdef = linphone_factory_create_video_definition(
-			linphone_factory_get(), call->current_params->sent_vsize.width, call->current_params->sent_vsize.height);
-		call->current_params->recv_vdef = linphone_factory_create_video_definition(
-			linphone_factory_get(), call->current_params->recv_vsize.width, call->current_params->recv_vsize.height);
+		call->current_params->sent_vdef = linphone_video_definition_ref(linphone_factory_find_supported_video_definition(
+			linphone_factory_get(), call->current_params->sent_vsize.width, call->current_params->sent_vsize.height));
+		call->current_params->recv_vdef = linphone_video_definition_ref(linphone_factory_find_supported_video_definition(
+			linphone_factory_get(), call->current_params->recv_vsize.width, call->current_params->recv_vsize.height));
 		call->current_params->sent_fps = video_stream_get_sent_framerate(vstream);
 		call->current_params->received_fps = video_stream_get_received_framerate(vstream);
 	}
@@ -4989,19 +4959,14 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 		/* if already choosed, don't change it */
 		return NULL;
 	} else if (call->ping_op && sal_op_get_contact_address(call->ping_op)) {
-		char *addr = sal_address_as_string(sal_op_get_contact_address(call->ping_op));
 		/* if the ping OPTIONS request succeeded use the contact guessed from the
 		 received, rport*/
 		ms_message("Contact has been fixed using OPTIONS"/* to %s",guessed*/);
-		ret=linphone_address_new(addr);
-		ms_free(addr);
+		ret=linphone_address_clone(sal_op_get_contact_address(call->ping_op));;
 	} else 	if (dest_proxy && dest_proxy->op && sal_op_get_contact_address(dest_proxy->op)){
-		char *addr = sal_address_as_string(sal_op_get_contact_address(dest_proxy->op));
-
 	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
 		ms_message("Contact has been fixed using proxy" /*to %s",fixed_contact*/);
-		ret=linphone_address_new(addr);
-		ms_free(addr);
+		ret=linphone_address_clone(sal_op_get_contact_address(dest_proxy->op));
 	} else {
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		if (ctt!=NULL){
@@ -5016,17 +4981,9 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 }
 
 void linphone_call_set_contact_op(LinphoneCall* call) {
-	SalAddress *sal_address = nullptr;
-	{
-		LinphoneAddress *contact = get_fixed_contact(call->core,call,call->dest_proxy);
-		if (contact) {
-			sal_address = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress());
-			sal_address_ref(sal_address);
-			linphone_address_unref(contact);
-		}
-	}
-
-	sal_op_set_and_clean_contact_address(call->op, sal_address);
+	LinphoneAddress *contact;
+	contact=get_fixed_contact(call->core,call,call->dest_proxy);
+	sal_op_set_and_clean_contact_address(call->op, (SalAddress *)contact);
 }
 
 LinphonePlayer *linphone_call_get_player(LinphoneCall *call){

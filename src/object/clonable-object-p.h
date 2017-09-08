@@ -21,7 +21,7 @@
 
 #include <unordered_map>
 
-#include "linphone/utils/general.h"
+#include "utils/general.h"
 
 // =============================================================================
 
@@ -29,7 +29,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ClonableObjectPrivate {
 public:
-	ClonableObjectPrivate () = default;
 	virtual ~ClonableObjectPrivate () = default;
 
 protected:
@@ -42,10 +41,6 @@ private:
 	int nRefs = 0;
 
 	L_DECLARE_PUBLIC(ClonableObject);
-
-	// It's forbidden to copy directly one Clonable object private.
-	// To allow copy, you must define copy constructor in inherited object.
-	L_DISABLE_COPY(ClonableObjectPrivate);
 };
 
 LINPHONE_END_NAMESPACE

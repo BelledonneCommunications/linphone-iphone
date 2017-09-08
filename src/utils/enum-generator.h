@@ -1,5 +1,5 @@
 /*
- * address-p.h
+ * enum-generator.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,44 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ADDRESS_P_H_
-#define _ADDRESS_P_H_
+#ifndef _ENUM_GENERATOR_H_
+#define _ENUM_GENERATOR_H_
 
-#include "address.h"
-#include "object/clonable-object-p.h"
+#include "magic-macros.h"
 
 // =============================================================================
 
-struct SalAddress;
-
 LINPHONE_BEGIN_NAMESPACE
 
-class AddressPrivate : public ClonableObjectPrivate {
-public:
-	inline const SalAddress *getInternalAddress () const {
-		return internalAddress;
-	}
+#define L_ENUM_VALUE(C, VALUE) C ## VALUE
 
-private:
-	struct AddressCache {
-		mutable std::string scheme;
-		mutable std::string displayName;
-		mutable std::string username;
-		mutable std::string domain;
-		mutable std::string methodParam;
-		mutable std::string password;
-
-		mutable std::unordered_map<std::string, std::string> headers;
-		mutable std::unordered_map<std::string, std::string> params;
-		mutable std::unordered_map<std::string, std::string> uriParams;
-	};
-
-	SalAddress *internalAddress = nullptr;
-	AddressCache cache;
-
-	L_DECLARE_PUBLIC(Address);
-};
+#ifndef L_USE_C_ENUM
+	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
+		MM_APPLY_COMMA(L_ENUM_VALUE, ENUM_NAME, __VA_ARGS__)
+#else
+	#define L_DECLARE_ENUM_VALUES(CLASS_NAME, ENUM_NAME, ...) \
+		MM_APPLY_COMMA(L_ENUM_VALUE, Linphone ## CLASS_NAME ## ENUM_NAME, __VA_ARGS__)
+#endif // ifndef L_USE_C_ENUM
 
 LINPHONE_END_NAMESPACE
 
-#endif
+#endif // ifndef _ENUM_GENERATOR_H_

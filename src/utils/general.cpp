@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "linphone/utils/general.h"
-
 #include "logger/logger.h"
+
+#include "general.h"
 
 // =============================================================================
 

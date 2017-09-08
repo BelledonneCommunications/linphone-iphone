@@ -1,5 +1,5 @@
 /*
- * cpim-tester.cpp
+ * liblinphone_tester - liblinphone test suite
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 
 #include "liblinphone_tester.h"
 
-// =============================================================================
-
 using namespace std;
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
-static void parse_minimal_message () {
+// =============================================================================
+
+static void parse_minimal_message (void) {
 	const string str = "Content-type: Message/CPIM\r\n"
 		"\r\n"
 		"Content-Type: text/plain; charset=utf-8\r\n"
@@ -39,7 +39,7 @@ static void parse_minimal_message () {
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
 }
 
-static void set_generic_header_name () {
+static void set_generic_header_name (void) {
 	const list<pair<string, bool> > entries = {
 		{ "toto", true },
 		{ "george.abitbol", true },
@@ -82,7 +82,7 @@ static void set_generic_header_name () {
 	}
 }
 
-static void set_generic_header_value () {
+static void set_generic_header_value (void) {
 	const list<pair<string, bool> > entries = {
 		{ "MyFeatures <mid:MessageFeatures@id.foo.com>", true },
 		{ "2000-12-13T13:40:00-08:00", true },
@@ -106,7 +106,7 @@ static void set_generic_header_value () {
 	}
 }
 
-static void check_core_header_names () {
+static void check_core_header_names (void) {
 	const list<pair<shared_ptr<Cpim::CoreHeader>, string> > entries = {
 		{ make_shared<Cpim::FromHeader>(), "From" },
 		{ make_shared<Cpim::ToHeader>(), "To" },
@@ -123,7 +123,7 @@ static void check_core_header_names () {
 	}
 }
 
-static void set_core_header_values () {
+static void set_core_header_values (void) {
 	const list<pair<shared_ptr<Cpim::Header>, list<pair<string, bool> > > > entries = {
 		{ make_shared<Cpim::FromHeader>(), {
 				{ "Winnie the Pooh <im:pooh@100akerwood.com>", true },
@@ -196,7 +196,7 @@ static void set_core_header_values () {
 	}
 }
 
-static void check_subject_header_language () {
+static void check_subject_header_language (void) {
 	Cpim::SubjectHeader subjectHeader;
 
 	// Check for not defined language.
@@ -226,7 +226,7 @@ static void check_subject_header_language () {
 	}
 }
 
-static void parse_rfc_example () {
+static void parse_rfc_example (void) {
 	const string str = "Content-type: Message/CPIM\r\n"
 		"\r\n"
 		"From: MR SANDERS <im:piglet@100akerwood.com>\r\n"
@@ -253,7 +253,7 @@ static void parse_rfc_example () {
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
 }
 
-static void parse_message_with_generic_header_parameters () {
+static void parse_message_with_generic_header_parameters (void) {
 	const string str = "Content-type: Message/CPIM\r\n"
 		"\r\n"
 		"From: MR SANDERS <im:piglet@100akerwood.com>\r\n"
@@ -275,7 +275,7 @@ static void parse_message_with_generic_header_parameters () {
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
 }
 
-static void build_message () {
+static void build_message (void) {
 	Cpim::Message message;
 	if (!BC_ASSERT_FALSE(message.isValid()))
 		return;

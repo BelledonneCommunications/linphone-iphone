@@ -76,11 +76,6 @@ set(CERTIFICATE_CLIENT_FILES
 
 set(CERTIFICATE_FILES ${CERTIFICATE_ALT_FILES} ${CERTIFICATE_CN_FILES} ${CERTIFICATE_CLIENT_FILES})
 
-set(DB_FILES
-	db/linphone.db
-	db/messages.db
-)
-
 set(RC_FILES
 	rcfiles/account_creator_rc
 	rcfiles/assistant_create.rc
@@ -151,11 +146,11 @@ set(VCARD_FILES
 set(OTHER_FILES
 	tester_hosts
 	local_tester_hosts
+	messages.db
 )
 
 set(IOS_RESOURCES_FILES
 	${OTHER_FILES}
-	${DB_FILES}
 	certificates
 	images
 	rcfiles
@@ -198,9 +193,7 @@ set(SOURCE_FILES_C
 )
 
 set(SOURCE_FILES_CXX
-	clonable-object-tester.cpp
-	cpim-tester.cpp
-	events-db-tester.cpp
+	cpim_tester.cpp
 )
 
 set(SOURCE_FILES_OBJC )
@@ -314,15 +307,14 @@ if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 		)
-		install(FILES ${CERTIFICATE_ALT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/altname")
-		install(FILES ${CERTIFICATE_CLIENT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/client")
-		install(FILES ${CERTIFICATE_CN_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/cn")
-		install(FILES ${DB_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/db")
-		install(FILES ${IMAGE_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/images")
 		install(FILES ${OTHER_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester")
-		install(FILES ${RC_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/rcfiles")
-		install(FILES ${SIPP_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sipp")
 		install(FILES ${SOUND_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sounds")
+		install(FILES ${SIPP_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sipp")
+		install(FILES ${CERTIFICATE_ALT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/altname")
+		install(FILES ${CERTIFICATE_CN_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/cn")
+		install(FILES ${CERTIFICATE_CLIENT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/client")
+		install(FILES ${RC_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/rcfiles")
+		install(FILES ${IMAGE_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/images")
 		install(FILES ${VCARD_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/vcards")
 	endif()
 endif()

@@ -84,7 +84,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 	}
 }
 
-int sal_register(SalOp *op, const char *proxy, const char *from, int expires, const SalAddress* old_contact){
+int sal_register(SalOp *op, const char *proxy, const char *from, int expires,SalAddress* old_contact){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
 	belle_sip_header_t* accept_header;
@@ -135,3 +135,5 @@ int sal_register_refresh(SalOp *op, int expires){
 int sal_unregister(SalOp *op){
 	return sal_register_refresh(op,0);
 }
+
+

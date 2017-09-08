@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "address/address.h"
 #include "conference-event-p.h"
 
 #include "conference-participant-event.h"
@@ -47,7 +46,8 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 		type == TypeConferenceParticipantUnsetAdmin
 	);
 	L_ASSERT(participantAddress);
-	d->participantAddress = make_shared<Address>(*participantAddress);
+	// TODO: Duplicate address.
+	d->participantAddress = participantAddress;
 }
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (const ConferenceParticipantEvent &src) :
@@ -57,15 +57,16 @@ ConferenceParticipantEvent &ConferenceParticipantEvent::operator= (const Confere
 	L_D(ConferenceParticipantEvent);
 	if (this != &src) {
 		ConferenceEvent::operator=(src);
-		d->participantAddress = make_shared<Address>(*src.getPrivate()->participantAddress);
+		// TODO: Duplicate address.
+		d->participantAddress = src.getPrivate()->participantAddress;
 	}
 
 	return *this;
 }
 
 shared_ptr<const Address> ConferenceParticipantEvent::getParticipantAddress () const {
-	L_D(const ConferenceParticipantEvent);
-	return d->participantAddress;
+	// TODO.
+	return nullptr;
 }
 
 LINPHONE_END_NAMESPACE

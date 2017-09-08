@@ -23,10 +23,10 @@
 #endif // ifdef SOCI_ENABLED
 
 #include "abstract/abstract-db-p.h"
-#include "chat/chat-message.h"
 #include "event-log/call-event.h"
 #include "event-log/message-event.h"
 #include "logger/logger.h"
+#include "message/message.h"
 
 #include "events-db.h"
 
@@ -75,25 +75,25 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		);
 	}
 
-	static constexpr EnumToSql<ChatMessage::State> messageStateToSql[] = {
-		{ ChatMessage::Idle, "1" },
-		{ ChatMessage::InProgress, "2" },
-		{ ChatMessage::Delivered, "3" },
-		{ ChatMessage::NotDelivered, "4" },
-		{ ChatMessage::FileTransferError, "5" },
-		{ ChatMessage::FileTransferDone, "6" },
-		{ ChatMessage::DeliveredToUser, "7" },
-		{ ChatMessage::Displayed, "8" }
+	static constexpr EnumToSql<Message::State> messageStateToSql[] = {
+		{ Message::Idle, "1" },
+		{ Message::InProgress, "2" },
+		{ Message::Delivered, "3" },
+		{ Message::NotDelivered, "4" },
+		{ Message::FileTransferError, "5" },
+		{ Message::FileTransferDone, "6" },
+		{ Message::DeliveredToUser, "7" },
+		{ Message::Displayed, "8" }
 	};
 
-	static constexpr const char *mapMessageStateToSql (ChatMessage::State state) {
+	static constexpr const char *mapMessageStateToSql (Message::State state) {
 		return mapEnumToSql(
 			messageStateToSql, sizeof messageStateToSql / sizeof messageStateToSql[0], state
 		);
 	}
 
-	static constexpr const char *mapMessageDirectionToSql (ChatMessage::Direction direction) {
-		return direction == ChatMessage::Direction::Incoming ? "1" : "2";
+	static constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
+		return direction == Message::Direction::Incoming ? "1" : "2";
 	}
 
 // -----------------------------------------------------------------------------
@@ -135,13 +135,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		*session <<
 			"CREATE TABLE IF NOT EXISTS sip_address ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  value VARCHAR(255) UNIQUE NOT NULL"
+			"  value VARCHAR(255) NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS event_type ("
-			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) UNIQUE NOT NULL"
+			"  id" + primaryKeyAutoIncrementStr("TINYINT") + ","
+			"  value VARCHAR(255) NOT NULL"
 			")";
 
 		*session <<
@@ -156,14 +156,14 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_state ("
-			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) UNIQUE NOT NULL"
+			"  id" + primaryKeyAutoIncrementStr("TINYINT") + ","
+			"  state VARCHAR(255) NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_direction ("
-			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) UNIQUE NOT NULL"
+			"  id" + primaryKeyAutoIncrementStr("TINYINT") + ","
+			"  direction VARCHAR(255) NOT NULL"
 			")";
 
 		*session <<
@@ -184,19 +184,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_event ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  event_id INT UNSIGNED NOT NULL,"
 			"  dialog_id INT UNSIGNED NOT NULL,"
 			"  state_id TINYINT UNSIGNED NOT NULL,"
 			"  direction_id TINYINT UNSIGNED NOT NULL,"
-			"  sender_sip_address_id INT UNSIGNED NOT NULL,"
 			"  imdn_message_id VARCHAR(255) NOT NULL," // See: https://tools.ietf.org/html/rfc5438#section-6.3
+			"  content_type VARCHAR(255) NOT NULL,"
 			"  is_secured BOOLEAN NOT NULL,"
-			"  content_type VARCHAR(255) NOT NULL," // Content type of text. (Html or text for example.)
-			"  text TEXT,"
-			"  app_data VARCHAR(2048)," // App user data.
-			"  FOREIGN KEY (event_id)"
-			"    REFERENCES event(id)"
-			"    ON DELETE CASCADE,"
+			"  app_data VARCHAR(2048),"
 			"  FOREIGN KEY (dialog_id)"
 			"    REFERENCES dialog(id)"
 			"    ON DELETE CASCADE,"
@@ -205,24 +199,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (direction_id)"
 			"    REFERENCES message_direction(id)"
-			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (sender_sip_address_id)"
-			"    REFERENCES sip_address(id)"
-			"    ON DELETE CASCADE"
-			")";
-
-		*session <<
-			"CREATE TABLE IF NOT EXISTS message_file_info ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  message_id INT UNSIGNED NOT NULL,"
-			"  content_type VARCHAR(255) NOT NULL," // File content type.
-			"  name VARCHAR(255) NOT NULL," // File name.
-			"  size INT UNSIGNED NOT NULL," // File size.
-			"  url VARCHAR(255) NOT NULL," // File url.
-			"  key VARCHAR(4096),"
-			"  key_size INT UNSIGNED,"
-			"  FOREIGN KEY (message_id)"
-			"    REFERENCES message(id)"
 			"    ON DELETE CASCADE"
 			")";
 
@@ -274,11 +250,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	bool EventsDb::addEvent (const EventLog &eventLog) {
-		if (!isConnected()) {
-			lWarning() << "Unable to add event. Not connected.";
-			return false;
-		}
-
 		// TODO.
 		switch (eventLog.getType()) {
 			case EventLog::TypeNone:
@@ -299,33 +270,18 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	bool EventsDb::deleteEvent (const EventLog &eventLog) {
-		if (!isConnected()) {
-			lWarning() << "Unable to delete event. Not connected.";
-			return false;
-		}
-
 		// TODO.
 		(void)eventLog;
 		return true;
 	}
 
 	void EventsDb::cleanEvents (FilterMask mask) {
-		if (!isConnected()) {
-			lWarning() << "Unable to clean events. Not connected.";
-			return;
-		}
-
 		// TODO.
 		(void)mask;
 	}
 
 	int EventsDb::getEventsCount (FilterMask mask) const {
 		L_D(const EventsDb);
-
-		if (!isConnected()) {
-			lWarning() << "Unable to get events count. Not connected.";
-			return 0;
-		}
 
 		string query = "SELECT COUNT(*) FROM event" +
 			buildSqlEventFilter({ MessageFilter, CallFilter, ConferenceFilter }, mask);
@@ -343,11 +299,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 	int EventsDb::getMessagesCount (const string &remoteAddress) const {
 		L_D(const EventsDb);
-
-		if (!isConnected()) {
-			lWarning() << "Unable to get messages count. Not connected.";
-			return 0;
-		}
 
 		string query = "SELECT COUNT(*) FROM message_event";
 		if (!remoteAddress.empty())
@@ -371,11 +322,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	int EventsDb::getUnreadMessagesCount (const string &remoteAddress) const {
 		L_D(const EventsDb);
 
-		if (!isConnected()) {
-			lWarning() << "Unable to get unread messages count. Not connected.";
-			return 0;
-		}
-
 		string query = "SELECT COUNT(*) FROM message_event";
 		if (!remoteAddress.empty())
 			query += "  WHERE dialog_id = ("
@@ -383,8 +329,8 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				"      SELECT id FROM sip_address WHERE value = :remote_address"
 				"    )"
 				"  )"
-				"  AND direction_id = " + string(mapMessageDirectionToSql(ChatMessage::Incoming)) +
-				"  AND state_id = " + string(mapMessageStateToSql(ChatMessage::Displayed));
+				"  AND direction_id = " + string(mapMessageDirectionToSql(Message::Incoming)) +
+				"  AND state_id = " + string(mapMessageStateToSql(Message::Displayed));
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION
@@ -398,11 +344,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) const {
-		if (!isConnected()) {
-			lWarning() << "Unable to get history. Not connected.";
-			return list<shared_ptr<EventLog>>();
-		}
-
 		// TODO.
 		(void)remoteAddress;
 		(void)nLast;
@@ -411,11 +352,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) const {
-		if (!isConnected()) {
-			lWarning() << "Unable to get history. Not connected.";
-			return list<shared_ptr<EventLog>>();
-		}
-
 		// TODO.
 		(void)remoteAddress;
 		(void)begin;
@@ -425,11 +361,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	void EventsDb::cleanHistory (const string &remoteAddress) {
-		if (!isConnected()) {
-			lWarning() << "Unable to clean history. Not connected.";
-			return;
-		}
-
 		// TODO.
 		(void)remoteAddress;
 	}

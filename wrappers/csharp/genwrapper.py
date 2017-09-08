@@ -22,7 +22,7 @@ import sys
 import pystache
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
-print(sys.path)
+print sys.path
 import genapixml as CApi
 import abstractapi as AbsApi
 import metadoc
@@ -604,18 +604,17 @@ def main():
 
 	interfaces = []
 	classes = []
-	for index in [parser.classesIndex, parser.interfacesIndex]:
-		for _class in index.values():
-			if _class is not None:
-				try:
-					if type(_class) is AbsApi.Class:
-						impl = ClassImpl(_class, translator)
-						classes.append(impl)
-					else:
-						impl = InterfaceImpl(_class, translator)
-						interfaces.append(impl)
-				except AbsApi.Error as e:
-					print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
+	for _class in parser.classesIndex.values() + parser.interfacesIndex.values():
+		if _class is not None:
+			try:
+				if type(_class) is AbsApi.Class:
+					impl = ClassImpl(_class, translator)
+					classes.append(impl)
+				else:
+					impl = InterfaceImpl(_class, translator)
+					interfaces.append(impl)
+			except AbsApi.Error as e:
+				print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
 
 	wrapper = WrapperImpl(enums, interfaces, classes)
 	render(renderer, wrapper, args.outputdir + "/" + args.outputfile)

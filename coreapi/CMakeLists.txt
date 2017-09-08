@@ -45,7 +45,6 @@ list(APPEND LINPHONE_PRIVATE_HEADER_FILES
 	offeranswer.h
 	private.h
 	quality_reporting.h
-	sal/sal.h
 	sqlite3_bctbx_vfs.h
 	vcard_private.h
 	xml2lpc.h
@@ -54,6 +53,7 @@ list(APPEND LINPHONE_PRIVATE_HEADER_FILES
 set(LINPHONE_SOURCE_FILES_C
 	account_creator.c
 	account_creator_service.c
+	address.c
 	authentication.c
 	bellesip_sal/sal_address_impl.c
 	bellesip_sal/sal_impl.c
@@ -109,7 +109,7 @@ set(LINPHONE_SOURCE_FILES_C
 	quality_reporting.c
 	remote_provisioning.c
 	ringtoneplayer.c
-	sal/sal.c
+	sal.c
 	siplogin.c
 	sipsetup.c
 	sqlite3_bctbx_vfs.c

@@ -46,10 +46,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
 
-// For migration purpose.
-#include "address/address-p.h"
-#include "c-wrapper/c-tools.h"
-
 #ifdef INET6
 #ifndef _WIN32
 #include <netdb.h>
@@ -3384,7 +3380,7 @@ static bctbx_list_t *make_routes_for_proxy(LinphoneProxyConfig *proxy, const Lin
 		ret=bctbx_list_append(ret,sal_address_new(local_route));
 	}
 	if (srv_route){
-		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_STRUCT(srv_route, Address)->getInternalAddress()));
+		ret=bctbx_list_append(ret,sal_address_clone((SalAddress*)srv_route));
 	}
 	if (ret==NULL){
 		/*if the proxy address matches the domain part of the destination, then use the same transport
@@ -3411,7 +3407,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	/*return default proxy if it is matching the destination uri*/
 	if (default_cfg){
 		const char *domain=linphone_proxy_config_get_domain(default_cfg);
-		if (domain && !strcmp(domain,linphone_address_get_domain(uri))){
+		if (strcmp(domain,linphone_address_get_domain(uri))==0){
 			found_cfg=default_cfg;
 			goto end;
 		}
@@ -3503,9 +3499,7 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		routes=make_routes_for_proxy(proxy,dest);
 		linphone_transfer_routes_to_op(routes,op);
 	}
-	char *addr = linphone_address_as_string(dest);
-	sal_op_set_to(op,addr);
-	ms_free(addr);
+	sal_op_set_to_address(op,dest);
 	sal_op_set_from(op,identity);
 	sal_op_set_sent_custom_header(op,headers);
 	sal_op_set_realm(op,linphone_proxy_config_get_realm(proxy));
@@ -6040,10 +6034,6 @@ LinphoneConfig * linphone_core_create_config(LinphoneCore *lc, const char *filen
 	return lp_config_new(filename);
 }
 
-LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {
-	return linphone_address_new(address);
-}
-
 static void linphone_core_uninit(LinphoneCore *lc)
 {
 	bctbx_list_t *elem = NULL;
@@ -6163,8 +6153,6 @@ static void stop_refreshing_proxy_config(bool_t is_sip_reachable, LinphoneProxyC
 			linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
 		}else{
 			cfg->commit=TRUE;
-			if (linphone_proxy_config_publish_enabled(cfg))
-				cfg->send_publish=TRUE; /*not sure if really the best place*/
 		}
 	}
 }

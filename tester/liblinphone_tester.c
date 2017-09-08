@@ -171,7 +171,6 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 }
 
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args)) {
-	bctbx_init_logger(FALSE);
 	if (! log_file) {
 #if defined(__ANDROID__)
 		linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
