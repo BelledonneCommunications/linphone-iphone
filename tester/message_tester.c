@@ -1462,6 +1462,13 @@ static void lime_cache_migration(void) {
 		fclose(xmlCacheFD);
 
 		LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(marie->lc);
+		LinphoneAddress *new_identity = linphone_address_clone(linphone_proxy_config_get_identity_address(cfg));
+		linphone_proxy_config_edit(cfg);
+		linphone_address_set_display_name(new_identity,"what about if we have a display name ?");
+		linphone_proxy_config_set_identity_address(cfg, new_identity);
+		
+		linphone_proxy_config_done(cfg);
 
 		if (!linphone_core_lime_available(marie->lc)) {
 			ms_warning("Lime not available, skiping");
@@ -1476,7 +1483,15 @@ static void lime_cache_migration(void) {
 
 		/* set the cache path, it will trigger the migration function */
 		linphone_core_set_zrtp_secrets_file(marie->lc, xmlCache_filepath);
-
+		/*short check*/
+		limeKey_t associatedKey={0};
+		
+		char * selfURI = linphone_address_as_string_uri_only(new_identity);
+		linphone_address_unref(new_identity);
+		bctbx_str_to_uint8(associatedKey.peerZID, (const uint8_t *)"0987654321fedcba5a5a5a5a", (uint16_t)strlen("0987654321fedcba5a5a5a5a"));
+		/* 0987654321fedcba5a5a5a5a is the only one with pvs=1*/
+		BC_ASSERT_FALSE(lime_getCachedRcvKeyByZid(marie->lc->zrtp_cache_db, &associatedKey, selfURI, "sip:bob@sip.linphone.org"));
+		ms_free(selfURI);
 		/* perform checks on the new cache, simple check is ok as deeper ones are performed in the bzrtp migration tester */
 		/* TODO */
 

@@ -103,7 +103,8 @@ inline OrtpLogLevel operator|=(OrtpLogLevel a, OrtpLogLevel b) {
 	return static_cast<OrtpLogLevel>(ia |= ib);
 }
 
-static OrtpLogFunc liblinphone_log_func = NULL;
+static OrtpLogFunc liblinphone_user_log_func = bctbx_logv_out; /*by default, user log handler = stdout*/
+static OrtpLogFunc liblinphone_current_log_func = NULL; /*can be either logcolection or user_log*/
 static LinphoneLogCollectionState liblinphone_log_collection_state = LinphoneLogCollectionDisabled;
 static char * liblinphone_log_collection_path = NULL;
 static char * liblinphone_log_collection_prefix = NULL;
@@ -463,20 +464,18 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 static void linphone_core_log_collection_handler(const char *domain, OrtpLogLevel level, const char *fmt, va_list args);
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	if (ortp_get_log_handler() == linphone_core_log_collection_handler) {
+	liblinphone_user_log_func = logfunc;
+	if (liblinphone_current_log_func == linphone_core_log_collection_handler) {
 		ms_message("There is already a log collection handler, keep it");
-		liblinphone_log_func = logfunc;
 	} else {
-		ortp_set_log_handler(logfunc);
-		sal_set_log_handler(logfunc);
+		bctbx_set_log_handler(liblinphone_current_log_func=liblinphone_user_log_func);
 	}
 }
 
 void linphone_core_set_log_file(FILE *file) {
 	if (file == NULL) file = stdout;
+	linphone_core_set_log_handler(NULL);
 	bctbx_set_log_file(file); /*gather everythings*/
-	sal_set_log_handler(NULL); /*disable default log handler*/
-	ortp_set_log_handler(NULL); /*disable default log handler*/
 }
 
 void linphone_core_set_log_level(OrtpLogLevel loglevel) {
@@ -507,6 +506,7 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 void linphone_core_set_log_level_mask(unsigned int loglevel) {
 	//we only have 2 domain for now ortp and belle-sip
 	bctbx_set_log_level_mask(ORTP_LOG_DOMAIN, loglevel);
+	bctbx_set_log_level_mask("bzrtp", loglevel); /*need something to set log lvel for all domains*/
 	sal_set_log_level((OrtpLogLevel)loglevel);
 }
 unsigned int linphone_core_get_log_level_mask(void) {
@@ -575,11 +575,11 @@ static void linphone_core_log_collection_handler(const char *domain, OrtpLogLeve
 	time_t tt;
 	int ret;
 
-	if (liblinphone_log_func != NULL && liblinphone_log_func != linphone_core_log_collection_handler) {
+	if (liblinphone_user_log_func != NULL && liblinphone_user_log_func != linphone_core_log_collection_handler) {
 #ifndef _WIN32
 		va_list args_copy;
 		va_copy(args_copy, args);
-		liblinphone_log_func(domain, level, fmt, args_copy);
+		liblinphone_user_log_func(domain, level, fmt, args_copy);
 		va_end(args_copy);
 #else
 		/* This works on 32 bits, luckily. */
@@ -687,24 +687,15 @@ LinphoneLogCollectionState linphone_core_log_collection_enabled(void) {
 void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 	if (liblinphone_log_collection_state == state) return;
 
-	/* at first call of this function, set liblinphone_log_func to the current
-	 * ortp log function */
-	if( liblinphone_log_func == NULL ){
-		liblinphone_log_func = ortp_get_log_handler();
-	}
 	liblinphone_log_collection_state = state;
 	if (state != LinphoneLogCollectionDisabled) {
 		ortp_mutex_init(&liblinphone_log_collection_mutex, NULL);
 		if (state == LinphoneLogCollectionEnabledWithoutPreviousLogHandler) {
-			liblinphone_log_func = NULL;
-		} else {
-			liblinphone_log_func = ortp_get_log_handler();
+			liblinphone_user_log_func = NULL; /*remove user log handler*/
 		}
-		ortp_set_log_handler(linphone_core_log_collection_handler);
-		sal_set_log_handler(linphone_core_log_collection_handler);
+		bctbx_set_log_handler(liblinphone_current_log_func = linphone_core_log_collection_handler);
 	} else {
-		ortp_set_log_handler(liblinphone_log_func);
-		sal_set_log_handler(liblinphone_log_func);
+		bctbx_set_log_handler(liblinphone_user_log_func); /*restaure */
 	}
 }
 
@@ -2170,7 +2161,11 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	LinphoneCoreCbs *internal_cbs = _linphone_core_cbs_new();
 	const char *msplugins_dir;
 	const char *image_resources_dir;
-
+	
+	bctbx_init_logger(FALSE);
+	if (liblinphone_user_log_func && liblinphone_current_log_func == NULL)
+		bctbx_set_log_handler(liblinphone_current_log_func=liblinphone_user_log_func); /*default value*/
+	
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);
@@ -2198,7 +2193,9 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
+	ortp_set_log_handler(NULL); /*remove ortp default log handler*/
 	ortp_init();
+	
 	linphone_core_activate_log_serialization_if_needed();
 
 	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
@@ -6156,6 +6153,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	bctbx_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
 	ms_bandwidth_controller_destroy(lc->bw_controller);
 	ms_factory_destroy(lc->factory);
+	bctbx_uninit_logger();
 }
 
 static void stop_refreshing_proxy_config(bool_t is_sip_reachable, LinphoneProxyConfig* cfg) {
