@@ -6541,6 +6541,7 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 }
 
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
+	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
 	if (lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}
@@ -6548,7 +6549,7 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
 
 	/* shall we perform cache migration ? */
-	if (!lp_config_get_int(lc->config,"sip","zrtp_cache_migration_done",FALSE)) {
+	if (proxy && !lp_config_get_int(lc->config,"sip","zrtp_cache_migration_done",FALSE)) {
 		char *tmpFile = reinterpret_cast<char *>(bctbx_malloc(strlen(file)+6));
 		/* check we have a valid xml cache file given in path */
 		FILE *CACHEFD = NULL;
@@ -6579,12 +6580,13 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 			/* migrate */
 			char *bkpFile = reinterpret_cast<char *>(bctbx_malloc(strlen(file)+6));
 			sprintf(bkpFile,"%s.bkp", file);
-
-			if ((ret = ms_zrtp_cache_migration((void *)cacheXml, linphone_core_get_zrtp_cache_db(lc), linphone_core_get_identity(lc))) == 0) {
+			char *selfURI = linphone_address_as_string_uri_only(linphone_proxy_config_get_identity_address(proxy));
+			if ((ret = ms_zrtp_cache_migration((void *)cacheXml, linphone_core_get_zrtp_cache_db(lc), selfURI)) == 0) {
 				ms_message("LIME/ZRTP cache migration successfull, obsolete xml file kept as backup in %s", bkpFile);
 			} else {
 				ms_error("LIME/ZRTP cache migration failed(returned -%x), start with a fresh cache, old one kept as backup in %s", -ret, bkpFile);
 			}
+			ms_free(selfURI);
 
 			/* rename the newly created sqlite3 file in to the given file name */
 			rename(file, bkpFile);
