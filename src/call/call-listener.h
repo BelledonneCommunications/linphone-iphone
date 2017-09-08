@@ -41,6 +41,7 @@ public:
 
 	virtual void statsUpdated (const LinphoneCallStats *stats) = 0;
 
+	virtual void resetCurrentCall () = 0;
 	virtual void setCurrentCall () = 0;
 
 	virtual void firstVideoFrameDecoded () = 0;

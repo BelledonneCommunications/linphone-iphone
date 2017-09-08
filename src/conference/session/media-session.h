@@ -46,6 +46,8 @@ public:
 	void initiateIncoming ();
 	bool initiateOutgoing ();
 	void iterate (time_t currentRealTime, bool oneSecondElapsed);
+	LinphoneStatus pause ();
+	LinphoneStatus resume ();
 	void sendVfuRequest ();
 	void startIncomingNotification ();
 	int startInvite (const Address *destination);

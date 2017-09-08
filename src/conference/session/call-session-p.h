@@ -54,7 +54,7 @@ public:
 	virtual void terminated ();
 	void updated (bool isUpdate);
 	void updatedByRemote ();
-	void updating (bool isUpdate);
+	virtual void updating (bool isUpdate);
 
 protected:
 	void accept (const std::shared_ptr<CallSessionParams> params);

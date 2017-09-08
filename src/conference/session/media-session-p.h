@@ -46,7 +46,6 @@ public:
 public:
 	static void stunAuthRequestedCb (void *userData, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
 
-	void abort (const std::string &errorMsg);
 	void accepted ();
 	void ackReceived (LinphoneHeaders *headers);
 	bool failure ();
@@ -213,8 +212,10 @@ private:
 	void reportBandwidth ();
 	void reportBandwidthForStream (MediaStream *ms, LinphoneStreamType type);
 
+	void abort (const std::string &errorMsg);
 	void handleIncomingReceivedStateInIncomingNotification ();
 	bool isReadyForInvite () const;
+	LinphoneStatus pause ();
 	void setTerminated ();
 	LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo);
 	LinphoneStatus startUpdate ();
@@ -287,6 +288,7 @@ private:
 
 	bool allMuted = false;
 	bool audioMuted = false;
+	bool automaticallyPaused = false;
 	bool pausedByApp = false;
 	bool playingRingbackTone = false;
 	bool recordActive = false;

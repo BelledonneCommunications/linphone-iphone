@@ -117,14 +117,6 @@ void MediaSessionPrivate::stunAuthRequestedCb (void *userData, const char *realm
 
 // -----------------------------------------------------------------------------
 
-void MediaSessionPrivate::abort (const string &errorMsg) {
-#if 0
-	linphone_core_stop_ringing(lc);
-#endif
-	stopStreams();
-	CallSessionPrivate::abort(errorMsg);
-}
-
 void MediaSessionPrivate::accepted () {
 	L_Q(MediaSession);
 	CallSessionPrivate::accepted();
@@ -3636,6 +3628,14 @@ void MediaSessionPrivate::reportBandwidthForStream (MediaStream *ms, LinphoneStr
 
 // -----------------------------------------------------------------------------
 
+void MediaSessionPrivate::abort (const string &errorMsg) {
+#if 0
+	linphone_core_stop_ringing(lc);
+#endif
+	stopStreams();
+	CallSessionPrivate::abort(errorMsg);
+}
+
 void MediaSessionPrivate::handleIncomingReceivedStateInIncomingNotification () {
 	L_Q(MediaSession);
 	/* Try to be best-effort in giving real local or routable contact address for 100Rel case */
@@ -3658,6 +3658,38 @@ bool MediaSessionPrivate::isReadyForInvite () const {
 	} else
 		iceReady = true;
 	return callSessionReady && iceReady;
+}
+
+LinphoneStatus MediaSessionPrivate::pause () {
+	L_Q(MediaSession);
+	if ((state != LinphoneCallStreamsRunning) && (state != LinphoneCallPausedByRemote)) {
+		lWarning() << "Cannot pause this MediaSession, it is not active";
+		return -1;
+	}
+	string subject;
+	if (sal_media_description_has_dir(resultDesc, SalStreamSendRecv))
+		subject = "Call on hold";
+	else if (sal_media_description_has_dir(resultDesc, SalStreamRecvOnly))
+		subject = "Call on hold for me too";
+	else {
+		lError() << "No reason to pause this call, it is already paused or inactive";
+		return -1;
+	}
+#if 0
+	call->broken = FALSE;
+#endif
+	setState(LinphoneCallPausing, "Pausing call");
+	makeLocalMediaDescription();
+	sal_call_set_local_media_description(op, localDesc);
+	if (sal_call_update(op, subject.c_str(), false) != 0)
+		linphone_core_notify_display_warning(core, "Could not pause the call");
+	if (listener)
+		listener->resetCurrentSession(*q);
+	linphone_core_notify_display_status(core, "Pausing the current call...");
+	if (audioStream || videoStream || textStream)
+		stopStreams();
+	pausedByApp = false;
+	return 0;
 }
 
 void MediaSessionPrivate::setTerminated () {
@@ -4125,6 +4157,61 @@ void MediaSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 		}
 	}
 	CallSession::iterate(currentRealTime, oneSecondElapsed);
+}
+
+LinphoneStatus MediaSession::pause () {
+	L_D(MediaSession);
+	LinphoneStatus result = d->pause();
+	if (result == 0)
+		d->pausedByApp = true;
+	return result;
+}
+
+LinphoneStatus MediaSession::resume () {
+	L_D(MediaSession);
+	if (d->state != LinphoneCallPaused) {
+		lWarning() << "we cannot resume a call that has not been established and paused before";
+		return -1;
+	}
+	if (!d->params->getPrivate()->getInConference()) {
+		if (linphone_core_sound_resources_locked(d->core)) {
+			lWarning() << "Cannot resume MediaSession " << this << " because another call is locking the sound resources";
+			return -1;
+		}
+		linphone_core_preempt_sound_resources(d->core);
+		lInfo() << "Resuming MediaSession " << this;
+	}
+	d->automaticallyPaused = false;
+#if 0
+	call->broken = FALSE;
+#endif
+	/* Stop playing music immediately. If remote side is a conference it
+	 * prevents the participants to hear it while the 200OK comes back. */
+	if (d->audioStream)
+		audio_stream_play(d->audioStream, nullptr);
+	d->makeLocalMediaDescription();
+	if (!d->core->sip_conf.sdp_200_ack)
+		sal_call_set_local_media_description(d->op, d->localDesc);
+	else
+		sal_call_set_local_media_description(d->op, nullptr);
+	sal_media_description_set_dir(d->localDesc, SalStreamSendRecv);
+	string subject = "Call resuming";
+	if (d->params->getPrivate()->getInConference() && !getCurrentParams()->getPrivate()->getInConference())
+		subject = "Conference";
+	if (sal_call_update(d->op, subject.c_str(), false) != 0)
+		return -1;
+	d->setState(LinphoneCallResuming,"Resuming");
+	if (!d->params->getPrivate()->getInConference() && d->listener)
+		d->listener->setCurrentSession(*this);
+	ostringstream os;
+	os << "Resuming the call with " << getRemoteAddressAsString();
+	linphone_core_notify_display_status(d->core, os.str().c_str());
+	if (d->core->sip_conf.sdp_200_ack) {
+		/* We are NOT offering, set local media description after sending the call so that we are ready to
+		 * process the remote offer when it will arrive. */
+		sal_call_set_local_media_description(d->op, d->localDesc);
+	}
+	return 0;
 }
 
 void MediaSession::sendVfuRequest () {

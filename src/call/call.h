@@ -49,6 +49,8 @@ public:
 	LinphoneStatus acceptUpdate (const std::shared_ptr<MediaSessionParams> msp);
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
+	LinphoneStatus pause ();
+	LinphoneStatus resume ();
 	void sendVfuRequest ();
 	void startRecording ();
 	void stopRecording ();

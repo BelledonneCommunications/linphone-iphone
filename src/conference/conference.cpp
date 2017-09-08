@@ -72,6 +72,11 @@ void ConferencePrivate::statsUpdated (const LinphoneCallStats *stats) {
 		callListener->statsUpdated(stats);
 }
 
+void ConferencePrivate::resetCurrentSession (const CallSession &session) {
+	if (callListener)
+		callListener->resetCurrentCall();
+}
+
 void ConferencePrivate::setCurrentSession (const CallSession &session) {
 	if (callListener)
 		callListener->setCurrentCall();

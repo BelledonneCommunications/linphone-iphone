@@ -162,6 +162,10 @@ void CallPrivate::statsUpdated (const LinphoneCallStats *stats) {
 		linphone_call_notify_stats_updated(lcall, stats);
 }
 
+void CallPrivate::resetCurrentCall () {
+	core->current_call = nullptr;
+}
+
 void CallPrivate::setCurrentCall () {
 	if (lcall)
 		core->current_call = lcall;
@@ -224,6 +228,16 @@ LinphoneStatus Call::decline (LinphoneReason reason) {
 LinphoneStatus Call::decline (const LinphoneErrorInfo *ei) {
 	L_D(Call);
 	return d->getActiveSession()->decline(ei);
+}
+
+LinphoneStatus Call::pause () {
+	L_D(Call);
+	return static_cast<MediaSession *>(d->getActiveSession().get())->pause();
+}
+
+LinphoneStatus Call::resume () {
+	L_D(Call);
+	return static_cast<MediaSession *>(d->getActiveSession().get())->resume();
 }
 
 void Call::sendVfuRequest () {

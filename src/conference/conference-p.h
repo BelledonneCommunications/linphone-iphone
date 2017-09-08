@@ -51,6 +51,7 @@ public:
 
 	virtual void statsUpdated (const LinphoneCallStats *stats);
 
+	virtual void resetCurrentSession (const CallSession &session);
 	virtual void setCurrentSession (const CallSession &session);
 
 	virtual void firstVideoFrameDecoded (const CallSession &session);

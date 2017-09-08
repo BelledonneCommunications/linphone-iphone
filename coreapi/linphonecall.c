@@ -1198,110 +1198,16 @@ RtpTransport * linphone_call_get_meta_rtcp_transport(const LinphoneCall *call, i
 }
 
 LinphoneStatus linphone_call_pause(LinphoneCall *call) {
-#if 0
-	int err = _linphone_call_pause(call);
-	if (err == 0) call->paused_by_app = TRUE;
-	return err;
-#else
-	return 0;
-#endif
+	return linphone_call_get_cpp_obj(call)->pause();
 }
 
 /* Internal version that does not play tone indication*/
 int _linphone_call_pause(LinphoneCall *call) {
-#if 0
-	LinphoneCore *lc;
-	const char *subject = NULL;
-
-	if ((call->state != LinphoneCallStreamsRunning) && (call->state != LinphoneCallPausedByRemote)) {
-		ms_warning("Cannot pause this call, it is not active.");
-		return -1;
-	}
-	if (sal_media_description_has_dir(call->resultdesc, SalStreamSendRecv)) {
-		subject = "Call on hold";
-	} else if (sal_media_description_has_dir(call->resultdesc, SalStreamRecvOnly)) {
-		subject = "Call on hold for me too";
-	} else {
-		ms_error("No reason to pause this call, it is already paused or inactive.");
-		return -1;
-	}
-
-	lc = linphone_call_get_core(call);
-	call->broken = FALSE;
-	linphone_call_set_state(call, LinphoneCallPausing, "Pausing call");
-	linphone_call_make_local_media_description(call);
-	sal_call_set_local_media_description(call->op, call->localdesc);
-	if (sal_call_update(call->op, subject, FALSE) != 0) {
-		linphone_core_notify_display_warning(lc, _("Could not pause the call"));
-	}
-	lc->current_call = NULL;
-	linphone_core_notify_display_status(lc, _("Pausing the current call..."));
-	if (call->audiostream || call->videostream || call->textstream)
-		linphone_call_stop_media_streams(call);
-	call->paused_by_app = FALSE;
 	return 0;
-#else
-	return 0;
-#endif
 }
 
 LinphoneStatus linphone_call_resume(LinphoneCall *call) {
-#if 0
-	LinphoneCore *lc;
-	const char *subject = "Call resuming";
-	char *remote_address;
-	char *display_status;
-
-	if (call->state != LinphoneCallPaused) {
-		ms_warning("we cannot resume a call that has not been established and paused before");
-		return -1;
-	}
-	lc = linphone_call_get_core(call);
-	if (linphone_call_params_get_in_conference(call->params) == FALSE) {
-		if (linphone_core_sound_resources_locked(lc)) {
-			ms_warning("Cannot resume call %p because another call is locking the sound resources.", call);
-			return -1;
-		}
-		linphone_core_preempt_sound_resources(lc);
-		ms_message("Resuming call %p", call);
-	}
-
-	call->was_automatically_paused = FALSE;
-	call->broken = FALSE;
-
-	/* Stop playing music immediately. If remote side is a conference it
-	 prevents the participants to hear it while the 200OK comes back. */
-	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
-
-	linphone_call_make_local_media_description(call);
-	if (!lc->sip_conf.sdp_200_ack) {
-		sal_call_set_local_media_description(call->op, call->localdesc);
-	} else {
-		sal_call_set_local_media_description(call->op, NULL);
-	}
-	sal_media_description_set_dir(call->localdesc, SalStreamSendRecv);
-	if (linphone_call_params_get_in_conference(call->params) && !linphone_call_params_get_in_conference(call->current_params)) subject = "Conference";
-	if (sal_call_update(call->op, subject, FALSE) != 0) {
-		return -1;
-	}
-	linphone_call_set_state(call, LinphoneCallResuming,"Resuming");
-	if (linphone_call_params_get_in_conference(call->params) == FALSE)
-		lc->current_call = call;
-	remote_address = linphone_call_get_remote_address_as_string(call);
-	display_status = ms_strdup_printf("Resuming the call with with %s", remote_address);
-	ms_free(remote_address);
-	linphone_core_notify_display_status(lc, display_status);
-	ms_free(display_status);
-
-	if (lc->sip_conf.sdp_200_ack) {
-		/* We are NOT offering, set local media description after sending the call so that we are ready to
-		 process the remote offer when it will arrive. */
-		sal_call_set_local_media_description(call->op, call->localdesc);
-	}
-	return 0;
-#else
-	return 0;
-#endif
+	return linphone_call_get_cpp_obj(call)->resume();
 }
 
 static void terminate_call(LinphoneCall *call) {
