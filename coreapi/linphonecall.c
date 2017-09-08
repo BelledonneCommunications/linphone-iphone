@@ -1442,24 +1442,6 @@ LinphoneStatus linphone_call_transfer_to_another(LinphoneCall *call, LinphoneCal
 #endif
 }
 
-int linphone_call_abort(LinphoneCall *call, const char *error) {
-#if 0
-	LinphoneCore *lc = linphone_call_get_core(call);
-
-	sal_call_terminate(call->op);
-
-	/* Stop ringing */
-	linphone_core_stop_ringing(lc);
-	linphone_call_stop_media_streams(call);
-
-	linphone_core_notify_display_status(lc, _("Call aborted"));
-	linphone_call_set_state(call, LinphoneCallError, error);
-	return 0;
-#else
-	return 0;
-#endif
-}
-
 int linphone_call_proceed_with_invite_if_ready(LinphoneCall *call, LinphoneProxyConfig *dest_proxy) {
 	return 0;
 }

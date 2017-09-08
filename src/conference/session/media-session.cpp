@@ -117,6 +117,14 @@ void MediaSessionPrivate::stunAuthRequestedCb (void *userData, const char *realm
 
 // -----------------------------------------------------------------------------
 
+void MediaSessionPrivate::abort (const string &errorMsg) {
+#if 0
+	linphone_core_stop_ringing(lc);
+#endif
+	stopStreams();
+	CallSessionPrivate::abort(errorMsg);
+}
+
 void MediaSessionPrivate::accepted () {
 	L_Q(MediaSession);
 	CallSessionPrivate::accepted();
@@ -201,9 +209,7 @@ void MediaSessionPrivate::accepted () {
 			case LinphoneCallIncomingReceived:
 			case LinphoneCallIncomingEarlyMedia:
 				lError() << "Incompatible SDP answer received, need to abort the call";
-#if 0
-				linphone_call_abort(call, _("Incompatible, check codecs or security settings..."));
-#endif
+				abort("Incompatible, check codecs or security settings...");
 				break;
 			/* Otherwise we are able to resume previous state */
 			default:

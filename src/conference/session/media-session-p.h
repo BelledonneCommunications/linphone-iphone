@@ -46,6 +46,7 @@ public:
 public:
 	static void stunAuthRequestedCb (void *userData, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
 
+	void abort (const std::string &errorMsg);
 	void accepted ();
 	void ackReceived (LinphoneHeaders *headers);
 	bool failure ();

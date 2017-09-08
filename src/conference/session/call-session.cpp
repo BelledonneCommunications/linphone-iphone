@@ -218,6 +218,12 @@ bool CallSessionPrivate::startPing () {
 
 // -----------------------------------------------------------------------------
 
+void CallSessionPrivate::abort (const string &errorMsg) {
+	sal_call_terminate(op);
+	linphone_core_notify_display_status(core, "Call aborted");
+	setState(LinphoneCallError, errorMsg);
+}
+
 void CallSessionPrivate::accepted () {
 	L_Q(CallSession);
 	char *msg = nullptr;

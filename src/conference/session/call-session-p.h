@@ -44,6 +44,7 @@ public:
 	LinphoneProxyConfig * getDestProxy () const { return destProxy; }
 	SalOp * getOp () const { return op; }
 
+	virtual void abort (const std::string &errorMsg);
 	virtual void accepted ();
 	void ackBeingSent (LinphoneHeaders *headers);
 	virtual void ackReceived (LinphoneHeaders *headers);
