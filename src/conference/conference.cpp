@@ -132,7 +132,7 @@ void Conference::removeParticipant (const shared_ptr<Participant> participant) {
 	// TODO
 }
 
-void Conference::removeParticipants (const list<const shared_ptr<Participant>> participants) {
+void Conference::removeParticipants (const list<shared_ptr<Participant>> participants) {
 	// TODO
 }
 
