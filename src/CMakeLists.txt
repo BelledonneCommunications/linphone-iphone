@@ -31,6 +31,14 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/chat-message.h
 	chat/chat-room-p.h
 	chat/chat-room.h
+	chat/cpim/cpim.h
+	chat/cpim/header/cpim-core-headers.h
+	chat/cpim/header/cpim-generic-header.h
+	chat/cpim/header/cpim-header-p.h
+	chat/cpim/header/cpim-header.h
+	chat/cpim/message/cpim-message.h
+	chat/cpim/parser/cpim-grammar.h
+	chat/cpim/parser/cpim-parser.h
 	chat/imdn.h
 	chat/is-composing.h
 	conference/conference-listener.h
@@ -51,14 +59,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/session/port-config.h
 	content/content.h
 	core/core.h
-	cpim/cpim.h
-	cpim/header/cpim-core-headers.h
-	cpim/header/cpim-generic-header.h
-	cpim/header/cpim-header-p.h
-	cpim/header/cpim-header.h
-	cpim/message/cpim-message.h
-	cpim/parser/cpim-grammar.h
-	cpim/parser/cpim-parser.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
 	db/events-db.h
@@ -92,6 +92,12 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	call/call.cpp
 	chat/chat-message.cpp
 	chat/chat-room.cpp
+	chat/cpim/header/cpim-core-headers.cpp
+	chat/cpim/header/cpim-generic-header.cpp
+	chat/cpim/header/cpim-header.cpp
+	chat/cpim/message/cpim-message.cpp
+	chat/cpim/parser/cpim-grammar.cpp
+	chat/cpim/parser/cpim-parser.cpp
 	chat/imdn.cpp
 	chat/is-composing.cpp
 	conference/conference.cpp
@@ -104,12 +110,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/session/media-session.cpp
 	content/content.cpp
 	core/core.cpp
-	cpim/header/cpim-core-headers.cpp
-	cpim/header/cpim-generic-header.cpp
-	cpim/header/cpim-header.cpp
-	cpim/message/cpim-message.cpp
-	cpim/parser/cpim-grammar.cpp
-	cpim/parser/cpim-parser.cpp
 	db/abstract/abstract-db.cpp
 	db/events-db.cpp
 	db/provider/db-session-provider.cpp

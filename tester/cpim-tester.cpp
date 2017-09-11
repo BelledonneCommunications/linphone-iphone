@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cpim/cpim.h"
+#include "chat/cpim/cpim.h"
 
 #include "liblinphone_tester.h"
 
