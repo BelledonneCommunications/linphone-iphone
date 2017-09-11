@@ -139,6 +139,12 @@ public interface LinphoneCallStats {
 	 * @return The upload bandwidth
 	 */
 	public float getUploadBandwidth();
+	
+	/**
+	 * Get the estimated download bandwidth in kbit/s
+	 * @return The estimated download bandwidth
+	 */
+	public float getEstimatedDownloadBandwidth();
 
 	/**
 	 * Get the local loss rate since last report

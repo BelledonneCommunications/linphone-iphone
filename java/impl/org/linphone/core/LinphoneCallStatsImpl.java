@@ -24,6 +24,7 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 	private int iceState;
 	private float downloadBandwidth;
 	private float uploadBandwidth;
+	private float estimatedDownloadBandwidth;
 	private float senderLossRate;
 	private float receiverLossRate;
 	private float senderInterarrivalJitter;
@@ -39,6 +40,7 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 	private native int getIceState(long nativeStatsPtr);
 	private native float getDownloadBandwidth(long nativeStatsPtr);
 	private native float getUploadBandwidth(long nativeStatsPtr);
+	private native float getEstimatedDownloadBandwidth(long nativeStatsptr);
 	private native float getSenderLossRate(long nativeStatsPtr);
 	private native float getReceiverLossRate(long nativeStatsPtr);
 	private native float getSenderInterarrivalJitter(long nativeStatsPtr);
@@ -57,6 +59,7 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 		iceState = getIceState(nativeStatsPtr);
 		downloadBandwidth = getDownloadBandwidth(nativeStatsPtr);
 		uploadBandwidth = getUploadBandwidth(nativeStatsPtr);
+		estimatedDownloadBandwidth = getEstimatedDownloadBandwidth(nativeStatsPtr);
 		senderLossRate = getSenderLossRate(nativeStatsPtr);
 		receiverLossRate = getReceiverLossRate(nativeStatsPtr);
 		senderInterarrivalJitter = getSenderInterarrivalJitter(nativeStatsPtr);
@@ -80,6 +83,10 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 
 	public float getUploadBandwidth() {
 		return uploadBandwidth;
+	}
+	
+	public float getEstimatedDownloadBandwidth() {
+		return estimatedDownloadBandwidth;
 	}
 
 	public float getSenderLossRate() {
