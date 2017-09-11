@@ -21,8 +21,6 @@
 #include "linphone/utils/utils.h"
 
 #include "chat-room-p.h"
-
-#include "chat-room.h"
 #include "imdn.h"
 #include "logger/logger.h"
 #include "utils/content-type.h"
@@ -34,8 +32,6 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// =============================================================================
 
 ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
 	: core(core), isComposingHandler(core, this) {}

@@ -956,7 +956,7 @@ static void dos_module_trigger(void) {
 	// At this point we should be banned for a minute
 
 	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 65000);; // Wait several seconds to ensure we are not banned anymore
-	BC_ASSERT_LOWER(marie->stat.number_of_LinphoneMessageReceived, number_of_messge_to_send, int, "%d");
+	BC_ASSERT_LOWER_STRICT(marie->stat.number_of_LinphoneMessageReceived, number_of_messge_to_send, int, "%d");
 
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);

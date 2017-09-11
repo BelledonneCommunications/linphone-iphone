@@ -1,5 +1,5 @@
 /*
- * message.h
+ * chat-message.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MESSAGE_H_
-#define _MESSAGE_H_
+#ifndef _CHAT_MESSAGE_H_
+#define _CHAT_MESSAGE_H_
 
 #include <list>
 #include <memory>
-#include <string>
 
 #include "object/object.h"
 
@@ -33,9 +32,9 @@ class Address;
 class ChatRoom;
 class Content;
 class ErrorInfo;
-class MessagePrivate;
+class ChatMessagePrivate;
 
-class LINPHONE_PUBLIC Message : public Object {
+class LINPHONE_PUBLIC ChatMessage : public Object {
 	friend class ChatRoom;
 
 public:
@@ -95,12 +94,12 @@ public:
 	void removeCustomHeader (const std::string &headerName);
 
 private:
-	Message (MessagePrivate &p);
+	ChatMessage (ChatMessagePrivate &p);
 
-	L_DECLARE_PRIVATE(Message);
-	L_DISABLE_COPY(Message);
+	L_DECLARE_PRIVATE(ChatMessage);
+	L_DISABLE_COPY(ChatMessage);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _MESSAGE_H_
+#endif // ifndef _CHAT_MESSAGE_H_

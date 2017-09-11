@@ -23,10 +23,10 @@
 #endif // ifdef SOCI_ENABLED
 
 #include "abstract/abstract-db-p.h"
+#include "chat/chat-message.h"
 #include "event-log/call-event.h"
 #include "event-log/message-event.h"
 #include "logger/logger.h"
-#include "message/message.h"
 
 #include "events-db.h"
 
@@ -75,25 +75,25 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		);
 	}
 
-	static constexpr EnumToSql<Message::State> messageStateToSql[] = {
-		{ Message::Idle, "1" },
-		{ Message::InProgress, "2" },
-		{ Message::Delivered, "3" },
-		{ Message::NotDelivered, "4" },
-		{ Message::FileTransferError, "5" },
-		{ Message::FileTransferDone, "6" },
-		{ Message::DeliveredToUser, "7" },
-		{ Message::Displayed, "8" }
+	static constexpr EnumToSql<ChatMessage::State> messageStateToSql[] = {
+		{ ChatMessage::Idle, "1" },
+		{ ChatMessage::InProgress, "2" },
+		{ ChatMessage::Delivered, "3" },
+		{ ChatMessage::NotDelivered, "4" },
+		{ ChatMessage::FileTransferError, "5" },
+		{ ChatMessage::FileTransferDone, "6" },
+		{ ChatMessage::DeliveredToUser, "7" },
+		{ ChatMessage::Displayed, "8" }
 	};
 
-	static constexpr const char *mapMessageStateToSql (Message::State state) {
+	static constexpr const char *mapMessageStateToSql (ChatMessage::State state) {
 		return mapEnumToSql(
 			messageStateToSql, sizeof messageStateToSql / sizeof messageStateToSql[0], state
 		);
 	}
 
-	static constexpr const char *mapMessageDirectionToSql (Message::Direction direction) {
-		return direction == Message::Direction::Incoming ? "1" : "2";
+	static constexpr const char *mapMessageDirectionToSql (ChatMessage::Direction direction) {
+		return direction == ChatMessage::Direction::Incoming ? "1" : "2";
 	}
 
 // -----------------------------------------------------------------------------
@@ -188,6 +188,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  dialog_id INT UNSIGNED NOT NULL,"
 			"  state_id TINYINT UNSIGNED NOT NULL,"
 			"  direction_id TINYINT UNSIGNED NOT NULL,"
+			"  sender_sip_address_id INT UNSIGNED NOT NULL,"
 			"  imdn_message_id VARCHAR(255) NOT NULL," // See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  is_secured BOOLEAN NOT NULL,"
 			"  content_type VARCHAR(255) NOT NULL," // Content type of text. (Html or text for example.)
@@ -204,6 +205,9 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (direction_id)"
 			"    REFERENCES message_direction(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (sender_sip_address_id)"
+			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			")";
 
@@ -379,8 +383,8 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				"      SELECT id FROM sip_address WHERE value = :remote_address"
 				"    )"
 				"  )"
-				"  AND direction_id = " + string(mapMessageDirectionToSql(Message::Incoming)) +
-				"  AND state_id = " + string(mapMessageStateToSql(Message::Displayed));
+				"  AND direction_id = " + string(mapMessageDirectionToSql(ChatMessage::Incoming)) +
+				"  AND state_id = " + string(mapMessageStateToSql(ChatMessage::Displayed));
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION

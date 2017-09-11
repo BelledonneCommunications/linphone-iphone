@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "linphone/utils/utils.h"
-#include <sal/sal.h>
+#include "sal/sal.h"
 
 #include "address-p.h"
 #include "c-wrapper/c-tools.h"

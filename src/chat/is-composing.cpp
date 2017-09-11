@@ -16,18 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "is-composing.h"
+#include "linphone/utils/utils.h"
 
 #include "chat-room-p.h"
-
 #include "logger/logger.h"
-#include "linphone/utils/utils.h"
+
+#include "is-composing.h"
+
+// =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// =============================================================================
 
 const string IsComposing::isComposingPrefix = "/xsi:isComposing";
 

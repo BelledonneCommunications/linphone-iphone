@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "logger/logger.h"
+
 #include "imdn.h"
 
-#include "logger/logger.h"
+// =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// =============================================================================
 
 const string Imdn::imdnPrefix = "/imdn:imdn";
 

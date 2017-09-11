@@ -25,27 +25,28 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address.h
 	c-wrapper/c-private-types.h
 	c-wrapper/c-tools.h
-	call/call.h
 	call/call-listener.h
 	call/call-p.h
+	call/call.h
+	chat/chat-message.h
 	chat/chat-room-p.h
 	chat/chat-room.h
 	chat/imdn.h
 	chat/is-composing.h
-	conference/conference.h
 	conference/conference-listener.h
 	conference/conference-p.h
+	conference/conference.h
 	conference/local-conference.h
-	conference/params/call-session-params.h
 	conference/params/call-session-params-p.h
-	conference/params/media-session-params.h
+	conference/params/call-session-params.h
 	conference/params/media-session-params-p.h
-	conference/participant.h
+	conference/params/media-session-params.h
 	conference/participant-p.h
+	conference/participant.h
 	conference/remote-conference.h
-	conference/session/call-session.h
 	conference/session/call-session-listener.h
 	conference/session/call-session-p.h
+	conference/session/call-session.h
 	conference/session/media-session.h
 	conference/session/port-config.h
 	content/content.h
@@ -73,7 +74,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	event-log/event-log.h
 	event-log/message-event.h
 	logger/logger.h
-	message/message.h
 	nat/ice-agent.h
 	nat/stun-client.h
 	object/clonable-object-p.h
@@ -90,9 +90,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-event-log.cpp
 	call/call.cpp
+	chat/chat-message.cpp
 	chat/chat-room.cpp
-	content/content.cpp
-	core/core.cpp
 	chat/imdn.cpp
 	chat/is-composing.cpp
 	conference/conference.cpp
@@ -103,6 +102,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/remote-conference.cpp
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp
+	content/content.cpp
+	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
 	cpim/header/cpim-generic-header.cpp
 	cpim/header/cpim-header.cpp
@@ -119,7 +120,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	event-log/event-log.cpp
 	event-log/message-event.cpp
 	logger/logger.cpp
-	message/message.cpp
 	nat/ice-agent.cpp
 	nat/stun-client.cpp
 	object/clonable-object.cpp

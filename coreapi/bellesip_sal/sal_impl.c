@@ -487,7 +487,6 @@ Sal * sal_init(MSFactory *factory){
 	sal->auto_contacts=TRUE;
 	sal->factory = factory;
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
-	belle_sip_set_log_handler(_belle_sip_log_handler); //printf by default
 	sal->stack = belle_sip_stack_new(NULL);
 
 	sal->user_agent=belle_sip_header_user_agent_new();
