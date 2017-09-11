@@ -1819,6 +1819,7 @@ struct _LinphoneCallStats {
 	LinphoneUpnpState upnp_state; /**< State of uPnP processing. */
 	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float estimated_download_bandwidth; /**<Estimated download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float local_late_rate; /**<percentage of packet received too late over last second*/
 	float local_loss_rate; /**<percentage of lost packet over last second*/
 	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */

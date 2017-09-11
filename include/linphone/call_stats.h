@@ -138,6 +138,13 @@ LINPHONE_PUBLIC float linphone_call_stats_get_download_bandwidth(const LinphoneC
 LINPHONE_PUBLIC float linphone_call_stats_get_upload_bandwidth(const LinphoneCallStats *stats);
 
 /**
+ * Get the estimated bandwidth measurement of the received stream, expressed in kbit/s, including IP/UDP/RTP headers.
+ * @param[in] stats LinphoneCallStats object
+ * @return The estimated bandwidth measurement of the received stream in kbit/s.
+ */
+LINPHONE_PUBLIC float linphone_call_stats_get_estimated_download_bandwidth(const LinphoneCallStats *stats);
+
+/**
  * Get the state of ICE processing.
  * @param[in] stats LinphoneCallStats object
  * @return The state of ICE processing.

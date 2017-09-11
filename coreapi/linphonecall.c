@@ -4514,6 +4514,10 @@ float linphone_call_stats_get_upload_bandwidth(const LinphoneCallStats *stats) {
 	return stats->upload_bandwidth;
 }
 
+float linphone_call_stats_get_estimated_download_bandwidth(const LinphoneCallStats *stats) {
+	return stats->estimated_download_bandwidth;
+}
+
 LinphoneIceState linphone_call_stats_get_ice_state(const LinphoneCallStats *stats) {
 	return stats->ice_state;
 }
@@ -4586,13 +4590,14 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	report_bandwidth_for_stream(call, ts, LinphoneStreamTypeText);
 
 	ms_message(	"Bandwidth usage for call [%p]:\n"
-				"\tRTP  audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f], text=[d=%5.1f,u=%5.1f] kbits/sec\n"
+				"\tRTP  audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f, ed=%5.1f], text=[d=%5.1f,u=%5.1f] kbits/sec\n"
 				"\tRTCP audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f], text=[d=%5.1f,u=%5.1f] kbits/sec",
 				call,
 				call->audio_stats->download_bandwidth,
 				call->audio_stats->upload_bandwidth,
 				call->video_stats->download_bandwidth,
 				call->video_stats->upload_bandwidth,
+				call->video_stats->estimated_download_bandwidth,
 				call->text_stats->download_bandwidth,
 				call->text_stats->upload_bandwidth,
 				call->audio_stats->rtcp_download_bandwidth,
@@ -4852,7 +4857,9 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			linphone_core_dtmf_received(call,evd->info.telephone_event);
 		} else if (evt == ORTP_EVENT_NEW_VIDEO_BANDWIDTH_ESTIMATION_AVAILABLE) {
 			ms_message("Video bandwidth estimation is %i kbit/s", (int)evd->info.video_bandwidth_available / 1000);
-			//TODO
+			/* If this event happens then it should be a video stream */
+			if (stream_index == call->main_video_stream_index)
+				stats->estimated_download_bandwidth = (float)(evd->info.video_bandwidth_available)*1e-3;
 		}
 		ortp_event_destroy(ev);
 	}

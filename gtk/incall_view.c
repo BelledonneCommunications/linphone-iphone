@@ -268,7 +268,10 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_recv")),size_r);
 		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_sent")),size_s);
 
-		tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),linphone_call_stats_get_download_bandwidth(vs),linphone_call_stats_get_upload_bandwidth(vs));
+		tmp=g_strdup_printf(_("download: %f (kbit/s)\nupload: %f (kbit/s)\nestimated download: %f (kbits/s)"),
+				linphone_call_stats_get_download_bandwidth(vs),
+				linphone_call_stats_get_upload_bandwidth(vs), 
+				linphone_call_stats_get_estimated_download_bandwidth(vs));
 		g_free(size_r);
 		g_free(size_s);
 	} else {

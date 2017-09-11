@@ -3447,6 +3447,10 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getUploadBandwidt
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	return (jfloat)linphone_call_stats_get_upload_bandwidth(stats);
 }
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getEstimatedDownloadBandwidth(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return (jfloat)linphone_call_stats_get_estimated_download_bandwidth(stats);
+}
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	return (jfloat) linphone_call_stats_get_sender_loss_rate(stats);
