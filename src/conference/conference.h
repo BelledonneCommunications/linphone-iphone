@@ -24,6 +24,7 @@
 #include "object/object.h"
 #include "address/address.h"
 #include "call/call-listener.h"
+#include "conference/conference-interface.h"
 #include "conference/params/call-session-params.h"
 #include "conference/participant.h"
 
@@ -36,15 +37,21 @@ LINPHONE_BEGIN_NAMESPACE
 class ConferencePrivate;
 class CallSessionPrivate;
 
-class Conference : public Object {
+class Conference : public Object, public ConferenceInterface {
 	friend class CallSessionPrivate;
 
 public:
-	//Conference (CallListener *listener = nullptr);
-
-	std::shared_ptr<Participant> addParticipant (const Address &addr, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
 	std::shared_ptr<Participant> getActiveParticipant () const;
 	std::shared_ptr<Participant> getMe () const;
+
+	/* ConferenceInterface */
+	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
+	virtual void addParticipants (const std::list<const Address> &addresses, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
+	virtual const std::string& getId () const;
+	virtual int getNbParticipants () const;
+	virtual std::list<std::shared_ptr<Participant>> getParticipants () const;
+	virtual void removeParticipant (const std::shared_ptr<Participant> participant);
+	virtual void removeParticipants (const std::list<const std::shared_ptr<Participant>> participants);
 
 protected:
 	explicit Conference (ConferencePrivate &p, LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);

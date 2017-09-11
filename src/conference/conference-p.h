@@ -61,8 +61,10 @@ private:
 	LinphoneCore *core = nullptr;
 	CallListener *callListener = nullptr;
 
-	std::shared_ptr<Participant> me = nullptr;
 	std::shared_ptr<Participant> activeParticipant = nullptr;
+	std::string id;
+	std::shared_ptr<Participant> me = nullptr;
+	std::list<std::shared_ptr<Participant>> participants;
 
 	L_DECLARE_PUBLIC(Conference);
 };

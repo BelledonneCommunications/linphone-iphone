@@ -52,7 +52,7 @@ void ConferencePrivate::callSessionSetTerminated (const CallSession &session) {
 		callListener->callSetTerminated();
 }
 
-void ConferencePrivate::callSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) {
+void ConferencePrivate::callSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {
 	if (callListener)
 		callListener->callStateChanged(state, message);
 }
@@ -62,7 +62,7 @@ void ConferencePrivate::incomingCallSessionStarted (const CallSession &session) 
 		callListener->incomingCallStarted();
 }
 
-void ConferencePrivate::encryptionChanged (const CallSession &session, bool activated, const std::string &authToken) {
+void ConferencePrivate::encryptionChanged (const CallSession &session, bool activated, const string &authToken) {
 	if (callListener)
 		callListener->encryptionChanged(activated, authToken);
 }
@@ -107,6 +107,33 @@ shared_ptr<Participant> Conference::addParticipant (const Address &addr, const s
 	d->activeParticipant = make_shared<Participant>(addr);
 	d->activeParticipant->getPrivate()->createSession(*this, params, hasMedia, d);
 	return d->activeParticipant;
+}
+
+void Conference::addParticipants (const list<const Address> &addresses, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+	// TODO
+}
+
+const string& Conference::getId () const {
+	L_D(const Conference);
+	return d->id;
+}
+
+int Conference::getNbParticipants () const {
+	// TODO
+	return 1;
+}
+
+list<shared_ptr<Participant>> Conference::getParticipants () const {
+	L_D(const Conference);
+	return d->participants;
+}
+
+void Conference::removeParticipant (const shared_ptr<Participant> participant) {
+	// TODO
+}
+
+void Conference::removeParticipants (const list<const shared_ptr<Participant>> participants) {
+	// TODO
 }
 
 shared_ptr<Participant> Conference::getActiveParticipant () const {
