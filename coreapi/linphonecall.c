@@ -144,6 +144,14 @@ void linphone_call_cbs_set_ack_processing(LinphoneCallCbs *cbs, LinphoneCallCbsA
 	cbs->ack_processing = cb;
 }
 
+LinphoneCallCbsTmmbrReceivedCb linphone_call_cbs_get_tmmbr_received(LinphoneCallCbs *cbs) {
+	return cbs->tmmbr_received_cb;
+}
+
+void linphone_call_cbs_set_tmmbr_received(LinphoneCallCbs *cbs, LinphoneCallCbsTmmbrReceivedCb cb) {
+	cbs->tmmbr_received_cb = cb;
+}
+
 
 bool_t linphone_call_state_is_early(LinphoneCallState state){
 	switch (state){
@@ -4860,6 +4868,10 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			/* If this event happens then it should be a video stream */
 			if (stream_index == call->main_video_stream_index)
 				stats->estimated_download_bandwidth = (float)(evd->info.video_bandwidth_available)*1e-3;
+		} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+			if (rtcp_RTPFB_get_type(evd->packet) == RTCP_RTPFB_TMMBR) {
+				linphone_call_notify_tmmbr_received(call, stream_index, (int)rtcp_RTPFB_tmmbr_get_max_bitrate(evd->packet));
+			}
 		}
 		ortp_event_destroy(ev);
 	}
@@ -6234,4 +6246,8 @@ void linphone_call_notify_info_message_received(LinphoneCall *call, const Linpho
 
 void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *msg, bool_t is_received) {
 	NOTIFY_IF_EXIST(ack_processing, call, msg, is_received)
+}
+
+void linphone_call_notify_tmmbr_received(LinphoneCall *call, int stream_index, int tmmbr) {
+	NOTIFY_IF_EXIST(tmmbr_received_cb, call, stream_index, tmmbr)
 }

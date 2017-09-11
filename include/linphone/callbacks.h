@@ -135,6 +135,14 @@ typedef void (*LinphoneCallCbsTransferStateChangedCb)(LinphoneCall *call, Linpho
 typedef void (*LinphoneCallCbsAckProcessingCb)(LinphoneCall *call, LinphoneHeaders *ack, bool_t is_received);
 
 /**
+ * Callback for notifying a received TMMBR.
+ * @param call LinphoneCall for which the TMMBR has changed
+ * @param stream_index the index of the current stream
+ * @param tmmbr the value of the received TMMBR
+ */
+typedef void (*LinphoneCallCbsTmmbrReceivedCb)(LinphoneCall *call, int stream_index, int tmmbr);
+
+/**
  * @}
 **/
 
