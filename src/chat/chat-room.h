@@ -24,7 +24,9 @@
 
 #include <list>
 
+#include "address/address.h"
 #include "object/object.h"
+#include "conference/conference-interface.h"
 
 #include "linphone/types.h"
 
@@ -34,9 +36,9 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate;
 
-class ChatRoom : public Object {
+class ChatRoom : public Object, public ConferenceInterface {
 public:
-	ChatRoom (LinphoneCore *core, LinphoneAddress *peerAddress);
+	ChatRoom (LinphoneCore *core, const Address &peerAddress);
 	virtual ~ChatRoom () = default;
 
 	void compose ();
@@ -46,19 +48,20 @@ public:
 	void deleteMessage (LinphoneChatMessage *msg);
 	LinphoneChatMessage * findMessage (const std::string& messageId);
 	LinphoneChatMessage * findMessageWithDirection (const std::string &messageId, LinphoneChatMessageDir direction);
-	uint32_t getChar () const;
 	std::list<LinphoneChatMessage *> getHistory (int nbMessages);
 	int getHistorySize ();
 	std::list<LinphoneChatMessage *> getHistoryRange (int startm, int endm);
 	int getUnreadMessagesCount ();
 	bool isRemoteComposing () const;
 	void markAsRead ();
-	void sendMessage (LinphoneChatMessage *msg);
+	virtual void sendMessage (LinphoneChatMessage *msg);
 
-	LinphoneCall *getCall () const;
 	LinphoneCore *getCore () const;
 
-	const LinphoneAddress *getPeerAddress () const;
+	const Address& getPeerAddress () const;
+
+protected:
+	explicit ChatRoom (ChatRoomPrivate &p);
 
 private:
 	L_DECLARE_PRIVATE(ChatRoom);

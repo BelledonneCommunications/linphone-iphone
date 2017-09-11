@@ -207,12 +207,12 @@ LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoo
  * @deprecated use linphone_chat_room_get_core()
  * @donotwrap
 **/
-LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCore* linphone_chat_room_get_lc(const LinphoneChatRoom *cr);
 
 /**
  * Returns back pointer to #LinphoneCore object.
 **/
-LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(const LinphoneChatRoom *cr);
 
 /**
  * When realtime text is enabled #linphone_call_params_realtime_text_enabled, #LinphoneCoreIsComposingReceivedCb is call everytime a char is received from peer.

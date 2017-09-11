@@ -33,7 +33,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate : public ObjectPrivate, public IsComposingListener {
 public:
-	ChatRoomPrivate (LinphoneCore *core);
+	ChatRoomPrivate (LinphoneCore *core, const Address &peerAddress);
 	virtual ~ChatRoomPrivate ();
 
 private:
@@ -62,7 +62,7 @@ public:
 		this->call = call;
 	}
 
-private:
+protected:
 	void sendIsComposingNotification ();
 
 	int createChatMessageFromDb (int argc, char **argv, char **colName);
@@ -78,7 +78,7 @@ public:
 	LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
 
-private:
+protected:
 	void chatMessageReceived (LinphoneChatMessage *msg);
 	void imdnReceived (const std::string &text);
 	void isComposingReceived (const std::string &text);
@@ -92,8 +92,7 @@ public:
 	LinphoneChatRoom *cBackPointer = nullptr;
 	LinphoneCore *core = nullptr;
 	LinphoneCall *call = nullptr;
-	LinphoneAddress *peerAddress = nullptr;
-	std::string peer;
+	Address peerAddress;
 	int unreadCount = -1;
 	bool isComposing = false;
 	bool remoteIsComposing = false;

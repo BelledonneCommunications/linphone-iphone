@@ -109,7 +109,7 @@ shared_ptr<Participant> Conference::addParticipant (const Address &addr, const s
 	return d->activeParticipant;
 }
 
-void Conference::addParticipants (const list<const Address> &addresses, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+void Conference::addParticipants (const list<Address> &addresses, const shared_ptr<CallSessionParams> params, bool hasMedia) {
 	// TODO
 }
 

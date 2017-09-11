@@ -28,9 +28,13 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	call/call-listener.h
 	call/call-p.h
 	call/call.h
+	chat/basic-chat-room.h
+	chat/basic-chat-room-p.h
 	chat/chat-message.h
 	chat/chat-room-p.h
 	chat/chat-room.h
+	chat/client-group-chat-room.h
+	chat/client-group-chat-room-p.h
 	chat/cpim/cpim.h
 	chat/cpim/header/cpim-core-headers.h
 	chat/cpim/header/cpim-generic-header.h
@@ -41,6 +45,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/cpim/parser/cpim-parser.h
 	chat/imdn.h
 	chat/is-composing.h
+	chat/real-time-text-chat-room.h
+	chat/real-time-text-chat-room-p.h
 	conference/conference-listener.h
 	conference/conference-p.h
 	conference/conference.h
@@ -90,8 +96,10 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-event-log.cpp
 	call/call.cpp
+	chat/basic-chat-room.cpp
 	chat/chat-message.cpp
 	chat/chat-room.cpp
+	chat/client-group-chat-room.cpp
 	chat/cpim/header/cpim-core-headers.cpp
 	chat/cpim/header/cpim-generic-header.cpp
 	chat/cpim/header/cpim-header.cpp
@@ -100,6 +108,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/cpim/parser/cpim-parser.cpp
 	chat/imdn.cpp
 	chat/is-composing.cpp
+	chat/real-time-text-chat-room.cpp
 	conference/conference.cpp
 	conference/local-conference.cpp
 	conference/params/call-session-params.cpp
