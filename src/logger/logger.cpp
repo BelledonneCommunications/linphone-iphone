@@ -44,7 +44,6 @@ Logger::Logger (Level level) : Object(*new LoggerPrivate) {
 Logger::~Logger () {
 	L_D(Logger);
 
-	d->os << endl;
 	const string str = d->os.str();
 
 	switch (d->level) {
