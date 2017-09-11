@@ -243,6 +243,7 @@ const char *linphone_ice_state_to_string(LinphoneIceState state){
 void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 }
 
+#if 0
 static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescription *md, const SalStreamDescription *stream, const char **addr, int *port)
 {
 	if (componentID == 1) {
@@ -254,6 +255,7 @@ static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescri
 	} else return;
 	if ((*addr)[0] == '\0') *addr = md->addr;
 }
+#endif
 
 void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md){
 #if 0

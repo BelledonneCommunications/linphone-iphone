@@ -639,6 +639,7 @@ void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, Lin
 void linphone_call_init_media_streams(LinphoneCall *call){
 }
 
+#if 0
 static int dtmf_tab[16]={'0','1','2','3','4','5','6','7','8','9','*','#','A','B','C','D'};
 
 static void linphone_core_dtmf_received(LinphoneCall *call, int dtmf){
@@ -648,6 +649,7 @@ static void linphone_core_dtmf_received(LinphoneCall *call, int dtmf){
 	}
 	linphone_call_notify_dtmf_received(call, dtmf_tab[dtmf]);
 }
+#endif
 
 void set_playback_gain_db(AudioStream *st, float gain){
 	if (st->volrecv){
@@ -659,18 +661,22 @@ void set_playback_gain_db(AudioStream *st, float gain){
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
 }
 
+#if 0
 static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
 	int pause_time=3000;
 	audio_stream_play(call->audiostream,lc->sound_conf.ringback_tone);
 	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 }
+#endif
 
+#if 0
 static bool_t linphone_call_sound_resources_available(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	LinphoneCall *current=linphone_core_get_current_call(lc);
 	return !linphone_core_is_in_conference(lc) &&
 		(current==NULL || current==call);
 }
+#endif
 
 void linphone_call_delete_upnp_session(LinphoneCall *call){
 }
@@ -943,6 +949,7 @@ void linphone_call_stop_recording(LinphoneCall *call) {
 	linphone_call_get_cpp_obj(call)->stopRecording();
 }
 
+#if 0
 static void linphone_call_lost(LinphoneCall *call){
 	LinphoneCore *lc = call->core;
 	char *temp = NULL;
@@ -959,6 +966,7 @@ static void linphone_call_lost(LinphoneCall *call){
 	linphone_core_play_named_tone(lc, LinphoneToneCallLost);
 	ms_free(temp);
 }
+#endif
 
 /*do not change the prototype of this function, it is also used internally in linphone-daemon.*/
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev){
@@ -1067,7 +1075,7 @@ const LinphoneCallParams * linphone_call_get_params(LinphoneCall *call) {
 	return call->paramsCache;
 }
 
-
+#if 0
 static int send_dtmf_handler(void *data, unsigned int revents){
 	LinphoneCall *call = (LinphoneCall*)data;
 	/*By default we send DTMF RFC2833 if we do not have enabled SIP_INFO but we can also send RFC2833 and SIP_INFO*/
@@ -1100,6 +1108,7 @@ static int send_dtmf_handler(void *data, unsigned int revents){
 		return FALSE;
 	}
 }
+#endif
 
 LinphoneStatus linphone_call_send_dtmf(LinphoneCall *call, char dtmf) {
 #if 0
@@ -1210,8 +1219,10 @@ LinphoneStatus linphone_call_resume(LinphoneCall *call) {
 	return linphone_call_get_cpp_obj(call)->resume();
 }
 
+#if 0
 static void terminate_call(LinphoneCall *call) {
 }
+#endif
 
 LinphoneStatus linphone_call_terminate(LinphoneCall *call) {
 	return linphone_call_get_cpp_obj(call)->terminate();
@@ -1388,6 +1399,7 @@ void linphone_call_set_broken(LinphoneCall *call){
 #endif
 }
 
+#if 0
 static void linphone_call_repair_by_invite_with_replaces(LinphoneCall *call) {
 	const char *call_id = sal_op_get_call_id(call->op);
 	const char *from_tag = sal_call_get_local_tag(call->op);
@@ -1397,6 +1409,7 @@ static void linphone_call_repair_by_invite_with_replaces(LinphoneCall *call) {
 	sal_call_set_replaces(call->op, call_id, from_tag, to_tag);
 	linphone_call_start_invite(call, NULL);
 }
+#endif
 
 void linphone_call_reinvite_to_recover_from_connection_loss(LinphoneCall *call) {
 #if 0

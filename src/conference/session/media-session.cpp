@@ -3571,13 +3571,13 @@ void MediaSessionPrivate::executeBackgroundTasks (bool oneSecondElapsed) {
 	handleStreamEvents(mainVideoStreamIndex);
 	handleStreamEvents(mainTextStreamIndex);
 
+#if 0
 	int disconnectTimeout = linphone_core_get_nortp_timeout(core);
 	bool disconnected = false;
 	if (((state == LinphoneCallStreamsRunning) || (state == LinphoneCallPausedByRemote)) && oneSecondElapsed && audioStream
 		&& (audioStream->ms.state == MSStreamStarted) && (disconnectTimeout > 0)) {
 		disconnected = !audio_stream_alive(audioStream, disconnectTimeout);
 	}
-#if 0
 	if (disconnected)
 		linphone_call_lost(call);
 #endif

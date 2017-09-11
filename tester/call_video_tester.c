@@ -166,7 +166,7 @@ static void zrtp_video_call(void) {
 
 static void call_state_changed_callback_to_accept_video(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *message){
 	LinphoneCoreVTable *vtable;
-	if (state == LinphoneCallUpdatedByRemote){		
+	if (state == LinphoneCallUpdatedByRemote){
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 		linphone_call_params_enable_video(params, TRUE);
 		linphone_call_accept_update(call, params);
@@ -192,7 +192,7 @@ static LinphoneCall* _request_video(LinphoneCoreManager* caller,LinphoneCoreMana
 	if (!BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(callee->lc))))){
 		BC_FAIL("Video was requested while it was already active. This test doesn't look very sane.");
 	}
-	
+
 	if (accept_with_params) {
 		LinphoneCoreVTable *vtable = linphone_core_v_table_new();
 		vtable->call_state_changed = call_state_changed_callback_to_accept_video;
@@ -227,7 +227,7 @@ bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bo
 	LinphoneVideoActivationPolicy *video_policy;
 	LinphoneCall *call_obj;
 	bool_t video_added = FALSE;
-	
+
 	if ((call_obj=_request_video(caller, callee, accept_with_params))){
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&caller->stat.number_of_LinphoneCallUpdatedByRemote,initial_caller_stat.number_of_LinphoneCallUpdatedByRemote+1));
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&callee->stat.number_of_LinphoneCallUpdating,initial_callee_stat.number_of_LinphoneCallUpdating+1));
@@ -237,7 +237,7 @@ bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bo
 		video_policy = linphone_core_get_video_activation_policy(caller->lc);
 		if (video_policy->automatically_accept || accept_with_params) {
 			video_added = BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(callee->lc))));
-			video_added = 
+			video_added =
 			BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(caller->lc))))
 			&& video_added;
 		} else {
@@ -302,12 +302,12 @@ static bool_t remove_video(LinphoneCoreManager *caller, LinphoneCoreManager *cal
 	}
 
 	if ((call_obj = linphone_core_get_current_call(callee->lc))) {
-		
+
 		if (!BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_obj)))){
 			BC_FAIL("Video was asked to be dropped while it was not active. This test doesn't look very sane.");
 			return FALSE;
 		}
-		
+
 		callee_params = linphone_core_create_call_params(callee->lc, call_obj);
 		/* Remove video. */
 		linphone_call_params_enable_video(callee_params, FALSE);
@@ -844,7 +844,7 @@ static void video_call_established_by_reinvite_with_implicit_avpf(void) {
 	policy.automatically_accept=FALSE;
 
 	linphone_core_set_video_policy(callee->lc,&policy);
-	
+
 	policy.automatically_initiate=TRUE;
 	policy.automatically_accept=TRUE;
 	linphone_core_set_video_policy(caller->lc,&policy);
@@ -855,21 +855,21 @@ static void video_call_established_by_reinvite_with_implicit_avpf(void) {
 
 	linphone_core_enable_video_display(caller->lc, TRUE);
 	linphone_core_enable_video_capture(caller->lc, TRUE);
-	
+
 	linphone_core_set_video_device(caller->lc,liblinphone_tester_mire_id);
 	linphone_core_set_video_device(callee->lc,liblinphone_tester_mire_id);
-	
+
 	caller_call = linphone_core_invite_address(caller->lc, callee->identity);
 	if (BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_LinphoneCallIncomingReceived,1))){
 		callee_call = linphone_core_get_current_call(callee->lc);
-		
+
 		linphone_core_accept_call(callee->lc, linphone_core_get_current_call(callee->lc));
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_LinphoneCallStreamsRunning,1));
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_LinphoneCallStreamsRunning,1));
-		
+
 		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(callee_call)));
 		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(caller_call)));
-		
+
 		/*then callee adds video*/
 		params = linphone_core_create_call_params(callee->lc, callee_call);
 		linphone_call_params_enable_video(params, TRUE);
@@ -879,13 +879,13 @@ static void video_call_established_by_reinvite_with_implicit_avpf(void) {
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_LinphoneCallUpdatedByRemote,1));
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_LinphoneCallStreamsRunning,2));
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_LinphoneCallStreamsRunning,2));
-		
+
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(callee_call)));
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(caller_call)));
-		
+
 		linphone_call_set_next_video_frame_decoded_callback(caller_call,linphone_call_iframe_decoded_cb,caller->lc);
 		linphone_call_set_next_video_frame_decoded_callback(callee_call,linphone_call_iframe_decoded_cb,callee->lc);
-		
+
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
 
@@ -894,7 +894,7 @@ static void video_call_established_by_reinvite_with_implicit_avpf(void) {
 		vstream = (VideoStream *)linphone_call_get_stream(callee_call, LinphoneStreamTypeVideo);
 		BC_ASSERT_TRUE(media_stream_avpf_enabled((MediaStream*)vstream));
 	}
-	
+
 	end_call(caller, callee);
 	linphone_core_manager_destroy(callee);
 	linphone_core_manager_destroy(caller);
@@ -1000,7 +1000,7 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	unsigned int nb_media_starts = 1;
 	const LinphoneCallParams *marie_remote_params;
 	const LinphoneCallParams *pauline_current_params;
-	
+
 	/*
 	 * Pauline is the caller
 	 * Marie is the callee
@@ -1027,13 +1027,13 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	 * they will not be used at the end.*/
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
-	
+
 	linphone_core_set_audio_port(marie->lc, -1);
 	linphone_core_set_video_port(marie->lc, -1);
 	linphone_core_set_audio_port(pauline->lc, -1);
 	linphone_core_set_video_port(pauline->lc, -1);
 
-	
+
 	linphone_core_invite_address(pauline->lc, marie->identity);
 	if (!BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
 	marie_remote_params = linphone_call_get_remote_params(linphone_core_get_current_call(marie->lc));
@@ -1041,18 +1041,18 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	if (marie_remote_params){
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(marie_remote_params) == caller_policy.automatically_initiate);
 	}
-	
+
 	linphone_call_accept(linphone_core_get_current_call(marie->lc));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1)
 		&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
-	
+
 	pauline_current_params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
 	BC_ASSERT_PTR_NOT_NULL(pauline_current_params);
 	if (pauline_current_params){
-		BC_ASSERT_TRUE(linphone_call_params_video_enabled(pauline_current_params) == 
+		BC_ASSERT_TRUE(linphone_call_params_video_enabled(pauline_current_params) ==
 			(caller_policy.automatically_initiate && callee_policy.automatically_accept));
 	}
-	
+
 	/* Wait for ICE reINVITEs to complete. */
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2)
 		&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
@@ -1063,8 +1063,8 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	}
 	BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
 	BC_ASSERT_TRUE(check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts));
-	
-	
+
+
 	if (caller_policy.automatically_initiate && callee_policy.automatically_accept && (video_added_by_caller || video_added_by_callee)){
 		BC_FAIL("Tired developer detected. You have requested the test to add video while it is already established from the beginning of the call.");
 	}else{
@@ -1095,7 +1095,7 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 		BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
 		nb_media_starts++;
 		BC_ASSERT_TRUE(check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts));
-		
+
 	}
 
 	end_call(pauline, marie);
@@ -1332,7 +1332,7 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 
 	/*The send-only client shall set rtp symmetric in absence of media relay for this test.*/
 	lp_config_set_int(marie->lc->config,"rtp","symmetric",1);
-	
+
 	linphone_call_set_next_video_frame_decoded_callback(linphone_core_invite_address(pauline->lc,marie->identity)
 														,linphone_call_iframe_decoded_cb
 														,pauline->lc);
@@ -1605,15 +1605,15 @@ static void classic_video_entry_phone_setup(void) {
 	linphone_core_set_avpf_mode(callee_mgr->lc, LinphoneAVPFEnabled);
 	linphone_core_set_video_policy(caller_mgr->lc, &vpol);
 	linphone_core_set_video_policy(callee_mgr->lc, &vpol);
-	
-	
+
+
 
 	// important: VP8 has really poor performances with the mire camera, at least
 	// on iOS - so when ever h264 is available, let's use it instead
 	if (linphone_core_find_payload_type(caller_mgr->lc,"h264", -1, -1)!=NULL) {
 		disable_all_video_codecs_except_one(caller_mgr->lc,"h264");
 		disable_all_video_codecs_except_one(callee_mgr->lc,"h264");
-		
+
 		/*On Mac OS, set VGA as the prefered size, otherwise we don't benefit from the hardware
 		 * accelerated H264 videotoolbox codec*/
 		if (ms_factory_get_encoder(linphone_core_get_ms_factory(callee_mgr->lc), "H264")->id == MS_VT_H264_ENC_ID){
@@ -1857,7 +1857,7 @@ static void incoming_reinvite_with_invalid_ack_sdp(void){
 		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(callee->lc))));
 		caller_params = linphone_call_get_current_params(linphone_core_get_current_call(caller->lc));
 		// TODO [refactoring]: BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,(int*)&caller_params->has_video,FALSE));
-
+		(void)caller_params;
 		sal_call_set_sdp_handling(linphone_call_get_op(inc_call), SalOpSDPNormal);
 	}
 	end_call(caller, callee);
@@ -1958,40 +1958,40 @@ static void call_with_early_media_and_no_sdp_in_200_with_video(void){
 
 
 /*
- * This test simulates a network congestion in the video flow from marie to pauline. 
+ * This test simulates a network congestion in the video flow from marie to pauline.
  * The stream from pauline to marie is not under test.
- * It checks that a first TMMBR consecutive to congestion detection is received, and a second one after congestion resolution is received 
+ * It checks that a first TMMBR consecutive to congestion detection is received, and a second one after congestion resolution is received
  * a few seconds later.
  * The parameters used for the network simulator correspond to a "light congestion", which are the ones that translate into relatively
  * small packet losses, hence the more difficult to detect at first sight.
- * 
+ *
 **/
 static void video_call_with_thin_congestion(void){
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneVideoPolicy pol = {0};
 	OrtpNetworkSimulatorParams simparams = { 0 };
-	
+
 	linphone_core_set_video_device(marie->lc, "Mire: Mire (synthetic moving picture)");
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, TRUE);
-	
+
 	pol.automatically_accept = TRUE;
 	pol.automatically_initiate = TRUE;
 	linphone_core_set_video_policy(marie->lc, &pol);
 	linphone_core_set_video_policy(pauline->lc, &pol);
-	
+
 	linphone_core_set_preferred_video_size_by_name(marie->lc, "vga");
 	simparams.mode = OrtpNetworkSimulatorOutbound;
 	simparams.enabled = TRUE;
 	simparams.max_bandwidth = 400000;
 	simparams.max_buffer_size = (int)simparams.max_bandwidth;
 	simparams.latency = 60;
-	
+
 	linphone_core_set_network_simulator_params(marie->lc, &simparams);
-	
+
 	if (BC_ASSERT_TRUE(call(marie, pauline))){
 		LinphoneCall *call = linphone_core_get_current_call(pauline->lc);
 		int first_tmmbr;
@@ -2001,12 +2001,12 @@ static void video_call_with_thin_congestion(void){
 		BC_ASSERT_GREATER((float)marie->stat.last_tmmbr_value_received, 220000.f, float, "%f");
 		BC_ASSERT_LOWER((float)marie->stat.last_tmmbr_value_received, 300000.f, float, "%f");
 		first_tmmbr = marie->stat.last_tmmbr_value_received;
-		
+
 		/*another tmmbr with a greater value is expected once the congestion is resolved*/
 		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, first_tmmbr + 1, 15000));
 		BC_ASSERT_GREATER((float)marie->stat.last_tmmbr_value_received, 290000.f, float, "%f");
 		BC_ASSERT_GREATER(linphone_call_get_current_quality(call), 4.f, float, "%f");
-		
+
 		end_call(marie, pauline);
 	}
 	linphone_core_manager_destroy(marie);

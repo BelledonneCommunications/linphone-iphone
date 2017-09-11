@@ -62,13 +62,11 @@ static LinphoneCall * look_for_broken_call_to_replace(SalOp *h, LinphoneCore *lc
 	const bctbx_list_t *calls = linphone_core_get_calls(lc);
 	const bctbx_list_t *it = calls;
 	while (it != NULL) {
-		LinphoneCall *replaced_call = NULL;
 #if 0
+		LinphoneCall *replaced_call = NULL;
 		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(it);
-#endif
 		SalOp *replaced_op = sal_call_get_replaces(h);
 		if (replaced_op) replaced_call = (LinphoneCall*)sal_op_get_user_pointer(replaced_op);
-#if 0
 		if ((call->broken && sal_call_compare_op(h, call->op))
 			|| ((replaced_call == call) && (strcmp(sal_op_get_from(h), sal_op_get_from(replaced_op)) == 0) && (strcmp(sal_op_get_to(h), sal_op_get_to(replaced_op)) == 0))) {
 			return call;
@@ -202,11 +200,11 @@ static void call_ringing(SalOp *h) {
 	L_GET_PRIVATE(session)->remoteRinging();
 }
 
-static void start_pending_refer(LinphoneCall *call){
 #if 0
+static void start_pending_refer(LinphoneCall *call){
 	linphone_core_start_refered_call(call->core, call,NULL);
-#endif
 }
+#endif
 
 /*
  * could be reach :
@@ -259,8 +257,8 @@ static void call_terminated(SalOp *op, const char *from) {
 	L_GET_PRIVATE(session)->terminated();
 }
 
-static int resume_call_after_failed_transfer(LinphoneCall *call){
 #if 0
+static int resume_call_after_failed_transfer(LinphoneCall *call){
 	if (call->was_automatically_paused && call->state==LinphoneCallPausing)
 		return BELLE_SIP_CONTINUE; /*was still in pausing state*/
 
@@ -274,10 +272,8 @@ static int resume_call_after_failed_transfer(LinphoneCall *call){
 	}
 	linphone_call_unref(call);
 	return BELLE_SIP_STOP;
-#else
-	return BELLE_SIP_STOP;
-#endif
 }
+#endif
 
 static void call_failure(SalOp *op) {
 	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(sal_op_get_user_pointer(op));

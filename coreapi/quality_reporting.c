@@ -44,6 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /*since printf family functions are LOCALE dependent, float separator may differ
 depending on the user's locale (LC_NUMERIC environment var).*/
+#if 0
 static char * float_to_one_decimal_string(float f) {
 	float rounded_f = floorf(f * 10 + .5f) / 10;
 
@@ -52,6 +53,7 @@ static char * float_to_one_decimal_string(float f) {
 
 	return ms_strdup_printf("%d.%d", floor_part, one_decimal_part);
 }
+#endif
 
 static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offset, const char *fmt, va_list args) {
 	belle_sip_error_code ret;
@@ -81,12 +83,14 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 	}
 }
 
+#if 0
 static void append_to_buffer(char **buff, size_t *buff_size, size_t *offset, const char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
 	append_to_buffer_valist(buff, buff_size, offset, fmt, args);
 	va_end(args);
 }
+#endif
 
 static void reset_avg_metrics(reporting_session_report_t * report){
 	int i;
@@ -118,6 +122,7 @@ static void reset_avg_metrics(reporting_session_report_t * report){
 #define METRICS_DELAY 1 << 4
 #define METRICS_SIGNAL 1 << 5
 
+#if 0
 static uint8_t are_metrics_filled(const reporting_content_metrics_t *rm) {
 	uint8_t ret = 0;
 
@@ -152,17 +157,16 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t *rm) {
 
 	return ret;
 }
-
-static bool_t quality_reporting_enabled(const LinphoneCall * call) {
-#if 0
-	return (call->dest_proxy != NULL && linphone_proxy_config_quality_reporting_enabled(call->dest_proxy));
-#else
-	return FALSE;
 #endif
-}
 
-static bool_t media_report_enabled(LinphoneCall * call, int stats_type){
 #if 0
+static bool_t quality_reporting_enabled(const LinphoneCall * call) {
+	return (call->dest_proxy != NULL && linphone_proxy_config_quality_reporting_enabled(call->dest_proxy));
+}
+#endif
+
+#if 0
+static bool_t media_report_enabled(LinphoneCall * call, int stats_type){
 	if (! quality_reporting_enabled(call))
 		return FALSE;
 
@@ -173,11 +177,10 @@ static bool_t media_report_enabled(LinphoneCall * call, int stats_type){
 		return FALSE;
 
 	return (call->log->reporting.reports[stats_type] != NULL);
-#else
-	return FALSE;
-#endif
 }
+#endif
 
+#if 0
 static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * offset, const reporting_content_metrics_t *rm) {
 	char * timestamps_start_str = NULL;
 	char * timestamps_stop_str = NULL;
@@ -273,7 +276,9 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	ms_free(moslq_str);
 	ms_free(moscq_str);
 }
+#endif
 
+#if 0
 static int send_report(LinphoneCall* call, reporting_session_report_t * report, const char * report_event) {
 	LinphoneContent *content;
 	size_t offset = 0;
@@ -408,7 +413,9 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 
 	return ret;
 }
+#endif
 
+#if 0
 static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * smd, SalStreamType sal_stream_type) {
 	int count;
 	if (smd != NULL) {
@@ -420,6 +427,7 @@ static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDesc
 	}
 	return NULL;
 }
+#endif
 
 static void update_ip(LinphoneCall * call, int stats_type) {
 #if 0
@@ -450,6 +458,7 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 #endif
 }
 
+#if 0
 static void qos_analyzer_on_action_suggested(void *user_data, int datac, const char** datav){
 	reporting_session_report_t *report = (reporting_session_report_t*)user_data;
 	LinphoneCall *call = report->call;
@@ -492,6 +501,7 @@ static void qos_analyzer_on_action_suggested(void *user_data, int datac, const c
 	appendbuf=ms_strdup_printf("%s%s;", report->qos_analyzer.output?report->qos_analyzer.output:"", datav[3]);
 	STR_REASSIGN(report->qos_analyzer.output, appendbuf);
 }
+#endif
 
 void linphone_reporting_update_ip(LinphoneCall * call) {
 	update_ip(call, LINPHONE_CALL_STATS_AUDIO);
@@ -604,9 +614,11 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 }
 
 /* generate random float in interval ] 0.9 t ; 1.1 t [*/
+#if 0
 static float reporting_rand(float t){
 	return t * (.2f * (rand() / (RAND_MAX * 1.0f)) + 0.9f);
 }
+#endif
 
 void linphone_reporting_on_rtcp_update(LinphoneCall *call, SalStreamType stats_type) {
 #if 0
@@ -718,6 +730,7 @@ int linphone_reporting_publish_interval_report(LinphoneCall* call) {
 	return publish_report(call, "VQIntervalReport");
 }
 
+#if 0
 static bool_t set_on_action_suggested_cb(MediaStream *stream,void (*on_action_suggested)(void*,int,const char**),void* u) {
 	if (stream&&stream->rc){
 		MSQosAnalyzer *analyzer=ms_bitrate_controller_get_qos_analyzer(stream->rc);
@@ -730,6 +743,7 @@ static bool_t set_on_action_suggested_cb(MediaStream *stream,void (*on_action_su
 	}
 	return FALSE;
 }
+#endif
 
 void linphone_reporting_call_state_updated(LinphoneCall *call){
 #if 0

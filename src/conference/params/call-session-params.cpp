@@ -26,7 +26,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-CallSessionParamsPrivate::CallSessionParamsPrivate (const CallSessionParamsPrivate &src) {
+CallSessionParamsPrivate::CallSessionParamsPrivate (const CallSessionParamsPrivate &src) : ClonableObjectPrivate () {
 	sessionName = src.sessionName;
 	privacy = src.privacy;
 	inConference = src.inConference;
