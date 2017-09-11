@@ -19,7 +19,7 @@
 #ifndef _CPIM_PARSER_H_
 #define _CPIM_PARSER_H_
 
-#include "cpim/message/cpim-message.h"
+#include "chat/cpim/message/cpim-message.h"
 #include "object/singleton.h"
 
 // =============================================================================

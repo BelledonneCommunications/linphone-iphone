@@ -19,8 +19,8 @@
 #ifndef _CPIM_MESSAGE_H_
 #define _CPIM_MESSAGE_H_
 
-#include "cpim/header/cpim-core-headers.h"
-#include "cpim/header/cpim-generic-header.h"
+#include "chat/cpim/header/cpim-core-headers.h"
+#include "chat/cpim/header/cpim-generic-header.h"
 
 // =============================================================================
 

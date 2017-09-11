@@ -20,8 +20,8 @@
 
 #include "linphone/utils/utils.h"
 
+#include "chat/cpim/parser/cpim-parser.h"
 #include "cpim-header-p.h"
-#include "cpim/parser/cpim-parser.h"
 
 #include "cpim-generic-header.h"
 

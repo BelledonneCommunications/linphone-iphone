@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "chat/cpim/parser/cpim-parser.h"
 #include "cpim-header-p.h"
-#include "cpim/parser/cpim-parser.h"
 
 #include "cpim-core-headers.h"
 
