@@ -2006,7 +2006,7 @@ static void video_call_with_thin_congestion(void){
 static void on_tmmbr_received(LinphoneCall *call, int stream_index, int tmmbr) {
 	if (stream_index == call->main_video_stream_index) {
 		stats* stat = get_stats(call->core);
-		stat->last_tmmbr_value_received = tmmbr;
+		stat->tmmbr_received_from_cb = tmmbr;
 	}
 }
 
@@ -2023,7 +2023,7 @@ static void call_created(LinphoneCore *lc, LinphoneCall *call){
  * It checks that after a few seconds marie received a TMMBR with the approximate value corresponding to the new bandwidth.
  * 
 **/
-static void video_call_with_high_bandwith_available(void) {
+static void video_call_with_high_bandwidth_available(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneVideoPolicy pol = {0};
@@ -2051,13 +2051,14 @@ static void video_call_with_high_bandwith_available(void) {
 	linphone_core_set_network_simulator_params(marie->lc, &simparams);
 	
 	linphone_core_cbs_set_call_created(core_cbs, call_created);
+	linphone_core_add_callbacks(marie->lc, core_cbs);
 	
 	if (BC_ASSERT_TRUE(call(marie, pauline))){
 		/*wait a little in order to have traffic*/
-		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, NULL, 5, 10000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, NULL, 5, 50000));
 		
-		BC_ASSERT_GREATER((float)marie->stat.last_tmmbr_value_received, 1030000.f, float, "%f");
-		BC_ASSERT_LOWER((float)marie->stat.last_tmmbr_value_received, 970000.f, float, "%f");
+		BC_ASSERT_GREATER((float)marie->stat.tmmbr_received_from_cb, 850000.f, float, "%f");
+		BC_ASSERT_LOWER((float)marie->stat.tmmbr_received_from_cb, 1150000.f, float, "%f");
 		
 		end_call(marie, pauline);
 	}
@@ -2135,7 +2136,7 @@ test_t call_video_tests[] = {
 	TEST_NO_TAG("Video call with no audio and no video codec", video_call_with_no_audio_and_no_video_codec),
 	TEST_NO_TAG("Call with early media and no SDP in 200 Ok with video", call_with_early_media_and_no_sdp_in_200_with_video),
 	TEST_NO_TAG("Video call with thin congestion", video_call_with_thin_congestion),
-	TEST_NO_TAG("Video call with high bandwith available", video_call_with_high_bandwith_available)
+	TEST_NO_TAG("Video call with high bandwidth available", video_call_with_high_bandwith_available)
 };
 
 test_suite_t call_video_test_suite = {"Video Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
