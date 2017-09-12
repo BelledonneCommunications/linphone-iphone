@@ -16,17 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ #include "chat/chat-message-p.h"
  #include "multipart-chat-message-modifier.h"
 
  LINPHONE_BEGIN_NAMESPACE
  
  using namespace std;
 
- void MultipartChatMessageModifier::encode(shared_ptr<ChatMessagePrivate> msg) {
-    //TODO
+ void MultipartChatMessageModifier::encode(const LinphonePrivate::ChatMessagePrivate* msg) {
+    if (msg->contents.size() > 1) {
+        //TODO
+    }
  }
 
- void MultipartChatMessageModifier::decode(shared_ptr<ChatMessagePrivate> msg) {
+ void MultipartChatMessageModifier::decode(const LinphonePrivate::ChatMessagePrivate* msg) {
     //TODO
  }
  

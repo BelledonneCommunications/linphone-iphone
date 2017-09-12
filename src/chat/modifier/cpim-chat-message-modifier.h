@@ -27,8 +27,9 @@
  
  class CpimChatMessageModifier : ChatMessageModifier {
  public:
-     virtual void encode(std::shared_ptr<ChatMessagePrivate> msg) = 0;
-     virtual void decode(std::shared_ptr<ChatMessagePrivate> msg) = 0;
+    CpimChatMessageModifier() {};
+     virtual void encode(const LinphonePrivate::ChatMessagePrivate* msg);
+     virtual void decode(const LinphonePrivate::ChatMessagePrivate* msg);
      virtual ~CpimChatMessageModifier () = default;
  };
  

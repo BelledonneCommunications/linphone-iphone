@@ -30,6 +30,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	call/call.h
 	chat/basic-chat-room-p.h
 	chat/basic-chat-room.h
+	chat/chat-message-p.h
 	chat/chat-message.h
 	chat/chat-room-p.h
 	chat/chat-room.h

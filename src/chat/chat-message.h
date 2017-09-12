@@ -69,9 +69,6 @@ public:
 
 	std::string getContentType () const;
 
-	std::string getText () const;
-	void setText (const std::string &text);
-
 	void send () const;
 
 	bool containsReadableText () const;

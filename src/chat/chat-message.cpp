@@ -21,36 +21,22 @@
 #include "db/events-db.h"
 #include "object/object-p.h"
 
+#include "linphone/types.h"
+#include "linphone/core.h"
+#include "linphone/lpconfig.h"
+
+#include "chat-message-p.h"
 #include "chat-message.h"
+
+#include "modifier/multipart-chat-message-modifier.h"
+#include "modifier/cpim-chat-message-modifier.h"
+#include "chat-room.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 using namespace std;
-
-class ChatMessagePrivate : public ObjectPrivate {
-private:
-	weak_ptr<ChatRoom> chatRoom;
-	ChatMessage::Direction direction = ChatMessage::Incoming;
-	// LinphoneAddress *from;
-	// LinphoneAddress *to;
-	shared_ptr<ErrorInfo> errorInfo;
-	string contentType;
-	string text;
-	bool isSecured = false;
-	bool isReadOnly = false;
-	time_t time = 0;
-	string id;
-	string appData;
-	list<shared_ptr<Content> > contents;
-	shared_ptr<Content> private_content;
-	unordered_map<string, string> customHeaders;
-	ChatMessage::State state = ChatMessage::Idle;
-	shared_ptr<EventsDb> eventsDb;
-
-	L_DECLARE_PUBLIC(ChatMessage);
-};
 
 // -----------------------------------------------------------------------------
 
@@ -105,17 +91,21 @@ string ChatMessage::getContentType () const {
 	return d->contentType;
 }
 
-string ChatMessage::getText () const {
-	L_D(const ChatMessage);
-	return d->text;
-}
-
-void ChatMessage::setText (const string &text) {
-	L_D(ChatMessage);
-	d->text = text;
-}
-
 void ChatMessage::send () const {
+	L_D(const ChatMessage);
+	
+	if (d->contents.size() > 1) {
+		MultipartChatMessageModifier mcmm;
+		mcmm.encode(d);
+	}
+
+	LinphoneCore *lc = getChatRoom()->getCore();
+	LpConfig *lpc = linphone_core_get_config(lc);
+	if (lp_config_get_int(lpc, "sip", "use_cpim", 0) == 1) {
+		CpimChatMessageModifier ccmm;
+		ccmm.encode(d);
+	}
+
 	// TODO.
 }
 
@@ -164,11 +154,15 @@ list<shared_ptr<const Content> > ChatMessage::getContents () const {
 
 void ChatMessage::addContent (const shared_ptr<Content> &content) {
 	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+
 	d->contents.push_back(content);
 }
 
 void ChatMessage::removeContent (const shared_ptr<const Content> &content) {
 	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+	
 	d->contents.remove(const_pointer_cast<Content>(content));
 }
 
@@ -184,11 +178,15 @@ string ChatMessage::getCustomHeaderValue (const string &headerName) const {
 
 void ChatMessage::addCustomHeader (const string &headerName, const string &headerValue) {
 	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+
 	d->customHeaders[headerName] = headerValue;
 }
 
 void ChatMessage::removeCustomHeader (const string &headerName) {
 	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+
 	d->customHeaders.erase(headerName);
 }
 

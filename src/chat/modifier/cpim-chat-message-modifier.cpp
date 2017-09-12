@@ -16,17 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ #include "chat/chat-message-p.h"
  #include "cpim-chat-message-modifier.h"
 
  LINPHONE_BEGIN_NAMESPACE
  
  using namespace std;
 
- void CpimChatMessageModifier::encode(shared_ptr<ChatMessagePrivate> msg) {
+ void CpimChatMessageModifier::encode(const LinphonePrivate::ChatMessagePrivate* msg) {
     //TODO
+    if (msg->internalContent) {
+        // Another ChatMessageModifier was called before this one, we apply our changes on the private content
+    } else {
+        // We're the first ChatMessageModifier to be called, we'll create the private content from the public one
+    }
  }
 
- void CpimChatMessageModifier::decode(shared_ptr<ChatMessagePrivate> msg) {
+ void CpimChatMessageModifier::decode(const LinphonePrivate::ChatMessagePrivate* msg) {
     //TODO
  }
  
