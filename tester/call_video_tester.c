@@ -2136,7 +2136,7 @@ test_t call_video_tests[] = {
 	TEST_NO_TAG("Video call with no audio and no video codec", video_call_with_no_audio_and_no_video_codec),
 	TEST_NO_TAG("Call with early media and no SDP in 200 Ok with video", call_with_early_media_and_no_sdp_in_200_with_video),
 	TEST_NO_TAG("Video call with thin congestion", video_call_with_thin_congestion),
-	TEST_NO_TAG("Video call with high bandwidth available", video_call_with_high_bandwith_available)
+	TEST_NO_TAG("Video call with high bandwidth available", video_call_with_high_bandwidth_available)
 };
 
 test_suite_t call_video_test_suite = {"Video Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
