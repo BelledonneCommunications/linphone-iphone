@@ -1364,6 +1364,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->params = linphone_call_params_copy(params);
 	linphone_call_init_common(call, from, to);
 
+	/*reserve the sockets immediately*/
+	linphone_call_init_media_streams(call);
+	
 	call->current_params->update_call_when_ice_completed = call->params->update_call_when_ice_completed; /*copy param*/
 
 	linphone_call_fill_media_multicast_addr(call);
@@ -6022,10 +6025,6 @@ end:
 int linphone_call_restart_invite(LinphoneCall *call) {
 	linphone_call_create_op(call);
 	linphone_call_stop_media_streams(call);
-	ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
-	ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
-	ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
-	linphone_call_init_media_streams(call);
 	return linphone_call_start_invite(call, NULL);
 }
 

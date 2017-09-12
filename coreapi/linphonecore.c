@@ -3571,8 +3571,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	if (linphone_call_params_get_local_conference_mode(params) ==  FALSE) lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 	call->log->start_date_time=ms_time(NULL);
-	linphone_call_init_media_streams(call);
-
+	
 	if (linphone_nat_policy_ice_enabled(call->nat_policy)) {
 		if (lc->sip_conf.sdp_200_ack){
 			ms_warning("ICE is not supported when sending INVITE without SDP");
