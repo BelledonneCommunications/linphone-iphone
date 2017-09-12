@@ -39,10 +39,12 @@ private:
 	string contentType;
 	string text;
 	bool isSecured = false;
+	bool isReadOnly = false;
 	time_t time = 0;
 	string id;
 	string appData;
 	list<shared_ptr<Content> > contents;
+	shared_ptr<Content> private_content;
 	unordered_map<string, string> customHeaders;
 	ChatMessage::State state = ChatMessage::Idle;
 	shared_ptr<EventsDb> eventsDb;
@@ -125,6 +127,11 @@ bool ChatMessage::containsReadableText () const {
 bool ChatMessage::isSecured () const {
 	L_D(const ChatMessage);
 	return d->isSecured;
+}
+
+bool ChatMessage::isReadOnly () const {
+	L_D(const ChatMessage);
+	return d->isReadOnly;
 }
 
 time_t ChatMessage::getTime () const {

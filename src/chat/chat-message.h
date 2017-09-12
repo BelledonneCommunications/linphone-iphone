@@ -77,6 +77,7 @@ public:
 	bool containsReadableText () const;
 
 	bool isSecured () const;
+	bool isReadOnly () const;
 
 	time_t getTime () const;
 
