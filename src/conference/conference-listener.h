@@ -25,11 +25,11 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceListener {
 public:
-	virtual void conferenceCreated (LinphoneAddress *addr) = 0;
-	virtual void conferenceTerminated (LinphoneAddress *addr) = 0;
-	virtual void participantAdded (LinphoneAddress *addr) = 0;
-	virtual void participantRemoved (LinphoneAddress *addr) = 0;
-	virtual void participantSetAdmin (LinphoneAddress *addr, bool isAdmin) = 0;
+	virtual void onConferenceCreated (LinphoneAddress *addr) = 0;
+	virtual void onConferenceTerminated (LinphoneAddress *addr) = 0;
+	virtual void onParticipantAdded (LinphoneAddress *addr) = 0;
+	virtual void onParticipantRemoved (LinphoneAddress *addr) = 0;
+	virtual void onParticipantSetAdmin (LinphoneAddress *addr, bool isAdmin) = 0;
 };
 
 LINPHONE_END_NAMESPACE

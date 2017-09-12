@@ -158,7 +158,7 @@ void MediaSessionPrivate::accepted () {
 					nextStateMsg = "Call paused by remote";
 				} else {
 					if (!params->getPrivate()->getInConference() && listener)
-						listener->setCurrentSession(*q);
+						listener->onSetCurrentSession(*q);
 					nextState = LinphoneCallStreamsRunning;
 					nextStateMsg = "Streams running";
 				}
@@ -865,7 +865,7 @@ void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
 				break;
 		}
 		if (listener)
-			listener->statsUpdated(stats);
+			listener->onStatsUpdated(stats);
 		stats->updated = 0;
 	}
 }
@@ -2926,7 +2926,7 @@ void MediaSessionPrivate::startVideoStream (LinphoneCallState targetState) {
 				}
 				ms_media_stream_sessions_set_encryption_mandatory(&videoStream->ms.sessions, isEncryptionMandatory());
 				if (listener)
-					listener->resetFirstVideoFrameDecoded(*q);
+					listener->onResetFirstVideoFrameDecoded(*q);
 				/* Start ZRTP engine if needed : set here or remote have a zrtp-hash attribute */
 				SalMediaDescription *remote = sal_call_get_remote_media_description(op);
 				const SalStreamDescription *remoteStream = sal_media_description_find_best_stream(remote, SalVideo);
@@ -3357,7 +3357,7 @@ void MediaSessionPrivate::propagateEncryptionChanged () {
 		lInfo() << "Some streams are not encrypted";
 		q->getCurrentParams()->setMediaEncryption(LinphoneMediaEncryptionNone);
 		if (listener)
-			listener->encryptionChanged(*q, false, authToken);
+			listener->onEncryptionChanged(*q, false, authToken);
 	} else {
 		if (!authToken.empty()) {
 			/* ZRTP only is using auth_token */
@@ -3370,7 +3370,7 @@ void MediaSessionPrivate::propagateEncryptionChanged () {
 			<< ((q->getCurrentParams()->getMediaEncryption() == LinphoneMediaEncryptionZRTP) ? "ZRTP"
 				: (q->getCurrentParams()->getMediaEncryption() == LinphoneMediaEncryptionDTLS) ? "DTLS" : "Unknown mechanism");
 		if (listener)
-			listener->encryptionChanged(*q, true, authToken);
+			listener->onEncryptionChanged(*q, true, authToken);
 #ifdef VIDEO_ENABLED
 		if (isEncryptionMandatory() && videoStream && media_stream_started(&videoStream->ms)) {
 			/* Nothing could have been sent yet so generating key frame */
@@ -3621,7 +3621,7 @@ void MediaSessionPrivate::reportBandwidthForStream (MediaStream *ms, LinphoneStr
 			linphone_call_stats_update(stats, ms);
 		stats->updated |= LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
 		if (listener)
-			listener->statsUpdated(stats);
+			listener->onStatsUpdated(stats);
 		stats->updated = 0;
 	}
 }
@@ -3684,7 +3684,7 @@ LinphoneStatus MediaSessionPrivate::pause () {
 	if (sal_call_update(op, subject.c_str(), false) != 0)
 		linphone_core_notify_display_warning(core, "Could not pause the call");
 	if (listener)
-		listener->resetCurrentSession(*q);
+		listener->onResetCurrentSession(*q);
 	linphone_core_notify_display_status(core, "Pausing the current call...");
 	if (audioStream || videoStream || textStream)
 		stopStreams();
@@ -3940,7 +3940,7 @@ void MediaSessionPrivate::videoStreamEventCb (const MSFilter *f, const unsigned 
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
 			lInfo() << "First video frame decoded successfully";
 			if (listener)
-				listener->firstVideoFrameDecoded(*q);
+				listener->onFirstVideoFrameDecoded(*q);
 			break;
 		case MS_VIDEO_DECODER_SEND_PLI:
 		case MS_VIDEO_DECODER_SEND_SLI:
@@ -4202,7 +4202,7 @@ LinphoneStatus MediaSession::resume () {
 		return -1;
 	d->setState(LinphoneCallResuming,"Resuming");
 	if (!d->params->getPrivate()->getInConference() && d->listener)
-		d->listener->setCurrentSession(*this);
+		d->listener->onSetCurrentSession(*this);
 	ostringstream os;
 	os << "Resuming the call with " << getRemoteAddressAsString();
 	linphone_core_notify_display_status(d->core, os.str().c_str());

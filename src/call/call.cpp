@@ -99,22 +99,22 @@ int CallPrivate::startInvite (const Address *destination) {
 
 // -----------------------------------------------------------------------------
 
-void CallPrivate::ackBeingSent (LinphoneHeaders *headers) {
+void CallPrivate::onAckBeingSent (LinphoneHeaders *headers) {
 	if (lcall)
 		linphone_call_notify_ack_processing(lcall, headers, false);
 }
 
-void CallPrivate::ackReceived (LinphoneHeaders *headers) {
+void CallPrivate::onAckReceived (LinphoneHeaders *headers) {
 	if (lcall)
 		linphone_call_notify_ack_processing(lcall, headers, true);
 }
 
-void CallPrivate::callSetReleased () {
+void CallPrivate::onCallSetReleased () {
 	if (lcall)
 		linphone_call_unref(lcall);
 }
 
-void CallPrivate::callSetTerminated () {
+void CallPrivate::onCallSetTerminated () {
 	if (lcall) {
 		if (lcall == core->current_call) {
 			lInfo() << "Resetting the current call";
@@ -137,41 +137,41 @@ void CallPrivate::callSetTerminated () {
 	}
 }
 
-void CallPrivate::callStateChanged (LinphoneCallState state, const std::string &message) {
+void CallPrivate::onCallStateChanged (LinphoneCallState state, const std::string &message) {
 	if (lcall)
 		linphone_call_notify_state_changed(lcall, state, message.c_str());
 }
 
-void CallPrivate::incomingCallStarted () {
+void CallPrivate::onIncomingCallStarted () {
 	if (lcall)
 		linphone_core_notify_incoming_call(core, lcall);
 }
 
-void CallPrivate::incomingCallToBeAdded () {
+void CallPrivate::onIncomingCallToBeAdded () {
 	if (lcall) /* The call is acceptable so we can now add it to our list */
 		linphone_core_add_call(core, lcall);
 }
 
-void CallPrivate::encryptionChanged (bool activated, const std::string &authToken) {
+void CallPrivate::onEncryptionChanged (bool activated, const std::string &authToken) {
 	if (lcall)
 		linphone_call_notify_encryption_changed(lcall, activated, authToken.empty() ? nullptr : authToken.c_str());
 }
 
-void CallPrivate::statsUpdated (const LinphoneCallStats *stats) {
+void CallPrivate::onStatsUpdated (const LinphoneCallStats *stats) {
 	if (lcall)
 		linphone_call_notify_stats_updated(lcall, stats);
 }
 
-void CallPrivate::resetCurrentCall () {
+void CallPrivate::onResetCurrentCall () {
 	core->current_call = nullptr;
 }
 
-void CallPrivate::setCurrentCall () {
+void CallPrivate::onSetCurrentCall () {
 	if (lcall)
 		core->current_call = lcall;
 }
 
-void CallPrivate::firstVideoFrameDecoded () {
+void CallPrivate::onFirstVideoFrameDecoded () {
 	if (lcall && nextVideoFrameDecoded._func) {
 		nextVideoFrameDecoded._func(lcall, nextVideoFrameDecoded._user_data);
 		nextVideoFrameDecoded._func = nullptr;
@@ -179,7 +179,7 @@ void CallPrivate::firstVideoFrameDecoded () {
 	}
 }
 
-void CallPrivate::resetFirstVideoFrameDecoded () {
+void CallPrivate::onResetFirstVideoFrameDecoded () {
 #ifdef VIDEO_ENABLED
 	if (lcall && nextVideoFrameDecoded._func)
 		static_cast<MediaSession *>(getActiveSession().get())->resetFirstVideoFrameDecoded();
@@ -491,7 +491,7 @@ void Call::setNextVideoFrameDecodedCallback (LinphoneCallCbFunc cb, void *user_d
 	L_D(Call);
 	d->nextVideoFrameDecoded._func = cb;
 	d->nextVideoFrameDecoded._user_data = user_data;
-	d->resetFirstVideoFrameDecoded();
+	d->onResetFirstVideoFrameDecoded();
 }
 
 void Call::setSpeakerVolumeGain (float value) {

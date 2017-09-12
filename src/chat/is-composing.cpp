@@ -226,7 +226,7 @@ void IsComposing::parse (xmlparsing_context_t *xmlCtx) {
 			stopRemoteRefreshTimer();
 		}
 
-		listener->isRemoteComposingStateChanged(state);
+		listener->onIsRemoteComposingStateChanged(state);
 		linphone_free_xml_text_content(stateStr);
 	}
 	if (refreshStr)
@@ -234,18 +234,18 @@ void IsComposing::parse (xmlparsing_context_t *xmlCtx) {
 }
 
 int IsComposing::idleTimerExpired (unsigned int revents) {
-	listener->isComposingStateChanged(false);
+	listener->onIsComposingStateChanged(false);
 	return BELLE_SIP_STOP;
 }
 
 int IsComposing::refreshTimerExpired (unsigned int revents) {
-	listener->isComposingRefreshNeeded();
+	listener->onIsComposingRefreshNeeded();
 	return BELLE_SIP_CONTINUE;
 }
 
 int IsComposing::remoteRefreshTimerExpired (unsigned int revents) {
 	stopRemoteRefreshTimer();
-	listener->isRemoteComposingStateChanged(false);
+	listener->onIsRemoteComposingStateChanged(false);
 	return BELLE_SIP_STOP;
 }
 

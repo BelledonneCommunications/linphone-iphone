@@ -39,23 +39,21 @@ public:
 
 	LinphoneCore * getCore () const { return core; }
 
-	virtual void ackBeingSent (const CallSession &session, LinphoneHeaders *headers);
-	virtual void ackReceived (const CallSession &session, LinphoneHeaders *headers);
-	virtual void callSessionAccepted (const CallSession &session);
-	virtual void callSessionSetReleased (const CallSession &session);
-	virtual void callSessionSetTerminated (const CallSession &session);
-	virtual void callSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message);
-	virtual void incomingCallSessionStarted (const CallSession &session);
-
-	virtual void encryptionChanged (const CallSession &session, bool activated, const std::string &authToken);
-
-	virtual void statsUpdated (const LinphoneCallStats *stats);
-
-	virtual void resetCurrentSession (const CallSession &session);
-	virtual void setCurrentSession (const CallSession &session);
-
-	virtual void firstVideoFrameDecoded (const CallSession &session);
-	virtual void resetFirstVideoFrameDecoded (const CallSession &session);
+private:
+	/* CallSessionListener */
+	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers);
+	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers);
+	virtual void onCallSessionAccepted (const CallSession &session);
+	virtual void onCallSessionSetReleased (const CallSession &session);
+	virtual void onCallSessionSetTerminated (const CallSession &session);
+	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message);
+	virtual void onIncomingCallSessionStarted (const CallSession &session);
+	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken);
+	virtual void onStatsUpdated (const LinphoneCallStats *stats);
+	virtual void onResetCurrentSession (const CallSession &session);
+	virtual void onSetCurrentSession (const CallSession &session);
+	virtual void onFirstVideoFrameDecoded (const CallSession &session);
+	virtual void onResetFirstVideoFrameDecoded (const CallSession &session);
 
 private:
 	LinphoneCore *core = nullptr;

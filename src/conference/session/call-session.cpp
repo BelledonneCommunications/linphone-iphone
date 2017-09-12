@@ -184,7 +184,7 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 				linphone_call_state_to_string(prevState) << " to " << linphone_call_state_to_string(state) << ")";
 		}
 		if (listener)
-			listener->callSessionStateChanged(*q, state, message);
+			listener->onCallSessionStateChanged(*q, state, message);
 		if (newState == LinphoneCallReleased)
 			setReleased(); /* Shall be performed after app notification */
 	}
@@ -247,13 +247,13 @@ void CallSessionPrivate::accepted () {
 void CallSessionPrivate::ackBeingSent (LinphoneHeaders *headers) {
 	L_Q(CallSession);
 	if (listener)
-		listener->ackBeingSent(*q, headers);
+		listener->onAckBeingSent(*q, headers);
 }
 
 void CallSessionPrivate::ackReceived (LinphoneHeaders *headers) {
 	L_Q(CallSession);
 	if (listener)
-		listener->ackReceived(*q, headers);
+		listener->onAckReceived(*q, headers);
 }
 
 bool CallSessionPrivate::failure () {
@@ -488,7 +488,7 @@ void CallSessionPrivate::accept (const shared_ptr<CallSessionParams> params) {
 	sal_call_accept(op);
 	linphone_core_notify_display_status(core, _("Connected."));
 	if (listener)
-		listener->setCurrentSession(*q);
+		listener->onSetCurrentSession(*q);
 	setState(LinphoneCallConnected, "Connected");
 }
 
@@ -615,7 +615,7 @@ void CallSessionPrivate::setReleased () {
 	}
 #endif
 	if (listener)
-		listener->callSessionSetReleased(*q);
+		listener->onCallSessionSetReleased(*q);
 }
 
 /* This method is called internally to get rid of a call that was notified to the application,
@@ -627,7 +627,7 @@ void CallSessionPrivate::setTerminated() {
 	L_Q(CallSession);
 	completeLog();
 	if (listener)
-		listener->callSessionSetTerminated(*q);
+		listener->onCallSessionSetTerminated(*q);
 }
 
 LinphoneStatus CallSessionPrivate::startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) {
@@ -882,7 +882,7 @@ void CallSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 void CallSession::startIncomingNotification () {
 	L_D(CallSession);
 	if (d->listener)
-		d->listener->callSessionAccepted(*this);
+		d->listener->onCallSessionAccepted(*this);
 	/* Prevent the CallSession from being destroyed while we are notifying, if the user declines within the state callback */
 	shared_ptr<CallSession> ref = shared_from_this();
 #if 0
@@ -904,7 +904,7 @@ void CallSession::startIncomingNotification () {
 	ms_free(msg);
 
 	if (d->listener)
-		d->listener->incomingCallSessionStarted(*this);
+		d->listener->onIncomingCallSessionStarted(*this);
 
 	d->setState(LinphoneCallIncomingReceived, "Incoming call");
 

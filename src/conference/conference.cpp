@@ -27,69 +27,69 @@ LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-void ConferencePrivate::ackBeingSent (const CallSession &session, LinphoneHeaders *headers) {
+void ConferencePrivate::onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) {
 	if (callListener)
-		callListener->ackBeingSent(headers);
+		callListener->onAckBeingSent(headers);
 }
 
-void ConferencePrivate::ackReceived (const CallSession &session, LinphoneHeaders *headers) {
+void ConferencePrivate::onAckReceived (const CallSession &session, LinphoneHeaders *headers) {
 	if (callListener)
-		callListener->ackReceived(headers);
+		callListener->onAckReceived(headers);
 }
 
-void ConferencePrivate::callSessionAccepted (const CallSession &session) {
+void ConferencePrivate::onCallSessionAccepted (const CallSession &session) {
 	if (callListener)
-		callListener->incomingCallToBeAdded();
+		callListener->onIncomingCallToBeAdded();
 }
 
-void ConferencePrivate::callSessionSetReleased (const CallSession &session) {
+void ConferencePrivate::onCallSessionSetReleased (const CallSession &session) {
 	if (callListener)
-		callListener->callSetReleased();
+		callListener->onCallSetReleased();
 }
 
-void ConferencePrivate::callSessionSetTerminated (const CallSession &session) {
+void ConferencePrivate::onCallSessionSetTerminated (const CallSession &session) {
 	if (callListener)
-		callListener->callSetTerminated();
+		callListener->onCallSetTerminated();
 }
 
-void ConferencePrivate::callSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {
+void ConferencePrivate::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {
 	if (callListener)
-		callListener->callStateChanged(state, message);
+		callListener->onCallStateChanged(state, message);
 }
 
-void ConferencePrivate::incomingCallSessionStarted (const CallSession &session) {
+void ConferencePrivate::onIncomingCallSessionStarted (const CallSession &session) {
 	if (callListener)
-		callListener->incomingCallStarted();
+		callListener->onIncomingCallStarted();
 }
 
-void ConferencePrivate::encryptionChanged (const CallSession &session, bool activated, const string &authToken) {
+void ConferencePrivate::onEncryptionChanged (const CallSession &session, bool activated, const string &authToken) {
 	if (callListener)
-		callListener->encryptionChanged(activated, authToken);
+		callListener->onEncryptionChanged(activated, authToken);
 }
 
-void ConferencePrivate::statsUpdated (const LinphoneCallStats *stats) {
+void ConferencePrivate::onStatsUpdated (const LinphoneCallStats *stats) {
 	if (callListener)
-		callListener->statsUpdated(stats);
+		callListener->onStatsUpdated(stats);
 }
 
-void ConferencePrivate::resetCurrentSession (const CallSession &session) {
+void ConferencePrivate::onResetCurrentSession (const CallSession &session) {
 	if (callListener)
-		callListener->resetCurrentCall();
+		callListener->onResetCurrentCall();
 }
 
-void ConferencePrivate::setCurrentSession (const CallSession &session) {
+void ConferencePrivate::onSetCurrentSession (const CallSession &session) {
 	if (callListener)
-		callListener->setCurrentCall();
+		callListener->onSetCurrentCall();
 }
 
-void ConferencePrivate::firstVideoFrameDecoded (const CallSession &session) {
+void ConferencePrivate::onFirstVideoFrameDecoded (const CallSession &session) {
 	if (callListener)
-		callListener->firstVideoFrameDecoded();
+		callListener->onFirstVideoFrameDecoded();
 }
 
-void ConferencePrivate::resetFirstVideoFrameDecoded (const CallSession &session) {
+void ConferencePrivate::onResetFirstVideoFrameDecoded (const CallSession &session) {
 	if (callListener)
-		callListener->resetFirstVideoFrameDecoded();
+		callListener->onResetFirstVideoFrameDecoded();
 }
 
 // =============================================================================

@@ -25,23 +25,23 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionListener {
 public:
-	virtual void ackBeingSent (const CallSession &session, LinphoneHeaders *headers) = 0;
-	virtual void ackReceived (const CallSession &session, LinphoneHeaders *headers) = 0;
-	virtual void callSessionAccepted (const CallSession &session) = 0;
-	virtual void callSessionSetReleased (const CallSession &session) = 0;
-	virtual void callSessionSetTerminated (const CallSession &session) = 0;
-	virtual void callSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) = 0;
-	virtual void incomingCallSessionStarted (const CallSession &session) = 0;
+	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) = 0;
+	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers) = 0;
+	virtual void onCallSessionAccepted (const CallSession &session) = 0;
+	virtual void onCallSessionSetReleased (const CallSession &session) = 0;
+	virtual void onCallSessionSetTerminated (const CallSession &session) = 0;
+	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) = 0;
+	virtual void onIncomingCallSessionStarted (const CallSession &session) = 0;
 
-	virtual void encryptionChanged (const CallSession &session, bool activated, const std::string &authToken) = 0;
+	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) = 0;
 
-	virtual void statsUpdated (const LinphoneCallStats *stats) = 0;
+	virtual void onStatsUpdated (const LinphoneCallStats *stats) = 0;
 
-	virtual void resetCurrentSession (const CallSession &session) = 0;
-	virtual void setCurrentSession (const CallSession &session) = 0;
+	virtual void onResetCurrentSession (const CallSession &session) = 0;
+	virtual void onSetCurrentSession (const CallSession &session) = 0;
 
-	virtual void firstVideoFrameDecoded (const CallSession &session) = 0;
-	virtual void resetFirstVideoFrameDecoded (const CallSession &session) = 0;
+	virtual void onFirstVideoFrameDecoded (const CallSession &session) = 0;
+	virtual void onResetFirstVideoFrameDecoded (const CallSession &session) = 0;
 };
 
 LINPHONE_END_NAMESPACE

@@ -27,9 +27,9 @@ LINPHONE_BEGIN_NAMESPACE
 
 class IsComposingListener {
 public:
-	virtual void isComposingStateChanged (bool isComposing) = 0;
-	virtual void isRemoteComposingStateChanged (bool isComposing) = 0;
-	virtual void isComposingRefreshNeeded () = 0;
+	virtual void onIsComposingStateChanged (bool isComposing) = 0;
+	virtual void onIsRemoteComposingStateChanged (bool isComposing) = 0;
+	virtual void onIsComposingRefreshNeeded () = 0;
 };
 
 LINPHONE_END_NAMESPACE

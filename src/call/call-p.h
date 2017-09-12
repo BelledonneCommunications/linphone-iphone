@@ -57,23 +57,21 @@ public:
 	SalOp * getOp () const;
 	void setAudioMuted (bool value);
 
-	void ackBeingSent (LinphoneHeaders *headers);
-	void ackReceived (LinphoneHeaders *headers);
-	void callSetReleased ();
-	void callSetTerminated ();
-	void callStateChanged (LinphoneCallState state, const std::string &message);
-	void incomingCallStarted ();
-	void incomingCallToBeAdded ();
-
-	void encryptionChanged (bool activated, const std::string &authToken);
-
-	void statsUpdated (const LinphoneCallStats *stats);
-
-	void resetCurrentCall ();
-	void setCurrentCall ();
-
-	void firstVideoFrameDecoded ();
-	void resetFirstVideoFrameDecoded ();
+private:
+	/* CallListener */
+	void onAckBeingSent (LinphoneHeaders *headers);
+	void onAckReceived (LinphoneHeaders *headers);
+	void onCallSetReleased ();
+	void onCallSetTerminated ();
+	void onCallStateChanged (LinphoneCallState state, const std::string &message);
+	void onIncomingCallStarted ();
+	void onIncomingCallToBeAdded ();
+	void onEncryptionChanged (bool activated, const std::string &authToken);
+	void onStatsUpdated (const LinphoneCallStats *stats);
+	void onResetCurrentCall ();
+	void onSetCurrentCall ();
+	void onFirstVideoFrameDecoded ();
+	void onResetFirstVideoFrameDecoded ();
 
 private:
 	LinphoneCall *lcall = nullptr;

@@ -84,9 +84,10 @@ protected:
 	void isComposingReceived (const std::string &text);
 
 private:
-	void isComposingStateChanged (bool isComposing);
-	void isRemoteComposingStateChanged (bool isComposing);
-	void isComposingRefreshNeeded ();
+	/* IsComposingListener */
+	void onIsComposingStateChanged (bool isComposing);
+	void onIsRemoteComposingStateChanged (bool isComposing);
+	void onIsComposingRefreshNeeded ();
 
 public:
 	LinphoneChatRoom *cBackPointer = nullptr;

@@ -522,17 +522,17 @@ void ChatRoomPrivate::isComposingReceived (const string &text) {
 
 // -----------------------------------------------------------------------------
 
-void ChatRoomPrivate::isComposingStateChanged (bool isComposing) {
+void ChatRoomPrivate::onIsComposingStateChanged (bool isComposing) {
 	this->isComposing = isComposing;
 	sendIsComposingNotification();
 }
 
-void ChatRoomPrivate::isRemoteComposingStateChanged (bool isComposing) {
+void ChatRoomPrivate::onIsRemoteComposingStateChanged (bool isComposing) {
 	remoteIsComposing = isComposing;
 	linphone_core_notify_is_composing_received(core, cBackPointer);
 }
 
-void ChatRoomPrivate::isComposingRefreshNeeded () {
+void ChatRoomPrivate::onIsComposingRefreshNeeded () {
 	sendIsComposingNotification();
 }
 
