@@ -66,13 +66,13 @@ Address &Address::operator= (const Address &src) {
 	return *this;
 }
 
-Address::operator bool () const {
-	L_D(const Address);
-	return static_cast<bool>(d->internalAddress);
-}
-
 bool Address::operator== (const Address &address) const {
 	return equal(address);
+}
+
+bool Address::isValid () const {
+	L_D(const Address);
+	return static_cast<bool>(d->internalAddress);
 }
 
 const string &Address::getScheme () const {

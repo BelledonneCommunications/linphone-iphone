@@ -190,9 +190,9 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
 LinphoneChatRoom *_linphone_core_create_chat_room_base(LinphoneCore *lc, const LinphoneAddress *addr) {
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
 	if (linphone_core_realtime_text_enabled(lc))
-		cr->cr = new LinphonePrivate::RealTimeTextChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address).get());
+		cr->cr = new LinphonePrivate::RealTimeTextChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address));
 	else
-		cr->cr = new LinphonePrivate::BasicChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address).get());
+		cr->cr = new LinphonePrivate::BasicChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address));
 	L_GET_PRIVATE(cr->cr)->setCBackPointer(cr);
 	return cr;
 }

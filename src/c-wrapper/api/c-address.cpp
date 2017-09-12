@@ -26,12 +26,14 @@
 
 using namespace std;
 
-L_DECLARE_C_STRUCT_IMPL(Address, address);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(Address, address);
 
 LinphoneAddress *linphone_address_new (const char *address) {
-	shared_ptr<LINPHONE_NAMESPACE::Address> cppPtr = make_shared<LINPHONE_NAMESPACE::Address>(L_C_TO_STRING(address));
-	if (!*cppPtr.get())
+	LINPHONE_NAMESPACE::Address *cppPtr = new LINPHONE_NAMESPACE::Address(L_C_TO_STRING(address));
+	if (!cppPtr->isValid()) {
+		delete cppPtr;
 		return nullptr;
+	}
 
 	LinphoneAddress *object = _linphone_address_init();
 	object->cppPtr = cppPtr;
@@ -136,11 +138,11 @@ char *linphone_address_as_string_uri_only (const LinphoneAddress *address) {
 }
 
 bool_t linphone_address_weak_equal (const LinphoneAddress *address1, const LinphoneAddress *address2) {
-	return address1->cppPtr->weakEqual(*address2->cppPtr.get());
+	return address1->cppPtr->weakEqual(*address2->cppPtr);
 }
 
 bool_t linphone_address_equal (const LinphoneAddress *address1, const LinphoneAddress *address2) {
-	return *address1->cppPtr.get() == *address2->cppPtr.get();
+	return *address1->cppPtr == *address2->cppPtr;
 }
 
 const char *linphone_address_get_header (const LinphoneAddress *address, const char *header_name) {

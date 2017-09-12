@@ -38,24 +38,62 @@ private:
 		std::shared_ptr<T> cppPtr;
 	};
 
+	template<typename T>
+	struct WrappedClonableObject {
+		belle_sip_object_t base;
+		T *cppPtr;
+	};
+
 public:
 	template<typename T>
 	static inline decltype (std::declval<T>().getPrivate()) getPrivate (T *object) {
 		if (!object)
-			return nullptr;
+		return nullptr;
 		return object->getPrivate();
 	}
 
-	template<typename T>
-	static inline std::shared_ptr<T> getCppPtrFromC (void *object) {
+	// ---------------------------------------------------------------------------
+	// Get c/cpp ptr helpers.
+	// ---------------------------------------------------------------------------
+
+	template<
+		typename CppType,
+		typename CType,
+		typename std::enable_if<std::is_base_of<Object, CppType>::value>::type = 0
+	>
+	static inline std::shared_ptr<CppType> getCppPtrFromC (CType *object) {
 		L_ASSERT(object);
-		return static_cast<WrappedObject<T> *>(object)->cppPtr;
+		return reinterpret_cast<WrappedObject<CppType> *>(object)->cppPtr;
 	}
 
-	template<typename T>
-	static inline std::shared_ptr<const T> getCppPtrFromC (const void *object) {
+	template<
+		typename CppType,
+		typename CType,
+		typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type = 0
+	>
+	static inline std::shared_ptr<const CppType> getCppPtrFromC (const CType *object) {
 		L_ASSERT(object);
-		return static_cast<const WrappedObject<const T> *>(object)->cppPtr;
+		return reinterpret_cast<const WrappedObject<CppType> *>(object)->cppPtr;
+	}
+
+	template<
+		typename CppType,
+		typename CType,
+		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+	>
+	static inline CppType *getCppPtrFromC (CType *object) {
+		L_ASSERT(object);
+		return reinterpret_cast<WrappedClonableObject<CppType> *>(object)->cppPtr;
+	}
+
+	template<
+		typename CppType,
+		typename CType,
+		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+	>
+	static inline const CppType *getCppPtrFromC (const CType *object) {
+		L_ASSERT(object);
+		return reinterpret_cast<const WrappedClonableObject<CppType> *>(object)->cppPtr;
 	}
 
 	template<typename T>
@@ -63,6 +101,18 @@ public:
 		L_ASSERT(object);
 		static_cast<WrappedObject<T> *>(object)->cppPtr = cppPtr;
 	}
+
+	template<typename T>
+	static T *getCppPtr (const std::shared_ptr<T> &cppPtr) {
+		return cppPtr.get();
+	}
+
+	template<typename T>
+	static T *getCppPtr (T *cppPtr) {
+		return cppPtr;
+	}
+
+	// ---------------------------------------------------------------------------
 
 	template<typename T>
 	static inline bctbx_list_t * getCListFromCppList (std::list<T> cppList) {
@@ -116,6 +166,30 @@ LINPHONE_END_NAMESPACE
 	FALSE \
 	);
 
+#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(STRUCT, C_NAME) \
+	struct _Linphone ## STRUCT { \
+		belle_sip_object_t base; \
+		LINPHONE_NAMESPACE::STRUCT *cppPtr; \
+	}; \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
+	static Linphone ## STRUCT *_linphone_ ## C_NAME ## _init() { \
+		return belle_sip_object_new(Linphone ## STRUCT); \
+	} \
+	static void _linphone_ ## C_NAME ## _uninit(Linphone ## STRUCT * object) { \
+		delete object->cppPtr; \
+	} \
+	static void _linphone_ ## C_NAME ## _clone(Linphone ## STRUCT * dest, const Linphone ## STRUCT * src) { \
+		L_ASSERT(src->cppPtr); \
+		dest->cppPtr = new LINPHONE_NAMESPACE::STRUCT(*src->cppPtr); \
+	} \
+	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## STRUCT); \
+	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## STRUCT, belle_sip_object_t, \
+	_linphone_ ## C_NAME ## _uninit, \
+	_linphone_ ## C_NAME ## _clone, \
+	NULL, \
+	FALSE \
+	);
+
 #define L_DECLARE_C_STRUCT_NEW_DEFAULT(STRUCT, C_NAME) \
 	Linphone ## STRUCT * linphone_ ## C_NAME ## _new() { \
 		Linphone ## STRUCT * object = _linphone_ ## C_NAME ## _init(); \
@@ -127,7 +201,7 @@ LINPHONE_END_NAMESPACE
 #define L_C_TO_STRING(STR) ((STR) == NULL ? std::string() : (STR))
 
 #define L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC<LINPHONE_NAMESPACE::TYPE>(OBJECT)
+	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC<LINPHONE_NAMESPACE::TYPE, Linphone ## TYPE>(OBJECT)
 
 #define L_SET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_PTR) \
 	LINPHONE_NAMESPACE::Wrapper::setCppPtrFromC(OBJECT, CPP_PTR)
@@ -136,7 +210,9 @@ LINPHONE_END_NAMESPACE
 	LINPHONE_NAMESPACE::Wrapper::getPrivate(OBJECT)
 
 #define L_GET_PRIVATE_FROM_C_STRUCT(OBJECT, TYPE) \
-	L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, TYPE).get())
+	L_GET_PRIVATE(LINPHONE_NAMESPACE::Wrapper::getCppPtr( \
+		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, TYPE) \
+	))
 
 #define L_GET_C_LIST_FROM_CPP_LIST(LIST, TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList<TYPE *>(LIST)

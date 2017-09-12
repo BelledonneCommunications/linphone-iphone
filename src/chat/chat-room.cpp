@@ -909,4 +909,3 @@ const Address& ChatRoom::getPeerAddress () const {
 }
 
 LINPHONE_END_NAMESPACE
-
