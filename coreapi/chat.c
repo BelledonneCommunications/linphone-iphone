@@ -682,11 +682,7 @@ void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call) {
 }
 
 bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr) {
-	std::list<LinphoneChatMessage *> l = L_GET_PRIVATE(cr->cr)->getTransientMessages();
-	bctbx_list_t *result = nullptr;
-	for (auto it = l.begin(); it != l.end(); it++)
-		result = bctbx_list_append(result, *it);
-	return result;
+	return L_GET_C_LIST_FROM_CPP_LIST(L_GET_PRIVATE(cr->cr)->getTransientMessages(), LinphoneChatMessage);
 }
 
 const char *linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {

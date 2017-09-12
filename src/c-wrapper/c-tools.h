@@ -19,6 +19,7 @@
 #ifndef _C_TOOLS_H_
 #define _C_TOOLS_H_
 
+#include <list>
 #include <memory>
 #include <string>
 
@@ -61,6 +62,22 @@ public:
 	static inline void setCppPtrFromC (void *object, std::shared_ptr<T> &cppPtr) {
 		L_ASSERT(object);
 		static_cast<WrappedObject<T> *>(object)->cppPtr = cppPtr;
+	}
+
+	template<typename T>
+	static inline bctbx_list_t * getCListFromCppList (std::list<T> cppList) {
+		bctbx_list_t *result = nullptr;
+		for (auto it = cppList.begin(); it != cppList.end(); it++)
+			result = bctbx_list_append(result, *it);
+		return result;
+	}
+
+	template<typename T>
+	static inline std::list<T> getCppListFromCList (bctbx_list_t *cList) {
+		std::list<T> result;
+		for (auto it = cList; it; it = bctbx_list_next(it))
+			result.push_back(static_cast<T>(bctbx_list_get_data(it)));
+		return result;
 	}
 
 private:
@@ -120,5 +137,10 @@ LINPHONE_END_NAMESPACE
 
 #define L_GET_PRIVATE_FROM_C_STRUCT(OBJECT, TYPE) \
 	L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, TYPE).get())
+
+#define L_GET_C_LIST_FROM_CPP_LIST(LIST, TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList<TYPE *>(LIST)
+#define L_GET_CPP_LIST_FROM_C_LIST(LIST, TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE *>(LIST)
 
 #endif // ifndef _C_TOOLS_H_
