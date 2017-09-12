@@ -28,13 +28,13 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	call/call-listener.h
 	call/call-p.h
 	call/call.h
-	chat/basic-chat-room.h
 	chat/basic-chat-room-p.h
+	chat/basic-chat-room.h
 	chat/chat-message.h
 	chat/chat-room-p.h
 	chat/chat-room.h
-	chat/client-group-chat-room.h
 	chat/client-group-chat-room-p.h
+	chat/client-group-chat-room.h
 	chat/cpim/cpim.h
 	chat/cpim/header/cpim-core-headers.h
 	chat/cpim/header/cpim-generic-header.h
@@ -45,8 +45,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/cpim/parser/cpim-parser.h
 	chat/imdn.h
 	chat/is-composing.h
-	chat/real-time-text-chat-room.h
 	chat/real-time-text-chat-room-p.h
+	chat/real-time-text-chat-room.h
 	conference/conference-listener.h
 	conference/conference-p.h
 	conference/conference.h
@@ -63,6 +63,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/session/call-session.h
 	conference/session/media-session.h
 	conference/session/port-config.h
+	content/content-type.h
+	content/content.h
 	content/content.h
 	core/core.h
 	db/abstract/abstract-db-p.h
@@ -117,6 +119,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/remote-conference.cpp
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp
+	content/content-type.cpp
+	content/content.cpp
 	content/content.cpp
 	core/core.cpp
 	db/abstract/abstract-db.cpp
