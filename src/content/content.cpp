@@ -43,7 +43,7 @@ Content::Content (const Content &src) : ClonableObject(*new ContentPrivate) {
 	d->contentType = src.getContentType();
 }
 
-Content::Content (Content &&src) {
+Content::Content (Content &&src) : ClonableObject(*new ContentPrivate) {
 	L_D(Content);
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
