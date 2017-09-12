@@ -4836,6 +4836,18 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			stats_index = LINPHONE_CALL_STATS_TEXT;
 			stats = call->text_stats;
 		}
+		
+		/*This MUST be done before any call to "linphone_call_stats_fill" since it has ownership over evd->packet*/
+		if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+			do {
+				if (rtcp_is_RTPFB(evd->packet)) {
+					if (rtcp_RTPFB_get_type(evd->packet) == RTCP_RTPFB_TMMBR) {
+						linphone_call_notify_tmmbr_received(call, stream_index, (int)rtcp_RTPFB_tmmbr_get_max_bitrate(evd->packet));
+					}
+				}
+			} while (rtcp_next_packet(evd->packet));
+			rtcp_rewind(evd->packet);
+		}
 
 		/*and yes the MediaStream must be taken at each iteration, because it may have changed due to the handling of events
 		 * in this loop*/
@@ -4868,10 +4880,6 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			/* If this event happens then it should be a video stream */
 			if (stream_index == call->main_video_stream_index)
 				stats->estimated_download_bandwidth = (float)(evd->info.video_bandwidth_available)*1e-3;
-		} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
-			if (evd->packet && rtcp_RTPFB_get_type(evd->packet) == RTCP_RTPFB_TMMBR) {
-				linphone_call_notify_tmmbr_received(call, stream_index, (int)rtcp_RTPFB_tmmbr_get_max_bitrate(evd->packet));
-			}
 		}
 		ortp_event_destroy(ev);
 	}
