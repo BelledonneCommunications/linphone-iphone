@@ -19,54 +19,38 @@
 #ifndef _CONTENT_H_
 #define _CONTENT_H_
 
-#include <memory>
 #include <string>
+#include <vector>
 
-#include "object/object.h"
+#include "object/clonable-object.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ContentPrivate;
+class ContentType;
 
-class Content : public Object {
-	friend class Core;
-
+class LINPHONE_PUBLIC Content : public ClonableObject {
 public:
-	const std::string &getType () const;
-	void setType (const std::string &type);
+	Content ();
+	Content (const Content &src);
+	Content (Content &&src);
 
-	const std::string &getSubType () const;
-	void setSubType (const std::string &subType);
+	Content &operator= (const Content &src);
+	Content &operator= (Content &&src);
 
-	const void *getBuffer () const;
-	void setBuffer (const void *buffer, size_t size);
+	const ContentType &getContentType () const;
+	void setContentType (const ContentType &contentType);
 
+	const std::vector<char> &getBody () const;
+	void setBody (const std::vector<char> &body);
+	void setBody (const std::string &body);
+	void setBody (const void *buffer, size_t size);
 	size_t getSize () const;
-	void setSize (size_t size);
-
-	const std::string &getEncoding () const;
-	void setEncoding (const std::string &encoding);
-
-	const std::string &getName () const;
-	void setName (const std::string &name);
-
-	bool isMultipart () const;
-
-	std::shared_ptr<Content> getPart (int index) const;
-	std::shared_ptr<Content> findPartByHeader (const std::string &headerName, const std::string &headerValue) const;
-
-	const std::string &getCustomHeaderValue (const std::string &headerName) const;
-
-	const std::string &getKey () const;
-	void setKey (const std::string &key);
 
 private:
-	Content ();
-
 	L_DECLARE_PRIVATE(Content);
-	L_DISABLE_COPY(Content);
 };
 
 LINPHONE_END_NAMESPACE

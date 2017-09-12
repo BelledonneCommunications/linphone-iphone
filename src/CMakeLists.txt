@@ -69,7 +69,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/session/port-config.h
 	content/content-type.h
 	content/content.h
-	content/content.h
 	core/core.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
@@ -126,7 +125,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp
 	content/content-type.cpp
-	content/content.cpp
 	content/content.cpp
 	core/core.cpp
 	db/abstract/abstract-db.cpp

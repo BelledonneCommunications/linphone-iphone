@@ -16,11 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// From coreapi.
-#include "private.h"
-
-#include "c-wrapper/c-tools.h"
-#include "object/object-p.h"
+#include "content-type.h"
+#include "object/clonable-object-p.h"
 
 #include "content.h"
 
@@ -30,148 +27,82 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ContentPrivate : public ObjectPrivate {
+class ContentPrivate : public ClonableObjectPrivate {
 public:
-	struct Cache {
-		string type;
-		string subType;
-		string customHeaderValue;
-		string encoding;
-	};
-
-	SalBodyHandler *bodyHandler = nullptr;
-	void *cryptoContext = nullptr;
-	string name;
-	string key;
-
-	mutable Cache cache;
+	vector<char> body;
+	ContentType contentType;
 };
 
 // -----------------------------------------------------------------------------
 
-Content::Content () : Object(*new ContentPrivate) {}
+Content::Content () : ClonableObject(*new ContentPrivate) {}
 
-const string &Content::getType () const {
-	L_D(const Content);
-	d->cache.type = sal_body_handler_get_subtype(d->bodyHandler);
-	return d->cache.type;
-}
-
-void Content::setType (const string &type) {
+Content::Content (const Content &src) : ClonableObject(*new ContentPrivate) {
 	L_D(Content);
-	sal_body_handler_set_type(d->bodyHandler, L_STRING_TO_C(type));
+	d->body = src.getBody();
+	d->contentType = src.getContentType();
 }
 
-const string &Content::getSubType () const {
-	L_D(const Content);
-	d->cache.subType = sal_body_handler_get_subtype(d->bodyHandler);
-	return d->cache.subType;
-}
-
-void Content::setSubType (const string &subType) {
+Content::Content (Content &&src) {
 	L_D(Content);
-	sal_body_handler_set_subtype(d->bodyHandler, L_STRING_TO_C(subType));
+	d->body = move(src.getPrivate()->body);
+	d->contentType = move(src.getPrivate()->contentType);
 }
 
-const void *Content::getBuffer () const {
-	L_D(const Content);
-	return sal_body_handler_get_data(d->bodyHandler);
-}
-
-void Content::setBuffer (const void *buffer, size_t size) {
+Content &Content::operator= (const Content &src) {
 	L_D(Content);
-	sal_body_handler_set_size(d->bodyHandler, size);
-	void *data = belle_sip_malloc(size);
-	sal_body_handler_set_data(d->bodyHandler, memcpy(data, buffer, size));
+	if (this != &src) {
+		d->body = src.getBody();
+		d->contentType = src.getContentType();
+	}
+
+	return *this;
+}
+
+Content &Content::operator= (Content &&src) {
+	L_D(Content);
+	if (this != &src) {
+		d->body = move(src.getPrivate()->body);
+		d->contentType = move(src.getPrivate()->contentType);
+	}
+
+	return *this;
+}
+
+const ContentType &Content::getContentType () const {
+	L_D(const Content);
+	return d->contentType;
+}
+
+void Content::setContentType (const ContentType &contentType) {
+	L_D(Content);
+	d->contentType = contentType;
+}
+
+const std::vector<char> &Content::getBody () const {
+	L_D(const Content);
+	return d->body;
+}
+
+void Content::setBody (const std::vector<char> &body) {
+	L_D(Content);
+	d->body = body;
+}
+
+void Content::setBody (const std::string &body) {
+	L_D(Content);
+	d->body = vector<char>(body.cbegin(), body.cend());
+}
+
+void Content::setBody (const void *buffer, size_t size) {
+	L_D(Content);
+	const char *start = static_cast<const char *>(buffer);
+	d->body = vector<char>(start, start + size);
 }
 
 size_t Content::getSize () const {
 	L_D(const Content);
-	return sal_body_handler_get_size(d->bodyHandler);
-}
-
-void Content::setSize (size_t size) {
-	L_D(Content);
-	sal_body_handler_set_data(d->bodyHandler, nullptr);
-	sal_body_handler_set_size(d->bodyHandler, size);
-}
-
-const string &Content::getEncoding () const {
-	L_D(const Content);
-	d->cache.encoding = sal_body_handler_get_encoding(d->bodyHandler);
-	return d->cache.encoding;
-}
-
-void Content::setEncoding (const string &encoding) {
-	L_D(Content);
-	sal_body_handler_set_encoding(d->bodyHandler, L_STRING_TO_C(encoding));
-}
-
-const string &Content::getName () const {
-	L_D(const Content);
-	return d->name;
-}
-
-void Content::setName (const string &name) {
-	L_D(Content);
-	d->name = name;
-}
-
-bool Content::isMultipart () const {
-	L_D(const Content);
-	return sal_body_handler_is_multipart(d->bodyHandler);
-}
-
-shared_ptr<Content> Content::getPart (int index) const {
-	L_D(const Content);
-
-	if (!isMultipart())
-	  return nullptr;
-
-	SalBodyHandler *bodyHandler = sal_body_handler_get_part(d->bodyHandler, index);
-	if (!bodyHandler)
-	  return nullptr;
-
-	Content *content = new Content();
-	sal_body_handler_ref(bodyHandler);
-	content->getPrivate()->bodyHandler = bodyHandler;
-	return shared_ptr<Content>(content);
-}
-
-shared_ptr<Content> Content::findPartByHeader (const string &headerName, const string &headerValue) const {
-	L_D(const Content);
-
-	if (!isMultipart())
-		return nullptr;
-
-  SalBodyHandler *bodyHandler = sal_body_handler_find_part_by_header(
-		d->bodyHandler,
-		L_STRING_TO_C(headerName),
-		L_STRING_TO_C(headerValue)
-	);
-	if (!bodyHandler)
-	  return nullptr;
-
-	Content *content = new Content();
-	sal_body_handler_ref(bodyHandler);
-	content->getPrivate()->bodyHandler = bodyHandler;
-	return shared_ptr<Content>(content);
-}
-
-const string &Content::getCustomHeaderValue (const string &headerName) const {
-	L_D(const Content);
-	d->cache.customHeaderValue = sal_body_handler_get_header(d->bodyHandler, L_STRING_TO_C(headerName));
-	return d->cache.customHeaderValue;
-}
-
-const string &Content::getKey () const {
-	L_D(const Content);
-	return d->key;
-}
-
-void Content::setKey (const string &key) {
-	L_D(Content);
-	d->key = key;
+	return d->body.size();
 }
 
 LINPHONE_END_NAMESPACE
