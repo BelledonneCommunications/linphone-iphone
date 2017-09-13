@@ -86,11 +86,6 @@ shared_ptr<const ErrorInfo> ChatMessage::getErrorInfo () const {
 	return d->errorInfo;
 }
 
-string ChatMessage::getContentType () const {
-	L_D(const ChatMessage);
-	return d->contentType;
-}
-
 void ChatMessage::send () {
 	L_D(ChatMessage);
 	

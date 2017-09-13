@@ -36,7 +36,6 @@ private:
 	// LinphoneAddress *from;
 	// LinphoneAddress *to;
 	std::shared_ptr<ErrorInfo> errorInfo;
-	std::string contentType;
 	std::string text;
 	bool isSecured = false;
 	bool isReadOnly = false;
