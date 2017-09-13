@@ -91,8 +91,8 @@ string ChatMessage::getContentType () const {
 	return d->contentType;
 }
 
-void ChatMessage::send () const {
-	L_D(const ChatMessage);
+void ChatMessage::send () {
+	L_D(ChatMessage);
 	
 	if (d->contents.size() > 1) {
 		MultipartChatMessageModifier mcmm;
@@ -107,6 +107,8 @@ void ChatMessage::send () const {
 	}
 
 	// TODO.
+
+	d->isReadOnly = true;
 }
 
 bool ChatMessage::containsReadableText () const {

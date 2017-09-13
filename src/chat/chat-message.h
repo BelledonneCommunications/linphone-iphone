@@ -69,7 +69,7 @@ public:
 
 	std::string getContentType () const;
 
-	void send () const;
+	void send ();
 
 	bool containsReadableText () const;
 

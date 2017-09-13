@@ -16,23 +16,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ #include <vector>
+
+ #include "content/content-type.h"
+ #include "content/content.h"
  #include "chat/chat-message-p.h"
+ #include "chat/cpim/cpim.h"
+
  #include "cpim-chat-message-modifier.h"
 
  LINPHONE_BEGIN_NAMESPACE
  
  using namespace std;
 
- void CpimChatMessageModifier::encode(const LinphonePrivate::ChatMessagePrivate* msg) {
-    //TODO
+ void CpimChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
+    Cpim::Message message;
+    Cpim::GenericHeader contentTypeHeader;
+	contentTypeHeader.setName("Content-Type");
+    contentTypeHeader.setValue("Message/CPIM");
+    message.addCpimHeader(contentTypeHeader);
+    
+    shared_ptr<Content> content;
     if (msg->internalContent) {
         // Another ChatMessageModifier was called before this one, we apply our changes on the private content
+        content = msg->internalContent;
     } else {
         // We're the first ChatMessageModifier to be called, we'll create the private content from the public one
+        // We take the first one because if there is more of them, the multipart modifier should have been called first
+        // So we should not be in this block
+        content = msg->contents.front();
+    }
+
+    string contentType = content->getContentType().asString();
+    const vector<char> body = content->getBody();
+    string contentBody(body.begin(), body.end());
+    message.setContent("ContentType: " + contentType + "\r\n" + contentBody);
+
+    if (!message.isValid()) {
+        //TODO
+    } else {
+        shared_ptr<Content> newContent = make_shared<Content>();
+        ContentType newContentType("Message/CPIM");
+        newContent->setContentType(newContentType);
+        newContent->setBody(message.asString());
+        msg->internalContent = newContent;
     }
  }
 
- void CpimChatMessageModifier::decode(const LinphonePrivate::ChatMessagePrivate* msg) {
+ void CpimChatMessageModifier::decode(LinphonePrivate::ChatMessagePrivate* msg) {
     //TODO
  }
  

@@ -28,8 +28,8 @@
  class MultipartChatMessageModifier : ChatMessageModifier {
  public:
     MultipartChatMessageModifier() {};
-     virtual void encode(const LinphonePrivate::ChatMessagePrivate* msg);
-     virtual void decode(const LinphonePrivate::ChatMessagePrivate* msg);
+     virtual void encode(LinphonePrivate::ChatMessagePrivate* msg);
+     virtual void decode(LinphonePrivate::ChatMessagePrivate* msg);
      virtual ~MultipartChatMessageModifier () = default;
  };
  

@@ -28,8 +28,8 @@
  class CpimChatMessageModifier : ChatMessageModifier {
  public:
     CpimChatMessageModifier() {};
-     virtual void encode(const LinphonePrivate::ChatMessagePrivate* msg);
-     virtual void decode(const LinphonePrivate::ChatMessagePrivate* msg);
+     virtual void encode(LinphonePrivate::ChatMessagePrivate* msg);
+     virtual void decode(LinphonePrivate::ChatMessagePrivate* msg);
      virtual ~CpimChatMessageModifier () = default;
  };
  

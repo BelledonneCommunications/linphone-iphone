@@ -23,13 +23,13 @@
  
  using namespace std;
 
- void MultipartChatMessageModifier::encode(const LinphonePrivate::ChatMessagePrivate* msg) {
+ void MultipartChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
     if (msg->contents.size() > 1) {
         //TODO
     }
  }
 
- void MultipartChatMessageModifier::decode(const LinphonePrivate::ChatMessagePrivate* msg) {
+ void MultipartChatMessageModifier::decode(LinphonePrivate::ChatMessagePrivate* msg) {
     //TODO
  }
  

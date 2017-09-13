@@ -27,8 +27,8 @@
  
  class ChatMessageModifier {
  public:
-     virtual void encode(const LinphonePrivate::ChatMessagePrivate* msg) = 0;
-     virtual void decode(const LinphonePrivate::ChatMessagePrivate* msg) = 0;
+     virtual void encode(LinphonePrivate::ChatMessagePrivate* msg) = 0;
+     virtual void decode(LinphonePrivate::ChatMessagePrivate* msg) = 0;
      virtual ~ChatMessageModifier () = default;
  };
  
