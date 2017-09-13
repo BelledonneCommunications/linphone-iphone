@@ -179,7 +179,7 @@ int linphone_call_log_get_duration(LinphoneCallLog *cl){
 	return cl->duration;
 }
 
-LinphoneAddress *linphone_call_log_get_from_address(LinphoneCallLog *cl){
+const LinphoneAddress *linphone_call_log_get_from_address(LinphoneCallLog *cl){
 	return cl->from;
 }
 
@@ -211,7 +211,7 @@ LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl){
 	return cl->status;
 }
 
-LinphoneAddress *linphone_call_log_get_to_address(LinphoneCallLog *cl){
+const LinphoneAddress *linphone_call_log_get_to_address(LinphoneCallLog *cl){
 	return cl->to;
 }
 

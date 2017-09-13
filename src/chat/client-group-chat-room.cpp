@@ -32,18 +32,25 @@ ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : Ch
 
 ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, std::list<Address> &addresses)
 	: ChatRoom(*new ChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
+	string factoryUri = linphone_core_get_chat_conference_factory_uri(core);
+	focus = make_shared<Participant>(factoryUri);
+	CallSessionParams csp;
+	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*this, &csp, false, this);
+	session->configure(LinphoneCallOutgoing, nullptr, nullptr, me, focus->getAddress());
+	session->initiateOutgoing();
+	session->startInvite(nullptr);
 	// TODO
 }
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
 	activeParticipant = make_shared<Participant>(addr);
 	activeParticipant->getPrivate()->createSession(*this, params, hasMedia, this);
 	return activeParticipant;
 }
 
-void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
 	// TODO
 }
 

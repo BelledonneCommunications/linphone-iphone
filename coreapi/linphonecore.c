@@ -3359,7 +3359,7 @@ static bctbx_list_t *make_routes_for_proxy(LinphoneProxyConfig *proxy, const Lin
 		ret=bctbx_list_append(ret,sal_address_new(local_route));
 	}
 	if (srv_route){
-		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_STRUCT(srv_route, Address)->getInternalAddress()));
+		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_STRUCT(srv_route, Address, Address)->getInternalAddress()));
 	}
 	if (ret==NULL){
 		/*if the proxy address matches the domain part of the destination, then use the same transport
@@ -5918,7 +5918,7 @@ void friends_config_uninit(LinphoneCore* lc)
 	ms_message("Destroying friends done.");
 }
 
-LpConfig * linphone_core_get_config(LinphoneCore *lc){
+LpConfig * linphone_core_get_config(const LinphoneCore *lc){
 	return lc->config;
 }
 
@@ -6671,7 +6671,7 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 }
 
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
-	linphone_call_params_get_cpp_obj(params)->initDefault(lc);
+	L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams, CallParams)->initDefault(lc);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
@@ -7083,6 +7083,14 @@ LinphoneStatus linphone_core_stop_conference_recording(LinphoneCore *lc) {
 
 LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
 	return lc->conf_ctx;
+}
+
+void linphone_core_set_chat_conference_factory_uri(LinphoneCore *lc, const char *uri) {
+	lp_config_set_string(linphone_core_get_config(lc), "misc", "chat_conference_factory_uri", uri);
+}
+
+const char * linphone_core_get_chat_conference_factory_uri(const LinphoneCore *lc) {
+	return lp_config_get_string(linphone_core_get_config(lc), "misc", "chat_conference_factory_uri", nullptr);
 }
 
 void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert) {

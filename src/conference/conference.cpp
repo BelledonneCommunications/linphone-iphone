@@ -39,13 +39,13 @@ shared_ptr<Participant> Conference::getActiveParticipant () const {
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> Conference::addParticipant (const Address &addr, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+shared_ptr<Participant> Conference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
 	activeParticipant = make_shared<Participant>(addr);
 	activeParticipant->getPrivate()->createSession(*this, params, hasMedia, this);
 	return activeParticipant;
 }
 
-void Conference::addParticipants (const list<Address> &addresses, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+void Conference::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
 	// TODO
 }
 

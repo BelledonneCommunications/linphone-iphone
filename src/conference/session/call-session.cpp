@@ -39,16 +39,22 @@ LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-CallSessionPrivate::CallSessionPrivate (const Conference &conference, const shared_ptr<CallSessionParams> params, CallSessionListener *listener)
+CallSessionPrivate::CallSessionPrivate (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener)
 	: conference(conference), listener(listener) {
 	if (params)
-		this->params = make_shared<CallSessionParams>(*params.get());
-	currentParams = make_shared<CallSessionParams>();
+		this->params = new CallSessionParams(*params);
+	currentParams = new CallSessionParams();
 	core = conference.getCore();
 	ei = linphone_error_info_new();
 }
 
 CallSessionPrivate::~CallSessionPrivate () {
+	if (currentParams)
+		delete currentParams;
+	if (params)
+		delete params;
+	if (remoteParams)
+		delete remoteParams;
 	if (ei)
 		linphone_error_info_unref(ei);
 	if (log)
@@ -475,13 +481,13 @@ void CallSessionPrivate::updating (bool isUpdate) {
 
 // -----------------------------------------------------------------------------
 
-void CallSessionPrivate::accept (const shared_ptr<CallSessionParams> params) {
+void CallSessionPrivate::accept (const CallSessionParams *params) {
 	L_Q(CallSession);
 	/* Try to be best-effort in giving real local or routable contact address */
 	setContactOp();
 	if (params) {
-		this->params = params;
-		sal_op_set_sent_custom_header(op, params->getPrivate()->getCustomHeaders());
+		this->params = new CallSessionParams(*params);
+		sal_op_set_sent_custom_header(op, this->params->getPrivate()->getCustomHeaders());
 	}
 
 	sal_call_accept(op);
@@ -491,7 +497,7 @@ void CallSessionPrivate::accept (const shared_ptr<CallSessionParams> params) {
 	setState(LinphoneCallConnected, "Connected");
 }
 
-LinphoneStatus CallSessionPrivate::acceptUpdate (const shared_ptr<CallSessionParams> csp, LinphoneCallState nextState, const string &stateInfo) {
+LinphoneStatus CallSessionPrivate::acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const string &stateInfo) {
 	return startAcceptUpdate(nextState, stateInfo);
 }
 
@@ -672,7 +678,7 @@ void CallSessionPrivate::setContactOp () {
 	SalAddress *salAddress = nullptr;
 	LinphoneAddress *contact = getFixedContact();
 	if (contact) {
-		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress());
+		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_STRUCT(contact, Address, Address)->getInternalAddress());
 		sal_address_ref(salAddress);
 		linphone_address_unref(contact);
 	}
@@ -742,7 +748,7 @@ LinphoneAddress * CallSessionPrivate::getFixedContact () const {
 
 // =============================================================================
 
-CallSession::CallSession (const Conference &conference, const shared_ptr<CallSessionParams> params, CallSessionListener *listener)
+CallSession::CallSession (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener)
 	: Object(*new CallSessionPrivate(conference, params, listener)) {
 	lInfo() << "New CallSession [" << this << "] initialized (LinphoneCore version: " << linphone_core_get_version() << ")";
 }
@@ -751,7 +757,7 @@ CallSession::CallSession (CallSessionPrivate &p) : Object(p) {}
 
 // -----------------------------------------------------------------------------
 
-LinphoneStatus CallSession::accept (const shared_ptr<CallSessionParams> csp) {
+LinphoneStatus CallSession::accept (const CallSessionParams *csp) {
 	L_D(CallSession);
 	LinphoneStatus result = d->checkForAcceptation();
 	if (result < 0) return result;
@@ -759,7 +765,7 @@ LinphoneStatus CallSession::accept (const shared_ptr<CallSessionParams> csp) {
 	return 0;
 }
 
-LinphoneStatus CallSession::acceptUpdate (const shared_ptr<CallSessionParams> csp) {
+LinphoneStatus CallSession::acceptUpdate (const CallSessionParams *csp) {
 	L_D(CallSession);
 	if (d->state != LinphoneCallUpdatedByRemote) {
 		lError() << "CallSession::acceptUpdate(): invalid state " << linphone_call_state_to_string(d->state) << " to call this method";
@@ -798,7 +804,7 @@ void CallSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg
 	if (direction == LinphoneCallOutgoing) {
 		d->startPing();
 	} else if (direction == LinphoneCallIncoming) {
-		d->params = make_shared<CallSessionParams>();
+		d->params = new CallSessionParams();
 		d->params->initDefault(d->core);
 	}
 }
@@ -989,13 +995,13 @@ LinphoneStatus CallSession::terminate (const LinphoneErrorInfo *ei) {
 	return 0;
 }
 
-LinphoneStatus CallSession::update (const shared_ptr<CallSessionParams> csp) {
+LinphoneStatus CallSession::update (const CallSessionParams *csp) {
 	L_D(CallSession);
 	LinphoneCallState nextState;
 	LinphoneCallState initialState = d->state;
 	if (!d->isUpdateAllowed(nextState))
 		return -1;
-	if (d->currentParams.get() == csp.get())
+	if (d->currentParams == csp)
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
 	LinphoneStatus result = d->startUpdate();
 	if (result && (d->state != initialState)) {
@@ -1044,7 +1050,7 @@ const Address& CallSession::getRemoteAddress () const {
 	L_D(const CallSession);
 	return *L_GET_CPP_PTR_FROM_C_STRUCT((d->direction == LinphoneCallIncoming)
 		? linphone_call_log_get_from(d->log) : linphone_call_log_get_to(d->log),
-		Address);
+		Address, Address);
 }
 
 string CallSession::getRemoteAddressAsString () const {
@@ -1060,14 +1066,14 @@ string CallSession::getRemoteContact () const {
 	return string();
 }
 
-const shared_ptr<CallSessionParams> CallSession::getRemoteParams () {
+const CallSessionParams * CallSession::getRemoteParams () {
 	L_D(CallSession);
 	if (d->op){
 		const SalCustomHeader *ch = sal_op_get_recv_custom_header(d->op);
 		if (ch) {
 			/* Instanciate a remote_params only if a SIP message was received before (custom headers indicates this) */
 			if (!d->remoteParams)
-				d->remoteParams = make_shared<CallSessionParams>();
+				d->remoteParams = new CallSessionParams();
 			d->remoteParams->getPrivate()->setCustomHeaders(ch);
 		}
 		return d->remoteParams;
@@ -1089,7 +1095,7 @@ string CallSession::getRemoteUserAgent () const {
 	return string();
 }
 
-shared_ptr<CallSessionParams> CallSession::getCurrentParams () {
+CallSessionParams * CallSession::getCurrentParams () {
 	L_D(CallSession);
 	d->updateCurrentParams();
 	return d->currentParams;
@@ -1097,7 +1103,7 @@ shared_ptr<CallSessionParams> CallSession::getCurrentParams () {
 
 // -----------------------------------------------------------------------------
 
-const shared_ptr<CallSessionParams> CallSession::getParams () const {
+const CallSessionParams * CallSession::getParams () const {
 	L_D(const CallSession);
 	return d->params;
 }

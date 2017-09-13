@@ -31,7 +31,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionPrivate : public ObjectPrivate {
 public:
-	CallSessionPrivate (const Conference &conference, const std::shared_ptr<CallSessionParams> params, CallSessionListener *listener);
+	CallSessionPrivate (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);
 	virtual ~CallSessionPrivate ();
 
 	int computeDuration () const;
@@ -56,8 +56,8 @@ public:
 	virtual void updating (bool isUpdate);
 
 protected:
-	void accept (const std::shared_ptr<CallSessionParams> params);
-	virtual LinphoneStatus acceptUpdate (const std::shared_ptr<CallSessionParams> csp, LinphoneCallState nextState, const std::string &stateInfo);
+	void accept (const CallSessionParams *params);
+	virtual LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo);
 	LinphoneStatus checkForAcceptation () const;
 	virtual void handleIncomingReceivedStateInIncomingNotification ();
 	virtual bool isReadyForInvite () const;
@@ -82,9 +82,9 @@ protected:
 	LinphoneCore *core = nullptr;
 	CallSessionListener *listener = nullptr;
 
-	std::shared_ptr<CallSessionParams> params = nullptr;
-	std::shared_ptr<CallSessionParams> currentParams = nullptr;
-	std::shared_ptr<CallSessionParams> remoteParams = nullptr;
+	CallSessionParams *params = nullptr;
+	CallSessionParams *currentParams = nullptr;
+	CallSessionParams *remoteParams = nullptr;
 
 	LinphoneCallDir direction = LinphoneCallOutgoing;
 	LinphoneCallState state = LinphoneCallIdle;

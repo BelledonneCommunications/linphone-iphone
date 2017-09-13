@@ -30,6 +30,9 @@ public:
 	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 	virtual ~RemoteConference() = default;
 
+protected:
+	std::shared_ptr<Participant> focus = nullptr;
+
 private:
 	L_DISABLE_COPY(RemoteConference);
 };

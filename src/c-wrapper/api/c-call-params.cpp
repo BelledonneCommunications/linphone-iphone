@@ -20,14 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/call_params.h"
 #include "private.h"
 
-#include "c-wrapper/c-private-types.h"
 #include "c-wrapper/c-tools.h"
 #include "conference/params/media-session-params.h"
 #include "conference/params/call-session-params-p.h"
 #include "conference/params/media-session-params-p.h"
 
 
-BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallParams);
+#define GET_CALL_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, CallSessionParams, CallParams)
+#define GET_CALL_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, CallSessionParams, CallParams)
+#define GET_MEDIA_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, MediaSessionParams, CallParams)
+#define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, MediaSessionParams, CallParams)
+
+
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(MediaSessionParams, CallParams, call_params)
 
 
 /*******************************************************************************
@@ -35,7 +40,7 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallParams);
  ******************************************************************************/
 
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params) {
-	return params->msp->getMediaProto();
+	return GET_MEDIA_CPP_PTR(params)->getMediaProto();
 }
 
 SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir) {
@@ -78,15 +83,15 @@ SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params) {
 }
 
 void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const SalCustomHeader *ch) {
-	L_GET_PRIVATE(static_cast<LinphonePrivate::CallSessionParams *>(params->msp.get()))->setCustomHeaders(ch);
+	GET_CALL_CPP_PRIVATE_PTR(params)->setCustomHeaders(ch);
 }
 
 void linphone_call_params_set_custom_sdp_attributes(LinphoneCallParams *params, const SalCustomSdpAttribute *csa) {
-	L_GET_PRIVATE(params->msp.get())->setCustomSdpAttributes(csa);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setCustomSdpAttributes(csa);
 }
 
 void linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa) {
-	L_GET_PRIVATE(params->msp.get())->setCustomSdpMediaAttributes(type, csa);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setCustomSdpMediaAttributes(type, csa);
 }
 
 
@@ -95,23 +100,23 @@ void linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *pa
  ******************************************************************************/
 
 void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value) {
-	params->msp->addCustomHeader(header_name, header_value);
+	GET_MEDIA_CPP_PTR(params)->addCustomHeader(header_name, header_value);
 }
 
 void linphone_call_params_add_custom_sdp_attribute(LinphoneCallParams *params, const char *attribute_name, const char *attribute_value) {
-	params->msp->addCustomSdpAttribute(attribute_name, attribute_value);
+	GET_MEDIA_CPP_PTR(params)->addCustomSdpAttribute(attribute_name, attribute_value);
 }
 
 void linphone_call_params_add_custom_sdp_media_attribute(LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name, const char *attribute_value) {
-	params->msp->addCustomSdpMediaAttribute(type, attribute_name, attribute_value);
+	GET_MEDIA_CPP_PTR(params)->addCustomSdpMediaAttribute(type, attribute_name, attribute_value);
 }
 
 void linphone_call_params_clear_custom_sdp_attributes(LinphoneCallParams *params) {
-	params->msp->clearCustomSdpAttributes();
+	GET_MEDIA_CPP_PTR(params)->clearCustomSdpAttributes();
 }
 
 void linphone_call_params_clear_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type) {
-	params->msp->clearCustomSdpMediaAttributes(type);
+	GET_MEDIA_CPP_PTR(params)->clearCustomSdpMediaAttributes(type);
 }
 
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *params) {
@@ -119,42 +124,42 @@ LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *params)
 }
 
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *params) {
-	return params->msp->earlyMediaSendingEnabled();
+	return GET_MEDIA_CPP_PTR(params)->earlyMediaSendingEnabled();
 }
 
 void linphone_call_params_enable_early_media_sending(LinphoneCallParams *params, bool_t enabled) {
-	params->msp->enableEarlyMediaSending(enabled);
+	GET_MEDIA_CPP_PTR(params)->enableEarlyMediaSending(enabled);
 }
 
 void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *params, bool_t enabled) {
-	params->msp->enableLowBandwidth(enabled);
+	GET_MEDIA_CPP_PTR(params)->enableLowBandwidth(enabled);
 }
 
 void linphone_call_params_enable_audio(LinphoneCallParams *params, bool_t enabled) {
-	params->msp->enableAudio(enabled);
+	GET_MEDIA_CPP_PTR(params)->enableAudio(enabled);
 }
 
 LinphoneStatus linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno) {
-	params->msp->enableRealtimeText(yesno);
+	GET_MEDIA_CPP_PTR(params)->enableRealtimeText(yesno);
 	return 0;
 }
 
 void linphone_call_params_enable_video(LinphoneCallParams *params, bool_t enabled) {
-	params->msp->enableVideo(enabled);
+	GET_MEDIA_CPP_PTR(params)->enableVideo(enabled);
 }
 
 const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name) {
-	std::string value = params->msp->getCustomHeader(header_name);
+	std::string value = GET_MEDIA_CPP_PTR(params)->getCustomHeader(header_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char * linphone_call_params_get_custom_sdp_attribute(const LinphoneCallParams *params, const char *attribute_name) {
-	std::string value = params->msp->getCustomSdpAttribute(attribute_name);
+	std::string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpAttribute(attribute_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char * linphone_call_params_get_custom_sdp_media_attribute(const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name) {
-	std::string value = params->msp->getCustomSdpMediaAttribute(type, attribute_name);
+	std::string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpMediaAttribute(type, attribute_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
@@ -163,20 +168,20 @@ bool_t linphone_call_params_get_local_conference_mode(const LinphoneCallParams *
 }
 
 LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *params) {
-	return params->msp->getMediaEncryption();
+	return GET_MEDIA_CPP_PTR(params)->getMediaEncryption();
 }
 
 LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params) {
-	return params->msp->getPrivacy();
+	return GET_MEDIA_CPP_PTR(params)->getPrivacy();
 }
 
 float linphone_call_params_get_received_framerate(const LinphoneCallParams *params) {
-	return params->msp->getReceivedFps();
+	return GET_MEDIA_CPP_PTR(params)->getReceivedFps();
 }
 
 MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *params) {
 	MSVideoSize vsize;
-	LinphoneVideoDefinition *vdef = params->msp->getReceivedVideoDefinition();
+	LinphoneVideoDefinition *vdef = GET_MEDIA_CPP_PTR(params)->getReceivedVideoDefinition();
 	if (vdef) {
 		vsize.width = linphone_video_definition_get_width(vdef);
 		vsize.height = linphone_video_definition_get_height(vdef);
@@ -188,25 +193,25 @@ MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParam
 }
 
 const LinphoneVideoDefinition * linphone_call_params_get_received_video_definition(const LinphoneCallParams *params) {
-	return params->msp->getReceivedVideoDefinition();
+	return GET_MEDIA_CPP_PTR(params)->getReceivedVideoDefinition();
 }
 
 const char *linphone_call_params_get_record_file(const LinphoneCallParams *params) {
-	const std::string &value = params->msp->getRecordFilePath();
+	const std::string &value = GET_MEDIA_CPP_PTR(params)->getRecordFilePath();
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char * linphone_call_params_get_rtp_profile(const LinphoneCallParams *params) {
-	return params->msp->getRtpProfile();
+	return GET_MEDIA_CPP_PTR(params)->getRtpProfile();
 }
 
 float linphone_call_params_get_sent_framerate(const LinphoneCallParams *params) {
-	return params->msp->getSentFps();
+	return GET_MEDIA_CPP_PTR(params)->getSentFps();
 }
 
 MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *params) {
 	MSVideoSize vsize;
-	LinphoneVideoDefinition *vdef = params->msp->getSentVideoDefinition();
+	LinphoneVideoDefinition *vdef = GET_MEDIA_CPP_PTR(params)->getSentVideoDefinition();
 	if (vdef) {
 		vsize.width = linphone_video_definition_get_width(vdef);
 		vsize.height = linphone_video_definition_get_height(vdef);
@@ -218,155 +223,155 @@ MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *p
 }
 
 const LinphoneVideoDefinition * linphone_call_params_get_sent_video_definition(const LinphoneCallParams *params) {
-	return params->msp->getSentVideoDefinition();
+	return GET_MEDIA_CPP_PTR(params)->getSentVideoDefinition();
 }
 
 const char *linphone_call_params_get_session_name(const LinphoneCallParams *params) {
-	const std::string &value = params->msp->getSessionName();
+	const std::string &value = GET_MEDIA_CPP_PTR(params)->getSessionName();
 	return value.empty() ? nullptr : value.c_str();
 }
 
 LinphonePayloadType *linphone_call_params_get_used_audio_payload_type(const LinphoneCallParams *params) {
-	return params->msp->getUsedAudioPayloadType();
+	return GET_MEDIA_CPP_PTR(params)->getUsedAudioPayloadType();
 }
 
 LinphonePayloadType *linphone_call_params_get_used_video_payload_type(const LinphoneCallParams *params) {
-	return params->msp->getUsedVideoPayloadType();
+	return GET_MEDIA_CPP_PTR(params)->getUsedVideoPayloadType();
 }
 
 LinphonePayloadType *linphone_call_params_get_used_text_payload_type(const LinphoneCallParams *params) {
-	return params->msp->getUsedRealtimeTextPayloadType();
+	return GET_MEDIA_CPP_PTR(params)->getUsedRealtimeTextPayloadType();
 }
 
 const OrtpPayloadType *linphone_call_params_get_used_audio_codec(const LinphoneCallParams *params) {
-	return params->msp->getUsedAudioCodec();
+	return GET_MEDIA_CPP_PTR(params)->getUsedAudioCodec();
 }
 
 void linphone_call_params_set_used_audio_codec(LinphoneCallParams *params, OrtpPayloadType *codec) {
-	L_GET_PRIVATE(params->msp.get())->setUsedAudioCodec(codec);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUsedAudioCodec(codec);
 }
 
 const OrtpPayloadType *linphone_call_params_get_used_video_codec(const LinphoneCallParams *params) {
-	return params->msp->getUsedVideoCodec();
+	return GET_MEDIA_CPP_PTR(params)->getUsedVideoCodec();
 }
 
 void linphone_call_params_set_used_video_codec(LinphoneCallParams *params, OrtpPayloadType *codec) {
-	L_GET_PRIVATE(params->msp.get())->setUsedVideoCodec(codec);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUsedVideoCodec(codec);
 }
 
 const OrtpPayloadType *linphone_call_params_get_used_text_codec(const LinphoneCallParams *params) {
-	return params->msp->getUsedRealtimeTextCodec();
+	return GET_MEDIA_CPP_PTR(params)->getUsedRealtimeTextCodec();
 }
 
 void linphone_call_params_set_used_text_codec(LinphoneCallParams *params, OrtpPayloadType *codec) {
-	L_GET_PRIVATE(params->msp.get())->setUsedRealtimeTextCodec(codec);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUsedRealtimeTextCodec(codec);
 }
 
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *params) {
-	return params->msp->lowBandwidthEnabled();
+	return GET_MEDIA_CPP_PTR(params)->lowBandwidthEnabled();
 }
 
 int linphone_call_params_get_audio_bandwidth_limit(const LinphoneCallParams *params) {
-	return params->msp->getAudioBandwidthLimit();
+	return GET_MEDIA_CPP_PTR(params)->getAudioBandwidthLimit();
 }
 
 void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *params, int bandwidth) {
-	params->msp->setAudioBandwidthLimit(bandwidth);
+	GET_MEDIA_CPP_PTR(params)->setAudioBandwidthLimit(bandwidth);
 }
 
 void linphone_call_params_set_media_encryption(LinphoneCallParams *params, LinphoneMediaEncryption encryption) {
-	params->msp->setMediaEncryption(encryption);
+	GET_MEDIA_CPP_PTR(params)->setMediaEncryption(encryption);
 }
 
 void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy) {
-	params->msp->setPrivacy(privacy);
+	GET_MEDIA_CPP_PTR(params)->setPrivacy(privacy);
 }
 
 void linphone_call_params_set_record_file(LinphoneCallParams *params, const char *path) {
-	params->msp->setRecordFilePath(path ? path : "");
+	GET_MEDIA_CPP_PTR(params)->setRecordFilePath(path ? path : "");
 }
 
 void linphone_call_params_set_session_name(LinphoneCallParams *params, const char *name) {
-	params->msp->setSessionName(name ? name : "");
+	GET_MEDIA_CPP_PTR(params)->setSessionName(name ? name : "");
 }
 
 bool_t linphone_call_params_audio_enabled(const LinphoneCallParams *params) {
-	return params->msp->audioEnabled();
+	return GET_MEDIA_CPP_PTR(params)->audioEnabled();
 }
 
 bool_t linphone_call_params_realtime_text_enabled(const LinphoneCallParams *params) {
-	return params->msp->realtimeTextEnabled();
+	return GET_MEDIA_CPP_PTR(params)->realtimeTextEnabled();
 }
 
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *params) {
-	return params->msp->videoEnabled();
+	return GET_MEDIA_CPP_PTR(params)->videoEnabled();
 }
 
 LinphoneMediaDirection linphone_call_params_get_audio_direction(const LinphoneCallParams *params) {
-	return params->msp->getAudioDirection();
+	return GET_MEDIA_CPP_PTR(params)->getAudioDirection();
 }
 
 LinphoneMediaDirection linphone_call_params_get_video_direction(const LinphoneCallParams *params) {
-	return params->msp->getVideoDirection();
+	return GET_MEDIA_CPP_PTR(params)->getVideoDirection();
 }
 
 void linphone_call_params_set_audio_direction(LinphoneCallParams *params, LinphoneMediaDirection dir) {
-	params->msp->setAudioDirection(dir);
+	GET_MEDIA_CPP_PTR(params)->setAudioDirection(dir);
 }
 
 void linphone_call_params_set_video_direction(LinphoneCallParams *params, LinphoneMediaDirection dir) {
-	params->msp->setVideoDirection(dir);
+	GET_MEDIA_CPP_PTR(params)->setVideoDirection(dir);
 }
 
 void linphone_call_params_enable_audio_multicast(LinphoneCallParams *params, bool_t yesno) {
-	params->msp->enableAudioMulticast(yesno);
+	GET_MEDIA_CPP_PTR(params)->enableAudioMulticast(yesno);
 }
 
 bool_t linphone_call_params_audio_multicast_enabled(const LinphoneCallParams *params) {
-	return params->msp->audioMulticastEnabled();
+	return GET_MEDIA_CPP_PTR(params)->audioMulticastEnabled();
 }
 
 void linphone_call_params_enable_video_multicast(LinphoneCallParams *params, bool_t yesno) {
-	params->msp->enableVideoMulticast(yesno);
+	GET_MEDIA_CPP_PTR(params)->enableVideoMulticast(yesno);
 }
 bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *params) {
-	return params->msp->videoMulticastEnabled();
+	return GET_MEDIA_CPP_PTR(params)->videoMulticastEnabled();
 }
 
 bool_t linphone_call_params_real_early_media_enabled(const LinphoneCallParams *params) {
-	return params->msp->earlyMediaSendingEnabled();
+	return GET_MEDIA_CPP_PTR(params)->earlyMediaSendingEnabled();
 }
 
 bool_t linphone_call_params_avpf_enabled(const LinphoneCallParams *params) {
-	return params->msp->avpfEnabled();
+	return GET_MEDIA_CPP_PTR(params)->avpfEnabled();
 }
 
 void linphone_call_params_enable_avpf(LinphoneCallParams *params, bool_t enable) {
-	params->msp->enableAvpf(enable);
+	GET_MEDIA_CPP_PTR(params)->enableAvpf(enable);
 }
 
 bool_t linphone_call_params_mandatory_media_encryption_enabled(const LinphoneCallParams *params) {
-	return params->msp->mandatoryMediaEncryptionEnabled();
+	return GET_MEDIA_CPP_PTR(params)->mandatoryMediaEncryptionEnabled();
 }
 
 void linphone_call_params_enable_mandatory_media_encryption(LinphoneCallParams *params, bool_t value) {
-	params->msp->enableMandatoryMediaEncryption(value);
+	GET_MEDIA_CPP_PTR(params)->enableMandatoryMediaEncryption(value);
 }
 
 uint16_t linphone_call_params_get_avpf_rr_interval(const LinphoneCallParams *params) {
-	return params->msp->getAvpfRrInterval();
+	return GET_MEDIA_CPP_PTR(params)->getAvpfRrInterval();
 }
 
 void linphone_call_params_set_avpf_rr_interval(LinphoneCallParams *params, uint16_t value) {
-	params->msp->setAvpfRrInterval(value);
+	GET_MEDIA_CPP_PTR(params)->setAvpfRrInterval(value);
 }
 
 void linphone_call_params_set_sent_fps(LinphoneCallParams *params, float value) {
-	L_GET_PRIVATE(params->msp.get())->setSentFps(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentFps(value);
 }
 
 void linphone_call_params_set_received_fps(LinphoneCallParams *params, float value) {
-	L_GET_PRIVATE(params->msp.get())->setReceivedFps(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedFps(value);
 }
 
 
@@ -375,115 +380,111 @@ void linphone_call_params_set_received_fps(LinphoneCallParams *params, float val
  ******************************************************************************/
 
 bool_t linphone_call_params_get_in_conference(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(static_cast<const LinphonePrivate::CallSessionParams *>(params->msp.get()))->getInConference();
+	return GET_CALL_CPP_PRIVATE_PTR(params)->getInConference();
 }
 
 void linphone_call_params_set_in_conference(LinphoneCallParams *params, bool_t value) {
-	L_GET_PRIVATE(static_cast<LinphonePrivate::CallSessionParams *>(params->msp.get()))->setInConference(value);
+	GET_CALL_CPP_PRIVATE_PTR(params)->setInConference(value);
 }
 
 bool_t linphone_call_params_get_internal_call_update(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(static_cast<const LinphonePrivate::CallSessionParams *>(params->msp.get()))->getInternalCallUpdate();
+	return GET_CALL_CPP_PRIVATE_PTR(params)->getInternalCallUpdate();
 }
 
 void linphone_call_params_set_internal_call_update(LinphoneCallParams *params, bool_t value) {
-	L_GET_PRIVATE(static_cast<LinphonePrivate::CallSessionParams *>(params->msp.get()))->setInternalCallUpdate(value);
+	GET_CALL_CPP_PRIVATE_PTR(params)->setInternalCallUpdate(value);
 }
 
 bool_t linphone_call_params_implicit_rtcp_fb_enabled(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(params->msp.get())->implicitRtcpFbEnabled();
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->implicitRtcpFbEnabled();
 }
 
 void linphone_call_params_enable_implicit_rtcp_fb(LinphoneCallParams *params, bool_t value) {
-	L_GET_PRIVATE(params->msp.get())->enableImplicitRtcpFb(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->enableImplicitRtcpFb(value);
 }
 
 int linphone_call_params_get_down_bandwidth(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(params->msp.get())->getDownBandwidth();
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getDownBandwidth();
 }
 
 void linphone_call_params_set_down_bandwidth(LinphoneCallParams *params, int value) {
-	L_GET_PRIVATE(params->msp.get())->setDownBandwidth(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setDownBandwidth(value);
 }
 
 int linphone_call_params_get_up_bandwidth(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(params->msp.get())->getUpBandwidth();
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getUpBandwidth();
 }
 
 void linphone_call_params_set_up_bandwidth(LinphoneCallParams *params, int value) {
-	L_GET_PRIVATE(params->msp.get())->setUpBandwidth(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUpBandwidth(value);
 }
 
 int linphone_call_params_get_down_ptime(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(params->msp.get())->getDownPtime();
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getDownPtime();
 }
 
 void linphone_call_params_set_down_ptime(LinphoneCallParams *params, int value) {
-	L_GET_PRIVATE(params->msp.get())->setDownPtime(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setDownPtime(value);
 }
 
 int linphone_call_params_get_up_ptime(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(params->msp.get())->getUpPtime();
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getUpPtime();
 }
 
 void linphone_call_params_set_up_ptime(LinphoneCallParams *params, int value) {
-	L_GET_PRIVATE(params->msp.get())->setUpPtime(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUpPtime(value);
 }
 
 SalCustomHeader * linphone_call_params_get_custom_headers(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(static_cast<const LinphonePrivate::CallSessionParams *>(params->msp.get()))->getCustomHeaders();
+	return GET_CALL_CPP_PRIVATE_PTR(params)->getCustomHeaders();
 }
 
 SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_attributes(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(params->msp.get())->getCustomSdpAttributes();
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getCustomSdpAttributes();
 }
 
 SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_media_attributes(const LinphoneCallParams *params, LinphoneStreamType type) {
-	return L_GET_PRIVATE(params->msp.get())->getCustomSdpMediaAttributes(type);
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getCustomSdpMediaAttributes(type);
 }
 
 LinphoneCall * linphone_call_params_get_referer(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(static_cast<const LinphonePrivate::CallSessionParams *>(params->msp.get()))->getReferer();
+	return GET_CALL_CPP_PRIVATE_PTR(params)->getReferer();
 }
 
 void linphone_call_params_set_referer(LinphoneCallParams *params, LinphoneCall *referer) {
-	L_GET_PRIVATE(static_cast<LinphonePrivate::CallSessionParams *>(params->msp.get()))->setReferer(referer);
+	GET_CALL_CPP_PRIVATE_PTR(params)->setReferer(referer);
 }
 
 bool_t linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(params->msp.get())->getUpdateCallWhenIceCompleted();
+	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getUpdateCallWhenIceCompleted();
 }
 
 void linphone_call_params_set_update_call_when_ice_completed(LinphoneCallParams *params, bool_t value) {
-	L_GET_PRIVATE(params->msp.get())->setUpdateCallWhenIceCompleted(value);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUpdateCallWhenIceCompleted(value);
 }
 
 void linphone_call_params_set_sent_vsize(LinphoneCallParams *params, MSVideoSize vsize) {
-	L_GET_PRIVATE(params->msp.get())->setSentVideoDefinition(linphone_video_definition_new(vsize.width, vsize.height, nullptr));
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentVideoDefinition(linphone_video_definition_new(vsize.width, vsize.height, nullptr));
 }
 
 void linphone_call_params_set_recv_vsize(LinphoneCallParams *params, MSVideoSize vsize) {
-	L_GET_PRIVATE(params->msp.get())->setReceivedVideoDefinition(linphone_video_definition_new(vsize.width, vsize.height, nullptr));
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedVideoDefinition(linphone_video_definition_new(vsize.width, vsize.height, nullptr));
 }
 
 void linphone_call_params_set_sent_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef) {
-	L_GET_PRIVATE(params->msp.get())->setSentVideoDefinition(vdef);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentVideoDefinition(vdef);
 }
 
 void linphone_call_params_set_received_video_definition(LinphoneCallParams *params, LinphoneVideoDefinition *vdef) {
-	L_GET_PRIVATE(params->msp.get())->setReceivedVideoDefinition(vdef);
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedVideoDefinition(vdef);
 }
 
 bool_t linphone_call_params_get_no_user_consent(const LinphoneCallParams *params) {
-	return L_GET_PRIVATE(static_cast<const LinphonePrivate::CallSessionParams *>(params->msp.get()))->getNoUserConsent();
+	return GET_CALL_CPP_PRIVATE_PTR(params)->getNoUserConsent();
 }
 
 void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t value) {
-	L_GET_PRIVATE(static_cast<LinphonePrivate::CallSessionParams *>(params->msp.get()))->setNoUserConsent(value);
-}
-
-std::shared_ptr<LinphonePrivate::MediaSessionParams> linphone_call_params_get_cpp_obj(const LinphoneCallParams *params) {
-	return params->msp;
+	GET_CALL_CPP_PRIVATE_PTR(params)->setNoUserConsent(value);
 }
 
 
@@ -492,11 +493,11 @@ std::shared_ptr<LinphonePrivate::MediaSessionParams> linphone_call_params_get_cp
  ******************************************************************************/
 
 void *linphone_call_params_get_user_data(const LinphoneCallParams *cp) {
-	return cp->user_data;
+	return cp->userData;
 }
 
 void linphone_call_params_set_user_data(LinphoneCallParams *cp, void *ud) {
-	cp->user_data = ud;
+	cp->userData = ud;
 }
 
 LinphoneCallParams * linphone_call_params_ref(LinphoneCallParams *cp) {
@@ -513,35 +514,18 @@ void linphone_call_params_unref(LinphoneCallParams *cp) {
  * Constructor and destructor functions                                        *
  ******************************************************************************/
 
-static void _linphone_call_params_destroy(LinphoneCallParams *params) {
-	params->msp = nullptr;
-}
-
-static void _linphone_call_params_clone(LinphoneCallParams *dst, const LinphoneCallParams *src) {
-	dst->msp = std::make_shared<LinphonePrivate::MediaSessionParams>(*src->msp);
-}
-
 LinphoneCallParams * linphone_call_params_new(LinphoneCore *core) {
-	LinphoneCallParams *params = belle_sip_object_new(LinphoneCallParams);
-	params->msp = std::make_shared<LinphonePrivate::MediaSessionParams>();
-	params->msp->initDefault(core);
+	LinphoneCallParams *params = _linphone_call_params_init();
+	params->cppPtr = new LinphonePrivate::MediaSessionParams();
+	params->cppPtr->initDefault(core);
 	return params;
 }
 
 LinphoneCallParams * linphone_call_params_new_for_wrapper(void) {
-	return belle_sip_object_new(LinphoneCallParams);
+	return _linphone_call_params_init();
 }
 
 /* DEPRECATED */
 void linphone_call_params_destroy(LinphoneCallParams *cp) {
 	linphone_call_params_unref(cp);
 }
-
-BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCallParams);
-
-BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallParams, belle_sip_object_t,
-	(belle_sip_object_destroy_t)_linphone_call_params_destroy,
-	(belle_sip_object_clone_t)_linphone_call_params_clone, // clone
-	NULL, // marshal
-	FALSE
-);

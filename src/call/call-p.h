@@ -39,7 +39,7 @@ LINPHONE_BEGIN_NAMESPACE
 class CallPrivate : public ObjectPrivate, CallListener {
 public:
 	CallPrivate (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, const Address &from, const Address &to,
-		LinphoneProxyConfig *cfg, SalOp *op, const std::shared_ptr<MediaSessionParams> msp);
+		LinphoneProxyConfig *cfg, SalOp *op, const MediaSessionParams *msp);
 	virtual ~CallPrivate ();
 
 	void initiateIncoming ();

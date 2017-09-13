@@ -191,9 +191,9 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
 LinphoneChatRoom *_linphone_core_create_chat_room_base(LinphoneCore *lc, const LinphoneAddress *addr) {
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
 	if (linphone_core_realtime_text_enabled(lc))
-		cr->cr = new LinphonePrivate::RealTimeTextChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address));
+		cr->cr = new LinphonePrivate::RealTimeTextChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address, Address));
 	else
-		cr->cr = new LinphonePrivate::BasicChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address));
+		cr->cr = new LinphonePrivate::BasicChatRoom(lc, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address, Address));
 	L_GET_PRIVATE(cr->cr)->setCBackPointer(cr);
 	return cr;
 }
@@ -257,9 +257,20 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 }
 
 LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, bctbx_list_t *addresses) {
+	const char *factoryUri = linphone_core_get_chat_conference_factory_uri(lc);
+	if (!factoryUri)
+		return nullptr;
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
+	LinphoneAddress *factoryAddr = linphone_address_new(factoryUri);
+	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(lc, factoryAddr);
+	linphone_address_unref(factoryAddr);
+	std::string from;
+	if (proxy)
+		from = L_GET_CPP_PTR_FROM_C_STRUCT(linphone_proxy_config_get_identity_address(proxy), Address, Address)->asString();
+	if (from.empty())
+		from = linphone_core_get_primary_contact(lc);
+	LinphonePrivate::Address me(from);
 	std::list<LinphonePrivate::Address> l = L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address);
-	LinphonePrivate::Address me; // TODO
 	cr->cr = new LinphonePrivate::ClientGroupChatRoom(lc, me, l);
 	L_GET_PRIVATE(cr->cr)->setCBackPointer(cr);
 	return cr;

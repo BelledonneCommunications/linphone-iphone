@@ -28,6 +28,7 @@ LINPHONE_BEGIN_NAMESPACE
 class LocalConference : public Conference {
 public:
 	LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
+	virtual ~LocalConference() = default;
 
 private:
 	L_DISABLE_COPY(LocalConference);

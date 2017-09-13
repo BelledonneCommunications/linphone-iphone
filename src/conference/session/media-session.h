@@ -19,8 +19,6 @@
 #ifndef _MEDIA_SESSION_H_
 #define _MEDIA_SESSION_H_
 
-#include <memory>
-
 #include "call-session.h"
 #include "conference/params/media-session-params.h"
 
@@ -37,11 +35,11 @@ class MediaSession : public CallSession {
 	friend class IceAgent;
 
 public:
-	MediaSession (const Conference &conference, const std::shared_ptr<CallSessionParams> params, CallSessionListener *listener);
+	MediaSession (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);
 
-	LinphoneStatus accept (const std::shared_ptr<MediaSessionParams> msp = nullptr);
-	LinphoneStatus acceptEarlyMedia (const std::shared_ptr<MediaSessionParams> msp = nullptr);
-	LinphoneStatus acceptUpdate (const std::shared_ptr<MediaSessionParams> msp);
+	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
+	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);
+	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);
 	void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalOp *op, const Address &from, const Address &to);
 	void initiateIncoming ();
 	bool initiateOutgoing ();
@@ -53,7 +51,7 @@ public:
 	int startInvite (const Address *destination);
 	void startRecording ();
 	void stopRecording ();
-	LinphoneStatus update (const std::shared_ptr<MediaSessionParams> msp);
+	LinphoneStatus update (const MediaSessionParams *msp);
 
 	void resetFirstVideoFrameDecoded ();
 	LinphoneStatus takePreviewSnapshot (const std::string& file);
@@ -71,17 +69,17 @@ public:
 	std::string getAuthenticationToken () const;
 	bool getAuthenticationTokenVerified () const;
 	float getAverageQuality () const;
-	std::shared_ptr<MediaSessionParams> getCurrentParams ();
+	MediaSessionParams *getCurrentParams ();
 	float getCurrentQuality () const;
-	const std::shared_ptr<MediaSessionParams> getMediaParams () const;
+	const MediaSessionParams *getMediaParams () const;
 	RtpTransport * getMetaRtcpTransport (int streamIndex);
 	RtpTransport * getMetaRtpTransport (int streamIndex);
 	float getMicrophoneVolumeGain () const;
 	void * getNativeVideoWindowId () const;
-	const std::shared_ptr<CallSessionParams> getParams () const;
+	const CallSessionParams *getParams () const;
 	float getPlayVolume () const;
 	float getRecordVolume () const;
-	const std::shared_ptr<MediaSessionParams> getRemoteParams ();
+	const MediaSessionParams *getRemoteParams ();
 	float getSpeakerVolumeGain () const;
 	LinphoneCallStats * getStats (LinphoneStreamType type) const;
 	int getStreamCount ();

@@ -43,8 +43,8 @@ public:
 	LinphoneCall *getCall () const;
 
 	/* ConferenceInterface */
-	std::shared_ptr<Participant> addParticipant (const Address &addr, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
-	void addParticipants (const std::list<Address> &addresses, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
+	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia);
+	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia);
 	const std::string& getId () const;
 	int getNbParticipants () const;
 	std::list<std::shared_ptr<Participant>> getParticipants () const;

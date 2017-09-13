@@ -35,7 +35,7 @@ LINPHONE_BEGIN_NAMESPACE
 // =============================================================================
 
 CallPrivate::CallPrivate (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, const Address &from, const Address &to,
-	LinphoneProxyConfig *cfg, SalOp *op, const shared_ptr<MediaSessionParams> msp) : lcall(call), core(core) {
+	LinphoneProxyConfig *cfg, SalOp *op, const MediaSessionParams *msp) : lcall(call), core(core) {
 	nextVideoFrameDecoded._func = nullptr;
 	nextVideoFrameDecoded._user_data = nullptr;
 }
@@ -189,7 +189,7 @@ void CallPrivate::onResetFirstVideoFrameDecoded () {
 // =============================================================================
 
 Call::Call (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, const Address &from, const Address &to,
-	LinphoneProxyConfig *cfg, SalOp *op, const shared_ptr<MediaSessionParams> msp) : Object(*new CallPrivate(call, core, direction, from, to, cfg, op, msp)) {
+	LinphoneProxyConfig *cfg, SalOp *op, const MediaSessionParams *msp) : Object(*new CallPrivate(call, core, direction, from, to, cfg, op, msp)) {
 	L_D(Call);
 	const Address *myAddress = (direction == LinphoneCallIncoming) ? &to : &from;
 	string confType = lp_config_get_string(linphone_core_get_config(core), "misc", "conference_type", "local");
@@ -205,17 +205,17 @@ Call::Call (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, c
 
 // -----------------------------------------------------------------------------
 
-LinphoneStatus Call::accept (const shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus Call::accept (const MediaSessionParams *msp) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->accept(msp);
 }
 
-LinphoneStatus Call::acceptEarlyMedia (const std::shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus Call::acceptEarlyMedia (const MediaSessionParams *msp) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->acceptEarlyMedia(msp);
 }
 
-LinphoneStatus Call::acceptUpdate (const shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus Call::acceptUpdate (const MediaSessionParams *msp) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->acceptUpdate(msp);
 }
@@ -270,7 +270,7 @@ LinphoneStatus Call::terminate (const LinphoneErrorInfo *ei) {
 	return d->getActiveSession()->terminate(ei);
 }
 
-LinphoneStatus Call::update (const std::shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus Call::update (const MediaSessionParams *msp) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->update(msp);
 }
@@ -342,7 +342,7 @@ LinphoneCore * Call::getCore () const {
 	return d->core;
 }
 
-const shared_ptr<MediaSessionParams> Call::getCurrentParams () const {
+const MediaSessionParams * Call::getCurrentParams () const {
 	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getCurrentParams();
 }
@@ -392,7 +392,7 @@ void * Call::getNativeVideoWindowId () const {
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getNativeVideoWindowId();
 }
 
-const std::shared_ptr<MediaSessionParams> Call::getParams () const {
+const MediaSessionParams * Call::getParams () const {
 	L_D(const Call);
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getMediaParams();
 }
@@ -427,7 +427,7 @@ string Call::getRemoteContact () const {
 	return d->getActiveSession()->getRemoteContact();
 }
 
-const shared_ptr<MediaSessionParams> Call::getRemoteParams () const {
+const MediaSessionParams * Call::getRemoteParams () const {
 	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getRemoteParams();
 }

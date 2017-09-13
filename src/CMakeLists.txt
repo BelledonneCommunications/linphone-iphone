@@ -23,7 +23,6 @@
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
-	c-wrapper/c-private-types.h
 	c-wrapper/c-tools.h
 	call/call-listener.h
 	call/call-p.h
@@ -98,6 +97,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	address/address.cpp
 	c-wrapper/api/c-address.cpp
+	c-wrapper/api/c-call-params.cpp
 	c-wrapper/api/c-event-log.cpp
 	call/call.cpp
 	chat/basic-chat-room.cpp

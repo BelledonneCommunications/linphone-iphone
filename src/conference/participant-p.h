@@ -38,7 +38,7 @@ class ParticipantPrivate : public ObjectPrivate {
 public:
 	virtual ~ParticipantPrivate () = default;
 
-	void createSession (const Conference &conference, const std::shared_ptr<CallSessionParams> params, bool hasMedia, CallSessionListener *listener);
+	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
 	std::shared_ptr<CallSession> getSession () const;
 
 	Address addr;

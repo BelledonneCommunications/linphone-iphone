@@ -39,7 +39,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class MediaSessionPrivate : public CallSessionPrivate {
 public:
-	MediaSessionPrivate (const Conference &conference, const std::shared_ptr<CallSessionParams> params, CallSessionListener *listener);
+	MediaSessionPrivate (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);
 	virtual ~MediaSessionPrivate ();
 
 public:
@@ -221,8 +221,8 @@ private:
 	void terminate ();
 	void updateCurrentParams ();
 
-	void accept (const std::shared_ptr<MediaSessionParams> params);
-	LinphoneStatus acceptUpdate (const std::shared_ptr<CallSessionParams> csp, LinphoneCallState nextState, const std::string &stateInfo);
+	void accept (const MediaSessionParams *params);
+	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo);
 
 #ifdef VIDEO_ENABLED
 	void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);
@@ -235,9 +235,9 @@ private:
 	static const std::string ecStateStore;
 	static const int ecStateMaxLen;
 
-	std::shared_ptr<MediaSessionParams> params = nullptr;
-	std::shared_ptr<MediaSessionParams> currentParams = nullptr;
-	std::shared_ptr<MediaSessionParams> remoteParams = nullptr;
+	MediaSessionParams *params = nullptr;
+	MediaSessionParams *currentParams = nullptr;
+	MediaSessionParams *remoteParams = nullptr;
 
 	AudioStream *audioStream = nullptr;
 	OrtpEvQueue *audioStreamEvQueue = nullptr;

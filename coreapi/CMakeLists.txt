@@ -70,7 +70,6 @@ set(LINPHONE_SOURCE_FILES_C
 	buffer.c
 	callbacks.c
 	call_log.c
-	call_params.c
 	carddav.c
 	chat.c
 	chat_file_transfer.c

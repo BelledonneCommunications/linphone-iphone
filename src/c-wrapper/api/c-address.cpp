@@ -26,7 +26,7 @@
 
 using namespace std;
 
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(Address, address);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(Address, Address, address);
 
 LinphoneAddress *linphone_address_new (const char *address) {
 	LINPHONE_NAMESPACE::Address *cppPtr = new LINPHONE_NAMESPACE::Address(L_C_TO_STRING(address));

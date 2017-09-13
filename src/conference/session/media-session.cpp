@@ -66,11 +66,11 @@ const int MediaSessionPrivate::ecStateMaxLen = 1048576; /* 1Mo */
 
 // =============================================================================
 
-MediaSessionPrivate::MediaSessionPrivate (const Conference &conference, const shared_ptr<CallSessionParams> params, CallSessionListener *listener)
-	: CallSessionPrivate(conference, params, listener) {
-	if (params)
-		this->params = make_shared<MediaSessionParams>(*(reinterpret_cast<const MediaSessionParams *>(params.get())));
-	currentParams = make_shared<MediaSessionParams>();
+MediaSessionPrivate::MediaSessionPrivate (const Conference &conference, const CallSessionParams *csp, CallSessionListener *listener)
+	: CallSessionPrivate(conference, csp, listener) {
+	if (csp)
+		params = new MediaSessionParams(*(reinterpret_cast<const MediaSessionParams *>(csp)));
+	currentParams = new MediaSessionParams();
 
 	audioStats = linphone_call_stats_ref(linphone_call_stats_new());
 	initStats(audioStats, LinphoneStreamTypeAudio);
@@ -91,6 +91,12 @@ MediaSessionPrivate::MediaSessionPrivate (const Conference &conference, const sh
 }
 
 MediaSessionPrivate::~MediaSessionPrivate () {
+	if (currentParams)
+		delete currentParams;
+	if (params)
+		delete params;
+	if (remoteParams)
+		delete remoteParams;
 	if (audioStats)
 		linphone_call_stats_unref(audioStats);
 	if (videoStats)
@@ -317,7 +323,7 @@ bool MediaSessionPrivate::failure () {
 
 void MediaSessionPrivate::pausedByRemote () {
 	linphone_core_notify_display_status(core, "We are paused by other party");
-	shared_ptr<MediaSessionParams> newParams = make_shared<MediaSessionParams>(*params.get());
+	MediaSessionParams *newParams = new MediaSessionParams(*params);
 	if (lp_config_get_int(linphone_core_get_config(core), "sip", "inactive_video_on_pause", 0))
 		newParams->setVideoDirection(LinphoneMediaDirectionInactive);
 	acceptUpdate(newParams, LinphoneCallPausedByRemote, "Call paused by remote");
@@ -419,7 +425,7 @@ void MediaSessionPrivate::updating (bool isUpdate) {
 		/* Refresh the local description, but in paused state, we don't change anything. */
 		if (!rmd && lp_config_get_int(linphone_core_get_config(core), "sip", "sdp_200_ack_follow_video_policy", 0)) {
 			lInfo() << "Applying default policy for offering SDP on CallSession [" << q << "]";
-			params = make_shared<MediaSessionParams>();
+			params = new MediaSessionParams();
 			params->initDefault(core);
 		}
 		makeLocalMediaDescription();
@@ -747,7 +753,7 @@ void MediaSessionPrivate::fixCallParams (SalMediaDescription *rmd) {
 		 */
 		/*params.getPrivate()->enableImplicitRtcpFb(params.getPrivate()->implicitRtcpFbEnabled() & sal_media_description_has_implicit_avpf(rmd));*/
 	}
-	const shared_ptr<MediaSessionParams> rcp = q->getRemoteParams();
+	const MediaSessionParams *rcp = q->getRemoteParams();
 	if (rcp) {
 		if (params->audioEnabled() && !rcp->audioEnabled()) {
 			lInfo() << "CallSession [" << q << "]: disabling audio in our call params because the remote doesn't want it";
@@ -1111,8 +1117,8 @@ void MediaSessionPrivate::selectOutgoingIpVersion () {
 		return;
 	}
 
-	LinphoneAddress *to = linphone_call_log_get_to_address(log);
-	if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_STRUCT(to, Address)->getInternalAddress()))
+	const LinphoneAddress *to = linphone_call_log_get_to_address(log);
+	if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_STRUCT(to, Address, Address)->getInternalAddress()))
 		af = AF_INET6;
 	else if (destProxy && destProxy->op)
 		af = sal_op_get_address_family(destProxy->op);
@@ -1224,7 +1230,7 @@ void MediaSessionPrivate::makeLocalMediaDescription () {
 	md->nb_streams = (biggestDesc ? biggestDesc->nb_streams : 1);
 
 	/* Re-check local ip address each time we make a new offer, because it may change in case of network reconnection */
-	getLocalIp(*L_GET_CPP_PTR_FROM_C_STRUCT((direction == LinphoneCallOutgoing) ? log->to : log->from, Address));
+	getLocalIp(*L_GET_CPP_PTR_FROM_C_STRUCT((direction == LinphoneCallOutgoing) ? log->to : log->from, Address, Address));
 	strncpy(md->addr, mediaLocalIp.c_str(), sizeof(md->addr));
 	LinphoneAddress *addr = nullptr;
 	if (destProxy) {
@@ -2070,7 +2076,7 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 		if (iceAgent->hasCompletedCheckList()) {
 			/* At least one ICE session has succeeded, so perform a call update */
 			if (iceAgent->isControlling() && q->getCurrentParams()->getPrivate()->getUpdateCallWhenIceCompleted()) {
-				shared_ptr<MediaSessionParams> newParams = make_shared<MediaSessionParams>(*params.get());
+				MediaSessionParams *newParams = new MediaSessionParams(*params);
 				newParams->getPrivate()->setInternalCallUpdate(true);
 				q->update(newParams);
 			}
@@ -3845,9 +3851,9 @@ void MediaSessionPrivate::updateCurrentParams () {
 
 // -----------------------------------------------------------------------------
 
-void MediaSessionPrivate::accept (const shared_ptr<MediaSessionParams> params) {
-	if (params) {
-		this->params = params;
+void MediaSessionPrivate::accept (const MediaSessionParams *csp) {
+	if (csp) {
+		params = new MediaSessionParams(*csp);
 		iceAgent->prepare(localDesc, true);
 		makeLocalMediaDescription();
 		sal_call_set_local_media_description(op, localDesc);
@@ -3881,7 +3887,7 @@ void MediaSessionPrivate::accept (const shared_ptr<MediaSessionParams> params) {
 		expectMediaInAck = true;
 }
 
-LinphoneStatus MediaSessionPrivate::acceptUpdate (const shared_ptr<CallSessionParams> csp, LinphoneCallState nextState, const string &stateInfo) {
+LinphoneStatus MediaSessionPrivate::acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const string &stateInfo) {
 	L_Q(MediaSession);
 	SalMediaDescription *desc = sal_call_get_remote_media_description(op);
 	bool keepSdpVersion = lp_config_get_int(linphone_core_get_config(core), "sip", "keep_sdp_version", 0);
@@ -3893,7 +3899,7 @@ LinphoneStatus MediaSessionPrivate::acceptUpdate (const shared_ptr<CallSessionPa
 		return 0;
 	}
 	if (csp)
-		params = make_shared<MediaSessionParams>(*static_cast<MediaSessionParams *>(csp.get()));
+		params = new MediaSessionParams(*static_cast<const MediaSessionParams *>(csp));
 	else {
 		if (!sal_call_is_offerer(op)) {
 			/* Reset call params for multicast because this param is only relevant when offering */
@@ -4006,7 +4012,7 @@ void MediaSessionPrivate::stunAuthRequestedCb (const char *realm, const char *no
 
 // =============================================================================
 
-MediaSession::MediaSession (const Conference &conference, const shared_ptr<CallSessionParams> params, CallSessionListener *listener)
+MediaSession::MediaSession (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener)
 	: CallSession(*new MediaSessionPrivate(conference, params, listener)) {
 	L_D(MediaSession);
 	d->iceAgent = new IceAgent(*this);
@@ -4014,7 +4020,7 @@ MediaSession::MediaSession (const Conference &conference, const shared_ptr<CallS
 
 // -----------------------------------------------------------------------------
 
-LinphoneStatus MediaSession::accept (const shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus MediaSession::accept (const MediaSessionParams *msp) {
 	L_D(MediaSession);
 	LinphoneStatus result = d->checkForAcceptation();
 	if (result < 0) return result;
@@ -4043,7 +4049,7 @@ LinphoneStatus MediaSession::accept (const shared_ptr<MediaSessionParams> msp) {
 	return 0;
 }
 
-LinphoneStatus MediaSession::acceptEarlyMedia (const std::shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus MediaSession::acceptEarlyMedia (const MediaSessionParams *msp) {
 	L_D(MediaSession);
 	if (d->state != LinphoneCallIncomingReceived) {
 		lError() << "Bad state " << linphone_call_state_to_string(d->state) << " for MediaSession::acceptEarlyMedia()";
@@ -4053,7 +4059,7 @@ LinphoneStatus MediaSession::acceptEarlyMedia (const std::shared_ptr<MediaSessio
 	d->setContactOp();
 	/* If parameters are passed, update the media description */
 	if (msp) {
-		d->params = msp;
+		d->params = new MediaSessionParams(*msp);
 		d->makeLocalMediaDescription();
 		sal_call_set_local_media_description(d->op, d->localDesc);
 		sal_op_set_sent_custom_header(d->op, d->params->getPrivate()->getCustomHeaders());
@@ -4066,7 +4072,7 @@ LinphoneStatus MediaSession::acceptEarlyMedia (const std::shared_ptr<MediaSessio
 	return 0;
 }
 
-LinphoneStatus MediaSession::acceptUpdate (const shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus MediaSession::acceptUpdate (const MediaSessionParams *msp) {
 	L_D(MediaSession);
 	if (d->expectMediaInAck) {
 		lError() << "MediaSession::acceptUpdate() is not possible during a late offer incoming reINVITE (INVITE without SDP)";
@@ -4102,7 +4108,7 @@ void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cf
 		Address cleanedFrom = from;
 		cleanedFrom.clean();
 		d->getLocalIp(cleanedFrom);
-		d->params = make_shared<MediaSessionParams>();
+		d->params = new MediaSessionParams();
 		d->params->initDefault(d->core);
 		d->initializeParamsAccordingToIncomingCallParams();
 		SalMediaDescription *md = sal_call_get_remote_media_description(d->op);
@@ -4217,7 +4223,7 @@ LinphoneStatus MediaSession::resume () {
 void MediaSession::sendVfuRequest () {
 #ifdef VIDEO_ENABLED
 	L_D(MediaSession);
-	shared_ptr<MediaSessionParams> currentParams = getCurrentParams();
+	MediaSessionParams *currentParams = getCurrentParams();
 	if ((currentParams->avpfEnabled() || currentParams->getPrivate()->implicitRtcpFbEnabled())
 		&& d->videoStream && media_stream_get_state(&d->videoStream->ms) == MSStreamStarted) { // || sal_media_description_has_implicit_avpf((const SalMediaDescription *)call->resultdesc)
 		lInfo() << "Request Full Intra Request on CallSession [" << this << "]";
@@ -4302,13 +4308,13 @@ void MediaSession::stopRecording () {
 	d->recordActive = false;
 }
 
-LinphoneStatus MediaSession::update (const shared_ptr<MediaSessionParams> msp) {
+LinphoneStatus MediaSession::update (const MediaSessionParams *msp) {
 	L_D(MediaSession);
 	LinphoneCallState nextState;
 	LinphoneCallState initialState = d->state;
 	if (!d->isUpdateAllowed(nextState))
 		return -1;
-	if (d->currentParams.get() == msp.get())
+	if (d->currentParams == msp)
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
 	d->iceAgent->checkSession(IR_Controlling, true);
 	if (d->params) {
@@ -4316,7 +4322,7 @@ LinphoneStatus MediaSession::update (const shared_ptr<MediaSessionParams> msp) {
 		call->broken = FALSE;
 #endif
 		d->setState(nextState, "Updating call");
-		d->params = msp;
+		d->params = new MediaSessionParams(*msp);
 		if (d->iceAgent->prepare(d->localDesc, false)) {
 			lInfo() << "Defer CallSession update to gather ICE candidates";
 			return 0;
@@ -4496,7 +4502,7 @@ float MediaSession::getAverageQuality () const {
 	return MediaSessionPrivate::aggregateQualityRatings(audioRating, videoRating);
 }
 
-shared_ptr<MediaSessionParams> MediaSession::getCurrentParams () {
+MediaSessionParams * MediaSession::getCurrentParams () {
 	L_D(MediaSession);
 	d->updateCurrentParams();
 	return d->currentParams;
@@ -4513,7 +4519,7 @@ float MediaSession::getCurrentQuality () const {
 	return MediaSessionPrivate::aggregateQualityRatings(audioRating, videoRating);
 }
 
-const shared_ptr<MediaSessionParams> MediaSession::getMediaParams () const {
+const MediaSessionParams * MediaSession::getMediaParams () const {
 	L_D(const MediaSession);
 	return d->params;
 }
@@ -4563,7 +4569,7 @@ void * MediaSession::getNativeVideoWindowId () const {
 	return nullptr;
 }
 
-const shared_ptr<CallSessionParams> MediaSession::getParams () const {
+const CallSessionParams * MediaSession::getParams () const {
 	L_D(const MediaSession);
 	return d->params;
 }
@@ -4588,12 +4594,14 @@ float MediaSession::getRecordVolume () const {
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
-const shared_ptr<MediaSessionParams> MediaSession::getRemoteParams () {
+const MediaSessionParams * MediaSession::getRemoteParams () {
 	L_D(MediaSession);
 	if (d->op){
 		SalMediaDescription *md = sal_call_get_remote_media_description(d->op);
 		if (md) {
-			d->remoteParams = make_shared<MediaSessionParams>();
+			if (d->remoteParams)
+				delete d->remoteParams;
+			d->remoteParams = new MediaSessionParams();
 			unsigned int nbAudioStreams = sal_media_description_nb_active_streams_of_type(md, SalAudio);
 			for (unsigned int i = 0; i < nbAudioStreams; i++) {
 				SalStreamDescription *sd = sal_media_description_get_active_stream_of_type(md, SalAudio, i);
@@ -4631,7 +4639,7 @@ const shared_ptr<MediaSessionParams> MediaSession::getRemoteParams () {
 		if (ch) {
 			/* Instanciate a remote_params only if a SIP message was received before (custom headers indicates this) */
 			if (!d->remoteParams)
-				d->remoteParams = make_shared<MediaSessionParams>();
+				d->remoteParams = new MediaSessionParams();
 			d->remoteParams->getPrivate()->setCustomHeaders(ch);
 		}
 		return d->remoteParams;

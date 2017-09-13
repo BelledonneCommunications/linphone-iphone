@@ -62,7 +62,7 @@ LINPHONE_PUBLIC int linphone_call_log_get_duration(LinphoneCallLog *cl);
  * @param[in] cl LinphoneCallLog object
  * @return The origin address (ie from) of the call.
 **/
-LINPHONE_PUBLIC LinphoneAddress * linphone_call_log_get_from_address(LinphoneCallLog *cl);
+LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_from_address(LinphoneCallLog *cl);
 
 /**
  * Get the RTP statistics computed locally regarding the call.
@@ -123,7 +123,7 @@ LINPHONE_PUBLIC LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog 
  * @param[in] cl LinphoneCallLog object
  * @return The destination address (ie to) of the call.
 **/
-LINPHONE_PUBLIC LinphoneAddress * linphone_call_log_get_to_address(LinphoneCallLog *cl);
+LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_to_address(LinphoneCallLog *cl);
 
 /**
  * Associate a persistent reference key to the call log.

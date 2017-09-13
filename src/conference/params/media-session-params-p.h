@@ -27,7 +27,6 @@
 
 // =============================================================================
 
-extern std::shared_ptr<LinphonePrivate::MediaSessionParams> linphone_call_params_get_cpp_obj(const LinphoneCallParams *params);
 extern LinphoneCallParams * linphone_call_params_new_for_wrapper(void);
 
 // =============================================================================

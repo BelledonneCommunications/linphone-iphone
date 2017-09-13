@@ -3908,7 +3908,7 @@ LINPHONE_PUBLIC void linphone_core_set_user_data(LinphoneCore *lc, void *userdat
  * sections and pairs of key=value in the configuration file.
  * @ingroup misc
 **/
-LINPHONE_PUBLIC LinphoneConfig * linphone_core_get_config(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneConfig * linphone_core_get_config(const LinphoneCore *lc);
 
 /**
  * Create a LpConfig object from a user config file.
@@ -4186,6 +4186,10 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_stop_conference_recording(LinphoneC
  * @return A pointer on #LinphoneConference or NULL if no conference are going on
  */
 LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *lc);
+
+void linphone_core_set_chat_conference_factory_uri(LinphoneCore *lc, const char *uri);
+
+const char * linphone_core_get_chat_conference_factory_uri(const LinphoneCore *lc);
 
 /**
  * @}
