@@ -158,10 +158,11 @@ LINPHONE_END_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-#define L_DECLARE_C_STRUCT_IMPL(STRUCT, C_NAME) \
+#define L_DECLARE_C_STRUCT_IMPL(STRUCT, C_NAME, ...) \
 	struct _Linphone ## STRUCT { \
 		belle_sip_object_t base; \
 		std::shared_ptr<LINPHONE_NAMESPACE::STRUCT> cppPtr; \
+		__VA_ARGS__ \
 	}; \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
 	static Linphone ## STRUCT *_linphone_ ## C_NAME ## _init() { \
@@ -184,11 +185,12 @@ LINPHONE_END_NAMESPACE
 	FALSE \
 	);
 
-#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_STRUCT, C_NAME) \
+#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_STRUCT, C_NAME, ...) \
 	struct _Linphone ## C_STRUCT { \
 		belle_sip_object_t base; \
 		void *userData; \
 		LINPHONE_NAMESPACE::CPP_CLASS *cppPtr; \
+		__VA_ARGS__ \
 	}; \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_STRUCT); \
 	static Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
