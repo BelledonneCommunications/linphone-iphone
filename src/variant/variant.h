@@ -30,15 +30,18 @@ LINPHONE_BEGIN_NAMESPACE
 #define L_DECLARE_VARIANT_TYPES(FUNC) \
 	FUNC(int, Int, 1) \
 	FUNC(unsigned int, UnsignedInt, 2) \
-	FUNC(long, Long, 3) \
-	FUNC(unsigned long, UnsignedLong, 4) \
-	FUNC(long long, LongLong, 5) \
-	FUNC(unsigned long long, UnsignedLongLong, 6) \
-	FUNC(bool, Bool, 7) \
-	FUNC(double, Double, 8) \
-	FUNC(float, Float, 9) \
-	FUNC(std::string, String, 10) \
-	FUNC(void *, Generic, 11)
+	FUNC(short, Short, 3) \
+	FUNC(unsigned short, UnsignedShort, 4) \
+	FUNC(long, Long, 5) \
+	FUNC(unsigned long, UnsignedLong, 6) \
+	FUNC(long long, LongLong, 7) \
+	FUNC(unsigned long long, UnsignedLongLong, 8) \
+	FUNC(char, Char, 9) \
+	FUNC(bool, Bool, 10) \
+	FUNC(double, Double, 11) \
+	FUNC(float, Float, 12) \
+	FUNC(std::string, String, 13) \
+	FUNC(void *, Generic, 14)
 
 #define L_DECLARE_VARIANT_ENUM_TYPE(TYPE, NAME, ID) NAME = ID,
 #define L_DECLARE_VARIANT_TRAIT_TYPE(TYPE, NAME, ID) \
@@ -65,10 +68,13 @@ public:
 
 	Variant (int value);
 	Variant (unsigned int value);
+	Variant (short value);
+	Variant (unsigned short value);
 	Variant (long value);
 	Variant (unsigned long value);
 	Variant (long long value);
 	Variant (unsigned long long value);
+	Variant (char value);
 	Variant (bool value);
 	Variant (double value);
 	Variant (float value);
@@ -100,7 +106,12 @@ public:
 		static_assert(id != Invalid, "Unable to get value of unsupported type.");
 
 		T value;
-		getValue(id, &value, &soFarSoGood);
+
+		bool ok;
+		getValue(id, static_cast<void *>(&value), &ok);
+		if (soFarSoGood)
+			*soFarSoGood = ok;
+
 		return value;
 	}
 
@@ -115,7 +126,7 @@ private:
 		static const int id = Invalid;
 	};
 
-	void getValue (int type, void *value, bool *soFarSoGood);
+	void getValue (int type, void *value, bool *soFarSoGood) const;
 
 	VariantPrivate *mPrivate = nullptr;
 

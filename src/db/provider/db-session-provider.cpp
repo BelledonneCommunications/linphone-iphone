@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <unordered_map>
-
 #ifdef SOCI_ENABLED
 	#include <soci/soci.h>
 #endif // ifdef SOCI_ENABLED

@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <unordered_map>
-
 #include "db/events-db.h"
 #include "object/object-p.h"
 
@@ -88,7 +86,7 @@ shared_ptr<const ErrorInfo> ChatMessage::getErrorInfo () const {
 
 void ChatMessage::send () {
 	L_D(ChatMessage);
-	
+
 	if (d->contents.size() > 1) {
 		MultipartChatMessageModifier mcmm;
 		mcmm.encode(d);
@@ -159,7 +157,7 @@ void ChatMessage::addContent (const shared_ptr<Content> &content) {
 void ChatMessage::removeContent (const shared_ptr<const Content> &content) {
 	L_D(ChatMessage);
 	if (d->isReadOnly) return;
-	
+
 	d->contents.remove(const_pointer_cast<Content>(content));
 }
 

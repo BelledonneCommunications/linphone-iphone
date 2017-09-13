@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <unordered_map>
-
 #include <belr/abnf.h>
 #include <belr/grammarbuilder.h>
 

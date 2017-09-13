@@ -67,8 +67,6 @@ public:
 
 	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
 
-	std::string getContentType () const;
-
 	void send ();
 
 	bool containsReadableText () const;

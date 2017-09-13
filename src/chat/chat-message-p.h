@@ -19,8 +19,6 @@
 #ifndef _CHAT_MESSAGE_P_H_
 #define _CHAT_MESSAGE_P_H_
 
-#include <unordered_map>
-
 #include "chat-message.h"
 #include "db/events-db.h"
 #include "object/object-p.h"
