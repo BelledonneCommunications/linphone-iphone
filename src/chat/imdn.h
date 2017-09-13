@@ -19,8 +19,6 @@
 #ifndef _IMDN_H_
 #define _IMDN_H_
 
-#include <string>
-
 #include "linphone/utils/general.h"
 
 #include "chat-room.h"

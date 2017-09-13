@@ -19,7 +19,6 @@
 #ifndef _MEDIA_SESSION_P_H_
 #define _MEDIA_SESSION_P_H_
 
-#include <string>
 #include <utility>
 
 #include "call-session-p.h"

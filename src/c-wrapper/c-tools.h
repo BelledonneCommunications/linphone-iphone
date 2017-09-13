@@ -21,7 +21,6 @@
 
 #include <list>
 #include <memory>
-#include <string>
 
 // From coreapi.
 #include "private.h"

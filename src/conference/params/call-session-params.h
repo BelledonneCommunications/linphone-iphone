@@ -19,8 +19,6 @@
 #ifndef _CALL_SESSION_PARAMS_H_
 #define _CALL_SESSION_PARAMS_H_
 
-#include <string>
-
 #include "object/clonable-object.h"
 
 #include "linphone/types.h"

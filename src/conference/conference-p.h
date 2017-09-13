@@ -27,8 +27,6 @@
 #include "conference/participant.h"
 #include "conference/session/call-session-listener.h"
 
-#include <string>
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE

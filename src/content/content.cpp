@@ -61,11 +61,8 @@ Content &Content::operator= (const Content &src) {
 
 Content &Content::operator= (Content &&src) {
 	L_D(Content);
-	if (this != &src) {
-		d->body = move(src.getPrivate()->body);
-		d->contentType = move(src.getPrivate()->contentType);
-	}
-
+	d->body = move(src.getPrivate()->body);
+	d->contentType = move(src.getPrivate()->contentType);
 	return *this;
 }
 

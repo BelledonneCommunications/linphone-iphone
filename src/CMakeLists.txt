@@ -46,11 +46,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/cpim/parser/cpim-parser.h
 	chat/imdn.h
 	chat/is-composing.h
+	chat/modifier/chat-message-modifier.h
+	chat/modifier/cpim-chat-message-modifier.h
+	chat/modifier/multipart-chat-message-modifier.h
 	chat/real-time-text-chat-room-p.h
 	chat/real-time-text-chat-room.h
-	chat/modifier/chat-message-modifier.h
-	chat/modifier/multipart-chat-message-modifier.h
-	chat/modifier/cpim-chat-message-modifier.h
 	conference/conference-listener.h
 	conference/conference-p.h
 	conference/conference.h
@@ -93,6 +93,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object.h
 	object/singleton.h
 	utils/payload-type-handler.h
+	variant/variant.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
@@ -112,9 +113,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/cpim/parser/cpim-parser.cpp
 	chat/imdn.cpp
 	chat/is-composing.cpp
-	chat/real-time-text-chat-room.cpp
-	chat/modifier/multipart-chat-message-modifier.cpp
 	chat/modifier/cpim-chat-message-modifier.cpp
+	chat/modifier/multipart-chat-message-modifier.cpp
+	chat/real-time-text-chat-room.cpp
 	conference/conference.cpp
 	conference/local-conference.cpp
 	conference/params/call-session-params.cpp
@@ -143,6 +144,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	utils/general.cpp
 	utils/payload-type-handler.cpp
 	utils/utils.cpp
+	variant/variant.cpp
 )
 
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")

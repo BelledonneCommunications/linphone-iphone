@@ -19,8 +19,6 @@
 #ifndef _CALL_LISTENER_H_
 #define _CALL_LISTENER_H_
 
-#include <string>
-
 #include "linphone/types.h"
 
 // =============================================================================

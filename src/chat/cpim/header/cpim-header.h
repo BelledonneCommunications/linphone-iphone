@@ -19,8 +19,6 @@
 #ifndef _CPIM_HEADER_H_
 #define _CPIM_HEADER_H_
 
-#include <string>
-
 #include "object/object.h"
 
 // =============================================================================

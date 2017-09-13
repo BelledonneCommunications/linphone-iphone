@@ -19,8 +19,6 @@
 #ifndef _DB_SESSION_PROVIDER_H_
 #define _DB_SESSION_PROVIDER_H_
 
-#include <string>
-
 #include "db-session.h"
 #include "object/singleton.h"
 

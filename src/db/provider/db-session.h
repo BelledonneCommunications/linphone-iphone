@@ -19,8 +19,6 @@
 #ifndef _DB_SESSION_H_
 #define _DB_SESSION_H_
 
-#include <string>
-
 #include "object/clonable-object.h"
 
 // =============================================================================

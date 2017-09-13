@@ -20,7 +20,6 @@
 #define _CALL_SESSION_P_H_
 
 #include <memory>
-#include <string>
 
 #include "object/object-p.h"
 

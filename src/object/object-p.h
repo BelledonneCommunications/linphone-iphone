@@ -19,7 +19,11 @@
 #ifndef _OBJECT_P_H_
 #define _OBJECT_P_H_
 
+#include <unordered_map>
+
 #include "linphone/utils/general.h"
+
+#include "variant/variant.h"
 
 // =============================================================================
 
@@ -33,6 +37,8 @@ protected:
 	Object *mPublic = nullptr;
 
 private:
+	std::unordered_map<std::string, Variant> properties;
+
 	L_DECLARE_PUBLIC(Object);
 };
 

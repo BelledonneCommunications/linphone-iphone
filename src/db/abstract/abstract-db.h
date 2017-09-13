@@ -19,8 +19,6 @@
 #ifndef _ABSTRACT_DB_H_
 #define _ABSTRACT_DB_H_
 
-#include <string>
-
 #include "object/object.h"
 
 // =============================================================================

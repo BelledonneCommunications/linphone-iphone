@@ -19,8 +19,6 @@
 #ifndef _IS_COMPOSING_H_
 #define _IS_COMPOSING_H_
 
-#include <string>
-
 #include "linphone/utils/general.h"
 
 #include "is-composing-listener.h"

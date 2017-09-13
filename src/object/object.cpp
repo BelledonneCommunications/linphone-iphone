@@ -22,6 +22,8 @@
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
 Object::~Object () {
@@ -30,6 +32,22 @@ Object::~Object () {
 
 Object::Object (ObjectPrivate &p) : mPrivate(&p) {
 	mPrivate->mPublic = this;
+}
+
+Variant Object::getProperty (const string &name) const {
+	L_D(const Object);
+	auto it = d->properties.find(name);
+	return it == d->properties.cend() ? Variant() : it->second;
+}
+
+void Object::setProperty (const string &name, const Variant &value) {
+	L_D(Object);
+	d->properties[name] = value;
+}
+
+void Object::setProperty (const string &name, Variant &&value) {
+	L_D(Object);
+	d->properties[name] = move(value);
 }
 
 LINPHONE_END_NAMESPACE
