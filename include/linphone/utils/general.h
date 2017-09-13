@@ -65,10 +65,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 void l_assert (const char *condition, const char *file, int line);
 
-#ifdef DEBUG
+#ifndef DEBUG
 	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
 #else
-	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : l_assert(#CONDITION, __FILE__, __LINE__))
+	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LINPHONE_NAMESPACE::l_assert(#CONDITION, __FILE__, __LINE__))
 #endif
 
 // Allows access to private internal data.
