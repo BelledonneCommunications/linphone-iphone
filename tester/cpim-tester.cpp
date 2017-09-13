@@ -37,6 +37,8 @@ static void parse_minimal_message () {
 
 	const string str2 = message->asString();
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
+
+	BC_ASSERT_STRING_EQUAL(message->getContent().c_str(), "");
 }
 
 static void set_generic_header_name () {
@@ -227,6 +229,10 @@ static void check_subject_header_language () {
 }
 
 static void parse_rfc_example () {
+	const string body = "<body>"
+		"Here is the text of my message."
+		"</body>";
+
 	const string str = "Content-type: Message/CPIM\r\n"
 		"\r\n"
 		"From: MR SANDERS <im:piglet@100akerwood.com>\r\n"
@@ -239,21 +245,25 @@ static void parse_rfc_example () {
 		"MyFeatures.VitalMessageOption: Confirmation-requested\r\n"
 		"MyFeatures.WackyMessageOption: Use-silly-font\r\n"
 		"\r\n"
-		"Content-type text/xml; charset=utf-8\r\n"
+		"Content-Type: text/xml; charset=utf-8\r\n"
 		"Content-ID: <1234567890@foo.com>\r\n"
-		"\r\n"
-		"<body>"
-		"Here is the text of my message."
-		"</body>";
+		"\r\n" + body;
 
 	shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(str);
 	if (!BC_ASSERT_PTR_NOT_NULL(message)) return;
 
 	const string str2 = message->asString();
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
+	
+	string content = message->getContent();
+	BC_ASSERT_STRING_EQUAL(content.c_str(), body.c_str());
 }
 
 static void parse_message_with_generic_header_parameters () {
+	const string body = "<body>"
+		"Here is the text of my message."
+		"</body>";
+
 	const string str = "Content-type: Message/CPIM\r\n"
 		"\r\n"
 		"From: MR SANDERS <im:piglet@100akerwood.com>\r\n"
@@ -261,18 +271,18 @@ static void parse_message_with_generic_header_parameters () {
 		"yaya: coucou\r\n"
 		"yepee:;good=bad ugly\r\n"
 		"\r\n"
-		"Content-type text/xml; charset=utf-8\r\n"
+		"Content-Type: text/xml; charset=utf-8\r\n"
 		"Content-ID: <1234567890@foo.com>\r\n"
-		"\r\n"
-		"<body>"
-		"Here is the text of my message."
-		"</body>";
+		"\r\n" + body;
 
 	shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(str);
 	if (!BC_ASSERT_PTR_NOT_NULL(message)) return;
 
 	const string str2 = message->asString();
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
+	
+	string content = message->getContent();
+	BC_ASSERT_STRING_EQUAL(content.c_str(), body.c_str());
 }
 
 static void build_message () {
@@ -281,11 +291,11 @@ static void build_message () {
 		return;
 
 	// Set CPIM headers.
-	Cpim::GenericHeader contentTypeHeader;
-	if (!BC_ASSERT_TRUE(contentTypeHeader.setName("Content-Type"))) return;
-	if (!BC_ASSERT_TRUE(contentTypeHeader.setValue("Message/CPIM"))) return;
+	Cpim::GenericHeader cpimContentTypeHeader;
+	if (!BC_ASSERT_TRUE(cpimContentTypeHeader.setName("Content-Type"))) return;
+	if (!BC_ASSERT_TRUE(cpimContentTypeHeader.setValue("Message/CPIM"))) return;
 
-	if (!BC_ASSERT_TRUE(message.addCpimHeader(contentTypeHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addCpimHeader(cpimContentTypeHeader))) return;
 
 	// Set message headers.
 	Cpim::FromHeader fromHeader;
@@ -328,10 +338,18 @@ static void build_message () {
 	if (!BC_ASSERT_TRUE(message.addMessageHeader(vitalMessageHeader))) return;
 	if (!BC_ASSERT_TRUE(message.addMessageHeader(wackyMessageHeader))) return;
 
-	const string content = "Content-type text/xml; charset=utf-8\r\n"
-		"Content-ID: <1234567890@foo.com>\r\n"
-		"\r\n"
-		"<body>"
+	// Set Content headers.
+    Cpim::GenericHeader contentTypeHeader;
+	if (!BC_ASSERT_TRUE(contentTypeHeader.setName("Content-Type"))) return;
+	if (!BC_ASSERT_TRUE( contentTypeHeader.setValue("text/xml; charset=utf-8"))) return;
+	if (!BC_ASSERT_TRUE(message.addContentHeader(contentTypeHeader))) return;
+	
+    Cpim::GenericHeader contentIdHeader;
+	if (!BC_ASSERT_TRUE(contentIdHeader.setName("Content-ID"))) return;
+	if (!BC_ASSERT_TRUE( contentIdHeader.setValue("<1234567890@foo.com>"))) return;
+    if (!BC_ASSERT_TRUE(message.addContentHeader(contentIdHeader))) return;
+
+	const string content = "<body>"
 		"Here is the text of my message."
 		"</body>";
 
@@ -351,7 +369,7 @@ static void build_message () {
 		"MyFeatures.VitalMessageOption: Confirmation-requested\r\n"
 		"MyFeatures.WackyMessageOption: Use-silly-font\r\n"
 		"\r\n"
-		"Content-type text/xml; charset=utf-8\r\n"
+		"Content-Type: text/xml; charset=utf-8\r\n"
 		"Content-ID: <1234567890@foo.com>\r\n"
 		"\r\n"
 		"<body>"
@@ -359,6 +377,14 @@ static void build_message () {
 		"</body>";
 
 	BC_ASSERT_STRING_EQUAL(strMessage.c_str(), expectedMessage.c_str());
+}
+
+static void cpim_chat_message_modifier_encoder(void) {
+	
+}
+
+static void cpim_chat_message_modifier_decoder(void) {
+	
 }
 
 test_t cpim_tests[] = {
@@ -370,7 +396,9 @@ test_t cpim_tests[] = {
 	TEST_NO_TAG("Check Subject header language", check_subject_header_language),
 	TEST_NO_TAG("Parse RFC example", parse_rfc_example),
 	TEST_NO_TAG("Parse Message with generic header parameters", parse_message_with_generic_header_parameters),
-	TEST_NO_TAG("Build Message", build_message)
+	TEST_NO_TAG("Build Message", build_message),
+	TEST_NO_TAG("CPIM chat message modifier encoder", cpim_chat_message_modifier_encoder),
+	TEST_NO_TAG("CPIM chat message modifier decoder", cpim_chat_message_modifier_decoder)
 };
 
 test_suite_t cpim_test_suite = {

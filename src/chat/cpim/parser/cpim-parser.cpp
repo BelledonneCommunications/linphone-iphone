@@ -166,7 +166,7 @@ namespace Cpim {
 		// Warning: Call this function one time!
 		shared_ptr<Message> createMessage () const {
 			size_t size = mHeaders->size();
-			if (size != 2) {
+			if (size < 2 || size > 3) {
 				lWarning() << "Bad headers lists size.";
 				return nullptr;
 			}
@@ -190,9 +190,21 @@ namespace Cpim {
 			}
 
 			// Add message headers.
+			if (mHeaders->size() > 2) {
+				list<shared_ptr<ListHeaderNode>>::iterator it = mHeaders->begin();
+				std::advance(it, 1);
+				shared_ptr<ListHeaderNode> messageHeaders = *it;
+				for (const auto &headerNode : *messageHeaders) {
+					const shared_ptr<const Header> header = headerNode->createHeader();
+					if (!header || !message->addMessageHeader(*header))
+						return nullptr;
+				}
+			}
+			
+			// Add content headers.
 			for (const auto &headerNode : *mHeaders->back()) {
 				const shared_ptr<const Header> header = headerNode->createHeader();
-				if (!header || !message->addMessageHeader(*header))
+				if (!header || !message->addContentHeader(*header))
 					return nullptr;
 			}
 
@@ -265,8 +277,9 @@ shared_ptr<Cpim::Message> Cpim::Parser::parseMessage (const string &input) {
 	}
 
 	shared_ptr<Message> message = messageNode->createMessage();
-	if (message)
+	if (message) {
 		message->setContent(input.substr(parsedSize));
+	}
 	return message;
 }
 

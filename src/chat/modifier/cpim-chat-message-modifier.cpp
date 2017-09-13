@@ -31,10 +31,10 @@
 
  void CpimChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
     Cpim::Message message;
-    Cpim::GenericHeader contentTypeHeader;
-	contentTypeHeader.setName("Content-Type");
-    contentTypeHeader.setValue("Message/CPIM");
-    message.addCpimHeader(contentTypeHeader);
+    Cpim::GenericHeader cpimContentTypeHeader;
+	cpimContentTypeHeader.setName("Content-Type");
+    cpimContentTypeHeader.setValue("Message/CPIM");
+    message.addCpimHeader(cpimContentTypeHeader);
     
     shared_ptr<Content> content;
     if (msg->internalContent) {
@@ -50,7 +50,13 @@
     string contentType = content->getContentType().asString();
     const vector<char> body = content->getBody();
     string contentBody(body.begin(), body.end());
-    message.setContent("ContentType: " + contentType + "\r\n" + contentBody);
+
+    Cpim::GenericHeader contentTypeHeader;
+	contentTypeHeader.setName("Content-Type");
+    contentTypeHeader.setValue(contentType);
+    message.addContentHeader(contentTypeHeader);
+
+    message.setContent(contentBody);
 
     if (!message.isValid()) {
         //TODO
@@ -64,7 +70,29 @@
  }
 
  void CpimChatMessageModifier::decode(LinphonePrivate::ChatMessagePrivate* msg) {
-    //TODO
+    shared_ptr<Content> content;
+    if (msg->internalContent) {
+        content = msg->internalContent;
+    } else {
+        content = msg->contents.front();
+    }
+
+    ContentType contentType = content->getContentType();
+    if (contentType.asString() == "Message/CPIM") {
+        const vector<char> body = content->getBody();
+        string contentBody(body.begin(), body.end());
+        shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(contentBody);
+        if (message && message->isValid()) {
+            shared_ptr<Content> newContent = make_shared<Content>();
+            ContentType newContentType(message->getContentHeaders()->front()->getValue());
+            newContent->setContentType(newContentType);
+            newContent->setBody(message->getContent());
+        } else {
+            //TODO
+        }
+    } else {
+        //TODO
+    }
  }
  
 LINPHONE_END_NAMESPACE

@@ -25,7 +25,7 @@ LINPHONE_BEGIN_NAMESPACE
 static const char *grammar =
 // See: https://tools.ietf.org/html/rfc3862
 R"==GRAMMAR==(
-Message = Headers CRLF Headers CRLF
+Message = Headers CRLF Headers CRLF [Headers CRLF]
 
 Headers = *Header
 Header = Header-name ":" Header-parameters SP Header-value CRLF

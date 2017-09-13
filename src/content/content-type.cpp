@@ -70,6 +70,10 @@ bool ContentType::operator== (const ContentType &contentType) {
 	return getType() == contentType.getType() && getSubType() == contentType.getSubType();
 }
 
+bool ContentType::operator== (const string &contentType) {
+	return *this == ContentType(contentType);
+}
+
 const string &ContentType::getType () const {
 	L_D(const ContentType);
 	return d->type;

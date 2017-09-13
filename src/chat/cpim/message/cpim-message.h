@@ -42,6 +42,10 @@ namespace Cpim {
 		HeaderList getMessageHeaders () const;
 		bool addMessageHeader (const Header &messageHeader);
 		void removeMessageHeader (const Header &messageHeader);
+		
+		HeaderList getContentHeaders () const;
+		bool addContentHeader (const Header &contentHeader);
+		void removeContentHeader (const Header &contentHeader);
 
 		std::string getContent () const;
 		bool setContent (const std::string &content);

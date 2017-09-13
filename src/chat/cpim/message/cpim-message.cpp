@@ -20,6 +20,7 @@
 
 #include "linphone/utils/utils.h"
 
+#include "logger/logger.h"
 #include "chat/cpim/parser/cpim-parser.h"
 #include "object/object-p.h"
 
@@ -37,6 +38,7 @@ public:
 
 	shared_ptr<PrivHeaderList> cpimHeaders = make_shared<PrivHeaderList>();
 	shared_ptr<PrivHeaderList> messageHeaders = make_shared<PrivHeaderList>();
+	shared_ptr<PrivHeaderList> contentHeaders = make_shared<PrivHeaderList>();
 	string content;
 };
 
@@ -92,6 +94,30 @@ void Cpim::Message::removeMessageHeader (const Header &messageHeader) {
 
 // -----------------------------------------------------------------------------
 
+Cpim::Message::HeaderList Cpim::Message::getContentHeaders () const {
+	L_D(const Message);
+	return d->contentHeaders;
+}
+
+bool Cpim::Message::addContentHeader (const Header &contentHeader) {
+	L_D(Message);
+
+	if (!contentHeader.isValid())
+		return false;
+
+	d->contentHeaders->push_back(Parser::getInstance()->cloneHeader(contentHeader));
+	return true;
+}
+
+void Cpim::Message::removeContentHeader (const Header &contentHeader) {
+	L_D(Message);
+	d->contentHeaders->remove_if([&contentHeader](const shared_ptr<const Header> &header) {
+			return contentHeader.getName() == header->getName() && contentHeader.getValue() == header->getValue();
+		});
+}
+
+// -----------------------------------------------------------------------------
+
 string Cpim::Message::getContent () const {
 	L_D(const Message);
 	return d->content;
@@ -125,11 +151,18 @@ string Cpim::Message::asString () const {
 
 	output += "\r\n";
 
-	for (const auto &messageHeader : *d->messageHeaders)
-		output += messageHeader->asString();
+	if (d->messageHeaders->size() > 0) {
+		for (const auto &messageHeader : *d->messageHeaders)
+			output += messageHeader->asString();
 
+		output += "\r\n";
+	}
+
+	for (const auto &contentHeaders : *d->contentHeaders)
+		output += contentHeaders->asString();
+		
 	output += "\r\n";
-	output += ""; // TODO: Headers MIME.
+
 	output += getContent();
 
 	return output;
