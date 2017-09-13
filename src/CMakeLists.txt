@@ -92,7 +92,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object-p.h
 	object/object.h
 	object/singleton.h
-	utils/content-type.h
 	utils/payload-type-handler.h
 )
 
@@ -141,7 +140,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	nat/stun-client.cpp
 	object/clonable-object.cpp
 	object/object.cpp
-	utils/content-type.cpp
 	utils/general.cpp
 	utils/payload-type-handler.cpp
 	utils/utils.cpp

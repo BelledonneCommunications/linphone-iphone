@@ -108,4 +108,36 @@ string ContentType::asString () const {
 	return isValid() ? d->type + "/" + d->subType : "";
 }
 
+bool ContentType::isFileTransfer () const {
+	return isFileTransfer(asString());
+}
+
+bool ContentType::isImIsComposing () const {
+	return isFileTransfer(asString());
+}
+
+bool ContentType::isImdn () const {
+	return isImdn(asString());
+}
+
+bool ContentType::isText () const {
+	return isText(asString());
+}
+
+bool ContentType::isFileTransfer (const string &contentType) {
+	return contentType == "application/vnd.gsma.rcs-ft-http+xml";
+}
+
+bool ContentType::isImIsComposing (const string &contentType) {
+	return contentType == "application/im-iscomposing+xml";
+}
+
+bool ContentType::isImdn (const string &contentType) {
+	return contentType == "message/imdn+xml";
+}
+
+bool ContentType::isText (const string &contentType) {
+	return contentType == "text/plain";
+}
+
 LINPHONE_END_NAMESPACE

@@ -20,11 +20,11 @@
 
 #include "linphone/utils/utils.h"
 
-#include "chat-room-p.h"
-#include "imdn.h"
 #include "c-wrapper/c-tools.h"
+#include "chat-room-p.h"
+#include "content/content-type.h"
+#include "imdn.h"
 #include "logger/logger.h"
-#include "utils/content-type.h"
 
 #include "chat-room.h"
 

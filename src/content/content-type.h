@@ -49,6 +49,16 @@ public:
 
 	std::string asString () const;
 
+	bool isFileTransfer () const;
+	bool isImIsComposing () const;
+	bool isImdn () const;
+	bool isText () const;
+
+	static bool isFileTransfer (const std::string &contentType);
+	static bool isImIsComposing (const std::string &contentType);
+	static bool isImdn (const std::string &contentType);
+	static bool isText (const std::string &contentType);
+
 private:
 	L_DECLARE_PRIVATE(ContentType);
 };

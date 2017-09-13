@@ -37,9 +37,9 @@
 
 #include "c-wrapper/c-tools.h"
 #include "chat/basic-chat-room.h"
-#include "chat/real-time-text-chat-room.h"
 #include "chat/real-time-text-chat-room-p.h"
-#include "utils/content-type.h"
+#include "chat/real-time-text-chat-room.h"
+#include "content/content-type.h"
 
 struct _LinphoneChatRoom{
 	belle_sip_object_t base;
