@@ -25,7 +25,9 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-BasicChatRoomPrivate::BasicChatRoomPrivate (LinphoneCore *core, const Address &peerAddress) : ChatRoomPrivate(core, peerAddress) {}
+BasicChatRoomPrivate::BasicChatRoomPrivate (LinphoneCore *core, const Address &peerAddress) : ChatRoomPrivate(core) {
+	this->peerAddress = peerAddress;
+}
 
 // =============================================================================
 

@@ -34,8 +34,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core, const Address &peerAddress)
-	: core(core), peerAddress(peerAddress), isComposingHandler(core, this) {}
+ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
+	: core(core), isComposingHandler(core, this) {}
 
 ChatRoomPrivate::~ChatRoomPrivate () {
 	for (auto it = transientMessages.begin(); it != transientMessages.end(); it++) {
@@ -538,7 +538,7 @@ void ChatRoomPrivate::onIsComposingRefreshNeeded () {
 
 // =============================================================================
 
-ChatRoom::ChatRoom (LinphoneCore *core, const Address &peerAddress) : Object(*new ChatRoomPrivate(core, peerAddress)) {}
+ChatRoom::ChatRoom (LinphoneCore *core) : Object(*new ChatRoomPrivate(core)) {}
 
 ChatRoom::ChatRoom (ChatRoomPrivate &p) : Object(p) {}
 

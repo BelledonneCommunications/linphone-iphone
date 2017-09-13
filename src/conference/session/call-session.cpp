@@ -23,7 +23,6 @@
 #include "address/address-p.h"
 #include "conference/session/call-session-p.h"
 #include "call/call-p.h"
-#include "conference/conference-p.h"
 #include "conference/params/call-session-params-p.h"
 
 #include "conference/session/call-session.h"
@@ -45,7 +44,7 @@ CallSessionPrivate::CallSessionPrivate (const Conference &conference, const shar
 	if (params)
 		this->params = make_shared<CallSessionParams>(*params.get());
 	currentParams = make_shared<CallSessionParams>();
-	core = conference.getPrivate()->getCore();
+	core = conference.getCore();
 	ei = linphone_error_info_new();
 }
 

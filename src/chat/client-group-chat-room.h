@@ -23,6 +23,7 @@
 #include "private.h"
 
 #include "chat/chat-room.h"
+#include "conference/remote-conference.h"
 
 #include "linphone/types.h"
 
@@ -32,11 +33,12 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ClientGroupChatRoomPrivate;
 
-class ClientGroupChatRoom : public ChatRoom {
+class ClientGroupChatRoom : public ChatRoom, public RemoteConference {
 public:
-	ClientGroupChatRoom (LinphoneCore *core, const Address &peerAddress);
+	ClientGroupChatRoom (LinphoneCore *core, const Address &me, std::list<Address> &addresses);
 	virtual ~ClientGroupChatRoom () = default;
 
+public:
 	/* ConferenceInterface */
 	std::shared_ptr<Participant> addParticipant (const Address &addr, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
 	void addParticipants (const std::list<Address> &addresses, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
@@ -44,7 +46,7 @@ public:
 	int getNbParticipants () const;
 	std::list<std::shared_ptr<Participant>> getParticipants () const;
 	void removeParticipant (const std::shared_ptr<Participant> participant);
-	void removeParticipants (const std::list<const std::shared_ptr<Participant>> participants);
+	void removeParticipants (const std::list<std::shared_ptr<Participant>> participants);
 
 private:
 	L_DECLARE_PRIVATE(ClientGroupChatRoom);

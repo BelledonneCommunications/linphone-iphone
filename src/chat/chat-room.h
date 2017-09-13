@@ -38,7 +38,7 @@ class ChatRoomPrivate;
 
 class ChatRoom : public Object, public ConferenceInterface {
 public:
-	ChatRoom (LinphoneCore *core, const Address &peerAddress);
+	ChatRoom (LinphoneCore *core);
 	virtual ~ChatRoom () = default;
 
 	void compose ();

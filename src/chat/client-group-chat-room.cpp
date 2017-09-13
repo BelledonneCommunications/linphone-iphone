@@ -17,14 +17,55 @@
  */
 
 #include "client-group-chat-room-p.h"
+#include "conference/participant-p.h"
 #include "logger/logger.h"
-
-// =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core, const Address &peerAddress) : ChatRoomPrivate(core, peerAddress) {}
+// =============================================================================
+
+ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : ChatRoomPrivate(core) {}
+
+// =============================================================================
+
+ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, std::list<Address> &addresses)
+	: ChatRoom(*new ChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
+	// TODO
+}
+
+// -----------------------------------------------------------------------------
+
+shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+	activeParticipant = make_shared<Participant>(addr);
+	activeParticipant->getPrivate()->createSession(*this, params, hasMedia, this);
+	return activeParticipant;
+}
+
+void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const shared_ptr<CallSessionParams> params, bool hasMedia) {
+	// TODO
+}
+
+const string& ClientGroupChatRoom::getId () const {
+	return id;
+}
+
+int ClientGroupChatRoom::getNbParticipants () const {
+	// TODO
+	return 1;
+}
+
+list<shared_ptr<Participant>> ClientGroupChatRoom::getParticipants () const {
+	return participants;
+}
+
+void ClientGroupChatRoom::removeParticipant (const shared_ptr<Participant> participant) {
+	// TODO
+}
+
+void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> participants) {
+	// TODO
+}
 
 LINPHONE_END_NAMESPACE

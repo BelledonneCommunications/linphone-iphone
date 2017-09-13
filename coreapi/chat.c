@@ -37,8 +37,9 @@
 
 #include "c-wrapper/c-tools.h"
 #include "chat/basic-chat-room.h"
-#include "chat/real-time-text-chat-room-p.h"
+#include "chat/client-group-chat-room.h"
 #include "chat/real-time-text-chat-room.h"
+#include "chat/real-time-text-chat-room-p.h"
 #include "content/content-type.h"
 
 struct _LinphoneChatRoom{
@@ -253,6 +254,15 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 		ret = _linphone_core_create_chat_room(lc, addr);
 	}
 	return ret;
+}
+
+LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, bctbx_list_t *addresses) {
+	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
+	std::list<LinphonePrivate::Address> l = L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address);
+	LinphonePrivate::Address me; // TODO
+	cr->cr = new LinphonePrivate::ClientGroupChatRoom(lc, me, l);
+	L_GET_PRIVATE(cr->cr)->setCBackPointer(cr);
+	return cr;
 }
 
 void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {

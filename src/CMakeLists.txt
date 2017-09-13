@@ -52,7 +52,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/real-time-text-chat-room-p.h
 	chat/real-time-text-chat-room.h
 	conference/conference-listener.h
-	conference/conference-p.h
 	conference/conference.h
 	conference/local-conference.h
 	conference/params/call-session-params-p.h

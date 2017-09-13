@@ -31,7 +31,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
-	ClientGroupChatRoomPrivate (LinphoneCore *core, const Address &peerAddress);
+	ClientGroupChatRoomPrivate (LinphoneCore *core);
 	virtual ~ClientGroupChatRoomPrivate () = default;
 
 private:

@@ -116,8 +116,8 @@ public:
 	template<typename T>
 	static inline bctbx_list_t * getCListFromCppList (std::list<T> cppList) {
 		bctbx_list_t *result = nullptr;
-		for (auto it = cppList.begin(); it != cppList.end(); it++)
-			result = bctbx_list_append(result, *it);
+		for (const auto &value : cppList)
+			result = bctbx_list_append(result, value);
 		return result;
 	}
 
@@ -126,6 +126,14 @@ public:
 		std::list<T> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
 			result.push_back(static_cast<T>(bctbx_list_get_data(it)));
+		return result;
+	}
+
+	template<typename T, typename U>
+	static inline std::list<T> getCppListOfCppObjFromCListOfStructPtr (bctbx_list_t *cList) {
+		std::list<T> result;
+		for (auto it = cList; it; it = bctbx_list_next(it))
+			result.push_back(*getCppPtrFromC<T>(reinterpret_cast<U *>(bctbx_list_get_data(it))));
 		return result;
 	}
 
@@ -217,5 +225,7 @@ LINPHONE_END_NAMESPACE
 	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList<TYPE *>(LIST)
 #define L_GET_CPP_LIST_FROM_C_LIST(LIST, TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE *>(LIST)
+#define L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(LIST, TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getCppListOfCppObjFromCListOfStructPtr<LINPHONE_NAMESPACE::TYPE, Linphone ## TYPE>(LIST)
 
 #endif // ifndef _C_TOOLS_H_

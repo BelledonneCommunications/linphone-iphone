@@ -25,14 +25,12 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class RemoteConferencePrivate;
-
 class RemoteConference : public Conference {
 public:
 	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
+	virtual ~RemoteConference() = default;
 
 private:
-	L_DECLARE_PRIVATE(RemoteConference);
 	L_DISABLE_COPY(RemoteConference);
 };
 

@@ -25,6 +25,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionListener {
 public:
+	virtual ~CallSessionListener() = default;
+
 	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) = 0;
 	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers) = 0;
 	virtual void onCallSessionAccepted (const CallSession &session) = 0;

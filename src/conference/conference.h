@@ -27,6 +27,7 @@
 #include "conference/conference-interface.h"
 #include "conference/params/call-session-params.h"
 #include "conference/participant.h"
+#include "conference/session/call-session-listener.h"
 
 #include "linphone/types.h"
 
@@ -34,16 +35,20 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferencePrivate;
 class CallSessionPrivate;
 
-class Conference : public Object, public ConferenceInterface {
+class Conference : public ConferenceInterface, public CallSessionListener {
 	friend class CallSessionPrivate;
 
 public:
-	std::shared_ptr<Participant> getActiveParticipant () const;
-	std::shared_ptr<Participant> getMe () const;
+	virtual ~Conference() = default;
 
+	std::shared_ptr<Participant> getActiveParticipant () const;
+	std::shared_ptr<Participant> getMe () const { return me; }
+
+	LinphoneCore * getCore () const { return core; }
+
+public:
 	/* ConferenceInterface */
 	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
 	virtual void addParticipants (const std::list<Address> &addresses, const std::shared_ptr<CallSessionParams> params, bool hasMedia);
@@ -53,11 +58,35 @@ public:
 	virtual void removeParticipant (const std::shared_ptr<Participant> participant);
 	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> participants);
 
+private:
+	/* CallSessionListener */
+	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers);
+	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers);
+	virtual void onCallSessionAccepted (const CallSession &session);
+	virtual void onCallSessionSetReleased (const CallSession &session);
+	virtual void onCallSessionSetTerminated (const CallSession &session);
+	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message);
+	virtual void onIncomingCallSessionStarted (const CallSession &session);
+	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken);
+	virtual void onStatsUpdated (const LinphoneCallStats *stats);
+	virtual void onResetCurrentSession (const CallSession &session);
+	virtual void onSetCurrentSession (const CallSession &session);
+	virtual void onFirstVideoFrameDecoded (const CallSession &session);
+	virtual void onResetFirstVideoFrameDecoded (const CallSession &session);
+
 protected:
-	explicit Conference (ConferencePrivate &p, LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
+	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
+
+protected:
+	LinphoneCore *core = nullptr;
+	CallListener *callListener = nullptr;
+
+	std::shared_ptr<Participant> activeParticipant = nullptr;
+	std::string id;
+	std::shared_ptr<Participant> me = nullptr;
+	std::list<std::shared_ptr<Participant>> participants;
 
 private:
-	L_DECLARE_PRIVATE(Conference);
 	L_DISABLE_COPY(Conference);
 };
 

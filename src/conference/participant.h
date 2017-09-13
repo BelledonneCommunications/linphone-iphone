@@ -28,11 +28,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ClientGroupChatRoom;
 class ParticipantPrivate;
 
 class Participant : public Object {
 	friend class Call;
 	friend class CallPrivate;
+	friend class ClientGroupChatRoom;
 	friend class Conference;
 	friend class MediaSessionPrivate;
 

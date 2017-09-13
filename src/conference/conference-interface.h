@@ -32,6 +32,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceInterface {
 public:
+	virtual ~ConferenceInterface() = default;
+
 	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const std::shared_ptr<CallSessionParams> params, bool hasMedia) = 0;
 	virtual void addParticipants (const std::list<Address> &addresses, const std::shared_ptr<CallSessionParams> params, bool hasMedia) = 0;
 	virtual const std::string& getId () const = 0;

@@ -33,7 +33,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate : public ObjectPrivate, public IsComposingListener {
 public:
-	ChatRoomPrivate (LinphoneCore *core, const Address &peerAddress);
+	ChatRoomPrivate (LinphoneCore *core);
 	virtual ~ChatRoomPrivate ();
 
 private:

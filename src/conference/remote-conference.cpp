@@ -16,21 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "conference-p.h"
-
 #include "remote-conference.h"
 
 LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-class RemoteConferencePrivate : public ConferencePrivate {
-public:
-};
-
-// =============================================================================
-
 RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(*new RemoteConferencePrivate, core, myAddress, listener) {}
+	: Conference(core, myAddress, listener) {}
 
 LINPHONE_END_NAMESPACE

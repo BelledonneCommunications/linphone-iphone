@@ -30,7 +30,9 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 RealTimeTextChatRoomPrivate::RealTimeTextChatRoomPrivate (LinphoneCore *core, const Address &peerAddress)
-	: ChatRoomPrivate(core, peerAddress) {}
+	: ChatRoomPrivate(core) {
+	this->peerAddress = peerAddress;
+}
 
 RealTimeTextChatRoomPrivate::~RealTimeTextChatRoomPrivate () {
 	if (!receivedRttCharacters.empty()) {

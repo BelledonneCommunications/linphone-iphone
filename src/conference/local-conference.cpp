@@ -16,21 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "conference-p.h"
-
 #include "local-conference.h"
 
 LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-class LocalConferencePrivate : public ConferencePrivate {
-public:
-};
-
-// =============================================================================
-
 LocalConference::LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(*new LocalConferencePrivate, core, myAddress, listener) {}
+	: Conference(core, myAddress, listener) {}
 
 LINPHONE_END_NAMESPACE
