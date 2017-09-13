@@ -49,6 +49,10 @@ namespace Utils {
 
 	LINPHONE_PUBLIC int stoi (const std::string &str, size_t *idx = 0, int base = 10);
 
+	LINPHONE_PUBLIC std::string stringToLower (const std::string &str);
+
+	LINPHONE_PUBLIC bool stringToBool (const std::string &str);
+
 	// Return a buffer allocated with new.
 	LINPHONE_PUBLIC char *utf8ToChar (uint32_t ic);
 

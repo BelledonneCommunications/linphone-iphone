@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <sstream>
 
@@ -85,6 +86,17 @@ int Utils::stoi (const string &str, size_t *idx, int base) {
 		*idx = p - str.c_str();
 
 	return v;
+}
+
+string Utils::stringToLower (const string &str) {
+	string result(str.size(), ' ');
+	transform(str.cbegin(), str.cend(), result.begin(), ::tolower);
+	return result;
+}
+
+bool Utils::stringToBool (const string &str) {
+	const string lowerStr = stringToLower(str);
+	return !lowerStr.empty() && (lowerStr == "true" || lowerStr == "1");
 }
 
 char *Utils::utf8ToChar (uint32_t ic) {

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "linphone/utils/utils.h"
+
 #include "variant.h"
 
 // =============================================================================
@@ -39,9 +41,12 @@ public:
 		bool b;
 		double d;
 		float f;
+		string *str;
+		void *g;
 	};
 
-	Variant::Type type = Variant::Invalid;
+	// Integer, because type can be a custom type.
+	int type = Variant::Invalid;
 	Value value = {};
 };
 
@@ -183,6 +188,56 @@ void Variant::swap (const Variant &variant) {
 }
 
 // -----------------------------------------------------------------------------
+// Number helpers.
+// -----------------------------------------------------------------------------
+
+static inline long long getAssumedNumber (const VariantPrivate &p) {
+	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+
+	switch (static_cast<Variant::Type>(p.type)) {
+		case Variant::Int:
+			return p.value.i;
+		case Variant::Short:
+			return p.value.s;
+		case Variant::Long:
+			return p.value.l;
+		case Variant::LongLong:
+			return p.value.ll;
+		case Variant::Char:
+			return p.value.c;
+		case Variant::Double:
+			return p.value.d;
+		case Variant::Float:
+			return p.value.f;
+
+		default:
+			L_ASSERT(false);
+	}
+
+	return 0;
+}
+
+static inline unsigned long long getAssumedUnsignedNumber (const VariantPrivate &p) {
+	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+
+	switch (static_cast<Variant::Type>(p.type)) {
+		case Variant::UnsignedInt:
+			return p.value.ui;
+		case Variant::UnsignedShort:
+			return p.value.us;
+		case Variant::UnsignedLong:
+			return p.value.ul;
+		case Variant::UnsignedLongLong:
+			return p.value.ull;
+
+		default:
+			L_ASSERT(false);
+	}
+
+	return 0;
+}
+
+// -----------------------------------------------------------------------------
 // Number conversions.
 // -----------------------------------------------------------------------------
 
@@ -201,7 +256,39 @@ static inline unsigned long long getValueAsUnsignedNumber (const VariantPrivate 
 // -----------------------------------------------------------------------------
 
 static inline bool getValueAsBool (const VariantPrivate &p, bool *soFarSoGood) {
-	// TODO.
+	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+
+	*soFarSoGood = true;
+	switch (static_cast<Variant::Type>(p.type)) {
+		case Variant::Int:
+		case Variant::Short:
+		case Variant::Long:
+		case Variant::LongLong:
+		case Variant::Char:
+		case Variant::Double:
+		case Variant::Float:
+			return static_cast<bool>(getAssumedNumber(p));
+
+		case Variant::UnsignedInt:
+		case Variant::UnsignedShort:
+		case Variant::UnsignedLong:
+		case Variant::UnsignedLongLong:
+			return static_cast<bool>(getAssumedUnsignedNumber(p));
+
+		case Variant::Bool:
+			return p.value.b;
+
+		case Variant::String:
+			return Utils::stringToBool(*p.value.str);
+
+		case Variant::Generic:
+			return static_cast<bool>(p.value.g);
+
+		default:
+			*soFarSoGood = false;
+			break;
+	}
+
 	return false;
 }
 
@@ -230,7 +317,7 @@ static inline void *getValueAsGeneric (const VariantPrivate &p, bool *soFarSoGoo
 void Variant::getValue (int type, void *value, bool *soFarSoGood) const {
 	L_D(const Variant);
 
-	if (type <= 0 || type >= MaxDefaultTypes) {
+	if (type <= Invalid || type >= MaxDefaultTypes) {
 		*soFarSoGood = false;
 		// Unable to get value. It will be great to support custom types.
 		return;
