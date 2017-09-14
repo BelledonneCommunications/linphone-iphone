@@ -427,4 +427,10 @@ void Variant::getValue (int type, void *value, bool *soFarSoGood) const {
 	}
 }
 
+Variant Variant::createGeneric (void *value) {
+	Variant variant(Generic);
+	variant.getPrivate()->value.g = value;
+	return variant;
+}
+
 LINPHONE_END_NAMESPACE

@@ -129,11 +129,7 @@ private:
 
 	void getValue (int type, void *value, bool *soFarSoGood) const;
 
-	static inline Variant createGeneric (void *value) {
-		Variant variant(Generic);
-		variant.setValue<void *>(value);
-		return variant;
-	}
+	static Variant createGeneric (void *value);
 
 	VariantPrivate *mPrivate = nullptr;
 
