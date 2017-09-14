@@ -49,6 +49,10 @@ void Conference::addParticipants (const list<Address> &addresses, const CallSess
 	// TODO
 }
 
+bool Conference::canHandleParticipants () const {
+	return true;
+}
+
 const string& Conference::getId () const {
 	return id;
 }

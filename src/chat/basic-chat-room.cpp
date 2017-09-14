@@ -44,6 +44,10 @@ void BasicChatRoom::addParticipants (const list<Address> &addresses, const CallS
 	lError() << "addParticipants() is not allowed on a BasicChatRoom";
 }
 
+bool BasicChatRoom::canHandleParticipants () const {
+	return false;
+}
+
 const string& BasicChatRoom::getId () const {
 	L_D(const BasicChatRoom);
 	lError() << "a BasicChatRoom does not have a conference id";

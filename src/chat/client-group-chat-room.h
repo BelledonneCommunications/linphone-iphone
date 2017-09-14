@@ -42,6 +42,7 @@ public:
 	/* ConferenceInterface */
 	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia);
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia);
+	bool canHandleParticipants () const;
 	const std::string& getId () const;
 	int getNbParticipants () const;
 	std::list<std::shared_ptr<Participant>> getParticipants () const;

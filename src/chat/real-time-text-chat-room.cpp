@@ -149,6 +149,10 @@ void RealTimeTextChatRoom::addParticipants (const list<Address> &addresses, cons
 	lError() << "addParticipants() is not allowed on a RealTimeTextChatRoom";
 }
 
+bool RealTimeTextChatRoom::canHandleParticipants () const {
+	return false;
+}
+
 const string& RealTimeTextChatRoom::getId () const {
 	L_D(const RealTimeTextChatRoom);
 	lError() << "a RealTimeTextChatRoom does not have a conference id";

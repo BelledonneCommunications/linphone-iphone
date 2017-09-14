@@ -54,6 +54,10 @@ void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const
 	// TODO
 }
 
+bool ClientGroupChatRoom::canHandleParticipants () const {
+	return true;
+}
+
 const string& ClientGroupChatRoom::getId () const {
 	return id;
 }
