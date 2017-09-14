@@ -81,7 +81,10 @@ Variant::Variant (const Variant &src) {
 }
 
 Variant::Variant (Variant &&src) {
-	// TODO.
+	// Don't call placement new.
+	L_ASSERT(!mPrivate);
+	mPrivate = src.mPrivate;
+	src.mPrivate = nullptr;
 }
 
 Variant::Variant (int value) : Variant(Int) {
