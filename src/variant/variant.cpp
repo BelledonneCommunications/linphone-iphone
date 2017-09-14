@@ -279,7 +279,7 @@ static inline bool getValueAsBool (const VariantPrivate &p, bool *soFarSoGood) {
 			return p.value.b;
 
 		case Variant::String:
-			return Utils::stringToBool(*p.value.str);
+			return Utils::stob(*p.value.str);
 
 		case Variant::Generic:
 			return static_cast<bool>(p.value.g);
@@ -293,7 +293,41 @@ static inline bool getValueAsBool (const VariantPrivate &p, bool *soFarSoGood) {
 }
 
 static inline double getValueAsDouble (const VariantPrivate &p, bool *soFarSoGood) {
-	// TODO.
+	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+
+	*soFarSoGood = true;
+	switch (static_cast<Variant::Type>(p.type)) {
+		case Variant::Int:
+		case Variant::Short:
+		case Variant::Long:
+		case Variant::LongLong:
+		case Variant::Char:
+		case Variant::Float:
+			return static_cast<double>(getAssumedNumber(p));
+
+		case Variant::UnsignedInt:
+		case Variant::UnsignedShort:
+		case Variant::UnsignedLong:
+		case Variant::UnsignedLongLong:
+			return static_cast<double>(getAssumedUnsignedNumber(p));
+
+		case Variant::Double:
+			return p.value.d;
+
+		case Variant::Bool:
+			return static_cast<double>(p.value.b);
+
+		case Variant::String:
+			return Utils::stod(*p.value.str);
+
+		case Variant::Generic:
+			return static_cast<double>(!!p.value.g);
+
+		default:
+			*soFarSoGood = false;
+			break;
+	}
+
 	return 0.0;
 }
 

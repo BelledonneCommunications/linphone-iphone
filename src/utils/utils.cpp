@@ -88,15 +88,25 @@ int Utils::stoi (const string &str, size_t *idx, int base) {
 	return v;
 }
 
+double Utils::stod (const std::string &str, size_t *idx) {
+	char *p;
+	double v = strtod(str.c_str(), &p);
+
+	if (idx)
+	  *idx = p - str.c_str();
+
+	return v;
+}
+
+bool Utils::stob (const string &str) {
+	const string lowerStr = stringToLower(str);
+	return !lowerStr.empty() && (lowerStr == "true" || lowerStr == "1");
+}
+
 string Utils::stringToLower (const string &str) {
 	string result(str.size(), ' ');
 	transform(str.cbegin(), str.cend(), result.begin(), ::tolower);
 	return result;
-}
-
-bool Utils::stringToBool (const string &str) {
-	const string lowerStr = stringToLower(str);
-	return !lowerStr.empty() && (lowerStr == "true" || lowerStr == "1");
 }
 
 char *Utils::utf8ToChar (uint32_t ic) {
