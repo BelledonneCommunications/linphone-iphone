@@ -93,7 +93,6 @@ protected:
 	LinphoneProxyConfig *destProxy = nullptr;
 	LinphoneErrorInfo *ei = nullptr;
 	LinphoneCallLog *log = nullptr;
-	LinphoneNatPolicy *natPolicy = nullptr;
 
 	SalOp *op = nullptr;
 

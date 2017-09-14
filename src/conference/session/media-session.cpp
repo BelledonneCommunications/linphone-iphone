@@ -103,6 +103,8 @@ MediaSessionPrivate::~MediaSessionPrivate () {
 		linphone_call_stats_unref(videoStats);
 	if (textStats)
 		linphone_call_stats_unref(textStats);
+	if (natPolicy)
+		linphone_nat_policy_unref(natPolicy);
 	if (stunClient)
 		delete stunClient;
 	delete iceAgent;
@@ -4086,6 +4088,12 @@ LinphoneStatus MediaSession::acceptUpdate (const MediaSessionParams *msp) {
 void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalOp *op, const Address &from, const Address &to) {
 	L_D(MediaSession);
 	CallSession::configure (direction, cfg, op, from, to);
+
+	if (d->destProxy)
+		d->natPolicy = linphone_proxy_config_get_nat_policy(d->destProxy);
+	if (!d->natPolicy)
+		d->natPolicy = linphone_core_get_nat_policy(d->core);
+	linphone_nat_policy_ref(d->natPolicy);
 
 	if (direction == LinphoneCallOutgoing) {
 		d->selectOutgoingIpVersion();

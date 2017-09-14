@@ -59,8 +59,6 @@ CallSessionPrivate::~CallSessionPrivate () {
 		linphone_error_info_unref(ei);
 	if (log)
 		linphone_call_log_unref(log);
-	if (natPolicy)
-		linphone_nat_policy_unref(natPolicy);
 	if (op)
 		sal_op_release(op);
 }
@@ -785,12 +783,6 @@ void CallSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg
 		d->destProxy = linphone_core_lookup_known_proxy(d->core, toAddr);
 	}
 	d->log = linphone_call_log_new(direction, fromAddr, toAddr);
-
-	if (d->destProxy)
-		d->natPolicy = linphone_proxy_config_get_nat_policy(d->destProxy);
-	if (!d->natPolicy)
-		d->natPolicy = linphone_core_get_nat_policy(d->core);
-	linphone_nat_policy_ref(d->natPolicy);
 
 	if (op) {
 		/* We already have an op for incoming calls */

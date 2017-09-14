@@ -261,6 +261,7 @@ private:
 	RtpProfile *textProfile = nullptr;
 	int mainTextStreamIndex = LINPHONE_CALL_STATS_TEXT;
 
+	LinphoneNatPolicy *natPolicy = nullptr;
 	StunClient *stunClient = nullptr;
 	IceAgent *iceAgent = nullptr;
 
