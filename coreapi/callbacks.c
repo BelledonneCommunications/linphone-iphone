@@ -688,6 +688,13 @@ static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	linphone_core_notify_display_status(lc,_("Call is updated by remote."));
 	linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
+	
+	if (call->ice_session && check_ice_reinvite_needs_defered_response(call)){
+			call->defer_update = TRUE;
+			ms_message("LinphoneCall [%p]: Ice reinvite received, but one or more check list are not completed. Response will be sent later, once ICE has completed.", call);
+			call->incoming_ice_reinvite_pending = TRUE;
+	}
+	
 	if (call->defer_update == FALSE){
 		if (call->state == LinphoneCallUpdatedByRemote){
 			linphone_call_accept_update(call, NULL);

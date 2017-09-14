@@ -405,6 +405,7 @@ struct _LinphoneCall{
 
 	bool_t reinvite_on_cancel_response_requested;
 	bool_t non_op_error; /*set when the LinphoneErrorInfo was set at higher level than sal*/
+	bool_t incoming_ice_reinvite_pending;
 
 	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
 	LinphoneCallCbs *current_cbs; /* The current LinphoneCallCbs object used to call a callback */
@@ -1996,6 +1997,7 @@ char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
 #define LINPHONE_SQLITE3_VFS "sqlite3bctbx_vfs"
 
 void linphone_call_check_ice_session(LinphoneCall *call, IceRole role, bool_t is_reinvite);
+bool_t check_ice_reinvite_needs_defered_response(LinphoneCall *call);
 
 bool_t linphone_call_state_is_early(LinphoneCallState state);
 
