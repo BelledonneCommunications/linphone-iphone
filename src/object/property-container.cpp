@@ -33,10 +33,16 @@ public:
 
 // -----------------------------------------------------------------------------
 
+PropertyContainer::PropertyContainer () : mPrivate(new PropertyContainerPrivate) {}
+
 // Empty copy constructor. Don't change this pattern.
 // PropertyContainer is an Entity component, not a simple structure.
 // An Entity is UNIQUE.
-PropertyContainer::PropertyContainer (const PropertyContainer &) {}
+PropertyContainer::PropertyContainer (const PropertyContainer &) : mPrivate(new PropertyContainerPrivate) {}
+
+PropertyContainer::~PropertyContainer () {
+	delete mPrivate;
+}
 
 PropertyContainer &PropertyContainer::operator= (const PropertyContainer &) {
 	return *this;

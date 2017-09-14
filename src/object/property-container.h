@@ -33,9 +33,9 @@ class PropertyContainerPrivate;
 
 class LINPHONE_PUBLIC PropertyContainer {
 public:
-	PropertyContainer () = default;
+	PropertyContainer ();
 	PropertyContainer (const PropertyContainer &src);
-	virtual ~PropertyContainer () = default;
+	virtual ~PropertyContainer ();
 
 	PropertyContainer &operator= (const PropertyContainer &src);
 
