@@ -25,15 +25,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "conference/params/call-session-params-p.h"
 #include "conference/params/media-session-params-p.h"
 
-
 #define GET_CALL_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, CallSessionParams, CallParams)
 #define GET_CALL_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, CallSessionParams, CallParams)
 #define GET_MEDIA_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, MediaSessionParams, CallParams)
 #define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, MediaSessionParams, CallParams)
 
-
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(MediaSessionParams, CallParams, call_params)
 
+// =============================================================================
+
+using namespace std;
 
 /*******************************************************************************
  * Internal functions                                                          *
@@ -149,17 +150,17 @@ void linphone_call_params_enable_video(LinphoneCallParams *params, bool_t enable
 }
 
 const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name) {
-	std::string value = GET_MEDIA_CPP_PTR(params)->getCustomHeader(header_name);
+	string value = GET_MEDIA_CPP_PTR(params)->getCustomHeader(header_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char * linphone_call_params_get_custom_sdp_attribute(const LinphoneCallParams *params, const char *attribute_name) {
-	std::string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpAttribute(attribute_name);
+	string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpAttribute(attribute_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char * linphone_call_params_get_custom_sdp_media_attribute(const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name) {
-	std::string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpMediaAttribute(type, attribute_name);
+	string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpMediaAttribute(type, attribute_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
@@ -197,7 +198,7 @@ const LinphoneVideoDefinition * linphone_call_params_get_received_video_definiti
 }
 
 const char *linphone_call_params_get_record_file(const LinphoneCallParams *params) {
-	const std::string &value = GET_MEDIA_CPP_PTR(params)->getRecordFilePath();
+	const string &value = GET_MEDIA_CPP_PTR(params)->getRecordFilePath();
 	return value.empty() ? nullptr : value.c_str();
 }
 
@@ -227,7 +228,7 @@ const LinphoneVideoDefinition * linphone_call_params_get_sent_video_definition(c
 }
 
 const char *linphone_call_params_get_session_name(const LinphoneCallParams *params) {
-	const std::string &value = GET_MEDIA_CPP_PTR(params)->getSessionName();
+	const string &value = GET_MEDIA_CPP_PTR(params)->getSessionName();
 	return value.empty() ? nullptr : value.c_str();
 }
 

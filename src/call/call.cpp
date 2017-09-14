@@ -137,7 +137,7 @@ void CallPrivate::onCallSetTerminated () {
 	}
 }
 
-void CallPrivate::onCallStateChanged (LinphoneCallState state, const std::string &message) {
+void CallPrivate::onCallStateChanged (LinphoneCallState state, const string &message) {
 	if (lcall)
 		linphone_call_notify_state_changed(lcall, state, message.c_str());
 }
@@ -152,7 +152,7 @@ void CallPrivate::onIncomingCallToBeAdded () {
 		linphone_core_add_call(core, lcall);
 }
 
-void CallPrivate::onEncryptionChanged (bool activated, const std::string &authToken) {
+void CallPrivate::onEncryptionChanged (bool activated, const string &authToken) {
 	if (lcall)
 		linphone_call_notify_encryption_changed(lcall, activated, authToken.empty() ? nullptr : authToken.c_str());
 }
@@ -255,12 +255,12 @@ void Call::stopRecording () {
 	static_cast<MediaSession *>(d->getActiveSession().get())->stopRecording();
 }
 
-LinphoneStatus Call::takePreviewSnapshot (const std::string& file) {
+LinphoneStatus Call::takePreviewSnapshot (const string& file) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->takePreviewSnapshot(file);
 }
 
-LinphoneStatus Call::takeVideoSnapshot (const std::string& file) {
+LinphoneStatus Call::takeVideoSnapshot (const string& file) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->takeVideoSnapshot(file);
 }

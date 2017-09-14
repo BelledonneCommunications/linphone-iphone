@@ -20,17 +20,17 @@
 #include "conference/participant-p.h"
 #include "logger/logger.h"
 
+// =============================================================================
+
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// =============================================================================
 
 ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : ChatRoomPrivate(core) {}
 
 // =============================================================================
 
-ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, std::list<Address> &addresses)
+ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, list<Address> &addresses)
 	: ChatRoom(*new ChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
 	string factoryUri = linphone_core_get_chat_conference_factory_uri(core);
 	focus = make_shared<Participant>(factoryUri);
