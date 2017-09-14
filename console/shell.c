@@ -156,11 +156,11 @@ static char *argv_to_line(int argc, char *argv[]) {
 }
 #endif
 
-#define MAX_ARGS 10
+#define MAX_ARGS 20
 
 #ifndef _WIN32
 static void spawn_linphonec(int argc, char *argv[]){
-	char * args[MAX_ARGS];
+	char * args[MAX_ARGS+1];
 	int i,j;
 	pid_t pid;
 	j=0;
@@ -168,10 +168,10 @@ static void spawn_linphonec(int argc, char *argv[]){
 	args[j++]="--pipe";
 	args[j++]="-c";
 	args[j++]="/dev/null";
-	for(i=0;i<argc;++i){
+	for(i=0;i<argc && i<MAX_ARGS;++i){
 		args[j++]=argv[i];
 	}
-	args[j++]=NULL;
+	args[j]=NULL;
 
 #ifdef __uClinux__
 	pid = vfork();
