@@ -48,21 +48,21 @@ LINPHONE_PUBLIC const char * linphone_call_log_get_call_id(const LinphoneCallLog
  * @param[in] cl LinphoneCallLog object
  * @return The direction of the call.
 **/
-LINPHONE_PUBLIC LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
+LINPHONE_PUBLIC LinphoneCallDir linphone_call_log_get_dir(const LinphoneCallLog *cl);
 
 /**
  * Get the duration of the call since connected.
  * @param[in] cl LinphoneCallLog object
  * @return The duration of the call in seconds.
 **/
-LINPHONE_PUBLIC int linphone_call_log_get_duration(LinphoneCallLog *cl);
+LINPHONE_PUBLIC int linphone_call_log_get_duration(const LinphoneCallLog *cl);
 
 /**
  * Get the origin address (ie from) of the call.
  * @param[in] cl LinphoneCallLog object
  * @return The origin address (ie from) of the call.
 **/
-LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_from_address(LinphoneCallLog *cl);
+LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_from_address(const LinphoneCallLog *cl);
 
 /**
  * Get the RTP statistics computed locally regarding the call.
@@ -76,7 +76,7 @@ LINPHONE_PUBLIC const rtp_stats_t * linphone_call_log_get_local_stats(const Linp
  * @param[in] cl LinphoneCallLog object
  * @return The overall quality indication of the call.
 **/
-LINPHONE_PUBLIC float linphone_call_log_get_quality(LinphoneCallLog *cl);
+LINPHONE_PUBLIC float linphone_call_log_get_quality(const LinphoneCallLog *cl);
 
 /**
  * Get the persistent reference key associated to the call log.
@@ -94,7 +94,7 @@ LINPHONE_PUBLIC const char * linphone_call_log_get_ref_key(const LinphoneCallLog
  * @param[in] cl LinphoneCallLog object
  * @return The remote address of the call.
 **/
-LINPHONE_PUBLIC LinphoneAddress * linphone_call_log_get_remote_address(LinphoneCallLog *cl);
+LINPHONE_PUBLIC LinphoneAddress * linphone_call_log_get_remote_address(const LinphoneCallLog *cl);
 
 /**
  * Get the RTP statistics computed by the remote end and sent back via RTCP.
@@ -109,21 +109,21 @@ LINPHONE_PUBLIC const rtp_stats_t * linphone_call_log_get_remote_stats(const Lin
  * @param[in] cl LinphoneCallLog object
  * @return The date of the beginning of the call.
 **/
-LINPHONE_PUBLIC time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
+LINPHONE_PUBLIC time_t linphone_call_log_get_start_date(const LinphoneCallLog *cl);
 
 /**
  * Get the status of the call.
  * @param[in] cl LinphoneCallLog object
  * @return The status of the call.
 **/
-LINPHONE_PUBLIC LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
+LINPHONE_PUBLIC LinphoneCallStatus linphone_call_log_get_status(const LinphoneCallLog *cl);
 
 /**
  * Get the destination address (ie to) of the call.
  * @param[in] cl LinphoneCallLog object
  * @return The destination address (ie to) of the call.
 **/
-LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_to_address(LinphoneCallLog *cl);
+LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_to_address(const LinphoneCallLog *cl);
 
 /**
  * Associate a persistent reference key to the call log.
@@ -141,7 +141,7 @@ LINPHONE_PUBLIC void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const ch
  * @param[in] cl LinphoneCallLog object
  * @return A boolean value telling whether video was enabled at the end of the call.
 **/
-LINPHONE_PUBLIC bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl);
+LINPHONE_PUBLIC bool_t linphone_call_log_video_enabled(const LinphoneCallLog *cl);
 
 /**
  * Get a human readable string describing the call.
@@ -149,21 +149,21 @@ LINPHONE_PUBLIC bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl);
  * @param[in] cl LinphoneCallLog object
  * @return A human readable string describing the call.
 **/
-LINPHONE_PUBLIC char * linphone_call_log_to_str(LinphoneCallLog *cl);
+LINPHONE_PUBLIC char * linphone_call_log_to_str(const LinphoneCallLog *cl);
 
 /**
  * Tells whether that call was a call to a conference server
  * @param[in] cl #LinphoneCallLog object
  * @return TRUE if the call was a call to a conference server
  */
-LINPHONE_PUBLIC bool_t linphone_call_log_was_conference(LinphoneCallLog *cl);
+LINPHONE_PUBLIC bool_t linphone_call_log_was_conference(const LinphoneCallLog *cl);
 
 /**
  * When the call was failed, return an object describing the failure.
  * @param[in] cl #LinphoneCallLog object
  * @return information about the error encountered by the call associated with this call log.
 **/
-LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_log_get_error_info(LinphoneCallLog *cl);
+LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_log_get_error_info(const LinphoneCallLog *cl);
 
 
 /*******************************************************************************

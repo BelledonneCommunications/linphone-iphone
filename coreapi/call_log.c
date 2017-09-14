@@ -171,15 +171,15 @@ const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
 	return cl->call_id;
 }
 
-LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl){
+LinphoneCallDir linphone_call_log_get_dir(const LinphoneCallLog *cl){
 	return cl->dir;
 }
 
-int linphone_call_log_get_duration(LinphoneCallLog *cl){
+int linphone_call_log_get_duration(const LinphoneCallLog *cl){
 	return cl->duration;
 }
 
-const LinphoneAddress *linphone_call_log_get_from_address(LinphoneCallLog *cl){
+const LinphoneAddress *linphone_call_log_get_from_address(const LinphoneCallLog *cl){
 	return cl->from;
 }
 
@@ -187,7 +187,7 @@ const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl){
 	return &cl->local_stats;
 }
 
-float linphone_call_log_get_quality(LinphoneCallLog *cl){
+float linphone_call_log_get_quality(const LinphoneCallLog *cl){
 	return cl->quality;
 }
 
@@ -195,7 +195,7 @@ const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
 	return cl->refkey;
 }
 
-LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl){
+LinphoneAddress *linphone_call_log_get_remote_address(const LinphoneCallLog *cl){
 	return (cl->dir == LinphoneCallIncoming) ? cl->from : cl->to;
 }
 
@@ -203,15 +203,15 @@ const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl)
 	return &cl->remote_stats;
 }
 
-time_t linphone_call_log_get_start_date(LinphoneCallLog *cl){
+time_t linphone_call_log_get_start_date(const LinphoneCallLog *cl){
 	return cl->start_date_time;
 }
 
-LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl){
+LinphoneCallStatus linphone_call_log_get_status(const LinphoneCallLog *cl){
 	return cl->status;
 }
 
-const LinphoneAddress *linphone_call_log_get_to_address(LinphoneCallLog *cl){
+const LinphoneAddress *linphone_call_log_get_to_address(const LinphoneCallLog *cl){
 	return cl->to;
 }
 
@@ -223,7 +223,7 @@ void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey){
 	if (refkey) cl->refkey=ms_strdup(refkey);
 }
 
-char * linphone_call_log_to_str(LinphoneCallLog *cl){
+char * linphone_call_log_to_str(const LinphoneCallLog *cl){
 	const char *status;
 	char *tmp;
 	char *from=linphone_address_as_string (cl->from);
@@ -260,15 +260,15 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl){
 	return tmp;
 }
 
-bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl) {
+bool_t linphone_call_log_video_enabled(const LinphoneCallLog *cl) {
 	return cl->video_enabled;
 }
 
-bool_t linphone_call_log_was_conference(LinphoneCallLog *cl) {
+bool_t linphone_call_log_was_conference(const LinphoneCallLog *cl) {
 	return cl->was_conference;
 }
 
-const LinphoneErrorInfo *linphone_call_log_get_error_info(LinphoneCallLog *cl){
+const LinphoneErrorInfo *linphone_call_log_get_error_info(const LinphoneCallLog *cl){
 	return cl->error_info;
 }
 
