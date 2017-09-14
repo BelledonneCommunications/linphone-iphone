@@ -368,7 +368,12 @@ static inline float getValueAsString (const VariantPrivate &p, bool *soFarSoGood
 }
 
 static inline void *getValueAsGeneric (const VariantPrivate &p, bool *soFarSoGood) {
-	// TODO.
+	if (p.type == Variant::Generic) {
+		*soFarSoGood = true;
+		return p.value.g;
+	}
+
+	*soFarSoGood = false;
 	return nullptr;
 }
 

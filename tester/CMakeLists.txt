@@ -199,6 +199,7 @@ set(SOURCE_FILES_CXX
 	clonable-object-tester.cpp
 	cpim-tester.cpp
 	events-db-tester.cpp
+	property-container-tester.cpp
 )
 
 set(SOURCE_FILES_OBJC )

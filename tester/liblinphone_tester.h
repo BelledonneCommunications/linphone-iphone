@@ -56,6 +56,7 @@ extern test_suite_t offeranswer_test_suite;
 extern test_suite_t player_test_suite;
 extern test_suite_t presence_server_test_suite;
 extern test_suite_t presence_test_suite;
+extern test_suite_t property_container_test_suite;
 extern test_suite_t proxy_config_test_suite;
 extern test_suite_t quality_reporting_test_suite;
 extern test_suite_t register_test_suite;
