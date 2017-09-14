@@ -516,8 +516,8 @@ void linphone_call_params_unref(LinphoneCallParams *cp) {
 
 LinphoneCallParams * linphone_call_params_new(LinphoneCore *core) {
 	LinphoneCallParams *params = _linphone_call_params_init();
-	params->cppPtr = new LinphonePrivate::MediaSessionParams();
-	params->cppPtr->initDefault(core);
+	L_SET_CPP_PTR_FROM_C_STRUCT(params, new LinphonePrivate::MediaSessionParams());
+	GET_MEDIA_CPP_PTR(params)->initDefault(core);
 	return params;
 }
 
