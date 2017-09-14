@@ -1,5 +1,5 @@
 /*
- * clonable-object-p.h
+ * property-container.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,38 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CLONABLE_OBJECT_P_H_
-#define _CLONABLE_OBJECT_P_H_
+#ifndef _PROPERTY_CONTAINER_H_
+#define _PROPERTY_CONTAINER_H_
 
-#include <unordered_map>
+#include <string>
 
 #include "linphone/utils/general.h"
+
+#include "variant/variant.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ClonableObjectPrivate {
-public:
-	ClonableObjectPrivate () = default;
-	virtual ~ClonableObjectPrivate () = default;
+class PropertyContainerPrivate;
 
-protected:
-	std::unordered_map<const ClonableObjectPrivate *, ClonableObject *> *mPublic = nullptr;
+class LINPHONE_PUBLIC PropertyContainer {
+public:
+	PropertyContainer () = default;
+	PropertyContainer (const PropertyContainer &src);
+	virtual ~PropertyContainer () = default;
+
+	PropertyContainer &operator= (const PropertyContainer &src);
+
+	Variant getProperty (const std::string &name) const;
+	void setProperty (const std::string &name, const Variant &value);
+	void setProperty (const std::string &name, Variant &&value);
 
 private:
-	void ref ();
-	void unref ();
+	PropertyContainerPrivate *mPrivate = nullptr;
 
-	int nRefs = 0;
-
-	L_DECLARE_PUBLIC(ClonableObject);
-
-	// It's forbidden to copy directly one Clonable object private.
-	// To allow copy, you must define copy constructor in inherited object.
-	L_DISABLE_COPY(ClonableObjectPrivate);
+	L_DECLARE_PRIVATE(PropertyContainer);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CLONABLE_OBJECT_P_H_
+#endif // ifndef _PROPERTY_CONTAINER_H_

@@ -19,23 +19,17 @@
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
 
-#include <string>
-
 #include "linphone/utils/general.h"
+
+#include "property-container.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Variant;
-
-class LINPHONE_PUBLIC Object {
+class LINPHONE_PUBLIC Object : public PropertyContainer {
 public:
 	virtual ~Object ();
-
-	Variant getProperty (const std::string &name) const;
-	void setProperty (const std::string &name, const Variant &value);
-	void setProperty (const std::string &name, Variant &&value);
 
 protected:
 	explicit Object (ObjectPrivate &p);
