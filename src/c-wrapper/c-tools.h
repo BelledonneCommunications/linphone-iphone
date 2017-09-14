@@ -22,6 +22,8 @@
 #include <list>
 #include <memory>
 
+#include "variant/variant.h"
+
 // From coreapi.
 #include "private.h"
 
@@ -97,18 +99,21 @@ public:
 	}
 
 	template<typename T>
-	static inline void setCppPtrFromC (void *object, std::shared_ptr<T> &cppPtr) {
+	static inline void setCppPtrFromC (void *object, const std::shared_ptr<T> &cppPtr) {
 		L_ASSERT(object);
 		static_cast<WrappedObject<T> *>(object)->cppPtr = cppPtr;
+		cppPtr->setProperty("LinphonePrivate::Wrapper::cBackPtr", object);
 	}
 
 	template<typename T>
-	static inline void setCppPtrFromC (void *object, T *cppPtr) {
+	static inline void setCppPtrFromC (void *object, const T *cppPtr) {
 		L_ASSERT(object);
-		T *tPtr = reinterpret_cast<T *>(static_cast<WrappedClonableObject<T> *>(object)->cppPtr);
-		if (tPtr != cppPtr) {
-			delete tPtr;
-			static_cast<WrappedClonableObject<T> *>(object)->cppPtr = new T(*cppPtr);
+		T *oldPtr = reinterpret_cast<T *>(static_cast<WrappedClonableObject<T> *>(object)->cppPtr);
+		if (oldPtr != cppPtr) {
+			delete oldPtr;
+			T *cppObject = static_cast<WrappedClonableObject<T> *>(object)->cppPtr;
+			cppObject = new T(*cppPtr);
+			cppObject->setProperty("LinphonePrivate::Wrapper::cBackPtr", object);
 		}
 	}
 
@@ -120,6 +125,28 @@ public:
 	template<typename T>
 	static T *getCppPtr (T *cppPtr) {
 		return cppPtr;
+	}
+
+	template<typename CType, typename CppType>
+	static inline CType * getCBackPtr (const std::shared_ptr<CppType> &object, CType *(*cTypeAllocator)()) {
+		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
+		void *value = v.getValue<void *>();
+		if (!value) {
+			CType *cObject = cTypeAllocator();
+			setCppPtrFromC(cObject, object);
+		}
+		return reinterpret_cast<CType *>(value);
+	}
+
+	template<typename CType, typename CppType>
+	static inline CType * getCBackPtr (const CppType *object, CType *(*cTypeAllocator)()) {
+		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
+		void *value = v.getValue<void *>();
+		if (!value) {
+			CType *cObject = cTypeAllocator();
+			setCppPtrFromC(cObject, object);
+		}
+		return reinterpret_cast<CType *>(value);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -234,6 +261,9 @@ LINPHONE_END_NAMESPACE
 	L_GET_PRIVATE(LINPHONE_NAMESPACE::Wrapper::getCppPtr( \
 		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE, C_TYPE) \
 	))
+
+#define L_GET_C_BACK_PTR(OBJECT, C_TYPE, C_NAME) \
+	LINPHONE_NAMESPACE::Wrapper::getCBackPtr<Linphone ## C_TYPE>(OBJECT, _linphone_ ## C_NAME ## _init)
 
 #define L_GET_C_LIST_FROM_CPP_LIST(LIST, TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList<TYPE *>(LIST)

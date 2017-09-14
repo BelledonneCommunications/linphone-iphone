@@ -82,4 +82,20 @@ void ClonableObject::setRef (const ClonableObjectPrivate &p) {
 	mPrivate->ref();
 }
 
+Variant ClonableObject::getProperty (const string &name) const {
+	L_D(const ClonableObject);
+	auto it = d->properties.find(name);
+	return it == d->properties.cend() ? Variant() : it->second;
+}
+
+void ClonableObject::setProperty (const string &name, const Variant &value) {
+	L_D(ClonableObject);
+	d->properties[name] = value;
+}
+
+void ClonableObject::setProperty (const string &name, Variant &&value) {
+	L_D(ClonableObject);
+	d->properties[name] = move(value);
+}
+
 LINPHONE_END_NAMESPACE

@@ -82,7 +82,7 @@ public:
 
 	template<typename T, typename = typename std::enable_if<std::is_same<T, void *>::value> >
 	// void* constructor. Must be explicitly called.
-	Variant (T value);
+	Variant (T value) {}
 
 	~Variant ();
 

@@ -23,6 +23,8 @@
 
 #include "linphone/utils/general.h"
 
+#include "variant/variant.h"
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
@@ -40,6 +42,8 @@ private:
 	void unref ();
 
 	int nRefs = 0;
+
+	std::unordered_map<std::string, Variant> properties;
 
 	L_DECLARE_PUBLIC(ClonableObject);
 

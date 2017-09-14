@@ -19,15 +19,23 @@
 #ifndef _CLONABLE_OBJECT_H_
 #define _CLONABLE_OBJECT_H_
 
+#include <string>
+
 #include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class Variant;
+
 class LINPHONE_PUBLIC ClonableObject {
 public:
 	virtual ~ClonableObject ();
+
+	Variant getProperty (const std::string &name) const;
+	void setProperty (const std::string &name, const Variant &value);
+	void setProperty (const std::string &name, Variant &&value);
 
 protected:
 	// Use a new ClonableObjectPrivate without owner.
