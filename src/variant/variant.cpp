@@ -51,11 +51,18 @@ public:
 };
 
 Variant::Variant () {
-	// Nothing. Construct an invalid invariant.
+	if (!mPrivate)
+		mPrivate = new VariantPrivate();
 }
 
-Variant::Variant (Type type) {
-	// TODO.
+Variant::Variant (Type type) : Variant() {
+	if (type != String)
+		return;
+
+	L_D(Variant);
+
+	if (!d->value.str)
+		d->value.str = new string();
 }
 
 Variant::Variant (const Variant &src) {
@@ -126,12 +133,17 @@ Variant::Variant (float value) : Variant(Float) {
 	d->value.f = value;
 }
 
-Variant::Variant (const std::string &value) {
-	// TODO.
+Variant::Variant (const std::string &value) : Variant(String) {
+	L_D(Variant);
+	*d->value.str = value;
 }
 
 Variant::~Variant () {
-	// TODO.
+	L_D(Variant);
+	if (d->type == String)
+		delete d->value.str;
+
+	delete mPrivate;
 }
 
 bool Variant::operator!= (const Variant &variant) const {
@@ -175,8 +187,8 @@ bool Variant::operator>= (const Variant &variant) const {
 }
 
 bool Variant::isValid () const {
-	// TODO.
-	return false;
+	L_D(const Variant);
+	return d->type != Invalid;
 }
 
 void Variant::clear () {
@@ -349,11 +361,13 @@ static inline void *getValueAsGeneric (const VariantPrivate &p, bool *soFarSoGoo
 // -----------------------------------------------------------------------------
 
 void Variant::getValue (int type, void *value, bool *soFarSoGood) const {
+	L_ASSERT(type > Invalid && type != MaxDefaultTypes);
+
 	L_D(const Variant);
 
-	if (type <= Invalid || type >= MaxDefaultTypes) {
+	if (type > MaxDefaultTypes) {
 		*soFarSoGood = false;
-		// Unable to get value. It will be great to support custom types.
+		// TODO: Unable to get value. It will be great to support custom types.
 		return;
 	}
 

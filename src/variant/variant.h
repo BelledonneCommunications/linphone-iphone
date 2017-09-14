@@ -80,9 +80,9 @@ public:
 	Variant (float value);
 	Variant (const std::string &value);
 
-	template<typename T, typename = typename std::enable_if<std::is_same<T, void *>::value> >
 	// void* constructor. Must be explicitly called.
-	Variant (T value) {}
+	template<typename T, typename = typename std::enable_if<std::is_same<T, void *>::value> >
+	Variant (T value) : Variant (Variant::createGeneric(value)) {}
 
 	~Variant ();
 
@@ -97,7 +97,8 @@ public:
 
 	template<typename T>
 	void setValue (const T &value) {
-		// TODO.
+		// Yeah, I'm crazy.
+		new (this) Variant(value);
 	}
 
 	template<typename T>
@@ -127,6 +128,12 @@ private:
 	};
 
 	void getValue (int type, void *value, bool *soFarSoGood) const;
+
+	static inline Variant createGeneric (void *value) {
+		Variant variant(Generic);
+		variant.setValue<void *>(value);
+		return variant;
+	}
 
 	VariantPrivate *mPrivate = nullptr;
 
