@@ -189,16 +189,13 @@ namespace Cpim {
 
 			// Add message headers.
 			if (mHeaders->size() > 2) {
-				list<shared_ptr<ListHeaderNode>>::iterator it = mHeaders->begin();
-				std::advance(it, 1);
-				shared_ptr<ListHeaderNode> messageHeaders = *it;
-				for (const auto &headerNode : *messageHeaders) {
+				for (const auto &headerNode : **(++mHeaders->cbegin())) {
 					const shared_ptr<const Header> header = headerNode->createHeader();
 					if (!header || !message->addMessageHeader(*header))
 						return nullptr;
 				}
 			}
-			
+
 			// Add content headers.
 			for (const auto &headerNode : *mHeaders->back()) {
 				const shared_ptr<const Header> header = headerNode->createHeader();
