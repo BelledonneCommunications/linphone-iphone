@@ -3499,6 +3499,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				ms_message("Sound resources are used by another call, not using soundcard.");
 				captcard=playcard=NULL;
 			}
+			media_stream_set_max_network_bitrate(&call->audiostream->ms, linphone_core_get_upload_bandwidth(lc) * 1000);
 			use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
 			audio_stream_enable_echo_canceller(call->audiostream, use_ec);
 			if (playcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(playcard, stream->max_rate);
@@ -3676,7 +3677,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 
 			call->current_params->video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			call->current_params->has_video=TRUE;
-
+			
+			media_stream_set_max_network_bitrate(&call->videostream->ms, linphone_core_get_upload_bandwidth(lc) * 1000);
 			rtp_session_enable_rtcp_mux(call->videostream->ms.sessions.rtp_session, vstream->rtcp_mux);
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
