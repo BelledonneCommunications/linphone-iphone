@@ -826,6 +826,13 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 	return NULL;
 }
 
+void linphone_proxy_config_set_etag(LinphoneProxyConfig *cfg,const char* sip_etag) {
+	if (cfg->sip_etag) ms_free(cfg->sip_etag);
+	if (sip_etag)
+		cfg->sip_etag = ms_strdup(sip_etag);
+	else
+		cfg->sip_etag = NULL;
+}
 /**
  * Commits modification made to the proxy configuration.
 **/
@@ -867,11 +874,7 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 		ms_message("Publish params have changed on proxy config [%p]",cfg);
 		if (cfg->presence_publish_event) {
 			if (cfg->publish) {
-				const char * sip_etag = linphone_event_get_custom_header(cfg->presence_publish_event, "SIP-ETag");
-				if (sip_etag) {
-					if (cfg->sip_etag) ms_free(cfg->sip_etag);
-					cfg->sip_etag = ms_strdup(sip_etag);
-				}
+				linphone_proxy_config_set_etag(cfg, linphone_event_get_custom_header(cfg->presence_publish_event, "SIP-ETag"));
 			}
 			/*publish is terminated*/
 			linphone_event_terminate(cfg->presence_publish_event);
@@ -1542,9 +1545,22 @@ void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatP
 }
 
 void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state) {
-	if ((cfg->presence_publish_event != NULL) && ((state == LinphonePublishCleared) || (state == LinphonePublishError))) {
-		linphone_event_unref(cfg->presence_publish_event);
-		cfg->presence_publish_event = NULL;
+	
+	if (cfg->presence_publish_event != NULL) {
+		switch (state) {
+			case LinphonePublishCleared:
+				linphone_proxy_config_set_etag(cfg,NULL);
+			case LinphonePublishError:
+				linphone_event_unref(cfg->presence_publish_event);
+				cfg->presence_publish_event = NULL;
+				break;
+			case LinphonePublishOk:
+				linphone_proxy_config_set_etag(cfg,linphone_event_get_custom_header(cfg->presence_publish_event, "SIP-ETag"));
+				break;
+			default:
+				break;
+				
+		}
 	}
 }
 
