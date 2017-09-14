@@ -66,7 +66,18 @@ Variant::Variant (Type type) : Variant() {
 }
 
 Variant::Variant (const Variant &src) {
-	// TODO.
+	// Don't call placement new.
+	L_ASSERT(!mPrivate);
+	mPrivate = new VariantPrivate();
+
+	L_D(Variant);
+	d->type = src.getPrivate()->type;
+
+	const VariantPrivate::Value &value = src.getPrivate()->value;
+	if (d->type == String)
+		d->value.str = new string(*value.str);
+	else
+		d->value = value;
 }
 
 Variant::Variant (Variant &&src) {
