@@ -1101,6 +1101,14 @@ public interface LinphoneCore {
 	LinphoneFriendList[] getFriendLists();
 
 	/**
+	 * Get filtered list by filter
+	 * @param filter
+	 * @param sipOnly get only sip address
+	 * @return LinphoneAddress list
+	 */
+	LinphoneAddress[] findContactsByChar(String filter, boolean sipOnly);
+
+	/**
 	 * Set my presence status
 	 * @param minutes_away how long in away
 	 * @param alternative_contact sip uri used to redirect call in state LinphoneStatusMoved

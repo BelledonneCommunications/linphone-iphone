@@ -5251,6 +5251,15 @@ LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_friends_lists(const Linph
 LINPHONE_PUBLIC LinphoneFriendList * linphone_core_get_default_friend_list(const LinphoneCore *lc);
 
 /**
+ * Retrieves a list of LinphoneAddress sort and filter
+ * @param[in] lc LinphoneCore object
+ * @param[in] filter Chars used for the filter*
+ * @param[in] sip_only Only sip address or not
+ * @return \bctbx_list{LinphoneAddress} a list of filtered LinphoneAddress + the LinphoneAddress created with the filter
+**/
+LINPHONE_PUBLIC const bctbx_list_t * linphone_core_find_contacts_by_char(LinphoneCore *core, const char *filter, bool_t sip_only);
+
+/**
  * Create a LinphonePresenceActivity with the given type and description.
  * @param[in] lc #LinphoneCore object.
  * @param[in] acttype The #LinphonePresenceActivityType to set for the activity.

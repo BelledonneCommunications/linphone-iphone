@@ -2436,6 +2436,30 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendLists(J
 	return jFriends;
 }
 
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_findContactsByChar(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jfilter
+																			,jboolean jsiponly) {
+	const char* filter = GetStringUTFChars(env, jfilter);
+	const bctbx_list_t* contacts = linphone_core_find_contacts_by_char((LinphoneCore*)lc, filter, jsiponly);
+	size_t contactsSize = bctbx_list_size(contacts);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data((LinphoneCore *)lc);
+	jobjectArray jContacts = env->NewObjectArray(contactsSize, ljb->addressClass, NULL);
+
+	for (size_t i = 0; i < contactsSize; i++) {
+		LinphoneAddress *addr = (LinphoneAddress*)contacts->data;
+		jobject jcontact = env->NewObject(ljb->addressClass, ljb->addressCtrId, (jlong)addr);
+		if(jcontact != NULL){
+			env->SetObjectArrayElement(jContacts, i, jcontact);
+		}
+		contacts = contacts->next;
+	}
+	ReleaseStringUTFChars(env, jfilter, filter);
+
+	return jContacts;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc

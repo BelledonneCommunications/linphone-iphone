@@ -2587,6 +2587,35 @@ void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 	linphone_core_notify_friend_list_created(lc, list);
 }
 
+const bctbx_list_t * linphone_core_find_contacts_by_char(LinphoneCore *core, const char *filter, bool_t sip_only) {
+	// Get sipuri from filter if possible
+	bctbx_list_t *list, *_list = NULL;
+	LinphoneAddress *addr = linphone_core_interpret_url(core, (sip_only) ? filter : "");
+	bctbx_list_t* listFriendsList = (bctbx_list_t*)linphone_core_get_friends_lists(core);
+	bctbx_list_t* listFriend = (listFriendsList != NULL)
+			? (bctbx_list_t*)linphone_friend_list_get_friends((LinphoneFriendList*)listFriendsList->data) : NULL;
+
+	if (addr != NULL)
+		list = bctbx_list_new(addr);
+
+	while (listFriend != NULL && listFriend->data != NULL) {
+		LinphoneAddress *buff = (LinphoneAddress*)linphone_friend_get_address((LinphoneFriend*)listFriend->data);
+		if (buff != NULL) {
+			bctbx_list_t *new_list = bctbx_list_new(buff);
+			if (list == NULL) {
+				_list = list = new_list;
+			} else {
+				if (_list == NULL) _list = list;
+				_list->next = new_list;
+				_list = _list->next;
+			}
+		}
+		listFriend = listFriend->next;
+	}
+
+	return list;
+}
+
 void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore* lc, bool_t val) {
 	lc->rtp_conf.audio_adaptive_jitt_comp_enabled = val;
 }
