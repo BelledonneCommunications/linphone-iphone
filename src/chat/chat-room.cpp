@@ -28,6 +28,9 @@
 
 #include "chat-room.h"
 
+extern LinphoneChatRoom * _linphone_chat_room_init();
+#define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatRoom, chat_room)
+
 // =============================================================================
 
 using namespace std;
@@ -38,15 +41,16 @@ ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
 	: core(core), isComposingHandler(core, this) {}
 
 ChatRoomPrivate::~ChatRoomPrivate () {
+	L_Q(ChatRoom);
 	for (auto it = transientMessages.begin(); it != transientMessages.end(); it++) {
 		linphone_chat_message_release(*it);
 	}
 	if (core) {
-		if (bctbx_list_find(core->chatrooms, cBackPointer)) {
-			lError() << "LinphoneChatRoom[" << cBackPointer << "] is destroyed while still being used by the LinphoneCore. " <<
+		if (bctbx_list_find(core->chatrooms, GET_BACK_PTR(q))) {
+			lError() << "LinphoneChatRoom[" << GET_BACK_PTR(q) << "] is destroyed while still being used by the LinphoneCore. " <<
 				"This is abnormal. linphone_core_get_chat_room() doesn't give a reference, there is no need to call linphone_chat_room_unref(). " <<
 				"In order to remove a chat room from the core, use linphone_core_delete_chat_room().";
-			core->chatrooms = bctbx_list_remove(core->chatrooms, cBackPointer);
+			core->chatrooms = bctbx_list_remove(core->chatrooms, GET_BACK_PTR(q));
 		}
 	}
 	if (pendingMessage)
@@ -101,6 +105,7 @@ void ChatRoomPrivate::removeTransientMessage (LinphoneChatMessage *msg) {
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::release () {
+	L_Q(ChatRoom);
 	isComposingHandler.stopTimers();
 	for (auto it = weakMessages.begin(); it != weakMessages.end(); it++) {
 		linphone_chat_message_deactivate(*it);
@@ -109,7 +114,7 @@ void ChatRoomPrivate::release () {
 		linphone_chat_message_deactivate(*it);
 	}
 	core = nullptr;
-	linphone_chat_room_unref(cBackPointer);
+	linphone_chat_room_unref(GET_BACK_PTR(q));
 }
 
 void ChatRoomPrivate::sendImdn (const string &content, LinphoneReason reason) {
@@ -140,7 +145,7 @@ void ChatRoomPrivate::sendImdn (const string &content, LinphoneReason reason) {
 		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
 		if (cbProcessOutgoingMessage) {
-			retval = cbProcessOutgoingMessage(imee, cBackPointer, msg);
+			retval = cbProcessOutgoingMessage(imee, GET_BACK_PTR(q), msg);
 		}
 	}
 
@@ -219,7 +224,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 				LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 				LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
 				if (cbProcessOutgoingMessage) {
-					retval = cbProcessOutgoingMessage(imee, cBackPointer, msg);
+					retval = cbProcessOutgoingMessage(imee, GET_BACK_PTR(q), msg);
 				}
 			}
 
@@ -424,12 +429,12 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsIncomingMessageCb cbProcessIncomingMessage = linphone_im_encryption_engine_cbs_get_process_incoming_message(imeeCbs);
 		if (cbProcessIncomingMessage) {
-			retval = cbProcessIncomingMessage(imee, cBackPointer, msg);
+			retval = cbProcessIncomingMessage(imee, GET_BACK_PTR(q), msg);
 			if (retval == 0) {
 				msg->is_secured = TRUE;
 			} else if (retval > 0) {
 				/* Unable to decrypt message */
-				linphone_core_notify_message_received_unable_decrypt(core, cBackPointer, msg);
+				linphone_core_notify_message_received_unable_decrypt(core, GET_BACK_PTR(q), msg);
 				reason = linphone_error_code_to_reason(retval);
 				linphone_chat_message_send_delivery_notification(msg, reason);
 				/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
@@ -499,14 +504,15 @@ end:
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::chatMessageReceived (LinphoneChatMessage *msg) {
+	L_Q(ChatRoom);
 	if (msg->message) {
 		/* Legacy API */
-		linphone_core_notify_text_message_received(core, cBackPointer, msg->from, msg->message);
+		linphone_core_notify_text_message_received(core, GET_BACK_PTR(q), msg->from, msg->message);
 	}
-	linphone_core_notify_message_received(core, cBackPointer, msg);
+	linphone_core_notify_message_received(core, GET_BACK_PTR(q), msg);
 	if (!ContentType::isImdn(msg->content_type) && !ContentType::isImIsComposing(msg->content_type)) {
 		remoteIsComposing = false;
-		linphone_core_notify_is_composing_received(core, cBackPointer);
+		linphone_core_notify_is_composing_received(core, GET_BACK_PTR(q));
 		linphone_chat_message_send_delivery_notification(msg, LinphoneReasonNone);
 	}
 }
@@ -528,8 +534,9 @@ void ChatRoomPrivate::onIsComposingStateChanged (bool isComposing) {
 }
 
 void ChatRoomPrivate::onIsRemoteComposingStateChanged (bool isComposing) {
+	L_Q(ChatRoom);
 	remoteIsComposing = isComposing;
-	linphone_core_notify_is_composing_received(core, cBackPointer);
+	linphone_core_notify_is_composing_received(core, GET_BACK_PTR(q));
 }
 
 void ChatRoomPrivate::onIsComposingRefreshNeeded () {
@@ -558,7 +565,7 @@ LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent 
 	L_D(ChatRoom);
 	LinphoneChatMessage *cm = belle_sip_object_new(LinphoneChatMessage);
 	cm->callbacks = linphone_chat_message_cbs_new();
-	cm->chat_room = d->cBackPointer;
+	cm->chat_room = GET_BACK_PTR(this);
 	cm->message = nullptr;
 	cm->file_transfer_information = linphone_content_copy(initialContent);
 	cm->dir = LinphoneChatMessageOutgoing;
@@ -575,11 +582,10 @@ LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent 
 }
 
 LinphoneChatMessage *ChatRoom::createMessage (const string &msg) {
-	L_D(ChatRoom);
 	LinphoneChatMessage *cm = belle_sip_object_new(LinphoneChatMessage);
 	cm->state = LinphoneChatMessageStateIdle;
 	cm->callbacks = linphone_chat_message_cbs_new();
-	cm->chat_room = d->cBackPointer;
+	cm->chat_room = GET_BACK_PTR(this);
 	cm->message = msg.empty() ? nullptr : ms_strdup(msg.c_str());
 	cm->content_type = ms_strdup("text/plain");
 	cm->file_transfer_information = nullptr; /* this property is used only when transfering file */
@@ -817,7 +823,7 @@ void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
 			LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 			LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
 			if (cbProcessOutgoingMessage) {
-				retval = cbProcessOutgoingMessage(imee, d->cBackPointer, msg);
+				retval = cbProcessOutgoingMessage(imee, GET_BACK_PTR(this), msg);
 				if (retval == 0) {
 					msg->is_secured = TRUE;
 				}

@@ -21,7 +21,11 @@
 #include "linphone/utils/utils.h"
 
 #include "real-time-text-chat-room-p.h"
+#include "c-wrapper/c-tools.h"
 #include "logger/logger.h"
+
+extern LinphoneChatRoom * _linphone_chat_room_init();
+#define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatRoom, chat_room)
 
 // =============================================================================
 
@@ -62,7 +66,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 		receivedRttCharacters.push_back(cmc);
 
 		remoteIsComposing = true;
-		linphone_core_notify_is_composing_received(core, cBackPointer);
+		linphone_core_notify_is_composing_received(core, GET_BACK_PTR(q));
 
 		if ((character == new_line) || (character == crlf) || (character == lf)) {
 			/* End of message */

@@ -50,7 +50,14 @@ public:
 	template<typename T>
 	static inline decltype (std::declval<T>().getPrivate()) getPrivate (T *object) {
 		if (!object)
-		return nullptr;
+			return nullptr;
+		return object->getPrivate();
+	}
+
+	template<typename T>
+	static inline decltype (std::declval<T>().getPrivate()) getPrivate (const std::shared_ptr<T> &object) {
+		if (!object)
+			return nullptr;
 		return object->getPrivate();
 	}
 
@@ -61,7 +68,8 @@ public:
 	template<
 		typename CppType,
 		typename CType,
-		typename std::enable_if<std::is_base_of<Object, CppType>::value>::type = 0
+		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		//typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type = 0
 	>
 	static inline std::shared_ptr<CppType> getCppPtrFromC (CType *object) {
 		L_ASSERT(object);
@@ -71,7 +79,8 @@ public:
 	template<
 		typename CppType,
 		typename CType,
-		typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type = 0
+		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		//typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type = 0
 	>
 	static inline std::shared_ptr<const CppType> getCppPtrFromC (const CType *object) {
 		L_ASSERT(object);
@@ -160,7 +169,7 @@ public:
 	}
 
 	template<typename T>
-	static inline std::list<T> getCppListFromCList (bctbx_list_t *cList) {
+	static inline std::list<T> getCppListFromCList (const bctbx_list_t *cList) {
 		std::list<T> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
 			result.push_back(static_cast<T>(bctbx_list_get_data(it)));
@@ -168,7 +177,7 @@ public:
 	}
 
 	template<typename T, typename U>
-	static inline std::list<T> getCppListOfCppObjFromCListOfStructPtr (bctbx_list_t *cList) {
+	static inline std::list<T> getCppListOfCppObjFromCListOfStructPtr (const bctbx_list_t *cList) {
 		std::list<T> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
 			result.push_back(*getCppPtrFromC<T>(reinterpret_cast<U *>(bctbx_list_get_data(it))));
@@ -185,29 +194,50 @@ LINPHONE_END_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-#define L_DECLARE_C_STRUCT_IMPL(STRUCT, C_NAME, ...) \
-	struct _Linphone ## STRUCT { \
+#define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(CPP_CLASS, C_STRUCT, C_NAME, CONSTRUCTOR, DESTRUCTOR, ...) \
+	struct _Linphone ## C_STRUCT { \
 		belle_sip_object_t base; \
-		std::shared_ptr<LINPHONE_NAMESPACE::STRUCT> cppPtr; \
+		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## STRUCT); \
-	static Linphone ## STRUCT *_linphone_ ## C_NAME ## _init() { \
-		Linphone ## STRUCT * object = belle_sip_object_new(Linphone ## STRUCT); \
-		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_STRUCT); \
+	Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
+		Linphone ## C_STRUCT * object = belle_sip_object_new(Linphone ## C_STRUCT); \
+		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS>(); \
+		CONSTRUCTOR(object); \
 		return object; \
 	} \
-	static void _linphone_ ## C_NAME ## _uninit(Linphone ## STRUCT * object) { \
+	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_STRUCT * object) { \
+		DESTRUCTOR(object); \
 		object->cppPtr.~shared_ptr (); \
 	} \
-	static void _linphone_ ## C_NAME ## _clone(Linphone ## STRUCT * dest, const Linphone ## STRUCT * src) { \
-		new(&dest->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::STRUCT>(); \
-		dest->cppPtr = std::make_shared<LINPHONE_NAMESPACE::STRUCT>(*src->cppPtr.get()); \
-	} \
-	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## STRUCT); \
-	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## STRUCT, belle_sip_object_t, \
+	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_STRUCT); \
+	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_STRUCT, belle_sip_object_t, \
 	_linphone_ ## C_NAME ## _uninit, \
-	_linphone_ ## C_NAME ## _clone, \
+	NULL, \
+	NULL, \
+	FALSE \
+	);
+
+#define L_DECLARE_C_STRUCT_IMPL(CPP_CLASS, C_STRUCT, C_NAME, ...) \
+	struct _Linphone ## C_STRUCT { \
+		belle_sip_object_t base; \
+		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
+		__VA_ARGS__ \
+	}; \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_STRUCT); \
+	Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
+		Linphone ## C_STRUCT * object = belle_sip_object_new(Linphone ## C_STRUCT); \
+		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS>(); \
+		return object; \
+	} \
+	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_STRUCT * object) { \
+		object->cppPtr.~shared_ptr (); \
+	} \
+	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_STRUCT); \
+	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_STRUCT, belle_sip_object_t, \
+	_linphone_ ## C_NAME ## _uninit, \
+	NULL, \
 	NULL, \
 	FALSE \
 	);
@@ -220,13 +250,13 @@ LINPHONE_END_NAMESPACE
 		__VA_ARGS__ \
 	}; \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_STRUCT); \
-	static Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
+	Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
 		return belle_sip_object_new(Linphone ## C_STRUCT); \
 	} \
-	static void _linphone_ ## C_NAME ## _uninit(Linphone ## C_STRUCT * object) { \
+	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_STRUCT * object) { \
 		delete object->cppPtr; \
 	} \
-	static void _linphone_ ## C_NAME ## _clone(Linphone ## C_STRUCT * dest, const Linphone ## C_STRUCT * src) { \
+	void _linphone_ ## C_NAME ## _clone(Linphone ## C_STRUCT * dest, const Linphone ## C_STRUCT * src) { \
 		L_ASSERT(src->cppPtr); \
 		dest->cppPtr = new LINPHONE_NAMESPACE::CPP_CLASS(*src->cppPtr); \
 	} \

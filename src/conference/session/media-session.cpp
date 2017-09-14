@@ -626,7 +626,7 @@ float MediaSessionPrivate::aggregateQualityRatings (float audioRating, float vid
 void MediaSessionPrivate::setState (LinphoneCallState newState, const string &message) {
 	L_Q(MediaSession);
 	/* Take a ref on the session otherwise it might get destroyed during the call to setState */
-	shared_ptr<CallSession> session = q->shared_from_this();
+	shared_ptr<CallSession> session = static_pointer_cast<CallSession>(q->shared_from_this());
 	CallSessionPrivate::setState(newState, message);
 	updateReportingCallState();
 }

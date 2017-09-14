@@ -54,13 +54,6 @@ public:
 	void sendImdn (const std::string &content, LinphoneReason reason);
 
 	int getMessagesCount (bool unreadOnly);
-	void setCBackPointer (LinphoneChatRoom *cr) {
-		this->cBackPointer = cr;
-	}
-
-	void setCall (LinphoneCall *call) {
-		this->call = call;
-	}
 
 protected:
 	void sendIsComposingNotification ();
@@ -90,7 +83,6 @@ private:
 	void onIsComposingRefreshNeeded ();
 
 public:
-	LinphoneChatRoom *cBackPointer = nullptr;
 	LinphoneCore *core = nullptr;
 	LinphoneCall *call = nullptr;
 	Address peerAddress;

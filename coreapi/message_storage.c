@@ -43,9 +43,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <assert.h>
 
 
-extern LinphonePrivate::ChatRoom& linphone_chat_room_get_cpp_obj(LinphoneChatRoom *cr);
-
-
 static char *utf8_convert(const char *filename){
 	char db_file_utf8[MAX_PATH_SIZE] = "";
 #if defined(_WIN32)
@@ -314,46 +311,6 @@ void linphone_chat_message_store_appdata(LinphoneChatMessage* msg){
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 	}
-}
-
-void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr) {
-	linphone_chat_room_get_cpp_obj(cr).markAsRead();
-}
-
-int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr) {
-	return linphone_chat_room_get_cpp_obj(cr).getUnreadMessagesCount();
-}
-
-int linphone_chat_room_get_history_size(LinphoneChatRoom *cr) {
-	return linphone_chat_room_get_cpp_obj(cr).getHistorySize();
-}
-
-void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	linphone_chat_room_get_cpp_obj(cr).deleteMessage(msg);
-}
-
-void linphone_chat_room_delete_history(LinphoneChatRoom *cr) {
-	linphone_chat_room_get_cpp_obj(cr).deleteHistory();
-}
-
-bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm) {
-	std::list<LinphoneChatMessage *> l = linphone_chat_room_get_cpp_obj(cr).getHistoryRange(startm, endm);
-	bctbx_list_t *result = nullptr;
-	for (auto it = l.begin(); it != l.end(); it++)
-		result = bctbx_list_append(result, *it);
-	return result;
-}
-
-bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr, int nb_message) {
-	std::list<LinphoneChatMessage *> l = linphone_chat_room_get_cpp_obj(cr).getHistory(nb_message);
-	bctbx_list_t *result = nullptr;
-	for (auto it = l.begin(); it != l.end(); it++)
-		result = bctbx_list_append(result, *it);
-	return result;
-}
-
-LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, const char *message_id) {
-	return linphone_chat_room_get_cpp_obj(cr).findMessage(message_id);
 }
 
 static void linphone_create_history_table(sqlite3* db){

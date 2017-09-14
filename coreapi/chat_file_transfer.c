@@ -26,9 +26,8 @@
 #include "private.h"
 #include "ortp/b64.h"
 
+#include "c-wrapper/c-tools.h"
 #include "chat/chat-room.h"
-
-extern LinphonePrivate::ChatRoom& linphone_chat_room_get_cpp_obj(LinphoneChatRoom *cr);
 
 static bool_t file_transfer_in_progress_and_valid(LinphoneChatMessage* msg) {
 	return (msg->chat_room && linphone_chat_room_get_core(msg->chat_room) && msg->http_request && !belle_http_request_is_cancelled(msg->http_request));
@@ -342,7 +341,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 				linphone_chat_message_ref(msg);
 				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 				_release_http_request(msg);
-				linphone_chat_room_get_cpp_obj(msg->chat_room).sendMessage(msg);
+				L_GET_CPP_PTR_FROM_C_STRUCT(msg->chat_room, ChatRoom, ChatRoom)->sendMessage(msg);
 				file_upload_end_background_task(msg);
 				linphone_chat_message_unref(msg);
 			} else {
@@ -658,5 +657,5 @@ const char *linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage
 }
 
 LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
-	return linphone_chat_room_get_cpp_obj(cr).createFileTransferMessage(initial_content);
+	return L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom, ChatRoom)->createFileTransferMessage(initial_content);
 }

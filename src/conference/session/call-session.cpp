@@ -881,7 +881,7 @@ void CallSession::startIncomingNotification () {
 	if (d->listener)
 		d->listener->onCallSessionAccepted(*this);
 	/* Prevent the CallSession from being destroyed while we are notifying, if the user declines within the state callback */
-	shared_ptr<CallSession> ref = shared_from_this();
+	shared_ptr<CallSession> ref = static_pointer_cast<CallSession>(shared_from_this());
 #if 0
 	call->bg_task_id=sal_begin_background_task("liblinphone call notification", NULL, NULL);
 #endif
@@ -937,7 +937,7 @@ int CallSession::startInvite (const Address *destination) {
 	linphone_core_notify_display_status(d->core, os.str().c_str());
 	char *from = linphone_address_as_string(d->log->from);
 	/* Take a ref because sal_call() may destroy the CallSession if no SIP transport is available */
-	shared_ptr<CallSession> ref = shared_from_this();
+	shared_ptr<CallSession> ref = static_pointer_cast<CallSession>(shared_from_this());
 	int result = sal_call(d->op, from, destinationStr.c_str());
 	ms_free(from);
 	if (result < 0) {

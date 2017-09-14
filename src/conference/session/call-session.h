@@ -19,8 +19,6 @@
 #ifndef _CALL_SESSION_H_
 #define _CALL_SESSION_H_
 
-#include <memory>
-
 #include "object/object.h"
 #include "address/address.h"
 #include "conference/conference.h"
@@ -34,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 class CallPrivate;
 class CallSessionPrivate;
 
-class CallSession : public Object, public std::enable_shared_from_this<CallSession> {
+class CallSession : public Object {
 	friend class CallPrivate;
 
 public:

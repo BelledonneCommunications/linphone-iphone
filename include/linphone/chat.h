@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_CHAT_H_
 
 
+#include "linphone/callbacks.h"
 #include "linphone/types.h"
 
 
@@ -457,7 +458,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_user_data(LinphoneChatMessage* me
 **/
 LINPHONE_PUBLIC LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
 
-LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, bctbx_list_t *addresses);
+LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const bctbx_list_t *addresses);
 
 LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
 

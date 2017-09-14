@@ -32,7 +32,7 @@ using namespace std;
 // Event log.
 // -----------------------------------------------------------------------------
 
-L_DECLARE_C_STRUCT_IMPL(EventLog, event_log);
+L_DECLARE_C_STRUCT_IMPL(EventLog, EventLog, event_log);
 L_DECLARE_C_STRUCT_NEW_DEFAULT(EventLog, event_log);
 
 LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *eventLog) {
@@ -43,7 +43,7 @@ LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *eventL
 // Message event.
 // -----------------------------------------------------------------------------
 
-L_DECLARE_C_STRUCT_IMPL(MessageEvent, message_event);
+L_DECLARE_C_STRUCT_IMPL(MessageEvent, MessageEvent, message_event);
 
 LinphoneMessageEvent *linphone_message_event_new (LinphoneMessage *message) {
 	LinphoneMessageEvent *object = _linphone_message_event_init();
