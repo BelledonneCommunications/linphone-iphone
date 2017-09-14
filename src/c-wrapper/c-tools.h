@@ -161,6 +161,32 @@ public:
 	// ---------------------------------------------------------------------------
 
 	template<typename T>
+	static void * getUserData (const std::shared_ptr<T> &cppPtr) {
+		Variant v = cppPtr->getProperty("LinphonePrivate::Wrapper::userData");
+		return v.getValue<void *>();
+	}
+
+	template<typename T>
+	static void * getUserData (T *cppPtr) {
+		Variant v = cppPtr->getProperty("LinphonePrivate::Wrapper::userData");
+		return v.getValue<void *>();
+	}
+
+	template<typename T>
+	static inline void setUserData (std::shared_ptr<T> object, void *value) {
+		L_ASSERT(object);
+		object->setProperty("LinphonePrivate::Wrapper::userData", value);
+	}
+
+	template<typename T>
+	static inline void setUserData (T *object, void *value) {
+		L_ASSERT(object);
+		object->setProperty("LinphonePrivate::Wrapper::userData", value);
+	}
+
+	// ---------------------------------------------------------------------------
+
+	template<typename T>
 	static inline bctbx_list_t * getCListFromCppList (std::list<T> cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
@@ -294,6 +320,16 @@ LINPHONE_END_NAMESPACE
 
 #define L_GET_C_BACK_PTR(OBJECT, C_TYPE, C_NAME) \
 	LINPHONE_NAMESPACE::Wrapper::getCBackPtr<Linphone ## C_TYPE>(OBJECT, _linphone_ ## C_NAME ## _init)
+
+#define L_GET_USER_DATA_FROM_C_STRUCT(OBJECT, CPP_TYPE, C_TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getUserData( \
+		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE, C_TYPE) \
+	)
+#define L_SET_USER_DATA_FROM_C_STRUCT(OBJECT, VALUE, CPP_TYPE, C_TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::setUserData( \
+		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE, C_TYPE), \
+		VALUE \
+	)
 
 #define L_GET_C_LIST_FROM_CPP_LIST(LIST, TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList<TYPE *>(LIST)
