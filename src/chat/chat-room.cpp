@@ -41,17 +41,8 @@ ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
 	: core(core), isComposingHandler(core, this) {}
 
 ChatRoomPrivate::~ChatRoomPrivate () {
-	L_Q(ChatRoom);
 	for (auto it = transientMessages.begin(); it != transientMessages.end(); it++) {
 		linphone_chat_message_release(*it);
-	}
-	if (core) {
-		if (bctbx_list_find(core->chatrooms, GET_BACK_PTR(q))) {
-			lError() << "LinphoneChatRoom[" << GET_BACK_PTR(q) << "] is destroyed while still being used by the LinphoneCore. " <<
-				"This is abnormal. linphone_core_get_chat_room() doesn't give a reference, there is no need to call linphone_chat_room_unref(). " <<
-				"In order to remove a chat room from the core, use linphone_core_delete_chat_room().";
-			core->chatrooms = bctbx_list_remove(core->chatrooms, GET_BACK_PTR(q));
-		}
 	}
 	if (pendingMessage)
 		linphone_chat_message_destroy(pendingMessage);
