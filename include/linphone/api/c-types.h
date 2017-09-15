@@ -80,6 +80,7 @@ typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipant
 typedef struct _LinphoneEventLog LinphoneEventLog;
 typedef struct _LinphoneMessage LinphoneMessage;
 typedef struct _LinphoneMessageEvent LinphoneMessageEvent;
+typedef struct _LinphoneParticipant LinphoneParticipant;
 
 // =============================================================================
 // C Enums.

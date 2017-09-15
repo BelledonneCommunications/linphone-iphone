@@ -21,5 +21,6 @@
 
 #include "linphone/api/c-address.h"
 #include "linphone/api/c-event-log.h"
+#include "linphone/api/c-participant.h"
 
 #endif // ifndef _C_API_H_
