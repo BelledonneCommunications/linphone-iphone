@@ -28,14 +28,21 @@ using namespace LinphonePrivate;
 
 // -----------------------------------------------------------------------------
 
-static void set_integer_property () {
+static void set_int_property () {
 	PropertyContainer properties;
 	properties.setProperty("integer", 42);
 	BC_ASSERT_EQUAL(properties.getProperty("integer").getValue<int>(), 42, int, "%d");
 }
 
+static void set_generic_property () {
+	PropertyContainer properties;
+	properties.setProperty("generic", reinterpret_cast<void *>(0x42));
+	BC_ASSERT_EQUAL(properties.getProperty("generic").getValue<void *>(), reinterpret_cast<void *>(0x42), void *, "%p");
+}
+
 test_t property_container_tests[] = {
-	TEST_NO_TAG("Set int property", set_integer_property)
+	TEST_NO_TAG("Set int property", set_int_property),
+	TEST_NO_TAG("Set generic property", set_generic_property)
 };
 
 test_suite_t property_container_test_suite = {

@@ -45,24 +45,46 @@ public:
 		void *g;
 	};
 
+	~VariantPrivate () {
+		deleteString();
+	}
+
+	inline int getType () const {
+		return type;
+	}
+
+	inline void setType (int newType) {
+		L_ASSERT(newType >= Variant::Invalid && newType != Variant::MaxDefaultTypes);
+
+		if (newType != Variant::String)
+			deleteString();
+		else if (type != Variant::String)
+			value.str = new string();
+
+		type = newType;
+	}
+
+	Value value = {};
+
+private:
+	inline void deleteString () {
+		if (type == Variant::String)
+		delete value.str;
+	}
+
 	// Integer, because type can be a custom type.
 	int type = Variant::Invalid;
-	Value value = {};
 };
 
 Variant::Variant () {
+	// Private can exist. (placement new)
 	if (!mPrivate)
 		mPrivate = new VariantPrivate();
 }
 
 Variant::Variant (Type type) : Variant() {
-	if (type != String)
-		return;
-
 	L_D(Variant);
-
-	if (!d->value.str)
-		d->value.str = new string();
+	d->setType(type);
 }
 
 Variant::Variant (const Variant &src) {
@@ -71,11 +93,13 @@ Variant::Variant (const Variant &src) {
 	mPrivate = new VariantPrivate();
 
 	L_D(Variant);
-	d->type = src.getPrivate()->type;
+
+	int type = src.getPrivate()->getType();
+	d->setType(type);
 
 	const VariantPrivate::Value &value = src.getPrivate()->value;
-	if (d->type == String)
-		d->value.str = new string(*value.str);
+	if (type == String)
+		*d->value.str = *value.str;
 	else
 		d->value = value;
 }
@@ -154,10 +178,10 @@ Variant::Variant (const std::string &value) : Variant(String) {
 
 Variant::~Variant () {
 	L_D(Variant);
-	if (d->type == String)
-		delete d->value.str;
 
-	delete mPrivate;
+	// Note: Private data can be stolen by copy operator (r-value).
+	// It can be null, but it useless to test it.
+	delete d;
 }
 
 bool Variant::operator!= (const Variant &variant) const {
@@ -176,12 +200,32 @@ bool Variant::operator<= (const Variant &variant) const {
 }
 
 Variant &Variant::operator= (const Variant &variant) {
-	// TODO.
+	L_D(Variant);
+
+	if (this != &variant) {
+		// Update type.
+		int type = variant.getPrivate()->getType();
+		d->setType(type);
+
+		// Update value.
+		const VariantPrivate::Value &value = variant.getPrivate()->value;
+		if (type == String)
+			*d->value.str = *value.str;
+		else
+			d->value = value;
+	}
+
 	return *this;
 }
 
 Variant &Variant::operator= (Variant &&variant) {
-	// TODO.
+	// Unset old d.
+	delete mPrivate;
+
+	// Set new d.
+	mPrivate = variant.mPrivate;
+	variant.mPrivate = nullptr;
+
 	return *this;
 }
 
@@ -202,7 +246,7 @@ bool Variant::operator>= (const Variant &variant) const {
 
 bool Variant::isValid () const {
 	L_D(const Variant);
-	return d->type != Invalid;
+	return d->getType() != Invalid;
 }
 
 void Variant::clear () {
@@ -218,9 +262,10 @@ void Variant::swap (const Variant &variant) {
 // -----------------------------------------------------------------------------
 
 static inline long long getAssumedNumber (const VariantPrivate &p) {
-	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+	const int type = p.getType();
+	L_ASSERT(type > Variant::Invalid && type < Variant::MaxDefaultTypes);
 
-	switch (static_cast<Variant::Type>(p.type)) {
+	switch (static_cast<Variant::Type>(type)) {
 		case Variant::Int:
 			return p.value.i;
 		case Variant::Short:
@@ -244,9 +289,10 @@ static inline long long getAssumedNumber (const VariantPrivate &p) {
 }
 
 static inline unsigned long long getAssumedUnsignedNumber (const VariantPrivate &p) {
-	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+	const int type = p.getType();
+	L_ASSERT(type > Variant::Invalid && type < Variant::MaxDefaultTypes);
 
-	switch (static_cast<Variant::Type>(p.type)) {
+	switch (static_cast<Variant::Type>(type)) {
 		case Variant::UnsignedInt:
 			return p.value.ui;
 		case Variant::UnsignedShort:
@@ -282,10 +328,10 @@ static inline unsigned long long getValueAsUnsignedNumber (const VariantPrivate 
 // -----------------------------------------------------------------------------
 
 static inline bool getValueAsBool (const VariantPrivate &p, bool *soFarSoGood) {
-	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+	const int type = p.getType();
+	L_ASSERT(type > Variant::Invalid && type < Variant::MaxDefaultTypes);
 
-	*soFarSoGood = true;
-	switch (static_cast<Variant::Type>(p.type)) {
+	switch (static_cast<Variant::Type>(type)) {
 		case Variant::Int:
 		case Variant::Short:
 		case Variant::Long:
@@ -319,10 +365,10 @@ static inline bool getValueAsBool (const VariantPrivate &p, bool *soFarSoGood) {
 }
 
 static inline double getValueAsDouble (const VariantPrivate &p, bool *soFarSoGood) {
-	L_ASSERT(p.type > Variant::Invalid && p.type < Variant::MaxDefaultTypes);
+	const int type = p.getType();
+	L_ASSERT(type > Variant::Invalid && type < Variant::MaxDefaultTypes);
 
-	*soFarSoGood = true;
-	switch (static_cast<Variant::Type>(p.type)) {
+	switch (static_cast<Variant::Type>(type)) {
 		case Variant::Int:
 		case Variant::Short:
 		case Variant::Long:
@@ -368,10 +414,8 @@ static inline float getValueAsString (const VariantPrivate &p, bool *soFarSoGood
 }
 
 static inline void *getValueAsGeneric (const VariantPrivate &p, bool *soFarSoGood) {
-	if (p.type == Variant::Generic) {
-		*soFarSoGood = true;
+	if (p.getType() == Variant::Generic)
 		return p.value.g;
-	}
 
 	*soFarSoGood = false;
 	return nullptr;
@@ -383,6 +427,8 @@ void Variant::getValue (int type, void *value, bool *soFarSoGood) const {
 	L_ASSERT(type > Invalid && type != MaxDefaultTypes);
 
 	L_D(const Variant);
+
+	*soFarSoGood = true;
 
 	if (type > MaxDefaultTypes) {
 		*soFarSoGood = false;
