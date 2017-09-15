@@ -407,7 +407,43 @@ static inline double getValueAsDouble (const VariantPrivate &p, bool *soFarSoGoo
 }
 
 static inline float getValueAsFloat (const VariantPrivate &p, bool *soFarSoGood) {
-	// TODO.
+	const int type = p.getType();
+	L_ASSERT(type > Variant::Invalid && type < Variant::MaxDefaultTypes);
+
+	switch (static_cast<Variant::Type>(type)) {
+		case Variant::Int:
+		case Variant::Short:
+		case Variant::Long:
+		case Variant::LongLong:
+		case Variant::Char:
+			return static_cast<double>(getAssumedNumber(p));
+
+		case Variant::UnsignedInt:
+		case Variant::UnsignedShort:
+		case Variant::UnsignedLong:
+		case Variant::UnsignedLongLong:
+			return static_cast<double>(getAssumedUnsignedNumber(p));
+
+		case Variant::Float:
+			return p.value.f;
+
+		case Variant::Double:
+			return static_cast<float>(p.value.d);
+
+		case Variant::Bool:
+			return static_cast<double>(p.value.b);
+
+		case Variant::String:
+			return Utils::stof(*p.value.str);
+
+		case Variant::Generic:
+			return static_cast<double>(!!p.value.g);
+
+		default:
+			*soFarSoGood = false;
+			break;
+	}
+
 	return 0.f;
 }
 

@@ -50,6 +50,7 @@ namespace Utils {
 
 	LINPHONE_PUBLIC int stoi (const std::string &str, size_t *idx = 0, int base = 10);
 	LINPHONE_PUBLIC double stod (const std::string &str, size_t *idx = 0);
+	LINPHONE_PUBLIC float stof (const std::string &str, size_t *idx = 0);
 	LINPHONE_PUBLIC bool stob (const std::string &str);
 
 	LINPHONE_PUBLIC std::string stringToLower (const std::string &str);

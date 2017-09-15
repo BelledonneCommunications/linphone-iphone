@@ -94,12 +94,22 @@ int Utils::stoi (const string &str, size_t *idx, int base) {
 	return v;
 }
 
-double Utils::stod (const std::string &str, size_t *idx) {
+double Utils::stod (const string &str, size_t *idx) {
 	char *p;
 	double v = strtod(str.c_str(), &p);
 
 	if (idx)
-	  *idx = p - str.c_str();
+		*idx = p - str.c_str();
+
+	return v;
+}
+
+float Utils::stof (const string &str, size_t *idx) {
+	char *p;
+	float v = strtof(str.c_str(), &p);
+
+	if (idx)
+		*idx = p - str.c_str();
 
 	return v;
 }
