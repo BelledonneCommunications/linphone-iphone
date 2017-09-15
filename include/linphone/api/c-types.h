@@ -75,6 +75,7 @@ typedef struct _LinphoneAddress LinphoneAddress;
 
 typedef struct _LinphoneCall LinphoneCall;
 typedef struct _LinphoneCallEvent LinphoneCallEvent;
+typedef struct _LinphoneChatRoom LinphoneChatRoom;
 typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
 typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
 typedef struct _LinphoneEventLog LinphoneEventLog;
