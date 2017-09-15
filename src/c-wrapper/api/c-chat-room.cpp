@@ -35,6 +35,8 @@ using namespace std;
 #define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, ChatRoom, ChatRoom)
 
 
+extern LinphoneParticipant * _linphone_participant_init();
+
 static void _linphone_chat_room_constructor(LinphoneChatRoom *cr);
 static void _linphone_chat_room_destructor(LinphoneChatRoom *cr);
 
@@ -185,6 +187,41 @@ bctbx_list_t *linphone_chat_room_get_history(LinphoneChatRoom *cr, int nb_messag
 
 LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, const char *message_id) {
 	return GET_CPP_PTR(cr)->findMessage(message_id);
+}
+
+LinphoneParticipant * linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {
+	return L_GET_C_BACK_PTR(GET_CPP_PTR(cr)->addParticipant(
+		*L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address, Address), nullptr, false),
+		Participant, participant);
+}
+
+void linphone_chat_room_add_participants (LinphoneChatRoom *cr, const bctbx_list_t *addresses) {
+	GET_CPP_PTR(cr)->addParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address, Address), nullptr, false);
+}
+
+bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr) {
+	return GET_CPP_PTR(cr)->canHandleParticipants();
+}
+
+const char * linphone_chat_room_get_id (const LinphoneChatRoom *cr) {
+	string id = GET_CPP_PTR(cr)->getId();
+	return id.empty() ? nullptr : id.c_str();
+}
+
+int linphone_chat_room_get_nb_participants (const LinphoneChatRoom *cr) {
+	return GET_CPP_PTR(cr)->getNbParticipants();
+}
+
+bctbx_list_t * linphone_chat_room_get_participants (const LinphoneChatRoom *cr) {
+	return L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(GET_CPP_PTR(cr)->getParticipants(), Participant, Participant, participant);
+}
+
+void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphoneParticipant *participant) {
+	GET_CPP_PTR(cr)->removeParticipant(L_GET_CPP_PTR_FROM_C_STRUCT(participant, Participant, Participant));
+}
+
+void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants) {
+	GET_CPP_PTR(cr)->removeParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(participants, Participant, Participant));
 }
 
 

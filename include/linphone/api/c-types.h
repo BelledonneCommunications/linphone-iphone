@@ -81,6 +81,11 @@ typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipant
 typedef struct _LinphoneEventLog LinphoneEventLog;
 typedef struct _LinphoneMessage LinphoneMessage;
 typedef struct _LinphoneMessageEvent LinphoneMessageEvent;
+
+/**
+ * The LinphoneParticipant object represents a participant of a conference.
+ * @ingroup misc
+**/
 typedef struct _LinphoneParticipant LinphoneParticipant;
 
 // =============================================================================

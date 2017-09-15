@@ -224,6 +224,65 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room);
 
 /**
+ * Add a participant to a chat room. This may fail if this type of chat room does not handle participants.
+ * Use linphone_chat_room_can_handle_participants() to know if this chat room handles participants.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] addr The address of the participant to add to the chat room
+ * @return The newly added participant or NULL in case of failure
+ */
+LINPHONE_PUBLIC LinphoneParticipant * linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr);
+
+/**
+ * Add several participants to a chat room at once. This may fail if this type of chat room does not handle participants.
+ * Use linphone_chat_room_can_handle_participants() to know if this chat room handles participants.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] addresses \bctbx_list{LinphoneAddress}
+ */
+LINPHONE_PUBLIC void linphone_chat_room_add_participants (LinphoneChatRoom *cr, const bctbx_list_t *addresses);
+
+/**
+ * Tells whether a chat room is able to handle participants.
+ * @param[in] cr A LinphoneChatRoom object
+ * @return A boolean value telling whether the chat room can handle participants or not
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr);
+
+/**
+ * Get the conference ID of the chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ * @return The conference ID of the chat room or NULL if this type of chat room is not conference based
+ */
+LINPHONE_PUBLIC const char * linphone_chat_room_get_id (const LinphoneChatRoom *cr);
+
+/**
+ * Get the number of participants in the chat room (that is without ourselves).
+ * @param[in] cr A LinphoneChatRoom object
+ * @return The number of participants in the chat room
+ */
+LINPHONE_PUBLIC int linphone_chat_room_get_nb_participants (const LinphoneChatRoom *cr);
+
+/**
+ * Get the list of participants of a chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ * @return \bctbx_list{LinphoneParticipant}
+ */
+LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_participants (const LinphoneChatRoom *cr);
+
+/**
+ * Remove a participant of a chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] participant The participant to remove from the chat room
+ */
+LINPHONE_PUBLIC void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphoneParticipant *participant);
+
+/**
+ * Remove several participants of a chat room at once.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] participants \bctbx_list{LinphoneParticipant}
+ */
+LINPHONE_PUBLIC void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants);
+
+/**
  * Returns back pointer to #LinphoneCore object.
  * @deprecated use linphone_chat_room_get_core()
  * @donotwrap
