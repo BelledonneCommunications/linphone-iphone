@@ -52,7 +52,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class VariantPrivate;
 
-class Variant {
+class LINPHONE_PUBLIC Variant {
 public:
 	enum Type {
 		Invalid = 0,
@@ -97,7 +97,7 @@ public:
 
 	template<typename T>
 	void setValue (const T &value) {
-		// Yeah, I'm crazy.
+		// Yeah, I'm crazy but it's useful to avoid code duplication.
 		new (this) Variant(value);
 	}
 
