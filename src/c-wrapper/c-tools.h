@@ -120,9 +120,9 @@ public:
 		T *oldPtr = reinterpret_cast<T *>(static_cast<WrappedClonableObject<T> *>(object)->cppPtr);
 		if (oldPtr != cppPtr) {
 			delete oldPtr;
-			T *cppObject = static_cast<WrappedClonableObject<T> *>(object)->cppPtr;
-			cppObject = new T(*cppPtr);
-			cppObject->setProperty("LinphonePrivate::Wrapper::cBackPtr", object);
+			T **cppObject = &static_cast<WrappedClonableObject<T> *>(object)->cppPtr;
+			*cppObject = new T(*cppPtr);
+			(*cppObject)->setProperty("LinphonePrivate::Wrapper::cBackPtr", object);
 		}
 	}
 
