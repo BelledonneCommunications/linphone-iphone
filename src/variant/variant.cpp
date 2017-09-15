@@ -69,7 +69,7 @@ public:
 private:
 	inline void deleteString () {
 		if (type == Variant::String)
-		delete value.str;
+			delete value.str;
 	}
 
 	// Integer, because type can be a custom type.
@@ -250,7 +250,8 @@ bool Variant::isValid () const {
 }
 
 void Variant::clear () {
-	// TODO.
+	L_D(Variant);
+	d->setType(Invalid);
 }
 
 void Variant::swap (const Variant &variant) {
@@ -374,7 +375,6 @@ static inline double getValueAsDouble (const VariantPrivate &p, bool *soFarSoGoo
 		case Variant::Long:
 		case Variant::LongLong:
 		case Variant::Char:
-		case Variant::Float:
 			return static_cast<double>(getAssumedNumber(p));
 
 		case Variant::UnsignedInt:
@@ -382,6 +382,9 @@ static inline double getValueAsDouble (const VariantPrivate &p, bool *soFarSoGoo
 		case Variant::UnsignedLong:
 		case Variant::UnsignedLongLong:
 			return static_cast<double>(getAssumedUnsignedNumber(p));
+
+		case Variant::Float:
+			return static_cast<double>(p.value.f);
 
 		case Variant::Double:
 			return p.value.d;
@@ -408,9 +411,46 @@ static inline float getValueAsFloat (const VariantPrivate &p, bool *soFarSoGood)
 	return 0.f;
 }
 
-static inline float getValueAsString (const VariantPrivate &p, bool *soFarSoGood) {
-	// TODO.
-	return 0.f;
+static inline string getValueAsString (const VariantPrivate &p, bool *soFarSoGood) {
+	const int type = p.getType();
+	L_ASSERT(type > Variant::Invalid && type < Variant::MaxDefaultTypes);
+
+	switch (static_cast<Variant::Type>(type)) {
+		case Variant::Int:
+		case Variant::Short:
+		case Variant::Long:
+		case Variant::LongLong:
+			return Utils::toString(getAssumedNumber(p));
+
+		case Variant::UnsignedInt:
+		case Variant::UnsignedShort:
+		case Variant::UnsignedLong:
+		case Variant::UnsignedLongLong:
+			return Utils::toString(getAssumedUnsignedNumber(p));
+
+		case Variant::Char:
+			return string(1, p.value.c);
+
+		case Variant::Bool:
+			return string(p.value.b ? "true" : "false");
+
+		case Variant::Double:
+			return Utils::toString(p.value.d);
+
+		case Variant::Float:
+			return Utils::toString(p.value.f);
+
+		case Variant::String:
+			return *p.value.str;
+
+		case Variant::Generic:
+			return Utils::toString(p.value.g);
+
+		default:
+			*soFarSoGood = false;
+	}
+
+	return string();
 }
 
 static inline void *getValueAsGeneric (const VariantPrivate &p, bool *soFarSoGood) {
@@ -456,16 +496,16 @@ void Variant::getValue (int type, void *value, bool *soFarSoGood) const {
 
 		// Cast as Unsigned number.
 		case UnsignedInt:
-			*static_cast<unsigned int *>(value) = static_cast<unsigned int>(getValueAsNumber(*d, soFarSoGood));
+			*static_cast<unsigned int *>(value) = static_cast<unsigned int>(getValueAsUnsignedNumber(*d, soFarSoGood));
 			break;
 		case UnsignedShort:
-			*static_cast<unsigned short *>(value) = static_cast<unsigned short>(getValueAsNumber(*d, soFarSoGood));
+			*static_cast<unsigned short *>(value) = static_cast<unsigned short>(getValueAsUnsignedNumber(*d, soFarSoGood));
 			break;
 		case UnsignedLong:
-			*static_cast<unsigned long *>(value) = static_cast<unsigned long>(getValueAsNumber(*d, soFarSoGood));
+			*static_cast<unsigned long *>(value) = static_cast<unsigned long>(getValueAsUnsignedNumber(*d, soFarSoGood));
 			break;
 		case UnsignedLongLong:
-			*static_cast<unsigned long long *>(value) = getValueAsNumber(*d, soFarSoGood);
+			*static_cast<unsigned long long *>(value) = getValueAsUnsignedNumber(*d, soFarSoGood);
 			break;
 
 		// Cast as specific value.

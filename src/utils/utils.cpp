@@ -78,6 +78,12 @@ TO_STRING_IMPL(float)
 TO_STRING_IMPL(double)
 TO_STRING_IMPL(long double)
 
+string Utils::toString (const void *val) {
+	ostringstream ss;
+	ss << val;
+	return ss.str();
+}
+
 int Utils::stoi (const string &str, size_t *idx, int base) {
 	char *p;
 	int v = strtol(str.c_str(), &p, base);

@@ -26,12 +26,21 @@ using namespace std;
 
 using namespace LinphonePrivate;
 
-// -----------------------------------------------------------------------------
-
 static void set_int_property () {
 	PropertyContainer properties;
 	properties.setProperty("integer", 42);
 	BC_ASSERT_EQUAL(properties.getProperty("integer").getValue<int>(), 42, int, "%d");
+}
+
+static void set_string_property () {
+	PropertyContainer properties;
+	const string text = "Hey listen!";
+	properties.setProperty("string", text);
+
+	{
+		string textToCheck = properties.getProperty("string").getValue<string>();
+		BC_ASSERT_STRING_EQUAL(textToCheck.c_str(), text.c_str());
+	}
 }
 
 static void set_generic_property () {
@@ -42,6 +51,7 @@ static void set_generic_property () {
 
 test_t property_container_tests[] = {
 	TEST_NO_TAG("Set int property", set_int_property),
+	TEST_NO_TAG("Set string property", set_string_property),
 	TEST_NO_TAG("Set generic property", set_generic_property)
 };
 
