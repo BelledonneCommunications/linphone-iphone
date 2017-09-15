@@ -236,7 +236,7 @@ LinphoneChatRoom * linphone_client_group_chat_room_new(LinphoneCore *lc, const b
 	if (from.empty())
 		from = linphone_core_get_primary_contact(lc);
 	LinphonePrivate::Address me(from);
-	std::list<LinphonePrivate::Address> l = L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address);
+	std::list<LinphonePrivate::Address> l = L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address, Address);
 	LinphoneChatRoom *cr = _linphone_chat_room_init();
 	L_SET_CPP_PTR_FROM_C_STRUCT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(lc, me, l));
 	return cr;
