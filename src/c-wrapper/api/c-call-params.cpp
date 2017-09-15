@@ -492,12 +492,12 @@ void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t
  * Reference and user data handling functions                                  *
  ******************************************************************************/
 
-void *linphone_call_params_get_user_data(const LinphoneCallParams *cp) {
-	return cp->userData;
+void * linphone_call_params_get_user_data(const LinphoneCallParams *cp) {
+	return L_GET_USER_DATA_FROM_C_STRUCT(cp, MediaSessionParams, CallParams);
 }
 
 void linphone_call_params_set_user_data(LinphoneCallParams *cp, void *ud) {
-	cp->userData = ud;
+	L_SET_USER_DATA_FROM_C_STRUCT(cp, ud, MediaSessionParams, CallParams);
 }
 
 LinphoneCallParams * linphone_call_params_ref(LinphoneCallParams *cp) {

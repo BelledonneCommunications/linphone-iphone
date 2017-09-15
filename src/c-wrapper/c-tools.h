@@ -42,7 +42,6 @@ private:
 	template<typename T>
 	struct WrappedClonableObject {
 		belle_sip_object_t base;
-		void *userData;
 		T *cppPtr;
 	};
 
@@ -271,7 +270,6 @@ LINPHONE_END_NAMESPACE
 #define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_STRUCT, C_NAME, ...) \
 	struct _Linphone ## C_STRUCT { \
 		belle_sip_object_t base; \
-		void *userData; \
 		LINPHONE_NAMESPACE::CPP_CLASS *cppPtr; \
 		__VA_ARGS__ \
 	}; \
