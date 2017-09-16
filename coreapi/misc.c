@@ -813,6 +813,7 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDes
 	linphone_call_update_ice_state_in_call_stats(call);
 }
 
+
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session, bool_t use_nortpproxy) {
 	IceCandidate *rtp_candidate = NULL;
 	IceCandidate *rtcp_candidate = NULL;
@@ -1682,6 +1683,38 @@ static bool_t _check_for_ice_restart_and_set_remote_credentials(IceSession *ice_
 		}
 	}
 	return ice_restarted;
+}
+
+/*the purpose of this function is to detect a situation where a check list is still running while a reINVITE
+with remote-candidates is received*/
+bool_t check_ice_reinvite_needs_defered_response(LinphoneCall *call){
+	SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
+	int i,j;
+	IceCheckList *cl;
+	
+	if (ice_session_state(call->ice_session) != IS_Running ) return FALSE;
+	
+	for (i = 0; i < md->nb_streams; i++) {
+		SalStreamDescription *stream = &md->streams[i];
+		cl = ice_session_check_list(call->ice_session, i);
+
+		if (cl==NULL) continue;
+		if (stream->ice_mismatch == TRUE) {
+			return FALSE;
+		}
+		if (stream->rtp_port == 0) {
+			continue;
+		}
+		
+		if (ice_check_list_state(cl) != ICL_Running) continue;
+
+		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+			const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
+			if (remote_candidate->addr[0] != '\0') return TRUE;
+
+		}
+	}
+	return FALSE;
 }
 
 static void _create_ice_check_lists_and_parse_ice_attributes(LinphoneCall *call, const SalMediaDescription *md, bool_t ice_restarted) {

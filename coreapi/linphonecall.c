@@ -4662,7 +4662,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		switch (ice_session_state(call->ice_session)) {
 			case IS_Completed:
 			case IS_Failed:
-				/* At least one ICE session has succeeded, so perform a call update. */
+				/* At least one ICE check list has succeeded, so perform a call update. */
 				if (ice_session_has_completed_check_list(call->ice_session) == TRUE) {
 					const LinphoneCallParams *current_param =  linphone_call_get_current_params(call);
 					if (ice_session_role(call->ice_session) == IR_Controlling && current_param->update_call_when_ice_completed ) {
@@ -4670,6 +4670,9 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 						params->internal_call_update = TRUE;
 						linphone_call_update(call, params);
 						linphone_call_params_unref(params);
+					}else if (ice_session_role(call->ice_session) == IR_Controlled && call->incoming_ice_reinvite_pending){
+						linphone_call_accept_update(call, NULL);
+						call->incoming_ice_reinvite_pending = FALSE;
 					}
 					start_dtls_on_all_streams(call);
 				}
