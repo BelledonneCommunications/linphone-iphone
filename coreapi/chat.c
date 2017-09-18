@@ -570,14 +570,6 @@ const LinphoneAddress *linphone_chat_message_get_peer_address(LinphoneChatMessag
 	return linphone_chat_room_get_peer_address(msg->chat_room);
 }
 
-void linphone_chat_message_set_user_data(LinphoneChatMessage *msg, void *ud) {
-	msg->message_userdata = ud;
-}
-
-void *linphone_chat_message_get_user_data(const LinphoneChatMessage *msg) {
-	return msg->message_userdata;
-}
-
 const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessage *msg) {
 	return msg->external_body_url;
 }
@@ -773,15 +765,6 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 	if (msg->callbacks) {
 		linphone_chat_message_cbs_unref(msg->callbacks);
 	}
-}
-
-LinphoneChatMessage *linphone_chat_message_ref(LinphoneChatMessage *msg) {
-	belle_sip_object_ref(msg);
-	return msg;
-}
-
-void linphone_chat_message_unref(LinphoneChatMessage *msg) {
-	belle_sip_object_unref(msg);
 }
 
 void linphone_chat_message_deactivate(LinphoneChatMessage *msg){

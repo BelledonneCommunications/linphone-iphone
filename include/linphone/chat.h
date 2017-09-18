@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/callbacks.h"
 #include "linphone/types.h"
 #include "linphone/api/c-types.h"
+#include "linphone/api/c-chat-message.h"
 #include "linphone/api/c-chat-room.h"
 #include "linphone/api/c-chat-room-cbs.h"
 
@@ -57,19 +58,6 @@ LINPHONE_PUBLIC LinphoneChatMessageState linphone_chat_message_get_state(const L
  * Duplicate a LinphoneChatMessage
 **/
 LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
-
-/**
- * Acquire a reference to the chat message.
- * @param msg the chat message
- * @return the same chat message
-**/
-LINPHONE_PUBLIC LinphoneChatMessage * linphone_chat_message_ref(LinphoneChatMessage *msg);
-
-/**
- * Release reference to the chat message.
- * @param msg the chat message.
-**/
-LINPHONE_PUBLIC void linphone_chat_message_unref(LinphoneChatMessage *msg);
 
 /**
  * Destroys a LinphoneChatMessage.
@@ -249,16 +237,6 @@ LINPHONE_PUBLIC const char* linphone_chat_message_get_text(const LinphoneChatMes
  * Get the time the message was sent.
  */
 LINPHONE_PUBLIC time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
-
-/**
- * User pointer get function
- */
-LINPHONE_PUBLIC void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
-
-/**
- *User pointer set function
- */
-LINPHONE_PUBLIC void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
 
 /**
  * Returns the chatroom this message belongs to.

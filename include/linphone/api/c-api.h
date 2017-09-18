@@ -20,6 +20,7 @@
 #define _C_API_H_
 
 #include "linphone/api/c-address.h"
+#include "linphone/api/c-chat-message.h"
 #include "linphone/api/c-chat-room.h"
 #include "linphone/api/c-event-log.h"
 #include "linphone/api/c-participant.h"
