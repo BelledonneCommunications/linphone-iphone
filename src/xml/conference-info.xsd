@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+   <xs:schema
+   targetNamespace="urn:ietf:params:xml:ns:conference-info"
+   xmlns:tns="urn:ietf:params:xml:ns:conference-info"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns="urn:ietf:params:xml:ns:conference-info"
+   elementFormDefault="qualified"
+   attributeFormDefault="unqualified">
+   <!--
+     This imports the xml:language definition
+   -->
+      <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+       schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+   <!--
+     CONFERENCE ELEMENT
+   -->
+      <xs:element name="conference-info" type="conference-type"/>
+      <!--
+         CONFERENCE TYPE
+      -->
+      <xs:complexType name="conference-type">
+       <xs:sequence>
+        <xs:element name="conference-description"
+         type="conference-description-type" minOccurs="0"/>
+        <xs:element name="host-info"
+         type="host-type" minOccurs="0"/>
+        <xs:element name="conference-state"
+         type="conference-state-type" minOccurs="0"/>
+        <xs:element name="users"
+         type="users-type" minOccurs="0"/>
+        <xs:element name="sidebars-by-ref"
+         type="uris-type" minOccurs="0"/>
+        <xs:element name="sidebars-by-val"
+         type="sidebars-by-val-type" minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:attribute name="entity"
+        type="xs:anyURI" use="required"/>
+       <xs:attribute name="state"
+        type="state-type" use="optional" default="full"/>
+       <xs:attribute name="version"
+        type="xs:unsignedInt" use="optional"/>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         STATE TYPE
+      -->
+      <xs:simpleType name="state-type">
+       <xs:restriction base="xs:string">
+        <xs:enumeration value="full"/>
+        <xs:enumeration value="partial"/>
+        <xs:enumeration value="deleted"/>
+       </xs:restriction>
+      </xs:simpleType>
+      <!--
+         CONFERENCE DESCRIPTION TYPE
+      -->
+      <xs:complexType name="conference-description-type">
+       <xs:sequence>
+        <xs:element name="display-text"
+         type="xs:string" minOccurs="0"/>
+        <xs:element name="subject"
+         type="xs:string" minOccurs="0"/>
+        <xs:element name="free-text"
+         type="xs:string" minOccurs="0"/>
+        <xs:element name="keywords"
+         type="keywords-type" minOccurs="0"/>
+        <xs:element name="conf-uris"
+         type="uris-type" minOccurs="0"/>
+        <xs:element name="service-uris"
+         type="uris-type" minOccurs="0"/>
+        <xs:element name="maximum-user-count"
+         type="xs:unsignedInt" minOccurs="0"/>
+        <xs:element name="available-media"
+         type="conference-media-type" minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         HOST TYPE
+      -->
+      <xs:complexType name="host-type">
+       <xs:sequence>
+        <xs:element name="display-text" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="web-page" type="xs:anyURI"
+         minOccurs="0"/>
+        <xs:element name="uris" type="uris-type"
+         minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         CONFERENCE STATE TYPE
+      -->
+      <xs:complexType name="conference-state-type">
+       <xs:sequence>
+        <xs:element name="user-count" type="xs:unsignedInt"
+         minOccurs="0"/>
+        <xs:element name="active" type="xs:boolean"
+         minOccurs="0"/>
+        <xs:element name="locked" type="xs:boolean"
+         minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         CONFERENCE MEDIA TYPE
+      -->
+      <xs:complexType name="conference-media-type">
+       <xs:sequence>
+        <xs:element name="entry" type="conference-medium-type"
+         maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         CONFERENCE MEDIUM TYPE
+      -->
+      <xs:complexType name="conference-medium-type">
+       <xs:sequence>
+        <xs:element name="display-text" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="type" type="xs:string"/>
+        <xs:element name="status" type="media-status-type"
+         minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:attribute name="label" type="xs:string"
+        use="required"/>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         URIs TYPE
+      -->
+      <xs:complexType name="uris-type">
+       <xs:sequence>
+        <xs:element name="entry" type="uri-type"
+         maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:attribute name="state" type="state-type"
+        use="optional" default="full"/>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         URI TYPE
+      -->
+      <xs:complexType name="uri-type">
+       <xs:sequence>
+        <xs:element name="uri" type="xs:anyURI"/>
+        <xs:element name="display-text" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="purpose" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="modified" type="execution-type"
+         minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         KEYWORDS TYPE
+      -->
+      <xs:simpleType name="keywords-type">
+       <xs:list itemType="xs:string"/>
+      </xs:simpleType>
+      <!--
+         USERS TYPE
+      -->
+      <xs:complexType name="users-type">
+       <xs:sequence>
+        <xs:element name="user" type="user-type"
+         minOccurs="0" maxOccurs="unbounded"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:attribute name="state" type="state-type"
+        use="optional" default="full"/>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         USER TYPE
+      -->
+      <xs:complexType name="user-type">
+       <xs:sequence>
+        <xs:element name="display-text" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="associated-aors" type="uris-type"
+         minOccurs="0"/>
+        <xs:element name="roles" type="user-roles-type"
+         minOccurs="0"/>
+        <xs:element name="languages" type="user-languages-type"
+         minOccurs="0"/>
+        <xs:element name="cascaded-focus" type="xs:anyURI"
+         minOccurs="0"/>
+        <xs:element name="endpoint" type="endpoint-type"
+         minOccurs="0" maxOccurs="unbounded"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:attribute name="entity" type="xs:anyURI"/>
+       <xs:attribute name="state" type="state-type"
+        use="optional" default="full"/>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         USER ROLES TYPE
+      -->
+      <xs:complexType name="user-roles-type">
+       <xs:sequence>
+        <xs:element name="entry" type="xs:string"
+         maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         USER LANGUAGES TYPE
+      -->
+      <xs:simpleType name="user-languages-type">
+       <xs:list itemType="xs:language"/>
+      </xs:simpleType>
+      <!--
+         ENDPOINT TYPE
+      -->
+      <xs:complexType name="endpoint-type">
+       <xs:sequence>
+        <xs:element name="display-text" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="referred" type="execution-type"
+         minOccurs="0"/>
+        <xs:element name="status" type="endpoint-status-type"
+         minOccurs="0"/>
+        <xs:element name="joining-method" type="joining-type"
+         minOccurs="0"/>
+        <xs:element name="joining-info"
+         type="execution-type"
+         minOccurs="0"/>
+        <xs:element name="disconnection-method"
+         type="disconnection-type"
+         minOccurs="0"/>
+        <xs:element name="disconnection-info"
+         type="execution-type"
+         minOccurs="0"/>
+        <xs:element name="media" type="media-type"
+         minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="call-info" type="call-type"
+         minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:attribute name="entity" type="xs:string"/>
+       <xs:attribute name="state" type="state-type"
+        use="optional" default="full"/>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         ENDPOINT STATUS TYPE
+      -->
+      <xs:simpleType name="endpoint-status-type">
+       <xs:restriction base="xs:string">
+        <xs:enumeration value="pending"/>
+        <xs:enumeration value="dialing-out"/>
+        <xs:enumeration value="dialing-in"/>
+        <xs:enumeration value="alerting"/>
+        <xs:enumeration value="on-hold"/>
+        <xs:enumeration value="connected"/>
+        <xs:enumeration value="muted-via-focus"/>
+        <xs:enumeration value="disconnecting"/>
+        <xs:enumeration value="disconnected"/>
+       </xs:restriction>
+      </xs:simpleType>
+      <!--
+         JOINING TYPE
+      -->
+      <xs:simpleType name="joining-type">
+       <xs:restriction base="xs:string">
+        <xs:enumeration value="dialed-in"/>
+        <xs:enumeration value="dialed-out"/>
+        <xs:enumeration value="focus-owner"/>
+       </xs:restriction>
+      </xs:simpleType>
+      <!--
+         DISCONNECTION TYPE
+      -->
+      <xs:simpleType name="disconnection-type">
+       <xs:restriction base="xs:string">
+        <xs:enumeration value="departed"/>
+        <xs:enumeration value="booted"/>
+        <xs:enumeration value="failed"/>
+        <xs:enumeration value="busy"/>
+       </xs:restriction>
+      </xs:simpleType>
+      <!--
+         EXECUTION TYPE
+      -->
+      <xs:complexType name="execution-type">
+       <xs:sequence>
+        <xs:element name="when" type="xs:dateTime"
+         minOccurs="0"/>
+        <xs:element name="reason" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="by" type="xs:anyURI"
+         minOccurs="0"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+     <!--
+         CALL TYPE
+      -->
+      <xs:complexType name="call-type">
+       <xs:choice>
+        <xs:element name="sip" type="sip-dialog-id-type"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:choice>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         SIP DIALOG ID TYPE
+      -->
+      <xs:complexType name="sip-dialog-id-type">
+       <xs:sequence>
+        <xs:element name="display-text" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="call-id" type="xs:string"/>
+        <xs:element name="from-tag" type="xs:string"/>
+        <xs:element name="to-tag" type="xs:string"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         MEDIA TYPE
+      -->
+      <xs:complexType name="media-type">
+       <xs:sequence>
+        <xs:element name="display-text" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="type" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="label" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="src-id" type="xs:string"
+         minOccurs="0"/>
+        <xs:element name="status" type="media-status-type"
+         minOccurs="0"/>
+        <xs:any namespace="##other" processContents="lax"
+         minOccurs="0" maxOccurs="unbounded"/>
+       </xs:sequence>
+       <xs:attribute name="id" type="xs:string"
+        use="required"/>
+       <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <!--
+         MEDIA STATUS TYPE
+      -->
+      <xs:simpleType name="media-status-type">
+       <xs:restriction base="xs:string">
+        <xs:enumeration value="recvonly"/>
+        <xs:enumeration value="sendonly"/>
+        <xs:enumeration value="sendrecv"/>
+        <xs:enumeration value="inactive"/>
+       </xs:restriction>
+      </xs:simpleType>
+       <!--
+         SIDEBARS BY VAL TYPE
+       -->
+       <xs:complexType name="sidebars-by-val-type">
+        <xs:sequence>
+         <xs:element name="entry" type="conference-type"
+          minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="state" type="state-type"
+         use="optional" default="full"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+       </xs:complexType>
+      </xs:schema>

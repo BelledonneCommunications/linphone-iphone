@@ -78,6 +78,8 @@ private:
 protected:
 	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 
+	std::shared_ptr<Participant> findParticipant (const Address &addr);
+
 protected:
 	LinphoneCore *core = nullptr;
 	CallListener *callListener = nullptr;

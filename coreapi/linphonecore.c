@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
+#include "conference/remote-conference-event-handler.h"
 
 // For migration purpose.
 #include "address/address-p.h"
@@ -2123,12 +2124,17 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 
 static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
 	if (strcmp(notified_event, "Presence") == 0) {
-		const bctbx_list_t* friendLists = linphone_core_get_friends_lists(lc);
-		while( friendLists != NULL ){
-			LinphoneFriendList* list = reinterpret_cast<LinphoneFriendList *>(friendLists->data);
-			ms_message("notify presence for list %p", list);
+		for (const bctbx_list_t *it = linphone_core_get_friends_lists(lc); it; it = bctbx_list_next(it)) {
+			LinphoneFriendList *list = reinterpret_cast<LinphoneFriendList *>(bctbx_list_get_data(it));
+			ms_message("Notify presence for list %p", list);
 			linphone_friend_list_notify_presence_received(list, lev, body);
-			friendLists = friendLists->next;
+		}
+	} else if (strcmp(notified_event, "Conference") == 0) {
+		LinphonePrivate::RemoteConferenceEventHandler *handler =
+			reinterpret_cast<LinphonePrivate::RemoteConferenceEventHandler *>(linphone_event_get_user_data(lev));
+		if (handler) {
+			ms_message("Notify event for conference %s", handler->getConfId().c_str());
+			handler->notifyReceived((char *)linphone_content_get_buffer(body));
 		}
 	}
 }
@@ -2136,6 +2142,8 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
 	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
 		linphone_friend_list_subscription_state_changed(lc, lev, state);
+	} else if (strcmp(linphone_event_get_name(lev), "Conference") == 0) {
+		
 	}
 }
 

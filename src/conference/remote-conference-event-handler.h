@@ -1,5 +1,5 @@
 /*
- * participant.h
+ * remote-conference-event-handler.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,42 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PARTICIPANT_H_
-#define _PARTICIPANT_H_
+#ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_H_
+#define _REMOTE_CONFERENCE_EVENT_HANDLER_H_
 
-#include "address/address.h"
+#include <string>
+
+#include "linphone/types.h"
 
 #include "object/object.h"
-#include "conference/params/call-session-params.h"
-
-// =============================================================================
+#include "conference-listener.h"
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ClientGroupChatRoom;
-class ParticipantPrivate;
+class RemoteConferenceEventHandlerPrivate;
 
-class Participant : public Object {
-	friend class Call;
-	friend class CallPrivate;
-	friend class ClientGroupChatRoom;
-	friend class Conference;
-	friend class LocalConference;
-	friend class MediaSessionPrivate;
+class RemoteConferenceEventHandler : public Object {
+	public:
+		RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener, const Address &confAddr);
+		~RemoteConferenceEventHandler();
 
-public:
-	Participant (const Address &addr);
+		void subscribe(std::string confId);
+		void notifyReceived(std::string xmlBody);
+		void unsubscribe();
 
-	const Address& getAddress () const;
+		std::string getConfId();
 
-	bool isAdmin () const;
-	void setAdmin (bool isAdmin);
-
-private:
-	L_DECLARE_PRIVATE(Participant);
-	L_DISABLE_COPY(Participant);
+	private:
+		L_DECLARE_PRIVATE(RemoteConferenceEventHandler);
+		L_DISABLE_COPY(RemoteConferenceEventHandler);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _PARTICIPANT_H_
+#endif // ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_H_

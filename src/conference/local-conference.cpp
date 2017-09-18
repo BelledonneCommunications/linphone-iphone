@@ -17,12 +17,67 @@
  */
 
 #include "local-conference.h"
+#include "participant-p.h"
 
-LINPHONE_BEGIN_NAMESPACE
+using namespace std;
+using namespace LinphonePrivate;
 
 // =============================================================================
 
 LocalConference::LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(core, myAddress, listener) {}
+	: Conference(core, myAddress, listener) {
+	eventHandler = new LocalConferenceEventHandler(core, this);
+}
 
-LINPHONE_END_NAMESPACE
+LocalConference::~LocalConference () {
+	delete eventHandler;
+}
+
+// -----------------------------------------------------------------------------
+
+shared_ptr<Participant> LocalConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+	shared_ptr<Participant> participant = findParticipant(addr);
+	if (participant)
+		return participant;
+	participant = make_shared<Participant>(addr);
+	participant->getPrivate()->createSession(*this, params, hasMedia, this);
+	participants.push_back(participant);
+	activeParticipant = participant;
+	return participant;
+}
+
+void LocalConference::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
+	for (const auto &addr : addresses)
+		addParticipant(addr, params, hasMedia);
+}
+
+bool LocalConference::canHandleParticipants () const {
+	return true;
+}
+
+const string& LocalConference::getId () const {
+	return id;
+}
+
+int LocalConference::getNbParticipants () const {
+	participants.size();
+	return 1;
+}
+
+list<shared_ptr<Participant>> LocalConference::getParticipants () const {
+	return participants;
+}
+
+void LocalConference::removeParticipant (const shared_ptr<Participant> participant) {
+	for (const auto &p : participants) {
+		if (participant->getAddress().equal(p->getAddress())) {
+			participants.remove(p);
+			return;
+		}
+	}
+}
+
+void LocalConference::removeParticipants (const list<shared_ptr<Participant>> participants) {
+	for (const auto &p : participants)
+		removeParticipant(p);
+}

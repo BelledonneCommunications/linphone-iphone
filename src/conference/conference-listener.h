@@ -19,19 +19,22 @@
 #ifndef _CONFERENCE_LISTENER_H_
 #define _CONFERENCE_LISTENER_H_
 
+#include "address/address.h"
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceListener {
 public:
-	virtual void onConferenceCreated (LinphoneAddress *addr) = 0;
-	virtual void onConferenceTerminated (LinphoneAddress *addr) = 0;
-	virtual void onParticipantAdded (LinphoneAddress *addr) = 0;
-	virtual void onParticipantRemoved (LinphoneAddress *addr) = 0;
-	virtual void onParticipantSetAdmin (LinphoneAddress *addr, bool isAdmin) = 0;
+	virtual void onConferenceCreated (const Address &addr) = 0;
+	virtual void onConferenceTerminated (const Address &addr) = 0;
+	virtual void onParticipantAdded (const Address &addr) = 0;
+	virtual void onParticipantRemoved (const Address &addr) = 0;
+	virtual void onParticipantSetAdmin (const Address &addr, bool isAdmin) = 0;
 };
 
 LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CONFERENCE_LISTENER_H_
+

@@ -141,4 +141,14 @@ void Conference::onResetFirstVideoFrameDecoded (const CallSession &session) {
 		callListener->onResetFirstVideoFrameDecoded();
 }
 
+// -----------------------------------------------------------------------------
+
+std::shared_ptr<Participant> Conference::findParticipant (const Address &addr) {
+	for (const auto &participant : participants) {
+		if (addr.equal(participant->getAddress()))
+			return participant;
+	}
+	return nullptr;
+}
+
 LINPHONE_END_NAMESPACE

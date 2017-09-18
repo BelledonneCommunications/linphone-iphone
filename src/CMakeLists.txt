@@ -53,6 +53,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/conference-listener.h
 	conference/conference.h
 	conference/local-conference.h
+	conference/local-conference-event-handler.h
 	conference/params/call-session-params-p.h
 	conference/params/call-session-params.h
 	conference/params/media-session-params-p.h
@@ -60,6 +61,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/participant-p.h
 	conference/participant.h
 	conference/remote-conference.h
+	conference/remote-conference-event-handler.h
 	conference/session/call-session-listener.h
 	conference/session/call-session-p.h
 	conference/session/call-session.h
@@ -93,6 +95,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/singleton.h
 	utils/payload-type-handler.h
 	variant/variant.h
+	xml/conference-info.h
+	xml/xml.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
@@ -122,10 +126,12 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/real-time-text-chat-room.cpp
 	conference/conference.cpp
 	conference/local-conference.cpp
+	conference/local-conference-event-handler.cpp
 	conference/params/call-session-params.cpp
 	conference/params/media-session-params.cpp
 	conference/participant.cpp
 	conference/remote-conference.cpp
+	conference/remote-conference-event-handler.cpp
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp
 	content/content-type.cpp
@@ -150,8 +156,15 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	utils/payload-type-handler.cpp
 	utils/utils.cpp
 	variant/variant.cpp
+	xml/conference-info.cpp
+	xml/xml.cpp
 )
 
+ADD_XSD_WRAPPERS(xml/xml "XML XSD - xml.xsd")
+ADD_XSD_WRAPPERS(xml/conference-info "Conference info XSD - conference-info.xsd")
+ADD_XSD_WRAPPERS(xml/resource-lists "Resourece lists XSD - resource-lists.xsd")
+
+set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS})
 

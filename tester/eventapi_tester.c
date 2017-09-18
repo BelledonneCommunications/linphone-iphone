@@ -82,7 +82,11 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 			counters->number_of_LinphoneSubscriptionActive++;
 			if (linphone_event_get_subscription_dir(lev)==LinphoneSubscriptionIncoming){
 				mgr->lev=lev;
-				linphone_event_notify(lev,content);
+				if(strcmp(linphone_event_get_name(lev), "Conference") == 0) {
+					// TODO : Get LocalConfEventHandler and call handler->subscribeReceived(lev)
+				} else {
+					linphone_event_notify(lev,content);
+				}
 			}
 		break;
 		case LinphoneSubscriptionTerminated:
