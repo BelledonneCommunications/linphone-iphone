@@ -142,9 +142,13 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 			[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers: @[store.defaultContainerIdentifier]] error:&contactError];
 			NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey];
 			CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
-			BOOL success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){}];
+			__block int number_of_contact=0;
+			LOGD(@"CNContactStore synchronizing");
+			BOOL success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){
+				number_of_contact++;
+			}];
 			if(success) {
-				LOGD(@"CNContactStore successfully synchronized");
+				LOGD(@"CNContactStore [%i] contacts successfully synchronized",number_of_contact);
 			}
 		}
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateAddressBook:) name:CNContactStoreDidChangeNotification object:nil];
