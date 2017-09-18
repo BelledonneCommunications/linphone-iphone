@@ -6104,8 +6104,9 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 		case LinphoneCallPausing:
 			if (sal_call_dialog_request_pending(call->op)) {
 				/* Need to cancel first re-INVITE as described in section 5.5 of RFC 6141 */
-				sal_call_cancel_invite(call->op);
-				call->reinvite_on_cancel_response_requested = TRUE;
+				if (sal_call_cancel_invite(call->op) == 0){
+					call->reinvite_on_cancel_response_requested = TRUE;
+				}
 			}
 			break;
 		case LinphoneCallStreamsRunning:
@@ -6124,8 +6125,9 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 			break;
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallOutgoingProgress:
-			sal_call_cancel_invite(call->op);
-			call->reinvite_on_cancel_response_requested = TRUE;
+			if (sal_call_cancel_invite(call->op) == 0){
+				call->reinvite_on_cancel_response_requested = TRUE;
+			}
 			break;
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingRinging:
