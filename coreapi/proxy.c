@@ -25,6 +25,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
 #include "enum.h"
+#include <bctoolbox/defs.h>
 #include <ctype.h>
 
 /*store current config related to server location*/
@@ -879,7 +880,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			}
 			linphone_presence_model_set_presentity(presence,linphone_proxy_config_get_identity_address(proxy));
 			linphone_presence_model_set_contact(presence,NULL); /*it will be automatically computed*/
-			
+
 		}
 		if (!(presence_body = linphone_presence_model_to_xml(presence))) {
 			ms_error("Cannot publish presence model [%p] for proxy config [%p] because of xml serialization error",presence,proxy);
@@ -906,7 +907,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			linphone_presence_model_set_contact(presence,contact);
 			bctbx_free(contact);
 		}
-		
+
 	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
 }
@@ -1485,11 +1486,12 @@ void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatP
 }
 
 void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state) {
-	
+
 	if (cfg->presence_publish_event != NULL) {
 		switch (state) {
 			case LinphonePublishCleared:
 				linphone_proxy_config_set_etag(cfg,NULL);
+				BCTBX_NO_BREAK;
 			case LinphonePublishError:
 				linphone_event_unref(cfg->presence_publish_event);
 				cfg->presence_publish_event = NULL;
@@ -1499,7 +1501,7 @@ void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg
 				break;
 			default:
 				break;
-				
+
 		}
 	}
 }
