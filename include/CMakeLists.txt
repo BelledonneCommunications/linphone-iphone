@@ -76,7 +76,9 @@ set(ROOT_HEADER_FILES
 set(C_API_HEADER_FILES
 	c-address.h
 	c-api.h
+	c-callbacks.h
 	c-chat-room.h
+	c-chat-room-cbs.h
 	c-event-log.h
 	c-participant.h
 	c-types.h

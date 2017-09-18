@@ -100,6 +100,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-call-params.cpp
 	c-wrapper/api/c-chat-room.cpp
+	c-wrapper/api/c-chat-room-cbs.cpp
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-participant.cpp
 	call/call.cpp

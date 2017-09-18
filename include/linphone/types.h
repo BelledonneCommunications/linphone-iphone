@@ -366,13 +366,6 @@ typedef enum _LinphoneChatMessageState {
 } LinphoneChatMessageState;
 
 /**
- * A chat room is the place where text messages are exchanged.
- * Can be created by linphone_core_create_chat_room().
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatRoom LinphoneChatRoom;
-
-/**
  * LinphoneConference class
  * The _LinphoneConference struct does not exists, it's the Conference C++ class that is used behind
  * @ingroup call_control

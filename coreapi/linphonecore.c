@@ -425,6 +425,14 @@ void linphone_core_cbs_set_version_update_check_result_received(LinphoneCoreCbs 
 	cbs->vtable->version_update_check_result_received = cb;
 }
 
+LinphoneCoreCbsChatRoomInstantiatedCb linphone_core_cbs_get_chat_room_instantiated (LinphoneCoreCbs *cbs) {
+	return cbs->vtable->chat_room_instantiated;
+}
+
+void linphone_core_cbs_set_chat_room_instantiated (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomInstantiatedCb cb) {
+	cbs->vtable->chat_room_instantiated = cb;
+}
+
 
 typedef belle_sip_object_t_vptr_t LinphoneCore_vptr_t;
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCore);

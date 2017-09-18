@@ -75,7 +75,20 @@ typedef struct _LinphoneAddress LinphoneAddress;
 
 typedef struct _LinphoneCall LinphoneCall;
 typedef struct _LinphoneCallEvent LinphoneCallEvent;
+
+/**
+ * A chat room is the place where text messages are exchanged.
+ * Can be created by linphone_core_create_chat_room().
+ * @ingroup chatroom
+ */
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
+
+/**
+ * An object to handle the callbacks for the handling a LinphoneChatRoom objects.
+ * @ingroup chatroom
+ */
+typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
+
 typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
 typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
 typedef struct _LinphoneEventLog LinphoneEventLog;

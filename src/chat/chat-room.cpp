@@ -425,7 +425,7 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 				msg->is_secured = TRUE;
 			} else if (retval > 0) {
 				/* Unable to decrypt message */
-				linphone_core_notify_message_received_unable_decrypt(core, GET_BACK_PTR(q), msg);
+				notifyUndecryptableMessageReceived(msg);
 				reason = linphone_error_code_to_reason(retval);
 				linphone_chat_message_send_delivery_notification(msg, reason);
 				/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
@@ -472,9 +472,9 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 			unreadCount = 1;
 		else
 			unreadCount++;
-		/* Mark the message as pending so that if linphone_core_chat_room_mark_as_read() is called
-			 in the linphone_chat_room_message_received() callback, it will effectively be marked as
-			 being read before being stored. */
+		/* Mark the message as pending so that if ChatRoom::markAsRead() is called in the
+		 * ChatRoomPrivate::chatMessageReceived() callback, it will effectively be marked as
+		 * being read before being stored. */
 		pendingMessage = msg;
 	}
 
@@ -496,12 +496,8 @@ end:
 
 void ChatRoomPrivate::chatMessageReceived (LinphoneChatMessage *msg) {
 	L_Q(ChatRoom);
-	if (msg->message) {
-		/* Legacy API */
-		linphone_core_notify_text_message_received(core, GET_BACK_PTR(q), msg->from, msg->message);
-	}
-	linphone_core_notify_message_received(core, GET_BACK_PTR(q), msg);
 	if (!ContentType::isImdn(msg->content_type) && !ContentType::isImIsComposing(msg->content_type)) {
+		notifyChatMessageReceived(msg);
 		remoteIsComposing = false;
 		linphone_core_notify_is_composing_received(core, GET_BACK_PTR(q));
 		linphone_chat_message_send_delivery_notification(msg, LinphoneReasonNone);
@@ -515,6 +511,32 @@ void ChatRoomPrivate::imdnReceived (const string &text) {
 
 void ChatRoomPrivate::isComposingReceived (const string &text) {
 	isComposingHandler.parse(text);
+}
+
+// -----------------------------------------------------------------------------
+
+void ChatRoomPrivate::notifyChatMessageReceived (LinphoneChatMessage *msg) {
+	L_Q(ChatRoom);
+	LinphoneChatRoom *cr = GET_BACK_PTR(q);
+	if (msg->message) {
+		/* Legacy API */
+		linphone_core_notify_text_message_received(core, cr, msg->from, msg->message);
+	}
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsMessageReceivedCb cb = linphone_chat_room_cbs_get_message_received(cbs);
+	if (cb)
+		cb(cr, msg);
+	linphone_core_notify_message_received(core, cr, msg);
+}
+
+void ChatRoomPrivate::notifyUndecryptableMessageReceived (LinphoneChatMessage *msg) {
+	L_Q(ChatRoom);
+	LinphoneChatRoom *cr = GET_BACK_PTR(q);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsUndecryptableMessageReceivedCb cb = linphone_chat_room_cbs_get_undecryptable_message_received(cbs);
+	if (cb)
+		cb(cr, msg);
+	linphone_core_notify_message_received_unable_decrypt(core, cr, msg);
 }
 
 // -----------------------------------------------------------------------------

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 #include "linphone/types.h"
+#include "linphone/api/c-callbacks.h"
 
 
 /**
@@ -501,6 +502,13 @@ typedef LinphoneCoreCbsFriendListRemovedCb LinphoneCoreFriendListRemovedCb;
  * @param[in] url The url where to download the new version if the result is LinphoneVersionUpdateCheckNewVersionAvailable
  */
 typedef void (*LinphoneCoreCbsVersionUpdateCheckResultReceivedCb) (LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url);
+
+/**
+ * Callback prototype telling that a LinphoneChatRoom object has been instantiated. This is useful to set the callbacks on the LinphoneChatRoom object.
+ * @param[in] lc LinphoneCore object
+ * @param[in] cr The LinphoneChatRoom object that has been instantiated
+ */
+typedef void (*LinphoneCoreCbsChatRoomInstantiatedCb) (LinphoneCore *lc, LinphoneChatRoom *cr);
 
 /**
  * @}

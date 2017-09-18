@@ -508,6 +508,7 @@ LinphoneChatRoom * linphone_client_group_chat_room_new(LinphoneCore *lc, const b
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call);
 bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);
+LinphoneChatRoomCbs * linphone_chat_room_cbs_new (void);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
@@ -1681,6 +1682,7 @@ BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
 BELLE_SIP_TYPE_ID(LinphoneChatMessageCbs),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
+BELLE_SIP_TYPE_ID(LinphoneChatRoomCbs),
 BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngine),
 BELLE_SIP_TYPE_ID(LinphoneImEncryptionEngineCbs),
@@ -1770,6 +1772,7 @@ void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendLi
 void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_notify_version_update_check_result_received(LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url);
+void linphone_core_notify_chat_room_instantiated (LinphoneCore *lc, LinphoneChatRoom *cr);
 
 void set_playback_gain_db(AudioStream *st, float gain);
 

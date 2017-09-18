@@ -77,6 +77,10 @@ protected:
 	void isComposingReceived (const std::string &text);
 
 private:
+	void notifyChatMessageReceived (LinphoneChatMessage *msg);
+	void notifyUndecryptableMessageReceived (LinphoneChatMessage *msg);
+
+private:
 	/* IsComposingListener */
 	void onIsComposingStateChanged (bool isComposing);
 	void onIsRemoteComposingStateChanged (bool isComposing);

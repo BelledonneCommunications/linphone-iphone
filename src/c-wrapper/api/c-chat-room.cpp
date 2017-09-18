@@ -42,12 +42,17 @@ static void _linphone_chat_room_destructor(LinphoneChatRoom *cr);
 
 L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(ChatRoom, ChatRoom, chat_room,
 	_linphone_chat_room_constructor, _linphone_chat_room_destructor,
+	LinphoneChatRoomCbs *cbs;
 	LinphoneAddress *peerAddressCache;
 )
 
-static void _linphone_chat_room_constructor(LinphoneChatRoom *cr) {}
+static void _linphone_chat_room_constructor(LinphoneChatRoom *cr) {
+	cr->cbs = linphone_chat_room_cbs_new();
+}
 
 static void _linphone_chat_room_destructor(LinphoneChatRoom *cr) {
+	linphone_chat_room_cbs_unref(cr->cbs);
+	cr->cbs = nullptr;
 	if (cr->peerAddressCache) {
 		linphone_address_unref(cr->peerAddressCache);
 		cr->peerAddressCache = nullptr;
@@ -189,6 +194,10 @@ LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, cons
 	return GET_CPP_PTR(cr)->findMessage(message_id);
 }
 
+LinphoneChatRoomCbs * linphone_chat_room_get_callbacks (const LinphoneChatRoom *cr) {
+	return cr->cbs;
+}
+
 LinphoneParticipant * linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {
 	return L_GET_C_BACK_PTR(GET_CPP_PTR(cr)->addParticipant(
 		*L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address, Address), nullptr, false),
@@ -257,25 +266,27 @@ LinphoneChatRoom * linphone_chat_room_new(LinphoneCore *core, const LinphoneAddr
 		L_SET_CPP_PTR_FROM_C_STRUCT(cr, std::make_shared<LinphonePrivate::RealTimeTextChatRoom>(core, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address, Address)));
 	else
 		L_SET_CPP_PTR_FROM_C_STRUCT(cr, std::make_shared<LinphonePrivate::BasicChatRoom>(core, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address, Address)));
+	linphone_core_notify_chat_room_instantiated(core, cr);
 	return cr;
 }
 
-LinphoneChatRoom * linphone_client_group_chat_room_new(LinphoneCore *lc, const bctbx_list_t *addresses) {
-	const char *factoryUri = linphone_core_get_chat_conference_factory_uri(lc);
+LinphoneChatRoom * linphone_client_group_chat_room_new(LinphoneCore *core, const bctbx_list_t *addresses) {
+	const char *factoryUri = linphone_core_get_chat_conference_factory_uri(core);
 	if (!factoryUri)
 		return nullptr;
 	LinphoneAddress *factoryAddr = linphone_address_new(factoryUri);
-	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(lc, factoryAddr);
+	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, factoryAddr);
 	linphone_address_unref(factoryAddr);
 	std::string from;
 	if (proxy)
 		from = L_GET_CPP_PTR_FROM_C_STRUCT(linphone_proxy_config_get_identity_address(proxy), Address, Address)->asString();
 	if (from.empty())
-		from = linphone_core_get_primary_contact(lc);
+		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::Address me(from);
 	std::list<LinphonePrivate::Address> l = L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address, Address);
 	LinphoneChatRoom *cr = _linphone_chat_room_init();
-	L_SET_CPP_PTR_FROM_C_STRUCT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(lc, me, l));
+	L_SET_CPP_PTR_FROM_C_STRUCT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me, l));
+	linphone_core_notify_chat_room_instantiated(core, cr);
 	return cr;
 }
 
