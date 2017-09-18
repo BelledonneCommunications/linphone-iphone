@@ -281,17 +281,17 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		// TODO.
 		switch (eventLog.getType()) {
-			case EventLog::TypeNone:
+			case EventLog::Type::None:
 				return false;
-			case EventLog::TypeMessage:
-			case EventLog::TypeCallStart:
-			case EventLog::TypeCallEnd:
-			case EventLog::TypeConferenceCreated:
-			case EventLog::TypeConferenceDestroyed:
-			case EventLog::TypeConferenceParticipantAdded:
-			case EventLog::TypeConferenceParticipantRemoved:
-			case EventLog::TypeConferenceParticipantSetAdmin:
-			case EventLog::TypeConferenceParticipantUnsetAdmin:
+			case EventLog::Type::Message:
+			case EventLog::Type::CallStart:
+			case EventLog::Type::CallEnd:
+			case EventLog::Type::ConferenceCreated:
+			case EventLog::Type::ConferenceDestroyed:
+			case EventLog::Type::ConferenceParticipantAdded:
+			case EventLog::Type::ConferenceParticipantRemoved:
+			case EventLog::Type::ConferenceParticipantSetAdmin:
+			case EventLog::Type::ConferenceParticipantUnsetAdmin:
 				break;
 		}
 

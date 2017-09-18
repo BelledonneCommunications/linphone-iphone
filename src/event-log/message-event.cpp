@@ -34,7 +34,7 @@ public:
 // -----------------------------------------------------------------------------
 
 MessageEvent::MessageEvent (const shared_ptr<Message> &message) :
-	EventLog(*new MessageEventPrivate, EventLog::TypeMessage) {
+	EventLog(*new MessageEventPrivate, EventLog::Type::Message) {
 	L_D(MessageEvent);
 	L_ASSERT(message);
 	d->message = message;

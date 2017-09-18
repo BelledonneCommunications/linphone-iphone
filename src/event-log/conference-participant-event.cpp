@@ -41,10 +41,10 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 ) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, conferenceAddress) {
 	L_D(ConferenceParticipantEvent);
 	L_ASSERT(
-		type == TypeConferenceParticipantAdded ||
-		type == TypeConferenceParticipantRemoved ||
-		type == TypeConferenceParticipantSetAdmin ||
-		type == TypeConferenceParticipantUnsetAdmin
+		type == Type::ConferenceParticipantAdded ||
+		type == Type::ConferenceParticipantRemoved ||
+		type == Type::ConferenceParticipantSetAdmin ||
+		type == Type::ConferenceParticipantUnsetAdmin
 	);
 	L_ASSERT(participantAddress);
 	d->participantAddress = make_shared<Address>(*participantAddress);

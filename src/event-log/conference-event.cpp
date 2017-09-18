@@ -30,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<const Address> &address) :
 	EventLog(*new ConferenceEventPrivate, type) {
 	L_D(ConferenceEvent);
-	L_ASSERT(type == TypeConferenceCreated || type == TypeConferenceDestroyed);
+	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
 	L_ASSERT(address);
 	d->address = make_shared<Address>(*address);
 }

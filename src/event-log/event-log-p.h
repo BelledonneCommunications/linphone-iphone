@@ -28,7 +28,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class EventLogPrivate : public ClonableObjectPrivate {
 private:
-	EventLog::Type type = EventLog::TypeNone;
+	EventLog::Type type = EventLog::Type::None;
 
 	L_DECLARE_PUBLIC(EventLog);
 };
