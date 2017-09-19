@@ -133,6 +133,16 @@ public:
 		return cppPtr;
 	}
 
+	template<typename T>
+	static const T *getCppPtr (const std::shared_ptr<const T> &cppPtr) {
+		return cppPtr.get();
+	}
+
+	template<typename T>
+	static const T *getCppPtr (const T *cppPtr) {
+		return cppPtr;
+	}
+
 	template<typename CType, typename CppType>
 	static inline CType * getCBackPtr (const std::shared_ptr<CppType> &object, CType *(*cTypeAllocator)()) {
 		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
