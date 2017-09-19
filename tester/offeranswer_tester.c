@@ -453,6 +453,7 @@ static void compatible_avpf_features(void) {
 
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000); /*wait 1 second for streams to start flowing*/
 	check_avpf_features(marie->lc, pt->avpf.features);
 	check_avpf_features(pauline->lc, pt->avpf.features);
 
@@ -477,6 +478,7 @@ static void incompatible_avpf_features(void) {
 	if (!call_ok) goto end;
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000); /*wait 1 second for streams to start flowing*/
 	check_avpf_features(marie->lc, PAYLOAD_TYPE_AVPF_NONE);
 	check_avpf_features(pauline->lc, PAYLOAD_TYPE_AVPF_NONE);
 
