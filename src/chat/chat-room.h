@@ -38,6 +38,8 @@ class ChatRoomPrivate;
 
 class ChatRoom : public Object, public ConferenceInterface {
 public:
+	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
+
 	ChatRoom (LinphoneCore *core);
 	virtual ~ChatRoom () = default;
 
@@ -59,6 +61,7 @@ public:
 	LinphoneCore *getCore () const;
 
 	const Address& getPeerAddress () const;
+	State getState () const;
 
 protected:
 	explicit ChatRoom (ChatRoomPrivate &p);

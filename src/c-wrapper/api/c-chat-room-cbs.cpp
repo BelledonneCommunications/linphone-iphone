@@ -26,6 +26,7 @@ struct _LinphoneChatRoomCbs {
 	void *userData;
 	LinphoneChatRoomCbsIsComposingReceivedCb isComposingReceivedCb;
 	LinphoneChatRoomCbsMessageReceivedCb messageReceivedCb;
+	LinphoneChatRoomCbsStateChangedCb stateChangedCb;
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb undecryptableMessageReceivedCb;
 };
 
@@ -75,6 +76,14 @@ LinphoneChatRoomCbsMessageReceivedCb linphone_chat_room_cbs_get_message_received
 
 void linphone_chat_room_cbs_set_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMessageReceivedCb cb) {
 	cbs->messageReceivedCb = cb;
+}
+
+LinphoneChatRoomCbsStateChangedCb linphone_chat_room_cbs_get_state_changed (const LinphoneChatRoomCbs *cbs) {
+	return cbs->stateChangedCb;
+}
+
+void linphone_chat_room_cbs_set_state_changed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsStateChangedCb cb) {
+	cbs->stateChangedCb = cb;
 }
 
 LinphoneChatRoomCbsUndecryptableMessageReceivedCb linphone_chat_room_cbs_get_undecryptable_message_received (const LinphoneChatRoomCbs *cbs) {

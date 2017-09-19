@@ -86,6 +86,7 @@ set(C_API_HEADER_FILES
 )
 
 set(ENUMS_HEADER_FILES
+	chat-room-enums.h
 	event-log-enums.h
 )
 

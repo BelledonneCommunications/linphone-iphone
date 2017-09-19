@@ -182,6 +182,13 @@ int ChatRoomPrivate::getMessagesCount (bool unreadOnly) {
 	return numrows;
 }
 
+void ChatRoomPrivate::setState (ChatRoom::State newState) {
+	if (newState != state) {
+		state = newState;
+		notifyStateChanged();
+	}
+}
+
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::sendIsComposingNotification () {
@@ -526,6 +533,15 @@ void ChatRoomPrivate::notifyChatMessageReceived (LinphoneChatMessage *msg) {
 	if (cb)
 		cb(cr, msg);
 	linphone_core_notify_message_received(core, cr, msg);
+}
+
+void ChatRoomPrivate::notifyStateChanged () {
+	L_Q(ChatRoom);
+	LinphoneChatRoom *cr = GET_BACK_PTR(q);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsStateChangedCb cb = linphone_chat_room_cbs_get_state_changed(cbs);
+	if (cb)
+		cb(cr, (LinphoneChatRoomState)state);
 }
 
 void ChatRoomPrivate::notifyUndecryptableMessageReceived (LinphoneChatMessage *msg) {
@@ -922,6 +938,11 @@ LinphoneCore *ChatRoom::getCore () const {
 const Address& ChatRoom::getPeerAddress () const {
 	L_D(const ChatRoom);
 	return d->peerAddress;
+}
+
+ChatRoom::State ChatRoom::getState () const {
+	L_D(const ChatRoom);
+	return d->state;
 }
 
 LINPHONE_END_NAMESPACE

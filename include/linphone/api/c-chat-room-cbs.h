@@ -89,6 +89,20 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsMessageReceivedCb linphone_chat_room_cbs_get_
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMessageReceivedCb cb);
 
 /**
+ * Get the state changed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current state changed callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsStateChangedCb linphone_chat_room_cbs_get_state_changed (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the state changed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The state changed callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_state_changed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsStateChangedCb cb);
+
+/**
  * Get the undecryptable message received callback.
  * @param[in] cbs LinphoneChatRoomCbs object.
  * @return The current undecryptable message received callback.

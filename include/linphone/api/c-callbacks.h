@@ -21,6 +21,7 @@
 
 // TODO: Remove me in the future.
 #include "linphone/callbacks.h"
+#include "linphone/api/c-types.h"
 
 // =============================================================================
 
@@ -46,6 +47,13 @@ typedef void (*LinphoneChatRoomCbsIsComposingReceivedCb) (LinphoneChatRoom *cr, 
  * @param[in] msg The #LinphoneChatMessage that has been received
  */
 typedef void (*LinphoneChatRoomCbsMessageReceivedCb) (LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+
+/**
+ * Callback used to notify a chat room state has changed.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] newState The new state of the chat room
+ */
+typedef void (*LinphoneChatRoomCbsStateChangedCb) (LinphoneChatRoom *cr, LinphoneChatRoomState newState);
 
 /**
  * Callback used to notify a chat room that a message has been received but we were unable to decrypt it

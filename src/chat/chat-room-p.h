@@ -22,6 +22,9 @@
 // From coreapi.
 #include "private.h"
 
+#include "linphone/enums/chat-room-enums.h"
+#include "linphone/utils/enum-generator.h"
+
 #include "chat-room.h"
 #include "is-composing.h"
 #include "is-composing-listener.h"
@@ -46,7 +49,6 @@ public:
 	std::list<LinphoneChatMessage *> getTransientMessages () const {
 		return transientMessages;
 	}
-
 	void moveTransientMessageToWeakMessages (LinphoneChatMessage *msg);
 	void removeTransientMessage (LinphoneChatMessage *msg);
 
@@ -54,6 +56,7 @@ public:
 	void sendImdn (const std::string &content, LinphoneReason reason);
 
 	int getMessagesCount (bool unreadOnly);
+	void setState (ChatRoom::State newState);
 
 protected:
 	void sendIsComposingNotification ();
@@ -78,6 +81,7 @@ protected:
 
 private:
 	void notifyChatMessageReceived (LinphoneChatMessage *msg);
+	void notifyStateChanged ();
 	void notifyUndecryptableMessageReceived (LinphoneChatMessage *msg);
 
 private:
@@ -89,6 +93,7 @@ private:
 public:
 	LinphoneCore *core = nullptr;
 	LinphoneCall *call = nullptr;
+	ChatRoom::State state = ChatRoom::State::None;
 	Address peerAddress;
 	int unreadCount = -1;
 	bool isComposing = false;

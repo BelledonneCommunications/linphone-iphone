@@ -23,6 +23,7 @@
 #include "linphone/types.h"
 
 #include "linphone/utils/enum-generator.h"
+#include "linphone/enums/chat-room-enums.h"
 #include "linphone/enums/event-log-enums.h"
 
 // =============================================================================
@@ -109,6 +110,7 @@ typedef struct _LinphoneMessageEvent LinphoneMessageEvent;
 // C Enums.
 // =============================================================================
 
+L_DECLARE_C_ENUM(ChatRoomState, L_ENUM_VALUES_CHAT_ROOM_STATE);
 L_DECLARE_C_ENUM(EventLogType, L_ENUM_VALUES_EVENT_LOG_TYPE);
 
 #ifdef __cplusplus
