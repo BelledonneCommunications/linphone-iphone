@@ -35,8 +35,14 @@ public:
 
 public:
 	/* ConferenceInterface */
-	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia);
-	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant);
+	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
+	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
+	virtual bool canHandleParticipants () const override;
+	virtual const std::string& getId () const override;
+	virtual int getNbParticipants () const override;
+	virtual std::list<std::shared_ptr<Participant>> getParticipants () const override;
+	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
 private:
 	L_DISABLE_COPY(LocalConference);

@@ -20,9 +20,19 @@
 #include "conference/participant.h"
 #include "local-conference-event-handler.h"
 #include "object/object-p.h"
-#include "xml/conference-info.h"
 
 #include "private.h"
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
+#include "xml/conference-info.h"
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic pop
+#endif
 
 // =============================================================================
 

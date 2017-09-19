@@ -407,7 +407,7 @@ static MS2_INLINE void set_string(char **dest, const char *src, bool_t lowercase
 		*dest=ms_strdup(src);
 		if (lowercase) {
 			char *cur = *dest;
-			for (; *cur; cur++) *cur = tolower(*cur);
+			for (; *cur; cur++) *cur = (char)tolower(*cur);
 		}
 	}
 }

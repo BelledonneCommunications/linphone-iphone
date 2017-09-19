@@ -19,9 +19,9 @@
 #ifndef _MEDIA_SESSION_PARAMS_H_
 #define _MEDIA_SESSION_PARAMS_H_
 
-#include "call-session-params.h"
-
 #include <ortp/payloadtype.h>
+
+#include "call-session-params.h"
 
 // =============================================================================
 
@@ -40,7 +40,7 @@ public:
 	MediaSessionParams (const MediaSessionParams &src);
 	virtual ~MediaSessionParams () = default;
 
-	void initDefault (LinphoneCore *core);
+	void initDefault (LinphoneCore *core) override;
 
 	bool audioEnabled () const;
 	bool audioMulticastEnabled () const;

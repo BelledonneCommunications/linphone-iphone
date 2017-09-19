@@ -90,6 +90,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(CheckSymbolExists)
 include(CMakePushCheckState)
 include(GNUInstallDirs)
+include(CheckCXXCompilerFlag)
 
 if(NOT CMAKE_INSTALL_RPATH AND CMAKE_INSTALL_PREFIX)
 	set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
@@ -205,7 +206,7 @@ endif()
 
 set(LINPHONE_LDFLAGS "${BELLESIP_LDFLAGS} ${MEDIASTREAMER2_LDFLAGS}")
 if(BELCARD_FOUND AND APPLE)
-    set(LINPHONE_LDFLAGS "${LINPHONE_LDFLAGS} -stdlib=libc++")
+	set(LINPHONE_LDFLAGS "${LINPHONE_LDFLAGS} -stdlib=libc++")
 endif()
 
 # include_directories must be called only UNDER THIS LINE in order to use our
@@ -281,7 +282,22 @@ if(MSVC)
 		list(APPEND STRICT_OPTIONS_CPP "/WX")
 	endif()
 else()
-	list(APPEND STRICT_OPTIONS_CPP "-Wall" "-Wuninitialized" "-Wno-error=deprecated-declarations")
+	list(APPEND STRICT_OPTIONS_CPP "\
+-Wall \
+-Wcast-align \
+-Wconversion \
+-Werror=return-type \
+-Wfloat-equal \
+-Winit-self \
+-Wno-error=deprecated-declarations \
+-Woverloaded-virtual \
+-Wpointer-arith \
+-Wuninitialized \
+-Wunused")
+	CHECK_CXX_COMPILER_FLAG("-Wsuggest-override" SUGGEST_OVERRIDE)
+	if (SUGGEST_OVERRIDE)
+		list(APPEND STRICT_OPTIONS_CPP "-Wsuggest-override -Werror=suggest-override")
+	endif ()
 	list(APPEND STRICT_OPTIONS_C "-Wstrict-prototypes" "-Werror=strict-prototypes")
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 		list(APPEND STRICT_OPTIONS_C "-fno-inline-small-functions")
@@ -306,7 +322,6 @@ endif()
 if(STRICT_OPTIONS_C)
 	list(REMOVE_DUPLICATES STRICT_OPTIONS_C)
 endif()
-
 
 set(GETTEXT_PACKAGE "linphone")
 if(ENABLE_RELATIVE_PREFIX)

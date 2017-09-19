@@ -45,15 +45,15 @@ public:
 public:
 	static void stunAuthRequestedCb (void *userData, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
 
-	void accepted ();
-	void ackReceived (LinphoneHeaders *headers);
-	bool failure ();
+	void accepted () override;
+	void ackReceived (LinphoneHeaders *headers) override;
+	bool failure () override;
 	void pausedByRemote ();
-	void remoteRinging ();
+	void remoteRinging () override;
 	void resumed ();
-	void terminated ();
+	void terminated () override;
 	void updated (bool isUpdate);
-	void updating (bool isUpdate);
+	void updating (bool isUpdate) override;
 
 	void enableSymmetricRtp (bool value);
 	void sendVfu ();
@@ -91,11 +91,11 @@ private:
 
 	static float aggregateQualityRatings (float audioRating, float videoRating);
 
-	void setState (LinphoneCallState newState, const std::string &message);
+	void setState (LinphoneCallState newState, const std::string &message) override;
 
 	void computeStreamsIndexes (const SalMediaDescription *md);
 	void fixCallParams (SalMediaDescription *rmd);
-	void initializeParamsAccordingToIncomingCallParams ();
+	void initializeParamsAccordingToIncomingCallParams () override;
 	void setCompatibleIncomingCallParams (SalMediaDescription *md);
 	void updateBiggestDesc (SalMediaDescription *md);
 	void updateRemoteSessionIdAndVer ();
@@ -211,18 +211,18 @@ private:
 	void reportBandwidth ();
 	void reportBandwidthForStream (MediaStream *ms, LinphoneStreamType type);
 
-	void abort (const std::string &errorMsg);
-	void handleIncomingReceivedStateInIncomingNotification ();
-	bool isReadyForInvite () const;
+	void abort (const std::string &errorMsg) override;
+	void handleIncomingReceivedStateInIncomingNotification () override;
+	bool isReadyForInvite () const override;
 	LinphoneStatus pause ();
-	void setTerminated ();
-	LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo);
-	LinphoneStatus startUpdate ();
-	void terminate ();
-	void updateCurrentParams ();
+	void setTerminated () override;
+	LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) override;
+	LinphoneStatus startUpdate () override;
+	void terminate () override;
+	void updateCurrentParams () override;
 
 	void accept (const MediaSessionParams *params);
-	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo);
+	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo) override;
 
 #ifdef VIDEO_ENABLED
 	void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);

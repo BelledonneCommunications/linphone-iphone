@@ -40,14 +40,14 @@ public:
 
 public:
 	/* ConferenceInterface */
-	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia);
-	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia);
-	bool canHandleParticipants () const;
-	const std::string& getId () const;
-	int getNbParticipants () const;
-	std::list<std::shared_ptr<Participant>> getParticipants () const;
-	void removeParticipant (const std::shared_ptr<const Participant> &participant);
-	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants);
+	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
+	bool canHandleParticipants () const override;
+	const std::string& getId () const override;
+	int getNbParticipants () const override;
+	std::list<std::shared_ptr<Participant>> getParticipants () const override;
+	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
 private:
 	/* ConferenceListener */

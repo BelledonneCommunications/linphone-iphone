@@ -42,7 +42,7 @@ LinphoneAddress *linphone_address_new (const char *address) {
 }
 
 LinphoneAddress *linphone_address_clone (const LinphoneAddress *address) {
-	return (LinphoneAddress *)belle_sip_object_clone(BELLE_SIP_OBJECT(address));
+	return reinterpret_cast<LinphoneAddress *>(belle_sip_object_clone(BELLE_SIP_OBJECT(address)));
 }
 
 LinphoneAddress *linphone_address_ref (LinphoneAddress *address) {

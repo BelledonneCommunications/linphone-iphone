@@ -16,24 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- #ifndef _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
- #define _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
- 
- #include "chat-message-modifier.h"
- 
- // =============================================================================
- 
- LINPHONE_BEGIN_NAMESPACE
- 
- class MultipartChatMessageModifier : ChatMessageModifier {
- public:
-    MultipartChatMessageModifier() {};
-     virtual void encode(LinphonePrivate::ChatMessagePrivate* msg);
-     virtual void decode(LinphonePrivate::ChatMessagePrivate* msg);
-     virtual ~MultipartChatMessageModifier () = default;
- };
- 
- LINPHONE_END_NAMESPACE
- 
- #endif // ifndef _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
- 
+#ifndef _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
+#define _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
+
+#include "chat-message-modifier.h"
+
+// =============================================================================
+
+LINPHONE_BEGIN_NAMESPACE
+
+class MultipartChatMessageModifier : public ChatMessageModifier {
+public:
+	MultipartChatMessageModifier () = default;
+
+	void encode (ChatMessagePrivate *message) override;
+	void decode (ChatMessagePrivate *message) override;
+};
+
+LINPHONE_END_NAMESPACE
+
+#endif // ifndef _MULTIPART_CHAT_MESSAGE_MODIFIER_H_

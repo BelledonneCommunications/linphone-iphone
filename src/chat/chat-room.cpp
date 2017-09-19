@@ -120,7 +120,7 @@ void ChatRoomPrivate::sendImdn (const string &content, LinphoneReason reason) {
 
 	/* Sending out of call */
 	SalOp *op = sal_op_new(core->sal);
-	linphone_configure_op(core, op, peer, nullptr, lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
+	linphone_configure_op(core, op, peer, nullptr, !!lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
 	LinphoneChatMessage *msg = q->createMessage(content);
 	LinphoneAddress *fromAddr = linphone_address_new(identity);
 	linphone_chat_message_set_from_address(msg, fromAddr);
@@ -206,7 +206,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 
 		/* Sending out of call */
 		SalOp *op = sal_op_new(core->sal);
-		linphone_configure_op(core, op, peer, nullptr, lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
+		linphone_configure_op(core, op, peer, nullptr, !!lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
 		string content = isComposingHandler.marshal(isComposing);
 		if (!content.empty()) {
 			int retval = -1;
@@ -284,7 +284,7 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 		linphone_address_unref(peer);
 
 		newMessage->time = (time_t)atol(argv[9]);
-		newMessage->is_read = atoi(argv[6]);
+		newMessage->is_read = !!atoi(argv[6]);
 		newMessage->state = static_cast<LinphoneChatMessageState>(atoi(argv[7]));
 		newMessage->storage_id = storageId;
 		newMessage->external_body_url = ms_strdup(argv[8]);
@@ -859,8 +859,10 @@ void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
 		if (!op) {
 			/* Sending out of call */
 			msg->op = op = sal_op_new(d->core->sal);
-			linphone_configure_op(d->core, op, peer, msg->custom_headers,
-				lp_config_get_int(d->core->config, "sip", "chat_msg_with_contact", 0));
+			linphone_configure_op(
+				d->core, op, peer, msg->custom_headers,
+				!!lp_config_get_int(d->core->config, "sip", "chat_msg_with_contact", 0)
+			);
 			sal_op_set_user_pointer(op, msg); /* If out of call, directly store msg */
 		}
 

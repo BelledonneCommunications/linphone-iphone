@@ -19,15 +19,15 @@
 #ifndef _CHAT_ROOM_P_H_
 #define _CHAT_ROOM_P_H_
 
-// From coreapi.
-#include "private.h"
-
 #include "linphone/enums/chat-room-enums.h"
 #include "linphone/utils/enum-generator.h"
 
+// From coreapi.
+#include "private.h"
+
 #include "chat-room.h"
-#include "is-composing.h"
 #include "is-composing-listener.h"
+#include "is-composing.h"
 #include "object/object-p.h"
 
 // =============================================================================
@@ -86,9 +86,9 @@ private:
 
 private:
 	/* IsComposingListener */
-	void onIsComposingStateChanged (bool isComposing);
-	void onIsRemoteComposingStateChanged (bool isComposing);
-	void onIsComposingRefreshNeeded ();
+	void onIsComposingStateChanged (bool isComposing) override;
+	void onIsRemoteComposingStateChanged (bool isComposing) override;
+	void onIsComposingRefreshNeeded () override;
 
 public:
 	LinphoneCore *core = nullptr;

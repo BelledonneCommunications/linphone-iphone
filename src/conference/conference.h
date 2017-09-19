@@ -19,17 +19,14 @@
 #ifndef _CONFERENCE_H_
 #define _CONFERENCE_H_
 
-#include <memory>
+#include "linphone/types.h"
 
-#include "object/object.h"
 #include "address/address.h"
 #include "call/call-listener.h"
 #include "conference/conference-interface.h"
 #include "conference/params/call-session-params.h"
 #include "conference/participant.h"
 #include "conference/session/call-session-listener.h"
-
-#include "linphone/types.h"
 
 // =============================================================================
 
@@ -50,30 +47,30 @@ public:
 
 public:
 	/* ConferenceInterface */
-	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia);
-	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia);
-	virtual bool canHandleParticipants () const;
-	virtual const std::string& getId () const;
-	virtual int getNbParticipants () const;
-	virtual std::list<std::shared_ptr<Participant>> getParticipants () const;
-	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant);
-	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants);
+	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
+	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
+	virtual bool canHandleParticipants () const override;
+	virtual const std::string& getId () const override;
+	virtual int getNbParticipants () const override;
+	virtual std::list<std::shared_ptr<Participant>> getParticipants () const override;
+	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
 private:
 	/* CallSessionListener */
-	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers);
-	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers);
-	virtual void onCallSessionAccepted (const CallSession &session);
-	virtual void onCallSessionSetReleased (const CallSession &session);
-	virtual void onCallSessionSetTerminated (const CallSession &session);
-	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message);
-	virtual void onIncomingCallSessionStarted (const CallSession &session);
-	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken);
-	virtual void onStatsUpdated (const LinphoneCallStats *stats);
-	virtual void onResetCurrentSession (const CallSession &session);
-	virtual void onSetCurrentSession (const CallSession &session);
-	virtual void onFirstVideoFrameDecoded (const CallSession &session);
-	virtual void onResetFirstVideoFrameDecoded (const CallSession &session);
+	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) override;
+	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers) override;
+	virtual void onCallSessionAccepted (const CallSession &session) override;
+	virtual void onCallSessionSetReleased (const CallSession &session) override;
+	virtual void onCallSessionSetTerminated (const CallSession &session) override;
+	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) override;
+	virtual void onIncomingCallSessionStarted (const CallSession &session) override;
+	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) override;
+	virtual void onStatsUpdated (const LinphoneCallStats *stats) override;
+	virtual void onResetCurrentSession (const CallSession &session) override;
+	virtual void onSetCurrentSession (const CallSession &session) override;
+	virtual void onFirstVideoFrameDecoded (const CallSession &session) override;
+	virtual void onResetFirstVideoFrameDecoded (const CallSession &session) override;
 
 protected:
 	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);

@@ -59,19 +59,19 @@ public:
 
 private:
 	/* CallListener */
-	void onAckBeingSent (LinphoneHeaders *headers);
-	void onAckReceived (LinphoneHeaders *headers);
-	void onCallSetReleased ();
-	void onCallSetTerminated ();
-	void onCallStateChanged (LinphoneCallState state, const std::string &message);
-	void onIncomingCallStarted ();
-	void onIncomingCallToBeAdded ();
-	void onEncryptionChanged (bool activated, const std::string &authToken);
-	void onStatsUpdated (const LinphoneCallStats *stats);
-	void onResetCurrentCall ();
-	void onSetCurrentCall ();
-	void onFirstVideoFrameDecoded ();
-	void onResetFirstVideoFrameDecoded ();
+	void onAckBeingSent (LinphoneHeaders *headers) override;
+	void onAckReceived (LinphoneHeaders *headers) override;
+	void onCallSetReleased () override;
+	void onCallSetTerminated () override;
+	void onCallStateChanged (LinphoneCallState state, const std::string &message) override;
+	void onIncomingCallStarted () override;
+	void onIncomingCallToBeAdded () override;
+	void onEncryptionChanged (bool activated, const std::string &authToken) override;
+	void onStatsUpdated (const LinphoneCallStats *stats) override;
+	void onResetCurrentCall () override;
+	void onSetCurrentCall () override;
+	void onFirstVideoFrameDecoded () override;
+	void onResetFirstVideoFrameDecoded () override;
 
 private:
 	LinphoneCall *lcall = nullptr;

@@ -17,9 +17,19 @@
  */
 
 #include "remote-conference-event-handler.h"
-#include "xml/conference-info.h"
 #include "private.h"
 #include "object/object-p.h"
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
+#include "xml/conference-info.h"
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic pop
+#endif
 
 // =============================================================================
 
@@ -37,7 +47,7 @@ public:
 	LinphoneEvent *lev = nullptr;
 };
 
-// =============================================================================
+// -----------------------------------------------------------------------------
 
 RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener)
 	: Object(*new RemoteConferenceEventHandlerPrivate) {

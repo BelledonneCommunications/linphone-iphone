@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <vector>
-
 #include "chat/chat-message-p.h"
 #include "chat/cpim/cpim.h"
 #include "content/content-type.h"
@@ -31,7 +29,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-void CpimChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
+void CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 	Cpim::Message message;
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
@@ -39,14 +37,14 @@ void CpimChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
 	message.addCpimHeader(cpimContentTypeHeader);
 
 	shared_ptr<Content> content;
-	if (msg->internalContent) {
+	if (messagePrivate->internalContent) {
 		// Another ChatMessageModifier was called before this one, we apply our changes on the private content
-		content = msg->internalContent;
+		content = messagePrivate->internalContent;
 	} else {
 		// We're the first ChatMessageModifier to be called, we'll create the private content from the public one
 		// We take the first one because if there is more of them, the multipart modifier should have been called first
 		// So we should not be in this block
-		content = msg->contents.front();
+		content = messagePrivate->contents.front();
 	}
 
 	string contentType = content->getContentType().asString();
@@ -67,16 +65,16 @@ void CpimChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
 		ContentType newContentType("Message/CPIM");
 		newContent->setContentType(newContentType);
 		newContent->setBody(message.asString());
-		msg->internalContent = newContent;
+		messagePrivate->internalContent = newContent;
 	}
 }
 
-void CpimChatMessageModifier::decode(LinphonePrivate::ChatMessagePrivate* msg) {
+void CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 	shared_ptr<Content> content;
-	if (msg->internalContent) {
-		content = msg->internalContent;
+	if (messagePrivate->internalContent) {
+		content = messagePrivate->internalContent;
 	} else {
-		content = msg->contents.front();
+		content = messagePrivate->contents.front();
 	}
 
 	ContentType contentType = content->getContentType();
