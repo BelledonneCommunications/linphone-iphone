@@ -57,7 +57,9 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 		char  tunnel_ip[64];
 		char *public_ip, *public_ip2=NULL;
 		BC_ASSERT_FALSE(get_ip_from_hostname("tunnel.linphone.org",tunnel_ip,sizeof(tunnel_ip)));
-						
+		linphone_core_remove_supported_tag(pauline->lc,"gruu"); /*with gruu, we have no access to the "public IP from contact*/
+		linphone_core_remove_supported_tag(marie->lc,"gruu");
+		
 		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,1));
 		public_ip = get_public_contact_ip(pauline->lc);
 		BC_ASSERT_STRING_NOT_EQUAL(public_ip, tunnel_ip);
