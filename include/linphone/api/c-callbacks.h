@@ -49,6 +49,28 @@ typedef void (*LinphoneChatRoomCbsIsComposingReceivedCb) (LinphoneChatRoom *cr, 
 typedef void (*LinphoneChatRoomCbsMessageReceivedCb) (LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
 /**
+ * Callback used to notify a chat room that a participant has been added.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] participant The #LinphoneParticipant that has been added to the chat room
+ */
+typedef void (*LinphoneChatRoomCbsParticipantAddedCb) (LinphoneChatRoom *cr, LinphoneParticipant *participant);
+
+/**
+ * Callback used to notify a chat room that a participant has been removed.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] participant The #LinphoneParticipant that has been removed from the chat room
+ */
+typedef void (*LinphoneChatRoomCbsParticipantRemovedCb) (LinphoneChatRoom *cr, LinphoneParticipant *participant);
+
+/**
+ * Callback used to notify a chat room that the admin status of a participant has been changed.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] participant The #LinphoneParticipant for which the admin status has been changed
+ * @param[in] isAdmin The new admin status of the participant
+ */
+typedef void (*LinphoneChatRoomCbsParticipantAdminStatusChangedCb) (LinphoneChatRoom *cr, LinphoneParticipant *participant, bool_t isAdmin);
+
+/**
  * Callback used to notify a chat room state has changed.
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] newState The new state of the chat room

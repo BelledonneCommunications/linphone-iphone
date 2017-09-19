@@ -35,9 +35,9 @@ class Participant : public Object {
 	friend class Call;
 	friend class CallPrivate;
 	friend class ClientGroupChatRoom;
-	friend class Conference;
 	friend class LocalConference;
 	friend class MediaSessionPrivate;
+	friend class RemoteConference;
 
 public:
 	Participant (const Address &addr);
@@ -51,6 +51,8 @@ private:
 	L_DECLARE_PRIVATE(Participant);
 	L_DISABLE_COPY(Participant);
 };
+
+std::ostream & operator<< (std::ostream &strm, const std::shared_ptr<Participant> &participant);
 
 LINPHONE_END_NAMESPACE
 

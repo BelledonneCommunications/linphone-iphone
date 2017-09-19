@@ -21,9 +21,10 @@
 #include "private.h"
 #include "object/object-p.h"
 
+// =============================================================================
+
 using namespace std;
 using namespace conference_info;
-using namespace LinphonePrivate;
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -36,15 +37,14 @@ public:
 	LinphoneEvent *lev = nullptr;
 };
 
-LINPHONE_END_NAMESPACE
+// =============================================================================
 
-// -------- RemoteConferenceEventHandler public methods ---------
-RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener, const Address &confAddr) : Object(*new RemoteConferenceEventHandlerPrivate) {
+RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener)
+	: Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D(RemoteConferenceEventHandler);
 	xercesc::XMLPlatformUtils::Initialize();
 	d->core = core;
 	d->listener = listener;
-	d->confAddr = confAddr;
 }
 
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler() {
@@ -53,6 +53,8 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler() {
 	if (d->lev)
 		linphone_event_unref(d->lev);
 }
+
+// -----------------------------------------------------------------------------
 
 void RemoteConferenceEventHandler::subscribe(string confId) {
 	L_D(RemoteConferenceEventHandler);
@@ -101,7 +103,16 @@ void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 	}
 }
 
+// -----------------------------------------------------------------------------
+
 string RemoteConferenceEventHandler::getConfId() {
 	L_D(RemoteConferenceEventHandler);
 	return d->confId;
 }
+
+void RemoteConferenceEventHandler::setConferenceAddress (const Address &addr) {
+	L_D(RemoteConferenceEventHandler);
+	d->confAddr = addr;
+}
+
+LINPHONE_END_NAMESPACE

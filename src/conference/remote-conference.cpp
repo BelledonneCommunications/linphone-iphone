@@ -17,12 +17,52 @@
  */
 
 #include "remote-conference.h"
+#include "participant-p.h"
+
+using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
 RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(core, myAddress, listener) {}
+	: Conference(core, myAddress, listener) {
+	eventHandler = new RemoteConferenceEventHandler(core, this);
+}
+
+// -----------------------------------------------------------------------------
+
+shared_ptr<Participant> RemoteConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+	shared_ptr<Participant> participant = findParticipant(addr);
+	if (participant)
+		return participant;
+	participant = make_shared<Participant>(addr);
+	participant->getPrivate()->createSession(*this, params, hasMedia, this);
+	participants.push_back(participant);
+	if (!activeParticipant)
+		activeParticipant = participant;
+	return participant;
+}
+
+void RemoteConference::removeParticipant (const shared_ptr<const Participant> &participant) {
+	for (const auto &p : participants) {
+		if (participant->getAddress().equal(p->getAddress())) {
+			participants.remove(p);
+			return;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void RemoteConference::onConferenceCreated (const Address &addr) {}
+
+void RemoteConference::onConferenceTerminated (const Address &addr) {}
+
+void RemoteConference::onParticipantAdded (const Address &addr) {}
+
+void RemoteConference::onParticipantRemoved (const Address &addr) {}
+
+void RemoteConference::onParticipantSetAdmin (const Address &addr, bool isAdmin) {}
 
 LINPHONE_END_NAMESPACE

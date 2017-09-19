@@ -32,7 +32,7 @@ class RemoteConferenceEventHandlerPrivate;
 
 class RemoteConferenceEventHandler : public Object {
 	public:
-		RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener, const Address &confAddr);
+		RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener);
 		~RemoteConferenceEventHandler();
 
 		void subscribe(std::string confId);
@@ -40,6 +40,7 @@ class RemoteConferenceEventHandler : public Object {
 		void unsubscribe();
 
 		std::string getConfId();
+		void setConferenceAddress (const Address &addr);
 
 	private:
 		L_DECLARE_PRIVATE(RemoteConferenceEventHandler);

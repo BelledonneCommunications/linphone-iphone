@@ -28,6 +28,9 @@ struct _LinphoneChatRoomCbs {
 	void *userData;
 	LinphoneChatRoomCbsIsComposingReceivedCb isComposingReceivedCb;
 	LinphoneChatRoomCbsMessageReceivedCb messageReceivedCb;
+	LinphoneChatRoomCbsParticipantAddedCb participantAddedCb;
+	LinphoneChatRoomCbsParticipantRemovedCb participantRemovedCb;
+	LinphoneChatRoomCbsParticipantAdminStatusChangedCb participantAdminStatusChangedCb;
 	LinphoneChatRoomCbsStateChangedCb stateChangedCb;
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb undecryptableMessageReceivedCb;
 };
@@ -80,6 +83,30 @@ LinphoneChatRoomCbsMessageReceivedCb linphone_chat_room_cbs_get_message_received
 
 void linphone_chat_room_cbs_set_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMessageReceivedCb cb) {
 	cbs->messageReceivedCb = cb;
+}
+
+LinphoneChatRoomCbsParticipantAddedCb linphone_chat_room_cbs_get_participant_added (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantAddedCb;
+}
+
+void linphone_chat_room_cbs_set_participant_added (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantAddedCb cb) {
+	cbs->participantAddedCb = cb;
+}
+
+LinphoneChatRoomCbsParticipantRemovedCb linphone_chat_room_cbs_get_participant_removed (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantRemovedCb;
+}
+
+void linphone_chat_room_cbs_set_participant_removed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantRemovedCb cb) {
+	cbs->participantRemovedCb = cb;
+}
+
+LinphoneChatRoomCbsParticipantAdminStatusChangedCb linphone_chat_room_cbs_get_participant_admin_status_changed (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantAdminStatusChangedCb;
+}
+
+void linphone_chat_room_cbs_set_participant_admin_status_changed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb) {
+	cbs->participantAdminStatusChangedCb = cb;
 }
 
 LinphoneChatRoomCbsStateChangedCb linphone_chat_room_cbs_get_state_changed (const LinphoneChatRoomCbs *cbs) {

@@ -20,7 +20,8 @@
 #include "participant-p.h"
 
 using namespace std;
-using namespace LinphonePrivate;
+
+LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
@@ -42,30 +43,9 @@ shared_ptr<Participant> LocalConference::addParticipant (const Address &addr, co
 	participant = make_shared<Participant>(addr);
 	participant->getPrivate()->createSession(*this, params, hasMedia, this);
 	participants.push_back(participant);
-	activeParticipant = participant;
+	if (!activeParticipant)
+		activeParticipant = participant;
 	return participant;
-}
-
-void LocalConference::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-	for (const auto &addr : addresses)
-		addParticipant(addr, params, hasMedia);
-}
-
-bool LocalConference::canHandleParticipants () const {
-	return true;
-}
-
-const string& LocalConference::getId () const {
-	return id;
-}
-
-int LocalConference::getNbParticipants () const {
-	participants.size();
-	return 1;
-}
-
-list<shared_ptr<Participant>> LocalConference::getParticipants () const {
-	return participants;
 }
 
 void LocalConference::removeParticipant (const shared_ptr<const Participant> &participant) {
@@ -77,7 +57,4 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 	}
 }
 
-void LocalConference::removeParticipants (const list<shared_ptr<Participant>> &participants) {
-	for (const auto &p : participants)
-		removeParticipant(p);
-}
+LINPHONE_END_NAMESPACE

@@ -50,6 +50,14 @@ public:
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants);
 
 private:
+	/* ConferenceListener */
+	void onConferenceCreated (const Address &addr);
+	void onConferenceTerminated (const Address &addr);
+	void onParticipantAdded (const Address &addr);
+	void onParticipantRemoved (const Address &addr);
+	void onParticipantSetAdmin (const Address &addr, bool isAdmin);
+
+private:
 	L_DECLARE_PRIVATE(ClientGroupChatRoom);
 	L_DISABLE_COPY(ClientGroupChatRoom);
 };

@@ -89,6 +89,48 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsMessageReceivedCb linphone_chat_room_cbs_get_
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMessageReceivedCb cb);
 
 /**
+ * Get the participant added callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current participant added callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantAddedCb linphone_chat_room_cbs_get_participant_added (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant added callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The participant added callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_added (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantAddedCb cb);
+
+/**
+ * Get the participant removed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current participant removed callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantRemovedCb linphone_chat_room_cbs_get_participant_removed (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant removed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The participant removed callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_removed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantRemovedCb cb);
+
+/**
+ * Get the participant admin status changed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current participant admin status changed callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantAdminStatusChangedCb linphone_chat_room_cbs_get_participant_admin_status_changed (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant admin status changed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The participant admin status changed callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_admin_status_changed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb);
+
+/**
  * Get the state changed callback.
  * @param[in] cbs LinphoneChatRoomCbs object.
  * @return The current state changed callback.

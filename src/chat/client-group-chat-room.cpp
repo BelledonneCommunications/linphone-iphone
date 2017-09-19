@@ -17,10 +17,14 @@
  */
 
 #include "client-group-chat-room-p.h"
+#include "c-wrapper/c-tools.h"
 #include "conference/participant-p.h"
 #include "logger/logger.h"
 
 // =============================================================================
+
+extern LinphoneChatRoom * _linphone_chat_room_init();
+extern LinphoneParticipant * _linphone_participant_init();
 
 using namespace std;
 
@@ -77,6 +81,59 @@ void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant>
 
 void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	// TODO
+}
+
+// -----------------------------------------------------------------------------
+
+void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
+	// TODO
+}
+
+void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
+	// TODO
+}
+
+void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
+	shared_ptr<Participant> participant = findParticipant(addr);
+	if (participant) {
+		lWarning() << "Participant " << participant << " added but already in the list of participants!";
+		return;
+	}
+	participant = make_shared<Participant>(addr);
+	participants.push_back(participant);
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom, chat_room);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
+	if (cb)
+		cb(cr, L_GET_C_BACK_PTR(participant, Participant, participant));
+}
+
+void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
+	shared_ptr<Participant> participant = findParticipant(addr);
+	if (!participant) {
+		lWarning() << "Participant " << participant << " removed but not in the list of participants!";
+		return;
+	}
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom, chat_room);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
+	if (cb)
+		cb(cr, L_GET_C_BACK_PTR(participant, Participant, participant));
+	participants.remove(participant);
+}
+
+void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdmin) {
+	shared_ptr<Participant> participant = findParticipant(addr);
+	if (!participant) {
+		lWarning() << "Participant " << participant << " admin status has been changed but is not in the list of participants!";
+		return;
+	}
+	participant->setAdmin(isAdmin);
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom, chat_room);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
+	if (cb)
+		cb(cr, L_GET_C_BACK_PTR(participant, Participant, participant), isAdmin);
 }
 
 LINPHONE_END_NAMESPACE

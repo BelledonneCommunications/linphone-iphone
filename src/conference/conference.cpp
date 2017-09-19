@@ -19,6 +19,7 @@
 #include "participant-p.h"
 
 #include "conference.h"
+#include "logger/logger.h"
 
 using namespace std;
 
@@ -40,13 +41,13 @@ shared_ptr<Participant> Conference::getActiveParticipant () const {
 // -----------------------------------------------------------------------------
 
 shared_ptr<Participant> Conference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
-	activeParticipant = make_shared<Participant>(addr);
-	activeParticipant->getPrivate()->createSession(*this, params, hasMedia, this);
-	return activeParticipant;
+	lError() << "Conference class does not handle addParticipant() generically";
+	return nullptr;
 }
 
 void Conference::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-	// TODO
+	for (const auto &addr : addresses)
+		addParticipant(addr, params, hasMedia);
 }
 
 bool Conference::canHandleParticipants () const {
@@ -58,8 +59,7 @@ const string& Conference::getId () const {
 }
 
 int Conference::getNbParticipants () const {
-	// TODO
-	return 1;
+	return participants.size();
 }
 
 list<shared_ptr<Participant>> Conference::getParticipants () const {
@@ -67,11 +67,12 @@ list<shared_ptr<Participant>> Conference::getParticipants () const {
 }
 
 void Conference::removeParticipant (const shared_ptr<const Participant> &participant) {
-	// TODO
+	lError() << "Conference class does not handle removeParticipant() generically";
 }
 
 void Conference::removeParticipants (const list<shared_ptr<Participant>> &participants) {
-	// TODO
+	for (const auto &p : participants)
+		removeParticipant(p);
 }
 
 // -----------------------------------------------------------------------------

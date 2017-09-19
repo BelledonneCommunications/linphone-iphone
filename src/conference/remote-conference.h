@@ -20,12 +20,13 @@
 #define _REMOTE_CONFERENCE_H_
 
 #include "conference.h"
+#include "remote-conference-event-handler.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class RemoteConference : public Conference {
+class RemoteConference : public Conference, public ConferenceListener {
 public:
 	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 	virtual ~RemoteConference() = default;
@@ -33,8 +34,23 @@ public:
 protected:
 	std::shared_ptr<Participant> focus = nullptr;
 
+public:
+	/* ConferenceInterface */
+	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia);
+	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant);
+
+protected:
+	/* ConferenceListener */
+	virtual void onConferenceCreated (const Address &addr);
+	virtual void onConferenceTerminated (const Address &addr);
+	virtual void onParticipantAdded (const Address &addr);
+	virtual void onParticipantRemoved (const Address &addr);
+	virtual void onParticipantSetAdmin (const Address &addr, bool isAdmin);
+
 private:
 	L_DISABLE_COPY(RemoteConference);
+
+	RemoteConferenceEventHandler *eventHandler = nullptr;
 };
 
 LINPHONE_END_NAMESPACE

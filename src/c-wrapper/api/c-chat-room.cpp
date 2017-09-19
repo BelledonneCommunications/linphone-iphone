@@ -44,7 +44,7 @@ static void _linphone_chat_room_destructor (LinphoneChatRoom *cr);
 
 L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(ChatRoom, ChatRoom, chat_room,
 	_linphone_chat_room_constructor, _linphone_chat_room_destructor,
-	LinphoneChatRoomCbs * cbs;
+	LinphoneChatRoomCbs *cbs;
 	LinphoneAddress *peerAddressCache;
 )
 

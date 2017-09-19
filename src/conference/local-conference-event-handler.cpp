@@ -24,9 +24,10 @@
 
 #include "private.h"
 
+// =============================================================================
+
 using namespace std;
 using namespace conference_info;
-using namespace LinphonePrivate;
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -39,7 +40,7 @@ public:
 	LocalConference *conf = nullptr;
 };
 
-LINPHONE_END_NAMESPACE
+// -----------------------------------------------------------------------------
 
 void LocalConferenceEventHandlerPrivate::notifyFullState(string notify, LinphoneEvent *lev) {
 	LinphoneContent *content = linphone_core_create_content(lev->lc);
@@ -64,7 +65,8 @@ void LocalConferenceEventHandlerPrivate::notifyAllExcept(string notify, const Ad
 	}
 }
 
-// -------- Conference::LocalConferenceEventHandler public methods ---------
+// =============================================================================
+
 LocalConferenceEventHandler::LocalConferenceEventHandler(LinphoneCore *core, LocalConference *localConf) : Object(*new LocalConferenceEventHandlerPrivate) {
 	L_D(LocalConferenceEventHandler);
 	xercesc::XMLPlatformUtils::Initialize();
@@ -75,6 +77,8 @@ LocalConferenceEventHandler::LocalConferenceEventHandler(LinphoneCore *core, Loc
 LocalConferenceEventHandler::~LocalConferenceEventHandler() {
 	xercesc::XMLPlatformUtils::Terminate();
 }
+
+// -----------------------------------------------------------------------------
 
 string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
 	L_D(LocalConferenceEventHandler);
@@ -163,3 +167,5 @@ string LocalConferenceEventHandler::notifyParticipantSetAdmin(const Address &add
 	//d->notifyAllExcept(notify.str(), addr);
 	return notify.str();
 }
+
+LINPHONE_END_NAMESPACE
