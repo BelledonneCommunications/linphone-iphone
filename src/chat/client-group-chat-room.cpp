@@ -71,11 +71,11 @@ list<shared_ptr<Participant>> ClientGroupChatRoom::getParticipants () const {
 	return participants;
 }
 
-void ClientGroupChatRoom::removeParticipant (const shared_ptr<Participant> participant) {
+void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	// TODO
 }
 
-void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> participants) {
+void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	// TODO
 }
 

@@ -45,8 +45,8 @@ public:
 	const std::string& getId () const;
 	int getNbParticipants () const;
 	std::list<std::shared_ptr<Participant>> getParticipants () const;
-	void removeParticipant (const std::shared_ptr<Participant> participant);
-	void removeParticipants (const std::list<std::shared_ptr<Participant>> participants);
+	void removeParticipant (const std::shared_ptr<const Participant> &participant);
+	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants);
 
 private:
 	L_DECLARE_PRIVATE(BasicChatRoom);
@@ -56,4 +56,3 @@ private:
 LINPHONE_END_NAMESPACE
 
 #endif // ifndef _BASIC_CHAT_ROOM_H_
-

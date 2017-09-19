@@ -173,11 +173,11 @@ list<shared_ptr<Participant>> RealTimeTextChatRoom::getParticipants () const {
 	return l;
 }
 
-void RealTimeTextChatRoom::removeParticipant (const shared_ptr<Participant> participant) {
+void RealTimeTextChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "removeParticipant() is not allowed on a RealTimeTextChatRoom";
 }
 
-void RealTimeTextChatRoom::removeParticipants (const list<shared_ptr<Participant>> participants) {
+void RealTimeTextChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	lError() << "removeParticipants() is not allowed on a RealTimeTextChatRoom";
 }
 

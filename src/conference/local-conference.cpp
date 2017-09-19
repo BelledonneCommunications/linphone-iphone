@@ -68,7 +68,7 @@ list<shared_ptr<Participant>> LocalConference::getParticipants () const {
 	return participants;
 }
 
-void LocalConference::removeParticipant (const shared_ptr<Participant> participant) {
+void LocalConference::removeParticipant (const shared_ptr<const Participant> &participant) {
 	for (const auto &p : participants) {
 		if (participant->getAddress().equal(p->getAddress())) {
 			participants.remove(p);
@@ -77,7 +77,7 @@ void LocalConference::removeParticipant (const shared_ptr<Participant> participa
 	}
 }
 
-void LocalConference::removeParticipants (const list<shared_ptr<Participant>> participants) {
+void LocalConference::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	for (const auto &p : participants)
 		removeParticipant(p);
 }

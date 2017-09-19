@@ -66,11 +66,11 @@ list<shared_ptr<Participant>> Conference::getParticipants () const {
 	return participants;
 }
 
-void Conference::removeParticipant (const shared_ptr<Participant> participant) {
+void Conference::removeParticipant (const shared_ptr<const Participant> &participant) {
 	// TODO
 }
 
-void Conference::removeParticipants (const list<shared_ptr<Participant>> participants) {
+void Conference::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	// TODO
 }
 

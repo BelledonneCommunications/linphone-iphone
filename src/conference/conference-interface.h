@@ -40,8 +40,8 @@ public:
 	virtual const std::string& getId () const = 0;
 	virtual int getNbParticipants () const = 0;
 	virtual std::list<std::shared_ptr<Participant>> getParticipants () const = 0;
-	virtual void removeParticipant (const std::shared_ptr<Participant> participant) = 0;
-	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> participants) = 0;
+	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) = 0;
+	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) = 0;
 };
 
 LINPHONE_END_NAMESPACE

@@ -65,11 +65,11 @@ list<shared_ptr<Participant>> BasicChatRoom::getParticipants () const {
 	return l;
 }
 
-void BasicChatRoom::removeParticipant (const shared_ptr<Participant> participant) {
+void BasicChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "removeParticipant() is not allowed on a BasicChatRoom";
 }
 
-void BasicChatRoom::removeParticipants (const list<shared_ptr<Participant>> participants) {
+void BasicChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	lError() << "removeParticipants() is not allowed on a BasicChatRoom";
 }
 

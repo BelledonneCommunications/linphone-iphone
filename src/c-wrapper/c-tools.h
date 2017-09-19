@@ -144,7 +144,7 @@ public:
 	}
 
 	template<typename CType, typename CppType>
-	static inline CType * getCBackPtr (const std::shared_ptr<CppType> &object, CType *(*cTypeAllocator)()) {
+	static inline CType *getCBackPtr (const std::shared_ptr<CppType> &object, CType *(*cTypeAllocator)()) {
 		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = v.getValue<void *>();
 		if (!value) {
@@ -155,7 +155,7 @@ public:
 	}
 
 	template<typename CType, typename CppType>
-	static inline CType * getCBackPtr (const CppType *object, CType *(*cTypeAllocator)()) {
+	static inline CType *getCBackPtr (const CppType *object, CType *(*cTypeAllocator)()) {
 		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = v.getValue<void *>();
 		if (!value) {
@@ -168,19 +168,19 @@ public:
 	// ---------------------------------------------------------------------------
 
 	template<typename T>
-	static void * getUserData (const std::shared_ptr<T> &cppPtr) {
+	static void *getUserData (const std::shared_ptr<T> &cppPtr) {
 		Variant v = cppPtr->getProperty("LinphonePrivate::Wrapper::userData");
 		return v.getValue<void *>();
 	}
 
 	template<typename T>
-	static void * getUserData (T *cppPtr) {
+	static void *getUserData (T *cppPtr) {
 		Variant v = cppPtr->getProperty("LinphonePrivate::Wrapper::userData");
 		return v.getValue<void *>();
 	}
 
 	template<typename T>
-	static inline void setUserData (std::shared_ptr<T> object, void *value) {
+	static inline void setUserData (const std::shared_ptr<T> &object, void *value) {
 		L_ASSERT(object);
 		object->setProperty("LinphonePrivate::Wrapper::userData", value);
 	}
@@ -194,7 +194,7 @@ public:
 	// ---------------------------------------------------------------------------
 
 	template<typename T>
-	static inline bctbx_list_t * getCListFromCppList (const std::list<T> cppList) {
+	static inline bctbx_list_t *getCListFromCppList (const std::list<T> cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, value);
@@ -202,7 +202,7 @@ public:
 	}
 
 	template<typename CppType, typename CType>
-	static inline bctbx_list_t * getCListOfStructPtrFromCppListOfCppObj (const std::list<std::shared_ptr<CppType>> cppList, CType *(*cTypeAllocator)()) {
+	static inline bctbx_list_t *getCListOfStructPtrFromCppListOfCppObj (const std::list<std::shared_ptr<CppType>> cppList, CType *(*cTypeAllocator)()) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, getCBackPtr(value, cTypeAllocator));
@@ -210,7 +210,7 @@ public:
 	}
 
 	template<typename CppType, typename CType>
-	static inline bctbx_list_t * getCListOfStructPtrFromCppListOfCppObj (const std::list<CppType> cppList, CType *(*cTypeAllocator)()) {
+	static inline bctbx_list_t *getCListOfStructPtrFromCppListOfCppObj (const std::list<CppType> cppList, CType *(*cTypeAllocator)()) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, getCBackPtr(value, cTypeAllocator));

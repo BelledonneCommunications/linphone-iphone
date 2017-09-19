@@ -56,8 +56,8 @@ public:
 	virtual const std::string& getId () const;
 	virtual int getNbParticipants () const;
 	virtual std::list<std::shared_ptr<Participant>> getParticipants () const;
-	virtual void removeParticipant (const std::shared_ptr<Participant> participant);
-	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> participants);
+	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant);
+	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants);
 
 private:
 	/* CallSessionListener */
