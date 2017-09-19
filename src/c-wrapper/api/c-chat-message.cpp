@@ -16,37 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "linphone/chat.h"
+#include "linphone/wrapper_utils.h"
 
- #include "linphone/chat.h"
- #include "linphone/wrapper_utils.h"
- #include "private.h"
- 
- #include "c-wrapper/c-tools.h"
- #include "chat/chat-message.h"
- #include "chat/chat-message-p.h"
- 
- using namespace std;
- 
- #define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, ChatMessage, ChatMessage)
- #define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, ChatMessage, ChatMessage)
+// TODO: Remove me later.
+#include "private.h"
 
- /*******************************************************************************
- * Reference and user data handling functions                                  *
- ******************************************************************************/
+#include "c-wrapper/c-tools.h"
+#include "chat/chat-message.h"
+#include "chat/chat-message-p.h"
 
-LinphoneChatMessage *linphone_chat_message_ref(LinphoneChatMessage *msg) {
+// =============================================================================
+
+#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, ChatMessage, ChatMessage)
+#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, ChatMessage, ChatMessage)
+
+using namespace std;
+
+// =============================================================================
+// Reference and user data handling functions.
+// =============================================================================
+
+LinphoneChatMessage *linphone_chat_message_ref (LinphoneChatMessage *msg) {
 	belle_sip_object_ref(msg);
 	return msg;
 }
 
-void linphone_chat_message_unref(LinphoneChatMessage *msg) {
+void linphone_chat_message_unref (LinphoneChatMessage *msg) {
 	belle_sip_object_unref(msg);
 }
 
-void * linphone_chat_message_get_user_data(const LinphoneChatMessage *msg) {
+void * linphone_chat_message_get_user_data (const LinphoneChatMessage *msg) {
 	return L_GET_USER_DATA_FROM_C_STRUCT(msg, ChatMessage, ChatMessage);
 }
 
-void linphone_chat_message_set_user_data(LinphoneChatMessage *msg, void *ud) {
+void linphone_chat_message_set_user_data (LinphoneChatMessage *msg, void *ud) {
 	L_SET_USER_DATA_FROM_C_STRUCT(msg, ud, ChatMessage, ChatMessage);
 }

@@ -19,7 +19,6 @@
 #include "linphone/api/c-participant.h"
 
 #include "c-wrapper/c-tools.h"
-
 #include "conference/participant.h"
 
 // =============================================================================
@@ -39,7 +38,7 @@ void linphone_participant_unref (LinphoneParticipant *participant) {
 	belle_sip_object_unref(participant);
 }
 
-void * linphone_participant_get_user_data(const LinphoneParticipant *participant) {
+void *linphone_participant_get_user_data(const LinphoneParticipant *participant) {
 	return L_GET_USER_DATA_FROM_C_STRUCT(participant, Participant, Participant);
 }
 
@@ -47,7 +46,7 @@ void linphone_participant_set_user_data(LinphoneParticipant *participant, void *
 	L_SET_USER_DATA_FROM_C_STRUCT(participant, ud, Participant, Participant);
 }
 
-const LinphoneAddress * linphone_participant_get_address (const LinphoneParticipant *participant) {
+const LinphoneAddress *linphone_participant_get_address (const LinphoneParticipant *participant) {
 	LinphonePrivate::Address addr = L_GET_CPP_PTR_FROM_C_STRUCT(participant, Participant, Participant)->getAddress();
 	if (participant->addressCache)
 		linphone_address_unref(participant->addressCache);

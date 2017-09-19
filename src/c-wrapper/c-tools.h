@@ -22,10 +22,10 @@
 #include <list>
 #include <memory>
 
-#include "variant/variant.h"
-
-// From coreapi.
+// TODO: From coreapi. Remove me later.
 #include "private.h"
+
+#include "variant/variant.h"
 
 // =============================================================================
 

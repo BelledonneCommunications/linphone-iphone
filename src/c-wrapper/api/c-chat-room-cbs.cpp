@@ -16,10 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "linphone/api/c-chat-room-cbs.h"
+
+// TODO: Remove me later.
 #include "private.h"
 
+// =============================================================================
 
 struct _LinphoneChatRoomCbs {
 	belle_sip_object_t base;
@@ -40,6 +42,8 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoomCbs, belle_sip_object_t,
 	NULL, // marshal
 	FALSE
 );
+
+// =============================================================================
 
 LinphoneChatRoomCbs * linphone_chat_room_cbs_new (void) {
 	return belle_sip_object_new(LinphoneChatRoomCbs);
