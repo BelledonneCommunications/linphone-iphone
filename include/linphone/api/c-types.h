@@ -19,16 +19,11 @@
 #ifndef _C_TYPES_H_
 #define _C_TYPES_H_
 
-// Do not move this define.
-// Enable C enums.
-#define L_USE_C_ENUM
-
 // TODO: Remove me in the future.
 #include "linphone/types.h"
 
+#include "linphone/utils/enum-generator.h"
 #include "linphone/enums/event-log-enums.h"
-
-#define L_DECLARE_C_ENUM(CLASS, ENUM, VALUES) enum Linphone ## CLASS ## ENUM { VALUES }
 
 // =============================================================================
 
@@ -105,7 +100,7 @@ typedef struct _LinphoneParticipant LinphoneParticipant;
 // C Enums.
 // =============================================================================
 
-L_DECLARE_C_ENUM(EventLog, Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
+L_DECLARE_C_ENUM(EventLogType, L_ENUM_VALUES_EVENT_LOG_TYPE);
 
 #ifdef __cplusplus
 	}

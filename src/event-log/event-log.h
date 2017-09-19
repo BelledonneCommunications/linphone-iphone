@@ -20,6 +20,7 @@
 #define _EVENT_LOG_H_
 
 #include "linphone/enums/event-log-enums.h"
+#include "linphone/utils/enum-generator.h"
 
 #include "object/clonable-object.h"
 
@@ -31,9 +32,7 @@ class EventLogPrivate;
 
 class LINPHONE_PUBLIC EventLog : public ClonableObject {
 public:
-	enum Type {
-		L_ENUM_VALUES_EVENT_LOG_TYPE
-	};
+	L_DECLARE_ENUM(Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
 
 	EventLog ();
 	EventLog (const EventLog &src);

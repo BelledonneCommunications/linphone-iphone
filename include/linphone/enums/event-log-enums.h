@@ -19,22 +19,18 @@
 #ifndef _EVENT_LOG_ENUMS_H_
 #define _EVENT_LOG_ENUMS_H_
 
-#include "linphone/utils/enum-generator.h"
-
 // =============================================================================
 
-#define L_ENUM_VALUES_EVENT_LOG_TYPE \
-	L_DECLARE_ENUM_VALUES(EventLog, Type, \
-		None, \
-		Message, \
-		CallStart, \
-		CallEnd, \
-		ConferenceCreated, \
-		ConferenceDestroyed, \
-		ConferenceParticipantAdded, \
-		ConferenceParticipantRemoved, \
-		ConferenceParticipantSetAdmin, \
-		ConferenceParticipantUnsetAdmin \
-	)
+#define L_ENUM_VALUES_EVENT_LOG_TYPE(F) \
+	F(None) \
+	F(Message) \
+	F(CallStart) \
+	F(CallEnd) \
+	F(ConferenceCreated) \
+	F(ConferenceDestroyed) \
+	F(ConferenceParticipantAdded) \
+	F(ConferenceParticipantRemoved) \
+	F(ConferenceParticipantSetAdmin) \
+	F(ConferenceParticipantUnsetAdmin)
 
 #endif // ifndef _EVENT_LOG_ENUMS_H_
