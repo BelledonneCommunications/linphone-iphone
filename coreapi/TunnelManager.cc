@@ -45,7 +45,7 @@ void TunnelManager::addServer(const char *ip, int port) {
 		ms_warning("TunnelManager is configured in dual mode, use addServerPair instead");
 		return;
 	}
-	
+
 	mServerAddrs.push_back(ServerAddr(ip,port));
 	if (mTunnelClient && !mUseDualClient) {
 		static_cast<TunnelClient*>(mTunnelClient)->addServer(ip,port);
@@ -70,7 +70,7 @@ void TunnelManager::addServerPair(const char *ip1, int port1, const char *ip2, i
 		ms_warning("TunnelManager is configured in single mode, use addServer instead");
 		return;
 	}
-	
+
 	mDualServerAddrs.push_back(DualServerAddr(ip1, port1, ip2, port2));
 	if (mTunnelClient && mUseDualClient) {
 		static_cast<DualTunnelClient*>(mTunnelClient)->addServerPair(ip1, port1, ip2, port2);
@@ -84,11 +84,8 @@ void TunnelManager::cleanServers() {
 		sal_end_background_task(mLongRunningTaskId);
 		mLongRunningTaskId = 0;
 	}
-	UdpMirrorClientList::iterator it;
-	for (it = mUdpMirrorClients.begin(); it != mUdpMirrorClients.end();) {
-		UdpMirrorClient& s=*it++;
-		s.stop();
-	}
+	for (auto &udpMirrorClient : mUdpMirrorClients)
+		udpMirrorClient.stop();
 	mUdpMirrorClients.clear();
 	mCurrentUdpMirrorClient = mUdpMirrorClients.end();
 	if (mTunnelClient) mTunnelClient->cleanServers();
@@ -141,7 +138,7 @@ RtpTransport *TunnelManager::createRtpTransport(int port){
 		dualSocket->recvSocket = ((DualTunnelClient *)mTunnelClient)->createSocket(TunnelRecvOnly, port);
 		dualSocket->recvSocket->setUserPointer(this);
 	}
-	
+
 	RtpTransport *t = ms_new0(RtpTransport,1);
 	t->t_getsocket=NULL;
 	t->t_recvfrom=customRecvfrom;
@@ -161,7 +158,7 @@ void TunnelManager::startClient() {
 		} else {
 			mTunnelClient = TunnelClient::create(TRUE);
 		}
-		
+
 		sal_set_tunnel(mCore->sal, mTunnelClient);
 		if (!mUseDualClient) {
 			static_cast<TunnelClient*>(mTunnelClient)->setCallback(tunnelCallback,this);
@@ -169,7 +166,7 @@ void TunnelManager::startClient() {
 			static_cast<DualTunnelClient*>(mTunnelClient)->setCallback(tunnelCallback2,this);
 		}
 	}
-	
+
 	if (mVerifyServerCertificate) {
 		const char *rootCertificatePath = linphone_core_get_root_ca(mCore);
 		if (rootCertificatePath != NULL) {
@@ -193,7 +190,7 @@ void TunnelManager::startClient() {
 			static_cast<TunnelClient*>(mTunnelClient)->addServer(addr.mAddr.c_str(), addr.mPort);
 		}
 	}
-	
+
 	mTunnelClient->setHttpProxy(mHttpProxyHost.c_str(), mHttpProxyPort, mHttpUserName.c_str(), mHttpPasswd.c_str());
 	if (!mTunnelClient->isStarted()) {
 		ms_message("Starting tunnel client");
@@ -380,7 +377,7 @@ void TunnelManager::setMode(LinphoneTunnelMode mode) {
 			   linphone_tunnel_mode_to_string(mode));
 	mMode = mode;
 	applyMode();
-	
+
 }
 
 void TunnelManager::stopLongRunningTask() {
@@ -393,7 +390,7 @@ void TunnelManager::stopLongRunningTask() {
 void TunnelManager::tunnelCallback(bool connected, void *user_pointer){
 	TunnelManager *zis = static_cast<TunnelManager*>(user_pointer);
 	Event ev;
-	
+
 	ev.mType=TunnelEvent;
 	ev.mData.mConnected=connected;
 	zis->postEvent(ev);
@@ -402,7 +399,7 @@ void TunnelManager::tunnelCallback(bool connected, void *user_pointer){
 void TunnelManager::tunnelCallback2(TunnelDirection direction, bool connected, void *user_pointer){
 	TunnelManager *zis = static_cast<TunnelManager*>(user_pointer);
 	Event ev;
-	
+
 	ev.mType=TunnelEvent;
 	ev.mData.mConnected=connected;
 	zis->postEvent(ev);
@@ -515,7 +512,7 @@ void TunnelManager::sUdpMirrorClientCallback(bool isUdpAvailable, void* data) {
 
 void TunnelManager::networkReachableCb(LinphoneCore *lc, bool_t reachable) {
 	TunnelManager *tunnel = bcTunnel(linphone_core_get_tunnel(lc));
-	
+
 	if (reachable) {
 		linphone_core_get_local_ip_for(AF_INET, NULL,tunnel->mLocalAddr);
 		if (tunnel->getMode() == LinphoneTunnelModeAuto){

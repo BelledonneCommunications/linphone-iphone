@@ -139,11 +139,8 @@ bctbx_list_t* linphone_vcard_context_get_vcard_list_from_file(LinphoneVcardConte
 		}
 		shared_ptr<belcard::BelCardList> belCards = context->parser->parseFile(filename);
 		if (belCards) {
-			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
-				shared_ptr<belcard::BelCard> belCard = (*it);
-				LinphoneVcard *vCard = linphone_vcard_new_from_belcard(belCard);
-				result = bctbx_list_append(result, vCard);
-			}
+			for (auto &belCard : belCards->getCards())
+				result = bctbx_list_append(result, linphone_vcard_new_from_belcard(belCard));
 		}
 	}
 	return result;
@@ -157,11 +154,8 @@ bctbx_list_t* linphone_vcard_context_get_vcard_list_from_buffer(LinphoneVcardCon
 		}
 		shared_ptr<belcard::BelCardList> belCards = context->parser->parse(buffer);
 		if (belCards) {
-			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
-				shared_ptr<belcard::BelCard> belCard = (*it);
-				LinphoneVcard *vCard = linphone_vcard_new_from_belcard(belCard);
-				result = bctbx_list_append(result, vCard);
-			}
+			for (auto &belCard : belCards->getCards())
+				result = bctbx_list_append(result, linphone_vcard_new_from_belcard(belCard));
 		}
 	}
 	return result;
@@ -274,16 +268,12 @@ void linphone_vcard_add_sip_address(LinphoneVcard *vCard, const char *sip_addres
 void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 	if (!vCard) return;
 
-	shared_ptr<belcard::BelCardImpp> impp;
-	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
-		const char *value = (*it)->getValue().c_str();
+	for (auto &impp : vCard->belCard->getImpp()) {
+		const char *value = impp->getValue().c_str();
 		if (strcmp(value, sip_address) == 0) {
-			impp = *it;
+			vCard->belCard->removeImpp(impp);
 			break;
 		}
-	}
-	if (impp) {
-		vCard->belCard->removeImpp(impp);
 	}
 }
 
@@ -303,8 +293,8 @@ void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_
 const bctbx_list_t* linphone_vcard_get_sip_addresses(LinphoneVcard *vCard) {
 	if (!vCard) return NULL;
 	if (!vCard->sip_addresses_cache) {
-		for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
-			LinphoneAddress* addr = linphone_address_new((*it)->getValue().c_str());
+		for (auto &impp : vCard->belCard->getImpp()) {
+			LinphoneAddress* addr = linphone_address_new(impp->getValue().c_str());
 			if (addr) {
 				vCard->sip_addresses_cache = bctbx_list_append(vCard->sip_addresses_cache, addr);
 			}
@@ -325,15 +315,12 @@ void linphone_vcard_remove_phone_number(LinphoneVcard *vCard, const char *phone)
 	if (!vCard) return;
 
 	shared_ptr<belcard::BelCardPhoneNumber> tel;
-	for (auto it = vCard->belCard->getPhoneNumbers().begin(); it != vCard->belCard->getPhoneNumbers().end(); ++it) {
-		const char *value = (*it)->getValue().c_str();
+	for (auto &phoneNumber : vCard->belCard->getPhoneNumbers()) {
+		const char *value = phoneNumber->getValue().c_str();
 		if (strcmp(value, phone) == 0) {
-			tel = *it;
+			vCard->belCard->removePhoneNumber(phoneNumber);
 			break;
 		}
-	}
-	if (tel) {
-		vCard->belCard->removePhoneNumber(tel);
 	}
 }
 
@@ -341,8 +328,8 @@ bctbx_list_t* linphone_vcard_get_phone_numbers(const LinphoneVcard *vCard) {
 	bctbx_list_t *result = NULL;
 	if (!vCard) return NULL;
 
-	for (auto it = vCard->belCard->getPhoneNumbers().begin(); it != vCard->belCard->getPhoneNumbers().end(); ++it) {
-		const char *value = (*it)->getValue().c_str();
+	for (auto &phoneNumber : vCard->belCard->getPhoneNumbers()) {
+		const char *value = phoneNumber->getValue().c_str();
 		result = bctbx_list_append(result, (char *)value);
 	}
 	return result;
