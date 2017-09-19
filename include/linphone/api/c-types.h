@@ -69,7 +69,10 @@ typedef unsigned char bool_t;
 typedef struct _LinphoneAddress LinphoneAddress;
 
 typedef struct _LinphoneCall LinphoneCall;
-typedef struct _LinphoneCallEvent LinphoneCallEvent;
+
+// -----------------------------------------------------------------------------
+// Chatroom.
+// -----------------------------------------------------------------------------
 
 /**
  * A chat room is the place where text messages are exchanged.
@@ -84,17 +87,23 @@ typedef struct _LinphoneChatRoom LinphoneChatRoom;
  */
 typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
 
+typedef struct _LinphoneMessage LinphoneMessage;
+
+/**
+* The LinphoneParticipant object represents a participant of a conference.
+* @ingroup misc
+**/
+typedef struct _LinphoneParticipant LinphoneParticipant;
+
+// -----------------------------------------------------------------------------
+// EventLog.
+// -----------------------------------------------------------------------------
+
+typedef struct _LinphoneCallEvent LinphoneCallEvent;
 typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
 typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
 typedef struct _LinphoneEventLog LinphoneEventLog;
-typedef struct _LinphoneMessage LinphoneMessage;
 typedef struct _LinphoneMessageEvent LinphoneMessageEvent;
-
-/**
- * The LinphoneParticipant object represents a participant of a conference.
- * @ingroup misc
-**/
-typedef struct _LinphoneParticipant LinphoneParticipant;
 
 // =============================================================================
 // C Enums.
