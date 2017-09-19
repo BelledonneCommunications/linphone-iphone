@@ -40,8 +40,8 @@ RealTimeTextChatRoomPrivate::RealTimeTextChatRoomPrivate (LinphoneCore *core, co
 
 RealTimeTextChatRoomPrivate::~RealTimeTextChatRoomPrivate () {
 	if (!receivedRttCharacters.empty()) {
-		for (auto it = receivedRttCharacters.begin(); it != receivedRttCharacters.end(); it++)
-			bctbx_free(*it);
+		for (auto &rttChars : receivedRttCharacters)
+			bctbx_free(rttChars);
 	}
 	if (pendingMessage)
 		linphone_chat_message_destroy(pendingMessage);
@@ -92,8 +92,8 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 			chatMessageReceived(pendingMessage);
 			linphone_chat_message_unref(pendingMessage);
 			pendingMessage = nullptr;
-			for (auto it = receivedRttCharacters.begin(); it != receivedRttCharacters.end(); it++)
-				ms_free(*it);
+			for (auto &rttChars : receivedRttCharacters)
+				ms_free(rttChars);
 			receivedRttCharacters.clear();
 		} else {
 			char *value = Utils::utf8ToChar(character);
@@ -124,8 +124,7 @@ void RealTimeTextChatRoom::sendMessage (LinphoneChatMessage *msg) {
 uint32_t RealTimeTextChatRoom::getChar () const {
 	L_D(const ChatRoom);
 	if (!d->receivedRttCharacters.empty()) {
-		for (auto it = d->receivedRttCharacters.begin(); it != d->receivedRttCharacters.end(); it++) {
-			LinphoneChatMessageCharacter *cmc = *it;
+		for (auto &cmc : d->receivedRttCharacters) {
 			if (!cmc->has_been_read) {
 				cmc->has_been_read = TRUE;
 				return cmc->value;

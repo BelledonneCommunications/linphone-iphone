@@ -41,9 +41,8 @@ ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
 	: core(core), isComposingHandler(core, this) {}
 
 ChatRoomPrivate::~ChatRoomPrivate () {
-	for (auto it = transientMessages.begin(); it != transientMessages.end(); it++) {
-		linphone_chat_message_release(*it);
-	}
+	for (auto &message : transientMessages)
+		linphone_chat_message_release(message);
 	if (pendingMessage)
 		linphone_chat_message_destroy(pendingMessage);
 }
@@ -98,12 +97,12 @@ void ChatRoomPrivate::removeTransientMessage (LinphoneChatMessage *msg) {
 void ChatRoomPrivate::release () {
 	L_Q(ChatRoom);
 	isComposingHandler.stopTimers();
-	for (auto it = weakMessages.begin(); it != weakMessages.end(); it++) {
-		linphone_chat_message_deactivate(*it);
-	}
-	for (auto it = transientMessages.begin(); it != transientMessages.end(); it++) {
-		linphone_chat_message_deactivate(*it);
-	}
+
+	for (auto &message : weakMessages)
+		linphone_chat_message_deactivate(message);
+	for (auto &message : transientMessages)
+		linphone_chat_message_deactivate(message);
+
 	core = nullptr;
 	linphone_chat_room_unref(GET_BACK_PTR(q));
 }
@@ -318,17 +317,17 @@ void ChatRoomPrivate::onWeakMessageDestroyed (LinphoneChatMessage *messageBeingD
 }
 
 LinphoneChatMessage *ChatRoomPrivate::getTransientMessage (unsigned int storageId) const {
-	for (auto it = transientMessages.begin(); it != transientMessages.end(); it++) {
-		if (linphone_chat_message_get_storage_id(*it) == storageId)
-			return linphone_chat_message_ref(*it);
+	for (auto &message : transientMessages) {
+		if (linphone_chat_message_get_storage_id(message) == storageId)
+			return linphone_chat_message_ref(message);
 	}
 	return nullptr;
 }
 
 LinphoneChatMessage *ChatRoomPrivate::getWeakMessage (unsigned int storageId) const {
-	for (auto it = weakMessages.begin(); it != weakMessages.end(); it++) {
-		if (linphone_chat_message_get_storage_id(*it) == storageId)
-			return linphone_chat_message_ref(*it);
+	for (auto &message : weakMessages) {
+		if (linphone_chat_message_get_storage_id(message) == storageId)
+			return linphone_chat_message_ref(message);
 	}
 	return nullptr;
 }
@@ -637,8 +636,8 @@ LinphoneChatMessage *ChatRoom::findMessage (const string &messageId) {
 	if (!l.empty()) {
 		cm = l.front();
 		linphone_chat_message_ref(cm);
-		for (auto it = l.begin(); it != l.end(); it++)
-			linphone_chat_message_unref(*it);
+		for (auto &message : l)
+			linphone_chat_message_unref(message);
 	}
 	return cm;
 }
@@ -647,17 +646,16 @@ LinphoneChatMessage * ChatRoom::findMessageWithDirection (const string &messageI
 	L_D(ChatRoom);
 	LinphoneChatMessage *ret = nullptr;
 	list<LinphoneChatMessage *> l = d->findMessages(messageId);
-	for (auto it = l.begin(); it != l.end(); it++) {
-		LinphoneChatMessage *cm = *it;
-		if (cm->dir == direction) {
-			linphone_chat_message_ref(cm);
-			ret = cm;
+	for (auto &message : l) {
+		if (message->dir == direction) {
+			linphone_chat_message_ref(message);
+			ret = message;
 			break;
 		}
 	}
 	if (!l.empty()) {
-		for (auto it = l.begin(); it != l.end(); it++)
-			linphone_chat_message_unref(*it);
+		for (auto &message : l)
+			linphone_chat_message_unref(message);
 	}
 	return ret;
 }
@@ -712,13 +710,12 @@ list<LinphoneChatMessage *> ChatRoom::getHistoryRange (int startm, int endm) {
 	if (!d->messages.empty()) {
 		/* Fill local addr with core identity instead of per message */
 		LinphoneAddress *localAddr = linphone_address_new(linphone_core_get_identity(d->core));
-		for (auto it = d->messages.begin(); it != d->messages.end(); it++) {
-			LinphoneChatMessage *msg = *it;
-			if (msg->dir == LinphoneChatMessageOutgoing) {
-				if (msg->from != NULL) linphone_address_unref(msg->from);
-				msg->from = linphone_address_ref(localAddr);
+		for (auto &message : d->messages) {
+			if (message->dir == LinphoneChatMessageOutgoing) {
+				if (message->from != NULL) linphone_address_unref(message->from);
+				message->from = linphone_address_ref(localAddr);
 			} else {
-				msg->to = linphone_address_ref(localAddr);
+				message->to = linphone_address_ref(localAddr);
 			}
 		}
 		linphone_address_unref(localAddr);
@@ -751,9 +748,9 @@ void ChatRoom::markAsRead () {
 	char *buf = sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q AND direction = %i AND status != %i", peer.c_str(), LinphoneChatMessageIncoming, LinphoneChatMessageStateDisplayed);
 	d->sqlRequestMessage(d->core->db, buf);
 	sqlite3_free(buf);
-	for (auto it = d->messages.begin(); it != d->messages.end(); it++) {
-		linphone_chat_message_send_display_notification(*it);
-		linphone_chat_message_unref(*it);
+	for (auto &message : d->messages) {
+		linphone_chat_message_send_display_notification(message);
+		linphone_chat_message_unref(message);
 	}
 	d->messages.clear();
 	buf = sqlite3_mprintf("UPDATE history SET status=%i WHERE remoteContact=%Q AND direction=%i;", LinphoneChatMessageStateDisplayed, peer.c_str(), LinphoneChatMessageIncoming);
