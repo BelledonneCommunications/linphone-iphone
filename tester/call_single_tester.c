@@ -427,6 +427,9 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		BC_ASSERT_FALSE(wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+2,2000));
 		BC_ASSERT_FALSE(wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+2,2000));
 
+	}else{
+		/*wait a bit for streams to start flowing*/
+		wait_for_until(callee_mgr->lc,caller_mgr->lc, NULL, 0, 500);
 	}
 	if (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS ) {
 		if (linphone_core_get_current_call(caller_mgr->lc)->audiostream)
@@ -739,6 +742,7 @@ static void call_outbound_with_multiple_proxy(void) {
 
 	// calling marie should go through the second proxy config
 	BC_ASSERT_TRUE(call(marie, pauline));
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
 
 	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
@@ -994,6 +998,7 @@ static void simple_call_compatibility_mode(void) {
 		BC_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
 
 		wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
+		wait_for_until(lc_pauline,lc_marie,NULL,0, 1000);
 		end_call(pauline, marie);
 	}
 	linphone_core_manager_destroy(marie);
@@ -1032,6 +1037,7 @@ static void terminate_call_with_error(void) {
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_phrase(ei), "Call refused for security reason");
 		BC_ASSERT_STRING_EQUAL(linphone_error_info_get_protocol(ei), "SIP");
 	}
+	wait_for_until(caller_mgr->lc, callee_mgr->lc, NULL, 0, 1000);
 	linphone_call_terminate_with_error_info(out_call,ei);
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallReleased,1));
@@ -1135,6 +1141,8 @@ static void cancel_other_device_after_accept(void) {
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallReleased,1));
+		
+		wait_for_until(caller_mgr->lc,callee_mgr_2->lc,NULL,0,500);
 		
 		rei = linphone_call_get_error_info(call_callee_2);
 		BC_ASSERT_PTR_NOT_NULL(rei);
@@ -2511,7 +2519,7 @@ static void call_with_privacy(void) {
 
 		BC_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId, int, "%d");
 	}
-
+	liblinphone_tester_check_rtcp(pauline, marie);
 	end_call(pauline, marie);
 
 	/*test proxy config privacy*/
@@ -2571,7 +2579,7 @@ static void call_with_privacy2(void) {
 
 		BC_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId, int, "%d");
 	}
-
+	liblinphone_tester_check_rtcp(pauline,marie);
 	end_call(pauline, marie);
 
 	/*test proxy config privacy*/
@@ -2589,6 +2597,7 @@ static void call_with_privacy2(void) {
 		BC_ASSERT_FALSE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),pauline->identity));
 		BC_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId, int, "%d");
 	}
+	liblinphone_tester_check_rtcp(pauline,marie);
 	end_call(marie, pauline);
 
 	linphone_core_manager_destroy(marie);
