@@ -22,36 +22,27 @@
 #
 # - Find the libxsd library
 #
-#  XSD_FOUND - system has libxsd
-#  XSD_LIBRARIES - The libraries needed to use libxsd
+#  LIBXSD_FOUND - system has libxsd
+#  LIBXSD_INCLUDE_DIRS - the libxsd include directory
+#  LIBXSD_LIBRARIES - The libraries needed to use libxsd
 
-if(APPLE)
-set(XSDCXX_DEFAULT_ROOT_PATH "/usr/local")
-else ()
-set(XSDCXX_DEFAULT_ROOT_PATH "/usr")
-endif()
 
-set(XSDCXX_ROOT_PATH ${XSDCXX_DEFAULT_ROOT_PATH}  CACHE STRING "Path of where the bin/xsdcxx executable will be found. Comes from http://www.codesynthesis.com/products/xsd/download.xhtml. On mac use 'brew install xsd'")
+find_package(XercesC)
 
-find_program(XSDCXX_PROG NAMES "xsdcxx" "xsd"
-        HINTS ${XSDCXX_ROOT_PATH}/bin
+find_path(LIBXSD_INCLUDE_DIRS
+	NAMES xsd/cxx/config.hxx
+	PATH_SUFFIXES include
 )
-if(XSDCXX_PROG)
-        set(XSD_FOUND 1)
-        message(STATUS "XSD found at ${XSDCXX_PROG}, enabling XSD")
-        # TODO: check XSD is the correct executable
-        find_library(XERCES_LIBS NAMES xerces-c)
-        if(NOT XERCES_LIBS)
-                message(FATAL_ERROR "Failed to find the Xerces library.")
-        endif()
-        find_path(XERCES_INCLUDE_DIRS NAMES xercesc/util/XercesDefs.hpp)
-        if(NOT XERCES_INCLUDE_DIRS)
-                message(FATAL_ERROR "Failed to find the Xerces includes.")
-        endif()
-        set(XSD_LIBRARIES ${XERCES_LIBS})
-else()
-        set(XSD_FOUND 0)
-        message(STATUS "Program 'xsdcxx' could not be found in ${XSDCXX_ROOT_PATH}/bin, disabling XSD features")
-endif()
 
-mark_as_advanced(XSD_FOUND)
+if(LIBXSD_INCLUDE_DIRS)
+	list(APPEND LIBXSD_INCLUDE_DIRS ${XercesC_INCLUDE_DIRS})
+endif()
+set(LIBXSD_LIBRARIES ${XercesC_LIBRARIES})
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(LibXsd
+	DEFAULT_MSG
+	LIBXSD_INCLUDE_DIRS LIBXSD_LIBRARIES
+)
+
+mark_as_advanced(LIBXSD_INCLUDE_DIRS LIBXSD_LIBRARIES)
