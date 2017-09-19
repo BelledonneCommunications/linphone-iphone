@@ -28,6 +28,9 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ChatMessagePrivate : public ObjectPrivate {
+	friend class CpimChatMessageModifier;
+	friend class MultipartChatMessageModifier;
+
 private:
 	std::weak_ptr<ChatRoom> chatRoom;
 	ChatMessage::Direction direction = ChatMessage::Incoming;
@@ -47,8 +50,6 @@ private:
 	std::shared_ptr<EventsDb> eventsDb;
 
 	L_DECLARE_PUBLIC(ChatMessage);
-	friend class CpimChatMessageModifier;
-	friend class MultipartChatMessageModifier;
 };
 
 LINPHONE_END_NAMESPACE

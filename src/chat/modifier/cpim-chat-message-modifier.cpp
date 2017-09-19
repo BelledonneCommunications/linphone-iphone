@@ -16,83 +16,85 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- #include <vector>
+#include <vector>
 
- #include "content/content-type.h"
- #include "content/content.h"
- #include "chat/chat-message-p.h"
- #include "chat/cpim/cpim.h"
+#include "chat/chat-message-p.h"
+#include "chat/cpim/cpim.h"
+#include "content/content-type.h"
+#include "content/content.h"
 
- #include "cpim-chat-message-modifier.h"
+#include "cpim-chat-message-modifier.h"
 
- LINPHONE_BEGIN_NAMESPACE
- 
- using namespace std;
+// =============================================================================
 
- void CpimChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
-    Cpim::Message message;
-    Cpim::GenericHeader cpimContentTypeHeader;
+using namespace std;
+
+LINPHONE_BEGIN_NAMESPACE
+
+void CpimChatMessageModifier::encode(LinphonePrivate::ChatMessagePrivate* msg) {
+	Cpim::Message message;
+	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
-    cpimContentTypeHeader.setValue("Message/CPIM");
-    message.addCpimHeader(cpimContentTypeHeader);
-    
-    shared_ptr<Content> content;
-    if (msg->internalContent) {
-        // Another ChatMessageModifier was called before this one, we apply our changes on the private content
-        content = msg->internalContent;
-    } else {
-        // We're the first ChatMessageModifier to be called, we'll create the private content from the public one
-        // We take the first one because if there is more of them, the multipart modifier should have been called first
-        // So we should not be in this block
-        content = msg->contents.front();
-    }
+	cpimContentTypeHeader.setValue("Message/CPIM");
+	message.addCpimHeader(cpimContentTypeHeader);
 
-    string contentType = content->getContentType().asString();
-    const vector<char> body = content->getBody();
-    string contentBody(body.begin(), body.end());
+	shared_ptr<Content> content;
+	if (msg->internalContent) {
+		// Another ChatMessageModifier was called before this one, we apply our changes on the private content
+		content = msg->internalContent;
+	} else {
+		// We're the first ChatMessageModifier to be called, we'll create the private content from the public one
+		// We take the first one because if there is more of them, the multipart modifier should have been called first
+		// So we should not be in this block
+		content = msg->contents.front();
+	}
 
-    Cpim::GenericHeader contentTypeHeader;
+	string contentType = content->getContentType().asString();
+	const vector<char> body = content->getBody();
+	string contentBody(body.begin(), body.end());
+
+	Cpim::GenericHeader contentTypeHeader;
 	contentTypeHeader.setName("Content-Type");
-    contentTypeHeader.setValue(contentType);
-    message.addContentHeader(contentTypeHeader);
+	contentTypeHeader.setValue(contentType);
+	message.addContentHeader(contentTypeHeader);
 
-    message.setContent(contentBody);
+	message.setContent(contentBody);
 
-    if (!message.isValid()) {
-        //TODO
-    } else {
-        shared_ptr<Content> newContent = make_shared<Content>();
-        ContentType newContentType("Message/CPIM");
-        newContent->setContentType(newContentType);
-        newContent->setBody(message.asString());
-        msg->internalContent = newContent;
-    }
- }
+	if (!message.isValid()) {
+		//TODO
+	} else {
+		shared_ptr<Content> newContent = make_shared<Content>();
+		ContentType newContentType("Message/CPIM");
+		newContent->setContentType(newContentType);
+		newContent->setBody(message.asString());
+		msg->internalContent = newContent;
+	}
+}
 
- void CpimChatMessageModifier::decode(LinphonePrivate::ChatMessagePrivate* msg) {
-    shared_ptr<Content> content;
-    if (msg->internalContent) {
-        content = msg->internalContent;
-    } else {
-        content = msg->contents.front();
-    }
+void CpimChatMessageModifier::decode(LinphonePrivate::ChatMessagePrivate* msg) {
+	shared_ptr<Content> content;
+	if (msg->internalContent) {
+		content = msg->internalContent;
+	} else {
+		content = msg->contents.front();
+	}
 
-    ContentType contentType = content->getContentType();
-    if (contentType.asString() == "Message/CPIM") {
-        const vector<char> body = content->getBody();
-        string contentBody(body.begin(), body.end());
-        shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(contentBody);
-        if (message && message->isValid()) {
-            shared_ptr<Content> newContent = make_shared<Content>();
-            ContentType newContentType(message->getContentHeaders()->front()->getValue());
-            newContent->setContentType(newContentType);
-            newContent->setBody(message->getContent());
-        } else {
-            //TODO
-        }
-    } else {
-        //TODO
-    }
- }
- 
+	ContentType contentType = content->getContentType();
+	if (contentType.asString() == "Message/CPIM") {
+		const vector<char> body = content->getBody();
+		string contentBody(body.begin(), body.end());
+		shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(contentBody);
+		if (message && message->isValid()) {
+			shared_ptr<Content> newContent = make_shared<Content>();
+			ContentType newContentType(message->getContentHeaders()->front()->getValue());
+			newContent->setContentType(newContentType);
+			newContent->setBody(message->getContent());
+		} else {
+			//TODO
+		}
+	} else {
+		//TODO
+	}
+}
+
 LINPHONE_END_NAMESPACE
