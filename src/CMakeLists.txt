@@ -160,9 +160,30 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	xml/xml.cpp
 )
 
-ADD_XSD_WRAPPERS(xml/xml "XML XSD - xml.xsd")
-ADD_XSD_WRAPPERS(xml/conference-info "Conference info XSD - conference-info.xsd")
-ADD_XSD_WRAPPERS(xml/resource-lists "Resourece lists XSD - resource-lists.xsd")
+function(ADD_XSD_WRAPPERS file _comment)
+        set(destinations ${CMAKE_CURRENT_BINARY_DIR}/xml/${file}.hxx ${CMAKE_CURRENT_BINARY_DIR}/xml/${file}.cxx)
+        set(source ${CMAKE_CURRENT_LIST_DIR}/xml/${file}.xsd)
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/xml")
+
+        set(regex "%http://.+/(.+)%\\\$$1%")
+
+        add_custom_command(OUTPUT ${destinations}
+                COMMAND "${XSDCXX_PROG}" "cxx-tree" "--generate-wildcard"
+                        "--generate-serialization" "--generate-ostream"
+                        "--generate-detach" "--std" "c++11" "--type-naming" "java"
+                        "--function-naming" "java"  "--location-regex-trace" "--show-sloc"
+                        "--location-regex" "\"${regex}\""
+                        "--output-dir" "${CMAKE_CURRENT_BINARY_DIR}/xml" "${source}"
+                COMMENT "${_comment}")
+
+        add_custom_target(${file} DEPENDS ${destinations} SOURCES ${source})
+
+        set_source_files_properties(${destinations} PROPERTIES GENERATED ON)
+        set(FLEXISIP_SOURCES ${FLEXISIP_SOURCES} ${destinations} PARENT_SCOPE)
+endfunction()
+ADD_XSD_WRAPPERS(xml "XML XSD - xml.xsd")
+ADD_XSD_WRAPPERS(conference-info "Conference info XSD - conference-info.xsd")
+ADD_XSD_WRAPPERS(resource-lists "Resourece lists XSD - resource-lists.xsd")
 
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")

@@ -16,21 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- #ifndef _C_CHAT_MESSAGE_H_
- #define _C_CHAT_MESSAGE_H_
+#ifndef _C_CHAT_MESSAGE_H_
+#define _C_CHAT_MESSAGE_H_
  
- #include "linphone/api/c-types.h"
+#include "linphone/api/c-types.h"
  
- // =============================================================================
+// =============================================================================
  
- #ifdef __cplusplus
-     extern "C" {
- #endif // ifdef __cplusplus
+#ifdef __cplusplus
+    extern "C" {
+#endif // ifdef __cplusplus
  
- /**
-  * @addtogroup chatmessage
-  * @{
-  */
+/**
+ * @addtogroup chatmessage
+ * @{
+ */
 
 /**
  * Acquire a reference to the chat message.
@@ -59,9 +59,9 @@ LINPHONE_PUBLIC void *linphone_chat_message_get_user_data(const LinphoneChatMess
 **/
 LINPHONE_PUBLIC void linphone_chat_message_set_user_data(LinphoneChatMessage *msg, void *ud);
 
- /**
-  * @}
-  */
+/**
+ * @}
+ */
 
 #ifdef __cplusplus
 }
