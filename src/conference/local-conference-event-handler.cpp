@@ -20,17 +20,7 @@
 #include "conference/participant.h"
 #include "local-conference-event-handler.h"
 #include "object/object-p.h"
-
-#if __clang__ || __GNUC__ >= 4
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
-#endif
-
 #include "xml/conference-info.h"
-
-#if __clang__ || __GNUC__ >= 4
-	#pragma GCC diagnostic pop
-#endif
 
 /* Needs to be included after xml/conference-info.h because of _() macro definition that breaks everything */
 #include "private.h"
@@ -38,9 +28,10 @@
 // =============================================================================
 
 using namespace std;
-using namespace conference_info;
 
 LINPHONE_BEGIN_NAMESPACE
+
+using namespace Xsd::ConferenceInfo;
 
 class LocalConferenceEventHandlerPrivate : public ObjectPrivate {
 public:
@@ -94,15 +85,15 @@ LocalConferenceEventHandler::~LocalConferenceEventHandler() {
 string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
 	L_D(LocalConferenceEventHandler);
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
-	Conference_type confInfo = Conference_type(entity);
-	Users_type users;
+	ConferenceType confInfo = ConferenceType(entity);
+	UsersType users;
 	confInfo.setUsers(users);
-	xml_schema::NamespaceInfomap map;
+	Xsd::XmlSchema::NamespaceInfomap map;
 
 	map[""].name = "urn:ietf:params:xml:ns:conference-info";
 	for (const auto &participant : d->conf->getParticipants()) {
-		User_type user = User_type();
-		User_roles_type roles;
+		UserType user = UserType();
+		UserRolesType roles;
 		user.setRoles(roles);
 		user.setEntity(participant->getAddress().asStringUriOnly());
 		user.getRoles()->getEntry().push_back(participant->isAdmin() ? "admin" : "participant");
@@ -111,7 +102,7 @@ string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
 	}
 
 	stringstream notify;
-	serializeConference_info(notify, confInfo, map);
+	serializeConferenceInfo(notify, confInfo, map);
 	//d->notifyFullState(notify.str(), lev);
 	return notify.str();
 }
@@ -119,21 +110,21 @@ string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
 string LocalConferenceEventHandler::notifyParticipantAdded(const Address &addr) {
 	L_D(LocalConferenceEventHandler);
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
-	Conference_type confInfo = Conference_type(entity);
-	Users_type users;
+	ConferenceType confInfo = ConferenceType(entity);
+	UsersType users;
 	confInfo.setUsers(users);
 
-	User_type user = User_type();
-	User_roles_type roles;
+	UserType user = UserType();
+	UserRolesType roles;
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back("participant");
 	user.setState("full");
 	confInfo.getUsers()->getUser().push_back(user);
 
-	xml_schema::NamespaceInfomap map;
+	Xsd::XmlSchema::NamespaceInfomap map;
 	stringstream notify;
-	serializeConference_info(notify, confInfo, map);
+	serializeConferenceInfo(notify, confInfo, map);
 	//d->notifyAllExcept(notify.str(), addr);
 	return notify.str();
 }
@@ -141,18 +132,18 @@ string LocalConferenceEventHandler::notifyParticipantAdded(const Address &addr) 
 string LocalConferenceEventHandler::notifyParticipantRemoved(const Address &addr) {
 	L_D(LocalConferenceEventHandler);
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
-	Conference_type confInfo = Conference_type(entity);
-	Users_type users;
+	ConferenceType confInfo = ConferenceType(entity);
+	UsersType users;
 	confInfo.setUsers(users);
 
-	User_type user = User_type();
+	UserType user = UserType();
 	user.setEntity(addr.asStringUriOnly());
 	user.setState("deleted");
 	confInfo.getUsers()->getUser().push_back(user);
 
-	xml_schema::NamespaceInfomap map;
+	Xsd::XmlSchema::NamespaceInfomap map;
 	stringstream notify;
-	serializeConference_info(notify, confInfo, map);
+	serializeConferenceInfo(notify, confInfo, map);
 	//d->notifyAllExcept(notify.str(), addr);
 	return notify.str();
 }
@@ -160,21 +151,21 @@ string LocalConferenceEventHandler::notifyParticipantRemoved(const Address &addr
 string LocalConferenceEventHandler::notifyParticipantSetAdmin(const Address &addr, bool isAdmin) {
 	L_D(LocalConferenceEventHandler);
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
-	Conference_type confInfo = Conference_type(entity);
-	Users_type users;
+	ConferenceType confInfo = ConferenceType(entity);
+	UsersType users;
 	confInfo.setUsers(users);
 
-	User_type user = User_type();
-	User_roles_type roles;
+	UserType user = UserType();
+	UserRolesType roles;
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back(isAdmin ? "admin" : "participant");
 	user.setState("partial");
 	confInfo.getUsers()->getUser().push_back(user);
 
-	xml_schema::NamespaceInfomap map;
+	Xsd::XmlSchema::NamespaceInfomap map;
 	stringstream notify;
-	serializeConference_info(notify, confInfo, map);
+	serializeConferenceInfo(notify, confInfo, map);
 	//d->notifyAllExcept(notify.str(), addr);
 	return notify.str();
 }

@@ -18,17 +18,7 @@
 
 #include "remote-conference-event-handler.h"
 #include "object/object-p.h"
-
-#if __clang__ || __GNUC__ >= 4
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
-#endif
-
 #include "xml/conference-info.h"
-
-#if __clang__ || __GNUC__ >= 4
-	#pragma GCC diagnostic pop
-#endif
 
 /* Needs to be included after xml/conference-info.h because of _() macro definition that breaks everything */
 #include "private.h"
@@ -36,9 +26,10 @@
 // =============================================================================
 
 using namespace std;
-using namespace conference_info;
 
 LINPHONE_BEGIN_NAMESPACE
+
+using namespace Xsd::ConferenceInfo;
 
 class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
 public:
@@ -89,7 +80,7 @@ void RemoteConferenceEventHandler::unsubscribe() {
 void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 	L_D(RemoteConferenceEventHandler);
 	istringstream data(xmlBody);
-	unique_ptr<Conference_type> confInfo = parseConference_info(data, xml_schema::Flags::dont_validate);
+	unique_ptr<ConferenceType> confInfo = parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
 	if (confInfo->getEntity() == d->confAddr.asString()) {
 		for (const auto &user : confInfo->getUsers()->getUser()) {
 			LinphoneAddress *cAddr = linphone_core_interpret_url(d->core, user.getEntity()->c_str());

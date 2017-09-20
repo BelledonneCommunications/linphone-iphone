@@ -33,12 +33,10 @@
 
 // Begin prologue.
 //
-
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
-
 //
 // End prologue.
 
@@ -53,21 +51,21 @@ namespace namespace_
 
   Lang::
   Lang (const char* s)
-  : ::xml_schema::String (s)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (s)
   {
   }
 
   Lang::
   Lang (const ::std::string& s)
-  : ::xml_schema::String (s)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (s)
   {
   }
 
   Lang::
   Lang (const Lang& o,
-        ::xml_schema::Flags f,
-        ::xml_schema::Container* c)
-  : ::xml_schema::String (o, f, c)
+        ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+        ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (o, f, c)
   {
   }
 
@@ -76,41 +74,41 @@ namespace namespace_
 
   Space::
   Space (Value v)
-  : ::xml_schema::Ncname (_xsd_Space_literals_[v])
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (_xsd_Space_literals_[v])
   {
   }
 
   Space::
   Space (const char* v)
-  : ::xml_schema::Ncname (v)
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (v)
   {
   }
 
   Space::
   Space (const ::std::string& v)
-  : ::xml_schema::Ncname (v)
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (v)
   {
   }
 
   Space::
-  Space (const ::xml_schema::Ncname& v)
-  : ::xml_schema::Ncname (v)
+  Space (const ::LinphonePrivate::Xsd::XmlSchema::Ncname& v)
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (v)
   {
   }
 
   Space::
   Space (const Space& v,
-         ::xml_schema::Flags f,
-         ::xml_schema::Container* c)
-  : ::xml_schema::Ncname (v, f, c)
+         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (v, f, c)
   {
   }
 
   Space& Space::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::Ncname& > (*this) = 
-    ::xml_schema::Ncname (_xsd_Space_literals_[v]);
+    static_cast< ::LinphonePrivate::Xsd::XmlSchema::Ncname& > (*this) = 
+    ::LinphonePrivate::Xsd::XmlSchema::Ncname (_xsd_Space_literals_[v]);
 
     return *this;
   }
@@ -121,41 +119,41 @@ namespace namespace_
 
   Lang_member::
   Lang_member (Value v)
-  : ::xml_schema::String (_xsd_Lang_member_literals_[v])
+  : ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_Lang_member_literals_[v])
   {
   }
 
   Lang_member::
   Lang_member (const char* v)
-  : ::xml_schema::String (v)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (v)
   {
   }
 
   Lang_member::
   Lang_member (const ::std::string& v)
-  : ::xml_schema::String (v)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (v)
   {
   }
 
   Lang_member::
-  Lang_member (const ::xml_schema::String& v)
-  : ::xml_schema::String (v)
+  Lang_member (const ::LinphonePrivate::Xsd::XmlSchema::String& v)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (v)
   {
   }
 
   Lang_member::
   Lang_member (const Lang_member& v,
-               ::xml_schema::Flags f,
-               ::xml_schema::Container* c)
-  : ::xml_schema::String (v, f, c)
+               ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+               ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (v, f, c)
   {
   }
 
   Lang_member& Lang_member::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::String& > (*this) = 
-    ::xml_schema::String (_xsd_Lang_member_literals_[v]);
+    static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+    ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_Lang_member_literals_[v]);
 
     return *this;
   }
@@ -172,32 +170,32 @@ namespace namespace_
 
   Lang::
   Lang (const ::xercesc::DOMElement& e,
-        ::xml_schema::Flags f,
-        ::xml_schema::Container* c)
-  : ::xml_schema::String (e, f, c)
+        ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+        ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (e, f, c)
   {
   }
 
   Lang::
   Lang (const ::xercesc::DOMAttr& a,
-        ::xml_schema::Flags f,
-        ::xml_schema::Container* c)
-  : ::xml_schema::String (a, f, c)
+        ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+        ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (a, f, c)
   {
   }
 
   Lang::
   Lang (const ::std::string& s,
         const ::xercesc::DOMElement* e,
-        ::xml_schema::Flags f,
-        ::xml_schema::Container* c)
-  : ::xml_schema::String (s, e, f, c)
+        ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+        ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (s, e, f, c)
   {
   }
 
   Lang* Lang::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
+  _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+          ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
   {
     return new class Lang (*this, f, c);
   }
@@ -207,18 +205,18 @@ namespace namespace_
 
   Space::
   Space (const ::xercesc::DOMElement& e,
-         ::xml_schema::Flags f,
-         ::xml_schema::Container* c)
-  : ::xml_schema::Ncname (e, f, c)
+         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (e, f, c)
   {
     _xsd_Space_convert ();
   }
 
   Space::
   Space (const ::xercesc::DOMAttr& a,
-         ::xml_schema::Flags f,
-         ::xml_schema::Container* c)
-  : ::xml_schema::Ncname (a, f, c)
+         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (a, f, c)
   {
     _xsd_Space_convert ();
   }
@@ -226,16 +224,16 @@ namespace namespace_
   Space::
   Space (const ::std::string& s,
          const ::xercesc::DOMElement* e,
-         ::xml_schema::Flags f,
-         ::xml_schema::Container* c)
-  : ::xml_schema::Ncname (s, e, f, c)
+         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::Ncname (s, e, f, c)
   {
     _xsd_Space_convert ();
   }
 
   Space* Space::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
+  _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+          ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
   {
     return new class Space (*this, f, c);
   }
@@ -277,18 +275,18 @@ namespace namespace_
 
   Lang_member::
   Lang_member (const ::xercesc::DOMElement& e,
-               ::xml_schema::Flags f,
-               ::xml_schema::Container* c)
-  : ::xml_schema::String (e, f, c)
+               ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+               ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (e, f, c)
   {
     _xsd_Lang_member_convert ();
   }
 
   Lang_member::
   Lang_member (const ::xercesc::DOMAttr& a,
-               ::xml_schema::Flags f,
-               ::xml_schema::Container* c)
-  : ::xml_schema::String (a, f, c)
+               ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+               ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (a, f, c)
   {
     _xsd_Lang_member_convert ();
   }
@@ -296,16 +294,16 @@ namespace namespace_
   Lang_member::
   Lang_member (const ::std::string& s,
                const ::xercesc::DOMElement* e,
-               ::xml_schema::Flags f,
-               ::xml_schema::Container* c)
-  : ::xml_schema::String (s, e, f, c)
+               ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+               ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+  : ::LinphonePrivate::Xsd::XmlSchema::String (s, e, f, c)
   {
     _xsd_Lang_member_convert ();
   }
 
   Lang_member* Lang_member::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
+  _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+          ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
   {
     return new class Lang_member (*this, f, c);
   }
@@ -348,7 +346,7 @@ namespace namespace_
   ::std::ostream&
   operator<< (::std::ostream& o, const Lang& i)
   {
-    return o << static_cast< const ::xml_schema::String& > (i);
+    return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 
   ::std::ostream&
@@ -360,7 +358,7 @@ namespace namespace_
   ::std::ostream&
   operator<< (::std::ostream& o, const Space& i)
   {
-    return o << static_cast< const ::xml_schema::Ncname& > (i);
+    return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Ncname& > (i);
   }
 
   ::std::ostream&
@@ -372,7 +370,7 @@ namespace namespace_
   ::std::ostream&
   operator<< (::std::ostream& o, const Lang_member& i)
   {
-    return o << static_cast< const ::xml_schema::String& > (i);
+    return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 }
 
@@ -393,58 +391,58 @@ namespace namespace_
   void
   operator<< (::xercesc::DOMElement& e, const Lang& i)
   {
-    e << static_cast< const ::xml_schema::String& > (i);
+    e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 
   void
   operator<< (::xercesc::DOMAttr& a, const Lang& i)
   {
-    a << static_cast< const ::xml_schema::String& > (i);
+    a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 
   void
-  operator<< (::xml_schema::ListStream& l,
+  operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
               const Lang& i)
   {
-    l << static_cast< const ::xml_schema::String& > (i);
+    l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 
   void
   operator<< (::xercesc::DOMElement& e, const Space& i)
   {
-    e << static_cast< const ::xml_schema::Ncname& > (i);
+    e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Ncname& > (i);
   }
 
   void
   operator<< (::xercesc::DOMAttr& a, const Space& i)
   {
-    a << static_cast< const ::xml_schema::Ncname& > (i);
+    a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Ncname& > (i);
   }
 
   void
-  operator<< (::xml_schema::ListStream& l,
+  operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
               const Space& i)
   {
-    l << static_cast< const ::xml_schema::Ncname& > (i);
+    l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Ncname& > (i);
   }
 
   void
   operator<< (::xercesc::DOMElement& e, const Lang_member& i)
   {
-    e << static_cast< const ::xml_schema::String& > (i);
+    e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 
   void
   operator<< (::xercesc::DOMAttr& a, const Lang_member& i)
   {
-    a << static_cast< const ::xml_schema::String& > (i);
+    a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 
   void
-  operator<< (::xml_schema::ListStream& l,
+  operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
               const Lang_member& i)
   {
-    l << static_cast< const ::xml_schema::String& > (i);
+    l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
   }
 }
 
@@ -452,11 +450,9 @@ namespace namespace_
 
 // Begin epilogue.
 //
-
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif
-
 //
 // End epilogue.
 

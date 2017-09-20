@@ -48,12 +48,10 @@
 
 // Begin prologue.
 //
-
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
-
 //
 // End prologue.
 
@@ -106,155 +104,161 @@
 
 #include <xsd/cxx/tree/std-ostream-operators.hxx>
 
-namespace xml_schema
+namespace LinphonePrivate
 {
-  // anyType and anySimpleType.
-  //
-  typedef ::xsd::cxx::tree::type Type;
-  typedef ::xsd::cxx::tree::simple_type< char, Type > SimpleType;
-  typedef ::xsd::cxx::tree::type Container;
-
-  // 8-bit
-  //
-  typedef signed char Byte;
-  typedef unsigned char UnsignedByte;
-
-  // 16-bit
-  //
-  typedef short Short;
-  typedef unsigned short UnsignedShort;
-
-  // 32-bit
-  //
-  typedef int Int;
-  typedef unsigned int UnsignedInt;
-
-  // 64-bit
-  //
-  typedef long long Long;
-  typedef unsigned long long UnsignedLong;
-
-  // Supposed to be arbitrary-length integral types.
-  //
-  typedef long long Integer;
-  typedef long long NonPositiveInteger;
-  typedef unsigned long long NonNegativeInteger;
-  typedef unsigned long long PositiveInteger;
-  typedef long long NegativeInteger;
-
-  // Boolean.
-  //
-  typedef bool Boolean;
-
-  // Floating-point types.
-  //
-  typedef float Float;
-  typedef double Double;
-  typedef double Decimal;
-
-  // String types.
-  //
-  typedef ::xsd::cxx::tree::string< char, SimpleType > String;
-  typedef ::xsd::cxx::tree::normalized_string< char, String > NormalizedString;
-  typedef ::xsd::cxx::tree::token< char, NormalizedString > Token;
-  typedef ::xsd::cxx::tree::name< char, Token > Name;
-  typedef ::xsd::cxx::tree::nmtoken< char, Token > Nmtoken;
-  typedef ::xsd::cxx::tree::nmtokens< char, SimpleType, Nmtoken > Nmtokens;
-  typedef ::xsd::cxx::tree::ncname< char, Name > Ncname;
-  typedef ::xsd::cxx::tree::language< char, Token > Language;
-
-  // ID/IDREF.
-  //
-  typedef ::xsd::cxx::tree::id< char, Ncname > Id;
-  typedef ::xsd::cxx::tree::idref< char, Ncname, Type > Idref;
-  typedef ::xsd::cxx::tree::idrefs< char, SimpleType, Idref > Idrefs;
-
-  // URI.
-  //
-  typedef ::xsd::cxx::tree::uri< char, SimpleType > Uri;
-
-  // Qualified name.
-  //
-  typedef ::xsd::cxx::tree::qname< char, SimpleType, Uri, Ncname > Qname;
-
-  // Binary.
-  //
-  typedef ::xsd::cxx::tree::buffer< char > Buffer;
-  typedef ::xsd::cxx::tree::base64_binary< char, SimpleType > Base64Binary;
-  typedef ::xsd::cxx::tree::hex_binary< char, SimpleType > HexBinary;
-
-  // Date/time.
-  //
-  typedef ::xsd::cxx::tree::time_zone TimeZone;
-  typedef ::xsd::cxx::tree::date< char, SimpleType > Date;
-  typedef ::xsd::cxx::tree::date_time< char, SimpleType > DateTime;
-  typedef ::xsd::cxx::tree::duration< char, SimpleType > Duration;
-  typedef ::xsd::cxx::tree::gday< char, SimpleType > Gday;
-  typedef ::xsd::cxx::tree::gmonth< char, SimpleType > Gmonth;
-  typedef ::xsd::cxx::tree::gmonth_day< char, SimpleType > GmonthDay;
-  typedef ::xsd::cxx::tree::gyear< char, SimpleType > Gyear;
-  typedef ::xsd::cxx::tree::gyear_month< char, SimpleType > GyearMonth;
-  typedef ::xsd::cxx::tree::time< char, SimpleType > Time;
-
-  // Entity.
-  //
-  typedef ::xsd::cxx::tree::entity< char, Ncname > Entity;
-  typedef ::xsd::cxx::tree::entities< char, SimpleType, Entity > Entities;
-
-  typedef ::xsd::cxx::tree::content_order ContentOrder;
-  // Namespace information and list stream. Used in
-  // serialization functions.
-  //
-  typedef ::xsd::cxx::xml::dom::namespace_info< char > NamespaceInfo;
-  typedef ::xsd::cxx::xml::dom::namespace_infomap< char > NamespaceInfomap;
-  typedef ::xsd::cxx::tree::list_stream< char > ListStream;
-  typedef ::xsd::cxx::tree::as_double< Double > AsDouble;
-  typedef ::xsd::cxx::tree::as_decimal< Decimal > AsDecimal;
-  typedef ::xsd::cxx::tree::facet Facet;
-
-  // Flags and properties.
-  //
-  typedef ::xsd::cxx::tree::flags Flags;
-  typedef ::xsd::cxx::tree::properties< char > Properties;
-
-  // Parsing/serialization diagnostics.
-  //
-  typedef ::xsd::cxx::tree::severity Severity;
-  typedef ::xsd::cxx::tree::error< char > Error;
-  typedef ::xsd::cxx::tree::diagnostics< char > Diagnostics;
-
-  // Exceptions.
-  //
-  typedef ::xsd::cxx::tree::exception< char > Exception;
-  typedef ::xsd::cxx::tree::bounds< char > Bounds;
-  typedef ::xsd::cxx::tree::duplicate_id< char > DuplicateId;
-  typedef ::xsd::cxx::tree::parsing< char > Parsing;
-  typedef ::xsd::cxx::tree::expected_element< char > ExpectedElement;
-  typedef ::xsd::cxx::tree::unexpected_element< char > UnexpectedElement;
-  typedef ::xsd::cxx::tree::expected_attribute< char > ExpectedAttribute;
-  typedef ::xsd::cxx::tree::unexpected_enumerator< char > UnexpectedEnumerator;
-  typedef ::xsd::cxx::tree::expected_text_content< char > ExpectedTextContent;
-  typedef ::xsd::cxx::tree::no_prefix_mapping< char > NoPrefixMapping;
-  typedef ::xsd::cxx::tree::serialization< char > Serialization;
-
-  // Error handler callback interface.
-  //
-  typedef ::xsd::cxx::xml::error_handler< char > ErrorHandler;
-
-  // DOM interaction.
-  //
-  namespace dom
+  namespace Xsd
   {
-    // Automatic pointer for DOMDocument.
-    //
-    using ::xsd::cxx::xml::dom::unique_ptr;
+    namespace XmlSchema
+    {
+      // anyType and anySimpleType.
+      //
+      typedef ::xsd::cxx::tree::type Type;
+      typedef ::xsd::cxx::tree::simple_type< char, Type > SimpleType;
+      typedef ::xsd::cxx::tree::type Container;
 
-#ifndef XSD_CXX_TREE_TREE_NODE_KEY__XML_SCHEMA
-#define XSD_CXX_TREE_TREE_NODE_KEY__XML_SCHEMA
-    // DOM user data key for back pointers to tree nodes.
-    //
-    const XMLCh* const treeNodeKey = ::xsd::cxx::tree::user_data_keys::node;
+      // 8-bit
+      //
+      typedef signed char Byte;
+      typedef unsigned char UnsignedByte;
+
+      // 16-bit
+      //
+      typedef short Short;
+      typedef unsigned short UnsignedShort;
+
+      // 32-bit
+      //
+      typedef int Int;
+      typedef unsigned int UnsignedInt;
+
+      // 64-bit
+      //
+      typedef long long Long;
+      typedef unsigned long long UnsignedLong;
+
+      // Supposed to be arbitrary-length integral types.
+      //
+      typedef long long Integer;
+      typedef long long NonPositiveInteger;
+      typedef unsigned long long NonNegativeInteger;
+      typedef unsigned long long PositiveInteger;
+      typedef long long NegativeInteger;
+
+      // Boolean.
+      //
+      typedef bool Boolean;
+
+      // Floating-point types.
+      //
+      typedef float Float;
+      typedef double Double;
+      typedef double Decimal;
+
+      // String types.
+      //
+      typedef ::xsd::cxx::tree::string< char, SimpleType > String;
+      typedef ::xsd::cxx::tree::normalized_string< char, String > NormalizedString;
+      typedef ::xsd::cxx::tree::token< char, NormalizedString > Token;
+      typedef ::xsd::cxx::tree::name< char, Token > Name;
+      typedef ::xsd::cxx::tree::nmtoken< char, Token > Nmtoken;
+      typedef ::xsd::cxx::tree::nmtokens< char, SimpleType, Nmtoken > Nmtokens;
+      typedef ::xsd::cxx::tree::ncname< char, Name > Ncname;
+      typedef ::xsd::cxx::tree::language< char, Token > Language;
+
+      // ID/IDREF.
+      //
+      typedef ::xsd::cxx::tree::id< char, Ncname > Id;
+      typedef ::xsd::cxx::tree::idref< char, Ncname, Type > Idref;
+      typedef ::xsd::cxx::tree::idrefs< char, SimpleType, Idref > Idrefs;
+
+      // URI.
+      //
+      typedef ::xsd::cxx::tree::uri< char, SimpleType > Uri;
+
+      // Qualified name.
+      //
+      typedef ::xsd::cxx::tree::qname< char, SimpleType, Uri, Ncname > Qname;
+
+      // Binary.
+      //
+      typedef ::xsd::cxx::tree::buffer< char > Buffer;
+      typedef ::xsd::cxx::tree::base64_binary< char, SimpleType > Base64Binary;
+      typedef ::xsd::cxx::tree::hex_binary< char, SimpleType > HexBinary;
+
+      // Date/time.
+      //
+      typedef ::xsd::cxx::tree::time_zone TimeZone;
+      typedef ::xsd::cxx::tree::date< char, SimpleType > Date;
+      typedef ::xsd::cxx::tree::date_time< char, SimpleType > DateTime;
+      typedef ::xsd::cxx::tree::duration< char, SimpleType > Duration;
+      typedef ::xsd::cxx::tree::gday< char, SimpleType > Gday;
+      typedef ::xsd::cxx::tree::gmonth< char, SimpleType > Gmonth;
+      typedef ::xsd::cxx::tree::gmonth_day< char, SimpleType > GmonthDay;
+      typedef ::xsd::cxx::tree::gyear< char, SimpleType > Gyear;
+      typedef ::xsd::cxx::tree::gyear_month< char, SimpleType > GyearMonth;
+      typedef ::xsd::cxx::tree::time< char, SimpleType > Time;
+
+      // Entity.
+      //
+      typedef ::xsd::cxx::tree::entity< char, Ncname > Entity;
+      typedef ::xsd::cxx::tree::entities< char, SimpleType, Entity > Entities;
+
+      typedef ::xsd::cxx::tree::content_order ContentOrder;
+      // Namespace information and list stream. Used in
+      // serialization functions.
+      //
+      typedef ::xsd::cxx::xml::dom::namespace_info< char > NamespaceInfo;
+      typedef ::xsd::cxx::xml::dom::namespace_infomap< char > NamespaceInfomap;
+      typedef ::xsd::cxx::tree::list_stream< char > ListStream;
+      typedef ::xsd::cxx::tree::as_double< Double > AsDouble;
+      typedef ::xsd::cxx::tree::as_decimal< Decimal > AsDecimal;
+      typedef ::xsd::cxx::tree::facet Facet;
+
+      // Flags and properties.
+      //
+      typedef ::xsd::cxx::tree::flags Flags;
+      typedef ::xsd::cxx::tree::properties< char > Properties;
+
+      // Parsing/serialization diagnostics.
+      //
+      typedef ::xsd::cxx::tree::severity Severity;
+      typedef ::xsd::cxx::tree::error< char > Error;
+      typedef ::xsd::cxx::tree::diagnostics< char > Diagnostics;
+
+      // Exceptions.
+      //
+      typedef ::xsd::cxx::tree::exception< char > Exception;
+      typedef ::xsd::cxx::tree::bounds< char > Bounds;
+      typedef ::xsd::cxx::tree::duplicate_id< char > DuplicateId;
+      typedef ::xsd::cxx::tree::parsing< char > Parsing;
+      typedef ::xsd::cxx::tree::expected_element< char > ExpectedElement;
+      typedef ::xsd::cxx::tree::unexpected_element< char > UnexpectedElement;
+      typedef ::xsd::cxx::tree::expected_attribute< char > ExpectedAttribute;
+      typedef ::xsd::cxx::tree::unexpected_enumerator< char > UnexpectedEnumerator;
+      typedef ::xsd::cxx::tree::expected_text_content< char > ExpectedTextContent;
+      typedef ::xsd::cxx::tree::no_prefix_mapping< char > NoPrefixMapping;
+      typedef ::xsd::cxx::tree::serialization< char > Serialization;
+
+      // Error handler callback interface.
+      //
+      typedef ::xsd::cxx::xml::error_handler< char > ErrorHandler;
+
+      // DOM interaction.
+      //
+      namespace dom
+      {
+        // Automatic pointer for DOMDocument.
+        //
+        using ::xsd::cxx::xml::dom::unique_ptr;
+
+#ifndef XSD_CXX_TREE_TREE_NODE_KEY__LINPHONEPRIVATE__XSD__XMLSCHEMA
+#define XSD_CXX_TREE_TREE_NODE_KEY__LINPHONEPRIVATE__XSD__XMLSCHEMA
+        // DOM user data key for back pointers to tree nodes.
+        //
+        const XMLCh* const treeNodeKey = ::xsd::cxx::tree::user_data_keys::node;
 #endif
+      }
+    }
   }
 }
 
@@ -286,7 +290,7 @@ namespace namespace_
 
 namespace namespace_
 {
-  class Lang: public ::xml_schema::String
+  class Lang: public ::LinphonePrivate::Xsd::XmlSchema::String
   {
     public:
 
@@ -295,28 +299,28 @@ namespace namespace_
     Lang (const ::std::string& v);
 
     Lang (const ::xercesc::DOMElement& e,
-          ::xml_schema::Flags f = 0,
-          ::xml_schema::Container* c = 0);
+          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+          ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Lang (const ::xercesc::DOMAttr& a,
-          ::xml_schema::Flags f = 0,
-          ::xml_schema::Container* c = 0);
+          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+          ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Lang (const ::std::string& s,
           const ::xercesc::DOMElement* e,
-          ::xml_schema::Flags f = 0,
-          ::xml_schema::Container* c = 0);
+          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+          ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Lang (const Lang& x,
-          ::xml_schema::Flags f = 0,
-          ::xml_schema::Container* c = 0);
+          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+          ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     virtual Lang*
-    _clone (::xml_schema::Flags f = 0,
-            ::xml_schema::Container* c = 0) const;
+    _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+            ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0) const;
   };
 
-  class Space: public ::xml_schema::Ncname
+  class Space: public ::LinphonePrivate::Xsd::XmlSchema::Ncname
   {
     public:
     enum Value
@@ -331,28 +335,28 @@ namespace namespace_
 
     Space (const ::std::string& v);
 
-    Space (const ::xml_schema::Ncname& v);
+    Space (const ::LinphonePrivate::Xsd::XmlSchema::Ncname& v);
 
     Space (const ::xercesc::DOMElement& e,
-           ::xml_schema::Flags f = 0,
-           ::xml_schema::Container* c = 0);
+           ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+           ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Space (const ::xercesc::DOMAttr& a,
-           ::xml_schema::Flags f = 0,
-           ::xml_schema::Container* c = 0);
+           ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+           ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Space (const ::std::string& s,
            const ::xercesc::DOMElement* e,
-           ::xml_schema::Flags f = 0,
-           ::xml_schema::Container* c = 0);
+           ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+           ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Space (const Space& x,
-           ::xml_schema::Flags f = 0,
-           ::xml_schema::Container* c = 0);
+           ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+           ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     virtual Space*
-    _clone (::xml_schema::Flags f = 0,
-            ::xml_schema::Container* c = 0) const;
+    _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+            ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0) const;
 
     Space&
     operator= (Value v);
@@ -372,7 +376,7 @@ namespace namespace_
     static const Value _xsd_Space_indexes_[2];
   };
 
-  class Lang_member: public ::xml_schema::String
+  class Lang_member: public ::LinphonePrivate::Xsd::XmlSchema::String
   {
     public:
     enum Value
@@ -386,28 +390,28 @@ namespace namespace_
 
     Lang_member (const ::std::string& v);
 
-    Lang_member (const ::xml_schema::String& v);
+    Lang_member (const ::LinphonePrivate::Xsd::XmlSchema::String& v);
 
     Lang_member (const ::xercesc::DOMElement& e,
-                 ::xml_schema::Flags f = 0,
-                 ::xml_schema::Container* c = 0);
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Lang_member (const ::xercesc::DOMAttr& a,
-                 ::xml_schema::Flags f = 0,
-                 ::xml_schema::Container* c = 0);
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Lang_member (const ::std::string& s,
                  const ::xercesc::DOMElement* e,
-                 ::xml_schema::Flags f = 0,
-                 ::xml_schema::Container* c = 0);
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     Lang_member (const Lang_member& x,
-                 ::xml_schema::Flags f = 0,
-                 ::xml_schema::Container* c = 0);
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0);
 
     virtual Lang_member*
-    _clone (::xml_schema::Flags f = 0,
-            ::xml_schema::Container* c = 0) const;
+    _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
+            ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0) const;
 
     Lang_member&
     operator= (Value v);
@@ -475,7 +479,7 @@ namespace namespace_
   operator<< (::xercesc::DOMAttr&, const Lang&);
 
   void
-  operator<< (::xml_schema::ListStream&,
+  operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream&,
               const Lang&);
 
   void
@@ -485,7 +489,7 @@ namespace namespace_
   operator<< (::xercesc::DOMAttr&, const Space&);
 
   void
-  operator<< (::xml_schema::ListStream&,
+  operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream&,
               const Space&);
 
   void
@@ -495,7 +499,7 @@ namespace namespace_
   operator<< (::xercesc::DOMAttr&, const Lang_member&);
 
   void
-  operator<< (::xml_schema::ListStream&,
+  operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream&,
               const Lang_member&);
 }
 
@@ -503,11 +507,9 @@ namespace namespace_
 
 // Begin epilogue.
 //
-
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif
-
 //
 // End epilogue.
 

@@ -33,12 +33,10 @@
 
 // Begin prologue.
 //
-
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
-
 //
 // End prologue.
 
@@ -46,3154 +44,3160 @@
 
 #include "conference-info.h"
 
-namespace conference_info
+namespace LinphonePrivate
 {
-  // Conference_type
-  // 
-
-  const Conference_type::Conference_descriptionOptional& Conference_type::
-  getConference_description () const
-  {
-    return this->conference_description_;
-  }
-
-  Conference_type::Conference_descriptionOptional& Conference_type::
-  getConference_description ()
-  {
-    return this->conference_description_;
-  }
-
-  void Conference_type::
-  setConference_description (const Conference_descriptionType& x)
-  {
-    this->conference_description_.set (x);
-  }
-
-  void Conference_type::
-  setConference_description (const Conference_descriptionOptional& x)
-  {
-    this->conference_description_ = x;
-  }
-
-  void Conference_type::
-  setConference_description (::std::unique_ptr< Conference_descriptionType > x)
-  {
-    this->conference_description_.set (std::move (x));
-  }
-
-  const Conference_type::Host_infoOptional& Conference_type::
-  getHost_info () const
-  {
-    return this->host_info_;
-  }
-
-  Conference_type::Host_infoOptional& Conference_type::
-  getHost_info ()
-  {
-    return this->host_info_;
-  }
-
-  void Conference_type::
-  setHost_info (const Host_infoType& x)
-  {
-    this->host_info_.set (x);
-  }
-
-  void Conference_type::
-  setHost_info (const Host_infoOptional& x)
-  {
-    this->host_info_ = x;
-  }
-
-  void Conference_type::
-  setHost_info (::std::unique_ptr< Host_infoType > x)
-  {
-    this->host_info_.set (std::move (x));
-  }
-
-  const Conference_type::Conference_stateOptional& Conference_type::
-  getConference_state () const
-  {
-    return this->conference_state_;
-  }
-
-  Conference_type::Conference_stateOptional& Conference_type::
-  getConference_state ()
-  {
-    return this->conference_state_;
-  }
-
-  void Conference_type::
-  setConference_state (const Conference_stateType& x)
-  {
-    this->conference_state_.set (x);
-  }
-
-  void Conference_type::
-  setConference_state (const Conference_stateOptional& x)
-  {
-    this->conference_state_ = x;
-  }
-
-  void Conference_type::
-  setConference_state (::std::unique_ptr< Conference_stateType > x)
-  {
-    this->conference_state_.set (std::move (x));
-  }
-
-  const Conference_type::UsersOptional& Conference_type::
-  getUsers () const
-  {
-    return this->users_;
-  }
-
-  Conference_type::UsersOptional& Conference_type::
-  getUsers ()
-  {
-    return this->users_;
-  }
-
-  void Conference_type::
-  setUsers (const UsersType& x)
-  {
-    this->users_.set (x);
-  }
-
-  void Conference_type::
-  setUsers (const UsersOptional& x)
-  {
-    this->users_ = x;
-  }
-
-  void Conference_type::
-  setUsers (::std::unique_ptr< UsersType > x)
-  {
-    this->users_.set (std::move (x));
-  }
-
-  const Conference_type::Sidebars_by_refOptional& Conference_type::
-  getSidebars_by_ref () const
-  {
-    return this->sidebars_by_ref_;
-  }
-
-  Conference_type::Sidebars_by_refOptional& Conference_type::
-  getSidebars_by_ref ()
-  {
-    return this->sidebars_by_ref_;
-  }
-
-  void Conference_type::
-  setSidebars_by_ref (const Sidebars_by_refType& x)
-  {
-    this->sidebars_by_ref_.set (x);
-  }
-
-  void Conference_type::
-  setSidebars_by_ref (const Sidebars_by_refOptional& x)
-  {
-    this->sidebars_by_ref_ = x;
-  }
-
-  void Conference_type::
-  setSidebars_by_ref (::std::unique_ptr< Sidebars_by_refType > x)
-  {
-    this->sidebars_by_ref_.set (std::move (x));
-  }
-
-  const Conference_type::Sidebars_by_valOptional& Conference_type::
-  getSidebars_by_val () const
-  {
-    return this->sidebars_by_val_;
-  }
-
-  Conference_type::Sidebars_by_valOptional& Conference_type::
-  getSidebars_by_val ()
-  {
-    return this->sidebars_by_val_;
-  }
-
-  void Conference_type::
-  setSidebars_by_val (const Sidebars_by_valType& x)
-  {
-    this->sidebars_by_val_.set (x);
-  }
-
-  void Conference_type::
-  setSidebars_by_val (const Sidebars_by_valOptional& x)
-  {
-    this->sidebars_by_val_ = x;
-  }
-
-  void Conference_type::
-  setSidebars_by_val (::std::unique_ptr< Sidebars_by_valType > x)
-  {
-    this->sidebars_by_val_.set (std::move (x));
-  }
-
-  const Conference_type::AnySequence& Conference_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Conference_type::AnySequence& Conference_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Conference_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Conference_type::EntityType& Conference_type::
-  getEntity () const
-  {
-    return this->entity_.get ();
-  }
-
-  Conference_type::EntityType& Conference_type::
-  getEntity ()
-  {
-    return this->entity_.get ();
-  }
-
-  void Conference_type::
-  setEntity (const EntityType& x)
-  {
-    this->entity_.set (x);
-  }
-
-  void Conference_type::
-  setEntity (::std::unique_ptr< EntityType > x)
-  {
-    this->entity_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Conference_type::EntityType > Conference_type::
-  detachEntity ()
-  {
-    return this->entity_.detach ();
-  }
-
-  const Conference_type::StateType& Conference_type::
-  getState () const
-  {
-    return this->state_.get ();
-  }
-
-  Conference_type::StateType& Conference_type::
-  getState ()
-  {
-    return this->state_.get ();
-  }
-
-  void Conference_type::
-  setState (const StateType& x)
-  {
-    this->state_.set (x);
-  }
-
-  void Conference_type::
-  setState (::std::unique_ptr< StateType > x)
-  {
-    this->state_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Conference_type::StateType > Conference_type::
-  detachState ()
-  {
-    return this->state_.detach ();
-  }
-
-  const Conference_type::StateType& Conference_type::
-  getStateDefaultValue ()
-  {
-    return state_default_value_;
-  }
-
-  const Conference_type::VersionOptional& Conference_type::
-  getVersion () const
-  {
-    return this->version_;
-  }
-
-  Conference_type::VersionOptional& Conference_type::
-  getVersion ()
-  {
-    return this->version_;
-  }
-
-  void Conference_type::
-  setVersion (const VersionType& x)
-  {
-    this->version_.set (x);
-  }
-
-  void Conference_type::
-  setVersion (const VersionOptional& x)
-  {
-    this->version_ = x;
-  }
-
-  const Conference_type::AnyAttributeSet& Conference_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Conference_type::AnyAttributeSet& Conference_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Conference_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Conference_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Conference_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // State_type
-  // 
-
-  State_type::
-  State_type (Value v)
-  : ::xml_schema::String (_xsd_State_type_literals_[v])
-  {
-  }
-
-  State_type::
-  State_type (const char* v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  State_type::
-  State_type (const ::std::string& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  State_type::
-  State_type (const ::xml_schema::String& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  State_type::
-  State_type (const State_type& v,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::String (v, f, c)
-  {
-  }
-
-  State_type& State_type::
-  operator= (Value v)
-  {
-    static_cast< ::xml_schema::String& > (*this) = 
-    ::xml_schema::String (_xsd_State_type_literals_[v]);
-
-    return *this;
-  }
-
-
-  // Conference_description_type
-  // 
-
-  const Conference_description_type::Display_textOptional& Conference_description_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  Conference_description_type::Display_textOptional& Conference_description_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void Conference_description_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void Conference_description_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void Conference_description_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const Conference_description_type::SubjectOptional& Conference_description_type::
-  getSubject () const
-  {
-    return this->subject_;
-  }
-
-  Conference_description_type::SubjectOptional& Conference_description_type::
-  getSubject ()
-  {
-    return this->subject_;
-  }
-
-  void Conference_description_type::
-  setSubject (const SubjectType& x)
-  {
-    this->subject_.set (x);
-  }
-
-  void Conference_description_type::
-  setSubject (const SubjectOptional& x)
-  {
-    this->subject_ = x;
-  }
-
-  void Conference_description_type::
-  setSubject (::std::unique_ptr< SubjectType > x)
-  {
-    this->subject_.set (std::move (x));
-  }
-
-  const Conference_description_type::Free_textOptional& Conference_description_type::
-  getFree_text () const
-  {
-    return this->free_text_;
-  }
-
-  Conference_description_type::Free_textOptional& Conference_description_type::
-  getFree_text ()
-  {
-    return this->free_text_;
-  }
-
-  void Conference_description_type::
-  setFree_text (const Free_textType& x)
-  {
-    this->free_text_.set (x);
-  }
-
-  void Conference_description_type::
-  setFree_text (const Free_textOptional& x)
-  {
-    this->free_text_ = x;
-  }
-
-  void Conference_description_type::
-  setFree_text (::std::unique_ptr< Free_textType > x)
-  {
-    this->free_text_.set (std::move (x));
-  }
-
-  const Conference_description_type::KeywordsOptional& Conference_description_type::
-  getKeywords () const
-  {
-    return this->keywords_;
-  }
-
-  Conference_description_type::KeywordsOptional& Conference_description_type::
-  getKeywords ()
-  {
-    return this->keywords_;
-  }
-
-  void Conference_description_type::
-  setKeywords (const KeywordsType& x)
-  {
-    this->keywords_.set (x);
-  }
-
-  void Conference_description_type::
-  setKeywords (const KeywordsOptional& x)
-  {
-    this->keywords_ = x;
-  }
-
-  void Conference_description_type::
-  setKeywords (::std::unique_ptr< KeywordsType > x)
-  {
-    this->keywords_.set (std::move (x));
-  }
-
-  const Conference_description_type::Conf_urisOptional& Conference_description_type::
-  getConf_uris () const
-  {
-    return this->conf_uris_;
-  }
-
-  Conference_description_type::Conf_urisOptional& Conference_description_type::
-  getConf_uris ()
-  {
-    return this->conf_uris_;
-  }
-
-  void Conference_description_type::
-  setConf_uris (const Conf_urisType& x)
-  {
-    this->conf_uris_.set (x);
-  }
-
-  void Conference_description_type::
-  setConf_uris (const Conf_urisOptional& x)
-  {
-    this->conf_uris_ = x;
-  }
-
-  void Conference_description_type::
-  setConf_uris (::std::unique_ptr< Conf_urisType > x)
-  {
-    this->conf_uris_.set (std::move (x));
-  }
-
-  const Conference_description_type::Service_urisOptional& Conference_description_type::
-  getService_uris () const
-  {
-    return this->service_uris_;
-  }
-
-  Conference_description_type::Service_urisOptional& Conference_description_type::
-  getService_uris ()
-  {
-    return this->service_uris_;
-  }
-
-  void Conference_description_type::
-  setService_uris (const Service_urisType& x)
-  {
-    this->service_uris_.set (x);
-  }
-
-  void Conference_description_type::
-  setService_uris (const Service_urisOptional& x)
-  {
-    this->service_uris_ = x;
-  }
-
-  void Conference_description_type::
-  setService_uris (::std::unique_ptr< Service_urisType > x)
-  {
-    this->service_uris_.set (std::move (x));
-  }
-
-  const Conference_description_type::Maximum_user_countOptional& Conference_description_type::
-  getMaximum_user_count () const
-  {
-    return this->maximum_user_count_;
-  }
-
-  Conference_description_type::Maximum_user_countOptional& Conference_description_type::
-  getMaximum_user_count ()
-  {
-    return this->maximum_user_count_;
-  }
-
-  void Conference_description_type::
-  setMaximum_user_count (const Maximum_user_countType& x)
-  {
-    this->maximum_user_count_.set (x);
-  }
-
-  void Conference_description_type::
-  setMaximum_user_count (const Maximum_user_countOptional& x)
-  {
-    this->maximum_user_count_ = x;
-  }
-
-  const Conference_description_type::Available_mediaOptional& Conference_description_type::
-  getAvailable_media () const
-  {
-    return this->available_media_;
-  }
-
-  Conference_description_type::Available_mediaOptional& Conference_description_type::
-  getAvailable_media ()
-  {
-    return this->available_media_;
-  }
-
-  void Conference_description_type::
-  setAvailable_media (const Available_mediaType& x)
-  {
-    this->available_media_.set (x);
-  }
-
-  void Conference_description_type::
-  setAvailable_media (const Available_mediaOptional& x)
-  {
-    this->available_media_ = x;
-  }
-
-  void Conference_description_type::
-  setAvailable_media (::std::unique_ptr< Available_mediaType > x)
-  {
-    this->available_media_.set (std::move (x));
-  }
-
-  const Conference_description_type::AnySequence& Conference_description_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Conference_description_type::AnySequence& Conference_description_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Conference_description_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Conference_description_type::AnyAttributeSet& Conference_description_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Conference_description_type::AnyAttributeSet& Conference_description_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Conference_description_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Conference_description_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Conference_description_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Host_type
-  // 
-
-  const Host_type::Display_textOptional& Host_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  Host_type::Display_textOptional& Host_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void Host_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void Host_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void Host_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const Host_type::Web_pageOptional& Host_type::
-  getWeb_page () const
-  {
-    return this->web_page_;
-  }
-
-  Host_type::Web_pageOptional& Host_type::
-  getWeb_page ()
-  {
-    return this->web_page_;
-  }
-
-  void Host_type::
-  setWeb_page (const Web_pageType& x)
-  {
-    this->web_page_.set (x);
-  }
-
-  void Host_type::
-  setWeb_page (const Web_pageOptional& x)
-  {
-    this->web_page_ = x;
-  }
-
-  void Host_type::
-  setWeb_page (::std::unique_ptr< Web_pageType > x)
-  {
-    this->web_page_.set (std::move (x));
-  }
-
-  const Host_type::UrisOptional& Host_type::
-  getUris () const
-  {
-    return this->uris_;
-  }
-
-  Host_type::UrisOptional& Host_type::
-  getUris ()
-  {
-    return this->uris_;
-  }
-
-  void Host_type::
-  setUris (const UrisType& x)
-  {
-    this->uris_.set (x);
-  }
-
-  void Host_type::
-  setUris (const UrisOptional& x)
-  {
-    this->uris_ = x;
-  }
-
-  void Host_type::
-  setUris (::std::unique_ptr< UrisType > x)
-  {
-    this->uris_.set (std::move (x));
-  }
-
-  const Host_type::AnySequence& Host_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Host_type::AnySequence& Host_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Host_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Host_type::AnyAttributeSet& Host_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Host_type::AnyAttributeSet& Host_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Host_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Host_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Host_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Conference_state_type
-  // 
-
-  const Conference_state_type::User_countOptional& Conference_state_type::
-  getUser_count () const
-  {
-    return this->user_count_;
-  }
-
-  Conference_state_type::User_countOptional& Conference_state_type::
-  getUser_count ()
-  {
-    return this->user_count_;
-  }
-
-  void Conference_state_type::
-  setUser_count (const User_countType& x)
-  {
-    this->user_count_.set (x);
-  }
-
-  void Conference_state_type::
-  setUser_count (const User_countOptional& x)
-  {
-    this->user_count_ = x;
-  }
-
-  const Conference_state_type::ActiveOptional& Conference_state_type::
-  getActive () const
-  {
-    return this->active_;
-  }
-
-  Conference_state_type::ActiveOptional& Conference_state_type::
-  getActive ()
-  {
-    return this->active_;
-  }
-
-  void Conference_state_type::
-  setActive (const ActiveType& x)
-  {
-    this->active_.set (x);
-  }
-
-  void Conference_state_type::
-  setActive (const ActiveOptional& x)
-  {
-    this->active_ = x;
-  }
-
-  const Conference_state_type::LockedOptional& Conference_state_type::
-  getLocked () const
-  {
-    return this->locked_;
-  }
-
-  Conference_state_type::LockedOptional& Conference_state_type::
-  getLocked ()
-  {
-    return this->locked_;
-  }
-
-  void Conference_state_type::
-  setLocked (const LockedType& x)
-  {
-    this->locked_.set (x);
-  }
-
-  void Conference_state_type::
-  setLocked (const LockedOptional& x)
-  {
-    this->locked_ = x;
-  }
-
-  const Conference_state_type::AnySequence& Conference_state_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Conference_state_type::AnySequence& Conference_state_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Conference_state_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Conference_state_type::AnyAttributeSet& Conference_state_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Conference_state_type::AnyAttributeSet& Conference_state_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Conference_state_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Conference_state_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Conference_state_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Conference_media_type
-  // 
-
-  const Conference_media_type::EntrySequence& Conference_media_type::
-  getEntry () const
-  {
-    return this->entry_;
-  }
-
-  Conference_media_type::EntrySequence& Conference_media_type::
-  getEntry ()
-  {
-    return this->entry_;
-  }
-
-  void Conference_media_type::
-  setEntry (const EntrySequence& s)
-  {
-    this->entry_ = s;
-  }
-
-  const Conference_media_type::AnyAttributeSet& Conference_media_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Conference_media_type::AnyAttributeSet& Conference_media_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Conference_media_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Conference_media_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Conference_media_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Conference_medium_type
-  // 
-
-  const Conference_medium_type::Display_textOptional& Conference_medium_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  Conference_medium_type::Display_textOptional& Conference_medium_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void Conference_medium_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void Conference_medium_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void Conference_medium_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const Conference_medium_type::TypeType& Conference_medium_type::
-  getType () const
-  {
-    return this->type_.get ();
-  }
-
-  Conference_medium_type::TypeType& Conference_medium_type::
-  getType ()
-  {
-    return this->type_.get ();
-  }
-
-  void Conference_medium_type::
-  setType (const TypeType& x)
-  {
-    this->type_.set (x);
-  }
-
-  void Conference_medium_type::
-  setType (::std::unique_ptr< TypeType > x)
-  {
-    this->type_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Conference_medium_type::TypeType > Conference_medium_type::
-  detachType ()
-  {
-    return this->type_.detach ();
-  }
-
-  const Conference_medium_type::StatusOptional& Conference_medium_type::
-  getStatus () const
-  {
-    return this->status_;
-  }
-
-  Conference_medium_type::StatusOptional& Conference_medium_type::
-  getStatus ()
-  {
-    return this->status_;
-  }
-
-  void Conference_medium_type::
-  setStatus (const StatusType& x)
-  {
-    this->status_.set (x);
-  }
-
-  void Conference_medium_type::
-  setStatus (const StatusOptional& x)
-  {
-    this->status_ = x;
-  }
-
-  void Conference_medium_type::
-  setStatus (::std::unique_ptr< StatusType > x)
-  {
-    this->status_.set (std::move (x));
-  }
-
-  const Conference_medium_type::AnySequence& Conference_medium_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Conference_medium_type::AnySequence& Conference_medium_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Conference_medium_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Conference_medium_type::LabelType& Conference_medium_type::
-  getLabel () const
-  {
-    return this->label_.get ();
-  }
-
-  Conference_medium_type::LabelType& Conference_medium_type::
-  getLabel ()
-  {
-    return this->label_.get ();
-  }
-
-  void Conference_medium_type::
-  setLabel (const LabelType& x)
-  {
-    this->label_.set (x);
-  }
-
-  void Conference_medium_type::
-  setLabel (::std::unique_ptr< LabelType > x)
-  {
-    this->label_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Conference_medium_type::LabelType > Conference_medium_type::
-  detachLabel ()
-  {
-    return this->label_.detach ();
-  }
-
-  const Conference_medium_type::AnyAttributeSet& Conference_medium_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Conference_medium_type::AnyAttributeSet& Conference_medium_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Conference_medium_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Conference_medium_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Conference_medium_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Uris_type
-  // 
-
-  const Uris_type::EntrySequence& Uris_type::
-  getEntry () const
-  {
-    return this->entry_;
-  }
-
-  Uris_type::EntrySequence& Uris_type::
-  getEntry ()
-  {
-    return this->entry_;
-  }
-
-  void Uris_type::
-  setEntry (const EntrySequence& s)
-  {
-    this->entry_ = s;
-  }
-
-  const Uris_type::StateType& Uris_type::
-  getState () const
-  {
-    return this->state_.get ();
-  }
-
-  Uris_type::StateType& Uris_type::
-  getState ()
-  {
-    return this->state_.get ();
-  }
-
-  void Uris_type::
-  setState (const StateType& x)
-  {
-    this->state_.set (x);
-  }
-
-  void Uris_type::
-  setState (::std::unique_ptr< StateType > x)
-  {
-    this->state_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Uris_type::StateType > Uris_type::
-  detachState ()
-  {
-    return this->state_.detach ();
-  }
-
-  const Uris_type::StateType& Uris_type::
-  getStateDefaultValue ()
-  {
-    return state_default_value_;
-  }
-
-  const Uris_type::AnyAttributeSet& Uris_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Uris_type::AnyAttributeSet& Uris_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Uris_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Uris_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Uris_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Uri_type
-  // 
-
-  const Uri_type::UriType& Uri_type::
-  getUri () const
-  {
-    return this->uri_.get ();
-  }
-
-  Uri_type::UriType& Uri_type::
-  getUri ()
-  {
-    return this->uri_.get ();
-  }
-
-  void Uri_type::
-  setUri (const UriType& x)
-  {
-    this->uri_.set (x);
-  }
-
-  void Uri_type::
-  setUri (::std::unique_ptr< UriType > x)
-  {
-    this->uri_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Uri_type::UriType > Uri_type::
-  detachUri ()
-  {
-    return this->uri_.detach ();
-  }
-
-  const Uri_type::Display_textOptional& Uri_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  Uri_type::Display_textOptional& Uri_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void Uri_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void Uri_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void Uri_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const Uri_type::PurposeOptional& Uri_type::
-  getPurpose () const
-  {
-    return this->purpose_;
-  }
-
-  Uri_type::PurposeOptional& Uri_type::
-  getPurpose ()
-  {
-    return this->purpose_;
-  }
-
-  void Uri_type::
-  setPurpose (const PurposeType& x)
-  {
-    this->purpose_.set (x);
-  }
-
-  void Uri_type::
-  setPurpose (const PurposeOptional& x)
-  {
-    this->purpose_ = x;
-  }
-
-  void Uri_type::
-  setPurpose (::std::unique_ptr< PurposeType > x)
-  {
-    this->purpose_.set (std::move (x));
-  }
-
-  const Uri_type::ModifiedOptional& Uri_type::
-  getModified () const
-  {
-    return this->modified_;
-  }
-
-  Uri_type::ModifiedOptional& Uri_type::
-  getModified ()
-  {
-    return this->modified_;
-  }
-
-  void Uri_type::
-  setModified (const ModifiedType& x)
-  {
-    this->modified_.set (x);
-  }
-
-  void Uri_type::
-  setModified (const ModifiedOptional& x)
-  {
-    this->modified_ = x;
-  }
-
-  void Uri_type::
-  setModified (::std::unique_ptr< ModifiedType > x)
-  {
-    this->modified_.set (std::move (x));
-  }
-
-  const Uri_type::AnySequence& Uri_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Uri_type::AnySequence& Uri_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Uri_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Uri_type::AnyAttributeSet& Uri_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Uri_type::AnyAttributeSet& Uri_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Uri_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Uri_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Uri_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Keywords_type
-  //
-
-  Keywords_type::
-  Keywords_type ()
-  : ::xsd::cxx::tree::list< ::xml_schema::String, char > (this)
-  {
-  }
-
-  Keywords_type::
-  Keywords_type (size_type n, const ::xml_schema::String& x)
-  : ::xsd::cxx::tree::list< ::xml_schema::String, char > (n, x, this)
-  {
-  }
-
-  Keywords_type::
-  Keywords_type (const Keywords_type& o,
-                 ::xml_schema::Flags f,
-                 ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (o, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::String, char > (o, f, this)
-  {
-  }
-
-  // Users_type
-  // 
-
-  const Users_type::UserSequence& Users_type::
-  getUser () const
-  {
-    return this->user_;
-  }
-
-  Users_type::UserSequence& Users_type::
-  getUser ()
-  {
-    return this->user_;
-  }
-
-  void Users_type::
-  setUser (const UserSequence& s)
-  {
-    this->user_ = s;
-  }
-
-  const Users_type::AnySequence& Users_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Users_type::AnySequence& Users_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Users_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Users_type::StateType& Users_type::
-  getState () const
-  {
-    return this->state_.get ();
-  }
-
-  Users_type::StateType& Users_type::
-  getState ()
-  {
-    return this->state_.get ();
-  }
-
-  void Users_type::
-  setState (const StateType& x)
-  {
-    this->state_.set (x);
-  }
-
-  void Users_type::
-  setState (::std::unique_ptr< StateType > x)
-  {
-    this->state_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Users_type::StateType > Users_type::
-  detachState ()
-  {
-    return this->state_.detach ();
-  }
-
-  const Users_type::StateType& Users_type::
-  getStateDefaultValue ()
-  {
-    return state_default_value_;
-  }
-
-  const Users_type::AnyAttributeSet& Users_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Users_type::AnyAttributeSet& Users_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Users_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Users_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Users_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // User_type
-  // 
-
-  const User_type::Display_textOptional& User_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  User_type::Display_textOptional& User_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void User_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void User_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void User_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const User_type::Associated_aorsOptional& User_type::
-  getAssociated_aors () const
-  {
-    return this->associated_aors_;
-  }
-
-  User_type::Associated_aorsOptional& User_type::
-  getAssociated_aors ()
-  {
-    return this->associated_aors_;
-  }
-
-  void User_type::
-  setAssociated_aors (const Associated_aorsType& x)
-  {
-    this->associated_aors_.set (x);
-  }
-
-  void User_type::
-  setAssociated_aors (const Associated_aorsOptional& x)
-  {
-    this->associated_aors_ = x;
-  }
-
-  void User_type::
-  setAssociated_aors (::std::unique_ptr< Associated_aorsType > x)
-  {
-    this->associated_aors_.set (std::move (x));
-  }
-
-  const User_type::RolesOptional& User_type::
-  getRoles () const
-  {
-    return this->roles_;
-  }
-
-  User_type::RolesOptional& User_type::
-  getRoles ()
-  {
-    return this->roles_;
-  }
-
-  void User_type::
-  setRoles (const RolesType& x)
-  {
-    this->roles_.set (x);
-  }
-
-  void User_type::
-  setRoles (const RolesOptional& x)
-  {
-    this->roles_ = x;
-  }
-
-  void User_type::
-  setRoles (::std::unique_ptr< RolesType > x)
-  {
-    this->roles_.set (std::move (x));
-  }
-
-  const User_type::LanguagesOptional& User_type::
-  getLanguages () const
-  {
-    return this->languages_;
-  }
-
-  User_type::LanguagesOptional& User_type::
-  getLanguages ()
-  {
-    return this->languages_;
-  }
-
-  void User_type::
-  setLanguages (const LanguagesType& x)
-  {
-    this->languages_.set (x);
-  }
-
-  void User_type::
-  setLanguages (const LanguagesOptional& x)
-  {
-    this->languages_ = x;
-  }
-
-  void User_type::
-  setLanguages (::std::unique_ptr< LanguagesType > x)
-  {
-    this->languages_.set (std::move (x));
-  }
-
-  const User_type::Cascaded_focusOptional& User_type::
-  getCascaded_focus () const
-  {
-    return this->cascaded_focus_;
-  }
-
-  User_type::Cascaded_focusOptional& User_type::
-  getCascaded_focus ()
-  {
-    return this->cascaded_focus_;
-  }
-
-  void User_type::
-  setCascaded_focus (const Cascaded_focusType& x)
-  {
-    this->cascaded_focus_.set (x);
-  }
-
-  void User_type::
-  setCascaded_focus (const Cascaded_focusOptional& x)
-  {
-    this->cascaded_focus_ = x;
-  }
-
-  void User_type::
-  setCascaded_focus (::std::unique_ptr< Cascaded_focusType > x)
-  {
-    this->cascaded_focus_.set (std::move (x));
-  }
-
-  const User_type::EndpointSequence& User_type::
-  getEndpoint () const
-  {
-    return this->endpoint_;
-  }
-
-  User_type::EndpointSequence& User_type::
-  getEndpoint ()
-  {
-    return this->endpoint_;
-  }
-
-  void User_type::
-  setEndpoint (const EndpointSequence& s)
-  {
-    this->endpoint_ = s;
-  }
-
-  const User_type::AnySequence& User_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  User_type::AnySequence& User_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void User_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const User_type::EntityOptional& User_type::
-  getEntity () const
-  {
-    return this->entity_;
-  }
-
-  User_type::EntityOptional& User_type::
-  getEntity ()
-  {
-    return this->entity_;
-  }
-
-  void User_type::
-  setEntity (const EntityType& x)
-  {
-    this->entity_.set (x);
-  }
-
-  void User_type::
-  setEntity (const EntityOptional& x)
-  {
-    this->entity_ = x;
-  }
-
-  void User_type::
-  setEntity (::std::unique_ptr< EntityType > x)
-  {
-    this->entity_.set (std::move (x));
-  }
-
-  const User_type::StateType& User_type::
-  getState () const
-  {
-    return this->state_.get ();
-  }
-
-  User_type::StateType& User_type::
-  getState ()
-  {
-    return this->state_.get ();
-  }
-
-  void User_type::
-  setState (const StateType& x)
-  {
-    this->state_.set (x);
-  }
-
-  void User_type::
-  setState (::std::unique_ptr< StateType > x)
-  {
-    this->state_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< User_type::StateType > User_type::
-  detachState ()
-  {
-    return this->state_.detach ();
-  }
-
-  const User_type::StateType& User_type::
-  getStateDefaultValue ()
-  {
-    return state_default_value_;
-  }
-
-  const User_type::AnyAttributeSet& User_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  User_type::AnyAttributeSet& User_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void User_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& User_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& User_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // User_roles_type
-  // 
-
-  const User_roles_type::EntrySequence& User_roles_type::
-  getEntry () const
-  {
-    return this->entry_;
-  }
-
-  User_roles_type::EntrySequence& User_roles_type::
-  getEntry ()
-  {
-    return this->entry_;
-  }
-
-  void User_roles_type::
-  setEntry (const EntrySequence& s)
-  {
-    this->entry_ = s;
-  }
-
-  const User_roles_type::AnyAttributeSet& User_roles_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  User_roles_type::AnyAttributeSet& User_roles_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void User_roles_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& User_roles_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& User_roles_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // User_languages_type
-  //
-
-  User_languages_type::
-  User_languages_type ()
-  : ::xsd::cxx::tree::list< ::xml_schema::Language, char > (this)
-  {
-  }
-
-  User_languages_type::
-  User_languages_type (size_type n, const ::xml_schema::Language& x)
-  : ::xsd::cxx::tree::list< ::xml_schema::Language, char > (n, x, this)
-  {
-  }
-
-  User_languages_type::
-  User_languages_type (const User_languages_type& o,
-                       ::xml_schema::Flags f,
-                       ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (o, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::Language, char > (o, f, this)
-  {
-  }
-
-  // Endpoint_type
-  // 
-
-  const Endpoint_type::Display_textOptional& Endpoint_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  Endpoint_type::Display_textOptional& Endpoint_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void Endpoint_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void Endpoint_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void Endpoint_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const Endpoint_type::ReferredOptional& Endpoint_type::
-  getReferred () const
-  {
-    return this->referred_;
-  }
-
-  Endpoint_type::ReferredOptional& Endpoint_type::
-  getReferred ()
-  {
-    return this->referred_;
-  }
-
-  void Endpoint_type::
-  setReferred (const ReferredType& x)
-  {
-    this->referred_.set (x);
-  }
-
-  void Endpoint_type::
-  setReferred (const ReferredOptional& x)
-  {
-    this->referred_ = x;
-  }
-
-  void Endpoint_type::
-  setReferred (::std::unique_ptr< ReferredType > x)
-  {
-    this->referred_.set (std::move (x));
-  }
-
-  const Endpoint_type::StatusOptional& Endpoint_type::
-  getStatus () const
-  {
-    return this->status_;
-  }
-
-  Endpoint_type::StatusOptional& Endpoint_type::
-  getStatus ()
-  {
-    return this->status_;
-  }
-
-  void Endpoint_type::
-  setStatus (const StatusType& x)
-  {
-    this->status_.set (x);
-  }
-
-  void Endpoint_type::
-  setStatus (const StatusOptional& x)
-  {
-    this->status_ = x;
-  }
-
-  void Endpoint_type::
-  setStatus (::std::unique_ptr< StatusType > x)
-  {
-    this->status_.set (std::move (x));
-  }
-
-  const Endpoint_type::Joining_methodOptional& Endpoint_type::
-  getJoining_method () const
-  {
-    return this->joining_method_;
-  }
-
-  Endpoint_type::Joining_methodOptional& Endpoint_type::
-  getJoining_method ()
-  {
-    return this->joining_method_;
-  }
-
-  void Endpoint_type::
-  setJoining_method (const Joining_methodType& x)
-  {
-    this->joining_method_.set (x);
-  }
-
-  void Endpoint_type::
-  setJoining_method (const Joining_methodOptional& x)
-  {
-    this->joining_method_ = x;
-  }
-
-  void Endpoint_type::
-  setJoining_method (::std::unique_ptr< Joining_methodType > x)
-  {
-    this->joining_method_.set (std::move (x));
-  }
-
-  const Endpoint_type::Joining_infoOptional& Endpoint_type::
-  getJoining_info () const
-  {
-    return this->joining_info_;
-  }
-
-  Endpoint_type::Joining_infoOptional& Endpoint_type::
-  getJoining_info ()
-  {
-    return this->joining_info_;
-  }
-
-  void Endpoint_type::
-  setJoining_info (const Joining_infoType& x)
-  {
-    this->joining_info_.set (x);
-  }
-
-  void Endpoint_type::
-  setJoining_info (const Joining_infoOptional& x)
-  {
-    this->joining_info_ = x;
-  }
-
-  void Endpoint_type::
-  setJoining_info (::std::unique_ptr< Joining_infoType > x)
-  {
-    this->joining_info_.set (std::move (x));
-  }
-
-  const Endpoint_type::Disconnection_methodOptional& Endpoint_type::
-  getDisconnection_method () const
-  {
-    return this->disconnection_method_;
-  }
-
-  Endpoint_type::Disconnection_methodOptional& Endpoint_type::
-  getDisconnection_method ()
-  {
-    return this->disconnection_method_;
-  }
-
-  void Endpoint_type::
-  setDisconnection_method (const Disconnection_methodType& x)
-  {
-    this->disconnection_method_.set (x);
-  }
-
-  void Endpoint_type::
-  setDisconnection_method (const Disconnection_methodOptional& x)
-  {
-    this->disconnection_method_ = x;
-  }
-
-  void Endpoint_type::
-  setDisconnection_method (::std::unique_ptr< Disconnection_methodType > x)
-  {
-    this->disconnection_method_.set (std::move (x));
-  }
-
-  const Endpoint_type::Disconnection_infoOptional& Endpoint_type::
-  getDisconnection_info () const
-  {
-    return this->disconnection_info_;
-  }
-
-  Endpoint_type::Disconnection_infoOptional& Endpoint_type::
-  getDisconnection_info ()
-  {
-    return this->disconnection_info_;
-  }
-
-  void Endpoint_type::
-  setDisconnection_info (const Disconnection_infoType& x)
-  {
-    this->disconnection_info_.set (x);
-  }
-
-  void Endpoint_type::
-  setDisconnection_info (const Disconnection_infoOptional& x)
-  {
-    this->disconnection_info_ = x;
-  }
-
-  void Endpoint_type::
-  setDisconnection_info (::std::unique_ptr< Disconnection_infoType > x)
-  {
-    this->disconnection_info_.set (std::move (x));
-  }
-
-  const Endpoint_type::MediaSequence& Endpoint_type::
-  getMedia () const
-  {
-    return this->media_;
-  }
-
-  Endpoint_type::MediaSequence& Endpoint_type::
-  getMedia ()
-  {
-    return this->media_;
-  }
-
-  void Endpoint_type::
-  setMedia (const MediaSequence& s)
-  {
-    this->media_ = s;
-  }
-
-  const Endpoint_type::Call_infoOptional& Endpoint_type::
-  getCall_info () const
-  {
-    return this->call_info_;
-  }
-
-  Endpoint_type::Call_infoOptional& Endpoint_type::
-  getCall_info ()
-  {
-    return this->call_info_;
-  }
-
-  void Endpoint_type::
-  setCall_info (const Call_infoType& x)
-  {
-    this->call_info_.set (x);
-  }
-
-  void Endpoint_type::
-  setCall_info (const Call_infoOptional& x)
-  {
-    this->call_info_ = x;
-  }
-
-  void Endpoint_type::
-  setCall_info (::std::unique_ptr< Call_infoType > x)
-  {
-    this->call_info_.set (std::move (x));
-  }
-
-  const Endpoint_type::AnySequence& Endpoint_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Endpoint_type::AnySequence& Endpoint_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Endpoint_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Endpoint_type::EntityOptional& Endpoint_type::
-  getEntity () const
-  {
-    return this->entity_;
-  }
-
-  Endpoint_type::EntityOptional& Endpoint_type::
-  getEntity ()
-  {
-    return this->entity_;
-  }
-
-  void Endpoint_type::
-  setEntity (const EntityType& x)
-  {
-    this->entity_.set (x);
-  }
-
-  void Endpoint_type::
-  setEntity (const EntityOptional& x)
-  {
-    this->entity_ = x;
-  }
-
-  void Endpoint_type::
-  setEntity (::std::unique_ptr< EntityType > x)
-  {
-    this->entity_.set (std::move (x));
-  }
-
-  const Endpoint_type::StateType& Endpoint_type::
-  getState () const
-  {
-    return this->state_.get ();
-  }
-
-  Endpoint_type::StateType& Endpoint_type::
-  getState ()
-  {
-    return this->state_.get ();
-  }
-
-  void Endpoint_type::
-  setState (const StateType& x)
-  {
-    this->state_.set (x);
-  }
-
-  void Endpoint_type::
-  setState (::std::unique_ptr< StateType > x)
-  {
-    this->state_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Endpoint_type::StateType > Endpoint_type::
-  detachState ()
-  {
-    return this->state_.detach ();
-  }
-
-  const Endpoint_type::StateType& Endpoint_type::
-  getStateDefaultValue ()
-  {
-    return state_default_value_;
-  }
-
-  const Endpoint_type::AnyAttributeSet& Endpoint_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Endpoint_type::AnyAttributeSet& Endpoint_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Endpoint_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Endpoint_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Endpoint_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Endpoint_status_type
-  // 
-
-  Endpoint_status_type::
-  Endpoint_status_type (Value v)
-  : ::xml_schema::String (_xsd_Endpoint_status_type_literals_[v])
-  {
-  }
-
-  Endpoint_status_type::
-  Endpoint_status_type (const char* v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Endpoint_status_type::
-  Endpoint_status_type (const ::std::string& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Endpoint_status_type::
-  Endpoint_status_type (const ::xml_schema::String& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Endpoint_status_type::
-  Endpoint_status_type (const Endpoint_status_type& v,
-                        ::xml_schema::Flags f,
-                        ::xml_schema::Container* c)
-  : ::xml_schema::String (v, f, c)
-  {
-  }
-
-  Endpoint_status_type& Endpoint_status_type::
-  operator= (Value v)
-  {
-    static_cast< ::xml_schema::String& > (*this) = 
-    ::xml_schema::String (_xsd_Endpoint_status_type_literals_[v]);
-
-    return *this;
-  }
-
-
-  // Joining_type
-  // 
-
-  Joining_type::
-  Joining_type (Value v)
-  : ::xml_schema::String (_xsd_Joining_type_literals_[v])
-  {
-  }
-
-  Joining_type::
-  Joining_type (const char* v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Joining_type::
-  Joining_type (const ::std::string& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Joining_type::
-  Joining_type (const ::xml_schema::String& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Joining_type::
-  Joining_type (const Joining_type& v,
-                ::xml_schema::Flags f,
-                ::xml_schema::Container* c)
-  : ::xml_schema::String (v, f, c)
-  {
-  }
-
-  Joining_type& Joining_type::
-  operator= (Value v)
-  {
-    static_cast< ::xml_schema::String& > (*this) = 
-    ::xml_schema::String (_xsd_Joining_type_literals_[v]);
-
-    return *this;
-  }
-
-
-  // Disconnection_type
-  // 
-
-  Disconnection_type::
-  Disconnection_type (Value v)
-  : ::xml_schema::String (_xsd_Disconnection_type_literals_[v])
-  {
-  }
-
-  Disconnection_type::
-  Disconnection_type (const char* v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Disconnection_type::
-  Disconnection_type (const ::std::string& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Disconnection_type::
-  Disconnection_type (const ::xml_schema::String& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Disconnection_type::
-  Disconnection_type (const Disconnection_type& v,
-                      ::xml_schema::Flags f,
-                      ::xml_schema::Container* c)
-  : ::xml_schema::String (v, f, c)
-  {
-  }
-
-  Disconnection_type& Disconnection_type::
-  operator= (Value v)
-  {
-    static_cast< ::xml_schema::String& > (*this) = 
-    ::xml_schema::String (_xsd_Disconnection_type_literals_[v]);
-
-    return *this;
-  }
-
-
-  // Execution_type
-  // 
-
-  const Execution_type::WhenOptional& Execution_type::
-  getWhen () const
-  {
-    return this->when_;
-  }
-
-  Execution_type::WhenOptional& Execution_type::
-  getWhen ()
-  {
-    return this->when_;
-  }
-
-  void Execution_type::
-  setWhen (const WhenType& x)
-  {
-    this->when_.set (x);
-  }
-
-  void Execution_type::
-  setWhen (const WhenOptional& x)
-  {
-    this->when_ = x;
-  }
-
-  void Execution_type::
-  setWhen (::std::unique_ptr< WhenType > x)
-  {
-    this->when_.set (std::move (x));
-  }
-
-  const Execution_type::ReasonOptional& Execution_type::
-  getReason () const
-  {
-    return this->reason_;
-  }
-
-  Execution_type::ReasonOptional& Execution_type::
-  getReason ()
-  {
-    return this->reason_;
-  }
-
-  void Execution_type::
-  setReason (const ReasonType& x)
-  {
-    this->reason_.set (x);
-  }
-
-  void Execution_type::
-  setReason (const ReasonOptional& x)
-  {
-    this->reason_ = x;
-  }
-
-  void Execution_type::
-  setReason (::std::unique_ptr< ReasonType > x)
-  {
-    this->reason_.set (std::move (x));
-  }
-
-  const Execution_type::ByOptional& Execution_type::
-  getBy () const
-  {
-    return this->by_;
-  }
-
-  Execution_type::ByOptional& Execution_type::
-  getBy ()
-  {
-    return this->by_;
-  }
-
-  void Execution_type::
-  setBy (const ByType& x)
-  {
-    this->by_.set (x);
-  }
-
-  void Execution_type::
-  setBy (const ByOptional& x)
-  {
-    this->by_ = x;
-  }
-
-  void Execution_type::
-  setBy (::std::unique_ptr< ByType > x)
-  {
-    this->by_.set (std::move (x));
-  }
-
-  const Execution_type::AnyAttributeSet& Execution_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Execution_type::AnyAttributeSet& Execution_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Execution_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Execution_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Execution_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Call_type
-  // 
-
-  const Call_type::SipOptional& Call_type::
-  getSip () const
-  {
-    return this->sip_;
-  }
-
-  Call_type::SipOptional& Call_type::
-  getSip ()
-  {
-    return this->sip_;
-  }
-
-  void Call_type::
-  setSip (const SipType& x)
-  {
-    this->sip_.set (x);
-  }
-
-  void Call_type::
-  setSip (const SipOptional& x)
-  {
-    this->sip_ = x;
-  }
-
-  void Call_type::
-  setSip (::std::unique_ptr< SipType > x)
-  {
-    this->sip_.set (std::move (x));
-  }
-
-  const Call_type::AnySequence& Call_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Call_type::AnySequence& Call_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Call_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Call_type::AnyAttributeSet& Call_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Call_type::AnyAttributeSet& Call_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Call_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Call_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Call_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Sip_dialog_id_type
-  // 
-
-  const Sip_dialog_id_type::Display_textOptional& Sip_dialog_id_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  Sip_dialog_id_type::Display_textOptional& Sip_dialog_id_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void Sip_dialog_id_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void Sip_dialog_id_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void Sip_dialog_id_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const Sip_dialog_id_type::Call_idType& Sip_dialog_id_type::
-  getCall_id () const
-  {
-    return this->call_id_.get ();
-  }
-
-  Sip_dialog_id_type::Call_idType& Sip_dialog_id_type::
-  getCall_id ()
-  {
-    return this->call_id_.get ();
-  }
-
-  void Sip_dialog_id_type::
-  setCall_id (const Call_idType& x)
-  {
-    this->call_id_.set (x);
-  }
-
-  void Sip_dialog_id_type::
-  setCall_id (::std::unique_ptr< Call_idType > x)
-  {
-    this->call_id_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Sip_dialog_id_type::Call_idType > Sip_dialog_id_type::
-  detachCall_id ()
-  {
-    return this->call_id_.detach ();
-  }
-
-  const Sip_dialog_id_type::From_tagType& Sip_dialog_id_type::
-  getFrom_tag () const
-  {
-    return this->from_tag_.get ();
-  }
-
-  Sip_dialog_id_type::From_tagType& Sip_dialog_id_type::
-  getFrom_tag ()
-  {
-    return this->from_tag_.get ();
-  }
-
-  void Sip_dialog_id_type::
-  setFrom_tag (const From_tagType& x)
-  {
-    this->from_tag_.set (x);
-  }
-
-  void Sip_dialog_id_type::
-  setFrom_tag (::std::unique_ptr< From_tagType > x)
-  {
-    this->from_tag_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Sip_dialog_id_type::From_tagType > Sip_dialog_id_type::
-  detachFrom_tag ()
-  {
-    return this->from_tag_.detach ();
-  }
-
-  const Sip_dialog_id_type::To_tagType& Sip_dialog_id_type::
-  getTo_tag () const
-  {
-    return this->to_tag_.get ();
-  }
-
-  Sip_dialog_id_type::To_tagType& Sip_dialog_id_type::
-  getTo_tag ()
-  {
-    return this->to_tag_.get ();
-  }
-
-  void Sip_dialog_id_type::
-  setTo_tag (const To_tagType& x)
-  {
-    this->to_tag_.set (x);
-  }
-
-  void Sip_dialog_id_type::
-  setTo_tag (::std::unique_ptr< To_tagType > x)
-  {
-    this->to_tag_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Sip_dialog_id_type::To_tagType > Sip_dialog_id_type::
-  detachTo_tag ()
-  {
-    return this->to_tag_.detach ();
-  }
-
-  const Sip_dialog_id_type::AnySequence& Sip_dialog_id_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Sip_dialog_id_type::AnySequence& Sip_dialog_id_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Sip_dialog_id_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Sip_dialog_id_type::AnyAttributeSet& Sip_dialog_id_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Sip_dialog_id_type::AnyAttributeSet& Sip_dialog_id_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Sip_dialog_id_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Sip_dialog_id_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Sip_dialog_id_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Media_type
-  // 
-
-  const Media_type::Display_textOptional& Media_type::
-  getDisplay_text () const
-  {
-    return this->display_text_;
-  }
-
-  Media_type::Display_textOptional& Media_type::
-  getDisplay_text ()
-  {
-    return this->display_text_;
-  }
-
-  void Media_type::
-  setDisplay_text (const Display_textType& x)
-  {
-    this->display_text_.set (x);
-  }
-
-  void Media_type::
-  setDisplay_text (const Display_textOptional& x)
-  {
-    this->display_text_ = x;
-  }
-
-  void Media_type::
-  setDisplay_text (::std::unique_ptr< Display_textType > x)
-  {
-    this->display_text_.set (std::move (x));
-  }
-
-  const Media_type::TypeOptional& Media_type::
-  getType () const
-  {
-    return this->type_;
-  }
-
-  Media_type::TypeOptional& Media_type::
-  getType ()
-  {
-    return this->type_;
-  }
-
-  void Media_type::
-  setType (const TypeType& x)
-  {
-    this->type_.set (x);
-  }
-
-  void Media_type::
-  setType (const TypeOptional& x)
-  {
-    this->type_ = x;
-  }
-
-  void Media_type::
-  setType (::std::unique_ptr< TypeType > x)
-  {
-    this->type_.set (std::move (x));
-  }
-
-  const Media_type::LabelOptional& Media_type::
-  getLabel () const
-  {
-    return this->label_;
-  }
-
-  Media_type::LabelOptional& Media_type::
-  getLabel ()
-  {
-    return this->label_;
-  }
-
-  void Media_type::
-  setLabel (const LabelType& x)
-  {
-    this->label_.set (x);
-  }
-
-  void Media_type::
-  setLabel (const LabelOptional& x)
-  {
-    this->label_ = x;
-  }
-
-  void Media_type::
-  setLabel (::std::unique_ptr< LabelType > x)
-  {
-    this->label_.set (std::move (x));
-  }
-
-  const Media_type::Src_idOptional& Media_type::
-  getSrc_id () const
-  {
-    return this->src_id_;
-  }
-
-  Media_type::Src_idOptional& Media_type::
-  getSrc_id ()
-  {
-    return this->src_id_;
-  }
-
-  void Media_type::
-  setSrc_id (const Src_idType& x)
-  {
-    this->src_id_.set (x);
-  }
-
-  void Media_type::
-  setSrc_id (const Src_idOptional& x)
-  {
-    this->src_id_ = x;
-  }
-
-  void Media_type::
-  setSrc_id (::std::unique_ptr< Src_idType > x)
-  {
-    this->src_id_.set (std::move (x));
-  }
-
-  const Media_type::StatusOptional& Media_type::
-  getStatus () const
-  {
-    return this->status_;
-  }
-
-  Media_type::StatusOptional& Media_type::
-  getStatus ()
-  {
-    return this->status_;
-  }
-
-  void Media_type::
-  setStatus (const StatusType& x)
-  {
-    this->status_.set (x);
-  }
-
-  void Media_type::
-  setStatus (const StatusOptional& x)
-  {
-    this->status_ = x;
-  }
-
-  void Media_type::
-  setStatus (::std::unique_ptr< StatusType > x)
-  {
-    this->status_.set (std::move (x));
-  }
-
-  const Media_type::AnySequence& Media_type::
-  getAny () const
-  {
-    return this->any_;
-  }
-
-  Media_type::AnySequence& Media_type::
-  getAny ()
-  {
-    return this->any_;
-  }
-
-  void Media_type::
-  setAny (const AnySequence& s)
-  {
-    this->any_ = s;
-  }
-
-  const Media_type::IdType& Media_type::
-  getId () const
-  {
-    return this->id_.get ();
-  }
-
-  Media_type::IdType& Media_type::
-  getId ()
-  {
-    return this->id_.get ();
-  }
-
-  void Media_type::
-  setId (const IdType& x)
-  {
-    this->id_.set (x);
-  }
-
-  void Media_type::
-  setId (::std::unique_ptr< IdType > x)
-  {
-    this->id_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Media_type::IdType > Media_type::
-  detachId ()
-  {
-    return this->id_.detach ();
-  }
-
-  const Media_type::AnyAttributeSet& Media_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Media_type::AnyAttributeSet& Media_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Media_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Media_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Media_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
-  }
-
-
-  // Media_status_type
-  // 
-
-  Media_status_type::
-  Media_status_type (Value v)
-  : ::xml_schema::String (_xsd_Media_status_type_literals_[v])
-  {
-  }
-
-  Media_status_type::
-  Media_status_type (const char* v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Media_status_type::
-  Media_status_type (const ::std::string& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Media_status_type::
-  Media_status_type (const ::xml_schema::String& v)
-  : ::xml_schema::String (v)
-  {
-  }
-
-  Media_status_type::
-  Media_status_type (const Media_status_type& v,
-                     ::xml_schema::Flags f,
-                     ::xml_schema::Container* c)
-  : ::xml_schema::String (v, f, c)
-  {
-  }
-
-  Media_status_type& Media_status_type::
-  operator= (Value v)
-  {
-    static_cast< ::xml_schema::String& > (*this) = 
-    ::xml_schema::String (_xsd_Media_status_type_literals_[v]);
-
-    return *this;
-  }
-
-
-  // Sidebars_by_val_type
-  // 
-
-  const Sidebars_by_val_type::EntrySequence& Sidebars_by_val_type::
-  getEntry () const
-  {
-    return this->entry_;
-  }
-
-  Sidebars_by_val_type::EntrySequence& Sidebars_by_val_type::
-  getEntry ()
-  {
-    return this->entry_;
-  }
-
-  void Sidebars_by_val_type::
-  setEntry (const EntrySequence& s)
-  {
-    this->entry_ = s;
-  }
-
-  const Sidebars_by_val_type::StateType& Sidebars_by_val_type::
-  getState () const
-  {
-    return this->state_.get ();
-  }
-
-  Sidebars_by_val_type::StateType& Sidebars_by_val_type::
-  getState ()
-  {
-    return this->state_.get ();
-  }
-
-  void Sidebars_by_val_type::
-  setState (const StateType& x)
-  {
-    this->state_.set (x);
-  }
-
-  void Sidebars_by_val_type::
-  setState (::std::unique_ptr< StateType > x)
-  {
-    this->state_.set (std::move (x));
-  }
-
-  ::std::unique_ptr< Sidebars_by_val_type::StateType > Sidebars_by_val_type::
-  detachState ()
-  {
-    return this->state_.detach ();
-  }
-
-  const Sidebars_by_val_type::StateType& Sidebars_by_val_type::
-  getStateDefaultValue ()
-  {
-    return state_default_value_;
-  }
-
-  const Sidebars_by_val_type::AnyAttributeSet& Sidebars_by_val_type::
-  getAnyAttribute () const
-  {
-    return this->any_attribute_;
-  }
-
-  Sidebars_by_val_type::AnyAttributeSet& Sidebars_by_val_type::
-  getAnyAttribute ()
-  {
-    return this->any_attribute_;
-  }
-
-  void Sidebars_by_val_type::
-  setAnyAttribute (const AnyAttributeSet& s)
-  {
-    this->any_attribute_ = s;
-  }
-
-  const ::xercesc::DOMDocument& Sidebars_by_val_type::
-  getDomDocument () const
-  {
-    return *this->dom_document_;
-  }
-
-  ::xercesc::DOMDocument& Sidebars_by_val_type::
-  getDomDocument ()
-  {
-    return *this->dom_document_;
+  namespace Xsd
+  {
+    namespace ConferenceInfo
+    {
+      // ConferenceType
+      // 
+
+      const ConferenceType::ConferenceDescriptionOptional& ConferenceType::
+      getConferenceDescription () const
+      {
+        return this->conference_description_;
+      }
+
+      ConferenceType::ConferenceDescriptionOptional& ConferenceType::
+      getConferenceDescription ()
+      {
+        return this->conference_description_;
+      }
+
+      void ConferenceType::
+      setConferenceDescription (const ConferenceDescriptionType& x)
+      {
+        this->conference_description_.set (x);
+      }
+
+      void ConferenceType::
+      setConferenceDescription (const ConferenceDescriptionOptional& x)
+      {
+        this->conference_description_ = x;
+      }
+
+      void ConferenceType::
+      setConferenceDescription (::std::unique_ptr< ConferenceDescriptionType > x)
+      {
+        this->conference_description_.set (std::move (x));
+      }
+
+      const ConferenceType::HostInfoOptional& ConferenceType::
+      getHostInfo () const
+      {
+        return this->host_info_;
+      }
+
+      ConferenceType::HostInfoOptional& ConferenceType::
+      getHostInfo ()
+      {
+        return this->host_info_;
+      }
+
+      void ConferenceType::
+      setHostInfo (const HostInfoType& x)
+      {
+        this->host_info_.set (x);
+      }
+
+      void ConferenceType::
+      setHostInfo (const HostInfoOptional& x)
+      {
+        this->host_info_ = x;
+      }
+
+      void ConferenceType::
+      setHostInfo (::std::unique_ptr< HostInfoType > x)
+      {
+        this->host_info_.set (std::move (x));
+      }
+
+      const ConferenceType::ConferenceStateOptional& ConferenceType::
+      getConferenceState () const
+      {
+        return this->conference_state_;
+      }
+
+      ConferenceType::ConferenceStateOptional& ConferenceType::
+      getConferenceState ()
+      {
+        return this->conference_state_;
+      }
+
+      void ConferenceType::
+      setConferenceState (const ConferenceStateType& x)
+      {
+        this->conference_state_.set (x);
+      }
+
+      void ConferenceType::
+      setConferenceState (const ConferenceStateOptional& x)
+      {
+        this->conference_state_ = x;
+      }
+
+      void ConferenceType::
+      setConferenceState (::std::unique_ptr< ConferenceStateType > x)
+      {
+        this->conference_state_.set (std::move (x));
+      }
+
+      const ConferenceType::UsersOptional& ConferenceType::
+      getUsers () const
+      {
+        return this->users_;
+      }
+
+      ConferenceType::UsersOptional& ConferenceType::
+      getUsers ()
+      {
+        return this->users_;
+      }
+
+      void ConferenceType::
+      setUsers (const UsersType& x)
+      {
+        this->users_.set (x);
+      }
+
+      void ConferenceType::
+      setUsers (const UsersOptional& x)
+      {
+        this->users_ = x;
+      }
+
+      void ConferenceType::
+      setUsers (::std::unique_ptr< UsersType > x)
+      {
+        this->users_.set (std::move (x));
+      }
+
+      const ConferenceType::SidebarsByRefOptional& ConferenceType::
+      getSidebarsByRef () const
+      {
+        return this->sidebars_by_ref_;
+      }
+
+      ConferenceType::SidebarsByRefOptional& ConferenceType::
+      getSidebarsByRef ()
+      {
+        return this->sidebars_by_ref_;
+      }
+
+      void ConferenceType::
+      setSidebarsByRef (const SidebarsByRefType& x)
+      {
+        this->sidebars_by_ref_.set (x);
+      }
+
+      void ConferenceType::
+      setSidebarsByRef (const SidebarsByRefOptional& x)
+      {
+        this->sidebars_by_ref_ = x;
+      }
+
+      void ConferenceType::
+      setSidebarsByRef (::std::unique_ptr< SidebarsByRefType > x)
+      {
+        this->sidebars_by_ref_.set (std::move (x));
+      }
+
+      const ConferenceType::SidebarsByValOptional& ConferenceType::
+      getSidebarsByVal () const
+      {
+        return this->sidebars_by_val_;
+      }
+
+      ConferenceType::SidebarsByValOptional& ConferenceType::
+      getSidebarsByVal ()
+      {
+        return this->sidebars_by_val_;
+      }
+
+      void ConferenceType::
+      setSidebarsByVal (const SidebarsByValType& x)
+      {
+        this->sidebars_by_val_.set (x);
+      }
+
+      void ConferenceType::
+      setSidebarsByVal (const SidebarsByValOptional& x)
+      {
+        this->sidebars_by_val_ = x;
+      }
+
+      void ConferenceType::
+      setSidebarsByVal (::std::unique_ptr< SidebarsByValType > x)
+      {
+        this->sidebars_by_val_.set (std::move (x));
+      }
+
+      const ConferenceType::AnySequence& ConferenceType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      ConferenceType::AnySequence& ConferenceType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void ConferenceType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const ConferenceType::EntityType& ConferenceType::
+      getEntity () const
+      {
+        return this->entity_.get ();
+      }
+
+      ConferenceType::EntityType& ConferenceType::
+      getEntity ()
+      {
+        return this->entity_.get ();
+      }
+
+      void ConferenceType::
+      setEntity (const EntityType& x)
+      {
+        this->entity_.set (x);
+      }
+
+      void ConferenceType::
+      setEntity (::std::unique_ptr< EntityType > x)
+      {
+        this->entity_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< ConferenceType::EntityType > ConferenceType::
+      setDetachEntity ()
+      {
+        return this->entity_.detach ();
+      }
+
+      const ConferenceType::StateType& ConferenceType::
+      getState () const
+      {
+        return this->state_.get ();
+      }
+
+      ConferenceType::StateType& ConferenceType::
+      getState ()
+      {
+        return this->state_.get ();
+      }
+
+      void ConferenceType::
+      setState (const StateType& x)
+      {
+        this->state_.set (x);
+      }
+
+      void ConferenceType::
+      setState (::std::unique_ptr< StateType > x)
+      {
+        this->state_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< ConferenceType::StateType > ConferenceType::
+      setDetachState ()
+      {
+        return this->state_.detach ();
+      }
+
+      const ConferenceType::StateType& ConferenceType::
+      getStateDefaultValue ()
+      {
+        return state_default_value_;
+      }
+
+      const ConferenceType::VersionOptional& ConferenceType::
+      getVersion () const
+      {
+        return this->version_;
+      }
+
+      ConferenceType::VersionOptional& ConferenceType::
+      getVersion ()
+      {
+        return this->version_;
+      }
+
+      void ConferenceType::
+      setVersion (const VersionType& x)
+      {
+        this->version_.set (x);
+      }
+
+      void ConferenceType::
+      setVersion (const VersionOptional& x)
+      {
+        this->version_ = x;
+      }
+
+      const ConferenceType::AnyAttributeSet& ConferenceType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      ConferenceType::AnyAttributeSet& ConferenceType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void ConferenceType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& ConferenceType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& ConferenceType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // StateType
+      // 
+
+      StateType::
+      StateType (Value v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_StateType_literals_[v])
+      {
+      }
+
+      StateType::
+      StateType (const char* v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      StateType::
+      StateType (const ::std::string& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      StateType::
+      StateType (const ::LinphonePrivate::Xsd::XmlSchema::String& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      StateType::
+      StateType (const StateType& v,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v, f, c)
+      {
+      }
+
+      StateType& StateType::
+      operator= (Value v)
+      {
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+        ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_StateType_literals_[v]);
+
+        return *this;
+      }
+
+
+      // ConferenceDescriptionType
+      // 
+
+      const ConferenceDescriptionType::DisplayTextOptional& ConferenceDescriptionType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      ConferenceDescriptionType::DisplayTextOptional& ConferenceDescriptionType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void ConferenceDescriptionType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void ConferenceDescriptionType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const ConferenceDescriptionType::SubjectOptional& ConferenceDescriptionType::
+      getSubject () const
+      {
+        return this->subject_;
+      }
+
+      ConferenceDescriptionType::SubjectOptional& ConferenceDescriptionType::
+      getSubject ()
+      {
+        return this->subject_;
+      }
+
+      void ConferenceDescriptionType::
+      setSubject (const SubjectType& x)
+      {
+        this->subject_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setSubject (const SubjectOptional& x)
+      {
+        this->subject_ = x;
+      }
+
+      void ConferenceDescriptionType::
+      setSubject (::std::unique_ptr< SubjectType > x)
+      {
+        this->subject_.set (std::move (x));
+      }
+
+      const ConferenceDescriptionType::FreeTextOptional& ConferenceDescriptionType::
+      getFreeText () const
+      {
+        return this->free_text_;
+      }
+
+      ConferenceDescriptionType::FreeTextOptional& ConferenceDescriptionType::
+      getFreeText ()
+      {
+        return this->free_text_;
+      }
+
+      void ConferenceDescriptionType::
+      setFreeText (const FreeTextType& x)
+      {
+        this->free_text_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setFreeText (const FreeTextOptional& x)
+      {
+        this->free_text_ = x;
+      }
+
+      void ConferenceDescriptionType::
+      setFreeText (::std::unique_ptr< FreeTextType > x)
+      {
+        this->free_text_.set (std::move (x));
+      }
+
+      const ConferenceDescriptionType::KeywordsOptional& ConferenceDescriptionType::
+      getKeywords () const
+      {
+        return this->keywords_;
+      }
+
+      ConferenceDescriptionType::KeywordsOptional& ConferenceDescriptionType::
+      getKeywords ()
+      {
+        return this->keywords_;
+      }
+
+      void ConferenceDescriptionType::
+      setKeywords (const KeywordsType& x)
+      {
+        this->keywords_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setKeywords (const KeywordsOptional& x)
+      {
+        this->keywords_ = x;
+      }
+
+      void ConferenceDescriptionType::
+      setKeywords (::std::unique_ptr< KeywordsType > x)
+      {
+        this->keywords_.set (std::move (x));
+      }
+
+      const ConferenceDescriptionType::ConfUrisOptional& ConferenceDescriptionType::
+      getConfUris () const
+      {
+        return this->conf_uris_;
+      }
+
+      ConferenceDescriptionType::ConfUrisOptional& ConferenceDescriptionType::
+      getConfUris ()
+      {
+        return this->conf_uris_;
+      }
+
+      void ConferenceDescriptionType::
+      setConfUris (const ConfUrisType& x)
+      {
+        this->conf_uris_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setConfUris (const ConfUrisOptional& x)
+      {
+        this->conf_uris_ = x;
+      }
+
+      void ConferenceDescriptionType::
+      setConfUris (::std::unique_ptr< ConfUrisType > x)
+      {
+        this->conf_uris_.set (std::move (x));
+      }
+
+      const ConferenceDescriptionType::ServiceUrisOptional& ConferenceDescriptionType::
+      getServiceUris () const
+      {
+        return this->service_uris_;
+      }
+
+      ConferenceDescriptionType::ServiceUrisOptional& ConferenceDescriptionType::
+      getServiceUris ()
+      {
+        return this->service_uris_;
+      }
+
+      void ConferenceDescriptionType::
+      setServiceUris (const ServiceUrisType& x)
+      {
+        this->service_uris_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setServiceUris (const ServiceUrisOptional& x)
+      {
+        this->service_uris_ = x;
+      }
+
+      void ConferenceDescriptionType::
+      setServiceUris (::std::unique_ptr< ServiceUrisType > x)
+      {
+        this->service_uris_.set (std::move (x));
+      }
+
+      const ConferenceDescriptionType::MaximumUserCountOptional& ConferenceDescriptionType::
+      getMaximumUserCount () const
+      {
+        return this->maximum_user_count_;
+      }
+
+      ConferenceDescriptionType::MaximumUserCountOptional& ConferenceDescriptionType::
+      getMaximumUserCount ()
+      {
+        return this->maximum_user_count_;
+      }
+
+      void ConferenceDescriptionType::
+      setMaximumUserCount (const MaximumUserCountType& x)
+      {
+        this->maximum_user_count_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setMaximumUserCount (const MaximumUserCountOptional& x)
+      {
+        this->maximum_user_count_ = x;
+      }
+
+      const ConferenceDescriptionType::AvailableMediaOptional& ConferenceDescriptionType::
+      getAvailableMedia () const
+      {
+        return this->available_media_;
+      }
+
+      ConferenceDescriptionType::AvailableMediaOptional& ConferenceDescriptionType::
+      getAvailableMedia ()
+      {
+        return this->available_media_;
+      }
+
+      void ConferenceDescriptionType::
+      setAvailableMedia (const AvailableMediaType& x)
+      {
+        this->available_media_.set (x);
+      }
+
+      void ConferenceDescriptionType::
+      setAvailableMedia (const AvailableMediaOptional& x)
+      {
+        this->available_media_ = x;
+      }
+
+      void ConferenceDescriptionType::
+      setAvailableMedia (::std::unique_ptr< AvailableMediaType > x)
+      {
+        this->available_media_.set (std::move (x));
+      }
+
+      const ConferenceDescriptionType::AnySequence& ConferenceDescriptionType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      ConferenceDescriptionType::AnySequence& ConferenceDescriptionType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void ConferenceDescriptionType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const ConferenceDescriptionType::AnyAttributeSet& ConferenceDescriptionType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      ConferenceDescriptionType::AnyAttributeSet& ConferenceDescriptionType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void ConferenceDescriptionType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& ConferenceDescriptionType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& ConferenceDescriptionType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // HostType
+      // 
+
+      const HostType::DisplayTextOptional& HostType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      HostType::DisplayTextOptional& HostType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void HostType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void HostType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void HostType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const HostType::WebPageOptional& HostType::
+      getWebPage () const
+      {
+        return this->web_page_;
+      }
+
+      HostType::WebPageOptional& HostType::
+      getWebPage ()
+      {
+        return this->web_page_;
+      }
+
+      void HostType::
+      setWebPage (const WebPageType& x)
+      {
+        this->web_page_.set (x);
+      }
+
+      void HostType::
+      setWebPage (const WebPageOptional& x)
+      {
+        this->web_page_ = x;
+      }
+
+      void HostType::
+      setWebPage (::std::unique_ptr< WebPageType > x)
+      {
+        this->web_page_.set (std::move (x));
+      }
+
+      const HostType::UrisOptional& HostType::
+      getUris () const
+      {
+        return this->uris_;
+      }
+
+      HostType::UrisOptional& HostType::
+      getUris ()
+      {
+        return this->uris_;
+      }
+
+      void HostType::
+      setUris (const UrisType& x)
+      {
+        this->uris_.set (x);
+      }
+
+      void HostType::
+      setUris (const UrisOptional& x)
+      {
+        this->uris_ = x;
+      }
+
+      void HostType::
+      setUris (::std::unique_ptr< UrisType > x)
+      {
+        this->uris_.set (std::move (x));
+      }
+
+      const HostType::AnySequence& HostType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      HostType::AnySequence& HostType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void HostType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const HostType::AnyAttributeSet& HostType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      HostType::AnyAttributeSet& HostType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void HostType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& HostType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& HostType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // ConferenceStateType
+      // 
+
+      const ConferenceStateType::UserCountOptional& ConferenceStateType::
+      getUserCount () const
+      {
+        return this->user_count_;
+      }
+
+      ConferenceStateType::UserCountOptional& ConferenceStateType::
+      getUserCount ()
+      {
+        return this->user_count_;
+      }
+
+      void ConferenceStateType::
+      setUserCount (const UserCountType& x)
+      {
+        this->user_count_.set (x);
+      }
+
+      void ConferenceStateType::
+      setUserCount (const UserCountOptional& x)
+      {
+        this->user_count_ = x;
+      }
+
+      const ConferenceStateType::ActiveOptional& ConferenceStateType::
+      getActive () const
+      {
+        return this->active_;
+      }
+
+      ConferenceStateType::ActiveOptional& ConferenceStateType::
+      getActive ()
+      {
+        return this->active_;
+      }
+
+      void ConferenceStateType::
+      setActive (const ActiveType& x)
+      {
+        this->active_.set (x);
+      }
+
+      void ConferenceStateType::
+      setActive (const ActiveOptional& x)
+      {
+        this->active_ = x;
+      }
+
+      const ConferenceStateType::LockedOptional& ConferenceStateType::
+      getLocked () const
+      {
+        return this->locked_;
+      }
+
+      ConferenceStateType::LockedOptional& ConferenceStateType::
+      getLocked ()
+      {
+        return this->locked_;
+      }
+
+      void ConferenceStateType::
+      setLocked (const LockedType& x)
+      {
+        this->locked_.set (x);
+      }
+
+      void ConferenceStateType::
+      setLocked (const LockedOptional& x)
+      {
+        this->locked_ = x;
+      }
+
+      const ConferenceStateType::AnySequence& ConferenceStateType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      ConferenceStateType::AnySequence& ConferenceStateType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void ConferenceStateType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const ConferenceStateType::AnyAttributeSet& ConferenceStateType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      ConferenceStateType::AnyAttributeSet& ConferenceStateType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void ConferenceStateType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& ConferenceStateType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& ConferenceStateType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // ConferenceMediaType
+      // 
+
+      const ConferenceMediaType::EntrySequence& ConferenceMediaType::
+      getEntry () const
+      {
+        return this->entry_;
+      }
+
+      ConferenceMediaType::EntrySequence& ConferenceMediaType::
+      getEntry ()
+      {
+        return this->entry_;
+      }
+
+      void ConferenceMediaType::
+      setEntry (const EntrySequence& s)
+      {
+        this->entry_ = s;
+      }
+
+      const ConferenceMediaType::AnyAttributeSet& ConferenceMediaType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      ConferenceMediaType::AnyAttributeSet& ConferenceMediaType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void ConferenceMediaType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& ConferenceMediaType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& ConferenceMediaType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // ConferenceMediumType
+      // 
+
+      const ConferenceMediumType::DisplayTextOptional& ConferenceMediumType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      ConferenceMediumType::DisplayTextOptional& ConferenceMediumType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void ConferenceMediumType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void ConferenceMediumType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void ConferenceMediumType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const ConferenceMediumType::TypeType& ConferenceMediumType::
+      getType () const
+      {
+        return this->type_.get ();
+      }
+
+      ConferenceMediumType::TypeType& ConferenceMediumType::
+      getType ()
+      {
+        return this->type_.get ();
+      }
+
+      void ConferenceMediumType::
+      setType (const TypeType& x)
+      {
+        this->type_.set (x);
+      }
+
+      void ConferenceMediumType::
+      setType (::std::unique_ptr< TypeType > x)
+      {
+        this->type_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< ConferenceMediumType::TypeType > ConferenceMediumType::
+      setDetachType ()
+      {
+        return this->type_.detach ();
+      }
+
+      const ConferenceMediumType::StatusOptional& ConferenceMediumType::
+      getStatus () const
+      {
+        return this->status_;
+      }
+
+      ConferenceMediumType::StatusOptional& ConferenceMediumType::
+      getStatus ()
+      {
+        return this->status_;
+      }
+
+      void ConferenceMediumType::
+      setStatus (const StatusType& x)
+      {
+        this->status_.set (x);
+      }
+
+      void ConferenceMediumType::
+      setStatus (const StatusOptional& x)
+      {
+        this->status_ = x;
+      }
+
+      void ConferenceMediumType::
+      setStatus (::std::unique_ptr< StatusType > x)
+      {
+        this->status_.set (std::move (x));
+      }
+
+      const ConferenceMediumType::AnySequence& ConferenceMediumType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      ConferenceMediumType::AnySequence& ConferenceMediumType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void ConferenceMediumType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const ConferenceMediumType::LabelType& ConferenceMediumType::
+      getLabel () const
+      {
+        return this->label_.get ();
+      }
+
+      ConferenceMediumType::LabelType& ConferenceMediumType::
+      getLabel ()
+      {
+        return this->label_.get ();
+      }
+
+      void ConferenceMediumType::
+      setLabel (const LabelType& x)
+      {
+        this->label_.set (x);
+      }
+
+      void ConferenceMediumType::
+      setLabel (::std::unique_ptr< LabelType > x)
+      {
+        this->label_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< ConferenceMediumType::LabelType > ConferenceMediumType::
+      setDetachLabel ()
+      {
+        return this->label_.detach ();
+      }
+
+      const ConferenceMediumType::AnyAttributeSet& ConferenceMediumType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      ConferenceMediumType::AnyAttributeSet& ConferenceMediumType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void ConferenceMediumType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& ConferenceMediumType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& ConferenceMediumType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // UrisType
+      // 
+
+      const UrisType::EntrySequence& UrisType::
+      getEntry () const
+      {
+        return this->entry_;
+      }
+
+      UrisType::EntrySequence& UrisType::
+      getEntry ()
+      {
+        return this->entry_;
+      }
+
+      void UrisType::
+      setEntry (const EntrySequence& s)
+      {
+        this->entry_ = s;
+      }
+
+      const UrisType::StateType& UrisType::
+      getState () const
+      {
+        return this->state_.get ();
+      }
+
+      UrisType::StateType& UrisType::
+      getState ()
+      {
+        return this->state_.get ();
+      }
+
+      void UrisType::
+      setState (const StateType& x)
+      {
+        this->state_.set (x);
+      }
+
+      void UrisType::
+      setState (::std::unique_ptr< StateType > x)
+      {
+        this->state_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< UrisType::StateType > UrisType::
+      setDetachState ()
+      {
+        return this->state_.detach ();
+      }
+
+      const UrisType::StateType& UrisType::
+      getStateDefaultValue ()
+      {
+        return state_default_value_;
+      }
+
+      const UrisType::AnyAttributeSet& UrisType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      UrisType::AnyAttributeSet& UrisType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void UrisType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& UrisType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& UrisType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // UriType
+      // 
+
+      const UriType::UriType1& UriType::
+      getUri () const
+      {
+        return this->uri_.get ();
+      }
+
+      UriType::UriType1& UriType::
+      getUri ()
+      {
+        return this->uri_.get ();
+      }
+
+      void UriType::
+      setUri (const UriType1& x)
+      {
+        this->uri_.set (x);
+      }
+
+      void UriType::
+      setUri (::std::unique_ptr< UriType1 > x)
+      {
+        this->uri_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< UriType::UriType1 > UriType::
+      setDetachUri ()
+      {
+        return this->uri_.detach ();
+      }
+
+      const UriType::DisplayTextOptional& UriType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      UriType::DisplayTextOptional& UriType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void UriType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void UriType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void UriType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const UriType::PurposeOptional& UriType::
+      getPurpose () const
+      {
+        return this->purpose_;
+      }
+
+      UriType::PurposeOptional& UriType::
+      getPurpose ()
+      {
+        return this->purpose_;
+      }
+
+      void UriType::
+      setPurpose (const PurposeType& x)
+      {
+        this->purpose_.set (x);
+      }
+
+      void UriType::
+      setPurpose (const PurposeOptional& x)
+      {
+        this->purpose_ = x;
+      }
+
+      void UriType::
+      setPurpose (::std::unique_ptr< PurposeType > x)
+      {
+        this->purpose_.set (std::move (x));
+      }
+
+      const UriType::ModifiedOptional& UriType::
+      getModified () const
+      {
+        return this->modified_;
+      }
+
+      UriType::ModifiedOptional& UriType::
+      getModified ()
+      {
+        return this->modified_;
+      }
+
+      void UriType::
+      setModified (const ModifiedType& x)
+      {
+        this->modified_.set (x);
+      }
+
+      void UriType::
+      setModified (const ModifiedOptional& x)
+      {
+        this->modified_ = x;
+      }
+
+      void UriType::
+      setModified (::std::unique_ptr< ModifiedType > x)
+      {
+        this->modified_.set (std::move (x));
+      }
+
+      const UriType::AnySequence& UriType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      UriType::AnySequence& UriType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void UriType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const UriType::AnyAttributeSet& UriType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      UriType::AnyAttributeSet& UriType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void UriType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& UriType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& UriType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // KeywordsType
+      //
+
+      KeywordsType::
+      KeywordsType ()
+      : ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char > (this)
+      {
+      }
+
+      KeywordsType::
+      KeywordsType (size_type n, const ::LinphonePrivate::Xsd::XmlSchema::String& x)
+      : ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char > (n, x, this)
+      {
+      }
+
+      KeywordsType::
+      KeywordsType (const KeywordsType& o,
+                    ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                    ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (o, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char > (o, f, this)
+      {
+      }
+
+      // UsersType
+      // 
+
+      const UsersType::UserSequence& UsersType::
+      getUser () const
+      {
+        return this->user_;
+      }
+
+      UsersType::UserSequence& UsersType::
+      getUser ()
+      {
+        return this->user_;
+      }
+
+      void UsersType::
+      setUser (const UserSequence& s)
+      {
+        this->user_ = s;
+      }
+
+      const UsersType::AnySequence& UsersType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      UsersType::AnySequence& UsersType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void UsersType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const UsersType::StateType& UsersType::
+      getState () const
+      {
+        return this->state_.get ();
+      }
+
+      UsersType::StateType& UsersType::
+      getState ()
+      {
+        return this->state_.get ();
+      }
+
+      void UsersType::
+      setState (const StateType& x)
+      {
+        this->state_.set (x);
+      }
+
+      void UsersType::
+      setState (::std::unique_ptr< StateType > x)
+      {
+        this->state_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< UsersType::StateType > UsersType::
+      setDetachState ()
+      {
+        return this->state_.detach ();
+      }
+
+      const UsersType::StateType& UsersType::
+      getStateDefaultValue ()
+      {
+        return state_default_value_;
+      }
+
+      const UsersType::AnyAttributeSet& UsersType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      UsersType::AnyAttributeSet& UsersType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void UsersType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& UsersType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& UsersType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // UserType
+      // 
+
+      const UserType::DisplayTextOptional& UserType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      UserType::DisplayTextOptional& UserType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void UserType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void UserType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void UserType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const UserType::AssociatedAorsOptional& UserType::
+      getAssociatedAors () const
+      {
+        return this->associated_aors_;
+      }
+
+      UserType::AssociatedAorsOptional& UserType::
+      getAssociatedAors ()
+      {
+        return this->associated_aors_;
+      }
+
+      void UserType::
+      setAssociatedAors (const AssociatedAorsType& x)
+      {
+        this->associated_aors_.set (x);
+      }
+
+      void UserType::
+      setAssociatedAors (const AssociatedAorsOptional& x)
+      {
+        this->associated_aors_ = x;
+      }
+
+      void UserType::
+      setAssociatedAors (::std::unique_ptr< AssociatedAorsType > x)
+      {
+        this->associated_aors_.set (std::move (x));
+      }
+
+      const UserType::RolesOptional& UserType::
+      getRoles () const
+      {
+        return this->roles_;
+      }
+
+      UserType::RolesOptional& UserType::
+      getRoles ()
+      {
+        return this->roles_;
+      }
+
+      void UserType::
+      setRoles (const RolesType& x)
+      {
+        this->roles_.set (x);
+      }
+
+      void UserType::
+      setRoles (const RolesOptional& x)
+      {
+        this->roles_ = x;
+      }
+
+      void UserType::
+      setRoles (::std::unique_ptr< RolesType > x)
+      {
+        this->roles_.set (std::move (x));
+      }
+
+      const UserType::LanguagesOptional& UserType::
+      getLanguages () const
+      {
+        return this->languages_;
+      }
+
+      UserType::LanguagesOptional& UserType::
+      getLanguages ()
+      {
+        return this->languages_;
+      }
+
+      void UserType::
+      setLanguages (const LanguagesType& x)
+      {
+        this->languages_.set (x);
+      }
+
+      void UserType::
+      setLanguages (const LanguagesOptional& x)
+      {
+        this->languages_ = x;
+      }
+
+      void UserType::
+      setLanguages (::std::unique_ptr< LanguagesType > x)
+      {
+        this->languages_.set (std::move (x));
+      }
+
+      const UserType::CascadedFocusOptional& UserType::
+      getCascadedFocus () const
+      {
+        return this->cascaded_focus_;
+      }
+
+      UserType::CascadedFocusOptional& UserType::
+      getCascadedFocus ()
+      {
+        return this->cascaded_focus_;
+      }
+
+      void UserType::
+      setCascadedFocus (const CascadedFocusType& x)
+      {
+        this->cascaded_focus_.set (x);
+      }
+
+      void UserType::
+      setCascadedFocus (const CascadedFocusOptional& x)
+      {
+        this->cascaded_focus_ = x;
+      }
+
+      void UserType::
+      setCascadedFocus (::std::unique_ptr< CascadedFocusType > x)
+      {
+        this->cascaded_focus_.set (std::move (x));
+      }
+
+      const UserType::EndpointSequence& UserType::
+      getEndpoint () const
+      {
+        return this->endpoint_;
+      }
+
+      UserType::EndpointSequence& UserType::
+      getEndpoint ()
+      {
+        return this->endpoint_;
+      }
+
+      void UserType::
+      setEndpoint (const EndpointSequence& s)
+      {
+        this->endpoint_ = s;
+      }
+
+      const UserType::AnySequence& UserType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      UserType::AnySequence& UserType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void UserType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const UserType::EntityOptional& UserType::
+      getEntity () const
+      {
+        return this->entity_;
+      }
+
+      UserType::EntityOptional& UserType::
+      getEntity ()
+      {
+        return this->entity_;
+      }
+
+      void UserType::
+      setEntity (const EntityType& x)
+      {
+        this->entity_.set (x);
+      }
+
+      void UserType::
+      setEntity (const EntityOptional& x)
+      {
+        this->entity_ = x;
+      }
+
+      void UserType::
+      setEntity (::std::unique_ptr< EntityType > x)
+      {
+        this->entity_.set (std::move (x));
+      }
+
+      const UserType::StateType& UserType::
+      getState () const
+      {
+        return this->state_.get ();
+      }
+
+      UserType::StateType& UserType::
+      getState ()
+      {
+        return this->state_.get ();
+      }
+
+      void UserType::
+      setState (const StateType& x)
+      {
+        this->state_.set (x);
+      }
+
+      void UserType::
+      setState (::std::unique_ptr< StateType > x)
+      {
+        this->state_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< UserType::StateType > UserType::
+      setDetachState ()
+      {
+        return this->state_.detach ();
+      }
+
+      const UserType::StateType& UserType::
+      getStateDefaultValue ()
+      {
+        return state_default_value_;
+      }
+
+      const UserType::AnyAttributeSet& UserType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      UserType::AnyAttributeSet& UserType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void UserType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& UserType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& UserType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // UserRolesType
+      // 
+
+      const UserRolesType::EntrySequence& UserRolesType::
+      getEntry () const
+      {
+        return this->entry_;
+      }
+
+      UserRolesType::EntrySequence& UserRolesType::
+      getEntry ()
+      {
+        return this->entry_;
+      }
+
+      void UserRolesType::
+      setEntry (const EntrySequence& s)
+      {
+        this->entry_ = s;
+      }
+
+      const UserRolesType::AnyAttributeSet& UserRolesType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      UserRolesType::AnyAttributeSet& UserRolesType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void UserRolesType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& UserRolesType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& UserRolesType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // UserLanguagesType
+      //
+
+      UserLanguagesType::
+      UserLanguagesType ()
+      : ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char > (this)
+      {
+      }
+
+      UserLanguagesType::
+      UserLanguagesType (size_type n, const ::LinphonePrivate::Xsd::XmlSchema::Language& x)
+      : ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char > (n, x, this)
+      {
+      }
+
+      UserLanguagesType::
+      UserLanguagesType (const UserLanguagesType& o,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (o, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char > (o, f, this)
+      {
+      }
+
+      // EndpointType
+      // 
+
+      const EndpointType::DisplayTextOptional& EndpointType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      EndpointType::DisplayTextOptional& EndpointType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void EndpointType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void EndpointType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void EndpointType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const EndpointType::ReferredOptional& EndpointType::
+      getReferred () const
+      {
+        return this->referred_;
+      }
+
+      EndpointType::ReferredOptional& EndpointType::
+      getReferred ()
+      {
+        return this->referred_;
+      }
+
+      void EndpointType::
+      setReferred (const ReferredType& x)
+      {
+        this->referred_.set (x);
+      }
+
+      void EndpointType::
+      setReferred (const ReferredOptional& x)
+      {
+        this->referred_ = x;
+      }
+
+      void EndpointType::
+      setReferred (::std::unique_ptr< ReferredType > x)
+      {
+        this->referred_.set (std::move (x));
+      }
+
+      const EndpointType::StatusOptional& EndpointType::
+      getStatus () const
+      {
+        return this->status_;
+      }
+
+      EndpointType::StatusOptional& EndpointType::
+      getStatus ()
+      {
+        return this->status_;
+      }
+
+      void EndpointType::
+      setStatus (const StatusType& x)
+      {
+        this->status_.set (x);
+      }
+
+      void EndpointType::
+      setStatus (const StatusOptional& x)
+      {
+        this->status_ = x;
+      }
+
+      void EndpointType::
+      setStatus (::std::unique_ptr< StatusType > x)
+      {
+        this->status_.set (std::move (x));
+      }
+
+      const EndpointType::JoiningMethodOptional& EndpointType::
+      getJoiningMethod () const
+      {
+        return this->joining_method_;
+      }
+
+      EndpointType::JoiningMethodOptional& EndpointType::
+      getJoiningMethod ()
+      {
+        return this->joining_method_;
+      }
+
+      void EndpointType::
+      setJoiningMethod (const JoiningMethodType& x)
+      {
+        this->joining_method_.set (x);
+      }
+
+      void EndpointType::
+      setJoiningMethod (const JoiningMethodOptional& x)
+      {
+        this->joining_method_ = x;
+      }
+
+      void EndpointType::
+      setJoiningMethod (::std::unique_ptr< JoiningMethodType > x)
+      {
+        this->joining_method_.set (std::move (x));
+      }
+
+      const EndpointType::JoiningInfoOptional& EndpointType::
+      getJoiningInfo () const
+      {
+        return this->joining_info_;
+      }
+
+      EndpointType::JoiningInfoOptional& EndpointType::
+      getJoiningInfo ()
+      {
+        return this->joining_info_;
+      }
+
+      void EndpointType::
+      setJoiningInfo (const JoiningInfoType& x)
+      {
+        this->joining_info_.set (x);
+      }
+
+      void EndpointType::
+      setJoiningInfo (const JoiningInfoOptional& x)
+      {
+        this->joining_info_ = x;
+      }
+
+      void EndpointType::
+      setJoiningInfo (::std::unique_ptr< JoiningInfoType > x)
+      {
+        this->joining_info_.set (std::move (x));
+      }
+
+      const EndpointType::DisconnectionMethodOptional& EndpointType::
+      getDisconnectionMethod () const
+      {
+        return this->disconnection_method_;
+      }
+
+      EndpointType::DisconnectionMethodOptional& EndpointType::
+      getDisconnectionMethod ()
+      {
+        return this->disconnection_method_;
+      }
+
+      void EndpointType::
+      setDisconnectionMethod (const DisconnectionMethodType& x)
+      {
+        this->disconnection_method_.set (x);
+      }
+
+      void EndpointType::
+      setDisconnectionMethod (const DisconnectionMethodOptional& x)
+      {
+        this->disconnection_method_ = x;
+      }
+
+      void EndpointType::
+      setDisconnectionMethod (::std::unique_ptr< DisconnectionMethodType > x)
+      {
+        this->disconnection_method_.set (std::move (x));
+      }
+
+      const EndpointType::DisconnectionInfoOptional& EndpointType::
+      getDisconnectionInfo () const
+      {
+        return this->disconnection_info_;
+      }
+
+      EndpointType::DisconnectionInfoOptional& EndpointType::
+      getDisconnectionInfo ()
+      {
+        return this->disconnection_info_;
+      }
+
+      void EndpointType::
+      setDisconnectionInfo (const DisconnectionInfoType& x)
+      {
+        this->disconnection_info_.set (x);
+      }
+
+      void EndpointType::
+      setDisconnectionInfo (const DisconnectionInfoOptional& x)
+      {
+        this->disconnection_info_ = x;
+      }
+
+      void EndpointType::
+      setDisconnectionInfo (::std::unique_ptr< DisconnectionInfoType > x)
+      {
+        this->disconnection_info_.set (std::move (x));
+      }
+
+      const EndpointType::MediaSequence& EndpointType::
+      getMedia () const
+      {
+        return this->media_;
+      }
+
+      EndpointType::MediaSequence& EndpointType::
+      getMedia ()
+      {
+        return this->media_;
+      }
+
+      void EndpointType::
+      setMedia (const MediaSequence& s)
+      {
+        this->media_ = s;
+      }
+
+      const EndpointType::CallInfoOptional& EndpointType::
+      getCallInfo () const
+      {
+        return this->call_info_;
+      }
+
+      EndpointType::CallInfoOptional& EndpointType::
+      getCallInfo ()
+      {
+        return this->call_info_;
+      }
+
+      void EndpointType::
+      setCallInfo (const CallInfoType& x)
+      {
+        this->call_info_.set (x);
+      }
+
+      void EndpointType::
+      setCallInfo (const CallInfoOptional& x)
+      {
+        this->call_info_ = x;
+      }
+
+      void EndpointType::
+      setCallInfo (::std::unique_ptr< CallInfoType > x)
+      {
+        this->call_info_.set (std::move (x));
+      }
+
+      const EndpointType::AnySequence& EndpointType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      EndpointType::AnySequence& EndpointType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void EndpointType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const EndpointType::EntityOptional& EndpointType::
+      getEntity () const
+      {
+        return this->entity_;
+      }
+
+      EndpointType::EntityOptional& EndpointType::
+      getEntity ()
+      {
+        return this->entity_;
+      }
+
+      void EndpointType::
+      setEntity (const EntityType& x)
+      {
+        this->entity_.set (x);
+      }
+
+      void EndpointType::
+      setEntity (const EntityOptional& x)
+      {
+        this->entity_ = x;
+      }
+
+      void EndpointType::
+      setEntity (::std::unique_ptr< EntityType > x)
+      {
+        this->entity_.set (std::move (x));
+      }
+
+      const EndpointType::StateType& EndpointType::
+      getState () const
+      {
+        return this->state_.get ();
+      }
+
+      EndpointType::StateType& EndpointType::
+      getState ()
+      {
+        return this->state_.get ();
+      }
+
+      void EndpointType::
+      setState (const StateType& x)
+      {
+        this->state_.set (x);
+      }
+
+      void EndpointType::
+      setState (::std::unique_ptr< StateType > x)
+      {
+        this->state_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< EndpointType::StateType > EndpointType::
+      setDetachState ()
+      {
+        return this->state_.detach ();
+      }
+
+      const EndpointType::StateType& EndpointType::
+      getStateDefaultValue ()
+      {
+        return state_default_value_;
+      }
+
+      const EndpointType::AnyAttributeSet& EndpointType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      EndpointType::AnyAttributeSet& EndpointType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void EndpointType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& EndpointType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& EndpointType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // EndpointStatusType
+      // 
+
+      EndpointStatusType::
+      EndpointStatusType (Value v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_EndpointStatusType_literals_[v])
+      {
+      }
+
+      EndpointStatusType::
+      EndpointStatusType (const char* v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      EndpointStatusType::
+      EndpointStatusType (const ::std::string& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      EndpointStatusType::
+      EndpointStatusType (const ::LinphonePrivate::Xsd::XmlSchema::String& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      EndpointStatusType::
+      EndpointStatusType (const EndpointStatusType& v,
+                          ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                          ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v, f, c)
+      {
+      }
+
+      EndpointStatusType& EndpointStatusType::
+      operator= (Value v)
+      {
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+        ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_EndpointStatusType_literals_[v]);
+
+        return *this;
+      }
+
+
+      // JoiningType
+      // 
+
+      JoiningType::
+      JoiningType (Value v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_JoiningType_literals_[v])
+      {
+      }
+
+      JoiningType::
+      JoiningType (const char* v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      JoiningType::
+      JoiningType (const ::std::string& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      JoiningType::
+      JoiningType (const ::LinphonePrivate::Xsd::XmlSchema::String& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      JoiningType::
+      JoiningType (const JoiningType& v,
+                   ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                   ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v, f, c)
+      {
+      }
+
+      JoiningType& JoiningType::
+      operator= (Value v)
+      {
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+        ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_JoiningType_literals_[v]);
+
+        return *this;
+      }
+
+
+      // DisconnectionType
+      // 
+
+      DisconnectionType::
+      DisconnectionType (Value v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_DisconnectionType_literals_[v])
+      {
+      }
+
+      DisconnectionType::
+      DisconnectionType (const char* v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      DisconnectionType::
+      DisconnectionType (const ::std::string& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      DisconnectionType::
+      DisconnectionType (const ::LinphonePrivate::Xsd::XmlSchema::String& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      DisconnectionType::
+      DisconnectionType (const DisconnectionType& v,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v, f, c)
+      {
+      }
+
+      DisconnectionType& DisconnectionType::
+      operator= (Value v)
+      {
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+        ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_DisconnectionType_literals_[v]);
+
+        return *this;
+      }
+
+
+      // ExecutionType
+      // 
+
+      const ExecutionType::WhenOptional& ExecutionType::
+      getWhen () const
+      {
+        return this->when_;
+      }
+
+      ExecutionType::WhenOptional& ExecutionType::
+      getWhen ()
+      {
+        return this->when_;
+      }
+
+      void ExecutionType::
+      setWhen (const WhenType& x)
+      {
+        this->when_.set (x);
+      }
+
+      void ExecutionType::
+      setWhen (const WhenOptional& x)
+      {
+        this->when_ = x;
+      }
+
+      void ExecutionType::
+      setWhen (::std::unique_ptr< WhenType > x)
+      {
+        this->when_.set (std::move (x));
+      }
+
+      const ExecutionType::ReasonOptional& ExecutionType::
+      getReason () const
+      {
+        return this->reason_;
+      }
+
+      ExecutionType::ReasonOptional& ExecutionType::
+      getReason ()
+      {
+        return this->reason_;
+      }
+
+      void ExecutionType::
+      setReason (const ReasonType& x)
+      {
+        this->reason_.set (x);
+      }
+
+      void ExecutionType::
+      setReason (const ReasonOptional& x)
+      {
+        this->reason_ = x;
+      }
+
+      void ExecutionType::
+      setReason (::std::unique_ptr< ReasonType > x)
+      {
+        this->reason_.set (std::move (x));
+      }
+
+      const ExecutionType::ByOptional& ExecutionType::
+      getBy () const
+      {
+        return this->by_;
+      }
+
+      ExecutionType::ByOptional& ExecutionType::
+      getBy ()
+      {
+        return this->by_;
+      }
+
+      void ExecutionType::
+      setBy (const ByType& x)
+      {
+        this->by_.set (x);
+      }
+
+      void ExecutionType::
+      setBy (const ByOptional& x)
+      {
+        this->by_ = x;
+      }
+
+      void ExecutionType::
+      setBy (::std::unique_ptr< ByType > x)
+      {
+        this->by_.set (std::move (x));
+      }
+
+      const ExecutionType::AnyAttributeSet& ExecutionType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      ExecutionType::AnyAttributeSet& ExecutionType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void ExecutionType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& ExecutionType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& ExecutionType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // CallType
+      // 
+
+      const CallType::SipOptional& CallType::
+      getSip () const
+      {
+        return this->sip_;
+      }
+
+      CallType::SipOptional& CallType::
+      getSip ()
+      {
+        return this->sip_;
+      }
+
+      void CallType::
+      setSip (const SipType& x)
+      {
+        this->sip_.set (x);
+      }
+
+      void CallType::
+      setSip (const SipOptional& x)
+      {
+        this->sip_ = x;
+      }
+
+      void CallType::
+      setSip (::std::unique_ptr< SipType > x)
+      {
+        this->sip_.set (std::move (x));
+      }
+
+      const CallType::AnySequence& CallType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      CallType::AnySequence& CallType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void CallType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const CallType::AnyAttributeSet& CallType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      CallType::AnyAttributeSet& CallType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void CallType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& CallType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& CallType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // SipDialogIdType
+      // 
+
+      const SipDialogIdType::DisplayTextOptional& SipDialogIdType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      SipDialogIdType::DisplayTextOptional& SipDialogIdType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void SipDialogIdType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void SipDialogIdType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void SipDialogIdType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const SipDialogIdType::CallIdType& SipDialogIdType::
+      getCallId () const
+      {
+        return this->call_id_.get ();
+      }
+
+      SipDialogIdType::CallIdType& SipDialogIdType::
+      getCallId ()
+      {
+        return this->call_id_.get ();
+      }
+
+      void SipDialogIdType::
+      setCallId (const CallIdType& x)
+      {
+        this->call_id_.set (x);
+      }
+
+      void SipDialogIdType::
+      setCallId (::std::unique_ptr< CallIdType > x)
+      {
+        this->call_id_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< SipDialogIdType::CallIdType > SipDialogIdType::
+      setDetachCall_id ()
+      {
+        return this->call_id_.detach ();
+      }
+
+      const SipDialogIdType::FromTagType& SipDialogIdType::
+      getFromTag () const
+      {
+        return this->from_tag_.get ();
+      }
+
+      SipDialogIdType::FromTagType& SipDialogIdType::
+      getFromTag ()
+      {
+        return this->from_tag_.get ();
+      }
+
+      void SipDialogIdType::
+      setFromTag (const FromTagType& x)
+      {
+        this->from_tag_.set (x);
+      }
+
+      void SipDialogIdType::
+      setFromTag (::std::unique_ptr< FromTagType > x)
+      {
+        this->from_tag_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< SipDialogIdType::FromTagType > SipDialogIdType::
+      setDetachFrom_tag ()
+      {
+        return this->from_tag_.detach ();
+      }
+
+      const SipDialogIdType::ToTagType& SipDialogIdType::
+      getToTag () const
+      {
+        return this->to_tag_.get ();
+      }
+
+      SipDialogIdType::ToTagType& SipDialogIdType::
+      getToTag ()
+      {
+        return this->to_tag_.get ();
+      }
+
+      void SipDialogIdType::
+      setToTag (const ToTagType& x)
+      {
+        this->to_tag_.set (x);
+      }
+
+      void SipDialogIdType::
+      setToTag (::std::unique_ptr< ToTagType > x)
+      {
+        this->to_tag_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< SipDialogIdType::ToTagType > SipDialogIdType::
+      setDetachTo_tag ()
+      {
+        return this->to_tag_.detach ();
+      }
+
+      const SipDialogIdType::AnySequence& SipDialogIdType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      SipDialogIdType::AnySequence& SipDialogIdType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void SipDialogIdType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const SipDialogIdType::AnyAttributeSet& SipDialogIdType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      SipDialogIdType::AnyAttributeSet& SipDialogIdType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void SipDialogIdType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& SipDialogIdType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& SipDialogIdType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // MediaType
+      // 
+
+      const MediaType::DisplayTextOptional& MediaType::
+      getDisplayText () const
+      {
+        return this->display_text_;
+      }
+
+      MediaType::DisplayTextOptional& MediaType::
+      getDisplayText ()
+      {
+        return this->display_text_;
+      }
+
+      void MediaType::
+      setDisplayText (const DisplayTextType& x)
+      {
+        this->display_text_.set (x);
+      }
+
+      void MediaType::
+      setDisplayText (const DisplayTextOptional& x)
+      {
+        this->display_text_ = x;
+      }
+
+      void MediaType::
+      setDisplayText (::std::unique_ptr< DisplayTextType > x)
+      {
+        this->display_text_.set (std::move (x));
+      }
+
+      const MediaType::TypeOptional& MediaType::
+      getType () const
+      {
+        return this->type_;
+      }
+
+      MediaType::TypeOptional& MediaType::
+      getType ()
+      {
+        return this->type_;
+      }
+
+      void MediaType::
+      setType (const TypeType& x)
+      {
+        this->type_.set (x);
+      }
+
+      void MediaType::
+      setType (const TypeOptional& x)
+      {
+        this->type_ = x;
+      }
+
+      void MediaType::
+      setType (::std::unique_ptr< TypeType > x)
+      {
+        this->type_.set (std::move (x));
+      }
+
+      const MediaType::LabelOptional& MediaType::
+      getLabel () const
+      {
+        return this->label_;
+      }
+
+      MediaType::LabelOptional& MediaType::
+      getLabel ()
+      {
+        return this->label_;
+      }
+
+      void MediaType::
+      setLabel (const LabelType& x)
+      {
+        this->label_.set (x);
+      }
+
+      void MediaType::
+      setLabel (const LabelOptional& x)
+      {
+        this->label_ = x;
+      }
+
+      void MediaType::
+      setLabel (::std::unique_ptr< LabelType > x)
+      {
+        this->label_.set (std::move (x));
+      }
+
+      const MediaType::SrcIdOptional& MediaType::
+      getSrcId () const
+      {
+        return this->src_id_;
+      }
+
+      MediaType::SrcIdOptional& MediaType::
+      getSrcId ()
+      {
+        return this->src_id_;
+      }
+
+      void MediaType::
+      setSrcId (const SrcIdType& x)
+      {
+        this->src_id_.set (x);
+      }
+
+      void MediaType::
+      setSrcId (const SrcIdOptional& x)
+      {
+        this->src_id_ = x;
+      }
+
+      void MediaType::
+      setSrcId (::std::unique_ptr< SrcIdType > x)
+      {
+        this->src_id_.set (std::move (x));
+      }
+
+      const MediaType::StatusOptional& MediaType::
+      getStatus () const
+      {
+        return this->status_;
+      }
+
+      MediaType::StatusOptional& MediaType::
+      getStatus ()
+      {
+        return this->status_;
+      }
+
+      void MediaType::
+      setStatus (const StatusType& x)
+      {
+        this->status_.set (x);
+      }
+
+      void MediaType::
+      setStatus (const StatusOptional& x)
+      {
+        this->status_ = x;
+      }
+
+      void MediaType::
+      setStatus (::std::unique_ptr< StatusType > x)
+      {
+        this->status_.set (std::move (x));
+      }
+
+      const MediaType::AnySequence& MediaType::
+      getAny () const
+      {
+        return this->any_;
+      }
+
+      MediaType::AnySequence& MediaType::
+      getAny ()
+      {
+        return this->any_;
+      }
+
+      void MediaType::
+      setAny (const AnySequence& s)
+      {
+        this->any_ = s;
+      }
+
+      const MediaType::IdType& MediaType::
+      getId () const
+      {
+        return this->id_.get ();
+      }
+
+      MediaType::IdType& MediaType::
+      getId ()
+      {
+        return this->id_.get ();
+      }
+
+      void MediaType::
+      setId (const IdType& x)
+      {
+        this->id_.set (x);
+      }
+
+      void MediaType::
+      setId (::std::unique_ptr< IdType > x)
+      {
+        this->id_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< MediaType::IdType > MediaType::
+      setDetachId ()
+      {
+        return this->id_.detach ();
+      }
+
+      const MediaType::AnyAttributeSet& MediaType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      MediaType::AnyAttributeSet& MediaType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void MediaType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& MediaType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& MediaType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+
+
+      // MediaStatusType
+      // 
+
+      MediaStatusType::
+      MediaStatusType (Value v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_MediaStatusType_literals_[v])
+      {
+      }
+
+      MediaStatusType::
+      MediaStatusType (const char* v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      MediaStatusType::
+      MediaStatusType (const ::std::string& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      MediaStatusType::
+      MediaStatusType (const ::LinphonePrivate::Xsd::XmlSchema::String& v)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v)
+      {
+      }
+
+      MediaStatusType::
+      MediaStatusType (const MediaStatusType& v,
+                       ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                       ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (v, f, c)
+      {
+      }
+
+      MediaStatusType& MediaStatusType::
+      operator= (Value v)
+      {
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+        ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_MediaStatusType_literals_[v]);
+
+        return *this;
+      }
+
+
+      // SidebarsByValType
+      // 
+
+      const SidebarsByValType::EntrySequence& SidebarsByValType::
+      getEntry () const
+      {
+        return this->entry_;
+      }
+
+      SidebarsByValType::EntrySequence& SidebarsByValType::
+      getEntry ()
+      {
+        return this->entry_;
+      }
+
+      void SidebarsByValType::
+      setEntry (const EntrySequence& s)
+      {
+        this->entry_ = s;
+      }
+
+      const SidebarsByValType::StateType& SidebarsByValType::
+      getState () const
+      {
+        return this->state_.get ();
+      }
+
+      SidebarsByValType::StateType& SidebarsByValType::
+      getState ()
+      {
+        return this->state_.get ();
+      }
+
+      void SidebarsByValType::
+      setState (const StateType& x)
+      {
+        this->state_.set (x);
+      }
+
+      void SidebarsByValType::
+      setState (::std::unique_ptr< StateType > x)
+      {
+        this->state_.set (std::move (x));
+      }
+
+      ::std::unique_ptr< SidebarsByValType::StateType > SidebarsByValType::
+      setDetachState ()
+      {
+        return this->state_.detach ();
+      }
+
+      const SidebarsByValType::StateType& SidebarsByValType::
+      getStateDefaultValue ()
+      {
+        return state_default_value_;
+      }
+
+      const SidebarsByValType::AnyAttributeSet& SidebarsByValType::
+      getAnyAttribute () const
+      {
+        return this->any_attribute_;
+      }
+
+      SidebarsByValType::AnyAttributeSet& SidebarsByValType::
+      getAnyAttribute ()
+      {
+        return this->any_attribute_;
+      }
+
+      void SidebarsByValType::
+      setAnyAttribute (const AnyAttributeSet& s)
+      {
+        this->any_attribute_ = s;
+      }
+
+      const ::xercesc::DOMDocument& SidebarsByValType::
+      getDomDocument () const
+      {
+        return *this->dom_document_;
+      }
+
+      ::xercesc::DOMDocument& SidebarsByValType::
+      getDomDocument ()
+      {
+        return *this->dom_document_;
+      }
+    }
   }
 }
 
@@ -3201,4063 +3205,4075 @@ namespace conference_info
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
 
-namespace conference_info
+namespace LinphonePrivate
 {
-  // Conference_type
-  //
-
-  const Conference_type::StateType Conference_type::state_default_value_ (
-    "full");
-
-  Conference_type::
-  Conference_type (const EntityType& entity)
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    conference_description_ (this),
-    host_info_ (this),
-    conference_state_ (this),
-    users_ (this),
-    sidebars_by_ref_ (this),
-    sidebars_by_val_ (this),
-    any_ (this->getDomDocument ()),
-    entity_ (entity, this),
-    state_ (getStateDefaultValue (), this),
-    version_ (this),
-    any_attribute_ (this->getDomDocument ())
+  namespace Xsd
   {
-  }
-
-  Conference_type::
-  Conference_type (const Conference_type& x,
-                   ::xml_schema::Flags f,
-                   ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    conference_description_ (x.conference_description_, f, this),
-    host_info_ (x.host_info_, f, this),
-    conference_state_ (x.conference_state_, f, this),
-    users_ (x.users_, f, this),
-    sidebars_by_ref_ (x.sidebars_by_ref_, f, this),
-    sidebars_by_val_ (x.sidebars_by_val_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    entity_ (x.entity_, f, this),
-    state_ (x.state_, f, this),
-    version_ (x.version_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Conference_type::
-  Conference_type (const ::xercesc::DOMElement& e,
-                   ::xml_schema::Flags f,
-                   ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    conference_description_ (this),
-    host_info_ (this),
-    conference_state_ (this),
-    users_ (this),
-    sidebars_by_ref_ (this),
-    sidebars_by_val_ (this),
-    any_ (this->getDomDocument ()),
-    entity_ (this),
-    state_ (this),
-    version_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
+    namespace ConferenceInfo
     {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Conference_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // conference-description
+      // ConferenceType
       //
-      if (n.name () == "conference-description" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Conference_descriptionType > r (
-          Conference_descriptionTraits::create (i, f, this));
 
-        if (!this->conference_description_)
+      const ConferenceType::StateType ConferenceType::state_default_value_ (
+        "full");
+
+      ConferenceType::
+      ConferenceType (const EntityType& entity)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        conference_description_ (this),
+        host_info_ (this),
+        conference_state_ (this),
+        users_ (this),
+        sidebars_by_ref_ (this),
+        sidebars_by_val_ (this),
+        any_ (this->getDomDocument ()),
+        entity_ (entity, this),
+        state_ (getStateDefaultValue (), this),
+        version_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      ConferenceType::
+      ConferenceType (const ConferenceType& x,
+                      ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                      ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        conference_description_ (x.conference_description_, f, this),
+        host_info_ (x.host_info_, f, this),
+        conference_state_ (x.conference_state_, f, this),
+        users_ (x.users_, f, this),
+        sidebars_by_ref_ (x.sidebars_by_ref_, f, this),
+        sidebars_by_val_ (x.sidebars_by_val_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        entity_ (x.entity_, f, this),
+        state_ (x.state_, f, this),
+        version_ (x.version_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      ConferenceType::
+      ConferenceType (const ::xercesc::DOMElement& e,
+                      ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                      ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        conference_description_ (this),
+        host_info_ (this),
+        conference_state_ (this),
+        users_ (this),
+        sidebars_by_ref_ (this),
+        sidebars_by_val_ (this),
+        any_ (this->getDomDocument ()),
+        entity_ (this),
+        state_ (this),
+        version_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
         {
-          this->conference_description_.set (::std::move (r));
-          continue;
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // host-info
-      //
-      if (n.name () == "host-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void ConferenceType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< Host_infoType > r (
-          Host_infoTraits::create (i, f, this));
-
-        if (!this->host_info_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->host_info_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // conference-description
+          //
+          if (n.name () == "conference-description" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ConferenceDescriptionType > r (
+              ConferenceDescriptionTraits::create (i, f, this));
+
+            if (!this->conference_description_)
+            {
+              this->conference_description_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // host-info
+          //
+          if (n.name () == "host-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< HostInfoType > r (
+              HostInfoTraits::create (i, f, this));
+
+            if (!this->host_info_)
+            {
+              this->host_info_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // conference-state
+          //
+          if (n.name () == "conference-state" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ConferenceStateType > r (
+              ConferenceStateTraits::create (i, f, this));
+
+            if (!this->conference_state_)
+            {
+              this->conference_state_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // users
+          //
+          if (n.name () == "users" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< UsersType > r (
+              UsersTraits::create (i, f, this));
+
+            if (!this->users_)
+            {
+              this->users_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // sidebars-by-ref
+          //
+          if (n.name () == "sidebars-by-ref" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< SidebarsByRefType > r (
+              SidebarsByRefTraits::create (i, f, this));
+
+            if (!this->sidebars_by_ref_)
+            {
+              this->sidebars_by_ref_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // sidebars-by-val
+          //
+          if (n.name () == "sidebars-by-val" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< SidebarsByValType > r (
+              SidebarsByValTraits::create (i, f, this));
+
+            if (!this->sidebars_by_val_)
+            {
+              this->sidebars_by_val_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "entity" && n.namespace_ ().empty ())
+          {
+            this->entity_.set (EntityTraits::create (i, f, this));
+            continue;
+          }
+
+          if (n.name () == "state" && n.namespace_ ().empty ())
+          {
+            this->state_.set (StateTraits::create (i, f, this));
+            continue;
+          }
+
+          if (n.name () == "version" && n.namespace_ ().empty ())
+          {
+            this->version_.set (VersionTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
+        }
+
+        if (!entity_.present ())
+        {
+          throw ::xsd::cxx::tree::expected_attribute< char > (
+            "entity",
+            "");
+        }
+
+        if (!state_.present ())
+        {
+          this->state_.set (getStateDefaultValue ());
         }
       }
 
-      // conference-state
-      //
-      if (n.name () == "conference-state" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      ConferenceType* ConferenceType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< Conference_stateType > r (
-          Conference_stateTraits::create (i, f, this));
+        return new class ConferenceType (*this, f, c);
+      }
 
-        if (!this->conference_state_)
+      ConferenceType& ConferenceType::
+      operator= (const ConferenceType& x)
+      {
+        if (this != &x)
         {
-          this->conference_state_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->conference_description_ = x.conference_description_;
+          this->host_info_ = x.host_info_;
+          this->conference_state_ = x.conference_state_;
+          this->users_ = x.users_;
+          this->sidebars_by_ref_ = x.sidebars_by_ref_;
+          this->sidebars_by_val_ = x.sidebars_by_val_;
+          this->any_ = x.any_;
+          this->entity_ = x.entity_;
+          this->state_ = x.state_;
+          this->version_ = x.version_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      ConferenceType::
+      ~ConferenceType ()
+      {
+      }
+
+      // StateType
+      //
+
+      StateType::
+      StateType (const ::xercesc::DOMElement& e,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (e, f, c)
+      {
+        _xsd_StateType_convert ();
+      }
+
+      StateType::
+      StateType (const ::xercesc::DOMAttr& a,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (a, f, c)
+      {
+        _xsd_StateType_convert ();
+      }
+
+      StateType::
+      StateType (const ::std::string& s,
+                 const ::xercesc::DOMElement* e,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (s, e, f, c)
+      {
+        _xsd_StateType_convert ();
+      }
+
+      StateType* StateType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class StateType (*this, f, c);
+      }
+
+      StateType::Value StateType::
+      _xsd_StateType_convert () const
+      {
+        ::xsd::cxx::tree::enum_comparator< char > c (_xsd_StateType_literals_);
+        const Value* i (::std::lower_bound (
+                          _xsd_StateType_indexes_,
+                          _xsd_StateType_indexes_ + 3,
+                          *this,
+                          c));
+
+        if (i == _xsd_StateType_indexes_ + 3 || _xsd_StateType_literals_[*i] != *this)
+        {
+          throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+        }
+
+        return *i;
+      }
+
+      const char* const StateType::
+      _xsd_StateType_literals_[3] =
+      {
+        "full",
+        "partial",
+        "deleted"
+      };
+
+      const StateType::Value StateType::
+      _xsd_StateType_indexes_[3] =
+      {
+        ::LinphonePrivate::Xsd::ConferenceInfo::StateType::deleted,
+        ::LinphonePrivate::Xsd::ConferenceInfo::StateType::full,
+        ::LinphonePrivate::Xsd::ConferenceInfo::StateType::partial
+      };
+
+      // ConferenceDescriptionType
+      //
+
+      ConferenceDescriptionType::
+      ConferenceDescriptionType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        subject_ (this),
+        free_text_ (this),
+        keywords_ (this),
+        conf_uris_ (this),
+        service_uris_ (this),
+        maximum_user_count_ (this),
+        available_media_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      ConferenceDescriptionType::
+      ConferenceDescriptionType (const ConferenceDescriptionType& x,
+                                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (x.display_text_, f, this),
+        subject_ (x.subject_, f, this),
+        free_text_ (x.free_text_, f, this),
+        keywords_ (x.keywords_, f, this),
+        conf_uris_ (x.conf_uris_, f, this),
+        service_uris_ (x.service_uris_, f, this),
+        maximum_user_count_ (x.maximum_user_count_, f, this),
+        available_media_ (x.available_media_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      ConferenceDescriptionType::
+      ConferenceDescriptionType (const ::xercesc::DOMElement& e,
+                                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        subject_ (this),
+        free_text_ (this),
+        keywords_ (this),
+        conf_uris_ (this),
+        service_uris_ (this),
+        maximum_user_count_ (this),
+        available_media_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // users
-      //
-      if (n.name () == "users" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void ConferenceDescriptionType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< UsersType > r (
-          UsersTraits::create (i, f, this));
-
-        if (!this->users_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->users_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // subject
+          //
+          if (n.name () == "subject" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< SubjectType > r (
+              SubjectTraits::create (i, f, this));
+
+            if (!this->subject_)
+            {
+              this->subject_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // free-text
+          //
+          if (n.name () == "free-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< FreeTextType > r (
+              FreeTextTraits::create (i, f, this));
+
+            if (!this->free_text_)
+            {
+              this->free_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // keywords
+          //
+          if (n.name () == "keywords" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< KeywordsType > r (
+              KeywordsTraits::create (i, f, this));
+
+            if (!this->keywords_)
+            {
+              this->keywords_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // conf-uris
+          //
+          if (n.name () == "conf-uris" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ConfUrisType > r (
+              ConfUrisTraits::create (i, f, this));
+
+            if (!this->conf_uris_)
+            {
+              this->conf_uris_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // service-uris
+          //
+          if (n.name () == "service-uris" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ServiceUrisType > r (
+              ServiceUrisTraits::create (i, f, this));
+
+            if (!this->service_uris_)
+            {
+              this->service_uris_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // maximum-user-count
+          //
+          if (n.name () == "maximum-user-count" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            if (!this->maximum_user_count_)
+            {
+              this->maximum_user_count_.set (MaximumUserCountTraits::create (i, f, this));
+              continue;
+            }
+          }
+
+          // available-media
+          //
+          if (n.name () == "available-media" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< AvailableMediaType > r (
+              AvailableMediaTraits::create (i, f, this));
+
+            if (!this->available_media_)
+            {
+              this->available_media_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
       }
 
-      // sidebars-by-ref
-      //
-      if (n.name () == "sidebars-by-ref" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      ConferenceDescriptionType* ConferenceDescriptionType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< Sidebars_by_refType > r (
-          Sidebars_by_refTraits::create (i, f, this));
+        return new class ConferenceDescriptionType (*this, f, c);
+      }
 
-        if (!this->sidebars_by_ref_)
+      ConferenceDescriptionType& ConferenceDescriptionType::
+      operator= (const ConferenceDescriptionType& x)
+      {
+        if (this != &x)
         {
-          this->sidebars_by_ref_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->display_text_ = x.display_text_;
+          this->subject_ = x.subject_;
+          this->free_text_ = x.free_text_;
+          this->keywords_ = x.keywords_;
+          this->conf_uris_ = x.conf_uris_;
+          this->service_uris_ = x.service_uris_;
+          this->maximum_user_count_ = x.maximum_user_count_;
+          this->available_media_ = x.available_media_;
+          this->any_ = x.any_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      ConferenceDescriptionType::
+      ~ConferenceDescriptionType ()
+      {
+      }
+
+      // HostType
+      //
+
+      HostType::
+      HostType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        web_page_ (this),
+        uris_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      HostType::
+      HostType (const HostType& x,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (x.display_text_, f, this),
+        web_page_ (x.web_page_, f, this),
+        uris_ (x.uris_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      HostType::
+      HostType (const ::xercesc::DOMElement& e,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        web_page_ (this),
+        uris_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // sidebars-by-val
-      //
-      if (n.name () == "sidebars-by-val" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void HostType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< Sidebars_by_valType > r (
-          Sidebars_by_valTraits::create (i, f, this));
-
-        if (!this->sidebars_by_val_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->sidebars_by_val_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // web-page
+          //
+          if (n.name () == "web-page" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< WebPageType > r (
+              WebPageTraits::create (i, f, this));
+
+            if (!this->web_page_)
+            {
+              this->web_page_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // uris
+          //
+          if (n.name () == "uris" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< UrisType > r (
+              UrisTraits::create (i, f, this));
+
+            if (!this->uris_)
+            {
+              this->uris_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
       }
 
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+      HostType* HostType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
+        return new class HostType (*this, f, c);
       }
 
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "entity" && n.namespace_ ().empty ())
+      HostType& HostType::
+      operator= (const HostType& x)
       {
-        this->entity_.set (EntityTraits::create (i, f, this));
-        continue;
-      }
-
-      if (n.name () == "state" && n.namespace_ ().empty ())
-      {
-        this->state_.set (StateTraits::create (i, f, this));
-        continue;
-      }
-
-      if (n.name () == "version" && n.namespace_ ().empty ())
-      {
-        this->version_.set (VersionTraits::create (i, f, this));
-        continue;
-      }
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-
-    if (!entity_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_attribute< char > (
-        "entity",
-        "");
-    }
-
-    if (!state_.present ())
-    {
-      this->state_.set (getStateDefaultValue ());
-    }
-  }
-
-  Conference_type* Conference_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Conference_type (*this, f, c);
-  }
-
-  Conference_type& Conference_type::
-  operator= (const Conference_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->conference_description_ = x.conference_description_;
-      this->host_info_ = x.host_info_;
-      this->conference_state_ = x.conference_state_;
-      this->users_ = x.users_;
-      this->sidebars_by_ref_ = x.sidebars_by_ref_;
-      this->sidebars_by_val_ = x.sidebars_by_val_;
-      this->any_ = x.any_;
-      this->entity_ = x.entity_;
-      this->state_ = x.state_;
-      this->version_ = x.version_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Conference_type::
-  ~Conference_type ()
-  {
-  }
-
-  // State_type
-  //
-
-  State_type::
-  State_type (const ::xercesc::DOMElement& e,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::String (e, f, c)
-  {
-    _xsd_State_type_convert ();
-  }
-
-  State_type::
-  State_type (const ::xercesc::DOMAttr& a,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::String (a, f, c)
-  {
-    _xsd_State_type_convert ();
-  }
-
-  State_type::
-  State_type (const ::std::string& s,
-              const ::xercesc::DOMElement* e,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::String (s, e, f, c)
-  {
-    _xsd_State_type_convert ();
-  }
-
-  State_type* State_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class State_type (*this, f, c);
-  }
-
-  State_type::Value State_type::
-  _xsd_State_type_convert () const
-  {
-    ::xsd::cxx::tree::enum_comparator< char > c (_xsd_State_type_literals_);
-    const Value* i (::std::lower_bound (
-                      _xsd_State_type_indexes_,
-                      _xsd_State_type_indexes_ + 3,
-                      *this,
-                      c));
-
-    if (i == _xsd_State_type_indexes_ + 3 || _xsd_State_type_literals_[*i] != *this)
-    {
-      throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
-    }
-
-    return *i;
-  }
-
-  const char* const State_type::
-  _xsd_State_type_literals_[3] =
-  {
-    "full",
-    "partial",
-    "deleted"
-  };
-
-  const State_type::Value State_type::
-  _xsd_State_type_indexes_[3] =
-  {
-    ::conference_info::State_type::deleted,
-    ::conference_info::State_type::full,
-    ::conference_info::State_type::partial
-  };
-
-  // Conference_description_type
-  //
-
-  Conference_description_type::
-  Conference_description_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    subject_ (this),
-    free_text_ (this),
-    keywords_ (this),
-    conf_uris_ (this),
-    service_uris_ (this),
-    maximum_user_count_ (this),
-    available_media_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Conference_description_type::
-  Conference_description_type (const Conference_description_type& x,
-                               ::xml_schema::Flags f,
-                               ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (x.display_text_, f, this),
-    subject_ (x.subject_, f, this),
-    free_text_ (x.free_text_, f, this),
-    keywords_ (x.keywords_, f, this),
-    conf_uris_ (x.conf_uris_, f, this),
-    service_uris_ (x.service_uris_, f, this),
-    maximum_user_count_ (x.maximum_user_count_, f, this),
-    available_media_ (x.available_media_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Conference_description_type::
-  Conference_description_type (const ::xercesc::DOMElement& e,
-                               ::xml_schema::Flags f,
-                               ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    subject_ (this),
-    free_text_ (this),
-    keywords_ (this),
-    conf_uris_ (this),
-    service_uris_ (this),
-    maximum_user_count_ (this),
-    available_media_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Conference_description_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
+        if (this != &x)
         {
-          this->display_text_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->display_text_ = x.display_text_;
+          this->web_page_ = x.web_page_;
+          this->uris_ = x.uris_;
+          this->any_ = x.any_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      HostType::
+      ~HostType ()
+      {
+      }
+
+      // ConferenceStateType
+      //
+
+      ConferenceStateType::
+      ConferenceStateType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        user_count_ (this),
+        active_ (this),
+        locked_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      ConferenceStateType::
+      ConferenceStateType (const ConferenceStateType& x,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        user_count_ (x.user_count_, f, this),
+        active_ (x.active_, f, this),
+        locked_ (x.locked_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      ConferenceStateType::
+      ConferenceStateType (const ::xercesc::DOMElement& e,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        user_count_ (this),
+        active_ (this),
+        locked_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // subject
-      //
-      if (n.name () == "subject" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void ConferenceStateType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< SubjectType > r (
-          SubjectTraits::create (i, f, this));
-
-        if (!this->subject_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->subject_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // user-count
+          //
+          if (n.name () == "user-count" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            if (!this->user_count_)
+            {
+              this->user_count_.set (UserCountTraits::create (i, f, this));
+              continue;
+            }
+          }
+
+          // active
+          //
+          if (n.name () == "active" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            if (!this->active_)
+            {
+              this->active_.set (ActiveTraits::create (i, f, this));
+              continue;
+            }
+          }
+
+          // locked
+          //
+          if (n.name () == "locked" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            if (!this->locked_)
+            {
+              this->locked_.set (LockedTraits::create (i, f, this));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
       }
 
-      // free-text
-      //
-      if (n.name () == "free-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      ConferenceStateType* ConferenceStateType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< Free_textType > r (
-          Free_textTraits::create (i, f, this));
+        return new class ConferenceStateType (*this, f, c);
+      }
 
-        if (!this->free_text_)
+      ConferenceStateType& ConferenceStateType::
+      operator= (const ConferenceStateType& x)
+      {
+        if (this != &x)
         {
-          this->free_text_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->user_count_ = x.user_count_;
+          this->active_ = x.active_;
+          this->locked_ = x.locked_;
+          this->any_ = x.any_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      ConferenceStateType::
+      ~ConferenceStateType ()
+      {
+      }
+
+      // ConferenceMediaType
+      //
+
+      ConferenceMediaType::
+      ConferenceMediaType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      ConferenceMediaType::
+      ConferenceMediaType (const ConferenceMediaType& x,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (x.entry_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      ConferenceMediaType::
+      ConferenceMediaType (const ::xercesc::DOMElement& e,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // keywords
-      //
-      if (n.name () == "keywords" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void ConferenceMediaType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< KeywordsType > r (
-          KeywordsTraits::create (i, f, this));
-
-        if (!this->keywords_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->keywords_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // entry
+          //
+          if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< EntryType > r (
+              EntryTraits::create (i, f, this));
+
+            this->entry_.push_back (::std::move (r));
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
       }
 
-      // conf-uris
-      //
-      if (n.name () == "conf-uris" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      ConferenceMediaType* ConferenceMediaType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< Conf_urisType > r (
-          Conf_urisTraits::create (i, f, this));
+        return new class ConferenceMediaType (*this, f, c);
+      }
 
-        if (!this->conf_uris_)
+      ConferenceMediaType& ConferenceMediaType::
+      operator= (const ConferenceMediaType& x)
+      {
+        if (this != &x)
         {
-          this->conf_uris_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->entry_ = x.entry_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      ConferenceMediaType::
+      ~ConferenceMediaType ()
+      {
+      }
+
+      // ConferenceMediumType
+      //
+
+      ConferenceMediumType::
+      ConferenceMediumType (const TypeType& type,
+                            const LabelType& label)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        type_ (type, this),
+        status_ (this),
+        any_ (this->getDomDocument ()),
+        label_ (label, this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      ConferenceMediumType::
+      ConferenceMediumType (const ConferenceMediumType& x,
+                            ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                            ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (x.display_text_, f, this),
+        type_ (x.type_, f, this),
+        status_ (x.status_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        label_ (x.label_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      ConferenceMediumType::
+      ConferenceMediumType (const ::xercesc::DOMElement& e,
+                            ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                            ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        type_ (this),
+        status_ (this),
+        any_ (this->getDomDocument ()),
+        label_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // service-uris
-      //
-      if (n.name () == "service-uris" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void ConferenceMediumType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< Service_urisType > r (
-          Service_urisTraits::create (i, f, this));
-
-        if (!this->service_uris_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->service_uris_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // type
+          //
+          if (n.name () == "type" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< TypeType > r (
+              TypeTraits::create (i, f, this));
+
+            if (!type_.present ())
+            {
+              this->type_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // status
+          //
+          if (n.name () == "status" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< StatusType > r (
+              StatusTraits::create (i, f, this));
+
+            if (!this->status_)
+            {
+              this->status_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
         }
-      }
-
-      // maximum-user-count
-      //
-      if (n.name () == "maximum-user-count" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        if (!this->maximum_user_count_)
-        {
-          this->maximum_user_count_.set (Maximum_user_countTraits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // available-media
-      //
-      if (n.name () == "available-media" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Available_mediaType > r (
-          Available_mediaTraits::create (i, f, this));
-
-        if (!this->available_media_)
-        {
-          this->available_media_.set (::std::move (r));
-          continue;
-        }
-      }
-
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
-      {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
-      }
-
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Conference_description_type* Conference_description_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Conference_description_type (*this, f, c);
-  }
-
-  Conference_description_type& Conference_description_type::
-  operator= (const Conference_description_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->display_text_ = x.display_text_;
-      this->subject_ = x.subject_;
-      this->free_text_ = x.free_text_;
-      this->keywords_ = x.keywords_;
-      this->conf_uris_ = x.conf_uris_;
-      this->service_uris_ = x.service_uris_;
-      this->maximum_user_count_ = x.maximum_user_count_;
-      this->available_media_ = x.available_media_;
-      this->any_ = x.any_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Conference_description_type::
-  ~Conference_description_type ()
-  {
-  }
-
-  // Host_type
-  //
-
-  Host_type::
-  Host_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    web_page_ (this),
-    uris_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Host_type::
-  Host_type (const Host_type& x,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (x.display_text_, f, this),
-    web_page_ (x.web_page_, f, this),
-    uris_ (x.uris_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Host_type::
-  Host_type (const ::xercesc::DOMElement& e,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    web_page_ (this),
-    uris_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Host_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
-        {
-          this->display_text_.set (::std::move (r));
-          continue;
-        }
-      }
-
-      // web-page
-      //
-      if (n.name () == "web-page" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Web_pageType > r (
-          Web_pageTraits::create (i, f, this));
-
-        if (!this->web_page_)
-        {
-          this->web_page_.set (::std::move (r));
-          continue;
-        }
-      }
-
-      // uris
-      //
-      if (n.name () == "uris" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< UrisType > r (
-          UrisTraits::create (i, f, this));
-
-        if (!this->uris_)
-        {
-          this->uris_.set (::std::move (r));
-          continue;
-        }
-      }
-
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
-      {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
-      }
-
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Host_type* Host_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Host_type (*this, f, c);
-  }
-
-  Host_type& Host_type::
-  operator= (const Host_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->display_text_ = x.display_text_;
-      this->web_page_ = x.web_page_;
-      this->uris_ = x.uris_;
-      this->any_ = x.any_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Host_type::
-  ~Host_type ()
-  {
-  }
-
-  // Conference_state_type
-  //
-
-  Conference_state_type::
-  Conference_state_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    user_count_ (this),
-    active_ (this),
-    locked_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Conference_state_type::
-  Conference_state_type (const Conference_state_type& x,
-                         ::xml_schema::Flags f,
-                         ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    user_count_ (x.user_count_, f, this),
-    active_ (x.active_, f, this),
-    locked_ (x.locked_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Conference_state_type::
-  Conference_state_type (const ::xercesc::DOMElement& e,
-                         ::xml_schema::Flags f,
-                         ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    user_count_ (this),
-    active_ (this),
-    locked_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Conference_state_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // user-count
-      //
-      if (n.name () == "user-count" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        if (!this->user_count_)
-        {
-          this->user_count_.set (User_countTraits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // active
-      //
-      if (n.name () == "active" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        if (!this->active_)
-        {
-          this->active_.set (ActiveTraits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // locked
-      //
-      if (n.name () == "locked" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        if (!this->locked_)
-        {
-          this->locked_.set (LockedTraits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
-      {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
-      }
-
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Conference_state_type* Conference_state_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Conference_state_type (*this, f, c);
-  }
-
-  Conference_state_type& Conference_state_type::
-  operator= (const Conference_state_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->user_count_ = x.user_count_;
-      this->active_ = x.active_;
-      this->locked_ = x.locked_;
-      this->any_ = x.any_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Conference_state_type::
-  ~Conference_state_type ()
-  {
-  }
-
-  // Conference_media_type
-  //
-
-  Conference_media_type::
-  Conference_media_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Conference_media_type::
-  Conference_media_type (const Conference_media_type& x,
-                         ::xml_schema::Flags f,
-                         ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (x.entry_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Conference_media_type::
-  Conference_media_type (const ::xercesc::DOMElement& e,
-                         ::xml_schema::Flags f,
-                         ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Conference_media_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // entry
-      //
-      if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< EntryType > r (
-          EntryTraits::create (i, f, this));
-
-        this->entry_.push_back (::std::move (r));
-        continue;
-      }
-
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Conference_media_type* Conference_media_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Conference_media_type (*this, f, c);
-  }
-
-  Conference_media_type& Conference_media_type::
-  operator= (const Conference_media_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->entry_ = x.entry_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Conference_media_type::
-  ~Conference_media_type ()
-  {
-  }
-
-  // Conference_medium_type
-  //
-
-  Conference_medium_type::
-  Conference_medium_type (const TypeType& type,
-                          const LabelType& label)
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    type_ (type, this),
-    status_ (this),
-    any_ (this->getDomDocument ()),
-    label_ (label, this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Conference_medium_type::
-  Conference_medium_type (const Conference_medium_type& x,
-                          ::xml_schema::Flags f,
-                          ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (x.display_text_, f, this),
-    type_ (x.type_, f, this),
-    status_ (x.status_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    label_ (x.label_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Conference_medium_type::
-  Conference_medium_type (const ::xercesc::DOMElement& e,
-                          ::xml_schema::Flags f,
-                          ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    type_ (this),
-    status_ (this),
-    any_ (this->getDomDocument ()),
-    label_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Conference_medium_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
-        {
-          this->display_text_.set (::std::move (r));
-          continue;
-        }
-      }
-
-      // type
-      //
-      if (n.name () == "type" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< TypeType > r (
-          TypeTraits::create (i, f, this));
 
         if (!type_.present ())
         {
-          this->type_.set (::std::move (r));
-          continue;
+          throw ::xsd::cxx::tree::expected_element< char > (
+            "type",
+            "urn:ietf:params:xml:ns:conference-info");
         }
-      }
 
-      // status
-      //
-      if (n.name () == "status" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< StatusType > r (
-          StatusTraits::create (i, f, this));
-
-        if (!this->status_)
+        while (p.more_attributes ())
         {
-          this->status_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "label" && n.namespace_ ().empty ())
+          {
+            this->label_.set (LabelTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
+        }
+
+        if (!label_.present ())
+        {
+          throw ::xsd::cxx::tree::expected_attribute< char > (
+            "label",
+            "");
         }
       }
 
-      // any
+      ConferenceMediumType* ConferenceMediumType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class ConferenceMediumType (*this, f, c);
+      }
+
+      ConferenceMediumType& ConferenceMediumType::
+      operator= (const ConferenceMediumType& x)
+      {
+        if (this != &x)
+        {
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->display_text_ = x.display_text_;
+          this->type_ = x.type_;
+          this->status_ = x.status_;
+          this->any_ = x.any_;
+          this->label_ = x.label_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      ConferenceMediumType::
+      ~ConferenceMediumType ()
+      {
+      }
+
+      // UrisType
       //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+
+      const UrisType::StateType UrisType::state_default_value_ (
+        "full");
+
+      UrisType::
+      UrisType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        state_ (getStateDefaultValue (), this),
+        any_attribute_ (this->getDomDocument ())
       {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
       }
 
-      break;
-    }
-
-    if (!type_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "type",
-        "urn:ietf:params:xml:ns:conference-info");
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "label" && n.namespace_ ().empty ())
+      UrisType::
+      UrisType (const UrisType& x,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (x.entry_, f, this),
+        state_ (x.state_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
       {
-        this->label_.set (LabelTraits::create (i, f, this));
-        continue;
       }
 
-      // any_attribute
+      UrisType::
+      UrisType (const ::xercesc::DOMElement& e,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        state_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
+        }
+      }
+
+      void UrisType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        for (; p.more_content (); p.next_content (false))
+        {
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // entry
+          //
+          if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< EntryType > r (
+              EntryTraits::create (i, f, this));
+
+            this->entry_.push_back (::std::move (r));
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "state" && n.namespace_ ().empty ())
+          {
+            this->state_.set (StateTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
+        }
+
+        if (!state_.present ())
+        {
+          this->state_.set (getStateDefaultValue ());
+        }
+      }
+
+      UrisType* UrisType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class UrisType (*this, f, c);
+      }
+
+      UrisType& UrisType::
+      operator= (const UrisType& x)
+      {
+        if (this != &x)
+        {
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->entry_ = x.entry_;
+          this->state_ = x.state_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      UrisType::
+      ~UrisType ()
+      {
+      }
+
+      // UriType
       //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+
+      UriType::
+      UriType (const UriType1& uri)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        uri_ (uri, this),
+        display_text_ (this),
+        purpose_ (this),
+        modified_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
       {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-
-    if (!label_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_attribute< char > (
-        "label",
-        "");
-    }
-  }
-
-  Conference_medium_type* Conference_medium_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Conference_medium_type (*this, f, c);
-  }
-
-  Conference_medium_type& Conference_medium_type::
-  operator= (const Conference_medium_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->display_text_ = x.display_text_;
-      this->type_ = x.type_;
-      this->status_ = x.status_;
-      this->any_ = x.any_;
-      this->label_ = x.label_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Conference_medium_type::
-  ~Conference_medium_type ()
-  {
-  }
-
-  // Uris_type
-  //
-
-  const Uris_type::StateType Uris_type::state_default_value_ (
-    "full");
-
-  Uris_type::
-  Uris_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    state_ (getStateDefaultValue (), this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Uris_type::
-  Uris_type (const Uris_type& x,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (x.entry_, f, this),
-    state_ (x.state_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Uris_type::
-  Uris_type (const ::xercesc::DOMElement& e,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    state_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Uris_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // entry
-      //
-      if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< EntryType > r (
-          EntryTraits::create (i, f, this));
-
-        this->entry_.push_back (::std::move (r));
-        continue;
       }
 
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "state" && n.namespace_ ().empty ())
+      UriType::
+      UriType (const UriType& x,
+               ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+               ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        uri_ (x.uri_, f, this),
+        display_text_ (x.display_text_, f, this),
+        purpose_ (x.purpose_, f, this),
+        modified_ (x.modified_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
       {
-        this->state_.set (StateTraits::create (i, f, this));
-        continue;
       }
 
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+      UriType::
+      UriType (const ::xercesc::DOMElement& e,
+               ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+               ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        uri_ (this),
+        display_text_ (this),
+        purpose_ (this),
+        modified_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
       {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
+        }
       }
-    }
 
-    if (!state_.present ())
-    {
-      this->state_.set (getStateDefaultValue ());
-    }
-  }
-
-  Uris_type* Uris_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Uris_type (*this, f, c);
-  }
-
-  Uris_type& Uris_type::
-  operator= (const Uris_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->entry_ = x.entry_;
-      this->state_ = x.state_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Uris_type::
-  ~Uris_type ()
-  {
-  }
-
-  // Uri_type
-  //
-
-  Uri_type::
-  Uri_type (const UriType& uri)
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    uri_ (uri, this),
-    display_text_ (this),
-    purpose_ (this),
-    modified_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Uri_type::
-  Uri_type (const Uri_type& x,
-            ::xml_schema::Flags f,
-            ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    uri_ (x.uri_, f, this),
-    display_text_ (x.display_text_, f, this),
-    purpose_ (x.purpose_, f, this),
-    modified_ (x.modified_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Uri_type::
-  Uri_type (const ::xercesc::DOMElement& e,
-            ::xml_schema::Flags f,
-            ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    uri_ (this),
-    display_text_ (this),
-    purpose_ (this),
-    modified_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Uri_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // uri
-      //
-      if (n.name () == "uri" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void UriType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< UriType > r (
-          UriTraits::create (i, f, this));
+        for (; p.more_content (); p.next_content (false))
+        {
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // uri
+          //
+          if (n.name () == "uri" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< UriType1 > r (
+              UriTraits::create (i, f, this));
+
+            if (!uri_.present ())
+            {
+              this->uri_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // purpose
+          //
+          if (n.name () == "purpose" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< PurposeType > r (
+              PurposeTraits::create (i, f, this));
+
+            if (!this->purpose_)
+            {
+              this->purpose_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // modified
+          //
+          if (n.name () == "modified" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ModifiedType > r (
+              ModifiedTraits::create (i, f, this));
+
+            if (!this->modified_)
+            {
+              this->modified_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
+        }
 
         if (!uri_.present ())
         {
-          this->uri_.set (::std::move (r));
-          continue;
+          throw ::xsd::cxx::tree::expected_element< char > (
+            "uri",
+            "urn:ietf:params:xml:ns:conference-info");
         }
-      }
 
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
+        while (p.more_attributes ())
         {
-          this->display_text_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
       }
 
-      // purpose
-      //
-      if (n.name () == "purpose" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UriType* UriType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< PurposeType > r (
-          PurposeTraits::create (i, f, this));
+        return new class UriType (*this, f, c);
+      }
 
-        if (!this->purpose_)
+      UriType& UriType::
+      operator= (const UriType& x)
+      {
+        if (this != &x)
         {
-          this->purpose_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->uri_ = x.uri_;
+          this->display_text_ = x.display_text_;
+          this->purpose_ = x.purpose_;
+          this->modified_ = x.modified_;
+          this->any_ = x.any_;
+          this->any_attribute_ = x.any_attribute_;
         }
+
+        return *this;
       }
 
-      // modified
-      //
-      if (n.name () == "modified" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UriType::
+      ~UriType ()
       {
-        ::std::unique_ptr< ModifiedType > r (
-          ModifiedTraits::create (i, f, this));
+      }
 
-        if (!this->modified_)
+      // KeywordsType
+      //
+
+      KeywordsType::
+      KeywordsType (const ::xercesc::DOMElement& e,
+                    ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                    ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (e, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char > (e, f, this)
+      {
+      }
+
+      KeywordsType::
+      KeywordsType (const ::xercesc::DOMAttr& a,
+                    ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                    ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (a, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char > (a, f, this)
+      {
+      }
+
+      KeywordsType::
+      KeywordsType (const ::std::string& s,
+                    const ::xercesc::DOMElement* e,
+                    ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                    ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (s, e, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char > (s, e, f, this)
+      {
+      }
+
+      KeywordsType* KeywordsType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class KeywordsType (*this, f, c);
+      }
+
+      KeywordsType::
+      ~KeywordsType ()
+      {
+      }
+
+      // UsersType
+      //
+
+      const UsersType::StateType UsersType::state_default_value_ (
+        "full");
+
+      UsersType::
+      UsersType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        user_ (this),
+        any_ (this->getDomDocument ()),
+        state_ (getStateDefaultValue (), this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      UsersType::
+      UsersType (const UsersType& x,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        user_ (x.user_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        state_ (x.state_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      UsersType::
+      UsersType (const ::xercesc::DOMElement& e,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        user_ (this),
+        any_ (this->getDomDocument ()),
+        state_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
         {
-          this->modified_.set (::std::move (r));
-          continue;
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+      void UsersType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
-      }
-
-      break;
-    }
-
-    if (!uri_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "uri",
-        "urn:ietf:params:xml:ns:conference-info");
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Uri_type* Uri_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Uri_type (*this, f, c);
-  }
-
-  Uri_type& Uri_type::
-  operator= (const Uri_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->uri_ = x.uri_;
-      this->display_text_ = x.display_text_;
-      this->purpose_ = x.purpose_;
-      this->modified_ = x.modified_;
-      this->any_ = x.any_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Uri_type::
-  ~Uri_type ()
-  {
-  }
-
-  // Keywords_type
-  //
-
-  Keywords_type::
-  Keywords_type (const ::xercesc::DOMElement& e,
-                 ::xml_schema::Flags f,
-                 ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (e, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::String, char > (e, f, this)
-  {
-  }
-
-  Keywords_type::
-  Keywords_type (const ::xercesc::DOMAttr& a,
-                 ::xml_schema::Flags f,
-                 ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (a, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::String, char > (a, f, this)
-  {
-  }
-
-  Keywords_type::
-  Keywords_type (const ::std::string& s,
-                 const ::xercesc::DOMElement* e,
-                 ::xml_schema::Flags f,
-                 ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (s, e, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::String, char > (s, e, f, this)
-  {
-  }
-
-  Keywords_type* Keywords_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Keywords_type (*this, f, c);
-  }
-
-  Keywords_type::
-  ~Keywords_type ()
-  {
-  }
-
-  // Users_type
-  //
-
-  const Users_type::StateType Users_type::state_default_value_ (
-    "full");
-
-  Users_type::
-  Users_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    user_ (this),
-    any_ (this->getDomDocument ()),
-    state_ (getStateDefaultValue (), this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Users_type::
-  Users_type (const Users_type& x,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    user_ (x.user_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    state_ (x.state_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Users_type::
-  Users_type (const ::xercesc::DOMElement& e,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    user_ (this),
-    any_ (this->getDomDocument ()),
-    state_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Users_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // user
-      //
-      if (n.name () == "user" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< UserType > r (
-          UserTraits::create (i, f, this));
-
-        this->user_.push_back (::std::move (r));
-        continue;
-      }
-
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
-      {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
-      }
-
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "state" && n.namespace_ ().empty ())
-      {
-        this->state_.set (StateTraits::create (i, f, this));
-        continue;
-      }
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-
-    if (!state_.present ())
-    {
-      this->state_.set (getStateDefaultValue ());
-    }
-  }
-
-  Users_type* Users_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Users_type (*this, f, c);
-  }
-
-  Users_type& Users_type::
-  operator= (const Users_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->user_ = x.user_;
-      this->any_ = x.any_;
-      this->state_ = x.state_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Users_type::
-  ~Users_type ()
-  {
-  }
-
-  // User_type
-  //
-
-  const User_type::StateType User_type::state_default_value_ (
-    "full");
-
-  User_type::
-  User_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    associated_aors_ (this),
-    roles_ (this),
-    languages_ (this),
-    cascaded_focus_ (this),
-    endpoint_ (this),
-    any_ (this->getDomDocument ()),
-    entity_ (this),
-    state_ (getStateDefaultValue (), this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  User_type::
-  User_type (const User_type& x,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (x.display_text_, f, this),
-    associated_aors_ (x.associated_aors_, f, this),
-    roles_ (x.roles_, f, this),
-    languages_ (x.languages_, f, this),
-    cascaded_focus_ (x.cascaded_focus_, f, this),
-    endpoint_ (x.endpoint_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    entity_ (x.entity_, f, this),
-    state_ (x.state_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  User_type::
-  User_type (const ::xercesc::DOMElement& e,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    associated_aors_ (this),
-    roles_ (this),
-    languages_ (this),
-    cascaded_focus_ (this),
-    endpoint_ (this),
-    any_ (this->getDomDocument ()),
-    entity_ (this),
-    state_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void User_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->display_text_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // user
+          //
+          if (n.name () == "user" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< UserType > r (
+              UserTraits::create (i, f, this));
+
+            this->user_.push_back (::std::move (r));
+            continue;
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
         }
-      }
 
-      // associated-aors
-      //
-      if (n.name () == "associated-aors" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Associated_aorsType > r (
-          Associated_aorsTraits::create (i, f, this));
-
-        if (!this->associated_aors_)
+        while (p.more_attributes ())
         {
-          this->associated_aors_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "state" && n.namespace_ ().empty ())
+          {
+            this->state_.set (StateTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
-      }
 
-      // roles
-      //
-      if (n.name () == "roles" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< RolesType > r (
-          RolesTraits::create (i, f, this));
-
-        if (!this->roles_)
+        if (!state_.present ())
         {
-          this->roles_.set (::std::move (r));
-          continue;
+          this->state_.set (getStateDefaultValue ());
         }
       }
 
-      // languages
-      //
-      if (n.name () == "languages" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UsersType* UsersType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< LanguagesType > r (
-          LanguagesTraits::create (i, f, this));
+        return new class UsersType (*this, f, c);
+      }
 
-        if (!this->languages_)
+      UsersType& UsersType::
+      operator= (const UsersType& x)
+      {
+        if (this != &x)
         {
-          this->languages_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->user_ = x.user_;
+          this->any_ = x.any_;
+          this->state_ = x.state_;
+          this->any_attribute_ = x.any_attribute_;
         }
+
+        return *this;
       }
 
-      // cascaded-focus
-      //
-      if (n.name () == "cascaded-focus" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UsersType::
+      ~UsersType ()
       {
-        ::std::unique_ptr< Cascaded_focusType > r (
-          Cascaded_focusTraits::create (i, f, this));
+      }
 
-        if (!this->cascaded_focus_)
+      // UserType
+      //
+
+      const UserType::StateType UserType::state_default_value_ (
+        "full");
+
+      UserType::
+      UserType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        associated_aors_ (this),
+        roles_ (this),
+        languages_ (this),
+        cascaded_focus_ (this),
+        endpoint_ (this),
+        any_ (this->getDomDocument ()),
+        entity_ (this),
+        state_ (getStateDefaultValue (), this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      UserType::
+      UserType (const UserType& x,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (x.display_text_, f, this),
+        associated_aors_ (x.associated_aors_, f, this),
+        roles_ (x.roles_, f, this),
+        languages_ (x.languages_, f, this),
+        cascaded_focus_ (x.cascaded_focus_, f, this),
+        endpoint_ (x.endpoint_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        entity_ (x.entity_, f, this),
+        state_ (x.state_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      UserType::
+      UserType (const ::xercesc::DOMElement& e,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        associated_aors_ (this),
+        roles_ (this),
+        languages_ (this),
+        cascaded_focus_ (this),
+        endpoint_ (this),
+        any_ (this->getDomDocument ()),
+        entity_ (this),
+        state_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
         {
-          this->cascaded_focus_.set (::std::move (r));
-          continue;
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // endpoint
-      //
-      if (n.name () == "endpoint" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void UserType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< EndpointType > r (
-          EndpointTraits::create (i, f, this));
-
-        this->endpoint_.push_back (::std::move (r));
-        continue;
-      }
-
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
-      {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
-      }
-
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "entity" && n.namespace_ ().empty ())
-      {
-        this->entity_.set (EntityTraits::create (i, f, this));
-        continue;
-      }
-
-      if (n.name () == "state" && n.namespace_ ().empty ())
-      {
-        this->state_.set (StateTraits::create (i, f, this));
-        continue;
-      }
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-
-    if (!state_.present ())
-    {
-      this->state_.set (getStateDefaultValue ());
-    }
-  }
-
-  User_type* User_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class User_type (*this, f, c);
-  }
-
-  User_type& User_type::
-  operator= (const User_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->display_text_ = x.display_text_;
-      this->associated_aors_ = x.associated_aors_;
-      this->roles_ = x.roles_;
-      this->languages_ = x.languages_;
-      this->cascaded_focus_ = x.cascaded_focus_;
-      this->endpoint_ = x.endpoint_;
-      this->any_ = x.any_;
-      this->entity_ = x.entity_;
-      this->state_ = x.state_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  User_type::
-  ~User_type ()
-  {
-  }
-
-  // User_roles_type
-  //
-
-  User_roles_type::
-  User_roles_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  User_roles_type::
-  User_roles_type (const User_roles_type& x,
-                   ::xml_schema::Flags f,
-                   ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (x.entry_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  User_roles_type::
-  User_roles_type (const ::xercesc::DOMElement& e,
-                   ::xml_schema::Flags f,
-                   ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void User_roles_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // entry
-      //
-      if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< EntryType > r (
-          EntryTraits::create (i, f, this));
-
-        this->entry_.push_back (::std::move (r));
-        continue;
-      }
-
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  User_roles_type* User_roles_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class User_roles_type (*this, f, c);
-  }
-
-  User_roles_type& User_roles_type::
-  operator= (const User_roles_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->entry_ = x.entry_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  User_roles_type::
-  ~User_roles_type ()
-  {
-  }
-
-  // User_languages_type
-  //
-
-  User_languages_type::
-  User_languages_type (const ::xercesc::DOMElement& e,
-                       ::xml_schema::Flags f,
-                       ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (e, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::Language, char > (e, f, this)
-  {
-  }
-
-  User_languages_type::
-  User_languages_type (const ::xercesc::DOMAttr& a,
-                       ::xml_schema::Flags f,
-                       ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (a, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::Language, char > (a, f, this)
-  {
-  }
-
-  User_languages_type::
-  User_languages_type (const ::std::string& s,
-                       const ::xercesc::DOMElement* e,
-                       ::xml_schema::Flags f,
-                       ::xml_schema::Container* c)
-  : ::xml_schema::SimpleType (s, e, f, c),
-    ::xsd::cxx::tree::list< ::xml_schema::Language, char > (s, e, f, this)
-  {
-  }
-
-  User_languages_type* User_languages_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class User_languages_type (*this, f, c);
-  }
-
-  User_languages_type::
-  ~User_languages_type ()
-  {
-  }
-
-  // Endpoint_type
-  //
-
-  const Endpoint_type::StateType Endpoint_type::state_default_value_ (
-    "full");
-
-  Endpoint_type::
-  Endpoint_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    referred_ (this),
-    status_ (this),
-    joining_method_ (this),
-    joining_info_ (this),
-    disconnection_method_ (this),
-    disconnection_info_ (this),
-    media_ (this),
-    call_info_ (this),
-    any_ (this->getDomDocument ()),
-    entity_ (this),
-    state_ (getStateDefaultValue (), this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Endpoint_type::
-  Endpoint_type (const Endpoint_type& x,
-                 ::xml_schema::Flags f,
-                 ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (x.display_text_, f, this),
-    referred_ (x.referred_, f, this),
-    status_ (x.status_, f, this),
-    joining_method_ (x.joining_method_, f, this),
-    joining_info_ (x.joining_info_, f, this),
-    disconnection_method_ (x.disconnection_method_, f, this),
-    disconnection_info_ (x.disconnection_info_, f, this),
-    media_ (x.media_, f, this),
-    call_info_ (x.call_info_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    entity_ (x.entity_, f, this),
-    state_ (x.state_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Endpoint_type::
-  Endpoint_type (const ::xercesc::DOMElement& e,
-                 ::xml_schema::Flags f,
-                 ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    referred_ (this),
-    status_ (this),
-    joining_method_ (this),
-    joining_info_ (this),
-    disconnection_method_ (this),
-    disconnection_info_ (this),
-    media_ (this),
-    call_info_ (this),
-    any_ (this->getDomDocument ()),
-    entity_ (this),
-    state_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Endpoint_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->display_text_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // associated-aors
+          //
+          if (n.name () == "associated-aors" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< AssociatedAorsType > r (
+              AssociatedAorsTraits::create (i, f, this));
+
+            if (!this->associated_aors_)
+            {
+              this->associated_aors_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // roles
+          //
+          if (n.name () == "roles" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< RolesType > r (
+              RolesTraits::create (i, f, this));
+
+            if (!this->roles_)
+            {
+              this->roles_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // languages
+          //
+          if (n.name () == "languages" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< LanguagesType > r (
+              LanguagesTraits::create (i, f, this));
+
+            if (!this->languages_)
+            {
+              this->languages_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // cascaded-focus
+          //
+          if (n.name () == "cascaded-focus" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< CascadedFocusType > r (
+              CascadedFocusTraits::create (i, f, this));
+
+            if (!this->cascaded_focus_)
+            {
+              this->cascaded_focus_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // endpoint
+          //
+          if (n.name () == "endpoint" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< EndpointType > r (
+              EndpointTraits::create (i, f, this));
+
+            this->endpoint_.push_back (::std::move (r));
+            continue;
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
         }
-      }
 
-      // referred
-      //
-      if (n.name () == "referred" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< ReferredType > r (
-          ReferredTraits::create (i, f, this));
-
-        if (!this->referred_)
+        while (p.more_attributes ())
         {
-          this->referred_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "entity" && n.namespace_ ().empty ())
+          {
+            this->entity_.set (EntityTraits::create (i, f, this));
+            continue;
+          }
+
+          if (n.name () == "state" && n.namespace_ ().empty ())
+          {
+            this->state_.set (StateTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
-      }
 
-      // status
-      //
-      if (n.name () == "status" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< StatusType > r (
-          StatusTraits::create (i, f, this));
-
-        if (!this->status_)
+        if (!state_.present ())
         {
-          this->status_.set (::std::move (r));
-          continue;
+          this->state_.set (getStateDefaultValue ());
         }
       }
 
-      // joining-method
-      //
-      if (n.name () == "joining-method" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UserType* UserType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< Joining_methodType > r (
-          Joining_methodTraits::create (i, f, this));
+        return new class UserType (*this, f, c);
+      }
 
-        if (!this->joining_method_)
+      UserType& UserType::
+      operator= (const UserType& x)
+      {
+        if (this != &x)
         {
-          this->joining_method_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->display_text_ = x.display_text_;
+          this->associated_aors_ = x.associated_aors_;
+          this->roles_ = x.roles_;
+          this->languages_ = x.languages_;
+          this->cascaded_focus_ = x.cascaded_focus_;
+          this->endpoint_ = x.endpoint_;
+          this->any_ = x.any_;
+          this->entity_ = x.entity_;
+          this->state_ = x.state_;
+          this->any_attribute_ = x.any_attribute_;
         }
+
+        return *this;
       }
 
-      // joining-info
-      //
-      if (n.name () == "joining-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UserType::
+      ~UserType ()
       {
-        ::std::unique_ptr< Joining_infoType > r (
-          Joining_infoTraits::create (i, f, this));
+      }
 
-        if (!this->joining_info_)
+      // UserRolesType
+      //
+
+      UserRolesType::
+      UserRolesType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      UserRolesType::
+      UserRolesType (const UserRolesType& x,
+                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                     ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (x.entry_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      UserRolesType::
+      UserRolesType (const ::xercesc::DOMElement& e,
+                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                     ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
         {
-          this->joining_info_.set (::std::move (r));
-          continue;
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // disconnection-method
-      //
-      if (n.name () == "disconnection-method" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void UserRolesType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< Disconnection_methodType > r (
-          Disconnection_methodTraits::create (i, f, this));
-
-        if (!this->disconnection_method_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->disconnection_method_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // entry
+          //
+          if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< EntryType > r (
+              EntryTraits::create (i, f, this));
+
+            this->entry_.push_back (::std::move (r));
+            continue;
+          }
+
+          break;
         }
-      }
 
-      // disconnection-info
-      //
-      if (n.name () == "disconnection-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Disconnection_infoType > r (
-          Disconnection_infoTraits::create (i, f, this));
-
-        if (!this->disconnection_info_)
+        while (p.more_attributes ())
         {
-          this->disconnection_info_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
       }
 
-      // media
-      //
-      if (n.name () == "media" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UserRolesType* UserRolesType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< MediaType > r (
-          MediaTraits::create (i, f, this));
-
-        this->media_.push_back (::std::move (r));
-        continue;
+        return new class UserRolesType (*this, f, c);
       }
 
-      // call-info
-      //
-      if (n.name () == "call-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      UserRolesType& UserRolesType::
+      operator= (const UserRolesType& x)
       {
-        ::std::unique_ptr< Call_infoType > r (
-          Call_infoTraits::create (i, f, this));
-
-        if (!this->call_info_)
+        if (this != &x)
         {
-          this->call_info_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->entry_ = x.entry_;
+          this->any_attribute_ = x.any_attribute_;
         }
+
+        return *this;
       }
 
-      // any
+      UserRolesType::
+      ~UserRolesType ()
+      {
+      }
+
+      // UserLanguagesType
       //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+
+      UserLanguagesType::
+      UserLanguagesType (const ::xercesc::DOMElement& e,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (e, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char > (e, f, this)
       {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
       }
 
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "entity" && n.namespace_ ().empty ())
+      UserLanguagesType::
+      UserLanguagesType (const ::xercesc::DOMAttr& a,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (a, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char > (a, f, this)
       {
-        this->entity_.set (EntityTraits::create (i, f, this));
-        continue;
       }
 
-      if (n.name () == "state" && n.namespace_ ().empty ())
+      UserLanguagesType::
+      UserLanguagesType (const ::std::string& s,
+                         const ::xercesc::DOMElement* e,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::SimpleType (s, e, f, c),
+        ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char > (s, e, f, this)
       {
-        this->state_.set (StateTraits::create (i, f, this));
-        continue;
       }
 
-      // any_attribute
+      UserLanguagesType* UserLanguagesType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class UserLanguagesType (*this, f, c);
+      }
+
+      UserLanguagesType::
+      ~UserLanguagesType ()
+      {
+      }
+
+      // EndpointType
       //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+
+      const EndpointType::StateType EndpointType::state_default_value_ (
+        "full");
+
+      EndpointType::
+      EndpointType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        referred_ (this),
+        status_ (this),
+        joining_method_ (this),
+        joining_info_ (this),
+        disconnection_method_ (this),
+        disconnection_info_ (this),
+        media_ (this),
+        call_info_ (this),
+        any_ (this->getDomDocument ()),
+        entity_ (this),
+        state_ (getStateDefaultValue (), this),
+        any_attribute_ (this->getDomDocument ())
       {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
       }
-    }
 
-    if (!state_.present ())
-    {
-      this->state_.set (getStateDefaultValue ());
-    }
-  }
-
-  Endpoint_type* Endpoint_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Endpoint_type (*this, f, c);
-  }
-
-  Endpoint_type& Endpoint_type::
-  operator= (const Endpoint_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->display_text_ = x.display_text_;
-      this->referred_ = x.referred_;
-      this->status_ = x.status_;
-      this->joining_method_ = x.joining_method_;
-      this->joining_info_ = x.joining_info_;
-      this->disconnection_method_ = x.disconnection_method_;
-      this->disconnection_info_ = x.disconnection_info_;
-      this->media_ = x.media_;
-      this->call_info_ = x.call_info_;
-      this->any_ = x.any_;
-      this->entity_ = x.entity_;
-      this->state_ = x.state_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Endpoint_type::
-  ~Endpoint_type ()
-  {
-  }
-
-  // Endpoint_status_type
-  //
-
-  Endpoint_status_type::
-  Endpoint_status_type (const ::xercesc::DOMElement& e,
-                        ::xml_schema::Flags f,
-                        ::xml_schema::Container* c)
-  : ::xml_schema::String (e, f, c)
-  {
-    _xsd_Endpoint_status_type_convert ();
-  }
-
-  Endpoint_status_type::
-  Endpoint_status_type (const ::xercesc::DOMAttr& a,
-                        ::xml_schema::Flags f,
-                        ::xml_schema::Container* c)
-  : ::xml_schema::String (a, f, c)
-  {
-    _xsd_Endpoint_status_type_convert ();
-  }
-
-  Endpoint_status_type::
-  Endpoint_status_type (const ::std::string& s,
-                        const ::xercesc::DOMElement* e,
-                        ::xml_schema::Flags f,
-                        ::xml_schema::Container* c)
-  : ::xml_schema::String (s, e, f, c)
-  {
-    _xsd_Endpoint_status_type_convert ();
-  }
-
-  Endpoint_status_type* Endpoint_status_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Endpoint_status_type (*this, f, c);
-  }
-
-  Endpoint_status_type::Value Endpoint_status_type::
-  _xsd_Endpoint_status_type_convert () const
-  {
-    ::xsd::cxx::tree::enum_comparator< char > c (_xsd_Endpoint_status_type_literals_);
-    const Value* i (::std::lower_bound (
-                      _xsd_Endpoint_status_type_indexes_,
-                      _xsd_Endpoint_status_type_indexes_ + 9,
-                      *this,
-                      c));
-
-    if (i == _xsd_Endpoint_status_type_indexes_ + 9 || _xsd_Endpoint_status_type_literals_[*i] != *this)
-    {
-      throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
-    }
-
-    return *i;
-  }
-
-  const char* const Endpoint_status_type::
-  _xsd_Endpoint_status_type_literals_[9] =
-  {
-    "pending",
-    "dialing-out",
-    "dialing-in",
-    "alerting",
-    "on-hold",
-    "connected",
-    "muted-via-focus",
-    "disconnecting",
-    "disconnected"
-  };
-
-  const Endpoint_status_type::Value Endpoint_status_type::
-  _xsd_Endpoint_status_type_indexes_[9] =
-  {
-    ::conference_info::Endpoint_status_type::alerting,
-    ::conference_info::Endpoint_status_type::connected,
-    ::conference_info::Endpoint_status_type::dialing_in,
-    ::conference_info::Endpoint_status_type::dialing_out,
-    ::conference_info::Endpoint_status_type::disconnected,
-    ::conference_info::Endpoint_status_type::disconnecting,
-    ::conference_info::Endpoint_status_type::muted_via_focus,
-    ::conference_info::Endpoint_status_type::on_hold,
-    ::conference_info::Endpoint_status_type::pending
-  };
-
-  // Joining_type
-  //
-
-  Joining_type::
-  Joining_type (const ::xercesc::DOMElement& e,
-                ::xml_schema::Flags f,
-                ::xml_schema::Container* c)
-  : ::xml_schema::String (e, f, c)
-  {
-    _xsd_Joining_type_convert ();
-  }
-
-  Joining_type::
-  Joining_type (const ::xercesc::DOMAttr& a,
-                ::xml_schema::Flags f,
-                ::xml_schema::Container* c)
-  : ::xml_schema::String (a, f, c)
-  {
-    _xsd_Joining_type_convert ();
-  }
-
-  Joining_type::
-  Joining_type (const ::std::string& s,
-                const ::xercesc::DOMElement* e,
-                ::xml_schema::Flags f,
-                ::xml_schema::Container* c)
-  : ::xml_schema::String (s, e, f, c)
-  {
-    _xsd_Joining_type_convert ();
-  }
-
-  Joining_type* Joining_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Joining_type (*this, f, c);
-  }
-
-  Joining_type::Value Joining_type::
-  _xsd_Joining_type_convert () const
-  {
-    ::xsd::cxx::tree::enum_comparator< char > c (_xsd_Joining_type_literals_);
-    const Value* i (::std::lower_bound (
-                      _xsd_Joining_type_indexes_,
-                      _xsd_Joining_type_indexes_ + 3,
-                      *this,
-                      c));
-
-    if (i == _xsd_Joining_type_indexes_ + 3 || _xsd_Joining_type_literals_[*i] != *this)
-    {
-      throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
-    }
-
-    return *i;
-  }
-
-  const char* const Joining_type::
-  _xsd_Joining_type_literals_[3] =
-  {
-    "dialed-in",
-    "dialed-out",
-    "focus-owner"
-  };
-
-  const Joining_type::Value Joining_type::
-  _xsd_Joining_type_indexes_[3] =
-  {
-    ::conference_info::Joining_type::dialed_in,
-    ::conference_info::Joining_type::dialed_out,
-    ::conference_info::Joining_type::focus_owner
-  };
-
-  // Disconnection_type
-  //
-
-  Disconnection_type::
-  Disconnection_type (const ::xercesc::DOMElement& e,
-                      ::xml_schema::Flags f,
-                      ::xml_schema::Container* c)
-  : ::xml_schema::String (e, f, c)
-  {
-    _xsd_Disconnection_type_convert ();
-  }
-
-  Disconnection_type::
-  Disconnection_type (const ::xercesc::DOMAttr& a,
-                      ::xml_schema::Flags f,
-                      ::xml_schema::Container* c)
-  : ::xml_schema::String (a, f, c)
-  {
-    _xsd_Disconnection_type_convert ();
-  }
-
-  Disconnection_type::
-  Disconnection_type (const ::std::string& s,
-                      const ::xercesc::DOMElement* e,
-                      ::xml_schema::Flags f,
-                      ::xml_schema::Container* c)
-  : ::xml_schema::String (s, e, f, c)
-  {
-    _xsd_Disconnection_type_convert ();
-  }
-
-  Disconnection_type* Disconnection_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Disconnection_type (*this, f, c);
-  }
-
-  Disconnection_type::Value Disconnection_type::
-  _xsd_Disconnection_type_convert () const
-  {
-    ::xsd::cxx::tree::enum_comparator< char > c (_xsd_Disconnection_type_literals_);
-    const Value* i (::std::lower_bound (
-                      _xsd_Disconnection_type_indexes_,
-                      _xsd_Disconnection_type_indexes_ + 4,
-                      *this,
-                      c));
-
-    if (i == _xsd_Disconnection_type_indexes_ + 4 || _xsd_Disconnection_type_literals_[*i] != *this)
-    {
-      throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
-    }
-
-    return *i;
-  }
-
-  const char* const Disconnection_type::
-  _xsd_Disconnection_type_literals_[4] =
-  {
-    "departed",
-    "booted",
-    "failed",
-    "busy"
-  };
-
-  const Disconnection_type::Value Disconnection_type::
-  _xsd_Disconnection_type_indexes_[4] =
-  {
-    ::conference_info::Disconnection_type::booted,
-    ::conference_info::Disconnection_type::busy,
-    ::conference_info::Disconnection_type::departed,
-    ::conference_info::Disconnection_type::failed
-  };
-
-  // Execution_type
-  //
-
-  Execution_type::
-  Execution_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    when_ (this),
-    reason_ (this),
-    by_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Execution_type::
-  Execution_type (const Execution_type& x,
-                  ::xml_schema::Flags f,
-                  ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    when_ (x.when_, f, this),
-    reason_ (x.reason_, f, this),
-    by_ (x.by_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Execution_type::
-  Execution_type (const ::xercesc::DOMElement& e,
-                  ::xml_schema::Flags f,
-                  ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    when_ (this),
-    reason_ (this),
-    by_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Execution_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // when
-      //
-      if (n.name () == "when" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      EndpointType::
+      EndpointType (const EndpointType& x,
+                    ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                    ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (x.display_text_, f, this),
+        referred_ (x.referred_, f, this),
+        status_ (x.status_, f, this),
+        joining_method_ (x.joining_method_, f, this),
+        joining_info_ (x.joining_info_, f, this),
+        disconnection_method_ (x.disconnection_method_, f, this),
+        disconnection_info_ (x.disconnection_info_, f, this),
+        media_ (x.media_, f, this),
+        call_info_ (x.call_info_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        entity_ (x.entity_, f, this),
+        state_ (x.state_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
       {
-        ::std::unique_ptr< WhenType > r (
-          WhenTraits::create (i, f, this));
+      }
 
-        if (!this->when_)
+      EndpointType::
+      EndpointType (const ::xercesc::DOMElement& e,
+                    ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                    ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        referred_ (this),
+        status_ (this),
+        joining_method_ (this),
+        joining_info_ (this),
+        disconnection_method_ (this),
+        disconnection_info_ (this),
+        media_ (this),
+        call_info_ (this),
+        any_ (this->getDomDocument ()),
+        entity_ (this),
+        state_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
         {
-          this->when_.set (::std::move (r));
-          continue;
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // reason
-      //
-      if (n.name () == "reason" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void EndpointType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< ReasonType > r (
-          ReasonTraits::create (i, f, this));
-
-        if (!this->reason_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->reason_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // referred
+          //
+          if (n.name () == "referred" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ReferredType > r (
+              ReferredTraits::create (i, f, this));
+
+            if (!this->referred_)
+            {
+              this->referred_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // status
+          //
+          if (n.name () == "status" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< StatusType > r (
+              StatusTraits::create (i, f, this));
+
+            if (!this->status_)
+            {
+              this->status_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // joining-method
+          //
+          if (n.name () == "joining-method" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< JoiningMethodType > r (
+              JoiningMethodTraits::create (i, f, this));
+
+            if (!this->joining_method_)
+            {
+              this->joining_method_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // joining-info
+          //
+          if (n.name () == "joining-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< JoiningInfoType > r (
+              JoiningInfoTraits::create (i, f, this));
+
+            if (!this->joining_info_)
+            {
+              this->joining_info_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // disconnection-method
+          //
+          if (n.name () == "disconnection-method" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisconnectionMethodType > r (
+              DisconnectionMethodTraits::create (i, f, this));
+
+            if (!this->disconnection_method_)
+            {
+              this->disconnection_method_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // disconnection-info
+          //
+          if (n.name () == "disconnection-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisconnectionInfoType > r (
+              DisconnectionInfoTraits::create (i, f, this));
+
+            if (!this->disconnection_info_)
+            {
+              this->disconnection_info_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // media
+          //
+          if (n.name () == "media" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< MediaType > r (
+              MediaTraits::create (i, f, this));
+
+            this->media_.push_back (::std::move (r));
+            continue;
+          }
+
+          // call-info
+          //
+          if (n.name () == "call-info" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< CallInfoType > r (
+              CallInfoTraits::create (i, f, this));
+
+            if (!this->call_info_)
+            {
+              this->call_info_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
         }
-      }
 
-      // by
-      //
-      if (n.name () == "by" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< ByType > r (
-          ByTraits::create (i, f, this));
-
-        if (!this->by_)
+        while (p.more_attributes ())
         {
-          this->by_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "entity" && n.namespace_ ().empty ())
+          {
+            this->entity_.set (EntityTraits::create (i, f, this));
+            continue;
+          }
+
+          if (n.name () == "state" && n.namespace_ ().empty ())
+          {
+            this->state_.set (StateTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
-      }
 
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Execution_type* Execution_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Execution_type (*this, f, c);
-  }
-
-  Execution_type& Execution_type::
-  operator= (const Execution_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->when_ = x.when_;
-      this->reason_ = x.reason_;
-      this->by_ = x.by_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Execution_type::
-  ~Execution_type ()
-  {
-  }
-
-  // Call_type
-  //
-
-  Call_type::
-  Call_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    sip_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Call_type::
-  Call_type (const Call_type& x,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    sip_ (x.sip_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Call_type::
-  Call_type (const ::xercesc::DOMElement& e,
-             ::xml_schema::Flags f,
-             ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    sip_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Call_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // sip
-      //
-      if (n.name () == "sip" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< SipType > r (
-          SipTraits::create (i, f, this));
-
-        if (!this->sip_)
+        if (!state_.present ())
         {
-          this->sip_.set (::std::move (r));
-          continue;
+          this->state_.set (getStateDefaultValue ());
         }
       }
 
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+      EndpointType* EndpointType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
+        return new class EndpointType (*this, f, c);
       }
 
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+      EndpointType& EndpointType::
+      operator= (const EndpointType& x)
       {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Call_type* Call_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Call_type (*this, f, c);
-  }
-
-  Call_type& Call_type::
-  operator= (const Call_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->sip_ = x.sip_;
-      this->any_ = x.any_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Call_type::
-  ~Call_type ()
-  {
-  }
-
-  // Sip_dialog_id_type
-  //
-
-  Sip_dialog_id_type::
-  Sip_dialog_id_type (const Call_idType& call_id,
-                      const From_tagType& from_tag,
-                      const To_tagType& to_tag)
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    call_id_ (call_id, this),
-    from_tag_ (from_tag, this),
-    to_tag_ (to_tag, this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Sip_dialog_id_type::
-  Sip_dialog_id_type (const Sip_dialog_id_type& x,
-                      ::xml_schema::Flags f,
-                      ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (x.display_text_, f, this),
-    call_id_ (x.call_id_, f, this),
-    from_tag_ (x.from_tag_, f, this),
-    to_tag_ (x.to_tag_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Sip_dialog_id_type::
-  Sip_dialog_id_type (const ::xercesc::DOMElement& e,
-                      ::xml_schema::Flags f,
-                      ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    call_id_ (this),
-    from_tag_ (this),
-    to_tag_ (this),
-    any_ (this->getDomDocument ()),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Sip_dialog_id_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
+        if (this != &x)
         {
-          this->display_text_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->display_text_ = x.display_text_;
+          this->referred_ = x.referred_;
+          this->status_ = x.status_;
+          this->joining_method_ = x.joining_method_;
+          this->joining_info_ = x.joining_info_;
+          this->disconnection_method_ = x.disconnection_method_;
+          this->disconnection_info_ = x.disconnection_info_;
+          this->media_ = x.media_;
+          this->call_info_ = x.call_info_;
+          this->any_ = x.any_;
+          this->entity_ = x.entity_;
+          this->state_ = x.state_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      EndpointType::
+      ~EndpointType ()
+      {
+      }
+
+      // EndpointStatusType
+      //
+
+      EndpointStatusType::
+      EndpointStatusType (const ::xercesc::DOMElement& e,
+                          ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                          ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (e, f, c)
+      {
+        _xsd_EndpointStatusType_convert ();
+      }
+
+      EndpointStatusType::
+      EndpointStatusType (const ::xercesc::DOMAttr& a,
+                          ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                          ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (a, f, c)
+      {
+        _xsd_EndpointStatusType_convert ();
+      }
+
+      EndpointStatusType::
+      EndpointStatusType (const ::std::string& s,
+                          const ::xercesc::DOMElement* e,
+                          ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                          ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (s, e, f, c)
+      {
+        _xsd_EndpointStatusType_convert ();
+      }
+
+      EndpointStatusType* EndpointStatusType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class EndpointStatusType (*this, f, c);
+      }
+
+      EndpointStatusType::Value EndpointStatusType::
+      _xsd_EndpointStatusType_convert () const
+      {
+        ::xsd::cxx::tree::enum_comparator< char > c (_xsd_EndpointStatusType_literals_);
+        const Value* i (::std::lower_bound (
+                          _xsd_EndpointStatusType_indexes_,
+                          _xsd_EndpointStatusType_indexes_ + 9,
+                          *this,
+                          c));
+
+        if (i == _xsd_EndpointStatusType_indexes_ + 9 || _xsd_EndpointStatusType_literals_[*i] != *this)
+        {
+          throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+        }
+
+        return *i;
+      }
+
+      const char* const EndpointStatusType::
+      _xsd_EndpointStatusType_literals_[9] =
+      {
+        "pending",
+        "dialing-out",
+        "dialing-in",
+        "alerting",
+        "on-hold",
+        "connected",
+        "muted-via-focus",
+        "disconnecting",
+        "disconnected"
+      };
+
+      const EndpointStatusType::Value EndpointStatusType::
+      _xsd_EndpointStatusType_indexes_[9] =
+      {
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::alerting,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::connected,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::dialing_in,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::dialing_out,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::disconnected,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::disconnecting,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::muted_via_focus,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::on_hold,
+        ::LinphonePrivate::Xsd::ConferenceInfo::EndpointStatusType::pending
+      };
+
+      // JoiningType
+      //
+
+      JoiningType::
+      JoiningType (const ::xercesc::DOMElement& e,
+                   ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                   ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (e, f, c)
+      {
+        _xsd_JoiningType_convert ();
+      }
+
+      JoiningType::
+      JoiningType (const ::xercesc::DOMAttr& a,
+                   ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                   ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (a, f, c)
+      {
+        _xsd_JoiningType_convert ();
+      }
+
+      JoiningType::
+      JoiningType (const ::std::string& s,
+                   const ::xercesc::DOMElement* e,
+                   ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                   ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (s, e, f, c)
+      {
+        _xsd_JoiningType_convert ();
+      }
+
+      JoiningType* JoiningType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class JoiningType (*this, f, c);
+      }
+
+      JoiningType::Value JoiningType::
+      _xsd_JoiningType_convert () const
+      {
+        ::xsd::cxx::tree::enum_comparator< char > c (_xsd_JoiningType_literals_);
+        const Value* i (::std::lower_bound (
+                          _xsd_JoiningType_indexes_,
+                          _xsd_JoiningType_indexes_ + 3,
+                          *this,
+                          c));
+
+        if (i == _xsd_JoiningType_indexes_ + 3 || _xsd_JoiningType_literals_[*i] != *this)
+        {
+          throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+        }
+
+        return *i;
+      }
+
+      const char* const JoiningType::
+      _xsd_JoiningType_literals_[3] =
+      {
+        "dialed-in",
+        "dialed-out",
+        "focus-owner"
+      };
+
+      const JoiningType::Value JoiningType::
+      _xsd_JoiningType_indexes_[3] =
+      {
+        ::LinphonePrivate::Xsd::ConferenceInfo::JoiningType::dialed_in,
+        ::LinphonePrivate::Xsd::ConferenceInfo::JoiningType::dialed_out,
+        ::LinphonePrivate::Xsd::ConferenceInfo::JoiningType::focus_owner
+      };
+
+      // DisconnectionType
+      //
+
+      DisconnectionType::
+      DisconnectionType (const ::xercesc::DOMElement& e,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (e, f, c)
+      {
+        _xsd_DisconnectionType_convert ();
+      }
+
+      DisconnectionType::
+      DisconnectionType (const ::xercesc::DOMAttr& a,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (a, f, c)
+      {
+        _xsd_DisconnectionType_convert ();
+      }
+
+      DisconnectionType::
+      DisconnectionType (const ::std::string& s,
+                         const ::xercesc::DOMElement* e,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (s, e, f, c)
+      {
+        _xsd_DisconnectionType_convert ();
+      }
+
+      DisconnectionType* DisconnectionType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class DisconnectionType (*this, f, c);
+      }
+
+      DisconnectionType::Value DisconnectionType::
+      _xsd_DisconnectionType_convert () const
+      {
+        ::xsd::cxx::tree::enum_comparator< char > c (_xsd_DisconnectionType_literals_);
+        const Value* i (::std::lower_bound (
+                          _xsd_DisconnectionType_indexes_,
+                          _xsd_DisconnectionType_indexes_ + 4,
+                          *this,
+                          c));
+
+        if (i == _xsd_DisconnectionType_indexes_ + 4 || _xsd_DisconnectionType_literals_[*i] != *this)
+        {
+          throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+        }
+
+        return *i;
+      }
+
+      const char* const DisconnectionType::
+      _xsd_DisconnectionType_literals_[4] =
+      {
+        "departed",
+        "booted",
+        "failed",
+        "busy"
+      };
+
+      const DisconnectionType::Value DisconnectionType::
+      _xsd_DisconnectionType_indexes_[4] =
+      {
+        ::LinphonePrivate::Xsd::ConferenceInfo::DisconnectionType::booted,
+        ::LinphonePrivate::Xsd::ConferenceInfo::DisconnectionType::busy,
+        ::LinphonePrivate::Xsd::ConferenceInfo::DisconnectionType::departed,
+        ::LinphonePrivate::Xsd::ConferenceInfo::DisconnectionType::failed
+      };
+
+      // ExecutionType
+      //
+
+      ExecutionType::
+      ExecutionType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        when_ (this),
+        reason_ (this),
+        by_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      ExecutionType::
+      ExecutionType (const ExecutionType& x,
+                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                     ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        when_ (x.when_, f, this),
+        reason_ (x.reason_, f, this),
+        by_ (x.by_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      ExecutionType::
+      ExecutionType (const ::xercesc::DOMElement& e,
+                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                     ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        when_ (this),
+        reason_ (this),
+        by_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // call-id
-      //
-      if (n.name () == "call-id" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void ExecutionType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< Call_idType > r (
-          Call_idTraits::create (i, f, this));
+        for (; p.more_content (); p.next_content (false))
+        {
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // when
+          //
+          if (n.name () == "when" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< WhenType > r (
+              WhenTraits::create (i, f, this));
+
+            if (!this->when_)
+            {
+              this->when_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // reason
+          //
+          if (n.name () == "reason" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ReasonType > r (
+              ReasonTraits::create (i, f, this));
+
+            if (!this->reason_)
+            {
+              this->reason_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // by
+          //
+          if (n.name () == "by" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ByType > r (
+              ByTraits::create (i, f, this));
+
+            if (!this->by_)
+            {
+              this->by_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
+        }
+      }
+
+      ExecutionType* ExecutionType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class ExecutionType (*this, f, c);
+      }
+
+      ExecutionType& ExecutionType::
+      operator= (const ExecutionType& x)
+      {
+        if (this != &x)
+        {
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->when_ = x.when_;
+          this->reason_ = x.reason_;
+          this->by_ = x.by_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      ExecutionType::
+      ~ExecutionType ()
+      {
+      }
+
+      // CallType
+      //
+
+      CallType::
+      CallType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        sip_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      CallType::
+      CallType (const CallType& x,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        sip_ (x.sip_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      CallType::
+      CallType (const ::xercesc::DOMElement& e,
+                ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        sip_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
+        }
+      }
+
+      void CallType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        for (; p.more_content (); p.next_content (false))
+        {
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // sip
+          //
+          if (n.name () == "sip" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< SipType > r (
+              SipTraits::create (i, f, this));
+
+            if (!this->sip_)
+            {
+              this->sip_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
+        }
+      }
+
+      CallType* CallType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class CallType (*this, f, c);
+      }
+
+      CallType& CallType::
+      operator= (const CallType& x)
+      {
+        if (this != &x)
+        {
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->sip_ = x.sip_;
+          this->any_ = x.any_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      CallType::
+      ~CallType ()
+      {
+      }
+
+      // SipDialogIdType
+      //
+
+      SipDialogIdType::
+      SipDialogIdType (const CallIdType& call_id,
+                       const FromTagType& from_tag,
+                       const ToTagType& to_tag)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        call_id_ (call_id, this),
+        from_tag_ (from_tag, this),
+        to_tag_ (to_tag, this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      SipDialogIdType::
+      SipDialogIdType (const SipDialogIdType& x,
+                       ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                       ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (x.display_text_, f, this),
+        call_id_ (x.call_id_, f, this),
+        from_tag_ (x.from_tag_, f, this),
+        to_tag_ (x.to_tag_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      SipDialogIdType::
+      SipDialogIdType (const ::xercesc::DOMElement& e,
+                       ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                       ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        call_id_ (this),
+        from_tag_ (this),
+        to_tag_ (this),
+        any_ (this->getDomDocument ()),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
+        }
+      }
+
+      void SipDialogIdType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        for (; p.more_content (); p.next_content (false))
+        {
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // call-id
+          //
+          if (n.name () == "call-id" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< CallIdType > r (
+              CallIdTraits::create (i, f, this));
+
+            if (!call_id_.present ())
+            {
+              this->call_id_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // from-tag
+          //
+          if (n.name () == "from-tag" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< FromTagType > r (
+              FromTagTraits::create (i, f, this));
+
+            if (!from_tag_.present ())
+            {
+              this->from_tag_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // to-tag
+          //
+          if (n.name () == "to-tag" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< ToTagType > r (
+              ToTagTraits::create (i, f, this));
+
+            if (!to_tag_.present ())
+            {
+              this->to_tag_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
+        }
 
         if (!call_id_.present ())
         {
-          this->call_id_.set (::std::move (r));
-          continue;
+          throw ::xsd::cxx::tree::expected_element< char > (
+            "call-id",
+            "urn:ietf:params:xml:ns:conference-info");
         }
-      }
-
-      // from-tag
-      //
-      if (n.name () == "from-tag" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< From_tagType > r (
-          From_tagTraits::create (i, f, this));
 
         if (!from_tag_.present ())
         {
-          this->from_tag_.set (::std::move (r));
-          continue;
+          throw ::xsd::cxx::tree::expected_element< char > (
+            "from-tag",
+            "urn:ietf:params:xml:ns:conference-info");
         }
-      }
-
-      // to-tag
-      //
-      if (n.name () == "to-tag" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< To_tagType > r (
-          To_tagTraits::create (i, f, this));
 
         if (!to_tag_.present ())
         {
-          this->to_tag_.set (::std::move (r));
-          continue;
+          throw ::xsd::cxx::tree::expected_element< char > (
+            "to-tag",
+            "urn:ietf:params:xml:ns:conference-info");
         }
-      }
 
-      // any
-      //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
-      {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
-      }
-
-      break;
-    }
-
-    if (!call_id_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "call-id",
-        "urn:ietf:params:xml:ns:conference-info");
-    }
-
-    if (!from_tag_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "from-tag",
-        "urn:ietf:params:xml:ns:conference-info");
-    }
-
-    if (!to_tag_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "to-tag",
-        "urn:ietf:params:xml:ns:conference-info");
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
-      {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-  }
-
-  Sip_dialog_id_type* Sip_dialog_id_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Sip_dialog_id_type (*this, f, c);
-  }
-
-  Sip_dialog_id_type& Sip_dialog_id_type::
-  operator= (const Sip_dialog_id_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->display_text_ = x.display_text_;
-      this->call_id_ = x.call_id_;
-      this->from_tag_ = x.from_tag_;
-      this->to_tag_ = x.to_tag_;
-      this->any_ = x.any_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Sip_dialog_id_type::
-  ~Sip_dialog_id_type ()
-  {
-  }
-
-  // Media_type
-  //
-
-  Media_type::
-  Media_type (const IdType& id)
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    type_ (this),
-    label_ (this),
-    src_id_ (this),
-    status_ (this),
-    any_ (this->getDomDocument ()),
-    id_ (id, this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Media_type::
-  Media_type (const Media_type& x,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (x.display_text_, f, this),
-    type_ (x.type_, f, this),
-    label_ (x.label_, f, this),
-    src_id_ (x.src_id_, f, this),
-    status_ (x.status_, f, this),
-    any_ (x.any_, this->getDomDocument ()),
-    id_ (x.id_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Media_type::
-  Media_type (const ::xercesc::DOMElement& e,
-              ::xml_schema::Flags f,
-              ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    display_text_ (this),
-    type_ (this),
-    label_ (this),
-    src_id_ (this),
-    status_ (this),
-    any_ (this->getDomDocument ()),
-    id_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Media_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // display-text
-      //
-      if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< Display_textType > r (
-          Display_textTraits::create (i, f, this));
-
-        if (!this->display_text_)
+        while (p.more_attributes ())
         {
-          this->display_text_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
         }
       }
 
-      // type
-      //
-      if (n.name () == "type" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      SipDialogIdType* SipDialogIdType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
       {
-        ::std::unique_ptr< TypeType > r (
-          TypeTraits::create (i, f, this));
+        return new class SipDialogIdType (*this, f, c);
+      }
 
-        if (!this->type_)
+      SipDialogIdType& SipDialogIdType::
+      operator= (const SipDialogIdType& x)
+      {
+        if (this != &x)
         {
-          this->type_.set (::std::move (r));
-          continue;
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->display_text_ = x.display_text_;
+          this->call_id_ = x.call_id_;
+          this->from_tag_ = x.from_tag_;
+          this->to_tag_ = x.to_tag_;
+          this->any_ = x.any_;
+          this->any_attribute_ = x.any_attribute_;
         }
+
+        return *this;
       }
 
-      // label
-      //
-      if (n.name () == "label" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      SipDialogIdType::
+      ~SipDialogIdType ()
       {
-        ::std::unique_ptr< LabelType > r (
-          LabelTraits::create (i, f, this));
+      }
 
-        if (!this->label_)
+      // MediaType
+      //
+
+      MediaType::
+      MediaType (const IdType& id)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        type_ (this),
+        label_ (this),
+        src_id_ (this),
+        status_ (this),
+        any_ (this->getDomDocument ()),
+        id_ (id, this),
+        any_attribute_ (this->getDomDocument ())
+      {
+      }
+
+      MediaType::
+      MediaType (const MediaType& x,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (x.display_text_, f, this),
+        type_ (x.type_, f, this),
+        label_ (x.label_, f, this),
+        src_id_ (x.src_id_, f, this),
+        status_ (x.status_, f, this),
+        any_ (x.any_, this->getDomDocument ()),
+        id_ (x.id_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
+      {
+      }
+
+      MediaType::
+      MediaType (const ::xercesc::DOMElement& e,
+                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                 ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        display_text_ (this),
+        type_ (this),
+        label_ (this),
+        src_id_ (this),
+        status_ (this),
+        any_ (this->getDomDocument ()),
+        id_ (this),
+        any_attribute_ (this->getDomDocument ())
+      {
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
         {
-          this->label_.set (::std::move (r));
-          continue;
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
         }
       }
 
-      // src-id
-      //
-      if (n.name () == "src-id" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+      void MediaType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
       {
-        ::std::unique_ptr< Src_idType > r (
-          Src_idTraits::create (i, f, this));
-
-        if (!this->src_id_)
+        for (; p.more_content (); p.next_content (false))
         {
-          this->src_id_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // display-text
+          //
+          if (n.name () == "display-text" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< DisplayTextType > r (
+              DisplayTextTraits::create (i, f, this));
+
+            if (!this->display_text_)
+            {
+              this->display_text_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // type
+          //
+          if (n.name () == "type" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< TypeType > r (
+              TypeTraits::create (i, f, this));
+
+            if (!this->type_)
+            {
+              this->type_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // label
+          //
+          if (n.name () == "label" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< LabelType > r (
+              LabelTraits::create (i, f, this));
+
+            if (!this->label_)
+            {
+              this->label_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // src-id
+          //
+          if (n.name () == "src-id" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< SrcIdType > r (
+              SrcIdTraits::create (i, f, this));
+
+            if (!this->src_id_)
+            {
+              this->src_id_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // status
+          //
+          if (n.name () == "status" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< StatusType > r (
+              StatusTraits::create (i, f, this));
+
+            if (!this->status_)
+            {
+              this->status_.set (::std::move (r));
+              continue;
+            }
+          }
+
+          // any
+          //
+          if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+          {
+            ::xercesc::DOMElement* r (
+              static_cast< ::xercesc::DOMElement* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMElement* > (&i), true)));
+            this->any_.push_back (r);
+            continue;
+          }
+
+          break;
         }
-      }
 
-      // status
-      //
-      if (n.name () == "status" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< StatusType > r (
-          StatusTraits::create (i, f, this));
-
-        if (!this->status_)
+        while (p.more_attributes ())
         {
-          this->status_.set (::std::move (r));
-          continue;
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "id" && n.namespace_ ().empty ())
+          {
+            this->id_.set (IdTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
+        }
+
+        if (!id_.present ())
+        {
+          throw ::xsd::cxx::tree::expected_attribute< char > (
+            "id",
+            "");
         }
       }
 
-      // any
+      MediaType* MediaType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class MediaType (*this, f, c);
+      }
+
+      MediaType& MediaType::
+      operator= (const MediaType& x)
+      {
+        if (this != &x)
+        {
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->display_text_ = x.display_text_;
+          this->type_ = x.type_;
+          this->label_ = x.label_;
+          this->src_id_ = x.src_id_;
+          this->status_ = x.status_;
+          this->any_ = x.any_;
+          this->id_ = x.id_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      MediaType::
+      ~MediaType ()
+      {
+      }
+
+      // MediaStatusType
       //
-      if ((!n.namespace_ ().empty () && n.namespace_ () != "urn:ietf:params:xml:ns:conference-info"))
+
+      MediaStatusType::
+      MediaStatusType (const ::xercesc::DOMElement& e,
+                       ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                       ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (e, f, c)
       {
-        ::xercesc::DOMElement* r (
-          static_cast< ::xercesc::DOMElement* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMElement* > (&i), true)));
-        this->any_.push_back (r);
-        continue;
+        _xsd_MediaStatusType_convert ();
       }
 
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "id" && n.namespace_ ().empty ())
+      MediaStatusType::
+      MediaStatusType (const ::xercesc::DOMAttr& a,
+                       ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                       ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (a, f, c)
       {
-        this->id_.set (IdTraits::create (i, f, this));
-        continue;
+        _xsd_MediaStatusType_convert ();
       }
 
-      // any_attribute
+      MediaStatusType::
+      MediaStatusType (const ::std::string& s,
+                       const ::xercesc::DOMElement* e,
+                       ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                       ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::String (s, e, f, c)
+      {
+        _xsd_MediaStatusType_convert ();
+      }
+
+      MediaStatusType* MediaStatusType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class MediaStatusType (*this, f, c);
+      }
+
+      MediaStatusType::Value MediaStatusType::
+      _xsd_MediaStatusType_convert () const
+      {
+        ::xsd::cxx::tree::enum_comparator< char > c (_xsd_MediaStatusType_literals_);
+        const Value* i (::std::lower_bound (
+                          _xsd_MediaStatusType_indexes_,
+                          _xsd_MediaStatusType_indexes_ + 4,
+                          *this,
+                          c));
+
+        if (i == _xsd_MediaStatusType_indexes_ + 4 || _xsd_MediaStatusType_literals_[*i] != *this)
+        {
+          throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+        }
+
+        return *i;
+      }
+
+      const char* const MediaStatusType::
+      _xsd_MediaStatusType_literals_[4] =
+      {
+        "recvonly",
+        "sendonly",
+        "sendrecv",
+        "inactive"
+      };
+
+      const MediaStatusType::Value MediaStatusType::
+      _xsd_MediaStatusType_indexes_[4] =
+      {
+        ::LinphonePrivate::Xsd::ConferenceInfo::MediaStatusType::inactive,
+        ::LinphonePrivate::Xsd::ConferenceInfo::MediaStatusType::recvonly,
+        ::LinphonePrivate::Xsd::ConferenceInfo::MediaStatusType::sendonly,
+        ::LinphonePrivate::Xsd::ConferenceInfo::MediaStatusType::sendrecv
+      };
+
+      // SidebarsByValType
       //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+
+      const SidebarsByValType::StateType SidebarsByValType::state_default_value_ (
+        "full");
+
+      SidebarsByValType::
+      SidebarsByValType ()
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        state_ (getStateDefaultValue (), this),
+        any_attribute_ (this->getDomDocument ())
       {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
-      }
-    }
-
-    if (!id_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_attribute< char > (
-        "id",
-        "");
-    }
-  }
-
-  Media_type* Media_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Media_type (*this, f, c);
-  }
-
-  Media_type& Media_type::
-  operator= (const Media_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->display_text_ = x.display_text_;
-      this->type_ = x.type_;
-      this->label_ = x.label_;
-      this->src_id_ = x.src_id_;
-      this->status_ = x.status_;
-      this->any_ = x.any_;
-      this->id_ = x.id_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Media_type::
-  ~Media_type ()
-  {
-  }
-
-  // Media_status_type
-  //
-
-  Media_status_type::
-  Media_status_type (const ::xercesc::DOMElement& e,
-                     ::xml_schema::Flags f,
-                     ::xml_schema::Container* c)
-  : ::xml_schema::String (e, f, c)
-  {
-    _xsd_Media_status_type_convert ();
-  }
-
-  Media_status_type::
-  Media_status_type (const ::xercesc::DOMAttr& a,
-                     ::xml_schema::Flags f,
-                     ::xml_schema::Container* c)
-  : ::xml_schema::String (a, f, c)
-  {
-    _xsd_Media_status_type_convert ();
-  }
-
-  Media_status_type::
-  Media_status_type (const ::std::string& s,
-                     const ::xercesc::DOMElement* e,
-                     ::xml_schema::Flags f,
-                     ::xml_schema::Container* c)
-  : ::xml_schema::String (s, e, f, c)
-  {
-    _xsd_Media_status_type_convert ();
-  }
-
-  Media_status_type* Media_status_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Media_status_type (*this, f, c);
-  }
-
-  Media_status_type::Value Media_status_type::
-  _xsd_Media_status_type_convert () const
-  {
-    ::xsd::cxx::tree::enum_comparator< char > c (_xsd_Media_status_type_literals_);
-    const Value* i (::std::lower_bound (
-                      _xsd_Media_status_type_indexes_,
-                      _xsd_Media_status_type_indexes_ + 4,
-                      *this,
-                      c));
-
-    if (i == _xsd_Media_status_type_indexes_ + 4 || _xsd_Media_status_type_literals_[*i] != *this)
-    {
-      throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
-    }
-
-    return *i;
-  }
-
-  const char* const Media_status_type::
-  _xsd_Media_status_type_literals_[4] =
-  {
-    "recvonly",
-    "sendonly",
-    "sendrecv",
-    "inactive"
-  };
-
-  const Media_status_type::Value Media_status_type::
-  _xsd_Media_status_type_indexes_[4] =
-  {
-    ::conference_info::Media_status_type::inactive,
-    ::conference_info::Media_status_type::recvonly,
-    ::conference_info::Media_status_type::sendonly,
-    ::conference_info::Media_status_type::sendrecv
-  };
-
-  // Sidebars_by_val_type
-  //
-
-  const Sidebars_by_val_type::StateType Sidebars_by_val_type::state_default_value_ (
-    "full");
-
-  Sidebars_by_val_type::
-  Sidebars_by_val_type ()
-  : ::xml_schema::Type (),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    state_ (getStateDefaultValue (), this),
-    any_attribute_ (this->getDomDocument ())
-  {
-  }
-
-  Sidebars_by_val_type::
-  Sidebars_by_val_type (const Sidebars_by_val_type& x,
-                        ::xml_schema::Flags f,
-                        ::xml_schema::Container* c)
-  : ::xml_schema::Type (x, f, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (x.entry_, f, this),
-    state_ (x.state_, f, this),
-    any_attribute_ (x.any_attribute_, this->getDomDocument ())
-  {
-  }
-
-  Sidebars_by_val_type::
-  Sidebars_by_val_type (const ::xercesc::DOMElement& e,
-                        ::xml_schema::Flags f,
-                        ::xml_schema::Container* c)
-  : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-    dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
-    entry_ (this),
-    state_ (this),
-    any_attribute_ (this->getDomDocument ())
-  {
-    if ((f & ::xml_schema::Flags::base) == 0)
-    {
-      ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
-      this->parse (p, f);
-    }
-  }
-
-  void Sidebars_by_val_type::
-  parse (::xsd::cxx::xml::dom::parser< char >& p,
-         ::xml_schema::Flags f)
-  {
-    for (; p.more_content (); p.next_content (false))
-    {
-      const ::xercesc::DOMElement& i (p.cur_element ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      // entry
-      //
-      if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-      {
-        ::std::unique_ptr< EntryType > r (
-          EntryTraits::create (i, f, this));
-
-        this->entry_.push_back (::std::move (r));
-        continue;
       }
 
-      break;
-    }
-
-    while (p.more_attributes ())
-    {
-      const ::xercesc::DOMAttr& i (p.next_attribute ());
-      const ::xsd::cxx::xml::qualified_name< char > n (
-        ::xsd::cxx::xml::dom::name< char > (i));
-
-      if (n.name () == "state" && n.namespace_ ().empty ())
+      SidebarsByValType::
+      SidebarsByValType (const SidebarsByValType& x,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (x, f, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (x.entry_, f, this),
+        state_ (x.state_, f, this),
+        any_attribute_ (x.any_attribute_, this->getDomDocument ())
       {
-        this->state_.set (StateTraits::create (i, f, this));
-        continue;
       }
 
-      // any_attribute
-      //
-      if ((!n.namespace_ ().empty () &&
-           n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
-           n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+      SidebarsByValType::
+      SidebarsByValType (const ::xercesc::DOMElement& e,
+                         ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                         ::LinphonePrivate::Xsd::XmlSchema::Container* c)
+      : ::LinphonePrivate::Xsd::XmlSchema::Type (e, f | ::LinphonePrivate::Xsd::XmlSchema::Flags::base, c),
+        dom_document_ (::xsd::cxx::xml::dom::create_document< char > ()),
+        entry_ (this),
+        state_ (this),
+        any_attribute_ (this->getDomDocument ())
       {
-        ::xercesc::DOMAttr* r (
-          static_cast< ::xercesc::DOMAttr* > (
-            this->getDomDocument ().importNode (
-              const_cast< ::xercesc::DOMAttr* > (&i), true)));
-        this->any_attribute_ .insert (r);
-        continue;
+        if ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::base) == 0)
+        {
+          ::xsd::cxx::xml::dom::parser< char > p (e, true, false, true);
+          this->parse (p, f);
+        }
+      }
+
+      void SidebarsByValType::
+      parse (::xsd::cxx::xml::dom::parser< char >& p,
+             ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        for (; p.more_content (); p.next_content (false))
+        {
+          const ::xercesc::DOMElement& i (p.cur_element ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          // entry
+          //
+          if (n.name () == "entry" && n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+          {
+            ::std::unique_ptr< EntryType > r (
+              EntryTraits::create (i, f, this));
+
+            this->entry_.push_back (::std::move (r));
+            continue;
+          }
+
+          break;
+        }
+
+        while (p.more_attributes ())
+        {
+          const ::xercesc::DOMAttr& i (p.next_attribute ());
+          const ::xsd::cxx::xml::qualified_name< char > n (
+            ::xsd::cxx::xml::dom::name< char > (i));
+
+          if (n.name () == "state" && n.namespace_ ().empty ())
+          {
+            this->state_.set (StateTraits::create (i, f, this));
+            continue;
+          }
+
+          // any_attribute
+          //
+          if ((!n.namespace_ ().empty () &&
+               n.namespace_ () != "urn:ietf:params:xml:ns:conference-info" &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xmlns_namespace< char > () &&
+               n.namespace_ () != ::xsd::cxx::xml::bits::xsi_namespace< char > ()))
+          {
+            ::xercesc::DOMAttr* r (
+              static_cast< ::xercesc::DOMAttr* > (
+                this->getDomDocument ().importNode (
+                  const_cast< ::xercesc::DOMAttr* > (&i), true)));
+            this->any_attribute_ .insert (r);
+            continue;
+          }
+        }
+
+        if (!state_.present ())
+        {
+          this->state_.set (getStateDefaultValue ());
+        }
+      }
+
+      SidebarsByValType* SidebarsByValType::
+      _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f,
+              ::LinphonePrivate::Xsd::XmlSchema::Container* c) const
+      {
+        return new class SidebarsByValType (*this, f, c);
+      }
+
+      SidebarsByValType& SidebarsByValType::
+      operator= (const SidebarsByValType& x)
+      {
+        if (this != &x)
+        {
+          static_cast< ::LinphonePrivate::Xsd::XmlSchema::Type& > (*this) = x;
+          this->entry_ = x.entry_;
+          this->state_ = x.state_;
+          this->any_attribute_ = x.any_attribute_;
+        }
+
+        return *this;
+      }
+
+      SidebarsByValType::
+      ~SidebarsByValType ()
+      {
       }
     }
-
-    if (!state_.present ())
-    {
-      this->state_.set (getStateDefaultValue ());
-    }
-  }
-
-  Sidebars_by_val_type* Sidebars_by_val_type::
-  _clone (::xml_schema::Flags f,
-          ::xml_schema::Container* c) const
-  {
-    return new class Sidebars_by_val_type (*this, f, c);
-  }
-
-  Sidebars_by_val_type& Sidebars_by_val_type::
-  operator= (const Sidebars_by_val_type& x)
-  {
-    if (this != &x)
-    {
-      static_cast< ::xml_schema::Type& > (*this) = x;
-      this->entry_ = x.entry_;
-      this->state_ = x.state_;
-      this->any_attribute_ = x.any_attribute_;
-    }
-
-    return *this;
-  }
-
-  Sidebars_by_val_type::
-  ~Sidebars_by_val_type ()
-  {
   }
 }
 
 #include <ostream>
 
-namespace conference_info
+namespace LinphonePrivate
 {
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Conference_type& i)
+  namespace Xsd
   {
-    if (i.getConference_description ())
+    namespace ConferenceInfo
     {
-      o << ::std::endl << "conference-description: " << *i.getConference_description ();
+      ::std::ostream&
+      operator<< (::std::ostream& o, const ConferenceType& i)
+      {
+        if (i.getConferenceDescription ())
+        {
+          o << ::std::endl << "conference-description: " << *i.getConferenceDescription ();
+        }
+
+        if (i.getHostInfo ())
+        {
+          o << ::std::endl << "host-info: " << *i.getHostInfo ();
+        }
+
+        if (i.getConferenceState ())
+        {
+          o << ::std::endl << "conference-state: " << *i.getConferenceState ();
+        }
+
+        if (i.getUsers ())
+        {
+          o << ::std::endl << "users: " << *i.getUsers ();
+        }
+
+        if (i.getSidebarsByRef ())
+        {
+          o << ::std::endl << "sidebars-by-ref: " << *i.getSidebarsByRef ();
+        }
+
+        if (i.getSidebarsByVal ())
+        {
+          o << ::std::endl << "sidebars-by-val: " << *i.getSidebarsByVal ();
+        }
+
+        o << ::std::endl << "entity: " << i.getEntity ();
+        o << ::std::endl << "state: " << i.getState ();
+        if (i.getVersion ())
+        {
+          o << ::std::endl << "version: " << *i.getVersion ();
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, StateType::Value i)
+      {
+        return o << StateType::_xsd_StateType_literals_[i];
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const StateType& i)
+      {
+        return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const ConferenceDescriptionType& i)
+      {
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        if (i.getSubject ())
+        {
+          o << ::std::endl << "subject: " << *i.getSubject ();
+        }
+
+        if (i.getFreeText ())
+        {
+          o << ::std::endl << "free-text: " << *i.getFreeText ();
+        }
+
+        if (i.getKeywords ())
+        {
+          o << ::std::endl << "keywords: " << *i.getKeywords ();
+        }
+
+        if (i.getConfUris ())
+        {
+          o << ::std::endl << "conf-uris: " << *i.getConfUris ();
+        }
+
+        if (i.getServiceUris ())
+        {
+          o << ::std::endl << "service-uris: " << *i.getServiceUris ();
+        }
+
+        if (i.getMaximumUserCount ())
+        {
+          o << ::std::endl << "maximum-user-count: " << *i.getMaximumUserCount ();
+        }
+
+        if (i.getAvailableMedia ())
+        {
+          o << ::std::endl << "available-media: " << *i.getAvailableMedia ();
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const HostType& i)
+      {
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        if (i.getWebPage ())
+        {
+          o << ::std::endl << "web-page: " << *i.getWebPage ();
+        }
+
+        if (i.getUris ())
+        {
+          o << ::std::endl << "uris: " << *i.getUris ();
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const ConferenceStateType& i)
+      {
+        if (i.getUserCount ())
+        {
+          o << ::std::endl << "user-count: " << *i.getUserCount ();
+        }
+
+        if (i.getActive ())
+        {
+          o << ::std::endl << "active: " << *i.getActive ();
+        }
+
+        if (i.getLocked ())
+        {
+          o << ::std::endl << "locked: " << *i.getLocked ();
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const ConferenceMediaType& i)
+      {
+        for (ConferenceMediaType::EntryConstIterator
+             b (i.getEntry ().begin ()), e (i.getEntry ().end ());
+             b != e; ++b)
+        {
+          o << ::std::endl << "entry: " << *b;
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const ConferenceMediumType& i)
+      {
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        o << ::std::endl << "type: " << i.getType ();
+        if (i.getStatus ())
+        {
+          o << ::std::endl << "status: " << *i.getStatus ();
+        }
+
+        o << ::std::endl << "label: " << i.getLabel ();
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const UrisType& i)
+      {
+        for (UrisType::EntryConstIterator
+             b (i.getEntry ().begin ()), e (i.getEntry ().end ());
+             b != e; ++b)
+        {
+          o << ::std::endl << "entry: " << *b;
+        }
+
+        o << ::std::endl << "state: " << i.getState ();
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const UriType& i)
+      {
+        o << ::std::endl << "uri: " << i.getUri ();
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        if (i.getPurpose ())
+        {
+          o << ::std::endl << "purpose: " << *i.getPurpose ();
+        }
+
+        if (i.getModified ())
+        {
+          o << ::std::endl << "modified: " << *i.getModified ();
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const KeywordsType& i)
+      {
+        return o << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char >& > (i);
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const UsersType& i)
+      {
+        for (UsersType::UserConstIterator
+             b (i.getUser ().begin ()), e (i.getUser ().end ());
+             b != e; ++b)
+        {
+          o << ::std::endl << "user: " << *b;
+        }
+
+        o << ::std::endl << "state: " << i.getState ();
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const UserType& i)
+      {
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        if (i.getAssociatedAors ())
+        {
+          o << ::std::endl << "associated-aors: " << *i.getAssociatedAors ();
+        }
+
+        if (i.getRoles ())
+        {
+          o << ::std::endl << "roles: " << *i.getRoles ();
+        }
+
+        if (i.getLanguages ())
+        {
+          o << ::std::endl << "languages: " << *i.getLanguages ();
+        }
+
+        if (i.getCascadedFocus ())
+        {
+          o << ::std::endl << "cascaded-focus: " << *i.getCascadedFocus ();
+        }
+
+        for (UserType::EndpointConstIterator
+             b (i.getEndpoint ().begin ()), e (i.getEndpoint ().end ());
+             b != e; ++b)
+        {
+          o << ::std::endl << "endpoint: " << *b;
+        }
+
+        if (i.getEntity ())
+        {
+          o << ::std::endl << "entity: " << *i.getEntity ();
+        }
+
+        o << ::std::endl << "state: " << i.getState ();
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const UserRolesType& i)
+      {
+        for (UserRolesType::EntryConstIterator
+             b (i.getEntry ().begin ()), e (i.getEntry ().end ());
+             b != e; ++b)
+        {
+          o << ::std::endl << "entry: " << *b;
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const UserLanguagesType& i)
+      {
+        return o << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char >& > (i);
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const EndpointType& i)
+      {
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        if (i.getReferred ())
+        {
+          o << ::std::endl << "referred: " << *i.getReferred ();
+        }
+
+        if (i.getStatus ())
+        {
+          o << ::std::endl << "status: " << *i.getStatus ();
+        }
+
+        if (i.getJoiningMethod ())
+        {
+          o << ::std::endl << "joining-method: " << *i.getJoiningMethod ();
+        }
+
+        if (i.getJoiningInfo ())
+        {
+          o << ::std::endl << "joining-info: " << *i.getJoiningInfo ();
+        }
+
+        if (i.getDisconnectionMethod ())
+        {
+          o << ::std::endl << "disconnection-method: " << *i.getDisconnectionMethod ();
+        }
+
+        if (i.getDisconnectionInfo ())
+        {
+          o << ::std::endl << "disconnection-info: " << *i.getDisconnectionInfo ();
+        }
+
+        for (EndpointType::MediaConstIterator
+             b (i.getMedia ().begin ()), e (i.getMedia ().end ());
+             b != e; ++b)
+        {
+          o << ::std::endl << "media: " << *b;
+        }
+
+        if (i.getCallInfo ())
+        {
+          o << ::std::endl << "call-info: " << *i.getCallInfo ();
+        }
+
+        if (i.getEntity ())
+        {
+          o << ::std::endl << "entity: " << *i.getEntity ();
+        }
+
+        o << ::std::endl << "state: " << i.getState ();
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, EndpointStatusType::Value i)
+      {
+        return o << EndpointStatusType::_xsd_EndpointStatusType_literals_[i];
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const EndpointStatusType& i)
+      {
+        return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, JoiningType::Value i)
+      {
+        return o << JoiningType::_xsd_JoiningType_literals_[i];
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const JoiningType& i)
+      {
+        return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, DisconnectionType::Value i)
+      {
+        return o << DisconnectionType::_xsd_DisconnectionType_literals_[i];
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const DisconnectionType& i)
+      {
+        return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const ExecutionType& i)
+      {
+        if (i.getWhen ())
+        {
+          o << ::std::endl << "when: " << *i.getWhen ();
+        }
+
+        if (i.getReason ())
+        {
+          o << ::std::endl << "reason: " << *i.getReason ();
+        }
+
+        if (i.getBy ())
+        {
+          o << ::std::endl << "by: " << *i.getBy ();
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const CallType& i)
+      {
+        if (i.getSip ())
+        {
+          o << ::std::endl << "sip: " << *i.getSip ();
+        }
+
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const SipDialogIdType& i)
+      {
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        o << ::std::endl << "call-id: " << i.getCallId ();
+        o << ::std::endl << "from-tag: " << i.getFromTag ();
+        o << ::std::endl << "to-tag: " << i.getToTag ();
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const MediaType& i)
+      {
+        if (i.getDisplayText ())
+        {
+          o << ::std::endl << "display-text: " << *i.getDisplayText ();
+        }
+
+        if (i.getType ())
+        {
+          o << ::std::endl << "type: " << *i.getType ();
+        }
+
+        if (i.getLabel ())
+        {
+          o << ::std::endl << "label: " << *i.getLabel ();
+        }
+
+        if (i.getSrcId ())
+        {
+          o << ::std::endl << "src-id: " << *i.getSrcId ();
+        }
+
+        if (i.getStatus ())
+        {
+          o << ::std::endl << "status: " << *i.getStatus ();
+        }
+
+        o << ::std::endl << "id: " << i.getId ();
+        return o;
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, MediaStatusType::Value i)
+      {
+        return o << MediaStatusType::_xsd_MediaStatusType_literals_[i];
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const MediaStatusType& i)
+      {
+        return o << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      ::std::ostream&
+      operator<< (::std::ostream& o, const SidebarsByValType& i)
+      {
+        for (SidebarsByValType::EntryConstIterator
+             b (i.getEntry ().begin ()), e (i.getEntry ().end ());
+             b != e; ++b)
+        {
+          o << ::std::endl << "entry: " << *b;
+        }
+
+        o << ::std::endl << "state: " << i.getState ();
+        return o;
+      }
     }
-
-    if (i.getHost_info ())
-    {
-      o << ::std::endl << "host-info: " << *i.getHost_info ();
-    }
-
-    if (i.getConference_state ())
-    {
-      o << ::std::endl << "conference-state: " << *i.getConference_state ();
-    }
-
-    if (i.getUsers ())
-    {
-      o << ::std::endl << "users: " << *i.getUsers ();
-    }
-
-    if (i.getSidebars_by_ref ())
-    {
-      o << ::std::endl << "sidebars-by-ref: " << *i.getSidebars_by_ref ();
-    }
-
-    if (i.getSidebars_by_val ())
-    {
-      o << ::std::endl << "sidebars-by-val: " << *i.getSidebars_by_val ();
-    }
-
-    o << ::std::endl << "entity: " << i.getEntity ();
-    o << ::std::endl << "state: " << i.getState ();
-    if (i.getVersion ())
-    {
-      o << ::std::endl << "version: " << *i.getVersion ();
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, State_type::Value i)
-  {
-    return o << State_type::_xsd_State_type_literals_[i];
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const State_type& i)
-  {
-    return o << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Conference_description_type& i)
-  {
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    if (i.getSubject ())
-    {
-      o << ::std::endl << "subject: " << *i.getSubject ();
-    }
-
-    if (i.getFree_text ())
-    {
-      o << ::std::endl << "free-text: " << *i.getFree_text ();
-    }
-
-    if (i.getKeywords ())
-    {
-      o << ::std::endl << "keywords: " << *i.getKeywords ();
-    }
-
-    if (i.getConf_uris ())
-    {
-      o << ::std::endl << "conf-uris: " << *i.getConf_uris ();
-    }
-
-    if (i.getService_uris ())
-    {
-      o << ::std::endl << "service-uris: " << *i.getService_uris ();
-    }
-
-    if (i.getMaximum_user_count ())
-    {
-      o << ::std::endl << "maximum-user-count: " << *i.getMaximum_user_count ();
-    }
-
-    if (i.getAvailable_media ())
-    {
-      o << ::std::endl << "available-media: " << *i.getAvailable_media ();
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Host_type& i)
-  {
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    if (i.getWeb_page ())
-    {
-      o << ::std::endl << "web-page: " << *i.getWeb_page ();
-    }
-
-    if (i.getUris ())
-    {
-      o << ::std::endl << "uris: " << *i.getUris ();
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Conference_state_type& i)
-  {
-    if (i.getUser_count ())
-    {
-      o << ::std::endl << "user-count: " << *i.getUser_count ();
-    }
-
-    if (i.getActive ())
-    {
-      o << ::std::endl << "active: " << *i.getActive ();
-    }
-
-    if (i.getLocked ())
-    {
-      o << ::std::endl << "locked: " << *i.getLocked ();
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Conference_media_type& i)
-  {
-    for (Conference_media_type::EntryConstIterator
-         b (i.getEntry ().begin ()), e (i.getEntry ().end ());
-         b != e; ++b)
-    {
-      o << ::std::endl << "entry: " << *b;
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Conference_medium_type& i)
-  {
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    o << ::std::endl << "type: " << i.getType ();
-    if (i.getStatus ())
-    {
-      o << ::std::endl << "status: " << *i.getStatus ();
-    }
-
-    o << ::std::endl << "label: " << i.getLabel ();
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Uris_type& i)
-  {
-    for (Uris_type::EntryConstIterator
-         b (i.getEntry ().begin ()), e (i.getEntry ().end ());
-         b != e; ++b)
-    {
-      o << ::std::endl << "entry: " << *b;
-    }
-
-    o << ::std::endl << "state: " << i.getState ();
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Uri_type& i)
-  {
-    o << ::std::endl << "uri: " << i.getUri ();
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    if (i.getPurpose ())
-    {
-      o << ::std::endl << "purpose: " << *i.getPurpose ();
-    }
-
-    if (i.getModified ())
-    {
-      o << ::std::endl << "modified: " << *i.getModified ();
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Keywords_type& i)
-  {
-    return o << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::String, char >& > (i);
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Users_type& i)
-  {
-    for (Users_type::UserConstIterator
-         b (i.getUser ().begin ()), e (i.getUser ().end ());
-         b != e; ++b)
-    {
-      o << ::std::endl << "user: " << *b;
-    }
-
-    o << ::std::endl << "state: " << i.getState ();
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const User_type& i)
-  {
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    if (i.getAssociated_aors ())
-    {
-      o << ::std::endl << "associated-aors: " << *i.getAssociated_aors ();
-    }
-
-    if (i.getRoles ())
-    {
-      o << ::std::endl << "roles: " << *i.getRoles ();
-    }
-
-    if (i.getLanguages ())
-    {
-      o << ::std::endl << "languages: " << *i.getLanguages ();
-    }
-
-    if (i.getCascaded_focus ())
-    {
-      o << ::std::endl << "cascaded-focus: " << *i.getCascaded_focus ();
-    }
-
-    for (User_type::EndpointConstIterator
-         b (i.getEndpoint ().begin ()), e (i.getEndpoint ().end ());
-         b != e; ++b)
-    {
-      o << ::std::endl << "endpoint: " << *b;
-    }
-
-    if (i.getEntity ())
-    {
-      o << ::std::endl << "entity: " << *i.getEntity ();
-    }
-
-    o << ::std::endl << "state: " << i.getState ();
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const User_roles_type& i)
-  {
-    for (User_roles_type::EntryConstIterator
-         b (i.getEntry ().begin ()), e (i.getEntry ().end ());
-         b != e; ++b)
-    {
-      o << ::std::endl << "entry: " << *b;
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const User_languages_type& i)
-  {
-    return o << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::Language, char >& > (i);
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Endpoint_type& i)
-  {
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    if (i.getReferred ())
-    {
-      o << ::std::endl << "referred: " << *i.getReferred ();
-    }
-
-    if (i.getStatus ())
-    {
-      o << ::std::endl << "status: " << *i.getStatus ();
-    }
-
-    if (i.getJoining_method ())
-    {
-      o << ::std::endl << "joining-method: " << *i.getJoining_method ();
-    }
-
-    if (i.getJoining_info ())
-    {
-      o << ::std::endl << "joining-info: " << *i.getJoining_info ();
-    }
-
-    if (i.getDisconnection_method ())
-    {
-      o << ::std::endl << "disconnection-method: " << *i.getDisconnection_method ();
-    }
-
-    if (i.getDisconnection_info ())
-    {
-      o << ::std::endl << "disconnection-info: " << *i.getDisconnection_info ();
-    }
-
-    for (Endpoint_type::MediaConstIterator
-         b (i.getMedia ().begin ()), e (i.getMedia ().end ());
-         b != e; ++b)
-    {
-      o << ::std::endl << "media: " << *b;
-    }
-
-    if (i.getCall_info ())
-    {
-      o << ::std::endl << "call-info: " << *i.getCall_info ();
-    }
-
-    if (i.getEntity ())
-    {
-      o << ::std::endl << "entity: " << *i.getEntity ();
-    }
-
-    o << ::std::endl << "state: " << i.getState ();
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, Endpoint_status_type::Value i)
-  {
-    return o << Endpoint_status_type::_xsd_Endpoint_status_type_literals_[i];
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Endpoint_status_type& i)
-  {
-    return o << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, Joining_type::Value i)
-  {
-    return o << Joining_type::_xsd_Joining_type_literals_[i];
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Joining_type& i)
-  {
-    return o << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, Disconnection_type::Value i)
-  {
-    return o << Disconnection_type::_xsd_Disconnection_type_literals_[i];
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Disconnection_type& i)
-  {
-    return o << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Execution_type& i)
-  {
-    if (i.getWhen ())
-    {
-      o << ::std::endl << "when: " << *i.getWhen ();
-    }
-
-    if (i.getReason ())
-    {
-      o << ::std::endl << "reason: " << *i.getReason ();
-    }
-
-    if (i.getBy ())
-    {
-      o << ::std::endl << "by: " << *i.getBy ();
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Call_type& i)
-  {
-    if (i.getSip ())
-    {
-      o << ::std::endl << "sip: " << *i.getSip ();
-    }
-
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Sip_dialog_id_type& i)
-  {
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    o << ::std::endl << "call-id: " << i.getCall_id ();
-    o << ::std::endl << "from-tag: " << i.getFrom_tag ();
-    o << ::std::endl << "to-tag: " << i.getTo_tag ();
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Media_type& i)
-  {
-    if (i.getDisplay_text ())
-    {
-      o << ::std::endl << "display-text: " << *i.getDisplay_text ();
-    }
-
-    if (i.getType ())
-    {
-      o << ::std::endl << "type: " << *i.getType ();
-    }
-
-    if (i.getLabel ())
-    {
-      o << ::std::endl << "label: " << *i.getLabel ();
-    }
-
-    if (i.getSrc_id ())
-    {
-      o << ::std::endl << "src-id: " << *i.getSrc_id ();
-    }
-
-    if (i.getStatus ())
-    {
-      o << ::std::endl << "status: " << *i.getStatus ();
-    }
-
-    o << ::std::endl << "id: " << i.getId ();
-    return o;
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, Media_status_type::Value i)
-  {
-    return o << Media_status_type::_xsd_Media_status_type_literals_[i];
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Media_status_type& i)
-  {
-    return o << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  ::std::ostream&
-  operator<< (::std::ostream& o, const Sidebars_by_val_type& i)
-  {
-    for (Sidebars_by_val_type::EntryConstIterator
-         b (i.getEntry ().begin ()), e (i.getEntry ().end ());
-         b != e; ++b)
-    {
-      o << ::std::endl << "entry: " << *b;
-    }
-
-    o << ::std::endl << "state: " << i.getState ();
-    return o;
   }
 }
 
@@ -7265,272 +7281,278 @@ namespace conference_info
 #include <xsd/cxx/xml/sax/std-input-source.hxx>
 #include <xsd/cxx/tree/error-handler.hxx>
 
-namespace conference_info
+namespace LinphonePrivate
 {
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (const ::std::string& u,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
+  namespace Xsd
   {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0,
-      (f & ::xml_schema::Flags::keep_dom) == 0);
-
-    ::xsd::cxx::tree::error_handler< char > h;
-
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::xsd::cxx::xml::dom::parse< char > (
-        u, h, p, f));
-
-    h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-    return ::std::unique_ptr< ::conference_info::Conference_type > (
-      ::conference_info::parseConference_info (
-        std::move (d), f | ::xml_schema::Flags::own_dom, p));
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (const ::std::string& u,
-                        ::xml_schema::ErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0,
-      (f & ::xml_schema::Flags::keep_dom) == 0);
-
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::xsd::cxx::xml::dom::parse< char > (
-        u, h, p, f));
-
-    if (!d.get ())
-      throw ::xsd::cxx::tree::parsing< char > ();
-
-    return ::std::unique_ptr< ::conference_info::Conference_type > (
-      ::conference_info::parseConference_info (
-        std::move (d), f | ::xml_schema::Flags::own_dom, p));
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (const ::std::string& u,
-                        ::xercesc::DOMErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::xsd::cxx::xml::dom::parse< char > (
-        u, h, p, f));
-
-    if (!d.get ())
-      throw ::xsd::cxx::tree::parsing< char > ();
-
-    return ::std::unique_ptr< ::conference_info::Conference_type > (
-      ::conference_info::parseConference_info (
-        std::move (d), f | ::xml_schema::Flags::own_dom, p));
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::std::istream& is,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0,
-      (f & ::xml_schema::Flags::keep_dom) == 0);
-
-    ::xsd::cxx::xml::sax::std_input_source isrc (is);
-    return ::conference_info::parseConference_info (isrc, f, p);
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::std::istream& is,
-                        ::xml_schema::ErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0,
-      (f & ::xml_schema::Flags::keep_dom) == 0);
-
-    ::xsd::cxx::xml::sax::std_input_source isrc (is);
-    return ::conference_info::parseConference_info (isrc, h, f, p);
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::std::istream& is,
-                        ::xercesc::DOMErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::xml::sax::std_input_source isrc (is);
-    return ::conference_info::parseConference_info (isrc, h, f, p);
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::std::istream& is,
-                        const ::std::string& sid,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0,
-      (f & ::xml_schema::Flags::keep_dom) == 0);
-
-    ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-    return ::conference_info::parseConference_info (isrc, f, p);
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::std::istream& is,
-                        const ::std::string& sid,
-                        ::xml_schema::ErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0,
-      (f & ::xml_schema::Flags::keep_dom) == 0);
-
-    ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-    return ::conference_info::parseConference_info (isrc, h, f, p);
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::std::istream& is,
-                        const ::std::string& sid,
-                        ::xercesc::DOMErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-    return ::conference_info::parseConference_info (isrc, h, f, p);
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::xercesc::InputSource& i,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xsd::cxx::tree::error_handler< char > h;
-
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::xsd::cxx::xml::dom::parse< char > (
-        i, h, p, f));
-
-    h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-    return ::std::unique_ptr< ::conference_info::Conference_type > (
-      ::conference_info::parseConference_info (
-        std::move (d), f | ::xml_schema::Flags::own_dom, p));
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::xercesc::InputSource& i,
-                        ::xml_schema::ErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::xsd::cxx::xml::dom::parse< char > (
-        i, h, p, f));
-
-    if (!d.get ())
-      throw ::xsd::cxx::tree::parsing< char > ();
-
-    return ::std::unique_ptr< ::conference_info::Conference_type > (
-      ::conference_info::parseConference_info (
-        std::move (d), f | ::xml_schema::Flags::own_dom, p));
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::xercesc::InputSource& i,
-                        ::xercesc::DOMErrorHandler& h,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::xsd::cxx::xml::dom::parse< char > (
-        i, h, p, f));
-
-    if (!d.get ())
-      throw ::xsd::cxx::tree::parsing< char > ();
-
-    return ::std::unique_ptr< ::conference_info::Conference_type > (
-      ::conference_info::parseConference_info (
-        std::move (d), f | ::xml_schema::Flags::own_dom, p));
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (const ::xercesc::DOMDocument& doc,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties& p)
-  {
-    if (f & ::xml_schema::Flags::keep_dom)
+    namespace ConferenceInfo
     {
-      ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-        static_cast< ::xercesc::DOMDocument* > (doc.cloneNode (true)));
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (const ::std::string& u,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
 
-      return ::std::unique_ptr< ::conference_info::Conference_type > (
-        ::conference_info::parseConference_info (
-          std::move (d), f | ::xml_schema::Flags::own_dom, p));
+        ::xsd::cxx::tree::error_handler< char > h;
+
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::xsd::cxx::xml::dom::parse< char > (
+            u, h, p, f));
+
+        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
+
+        return ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > (
+          ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (
+            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (const ::std::string& u,
+                           ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
+
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::xsd::cxx::xml::dom::parse< char > (
+            u, h, p, f));
+
+        if (!d.get ())
+          throw ::xsd::cxx::tree::parsing< char > ();
+
+        return ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > (
+          ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (
+            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (const ::std::string& u,
+                           ::xercesc::DOMErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::xsd::cxx::xml::dom::parse< char > (
+            u, h, p, f));
+
+        if (!d.get ())
+          throw ::xsd::cxx::tree::parsing< char > ();
+
+        return ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > (
+          ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (
+            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::std::istream& is,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
+
+        ::xsd::cxx::xml::sax::std_input_source isrc (is);
+        return ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (isrc, f, p);
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::std::istream& is,
+                           ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
+
+        ::xsd::cxx::xml::sax::std_input_source isrc (is);
+        return ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (isrc, h, f, p);
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::std::istream& is,
+                           ::xercesc::DOMErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::sax::std_input_source isrc (is);
+        return ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (isrc, h, f, p);
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::std::istream& is,
+                           const ::std::string& sid,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
+
+        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
+        return ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (isrc, f, p);
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::std::istream& is,
+                           const ::std::string& sid,
+                           ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
+
+        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
+        return ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (isrc, h, f, p);
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::std::istream& is,
+                           const ::std::string& sid,
+                           ::xercesc::DOMErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
+        return ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (isrc, h, f, p);
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::xercesc::InputSource& i,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::xsd::cxx::tree::error_handler< char > h;
+
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::xsd::cxx::xml::dom::parse< char > (
+            i, h, p, f));
+
+        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
+
+        return ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > (
+          ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (
+            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::xercesc::InputSource& i,
+                           ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::xsd::cxx::xml::dom::parse< char > (
+            i, h, p, f));
+
+        if (!d.get ())
+          throw ::xsd::cxx::tree::parsing< char > ();
+
+        return ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > (
+          ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (
+            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::xercesc::InputSource& i,
+                           ::xercesc::DOMErrorHandler& h,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::xsd::cxx::xml::dom::parse< char > (
+            i, h, p, f));
+
+        if (!d.get ())
+          throw ::xsd::cxx::tree::parsing< char > ();
+
+        return ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > (
+          ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (
+            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (const ::xercesc::DOMDocument& doc,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
+      {
+        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
+        {
+          ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+            static_cast< ::xercesc::DOMDocument* > (doc.cloneNode (true)));
+
+          return ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > (
+            ::LinphonePrivate::Xsd::ConferenceInfo::parseConferenceInfo (
+              std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
+        }
+
+        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
+        const ::xsd::cxx::xml::qualified_name< char > n (
+          ::xsd::cxx::xml::dom::name< char > (e));
+
+        if (n.name () == "conference-info" &&
+            n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+        {
+          ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > r (
+            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType, char >::create (
+              e, f, 0));
+          return r;
+        }
+
+        throw ::xsd::cxx::tree::unexpected_element < char > (
+          n.name (),
+          n.namespace_ (),
+          "conference-info",
+          "urn:ietf:params:xml:ns:conference-info");
+      }
+
+      ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType >
+      parseConferenceInfo (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
+                           ::LinphonePrivate::Xsd::XmlSchema::Flags f,
+                           const ::LinphonePrivate::Xsd::XmlSchema::Properties&)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > c (
+          ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) &&
+           !(f & ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom))
+          ? static_cast< ::xercesc::DOMDocument* > (d->cloneNode (true))
+          : 0);
+
+        ::xercesc::DOMDocument& doc (c.get () ? *c : *d);
+        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
+
+        const ::xsd::cxx::xml::qualified_name< char > n (
+          ::xsd::cxx::xml::dom::name< char > (e));
+
+        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
+          doc.setUserData (::LinphonePrivate::Xsd::XmlSchema::dom::treeNodeKey,
+                           (c.get () ? &c : &d),
+                           0);
+
+        if (n.name () == "conference-info" &&
+            n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+        {
+          ::std::unique_ptr< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType > r (
+            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType, char >::create (
+              e, f, 0));
+          return r;
+        }
+
+        throw ::xsd::cxx::tree::unexpected_element < char > (
+          n.name (),
+          n.namespace_ (),
+          "conference-info",
+          "urn:ietf:params:xml:ns:conference-info");
+      }
     }
-
-    const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-    const ::xsd::cxx::xml::qualified_name< char > n (
-      ::xsd::cxx::xml::dom::name< char > (e));
-
-    if (n.name () == "conference-info" &&
-        n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-    {
-      ::std::unique_ptr< ::conference_info::Conference_type > r (
-        ::xsd::cxx::tree::traits< ::conference_info::Conference_type, char >::create (
-          e, f, 0));
-      return r;
-    }
-
-    throw ::xsd::cxx::tree::unexpected_element < char > (
-      n.name (),
-      n.namespace_ (),
-      "conference-info",
-      "urn:ietf:params:xml:ns:conference-info");
-  }
-
-  ::std::unique_ptr< ::conference_info::Conference_type >
-  parseConference_info (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                        ::xml_schema::Flags f,
-                        const ::xml_schema::Properties&)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > c (
-      ((f & ::xml_schema::Flags::keep_dom) &&
-       !(f & ::xml_schema::Flags::own_dom))
-      ? static_cast< ::xercesc::DOMDocument* > (d->cloneNode (true))
-      : 0);
-
-    ::xercesc::DOMDocument& doc (c.get () ? *c : *d);
-    const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-
-    const ::xsd::cxx::xml::qualified_name< char > n (
-      ::xsd::cxx::xml::dom::name< char > (e));
-
-    if (f & ::xml_schema::Flags::keep_dom)
-      doc.setUserData (::xml_schema::dom::treeNodeKey,
-                       (c.get () ? &c : &d),
-                       0);
-
-    if (n.name () == "conference-info" &&
-        n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-    {
-      ::std::unique_ptr< ::conference_info::Conference_type > r (
-        ::xsd::cxx::tree::traits< ::conference_info::Conference_type, char >::create (
-          e, f, 0));
-      return r;
-    }
-
-    throw ::xsd::cxx::tree::unexpected_element < char > (
-      n.name (),
-      n.namespace_ (),
-      "conference-info",
-      "urn:ietf:params:xml:ns:conference-info");
   }
 }
 
@@ -7538,1733 +7560,1739 @@ namespace conference_info
 #include <xsd/cxx/tree/error-handler.hxx>
 #include <xsd/cxx/xml/dom/serialization-source.hxx>
 
-namespace conference_info
+namespace LinphonePrivate
 {
-  void
-  serializeConference_info (::std::ostream& o,
-                            const ::conference_info::Conference_type& s,
-                            const ::xml_schema::NamespaceInfomap& m,
-                            const ::std::string& e,
-                            ::xml_schema::Flags f)
+  namespace Xsd
   {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0);
-
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::conference_info::serializeConference_info (s, m, f));
-
-    ::xsd::cxx::tree::error_handler< char > h;
-
-    ::xsd::cxx::xml::dom::ostream_format_target t (o);
-    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-    {
-      h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-    }
-  }
-
-  void
-  serializeConference_info (::std::ostream& o,
-                            const ::conference_info::Conference_type& s,
-                            ::xml_schema::ErrorHandler& h,
-                            const ::xml_schema::NamespaceInfomap& m,
-                            const ::std::string& e,
-                            ::xml_schema::Flags f)
-  {
-    ::xsd::cxx::xml::auto_initializer i (
-      (f & ::xml_schema::Flags::dont_initialize) == 0);
-
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::conference_info::serializeConference_info (s, m, f));
-    ::xsd::cxx::xml::dom::ostream_format_target t (o);
-    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-    {
-      throw ::xsd::cxx::tree::serialization< char > ();
-    }
-  }
-
-  void
-  serializeConference_info (::std::ostream& o,
-                            const ::conference_info::Conference_type& s,
-                            ::xercesc::DOMErrorHandler& h,
-                            const ::xml_schema::NamespaceInfomap& m,
-                            const ::std::string& e,
-                            ::xml_schema::Flags f)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::conference_info::serializeConference_info (s, m, f));
-    ::xsd::cxx::xml::dom::ostream_format_target t (o);
-    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-    {
-      throw ::xsd::cxx::tree::serialization< char > ();
-    }
-  }
-
-  void
-  serializeConference_info (::xercesc::XMLFormatTarget& t,
-                            const ::conference_info::Conference_type& s,
-                            const ::xml_schema::NamespaceInfomap& m,
-                            const ::std::string& e,
-                            ::xml_schema::Flags f)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::conference_info::serializeConference_info (s, m, f));
-
-    ::xsd::cxx::tree::error_handler< char > h;
-
-    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-    {
-      h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-    }
-  }
-
-  void
-  serializeConference_info (::xercesc::XMLFormatTarget& t,
-                            const ::conference_info::Conference_type& s,
-                            ::xml_schema::ErrorHandler& h,
-                            const ::xml_schema::NamespaceInfomap& m,
-                            const ::std::string& e,
-                            ::xml_schema::Flags f)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::conference_info::serializeConference_info (s, m, f));
-    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-    {
-      throw ::xsd::cxx::tree::serialization< char > ();
-    }
-  }
-
-  void
-  serializeConference_info (::xercesc::XMLFormatTarget& t,
-                            const ::conference_info::Conference_type& s,
-                            ::xercesc::DOMErrorHandler& h,
-                            const ::xml_schema::NamespaceInfomap& m,
-                            const ::std::string& e,
-                            ::xml_schema::Flags f)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::conference_info::serializeConference_info (s, m, f));
-    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-    {
-      throw ::xsd::cxx::tree::serialization< char > ();
-    }
-  }
-
-  void
-  serializeConference_info (::xercesc::DOMDocument& d,
-                            const ::conference_info::Conference_type& s,
-                            ::xml_schema::Flags)
-  {
-    ::xercesc::DOMElement& e (*d.getDocumentElement ());
-    const ::xsd::cxx::xml::qualified_name< char > n (
-      ::xsd::cxx::xml::dom::name< char > (e));
-
-    if (n.name () == "conference-info" &&
-        n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
-    {
-      e << s;
-    }
-    else
-    {
-      throw ::xsd::cxx::tree::unexpected_element < char > (
-        n.name (),
-        n.namespace_ (),
-        "conference-info",
-        "urn:ietf:params:xml:ns:conference-info");
-    }
-  }
-
-  ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument >
-  serializeConference_info (const ::conference_info::Conference_type& s,
-                            const ::xml_schema::NamespaceInfomap& m,
-                            ::xml_schema::Flags f)
-  {
-    ::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-      ::xsd::cxx::xml::dom::serialize< char > (
-        "conference-info",
-        "urn:ietf:params:xml:ns:conference-info",
-        m, f));
-
-    ::conference_info::serializeConference_info (*d, s, f);
-    return d;
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Conference_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Conference_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // conference-description
-    //
-    if (i.getConference_description ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "conference-description",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getConference_description ();
-    }
-
-    // host-info
-    //
-    if (i.getHost_info ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "host-info",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getHost_info ();
-    }
-
-    // conference-state
-    //
-    if (i.getConference_state ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "conference-state",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getConference_state ();
-    }
-
-    // users
-    //
-    if (i.getUsers ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "users",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getUsers ();
-    }
-
-    // sidebars-by-ref
-    //
-    if (i.getSidebars_by_ref ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "sidebars-by-ref",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getSidebars_by_ref ();
-    }
-
-    // sidebars-by-val
-    //
-    if (i.getSidebars_by_val ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "sidebars-by-val",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getSidebars_by_val ();
-    }
-
-    // any
-    //
-    for (Conference_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-
-    // entity
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "entity",
-          e));
-
-      a << i.getEntity ();
-    }
-
-    // state
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "state",
-          e));
-
-      a << i.getState ();
-    }
-
-    // version
-    //
-    if (i.getVersion ())
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "version",
-          e));
-
-      a << *i.getVersion ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const State_type& i)
-  {
-    e << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMAttr& a, const State_type& i)
-  {
-    a << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xml_schema::ListStream& l,
-              const State_type& i)
-  {
-    l << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Conference_description_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Conference_description_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // subject
-    //
-    if (i.getSubject ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "subject",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getSubject ();
-    }
-
-    // free-text
-    //
-    if (i.getFree_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "free-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getFree_text ();
-    }
-
-    // keywords
-    //
-    if (i.getKeywords ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "keywords",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getKeywords ();
-    }
-
-    // conf-uris
-    //
-    if (i.getConf_uris ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "conf-uris",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getConf_uris ();
-    }
-
-    // service-uris
-    //
-    if (i.getService_uris ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "service-uris",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getService_uris ();
-    }
-
-    // maximum-user-count
-    //
-    if (i.getMaximum_user_count ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "maximum-user-count",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getMaximum_user_count ();
-    }
-
-    // available-media
-    //
-    if (i.getAvailable_media ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "available-media",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getAvailable_media ();
-    }
-
-    // any
-    //
-    for (Conference_description_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Host_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Host_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // web-page
-    //
-    if (i.getWeb_page ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "web-page",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getWeb_page ();
-    }
-
-    // uris
-    //
-    if (i.getUris ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "uris",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getUris ();
-    }
-
-    // any
-    //
-    for (Host_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Conference_state_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Conference_state_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // user-count
-    //
-    if (i.getUser_count ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "user-count",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getUser_count ();
-    }
-
-    // active
-    //
-    if (i.getActive ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "active",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getActive ();
-    }
-
-    // locked
-    //
-    if (i.getLocked ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "locked",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getLocked ();
-    }
-
-    // any
-    //
-    for (Conference_state_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Conference_media_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Conference_media_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // entry
-    //
-    for (Conference_media_type::EntryConstIterator
-         b (i.getEntry ().begin ()), n (i.getEntry ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "entry",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *b;
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Conference_medium_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Conference_medium_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // type
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "type",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << i.getType ();
-    }
-
-    // status
-    //
-    if (i.getStatus ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "status",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getStatus ();
-    }
-
-    // any
-    //
-    for (Conference_medium_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-
-    // label
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "label",
-          e));
-
-      a << i.getLabel ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Uris_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Uris_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // entry
-    //
-    for (Uris_type::EntryConstIterator
-         b (i.getEntry ().begin ()), n (i.getEntry ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "entry",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *b;
-    }
-
-    // state
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "state",
-          e));
-
-      a << i.getState ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Uri_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Uri_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // uri
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "uri",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << i.getUri ();
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // purpose
-    //
-    if (i.getPurpose ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "purpose",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getPurpose ();
-    }
-
-    // modified
-    //
-    if (i.getModified ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "modified",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getModified ();
-    }
-
-    // any
-    //
-    for (Uri_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Keywords_type& i)
-  {
-    e << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::String, char >& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMAttr& a, const Keywords_type& i)
-  {
-    a << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::String, char >& > (i);
-  }
-
-  void
-  operator<< (::xml_schema::ListStream& l,
-              const Keywords_type& i)
-  {
-    l << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::String, char >& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Users_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Users_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // user
-    //
-    for (Users_type::UserConstIterator
-         b (i.getUser ().begin ()), n (i.getUser ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "user",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *b;
-    }
-
-    // any
-    //
-    for (Users_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-
-    // state
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "state",
-          e));
-
-      a << i.getState ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const User_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (User_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // associated-aors
-    //
-    if (i.getAssociated_aors ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "associated-aors",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getAssociated_aors ();
-    }
-
-    // roles
-    //
-    if (i.getRoles ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "roles",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getRoles ();
-    }
-
-    // languages
-    //
-    if (i.getLanguages ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "languages",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getLanguages ();
-    }
-
-    // cascaded-focus
-    //
-    if (i.getCascaded_focus ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "cascaded-focus",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getCascaded_focus ();
-    }
-
-    // endpoint
-    //
-    for (User_type::EndpointConstIterator
-         b (i.getEndpoint ().begin ()), n (i.getEndpoint ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "endpoint",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *b;
-    }
-
-    // any
-    //
-    for (User_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-
-    // entity
-    //
-    if (i.getEntity ())
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "entity",
-          e));
-
-      a << *i.getEntity ();
-    }
-
-    // state
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "state",
-          e));
-
-      a << i.getState ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const User_roles_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (User_roles_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // entry
-    //
-    for (User_roles_type::EntryConstIterator
-         b (i.getEntry ().begin ()), n (i.getEntry ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "entry",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *b;
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const User_languages_type& i)
-  {
-    e << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::Language, char >& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMAttr& a, const User_languages_type& i)
-  {
-    a << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::Language, char >& > (i);
-  }
-
-  void
-  operator<< (::xml_schema::ListStream& l,
-              const User_languages_type& i)
-  {
-    l << static_cast< const ::xsd::cxx::tree::list< ::xml_schema::Language, char >& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Endpoint_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Endpoint_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // referred
-    //
-    if (i.getReferred ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "referred",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getReferred ();
-    }
-
-    // status
-    //
-    if (i.getStatus ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "status",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getStatus ();
-    }
-
-    // joining-method
-    //
-    if (i.getJoining_method ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "joining-method",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getJoining_method ();
-    }
-
-    // joining-info
-    //
-    if (i.getJoining_info ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "joining-info",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getJoining_info ();
-    }
-
-    // disconnection-method
-    //
-    if (i.getDisconnection_method ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "disconnection-method",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisconnection_method ();
-    }
-
-    // disconnection-info
-    //
-    if (i.getDisconnection_info ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "disconnection-info",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisconnection_info ();
-    }
-
-    // media
-    //
-    for (Endpoint_type::MediaConstIterator
-         b (i.getMedia ().begin ()), n (i.getMedia ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "media",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *b;
-    }
-
-    // call-info
-    //
-    if (i.getCall_info ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "call-info",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getCall_info ();
-    }
-
-    // any
-    //
-    for (Endpoint_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-
-    // entity
-    //
-    if (i.getEntity ())
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "entity",
-          e));
-
-      a << *i.getEntity ();
-    }
-
-    // state
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "state",
-          e));
-
-      a << i.getState ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Endpoint_status_type& i)
-  {
-    e << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMAttr& a, const Endpoint_status_type& i)
-  {
-    a << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xml_schema::ListStream& l,
-              const Endpoint_status_type& i)
-  {
-    l << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Joining_type& i)
-  {
-    e << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMAttr& a, const Joining_type& i)
-  {
-    a << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xml_schema::ListStream& l,
-              const Joining_type& i)
-  {
-    l << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Disconnection_type& i)
-  {
-    e << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMAttr& a, const Disconnection_type& i)
-  {
-    a << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xml_schema::ListStream& l,
-              const Disconnection_type& i)
-  {
-    l << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Execution_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Execution_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // when
-    //
-    if (i.getWhen ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "when",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getWhen ();
-    }
-
-    // reason
-    //
-    if (i.getReason ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "reason",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getReason ();
-    }
-
-    // by
-    //
-    if (i.getBy ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "by",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getBy ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Call_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Call_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // sip
-    //
-    if (i.getSip ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "sip",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getSip ();
-    }
-
-    // any
-    //
-    for (Call_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Sip_dialog_id_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Sip_dialog_id_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // call-id
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "call-id",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << i.getCall_id ();
-    }
-
-    // from-tag
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "from-tag",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << i.getFrom_tag ();
-    }
-
-    // to-tag
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "to-tag",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << i.getTo_tag ();
-    }
-
-    // any
-    //
-    for (Sip_dialog_id_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Media_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Media_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // display-text
-    //
-    if (i.getDisplay_text ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "display-text",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getDisplay_text ();
-    }
-
-    // type
-    //
-    if (i.getType ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "type",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getType ();
-    }
-
-    // label
-    //
-    if (i.getLabel ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "label",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getLabel ();
-    }
-
-    // src-id
-    //
-    if (i.getSrc_id ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "src-id",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getSrc_id ();
-    }
-
-    // status
-    //
-    if (i.getStatus ())
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "status",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *i.getStatus ();
-    }
-
-    // any
-    //
-    for (Media_type::AnyConstIterator
-         b (i.getAny ().begin ()), n (i.getAny ().end ());
-         b != n; ++b)
-    {
-      e.appendChild (
-        e.getOwnerDocument ()->importNode (
-          const_cast< ::xercesc::DOMElement* > (&(*b)), true));
-    }
-
-    // id
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "id",
-          e));
-
-      a << i.getId ();
-    }
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Media_status_type& i)
-  {
-    e << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMAttr& a, const Media_status_type& i)
-  {
-    a << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xml_schema::ListStream& l,
-              const Media_status_type& i)
-  {
-    l << static_cast< const ::xml_schema::String& > (i);
-  }
-
-  void
-  operator<< (::xercesc::DOMElement& e, const Sidebars_by_val_type& i)
-  {
-    e << static_cast< const ::xml_schema::Type& > (i);
-
-    // any_attribute
-    //
-    for (Sidebars_by_val_type::AnyAttributeConstIterator
-         b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMAttr* a (
-        static_cast< ::xercesc::DOMAttr* > (
-          e.getOwnerDocument ()->importNode (
-            const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
-
-      if (a->getLocalName () == 0)
-        e.setAttributeNode (a);
-      else
-        e.setAttributeNodeNS (a);
-    }
-
-    // entry
-    //
-    for (Sidebars_by_val_type::EntryConstIterator
-         b (i.getEntry ().begin ()), n (i.getEntry ().end ());
-         b != n; ++b)
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "entry",
-          "urn:ietf:params:xml:ns:conference-info",
-          e));
-
-      s << *b;
-    }
-
-    // state
-    //
-    {
-      ::xercesc::DOMAttr& a (
-        ::xsd::cxx::xml::dom::create_attribute (
-          "state",
-          e));
-
-      a << i.getState ();
+    namespace ConferenceInfo
+    {
+      void
+      serializeConferenceInfo (::std::ostream& o,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
+                               const ::std::string& e,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
+
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::LinphonePrivate::Xsd::ConferenceInfo::serializeConferenceInfo (s, m, f));
+
+        ::xsd::cxx::tree::error_handler< char > h;
+
+        ::xsd::cxx::xml::dom::ostream_format_target t (o);
+        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+        {
+          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+        }
+      }
+
+      void
+      serializeConferenceInfo (::std::ostream& o,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
+                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
+                               const ::std::string& e,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        ::xsd::cxx::xml::auto_initializer i (
+          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
+
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::LinphonePrivate::Xsd::ConferenceInfo::serializeConferenceInfo (s, m, f));
+        ::xsd::cxx::xml::dom::ostream_format_target t (o);
+        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+        {
+          throw ::xsd::cxx::tree::serialization< char > ();
+        }
+      }
+
+      void
+      serializeConferenceInfo (::std::ostream& o,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               ::xercesc::DOMErrorHandler& h,
+                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
+                               const ::std::string& e,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::LinphonePrivate::Xsd::ConferenceInfo::serializeConferenceInfo (s, m, f));
+        ::xsd::cxx::xml::dom::ostream_format_target t (o);
+        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+        {
+          throw ::xsd::cxx::tree::serialization< char > ();
+        }
+      }
+
+      void
+      serializeConferenceInfo (::xercesc::XMLFormatTarget& t,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
+                               const ::std::string& e,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::LinphonePrivate::Xsd::ConferenceInfo::serializeConferenceInfo (s, m, f));
+
+        ::xsd::cxx::tree::error_handler< char > h;
+
+        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+        {
+          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+        }
+      }
+
+      void
+      serializeConferenceInfo (::xercesc::XMLFormatTarget& t,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
+                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
+                               const ::std::string& e,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::LinphonePrivate::Xsd::ConferenceInfo::serializeConferenceInfo (s, m, f));
+        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+        {
+          throw ::xsd::cxx::tree::serialization< char > ();
+        }
+      }
+
+      void
+      serializeConferenceInfo (::xercesc::XMLFormatTarget& t,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               ::xercesc::DOMErrorHandler& h,
+                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
+                               const ::std::string& e,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::LinphonePrivate::Xsd::ConferenceInfo::serializeConferenceInfo (s, m, f));
+        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+        {
+          throw ::xsd::cxx::tree::serialization< char > ();
+        }
+      }
+
+      void
+      serializeConferenceInfo (::xercesc::DOMDocument& d,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags)
+      {
+        ::xercesc::DOMElement& e (*d.getDocumentElement ());
+        const ::xsd::cxx::xml::qualified_name< char > n (
+          ::xsd::cxx::xml::dom::name< char > (e));
+
+        if (n.name () == "conference-info" &&
+            n.namespace_ () == "urn:ietf:params:xml:ns:conference-info")
+        {
+          e << s;
+        }
+        else
+        {
+          throw ::xsd::cxx::tree::unexpected_element < char > (
+            n.name (),
+            n.namespace_ (),
+            "conference-info",
+            "urn:ietf:params:xml:ns:conference-info");
+        }
+      }
+
+      ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
+      serializeConferenceInfo (const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& s,
+                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
+                               ::LinphonePrivate::Xsd::XmlSchema::Flags f)
+      {
+        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
+          ::xsd::cxx::xml::dom::serialize< char > (
+            "conference-info",
+            "urn:ietf:params:xml:ns:conference-info",
+            m, f));
+
+        ::LinphonePrivate::Xsd::ConferenceInfo::serializeConferenceInfo (*d, s, f);
+        return d;
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const ConferenceType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (ConferenceType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // conference-description
+        //
+        if (i.getConferenceDescription ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "conference-description",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getConferenceDescription ();
+        }
+
+        // host-info
+        //
+        if (i.getHostInfo ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "host-info",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getHostInfo ();
+        }
+
+        // conference-state
+        //
+        if (i.getConferenceState ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "conference-state",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getConferenceState ();
+        }
+
+        // users
+        //
+        if (i.getUsers ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "users",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getUsers ();
+        }
+
+        // sidebars-by-ref
+        //
+        if (i.getSidebarsByRef ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "sidebars-by-ref",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getSidebarsByRef ();
+        }
+
+        // sidebars-by-val
+        //
+        if (i.getSidebarsByVal ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "sidebars-by-val",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getSidebarsByVal ();
+        }
+
+        // any
+        //
+        for (ConferenceType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+
+        // entity
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "entity",
+              e));
+
+          a << i.getEntity ();
+        }
+
+        // state
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "state",
+              e));
+
+          a << i.getState ();
+        }
+
+        // version
+        //
+        if (i.getVersion ())
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "version",
+              e));
+
+          a << *i.getVersion ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const StateType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMAttr& a, const StateType& i)
+      {
+        a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
+                  const StateType& i)
+      {
+        l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const ConferenceDescriptionType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (ConferenceDescriptionType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // subject
+        //
+        if (i.getSubject ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "subject",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getSubject ();
+        }
+
+        // free-text
+        //
+        if (i.getFreeText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "free-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getFreeText ();
+        }
+
+        // keywords
+        //
+        if (i.getKeywords ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "keywords",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getKeywords ();
+        }
+
+        // conf-uris
+        //
+        if (i.getConfUris ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "conf-uris",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getConfUris ();
+        }
+
+        // service-uris
+        //
+        if (i.getServiceUris ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "service-uris",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getServiceUris ();
+        }
+
+        // maximum-user-count
+        //
+        if (i.getMaximumUserCount ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "maximum-user-count",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getMaximumUserCount ();
+        }
+
+        // available-media
+        //
+        if (i.getAvailableMedia ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "available-media",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getAvailableMedia ();
+        }
+
+        // any
+        //
+        for (ConferenceDescriptionType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const HostType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (HostType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // web-page
+        //
+        if (i.getWebPage ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "web-page",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getWebPage ();
+        }
+
+        // uris
+        //
+        if (i.getUris ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "uris",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getUris ();
+        }
+
+        // any
+        //
+        for (HostType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const ConferenceStateType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (ConferenceStateType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // user-count
+        //
+        if (i.getUserCount ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "user-count",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getUserCount ();
+        }
+
+        // active
+        //
+        if (i.getActive ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "active",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getActive ();
+        }
+
+        // locked
+        //
+        if (i.getLocked ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "locked",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getLocked ();
+        }
+
+        // any
+        //
+        for (ConferenceStateType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const ConferenceMediaType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (ConferenceMediaType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // entry
+        //
+        for (ConferenceMediaType::EntryConstIterator
+             b (i.getEntry ().begin ()), n (i.getEntry ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "entry",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *b;
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const ConferenceMediumType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (ConferenceMediumType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // type
+        //
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "type",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << i.getType ();
+        }
+
+        // status
+        //
+        if (i.getStatus ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "status",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getStatus ();
+        }
+
+        // any
+        //
+        for (ConferenceMediumType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+
+        // label
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "label",
+              e));
+
+          a << i.getLabel ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const UrisType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (UrisType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // entry
+        //
+        for (UrisType::EntryConstIterator
+             b (i.getEntry ().begin ()), n (i.getEntry ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "entry",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *b;
+        }
+
+        // state
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "state",
+              e));
+
+          a << i.getState ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const UriType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (UriType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // uri
+        //
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "uri",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << i.getUri ();
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // purpose
+        //
+        if (i.getPurpose ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "purpose",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getPurpose ();
+        }
+
+        // modified
+        //
+        if (i.getModified ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "modified",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getModified ();
+        }
+
+        // any
+        //
+        for (UriType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const KeywordsType& i)
+      {
+        e << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char >& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMAttr& a, const KeywordsType& i)
+      {
+        a << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char >& > (i);
+      }
+
+      void
+      operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
+                  const KeywordsType& i)
+      {
+        l << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::String, char >& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const UsersType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (UsersType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // user
+        //
+        for (UsersType::UserConstIterator
+             b (i.getUser ().begin ()), n (i.getUser ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "user",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *b;
+        }
+
+        // any
+        //
+        for (UsersType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+
+        // state
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "state",
+              e));
+
+          a << i.getState ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const UserType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (UserType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // associated-aors
+        //
+        if (i.getAssociatedAors ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "associated-aors",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getAssociatedAors ();
+        }
+
+        // roles
+        //
+        if (i.getRoles ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "roles",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getRoles ();
+        }
+
+        // languages
+        //
+        if (i.getLanguages ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "languages",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getLanguages ();
+        }
+
+        // cascaded-focus
+        //
+        if (i.getCascadedFocus ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "cascaded-focus",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getCascadedFocus ();
+        }
+
+        // endpoint
+        //
+        for (UserType::EndpointConstIterator
+             b (i.getEndpoint ().begin ()), n (i.getEndpoint ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "endpoint",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *b;
+        }
+
+        // any
+        //
+        for (UserType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+
+        // entity
+        //
+        if (i.getEntity ())
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "entity",
+              e));
+
+          a << *i.getEntity ();
+        }
+
+        // state
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "state",
+              e));
+
+          a << i.getState ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const UserRolesType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (UserRolesType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // entry
+        //
+        for (UserRolesType::EntryConstIterator
+             b (i.getEntry ().begin ()), n (i.getEntry ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "entry",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *b;
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const UserLanguagesType& i)
+      {
+        e << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char >& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMAttr& a, const UserLanguagesType& i)
+      {
+        a << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char >& > (i);
+      }
+
+      void
+      operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
+                  const UserLanguagesType& i)
+      {
+        l << static_cast< const ::xsd::cxx::tree::list< ::LinphonePrivate::Xsd::XmlSchema::Language, char >& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const EndpointType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (EndpointType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // referred
+        //
+        if (i.getReferred ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "referred",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getReferred ();
+        }
+
+        // status
+        //
+        if (i.getStatus ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "status",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getStatus ();
+        }
+
+        // joining-method
+        //
+        if (i.getJoiningMethod ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "joining-method",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getJoiningMethod ();
+        }
+
+        // joining-info
+        //
+        if (i.getJoiningInfo ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "joining-info",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getJoiningInfo ();
+        }
+
+        // disconnection-method
+        //
+        if (i.getDisconnectionMethod ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "disconnection-method",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisconnectionMethod ();
+        }
+
+        // disconnection-info
+        //
+        if (i.getDisconnectionInfo ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "disconnection-info",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisconnectionInfo ();
+        }
+
+        // media
+        //
+        for (EndpointType::MediaConstIterator
+             b (i.getMedia ().begin ()), n (i.getMedia ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "media",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *b;
+        }
+
+        // call-info
+        //
+        if (i.getCallInfo ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "call-info",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getCallInfo ();
+        }
+
+        // any
+        //
+        for (EndpointType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+
+        // entity
+        //
+        if (i.getEntity ())
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "entity",
+              e));
+
+          a << *i.getEntity ();
+        }
+
+        // state
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "state",
+              e));
+
+          a << i.getState ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const EndpointStatusType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMAttr& a, const EndpointStatusType& i)
+      {
+        a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
+                  const EndpointStatusType& i)
+      {
+        l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const JoiningType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMAttr& a, const JoiningType& i)
+      {
+        a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
+                  const JoiningType& i)
+      {
+        l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const DisconnectionType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMAttr& a, const DisconnectionType& i)
+      {
+        a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
+                  const DisconnectionType& i)
+      {
+        l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const ExecutionType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (ExecutionType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // when
+        //
+        if (i.getWhen ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "when",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getWhen ();
+        }
+
+        // reason
+        //
+        if (i.getReason ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "reason",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getReason ();
+        }
+
+        // by
+        //
+        if (i.getBy ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "by",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getBy ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const CallType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (CallType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // sip
+        //
+        if (i.getSip ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "sip",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getSip ();
+        }
+
+        // any
+        //
+        for (CallType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const SipDialogIdType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (SipDialogIdType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // call-id
+        //
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "call-id",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << i.getCallId ();
+        }
+
+        // from-tag
+        //
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "from-tag",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << i.getFromTag ();
+        }
+
+        // to-tag
+        //
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "to-tag",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << i.getToTag ();
+        }
+
+        // any
+        //
+        for (SipDialogIdType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const MediaType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (MediaType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // display-text
+        //
+        if (i.getDisplayText ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "display-text",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getDisplayText ();
+        }
+
+        // type
+        //
+        if (i.getType ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "type",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getType ();
+        }
+
+        // label
+        //
+        if (i.getLabel ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "label",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getLabel ();
+        }
+
+        // src-id
+        //
+        if (i.getSrcId ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "src-id",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getSrcId ();
+        }
+
+        // status
+        //
+        if (i.getStatus ())
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "status",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *i.getStatus ();
+        }
+
+        // any
+        //
+        for (MediaType::AnyConstIterator
+             b (i.getAny ().begin ()), n (i.getAny ().end ());
+             b != n; ++b)
+        {
+          e.appendChild (
+            e.getOwnerDocument ()->importNode (
+              const_cast< ::xercesc::DOMElement* > (&(*b)), true));
+        }
+
+        // id
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "id",
+              e));
+
+          a << i.getId ();
+        }
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const MediaStatusType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMAttr& a, const MediaStatusType& i)
+      {
+        a << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::LinphonePrivate::Xsd::XmlSchema::ListStream& l,
+                  const MediaStatusType& i)
+      {
+        l << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::String& > (i);
+      }
+
+      void
+      operator<< (::xercesc::DOMElement& e, const SidebarsByValType& i)
+      {
+        e << static_cast< const ::LinphonePrivate::Xsd::XmlSchema::Type& > (i);
+
+        // any_attribute
+        //
+        for (SidebarsByValType::AnyAttributeConstIterator
+             b (i.getAnyAttribute ().begin ()), n (i.getAnyAttribute ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMAttr* a (
+            static_cast< ::xercesc::DOMAttr* > (
+              e.getOwnerDocument ()->importNode (
+                const_cast< ::xercesc::DOMAttr* > (&(*b)), true)));
+
+          if (a->getLocalName () == 0)
+            e.setAttributeNode (a);
+          else
+            e.setAttributeNodeNS (a);
+        }
+
+        // entry
+        //
+        for (SidebarsByValType::EntryConstIterator
+             b (i.getEntry ().begin ()), n (i.getEntry ().end ());
+             b != n; ++b)
+        {
+          ::xercesc::DOMElement& s (
+            ::xsd::cxx::xml::dom::create_element (
+              "entry",
+              "urn:ietf:params:xml:ns:conference-info",
+              e));
+
+          s << *b;
+        }
+
+        // state
+        //
+        {
+          ::xercesc::DOMAttr& a (
+            ::xsd::cxx::xml::dom::create_attribute (
+              "state",
+              e));
+
+          a << i.getState ();
+        }
+      }
     }
   }
 }
@@ -9273,11 +9301,9 @@ namespace conference_info
 
 // Begin epilogue.
 //
-
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif
-
 //
 // End epilogue.
 

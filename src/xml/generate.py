@@ -30,21 +30,6 @@ def find_xsdcxx():
 	xsdcxx = find_executable("xsd")
 	return xsdcxx
 
-def get_prologue():
-	return """
-#if __clang__ || __GNUC__ >= 4
-\t#pragma GCC diagnostic push
-\t#pragma GCC diagnostic ignored "-Wsuggest-override"
-#endif
-"""
-
-def get_epilogue():
-	return """
-#if __clang__ || __GNUC__ >= 4
-\t#pragma GCC diagnostic pop
-#endif
-"""
-
 def generate(name):
 	xsdcxx = find_xsdcxx()
 	if xsdcxx is None:
@@ -56,6 +41,8 @@ def generate(name):
 	source_file = name + ".xsd"
 	print("Generating code from " + source_file)
 	source_file = os.path.join("xml", source_file)
+	prologue_file = os.path.join("xml", "prologue.txt")
+	epilogue_file = os.path.join("xml", "epilogue.txt")
 	work_dir = os.path.join(script_dir, "..")
 	os.chdir(work_dir)
 	p = Popen([xsdcxx,
@@ -67,15 +54,43 @@ def generate(name):
 		"--std", "c++11",
 		"--type-naming", "java",
 		"--function-naming", "java",
-		"--location-regex-trace",
-		"--show-sloc",
 		"--hxx-suffix", ".h",
 		"--ixx-suffix", ".h",
 		"--cxx-suffix", ".cpp",
-		"--prologue", get_prologue(),
-		"--epilogue", get_epilogue(),
 		"--location-regex", "%http://.+/(.+)%$1%",
 		"--output-dir", "xml",
+		"--show-sloc",
+		"--prologue-file", prologue_file,
+		"--epilogue-file", epilogue_file,
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-([^,-]+)-?([^,-]*)%\\u$1\\u$2\\u$3\\u$4%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-?([^,-]*)%\\u$1\\u$2\\u$3%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-?([^,-]*)%\\u$1\\u$2%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-([^,-]+)-?([^,-]*),([^,]+)%\\u$1\\u$2\\u$3\\u$4\\l\\u$5%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-?([^,-]*),([^,]+)%\\u$1\\u$2\\u$3\\l\\u$4%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-?([^,-]*),([^,]+)%\\u$1\\u$2\\l\\u$3%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-([^,-]+)-?([^,-]*),([^,]+),([^,]+)%\\u$1\\u$2\\u$3\\u$4\\l\\u$5\\u$6%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-?([^,-]*),([^,]+),([^,]+)%\\u$1\\u$2\\u$3\\l\\u$4\\u$5%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-?([^,-]*),([^,]+),([^,]+)%\\u$1\\u$2\\l\\u$3\\u$4%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-([^,-]+)-?([^,-]*),([^,]+),([^,]+),([^,]+)%\\u$1\\u$2\\u$3\\u$4\\l\\u$5\\u$6\\u$7%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-([^,-]+)-?([^,-]*),([^,]+),([^,]+),([^,]+)%\\u$1\\u$2\\u$3\\l\\u$4\\u$5\\u$6%",
+		"--type-regex", "%(?:[^ ]* )?([^,-]+)-?([^,-]*),([^,]+),([^,]+),([^,]+)%\\u$1\\u$2\\l\\u$3\\u$4\\u$5%",
+		"--accessor-regex", "%([^,-]+)-([^,-]+)-?([^,-]*)%get\\u$1\\u$2\\u$3%",
+		"--accessor-regex", "%([^,-]+)-?([^,-]*)%get\\u$1\\u$2%",
+		"--accessor-regex", "%([^,-]+)-([^,-]+)-?([^,-]*),([^,]+)%get\\u$1\\u$2\\u$3\\l\\u$4%",
+		"--accessor-regex", "%([^,-]+)-?([^,-]*),([^,]+)%get\\u$1\\u$2\\l\\u$3%",
+		"--accessor-regex", "%([^,-]+)-([^,-]+)-?([^,-]*),([^,]+),([^,]+)%get\\u$1\\u$2\\u$3\\l\\u$4\\u$5%",
+		"--accessor-regex", "%([^,-]+)-?([^,-]*),([^,]+),([^,]+)%get\\u$1\\u$2\\l\\u$3\\u$4%",
+		"--modifier-regex", "%([^,-]+)-([^,-]+)-?([^,-]*)%set\\u$1\\u$2\\u$3%",
+		"--modifier-regex", "%([^,-]+)-?([^,-]*)%set\\u$1\\u$2%",
+		"--modifier-regex", "%([^,-]+)-([^,-]+)-?([^,-]*),([^,]+)%set\\u$1\\u$2\\u$3\\l\\u$4%",
+		"--modifier-regex", "%([^,-]+)-?([^,-]*),([^,]+)%set\\u$1\\u$2\\l\\u$3%",
+		"--modifier-regex", "%([^,-]+)-([^,-]+)-?([^,-]*),([^,]+),([^,]+)%set\\u$1\\u$2\\u$3\\l\\u$4\\u$5%",
+		"--modifier-regex", "%([^,-]+)-?([^,-]*),([^,]+),([^,]+)%set\\u$1\\u$2\\l\\u$3\\u$4%",
+		"--parser-regex", "%([^-]+)-?([^-]*)%parse\\u$1\\u$2%",
+		"--serializer-regex", "%([^-]+)-?([^-]*)%serialize\\u$1\\u$2%",
+		"--namespace-map", "http://www.w3.org/2001/XMLSchema=LinphonePrivate::Xsd::XmlSchema",
+		"--namespace-map", "urn:ietf:params:xml:ns:conference-info=LinphonePrivate::Xsd::ConferenceInfo",
+		"--namespace-map", "urn:ietf:params:xml:ns:resource-lists=LinphonePrivate::Xsd::ResourceLists",
 		source_file
 		], shell=False)
 	p.communicate()
