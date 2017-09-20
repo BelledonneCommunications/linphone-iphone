@@ -676,7 +676,7 @@ void CallSessionPrivate::setContactOp () {
 	SalAddress *salAddress = nullptr;
 	LinphoneAddress *contact = getFixedContact();
 	if (contact) {
-		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_STRUCT(contact, Address, Address)->getInternalAddress());
+		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress());
 		sal_address_ref(salAddress);
 		linphone_address_unref(contact);
 	}
@@ -1042,7 +1042,7 @@ const Address& CallSession::getRemoteAddress () const {
 	L_D(const CallSession);
 	return *L_GET_CPP_PTR_FROM_C_STRUCT((d->direction == LinphoneCallIncoming)
 		? linphone_call_log_get_from(d->log) : linphone_call_log_get_to(d->log),
-		Address, Address);
+		Address);
 }
 
 string CallSession::getRemoteAddressAsString () const {

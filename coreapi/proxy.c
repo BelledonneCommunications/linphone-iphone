@@ -500,7 +500,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 		linphone_configure_op(cfg->lc, cfg->op, cfg->identity_address, cfg->sent_headers, FALSE);
 
 		if ((contact=guess_contact_for_register(cfg))) {
-			sal_op_set_contact_address(cfg->op, L_GET_PRIVATE_FROM_C_STRUCT(contact, Address, Address)->getInternalAddress());
+			sal_op_set_contact_address(cfg->op, L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress());
 			linphone_address_unref(contact);
 		}
 
@@ -511,7 +511,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 			proxy_string,
 			cfg->reg_identity,
 			cfg->expires,
-			cfg->pending_contact ? L_GET_PRIVATE_FROM_C_STRUCT(cfg->pending_contact, Address, Address)->getInternalAddress() : NULL
+			cfg->pending_contact ? L_GET_PRIVATE_FROM_C_STRUCT(cfg->pending_contact, Address)->getInternalAddress() : NULL
 		)==0) {
 			if (cfg->pending_contact) {
 				linphone_address_unref(cfg->pending_contact);
@@ -1393,7 +1393,7 @@ const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) 
 	bool_t destroy_route_addr = FALSE;
 
 	if (linphone_proxy_config_get_service_route(cfg)) {
-		route_addr = L_GET_PRIVATE_FROM_C_STRUCT(linphone_proxy_config_get_service_route(cfg), Address, Address)->getInternalAddress();
+		route_addr = L_GET_PRIVATE_FROM_C_STRUCT(linphone_proxy_config_get_service_route(cfg), Address)->getInternalAddress();
 	} else if (linphone_proxy_config_get_route(cfg)) {
 		addr=linphone_proxy_config_get_route(cfg);
 	} else if(linphone_proxy_config_get_addr(cfg)) {

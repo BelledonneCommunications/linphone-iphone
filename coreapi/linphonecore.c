@@ -3368,7 +3368,7 @@ static bctbx_list_t *make_routes_for_proxy(LinphoneProxyConfig *proxy, const Lin
 		ret=bctbx_list_append(ret,sal_address_new(local_route));
 	}
 	if (srv_route){
-		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_STRUCT(srv_route, Address, Address)->getInternalAddress()));
+		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_STRUCT(srv_route, Address)->getInternalAddress()));
 	}
 	if (ret==NULL){
 		/*if the proxy address matches the domain part of the destination, then use the same transport
@@ -6681,7 +6681,7 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 }
 
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
-	L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams, CallParams)->initDefault(lc);
+	L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams)->initDefault(lc);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

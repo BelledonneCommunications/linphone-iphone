@@ -29,9 +29,9 @@
 // =============================================================================
 
 #define GET_CALL_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, CallSessionParams, CallParams)
-#define GET_CALL_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, CallSessionParams, CallParams)
-#define GET_MEDIA_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, MediaSessionParams, CallParams)
-#define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, MediaSessionParams, CallParams)
+#define GET_CALL_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, CallSessionParams)
+#define GET_MEDIA_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, MediaSessionParams)
+#define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, MediaSessionParams)
 
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(MediaSessionParams, CallParams, call_params)
 
@@ -493,11 +493,11 @@ void linphone_call_params_set_no_user_consent (LinphoneCallParams *params, bool_
 // =============================================================================
 
 void *linphone_call_params_get_user_data (const LinphoneCallParams *cp) {
-	return L_GET_USER_DATA_FROM_C_STRUCT(cp, MediaSessionParams, CallParams);
+	return L_GET_USER_DATA_FROM_C_STRUCT(cp, MediaSessionParams);
 }
 
 void linphone_call_params_set_user_data (LinphoneCallParams *cp, void *ud) {
-	L_SET_USER_DATA_FROM_C_STRUCT(cp, ud, MediaSessionParams, CallParams);
+	L_SET_USER_DATA_FROM_C_STRUCT(cp, ud, MediaSessionParams);
 }
 
 LinphoneCallParams *linphone_call_params_ref (LinphoneCallParams *cp) {

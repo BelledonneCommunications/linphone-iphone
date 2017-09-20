@@ -1120,7 +1120,7 @@ void MediaSessionPrivate::selectOutgoingIpVersion () {
 	}
 
 	const LinphoneAddress *to = linphone_call_log_get_to_address(log);
-	if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_STRUCT(to, Address, Address)->getInternalAddress()))
+	if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_STRUCT(to, Address)->getInternalAddress()))
 		af = AF_INET6;
 	else if (destProxy && destProxy->op)
 		af = sal_op_get_address_family(destProxy->op);
@@ -1232,7 +1232,11 @@ void MediaSessionPrivate::makeLocalMediaDescription () {
 	md->nb_streams = (biggestDesc ? biggestDesc->nb_streams : 1);
 
 	/* Re-check local ip address each time we make a new offer, because it may change in case of network reconnection */
-	getLocalIp(*L_GET_CPP_PTR_FROM_C_STRUCT((direction == LinphoneCallOutgoing) ? log->to : log->from, Address, Address));
+	{
+		LinphoneAddress *address = (direction == LinphoneCallOutgoing ? log->to : log->from);
+		getLocalIp(*L_GET_CPP_PTR_FROM_C_STRUCT(address, Address));
+	}
+
 	strncpy(md->addr, mediaLocalIp.c_str(), sizeof(md->addr));
 	LinphoneAddress *addr = nullptr;
 	if (destProxy) {

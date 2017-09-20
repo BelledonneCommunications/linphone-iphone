@@ -47,9 +47,9 @@ void linphone_chat_message_unref (LinphoneChatMessage *msg) {
 }
 
 void * linphone_chat_message_get_user_data (const LinphoneChatMessage *msg) {
-	return L_GET_USER_DATA_FROM_C_STRUCT(msg, ChatMessage, ChatMessage);
+	return L_GET_USER_DATA_FROM_C_STRUCT(msg, ChatMessage);
 }
 
 void linphone_chat_message_set_user_data (LinphoneChatMessage *msg, void *ud) {
-	L_SET_USER_DATA_FROM_C_STRUCT(msg, ud, ChatMessage, ChatMessage);
+	L_SET_USER_DATA_FROM_C_STRUCT(msg, ud, ChatMessage);
 }

@@ -832,7 +832,7 @@ void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
 		if (identity.empty()) {
 			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(d->core, peer);
 			if (proxy) {
-				identity = L_GET_CPP_PTR_FROM_C_STRUCT(linphone_proxy_config_get_identity_address(proxy), Address, Address)->asString();
+				identity = L_GET_CPP_PTR_FROM_C_STRUCT(linphone_proxy_config_get_identity_address(proxy), Address)->asString();
 			} else {
 				identity = linphone_core_get_primary_contact(d->core);
 			}

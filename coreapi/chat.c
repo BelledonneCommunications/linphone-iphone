@@ -100,7 +100,7 @@ static LinphoneChatRoom *_linphone_core_create_chat_room_from_url(LinphoneCore *
 }
 
 static bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from) {
-	LinphoneAddress *addr = linphone_address_new(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom, ChatRoom)->getPeerAddress().asString().c_str());
+	LinphoneAddress *addr = linphone_address_new(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom)->getPeerAddress().asString().c_str());
 	bool_t result = linphone_address_weak_equal(addr, from);
 	linphone_address_unref(addr);
 	return result;
@@ -166,7 +166,7 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 	linphone_chat_message_store_state(msg);
 
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
-		L_GET_PRIVATE_FROM_C_STRUCT(msg->chat_room, ChatRoom, ChatRoom)->moveTransientMessageToWeakMessages(msg);
+		L_GET_PRIVATE_FROM_C_STRUCT(msg->chat_room, ChatRoom)->moveTransientMessageToWeakMessages(msg);
 	}
 }
 
@@ -253,7 +253,7 @@ int linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage
 	LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);
-	LinphoneReason reason = L_GET_PRIVATE_FROM_C_STRUCT(cr, ChatRoom, ChatRoom)->messageReceived(op, sal_msg);
+	LinphoneReason reason = L_GET_PRIVATE_FROM_C_STRUCT(cr, ChatRoom)->messageReceived(op, sal_msg);
 	linphone_address_unref(addr);
 	return reason;
 }
@@ -269,7 +269,7 @@ void _linphone_chat_message_resend(LinphoneChatMessage *msg, bool_t ref_msg) {
 
 	cr = linphone_chat_message_get_chat_room(msg);
 	if (ref_msg) linphone_chat_message_ref(msg);
-	L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom, ChatRoom)->sendMessage(msg);
+	L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom)->sendMessage(msg);
 }
 
 void linphone_chat_message_resend(LinphoneChatMessage *msg) {
@@ -385,7 +385,7 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, Imdn
 void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason) {
 	char *content = linphone_chat_message_create_imdn_xml(cm, imdn_type, reason);
 	if (content) {
-		L_GET_PRIVATE_FROM_C_STRUCT(linphone_chat_message_get_chat_room(cm), ChatRoom, ChatRoom)->sendImdn(content, reason);
+		L_GET_PRIVATE_FROM_C_STRUCT(linphone_chat_message_get_chat_room(cm), ChatRoom)->sendImdn(content, reason);
 		ms_free(content);
 	}
 }
@@ -411,7 +411,7 @@ void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm) {
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
 	if (linphone_core_realtime_text_enabled(lc)) {
 		std::shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom, ChatRoom));
+			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom));
 		L_GET_PRIVATE(rttcr)->realtimeTextReceived(character, call);
 		//L_GET_PRIVATE(std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom, ChatRoom)))->realtimeTextReceived(character, call);
 	}
@@ -421,7 +421,7 @@ LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr))) {
 		std::shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom, ChatRoom));
+			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom));
 		LinphoneCall *call = rttcr->getCall();
 		LinphoneCore *lc = rttcr->getCore();
 		const uint32_t new_line = 0x2028;

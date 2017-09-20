@@ -289,8 +289,8 @@ LinphoneCall * linphone_call_new_outgoing(LinphoneCore *lc, const LinphoneAddres
 	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
 	call->remoteAddressCache = linphone_address_new(nullptr);
 	call->call = std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
-		*L_GET_CPP_PTR_FROM_C_STRUCT(from, Address, Address), *L_GET_CPP_PTR_FROM_C_STRUCT(to, Address, Address),
-		cfg, nullptr, L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams, CallParams));
+		*L_GET_CPP_PTR_FROM_C_STRUCT(from, Address), *L_GET_CPP_PTR_FROM_C_STRUCT(to, Address),
+		cfg, nullptr, L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams));
 	return call;
 }
 
@@ -301,7 +301,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, const LinphoneAddres
 	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
 	call->remoteAddressCache = linphone_address_new(nullptr);
 	call->call = std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
-		*L_GET_CPP_PTR_FROM_C_STRUCT(from, Address, Address), *L_GET_CPP_PTR_FROM_C_STRUCT(to, Address, Address),
+		*L_GET_CPP_PTR_FROM_C_STRUCT(from, Address), *L_GET_CPP_PTR_FROM_C_STRUCT(to, Address),
 		nullptr, op, nullptr);
 	L_GET_PRIVATE(linphone_call_get_cpp_obj(call).get())->initiateIncoming();
 	return call;
@@ -1284,7 +1284,7 @@ LinphoneStatus linphone_call_accept(LinphoneCall *call) {
 }
 
 LinphoneStatus linphone_call_accept_with_params(LinphoneCall *call, const LinphoneCallParams *params) {
-	return linphone_call_get_cpp_obj(call)->accept(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams, CallParams) : nullptr);
+	return linphone_call_get_cpp_obj(call)->accept(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
 }
 
 LinphoneStatus linphone_call_accept_early_media(LinphoneCall* call) {
@@ -1292,11 +1292,11 @@ LinphoneStatus linphone_call_accept_early_media(LinphoneCall* call) {
 }
 
 LinphoneStatus linphone_call_accept_early_media_with_params(LinphoneCall *call, const LinphoneCallParams *params) {
-	return linphone_call_get_cpp_obj(call)->acceptEarlyMedia(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams, CallParams) : nullptr);
+	return linphone_call_get_cpp_obj(call)->acceptEarlyMedia(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
 }
 
 LinphoneStatus linphone_call_update(LinphoneCall *call, const LinphoneCallParams *params) {
-	return linphone_call_get_cpp_obj(call)->update(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams, CallParams) : nullptr);
+	return linphone_call_get_cpp_obj(call)->update(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
 }
 
 int linphone_call_start_update(LinphoneCall *call) {
@@ -1327,7 +1327,7 @@ int linphone_call_start_accept_update(LinphoneCall *call, LinphoneCallState next
 }
 
 LinphoneStatus linphone_call_accept_update(LinphoneCall *call, const LinphoneCallParams *params) {
-	return linphone_call_get_cpp_obj(call)->acceptUpdate(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams, CallParams) : nullptr);
+	return linphone_call_get_cpp_obj(call)->acceptUpdate(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
 }
 
 LinphoneStatus linphone_call_transfer(LinphoneCall *call, const char *refer_to) {
