@@ -445,8 +445,8 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCore, belle_sip_object_t,
 );
 
 void lc_callback_obj_init(LCCallbackObj *obj,LinphoneCoreCbFunc func,void* ud) {
-  obj->_func=func;
-  obj->_user_data=ud;
+	obj->_func=func;
+	obj->_user_data=ud;
 }
 
 int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
@@ -1094,7 +1094,7 @@ static void net_config_read(LinphoneCore *lc) {
 	if (tmpstr!=NULL && (strlen(tmpstr)<1)) tmpstr=NULL;
 	linphone_core_set_nat_address(lc,tmpstr);
 	tmp=lp_config_get_int(lc->config,"net","nat_sdp_only",0);
-	lc->net_conf.nat_sdp_only=tmp;
+	lc->net_conf.nat_sdp_only=!!tmp;
 	tmp=lp_config_get_int(lc->config,"net","mtu",1300);
 	linphone_core_set_mtu(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","download_ptime",-1);
@@ -1103,9 +1103,9 @@ static void net_config_read(LinphoneCore *lc) {
 		linphone_core_set_download_ptime(lc,tmp);
 	}
 	tmp = lp_config_get_int(lc->config, "net", "dns_srv_enabled", 1);
-	linphone_core_enable_dns_srv(lc, tmp);
+	linphone_core_enable_dns_srv(lc, !!tmp);
 	tmp = lp_config_get_int(lc->config, "net", "dns_search_enabled", 1);
-	linphone_core_enable_dns_search(lc, tmp);
+	linphone_core_enable_dns_search(lc, !!tmp);
 }
 
 static void build_sound_devices_table(LinphoneCore *lc){
@@ -1245,12 +1245,10 @@ static void sound_config_read(LinphoneCore *lc)
 	tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
 #endif
 	tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
-	linphone_core_enable_echo_cancellation(lc,tmp);
+	linphone_core_enable_echo_cancellation(lc, !!tmp);
 	linphone_core_set_echo_canceller_filter_name(lc, linphone_core_get_echo_canceller_filter_name(lc));
-	linphone_core_enable_echo_limiter(lc,
-		lp_config_get_int(lc->config,"sound","echolimiter",0));
-	linphone_core_enable_agc(lc,
-		lp_config_get_int(lc->config,"sound","agc",0));
+	linphone_core_enable_echo_limiter(lc, !!lp_config_get_int(lc->config,"sound","echolimiter",0));
+	linphone_core_enable_agc(lc, !!lp_config_get_int(lc->config,"sound","agc",0));
 
 	linphone_core_set_playback_gain_db (lc,lp_config_get_float(lc->config,"sound","playback_gain_db",0));
 	linphone_core_set_mic_gain_db (lc,lp_config_get_float(lc->config,"sound","mic_gain_db",0));
@@ -1283,8 +1281,8 @@ static void certificates_config_read(LinphoneCore *lc) {
 		}
 	}
 	linphone_core_set_root_ca(lc,rootca);
-	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
-	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
+	linphone_core_verify_server_certificates(lc, !!lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
+	linphone_core_verify_server_cn(lc, !!lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	bctbx_free(root_ca_path);
 }
 
@@ -1299,8 +1297,8 @@ static void sip_config_read(LinphoneCore *lc) {
 		sal_use_session_timers(lc->sal,200);
 	}
 
-	sal_use_no_initial_route(lc->sal,lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
-	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
+	sal_use_no_initial_route(lc->sal, !!lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
+	sal_use_rport(lc->sal, !!lp_config_get_int(lc->config,"sip","use_rport",1));
 
 	if (!lp_config_get_int(lc->config,"sip","ipv6_migration_done",FALSE) && lp_config_has_entry(lc->config,"sip","use_ipv6")) {
 		lp_config_clean_entry(lc->config,"sip","use_ipv6");
@@ -1308,7 +1306,7 @@ static void sip_config_read(LinphoneCore *lc) {
 		ms_message("IPV6 settings migration done.");
 	}
 
-	lc->sip_conf.ipv6_enabled=lp_config_get_int(lc->config,"sip","use_ipv6",ipv6_default);
+	lc->sip_conf.ipv6_enabled = !!lp_config_get_int(lc->config,"sip","use_ipv6",ipv6_default);
 
 	memset(&tr,0,sizeof(tr));
 
@@ -1343,7 +1341,7 @@ static void sip_config_read(LinphoneCore *lc) {
 	}
 
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
-	linphone_core_set_guess_hostname(lc,tmp);
+	linphone_core_set_guess_hostname(lc, !!tmp);
 
 	tmp=lp_config_get_int(lc->config,"sip","lime",LinphoneLimeDisabled);
 	linphone_core_enable_lime(lc,static_cast<LinphoneLimeState>(tmp));
@@ -1385,23 +1383,23 @@ static void sip_config_read(LinphoneCore *lc) {
 	linphone_core_set_media_encryption(lc,linphone_core_get_media_encryption(lc));
 
 	/*for tuning or test*/
-	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
+	lc->sip_conf.sdp_200_ack = !!lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.register_only_when_network_is_up=
-		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
+		!!lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
 	lc->sip_conf.register_only_when_upnp_is_ok=
-		lp_config_get_int(lc->config,"sip","register_only_when_upnp_is_ok",1);
-	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",0);
-	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
-	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
-	lc->sip_conf.tcp_tls_keepalive=lp_config_get_int(lc->config,"sip","tcp_tls_keepalive",0);
+		!!lp_config_get_int(lc->config,"sip","register_only_when_upnp_is_ok",1);
+	lc->sip_conf.ping_with_options= !!lp_config_get_int(lc->config,"sip","ping_with_options",0);
+	lc->sip_conf.auto_net_state_mon = !!lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
+	lc->sip_conf.keepalive_period = lp_config_get_int(lc->config,"sip","keepalive_period",10000);
+	lc->sip_conf.tcp_tls_keepalive = !!lp_config_get_int(lc->config,"sip","tcp_tls_keepalive",0);
 	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
-	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
-	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
-	sal_enable_sip_update_method(lc->sal,lp_config_get_int(lc->config,"sip","sip_update",1));
-	lc->sip_conf.vfu_with_info=lp_config_get_int(lc->config,"sip","vfu_with_info",1);
+	sal_use_one_matching_codec_policy(lc->sal, !!lp_config_get_int(lc->config,"sip","only_one_codec",0));
+	sal_use_dates(lc->sal, !!lp_config_get_int(lc->config,"sip","put_date",0));
+	sal_enable_sip_update_method(lc->sal, !!lp_config_get_int(lc->config,"sip","sip_update",1));
+	lc->sip_conf.vfu_with_info = !!lp_config_get_int(lc->config,"sip","vfu_with_info",1);
 	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
 	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound, gruu"));
-	lc->sip_conf.save_auth_info = lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
+	lc->sip_conf.save_auth_info = !!lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
 	linphone_core_create_im_notif_policy(lc);
 }
 
@@ -1448,11 +1446,11 @@ static void rtp_config_read(LinphoneCore *lc) {
 	linphone_core_set_video_jittcomp(lc,jitt_comp);
 	nortp_timeout=lp_config_get_int(lc->config,"rtp","nortp_timeout",30);
 	linphone_core_set_nortp_timeout(lc,nortp_timeout);
-	rtp_no_xmit_on_audio_mute=lp_config_get_int(lc->config,"rtp","rtp_no_xmit_on_audio_mute",FALSE);
+	rtp_no_xmit_on_audio_mute = !!lp_config_get_int(lc->config,"rtp","rtp_no_xmit_on_audio_mute",FALSE);
 	linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_no_xmit_on_audio_mute);
-	adaptive_jitt_comp_enabled = lp_config_get_int(lc->config, "rtp", "audio_adaptive_jitt_comp_enabled", TRUE);
+	adaptive_jitt_comp_enabled = !!lp_config_get_int(lc->config, "rtp", "audio_adaptive_jitt_comp_enabled", TRUE);
 	linphone_core_enable_audio_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
-	adaptive_jitt_comp_enabled = lp_config_get_int(lc->config, "rtp", "video_adaptive_jitt_comp_enabled", TRUE);
+	adaptive_jitt_comp_enabled = !!lp_config_get_int(lc->config, "rtp", "video_adaptive_jitt_comp_enabled", TRUE);
 	linphone_core_enable_video_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
 	lc->rtp_conf.disable_upnp = lp_config_get_int(lc->config, "rtp", "disable_upnp", FALSE);
 	linphone_core_set_avpf_mode(lc,static_cast<LinphoneAVPFMode>(lp_config_get_int(lc->config,"rtp","avpf",LinphoneAVPFDisabled)));
@@ -1461,7 +1459,7 @@ static void rtp_config_read(LinphoneCore *lc) {
 	else
 		lc->rtp_conf.audio_multicast_addr=ms_strdup("224.1.2.3");
 	if ((tmp_int=lp_config_get_int(lc->config,"rtp","audio_multicast_enabled",-1)) >-1)
-		linphone_core_enable_audio_multicast(lc,tmp_int);
+		linphone_core_enable_audio_multicast(lc, !!tmp_int);
 	if ((tmp_int=lp_config_get_int(lc->config,"rtp","audio_multicast_ttl",-1))>0)
 			linphone_core_set_audio_multicast_ttl(lc,tmp_int);
 	else
@@ -1475,7 +1473,7 @@ static void rtp_config_read(LinphoneCore *lc) {
 	else
 		lc->rtp_conf.video_multicast_ttl=1;/*local network*/
 	if ((tmp_int=lp_config_get_int(lc->config,"rtp","video_multicast_enabled",-1)) >0)
-		linphone_core_enable_video_multicast(lc,tmp_int);
+		linphone_core_enable_video_multicast(lc, !!tmp_int);
 }
 
 static PayloadType * find_payload(const bctbx_list_t *default_list, const char *mime_type, int clock_rate, int channels, const char *recv_fmtp){
@@ -1616,7 +1614,7 @@ static bctbx_list_t *add_missing_supported_codecs(LinphoneCore *lc, const bctbx_
 			}
 			last_seen = pt;
 			ms_message("Supported codec %s/%i fmtp=%s automatically added to codec list.", pt->mime_type,
-				   pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : "");
+					 pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : "");
 		}else{
 			last_seen = (PayloadType*)elem2->data;
 		}
@@ -1727,7 +1725,6 @@ static void build_video_devices_table(LinphoneCore *lc){
 
 static void video_config_read(LinphoneCore *lc){
 #ifdef VIDEO_ENABLED
-	int capture, display, self_view, reuse_source;
 	int automatic_video=1;
 	const char *str;
 	LinphoneVideoPolicy vpol;
@@ -1749,17 +1746,13 @@ static void video_config_read(LinphoneCore *lc){
 #if defined(__ANDROID__) || TARGET_OS_IPHONE
 	automatic_video=0;
 #endif
-	capture=lp_config_get_int(lc->config,"video","capture",1);
-	display=lp_config_get_int(lc->config,"video","display",1);
-	self_view=lp_config_get_int(lc->config,"video","self_view",1);
-	reuse_source=lp_config_get_int(lc->config,"video","reuse_source",0);
-	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",automatic_video);
-	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",automatic_video);
-	linphone_core_enable_video_capture(lc, capture);
-	linphone_core_enable_video_display(lc, display);
-	linphone_core_enable_video_preview(lc,lp_config_get_int(lc->config,"video","show_local",0));
-	linphone_core_enable_self_view(lc,self_view);
-	linphone_core_enable_video_source_reuse(lc, reuse_source);
+	vpol.automatically_initiate = !!lp_config_get_int(lc->config,"video","automatically_initiate",automatic_video);
+	vpol.automatically_accept = !!lp_config_get_int(lc->config,"video","automatically_accept",automatic_video);
+	linphone_core_enable_video_capture(lc, !!lp_config_get_int(lc->config,"video","capture",1));
+	linphone_core_enable_video_display(lc, !!lp_config_get_int(lc->config,"video","display",1));
+	linphone_core_enable_video_preview(lc, !!lp_config_get_int(lc->config,"video","show_local",0));
+	linphone_core_enable_self_view(lc, !!lp_config_get_int(lc->config,"video","self_view",1));
+	linphone_core_enable_video_source_reuse(lc, !!lp_config_get_int(lc->config,"video","reuse_source",0));
 	linphone_core_set_video_policy(lc,&vpol);
 #endif
 }
@@ -1815,7 +1808,7 @@ void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled
 }
 
 bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"net","adaptive_rate_control",TRUE);
+	return !!lp_config_get_int(lc->config,"net","adaptive_rate_control",TRUE);
 }
 
 void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, const char* algorithm){
@@ -1836,7 +1829,7 @@ const char * linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"rtp","rtcp_enabled",TRUE);
+	return !!lp_config_get_int(lc->config,"rtp","rtcp_enabled",TRUE);
 }
 
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
@@ -1979,7 +1972,7 @@ static void misc_config_read(LinphoneCore *lc) {
 		sal_set_uuid(lc->sal, uuid);
 
 	lc->user_certificates_path=ms_strdup(lp_config_get_string(config,"misc","user_certificates_path","."));
-	lc->send_call_stats_periodical_updates = lp_config_get_int(config, "misc", "send_call_stats_periodical_updates", 0);
+	lc->send_call_stats_periodical_updates = !!lp_config_get_int(config, "misc", "send_call_stats_periodical_updates", 0);
 }
 
 void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path){
@@ -2143,7 +2136,7 @@ static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, 
 	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
 		linphone_friend_list_subscription_state_changed(lc, lev, state);
 	} else if (strcmp(linphone_event_get_name(lev), "Conference") == 0) {
-		
+
 	}
 }
 
@@ -2184,11 +2177,11 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	LinphoneCoreCbs *internal_cbs = _linphone_core_cbs_new();
 	const char *msplugins_dir;
 	const char *image_resources_dir;
-	
+
 	bctbx_init_logger(FALSE);
 	if (liblinphone_user_log_func && liblinphone_current_log_func == NULL)
 		bctbx_set_log_handler(liblinphone_current_log_func=liblinphone_user_log_func); /*default value*/
-	
+
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);
@@ -2218,7 +2211,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_set_log_handler(NULL); /*remove ortp default log handler*/
 	ortp_init();
-	
+
 	linphone_core_activate_log_serialization_if_needed();
 
 	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
@@ -2523,7 +2516,7 @@ void linphone_core_enable_generic_comfort_noise(LinphoneCore *lc, bool_t enabled
 }
 
 bool_t linphone_core_generic_comfort_noise_enabled(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config, "misc", "use_cn", FALSE);
+	return !!lp_config_get_int(lc->config, "misc", "use_cn", FALSE);
 }
 
 const bctbx_list_t* linphone_core_get_friend_list(const LinphoneCore *lc) {
@@ -2720,7 +2713,7 @@ void linphone_core_set_nortp_timeout(LinphoneCore *lc, int nortp_timeout){
 }
 
 bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc) {
-	return lp_config_get_int(lc->config, "sip", "use_info", 0);
+	return !!lp_config_get_int(lc->config, "sip", "use_info", 0);
 }
 
 void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc,bool_t use_info) {
@@ -2730,7 +2723,7 @@ void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc,bool_t use_info) {
 }
 
 bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc) {
-	return lp_config_get_int(lc->config, "sip", "use_rfc2833", 1);
+	return !!lp_config_get_int(lc->config, "sip", "use_rfc2833", 1);
 }
 
 void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833) {
@@ -2841,7 +2834,7 @@ int _linphone_core_apply_transports(LinphoneCore *lc){
 }
 
 bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp){
-	return sal_transport_available(lc->sal,(SalTransport)tp);
+	return !!sal_transport_available(lc->sal,(SalTransport)tp);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneTransports);
@@ -3350,22 +3343,22 @@ void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, L
 }
 
 /*
-   returns the ideal route set for making an operation through this proxy.
-   The list must be freed as well as the SalAddress content
+	 returns the ideal route set for making an operation through this proxy.
+	 The list must be freed as well as the SalAddress content
 
-   rfc3608
-   6.1.  Procedures at the UA
+	 rfc3608
+	 6.1.  Procedures at the UA
 
-   /.../
-   For example, some devices will use locally-configured
-   explicit loose routing to reach a next-hop proxy, and others will use
-   a default outbound-proxy routing rule.  However, for the result to
-   function, the combination MUST provide valid routing in the local
-   environment.  In general, the service route set is appended to any
-   locally configured route needed to egress the access proxy chain.
-   Systems designers must match the service routing policy of their
-   nodes with the basic SIP routing policy in order to get a workable
-   system.
+	 /.../
+	 For example, some devices will use locally-configured
+	 explicit loose routing to reach a next-hop proxy, and others will use
+	 a default outbound-proxy routing rule.  However, for the result to
+	 function, the combination MUST provide valid routing in the local
+	 environment.  In general, the service route set is appended to any
+	 locally configured route needed to egress the access proxy chain.
+	 Systems designers must match the service routing policy of their
+	 nodes with the basic SIP routing policy in order to get a workable
+	 system.
 */
 static bctbx_list_t *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneAddress *dest){
 	bctbx_list_t *ret=NULL;
@@ -3444,7 +3437,7 @@ const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAdd
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneCall *call;
 	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
-	linphone_call_params_enable_video(p, linphone_call_params_video_enabled(p) & !!lc->video_policy.automatically_initiate);
+	linphone_call_params_enable_video(p, linphone_call_params_video_enabled(p) && !!lc->video_policy.automatically_initiate);
 	call=linphone_core_invite_with_params(lc,url,p);
 	linphone_call_params_unref(p);
 	return call;
@@ -3464,7 +3457,7 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
 LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneCall *call;
 	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
-	linphone_call_params_enable_video(p, linphone_call_params_video_enabled(p) & !!lc->video_policy.automatically_initiate);
+	linphone_call_params_enable_video(p, linphone_call_params_video_enabled(p) && !!lc->video_policy.automatically_initiate);
 	call=linphone_core_invite_address_with_params (lc,addr,p);
 	linphone_call_params_unref(p);
 	return call;
@@ -3506,7 +3499,7 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		SalAddress *new_contact = contact ? sal_address_clone(contact) : NULL;
 		sal_op_set_and_clean_contact_address(proxy->op, new_contact);
 	}
-	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
+	sal_op_cnx_ip_to_0000_if_sendonly_enable(op, !!lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }
 void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact) {
 	linphone_configure_op_with_proxy(lc, op, dest, headers,with_contact,linphone_core_lookup_known_proxy(lc,dest));
@@ -3538,10 +3531,11 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
 		linphone_call_params_enable_avpf(cp, linphone_proxy_config_avpf_enabled(proxy));
-		linphone_call_params_set_avpf_rr_interval(cp, linphone_proxy_config_get_avpf_rr_interval(proxy) * 1000);
+		linphone_call_params_set_avpf_rr_interval(cp, (uint16_t)(linphone_proxy_config_get_avpf_rr_interval(proxy) * 1000));
 	}else{
 		linphone_call_params_enable_avpf(cp, linphone_core_get_avpf_mode(lc)==LinphoneAVPFEnabled);
-		if (linphone_call_params_avpf_enabled(cp)) linphone_call_params_set_avpf_rr_interval(cp, linphone_core_get_avpf_rr_interval(lc) * 1000);
+		if (linphone_call_params_avpf_enabled(cp))
+			linphone_call_params_set_avpf_rr_interval(cp, (uint16_t)(linphone_core_get_avpf_rr_interval(lc) * 1000));
 	}
 
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
@@ -4014,7 +4008,7 @@ int linphone_core_get_rec_level(LinphoneCore *lc) {
 
 void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	MSSndCard *sndcard;
-	lc->sound_conf.ring_lev=level;
+	lc->sound_conf.ring_lev = (char)level;
 	sndcard=lc->sound_conf.ring_sndcard;
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_PLAYBACK,level);
 }
@@ -4064,14 +4058,14 @@ float linphone_core_get_playback_gain_db(LinphoneCore *lc) {
 
 void linphone_core_set_play_level(LinphoneCore *lc, int level){
 	MSSndCard *sndcard;
-	lc->sound_conf.play_lev=level;
+	lc->sound_conf.play_lev = (char)level;
 	sndcard=lc->sound_conf.play_sndcard;
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_PLAYBACK,level);
 }
 
 void linphone_core_set_rec_level(LinphoneCore *lc, int level) {
 	MSSndCard *sndcard;
-	lc->sound_conf.rec_lev=level;
+	lc->sound_conf.rec_lev = (char)level;
 	sndcard=lc->sound_conf.capt_sndcard;
 	if (sndcard) ms_snd_card_set_level(sndcard,MS_SND_CARD_CAPTURE,level);
 }
@@ -4160,9 +4154,9 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc){
 }
 
 void linphone_core_set_default_sound_devices(LinphoneCore *lc){
-    linphone_core_set_ringer_device(lc, NULL);
-    linphone_core_set_playback_device(lc, NULL);
-    linphone_core_set_capture_device(lc, NULL);
+		linphone_core_set_ringer_device(lc, NULL);
+		linphone_core_set_playback_device(lc, NULL);
+		linphone_core_set_capture_device(lc, NULL);
 }
 
 void linphone_core_reload_sound_devices(LinphoneCore *lc){
@@ -4584,9 +4578,9 @@ void linphone_core_set_nat_policy(LinphoneCore *lc, LinphoneNatPolicy *policy) {
 		linphone_nat_policy_save_to_config(lc->nat_policy);
 	}
 
-	sal_nat_helper_enable(lc->sal, lp_config_get_int(lc->config, "net", "enable_nat_helper", 1));
+	sal_nat_helper_enable(lc->sal, !!lp_config_get_int(lc->config, "net", "enable_nat_helper", 1));
 	sal_enable_auto_contacts(lc->sal, TRUE);
-	sal_use_rport(lc->sal, lp_config_get_int(lc->config, "sip", "use_rport", 1));
+	sal_use_rport(lc->sal, !!lp_config_get_int(lc->config, "sip", "use_rport", 1));
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 }
 
@@ -5769,7 +5763,7 @@ void sip_config_uninit(LinphoneCore *lc)
 			for(elem=config->proxies;elem!=NULL;elem=bctbx_list_next(elem)){
 				LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 				LinphoneRegistrationState state = linphone_proxy_config_get_state(cfg);
-				still_registered|=(state==LinphoneRegistrationOk||state==LinphoneRegistrationProgress);
+				still_registered = (state==LinphoneRegistrationOk||state==LinphoneRegistrationProgress);
 			}
 			ms_usleep(100000);
 		}
@@ -6202,8 +6196,8 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	bctbx_list_t* the_calls = lc->calls;
 	LinphoneCall* call = NULL;
 	bool_t dont_need_sound = TRUE;
-	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_io", FALSE);
-	bool_t use_rtp_io_enable_local_output = lp_config_get_int(lc->config, "sound", "rtp_io_enable_local_output", FALSE);
+	bool_t use_rtp_io = !!lp_config_get_int(lc->config, "sound", "rtp_io", FALSE);
+	bool_t use_rtp_io_enable_local_output = !!lp_config_get_int(lc->config, "sound", "rtp_io_enable_local_output", FALSE);
 
 	/* check if the remaining calls are paused */
 	while( the_calls ){

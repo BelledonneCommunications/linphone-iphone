@@ -64,7 +64,7 @@ static char *utf8_convert(const char *filename){
 		cb = iconv_open("UTF-8", nl_langinfo(CODESET));
 		if (cb != (iconv_t)-1) {
 			int ret;
-			ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
+			ret = (int)iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
 			if(ret == -1) db_file_utf8[0] = '\0';
 			iconv_close(cb);
 		}

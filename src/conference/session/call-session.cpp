@@ -788,7 +788,7 @@ void CallSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg
 		/* We already have an op for incoming calls */
 		d->op = op;
 		sal_op_set_user_pointer(d->op, this);
-		sal_op_cnx_ip_to_0000_if_sendonly_enable(op, lp_config_get_default_int(linphone_core_get_config(d->core),
+		sal_op_cnx_ip_to_0000_if_sendonly_enable(op, !!lp_config_get_default_int(linphone_core_get_config(d->core),
 			"sip", "cnx_ip_to_0000_if_sendonly_enabled", 0));
 		d->log->call_id = ms_strdup(sal_op_get_call_id(op)); /* Must be known at that time */
 	}

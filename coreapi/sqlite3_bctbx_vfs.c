@@ -77,7 +77,7 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
 	int ret;
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile){
-		ret = bctbx_file_read(pFile->pbctbx_file, buf, count, (off_t)offset);
+		ret = (int)bctbx_file_read(pFile->pbctbx_file, buf, count, (off_t)offset);
 		if( ret==count ){
 			return SQLITE_OK;
 		}
@@ -106,7 +106,7 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	int ret;
 	if (pFile ){
-		ret = bctbx_file_write(pFile->pbctbx_file, buf, count, (off_t)offset);
+		ret = (int)bctbx_file_write(pFile->pbctbx_file, buf, count, (off_t)offset);
 		if(ret > 0 ) return SQLITE_OK;
 		else {
 			return SQLITE_IOERR_WRITE;
@@ -119,11 +119,11 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
  * TRuncates or extends a file depending on the size provided.
  * @param  p    sqlite3_file file handle pointer.
  * @param  size New file size.
- * @return  SQLITE_OK on success, SQLITE_IOERR_TRUNCATE if an error occurred during truncate,	
- *          SQLITE_ERROR if ther was a problem on the file descriptor.    
+ * @return  SQLITE_OK on success, SQLITE_IOERR_TRUNCATE if an error occurred during truncate,
+ *          SQLITE_ERROR if ther was a problem on the file descriptor.
  */
 static int sqlite3bctbx_Truncate(sqlite3_file *p, sqlite_int64 size){
-	int rc;                        
+	int rc;
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile->pbctbx_file){
 		rc = bctbx_file_truncate(pFile->pbctbx_file, size);
@@ -259,7 +259,7 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	char* convertedFilename;
 	int nChar, nb_byte;
 	LPWSTR wideFilename;
-	
+
 	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, NULL, 0);
 	if (nChar == 0) return NULL;
 	wideFilename = reinterpret_cast<LPWSTR>(bctbx_malloc(nChar*sizeof(wideFilename[0])));
@@ -269,7 +269,7 @@ static char* ConvertFromUtf8Filename(const char* fName){
 		bctbx_free(wideFilename);
 		wideFilename = 0;
 	}
-	
+
 	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, 0, 0, 0, 0);
 	if (nb_byte == 0) return NULL;
 	convertedFilename = reinterpret_cast<char *>(bctbx_malloc(nb_byte));
@@ -290,15 +290,14 @@ static char* ConvertFromUtf8Filename(const char* fName){
 	char *outbuf=db_file_locale, *inbuf=db_file_utf8;
 	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
 	iconv_t cb;
-	
+
 	if (strcasecmp("UTF-8", nl_langinfo(CODESET)) == 0) {
 		strncpy(db_file_locale, fName, MAX_PATH_SIZE - 1);
 	} else {
 		strncpy(db_file_utf8, fName, MAX_PATH_SIZE-1);
 		cb = iconv_open(nl_langinfo(CODESET), "UTF-8");
 		if (cb != (iconv_t)-1) {
-			int ret;
-			ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
+			int ret = (int)iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
 			if(ret == -1) db_file_locale[0] = '\0';
 			iconv_close(cb);
 		}
@@ -346,7 +345,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	if (pFile == NULL || fName == NULL){
 		return SQLITE_IOERR;
 	}
-	
+
 	/* Set flags  to open the file with */
 	if( flags&SQLITE_OPEN_EXCLUSIVE ) openFlags  |= O_EXCL;
 	if( flags&SQLITE_OPEN_CREATE )    openFlags |= O_CREAT;
@@ -363,7 +362,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	} else {
 		pFile->pbctbx_file = NULL;
 	}
-	
+
 	if( pFile->pbctbx_file == NULL){
 		return SQLITE_CANTOPEN;
 	}
@@ -445,7 +444,7 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pDefault = sqlite3_vfs_find("unix-none");
 	#endif
 	pVfsToUse->xCurrentTime = pDefault->xCurrentTime;
-	
+
 	pVfsToUse->xAccess =  pDefault->xAccess;
 	pVfsToUse->xFullPathname = pDefault->xFullPathname;
 

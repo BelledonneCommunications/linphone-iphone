@@ -153,7 +153,7 @@ bctbx_list_t * call_logs_read_from_config_file(LinphoneCore *lc){
 			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
-			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
+			cl->video_enabled=!!lp_config_get_int(cfg,logsection,"video_enabled",0);
 			tmp=lp_config_get_string(cfg,logsection,"call_id",NULL);
 			if (tmp) cl->call_id=ms_strdup(tmp);
 			call_logs=bctbx_list_append(call_logs,cl);

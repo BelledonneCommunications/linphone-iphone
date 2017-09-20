@@ -432,7 +432,7 @@ bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard) {
 	unsigned char previous_md5[VCARD_MD5_HASH_SIZE];
 	memcpy(previous_md5, vCard->md5, VCARD_MD5_HASH_SIZE);
 	linphone_vcard_compute_md5_hash(vCard);
-	return memcmp(vCard->md5, previous_md5, VCARD_MD5_HASH_SIZE);
+	return !!memcmp(vCard->md5, previous_md5, VCARD_MD5_HASH_SIZE);
 }
 
 bool_t linphone_core_vcard_supported(void) {

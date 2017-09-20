@@ -889,7 +889,7 @@ void linphone_core_update_friends_subscriptions(LinphoneCore *lc) {
 }
 
 bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"sip","subscribe_presence_only_when_registered",1);
+	return !!lp_config_get_int(lc->config,"sip","subscribe_presence_only_when_registered",1);
 }
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc) {
@@ -1030,7 +1030,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 		linphone_friend_set_inc_subscribe_policy(lf,__policy_str_to_enum(tmp));
 	}
 	a=lp_config_get_int(config,item,"subscribe",0);
-	linphone_friend_send_subscribe(lf,a);
+	linphone_friend_send_subscribe(lf,!!a);
 	a = lp_config_get_int(config, item, "presence_received", 0);
 	lf->presence_received = (bool_t)a;
 
@@ -1156,7 +1156,7 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 		lc = fr->friend_list->lc;
 	}
 	if (lc) {
-		skip = 1 - lp_config_get_int(fr->lc->config, "misc", "store_friends", 1);
+		skip = !lp_config_get_int(fr->lc->config, "misc", "store_friends", 1);
 		linphone_vcard_set_skip_validation(vcard, skip);
 	}
 	linphone_vcard_set_full_name(vcard, name);
@@ -1410,9 +1410,9 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 		}
 	}
 	linphone_friend_set_inc_subscribe_policy(lf, static_cast<LinphoneSubscribePolicy>(atoi(argv[3])));
-	linphone_friend_send_subscribe(lf, atoi(argv[4]));
+	linphone_friend_send_subscribe(lf, !!atoi(argv[4]));
 	linphone_friend_set_ref_key(lf, ms_strdup(argv[5]));
-	lf->presence_received = atoi(argv[9]);
+	lf->presence_received = !!atoi(argv[9]);
 	lf->storage_id = storage_id;
 
 	*list = bctbx_list_append(*list, linphone_friend_ref(lf));

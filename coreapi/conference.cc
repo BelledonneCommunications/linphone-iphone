@@ -169,23 +169,25 @@ public:
 	LocalConference(LinphoneCore *core, LinphoneConference *conf, const Params *params = NULL);
 	virtual ~LocalConference();
 
-	virtual int inviteAddresses(const list<const LinphoneAddress*> &addresses, const LinphoneCallParams *params);
-	virtual int addParticipant(LinphoneCall *call);
-	virtual int removeParticipant(LinphoneCall *call);
-	virtual int removeParticipant(const LinphoneAddress *uri);
-	virtual int terminate();
+	virtual int inviteAddresses(const list<const LinphoneAddress*> &addresses, const LinphoneCallParams *params) override;
+	virtual int addParticipant(LinphoneCall *call) override;
+	virtual int removeParticipant(LinphoneCall *call) override;
+	virtual int removeParticipant(const LinphoneAddress *uri) override;
+	virtual int terminate() override;
 
-	virtual int enter();
-	virtual int leave();
-	virtual bool isIn() const {return m_localParticipantStream!=NULL;}
-	virtual int getSize() const;
+	virtual int enter() override;
+	virtual int leave() override;
+	virtual bool isIn() const override {
+		return m_localParticipantStream!=NULL;
+	}
+	virtual int getSize() const override;
 
-	virtual int startRecording(const char *path);
-	virtual int stopRecording();
+	virtual int startRecording(const char *path) override;
+	virtual int stopRecording() override;
 
-	virtual void onCallStreamStarting(LinphoneCall *call, bool isPausedByRemote);
-	virtual void onCallStreamStopping(LinphoneCall *call);
-	virtual void onCallTerminating(LinphoneCall *call);
+	virtual void onCallStreamStarting(LinphoneCall *call, bool isPausedByRemote) override;
+	virtual void onCallStreamStopping(LinphoneCall *call) override;
+	virtual void onCallTerminating(LinphoneCall *call) override;
 
 private:
 	void addLocalEndpoint();
@@ -207,18 +209,24 @@ public:
 	RemoteConference(LinphoneCore *core, LinphoneConference *conf, const Params *params = NULL);
 	virtual ~RemoteConference();
 
-	virtual int inviteAddresses(const list<const LinphoneAddress*> &addresses, const LinphoneCallParams *params);
-	virtual int addParticipant(LinphoneCall *call);
-	virtual int removeParticipant(LinphoneCall *call) {return -1;}
-	virtual int removeParticipant(const LinphoneAddress *uri);
-	virtual int terminate();
+	virtual int inviteAddresses(const list<const LinphoneAddress*> &addresses, const LinphoneCallParams *params) override;
+	virtual int addParticipant(LinphoneCall *call) override;
+	virtual int removeParticipant(LinphoneCall *call) override {
+		return -1;
+	}
+	virtual int removeParticipant(const LinphoneAddress *uri) override;
+	virtual int terminate() override;
 
-	virtual int enter();
-	virtual int leave();
-	virtual bool isIn() const;
+	virtual int enter() override;
+	virtual int leave() override;
+	virtual bool isIn() const override;
 
-	virtual int startRecording(const char *path) {return 0;}
-	virtual int stopRecording() {return 0;}
+	virtual int startRecording (const char *path) override {
+		return 0;
+	}
+	virtual int stopRecording() override {
+		return 0;
+	}
 
 private:
 	bool focusIsReady() const;

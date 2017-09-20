@@ -832,11 +832,11 @@ void linphone_config_set_skip_flag_for_section(LpConfig *lpconfig, const char *s
 void lp_item_write(LpItem *item, LpConfig *lpconfig){
 	int ret =-1 ;
 	if (item->is_comment){
-		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s\n",item->value);
+		ret = (int)bctbx_file_fprintf(lpconfig->pFile, 0, "%s\n",item->value);
 
 	}
 	else if (item->value && item->value[0] != '\0' ){
-		ret =bctbx_file_fprintf(lpconfig->pFile, 0, "%s=%s\n",item->key,item->value);
+		ret = (int)bctbx_file_fprintf(lpconfig->pFile, 0, "%s=%s\n",item->key,item->value);
 	}
 
 	else {

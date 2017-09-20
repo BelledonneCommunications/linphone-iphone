@@ -38,12 +38,21 @@
 
 #include <xsd/cxx/pre.hxx>
 
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 #include "conference-info.h"
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic pop
+#endif
 
 namespace conference_info
 {
   // Conference_type
-  // 
+  //
 
   const Conference_type::Conference_descriptionOptional& Conference_type::
   getConference_description () const
@@ -365,7 +374,7 @@ namespace conference_info
 
 
   // State_type
-  // 
+  //
 
   State_type::
   State_type (Value v)
@@ -402,7 +411,7 @@ namespace conference_info
   State_type& State_type::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::String& > (*this) = 
+    static_cast< ::xml_schema::String& > (*this) =
     ::xml_schema::String (_xsd_State_type_literals_[v]);
 
     return *this;
@@ -410,7 +419,7 @@ namespace conference_info
 
 
   // Conference_description_type
-  // 
+  //
 
   const Conference_description_type::Display_textOptional& Conference_description_type::
   getDisplay_text () const
@@ -696,7 +705,7 @@ namespace conference_info
 
 
   // Host_type
-  // 
+  //
 
   const Host_type::Display_textOptional& Host_type::
   getDisplay_text () const
@@ -838,7 +847,7 @@ namespace conference_info
 
 
   // Conference_state_type
-  // 
+  //
 
   const Conference_state_type::User_countOptional& Conference_state_type::
   getUser_count () const
@@ -962,7 +971,7 @@ namespace conference_info
 
 
   // Conference_media_type
-  // 
+  //
 
   const Conference_media_type::EntrySequence& Conference_media_type::
   getEntry () const
@@ -1014,7 +1023,7 @@ namespace conference_info
 
 
   // Conference_medium_type
-  // 
+  //
 
   const Conference_medium_type::Display_textOptional& Conference_medium_type::
   getDisplay_text () const
@@ -1186,7 +1195,7 @@ namespace conference_info
 
 
   // Uris_type
-  // 
+  //
 
   const Uris_type::EntrySequence& Uris_type::
   getEntry () const
@@ -1274,7 +1283,7 @@ namespace conference_info
 
 
   // Uri_type
-  // 
+  //
 
   const Uri_type::UriType& Uri_type::
   getUri () const
@@ -1470,7 +1479,7 @@ namespace conference_info
   }
 
   // Users_type
-  // 
+  //
 
   const Users_type::UserSequence& Users_type::
   getUser () const
@@ -1576,7 +1585,7 @@ namespace conference_info
 
 
   // User_type
-  // 
+  //
 
   const User_type::Display_textOptional& User_type::
   getDisplay_text () const
@@ -1862,7 +1871,7 @@ namespace conference_info
 
 
   // User_roles_type
-  // 
+  //
 
   const User_roles_type::EntrySequence& User_roles_type::
   getEntry () const
@@ -1938,7 +1947,7 @@ namespace conference_info
   }
 
   // Endpoint_type
-  // 
+  //
 
   const Endpoint_type::Display_textOptional& Endpoint_type::
   getDisplay_text () const
@@ -2314,7 +2323,7 @@ namespace conference_info
 
 
   // Endpoint_status_type
-  // 
+  //
 
   Endpoint_status_type::
   Endpoint_status_type (Value v)
@@ -2351,7 +2360,7 @@ namespace conference_info
   Endpoint_status_type& Endpoint_status_type::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::String& > (*this) = 
+    static_cast< ::xml_schema::String& > (*this) =
     ::xml_schema::String (_xsd_Endpoint_status_type_literals_[v]);
 
     return *this;
@@ -2359,7 +2368,7 @@ namespace conference_info
 
 
   // Joining_type
-  // 
+  //
 
   Joining_type::
   Joining_type (Value v)
@@ -2396,7 +2405,7 @@ namespace conference_info
   Joining_type& Joining_type::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::String& > (*this) = 
+    static_cast< ::xml_schema::String& > (*this) =
     ::xml_schema::String (_xsd_Joining_type_literals_[v]);
 
     return *this;
@@ -2404,7 +2413,7 @@ namespace conference_info
 
 
   // Disconnection_type
-  // 
+  //
 
   Disconnection_type::
   Disconnection_type (Value v)
@@ -2441,7 +2450,7 @@ namespace conference_info
   Disconnection_type& Disconnection_type::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::String& > (*this) = 
+    static_cast< ::xml_schema::String& > (*this) =
     ::xml_schema::String (_xsd_Disconnection_type_literals_[v]);
 
     return *this;
@@ -2449,7 +2458,7 @@ namespace conference_info
 
 
   // Execution_type
-  // 
+  //
 
   const Execution_type::WhenOptional& Execution_type::
   getWhen () const
@@ -2573,7 +2582,7 @@ namespace conference_info
 
 
   // Call_type
-  // 
+  //
 
   const Call_type::SipOptional& Call_type::
   getSip () const
@@ -2655,7 +2664,7 @@ namespace conference_info
 
 
   // Sip_dialog_id_type
-  // 
+  //
 
   const Sip_dialog_id_type::Display_textOptional& Sip_dialog_id_type::
   getDisplay_text () const
@@ -2827,7 +2836,7 @@ namespace conference_info
 
 
   // Media_type
-  // 
+  //
 
   const Media_type::Display_textOptional& Media_type::
   getDisplay_text () const
@@ -3059,7 +3068,7 @@ namespace conference_info
 
 
   // Media_status_type
-  // 
+  //
 
   Media_status_type::
   Media_status_type (Value v)
@@ -3096,7 +3105,7 @@ namespace conference_info
   Media_status_type& Media_status_type::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::String& > (*this) = 
+    static_cast< ::xml_schema::String& > (*this) =
     ::xml_schema::String (_xsd_Media_status_type_literals_[v]);
 
     return *this;
@@ -3104,7 +3113,7 @@ namespace conference_info
 
 
   // Sidebars_by_val_type
-  // 
+  //
 
   const Sidebars_by_val_type::EntrySequence& Sidebars_by_val_type::
   getEntry () const
@@ -9269,4 +9278,3 @@ namespace conference_info
 //
 //
 // End epilogue.
-

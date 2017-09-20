@@ -16,18 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ice-agent.h"
-#include "conference/session/media-session-p.h"
-
-#include "logger/logger.h"
-
 #include "linphone/core.h"
 
+#include "conference/session/media-session-p.h"
+#include "logger/logger.h"
+
+#include "ice-agent.h"
+
+// =============================================================================
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-// =============================================================================
 
 bool IceAgent::candidatesGathered () const {
 	if (!iceSession)
@@ -43,7 +43,7 @@ void IceAgent::checkSession (IceRole role, bool isReinvite) {
 		return;
 	iceSession = ice_session_new();
 	/* For backward compatibility purposes, shall be enabled by default in the future */
-	ice_session_enable_message_integrity_check(iceSession, lp_config_get_int(config, "net", "ice_session_enable_message_integrity_check", 1));
+	ice_session_enable_message_integrity_check(iceSession, !!lp_config_get_int(config, "net", "ice_session_enable_message_integrity_check", 1));
 	if (lp_config_get_int(config, "net", "dont_default_to_stun_candidates", 0)) {
 		IceCandidateType types[ICT_CandidateTypeMax];
 		types[0] = ICT_HostCandidate;
@@ -494,14 +494,17 @@ void IceAgent::createIceCheckListsAndParseIceAttributes (const SalMediaDescripti
 				continue;
 			const char *addr = nullptr;
 			int port = 0;
-			getIceDefaultAddrAndPort(candidate->componentID, md, stream, &addr, &port);
+			getIceDefaultAddrAndPort(static_cast<uint16_t>(candidate->componentID), md, stream, &addr, &port);
 			if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
 				defaultCandidate = true;
 			int family = AF_INET;
 			if (strchr(candidate->addr, ':'))
 				family = AF_INET6;
-			ice_add_remote_candidate(cl, candidate->type, family, candidate->addr, candidate->port, candidate->componentID,
-				candidate->priority, candidate->foundation, defaultCandidate);
+			ice_add_remote_candidate(
+				cl, candidate->type, family, candidate->addr, candidate->port,
+				static_cast<uint16_t>(candidate->componentID),
+				candidate->priority, candidate->foundation, defaultCandidate
+			);
 		}
 		if (!iceRestarted) {
 			bool_t losingPairsAdded = false;
@@ -511,7 +514,7 @@ void IceAgent::createIceCheckListsAndParseIceAttributes (const SalMediaDescripti
 				int port = 0;
 				int componentID = j + 1;
 				if (remoteCandidate->addr[0] == '\0') break;
-				getIceDefaultAddrAndPort(componentID, md, stream, &addr, &port);
+				getIceDefaultAddrAndPort(static_cast<uint16_t>(componentID), md, stream, &addr, &port);
 				if (j == 0) /* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
 					ice_check_list_unselect_valid_pairs(cl);
 				int remoteFamily = AF_INET;
@@ -520,7 +523,7 @@ void IceAgent::createIceCheckListsAndParseIceAttributes (const SalMediaDescripti
 				int family = AF_INET;
 				if (strchr(addr, ':'))
 					family = AF_INET6;
-				ice_add_losing_pair(cl, j + 1, remoteFamily, remoteCandidate->addr, remoteCandidate->port, family, addr, port);
+				ice_add_losing_pair(cl, static_cast<uint16_t>(j + 1), remoteFamily, remoteCandidate->addr, remoteCandidate->port, family, addr, port);
 				losingPairsAdded = true;
 			}
 			if (losingPairsAdded)

@@ -326,7 +326,7 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 }
 
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc){
-	return lp_config_get_int(lc->config,"sound","tone_indications",1);
+	return !!lp_config_get_int(lc->config,"sound","tone_indications",1);
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
@@ -835,7 +835,7 @@ bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc){
 	/* Clients don't really need rtp symmetric, unless they have a public IP address and want
 	 * to interoperate with natted client. This case is not frequent with client apps.
 	 */
-	return lp_config_get_int(lc->config,"rtp","symmetric",0);
+	return !!lp_config_get_int(lc->config,"rtp","symmetric",0);
 }
 
 LinphoneStatus linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params){

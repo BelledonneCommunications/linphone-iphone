@@ -837,7 +837,7 @@ float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 	rtcp_rewind(stats->sent_rtcp);
 	if (!srb)
 		return 0.0;
-	return 100.0f * report_block_get_fraction_lost(srb) / 256.0f;
+	return 100.0f * (float)report_block_get_fraction_lost(srb) / 256.0f;
 }
 
 float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats) {
@@ -859,7 +859,7 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 	rtcp_rewind(stats->received_rtcp);
 	if (!rrb)
 		return 0.0;
-	return 100.0f * report_block_get_fraction_lost(rrb) / 256.0f;
+	return 100.0f * (float)report_block_get_fraction_lost(rrb) / 256.0f;
 }
 
 float linphone_call_stats_get_local_loss_rate(const LinphoneCallStats *stats) {

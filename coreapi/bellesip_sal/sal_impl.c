@@ -84,7 +84,7 @@ void sal_set_log_level(OrtpLogLevel level) {
 	if (((level&ORTP_DEBUG) != 0) || ((level&ORTP_TRACE) != 0)) {
 		belle_sip_level = BELLE_SIP_LOG_DEBUG;
 	}
-	
+
 	belle_sip_set_log_level(belle_sip_level);
 }
 static BctbxLogFunc _belle_sip_log_handler = bctbx_logv_out;
@@ -215,7 +215,7 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 
 	if (dialog) {
 		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
-		
+
 		if (op == NULL  && strcmp("NOTIFY",method) == 0) {
 			/*special case for Dialog created by notify mathing subscribe*/
 			belle_sip_transaction_t * sub_trans = belle_sip_dialog_get_last_transaction(dialog);
@@ -658,7 +658,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	sal_address_set_domain(sal_addr,addr);
 	sal_address_set_port(sal_addr,port);
 	sal_address_set_transport(sal_addr,tr);
-	result = sal_add_listen_port(ctx, sal_addr, is_tunneled);
+	result = sal_add_listen_port(ctx, sal_addr, !!is_tunneled);
 	sal_address_destroy(sal_addr);
 	return result;
 }
@@ -986,7 +986,7 @@ const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
 SalCustomHeader *sal_custom_header_remove(SalCustomHeader *ch, const char *name) {
 	belle_sip_message_t *msg=(belle_sip_message_t*)ch;
 	if (msg==NULL) return NULL;
-	
+
 	belle_sip_message_remove_header(msg, name);
 	return (SalCustomHeader*)msg;
 }
@@ -1066,9 +1066,9 @@ int sal_generate_uuid(char *uuid, size_t len) {
 	if (len==0) return -1;
 	/*create an UUID as described in RFC4122, 4.4 */
 	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(sal_uuid_t));
-	uuid_struct.clock_seq_hi_and_reserved&=~(1<<6);
+	uuid_struct.clock_seq_hi_and_reserved&=(unsigned char)~(1<<6);
 	uuid_struct.clock_seq_hi_and_reserved|=1<<7;
-	uuid_struct.time_hi_and_version&=~(0xf<<12);
+	uuid_struct.time_hi_and_version&=(short unsigned int)~(0xf<<12);
 	uuid_struct.time_hi_and_version|=4<<12;
 
 	written=snprintf(uuid,len,"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-", uuid_struct.time_low, uuid_struct.time_mid,

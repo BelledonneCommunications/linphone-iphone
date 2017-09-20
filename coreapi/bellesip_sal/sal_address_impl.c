@@ -58,7 +58,7 @@ void sal_address_set_secure(SalAddress *addr, bool_t enabled){
 bool_t sal_address_is_secure(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
-	if (uri) return belle_sip_uri_is_secure(uri);
+	if (uri) return !!belle_sip_uri_is_secure(uri);
 	return FALSE;
 }
 
@@ -199,7 +199,7 @@ void sal_address_set_param(SalAddress *addr,const char* name,const char* value){
 
 bool_t sal_address_has_param(const SalAddress *addr, const char *name){
 	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(addr);
-	return belle_sip_parameters_has_parameter(parameters, name);
+	return !!belle_sip_parameters_has_parameter(parameters, name);
 }
 
 const char * sal_address_get_param(const SalAddress *addr, const char *name) {
@@ -224,7 +224,7 @@ void sal_address_set_uri_params(SalAddress *addr, const char *params){
 
 bool_t sal_address_has_uri_param(const SalAddress *addr, const char *name){
 	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)));
-	return belle_sip_parameters_has_parameter(parameters, name);
+	return !!belle_sip_parameters_has_parameter(parameters, name);
 }
 
 const char * sal_address_get_uri_param(const SalAddress *addr, const char *name) {

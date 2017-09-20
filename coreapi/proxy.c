@@ -116,24 +116,24 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	const char *nat_policy_ref = lc ? lp_config_get_default_string(lc->config, "proxy", "nat_policy_ref", NULL):NULL;
 	cfg->lc = lc;
 	cfg->expires = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_expires", 3600) : 3600;
-	cfg->reg_sendregister = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 1) : 1;
+	cfg->reg_sendregister = lc ? !!lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 1) : 1;
 	cfg->dial_prefix = dial_prefix ? ms_strdup(dial_prefix) : NULL;
-	cfg->dial_escape_plus = lc ? lp_config_get_default_int(lc->config, "proxy", "dial_escape_plus", 0) : 0;
+	cfg->dial_escape_plus = lc ? !!lp_config_get_default_int(lc->config, "proxy", "dial_escape_plus", 0) : 0;
 	cfg->privacy = lc ? lp_config_get_default_int(lc->config, "proxy", "privacy", LinphonePrivacyDefault) : LinphonePrivacyDefault;
 	cfg->identity_address = identity ? linphone_address_new(identity) : NULL;
 	cfg->reg_identity = cfg->identity_address ? linphone_address_as_string(cfg->identity_address) : NULL;
 	cfg->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
 	cfg->reg_route = route ? ms_strdup(route) : NULL;
 	cfg->realm = realm ? ms_strdup(realm) : NULL;
-	cfg->quality_reporting_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
+	cfg->quality_reporting_enabled = lc ? !!lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
 	cfg->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
-	cfg->quality_reporting_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
+	cfg->quality_reporting_interval = lc ? !!lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
 	cfg->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
 	cfg->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
 	cfg->avpf_mode = lc ? static_cast<LinphoneAVPFMode>(lp_config_get_default_int(lc->config, "proxy", "avpf", LinphoneAVPFDefault)) : LinphoneAVPFDefault;
-	cfg->avpf_rr_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
+	cfg->avpf_rr_interval = lc ? !!lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
 	cfg->publish_expires= lc ? lp_config_get_default_int(lc->config, "proxy", "publish_expires", -1) : -1;
-	cfg->publish = lc ? lp_config_get_default_int(lc->config, "proxy", "publish", FALSE) : FALSE;
+	cfg->publish = lc ? !!lp_config_get_default_int(lc->config, "proxy", "publish", FALSE) : FALSE;
 	cfg->refkey = refkey ? ms_strdup(refkey) : NULL;
 	if (nat_policy_ref) {
 		LinphoneNatPolicy *policy = linphone_config_create_nat_policy_from_section(lc->config,nat_policy_ref);
@@ -570,7 +570,7 @@ bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg)
 }
 
 void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, int interval) {
-	cfg->quality_reporting_interval = interval;
+	cfg->quality_reporting_interval = !!interval;
 }
 
 int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg) {
@@ -1165,10 +1165,10 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	}
 
 #define CONFIGURE_BOOL_VALUE(cfg,config,key,param,param_name) \
-	linphone_proxy_config_enable_##param(cfg,lp_config_get_int(config,key,param_name,linphone_proxy_config_##param##_enabled(cfg)));
+	linphone_proxy_config_enable_##param(cfg, !!lp_config_get_int(config,key,param_name,linphone_proxy_config_##param##_enabled(cfg)));
 
 #define CONFIGURE_INT_VALUE(cfg,config,key,param,param_name) \
-		linphone_proxy_config_set_##param(cfg,lp_config_get_int(config,key,param_name,linphone_proxy_config_get_##param(cfg)));
+		linphone_proxy_config_set_##param(cfg, !!lp_config_get_int(config,key,param_name,linphone_proxy_config_get_##param(cfg)));
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc, int index)
 {

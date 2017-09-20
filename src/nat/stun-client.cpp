@@ -16,19 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stun-client.h"
-
-#include "logger/logger.h"
-
 #include "linphone/core.h"
 
 #include "private.h"
 
+#include "logger/logger.h"
+
+#include "stun-client.h"
+
+// =============================================================================
+
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// =============================================================================
 
 int StunClient::run (int audioPort, int videoPort, int textPort) {
 	if (linphone_core_ipv6_enabled(core)) {
@@ -107,7 +107,7 @@ int StunClient::run (int audioPort, int videoPort, int textPort) {
 		}
 		struct timeval cur;
 		ortp_gettimeofday(&cur, nullptr);
-		elapsed = ((cur.tv_sec - init.tv_sec) * 1000.) + ((cur.tv_usec - init.tv_usec) / 1000.);
+		elapsed = static_cast<double>(cur.tv_sec - init.tv_sec) * 1000 + static_cast<double>(cur.tv_usec - init.tv_usec) / 1000;
 		if (elapsed > 2000.) {
 			lInfo() << "STUN responses timeout, going ahead";
 			ret = -1;
@@ -181,7 +181,7 @@ ortp_socket_t StunClient::createStunSocket (int localPort) {
 	memset(&laddr, 0, sizeof(laddr));
 	laddr.sin_family = AF_INET;
 	laddr.sin_addr.s_addr = INADDR_ANY;
-	laddr.sin_port = htons(localPort);
+	laddr.sin_port = htons(static_cast<uint16_t>(localPort));
 	if (bind(sock, (struct sockaddr *)&laddr, sizeof(laddr)) < 0) {
 		lError() << "Bind socket to 0.0.0.0:" << localPort << " failed: " << getSocketError();
 		close_socket(sock);
@@ -198,7 +198,7 @@ int StunClient::recvStunResponse(ortp_socket_t sock, Candidate &candidate, int &
 	char buf[MS_STUN_MAX_MESSAGE_SIZE];
 	int len = MS_STUN_MAX_MESSAGE_SIZE;
 
-	len = recv(sock, buf, len, 0);
+	len = static_cast<int>(recv(sock, buf, len, 0));
 	if (len > 0) {
 		struct in_addr ia;
 		MSStunMessage *resp = ms_stun_message_create_from_buffer_parsing((uint8_t *)buf, (ssize_t)len);
@@ -227,7 +227,7 @@ int StunClient::recvStunResponse(ortp_socket_t sock, Candidate &candidate, int &
 int StunClient::sendStunRequest(ortp_socket_t sock, const struct sockaddr *server, socklen_t addrlen, int id, bool changeAddr) {
 	MSStunMessage *req = ms_stun_binding_request_create();
 	UInt96 trId = ms_stun_message_get_tr_id(req);
-	trId.octet[0] = id;
+	trId.octet[0] = static_cast<unsigned char>(id);
 	ms_stun_message_set_tr_id(req, trId);
 	ms_stun_message_enable_change_ip(req, changeAddr);
 	ms_stun_message_enable_change_port(req, changeAddr);
@@ -238,7 +238,7 @@ int StunClient::sendStunRequest(ortp_socket_t sock, const struct sockaddr *serve
 		lError() << "Failed to encode STUN message";
 		err = -1;
 	} else {
-		err = bctbx_sendto(sock, buf, len, 0, server, addrlen);
+		err = static_cast<int>(bctbx_sendto(sock, buf, len, 0, server, addrlen));
 		if (err < 0) {
 			lError() << "sendto failed: " << strerror(errno);
 			err = -1;

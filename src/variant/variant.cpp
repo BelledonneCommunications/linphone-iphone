@@ -278,9 +278,9 @@ static inline long long getAssumedNumber (const VariantPrivate &p) {
 		case Variant::Char:
 			return p.value.c;
 		case Variant::Double:
-			return p.value.d;
+			return static_cast<long long>(p.value.d);
 		case Variant::Float:
-			return p.value.f;
+			return static_cast<long long>(p.value.f);
 
 		default:
 			L_ASSERT(false);
@@ -416,13 +416,13 @@ static inline float getValueAsFloat (const VariantPrivate &p, bool *soFarSoGood)
 		case Variant::Long:
 		case Variant::LongLong:
 		case Variant::Char:
-			return static_cast<double>(getAssumedNumber(p));
+			return static_cast<float>(getAssumedNumber(p));
 
 		case Variant::UnsignedInt:
 		case Variant::UnsignedShort:
 		case Variant::UnsignedLong:
 		case Variant::UnsignedLongLong:
-			return static_cast<double>(getAssumedUnsignedNumber(p));
+			return static_cast<float>(getAssumedUnsignedNumber(p));
 
 		case Variant::Float:
 			return p.value.f;
@@ -431,13 +431,13 @@ static inline float getValueAsFloat (const VariantPrivate &p, bool *soFarSoGood)
 			return static_cast<float>(p.value.d);
 
 		case Variant::Bool:
-			return static_cast<double>(p.value.b);
+			return static_cast<float>(p.value.b);
 
 		case Variant::String:
 			return Utils::stof(*p.value.str);
 
 		case Variant::Generic:
-			return static_cast<double>(!!p.value.g);
+			return static_cast<float>(!!p.value.g);
 
 		default:
 			*soFarSoGood = false;
