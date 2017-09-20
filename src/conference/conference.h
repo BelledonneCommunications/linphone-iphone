@@ -47,30 +47,30 @@ public:
 
 public:
 	/* ConferenceInterface */
-	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
-	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
-	virtual bool canHandleParticipants () const override;
-	virtual const std::string& getId () const override;
-	virtual int getNbParticipants () const override;
-	virtual std::list<std::shared_ptr<Participant>> getParticipants () const override;
-	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
-	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
+	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
+	bool canHandleParticipants () const override;
+	const std::string& getId () const override;
+	int getNbParticipants () const override;
+	std::list<std::shared_ptr<Participant>> getParticipants () const override;
+	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
 private:
 	/* CallSessionListener */
-	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) override;
-	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers) override;
-	virtual void onCallSessionAccepted (const CallSession &session) override;
-	virtual void onCallSessionSetReleased (const CallSession &session) override;
-	virtual void onCallSessionSetTerminated (const CallSession &session) override;
-	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) override;
-	virtual void onIncomingCallSessionStarted (const CallSession &session) override;
-	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) override;
-	virtual void onStatsUpdated (const LinphoneCallStats *stats) override;
-	virtual void onResetCurrentSession (const CallSession &session) override;
-	virtual void onSetCurrentSession (const CallSession &session) override;
-	virtual void onFirstVideoFrameDecoded (const CallSession &session) override;
-	virtual void onResetFirstVideoFrameDecoded (const CallSession &session) override;
+	void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) override;
+	void onAckReceived (const CallSession &session, LinphoneHeaders *headers) override;
+	void onCallSessionAccepted (const CallSession &session) override;
+	void onCallSessionSetReleased (const CallSession &session) override;
+	void onCallSessionSetTerminated (const CallSession &session) override;
+	void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) override;
+	void onIncomingCallSessionStarted (const CallSession &session) override;
+	void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) override;
+	void onStatsUpdated (const LinphoneCallStats *stats) override;
+	void onResetCurrentSession (const CallSession &session) override;
+	void onSetCurrentSession (const CallSession &session) override;
+	void onFirstVideoFrameDecoded (const CallSession &session) override;
+	void onResetFirstVideoFrameDecoded (const CallSession &session) override;
 
 protected:
 	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);

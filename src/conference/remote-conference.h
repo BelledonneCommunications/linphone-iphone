@@ -36,16 +36,16 @@ protected:
 
 public:
 	/* ConferenceInterface */
-	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
-	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
+	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 
 protected:
 	/* ConferenceListener */
-	virtual void onConferenceCreated (const Address &addr) override;
-	virtual void onConferenceTerminated (const Address &addr) override;
-	virtual void onParticipantAdded (const Address &addr) override;
-	virtual void onParticipantRemoved (const Address &addr) override;
-	virtual void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
+	void onConferenceCreated (const Address &addr) override;
+	void onConferenceTerminated (const Address &addr) override;
+	void onParticipantAdded (const Address &addr) override;
+	void onParticipantRemoved (const Address &addr) override;
+	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
 
 private:
 	L_DISABLE_COPY(RemoteConference);
