@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/types.h"
 #include "linphone/api/c-types.h"
 #include "linphone/api/c-chat-message.h"
+#include "linphone/api/c-chat-message-cbs.h"
 #include "linphone/api/c-chat-room.h"
 #include "linphone/api/c-chat-room-cbs.h"
 
