@@ -30,6 +30,21 @@ def find_xsdcxx():
 	xsdcxx = find_executable("xsd")
 	return xsdcxx
 
+def get_prologue():
+	return """
+#if __clang__ || __GNUC__ >= 4
+\t#pragma GCC diagnostic push
+\t#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+"""
+
+def get_epilogue():
+	return """
+#if __clang__ || __GNUC__ >= 4
+\t#pragma GCC diagnostic pop
+#endif
+"""
+
 def generate(name):
 	xsdcxx = find_xsdcxx()
 	if xsdcxx is None:
@@ -57,6 +72,8 @@ def generate(name):
 		"--hxx-suffix", ".h",
 		"--ixx-suffix", ".h",
 		"--cxx-suffix", ".cpp",
+		"--prologue", get_prologue(),
+		"--epilogue", get_epilogue(),
 		"--location-regex", "%http://.+/(.+)%$1%",
 		"--output-dir", "xml",
 		source_file

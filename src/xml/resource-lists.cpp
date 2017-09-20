@@ -33,6 +33,12 @@
 
 // Begin prologue.
 //
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 //
 // End prologue.
 
@@ -2446,6 +2452,11 @@ namespace resource_lists
 
 // Begin epilogue.
 //
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic pop
+#endif
+
 //
 // End epilogue.
 

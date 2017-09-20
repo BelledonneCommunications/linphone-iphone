@@ -33,21 +33,18 @@
 
 // Begin prologue.
 //
-//
-// End prologue.
-
-#include <xsd/cxx/pre.hxx>
 
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-#include "xml.h"
+//
+// End prologue.
 
-#if __clang__ || __GNUC__ >= 4
-	#pragma GCC diagnostic pop
-#endif
+#include <xsd/cxx/pre.hxx>
+
+#include "xml.h"
 
 namespace namespace_
 {
@@ -75,7 +72,7 @@ namespace namespace_
   }
 
   // Space
-  //
+  // 
 
   Space::
   Space (Value v)
@@ -112,7 +109,7 @@ namespace namespace_
   Space& Space::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::Ncname& > (*this) =
+    static_cast< ::xml_schema::Ncname& > (*this) = 
     ::xml_schema::Ncname (_xsd_Space_literals_[v]);
 
     return *this;
@@ -120,7 +117,7 @@ namespace namespace_
 
 
   // Lang_member
-  //
+  // 
 
   Lang_member::
   Lang_member (Value v)
@@ -157,7 +154,7 @@ namespace namespace_
   Lang_member& Lang_member::
   operator= (Value v)
   {
-    static_cast< ::xml_schema::String& > (*this) =
+    static_cast< ::xml_schema::String& > (*this) = 
     ::xml_schema::String (_xsd_Lang_member_literals_[v]);
 
     return *this;
@@ -455,5 +452,11 @@ namespace namespace_
 
 // Begin epilogue.
 //
+
+#if __clang__ || __GNUC__ >= 4
+	#pragma GCC diagnostic pop
+#endif
+
 //
 // End epilogue.
+
