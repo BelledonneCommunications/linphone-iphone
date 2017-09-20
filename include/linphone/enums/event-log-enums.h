@@ -23,7 +23,7 @@
 
 #define L_ENUM_VALUES_EVENT_LOG_TYPE(F) \
 	F(None) \
-	F(Message) \
+	F(ChatMessage) \
 	F(CallStart) \
 	F(CallEnd) \
 	F(ConferenceCreated) \

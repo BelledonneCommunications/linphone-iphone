@@ -78,12 +78,12 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/provider/db-session.h
 	enums.h
 	event-log/call-event.h
+	event-log/chat-message-event.h
 	event-log/conference-event-p.h
 	event-log/conference-event.h
 	event-log/conference-participant-event.h
 	event-log/event-log-p.h
 	event-log/event-log.h
-	event-log/message-event.h
 	logger/logger.h
 	nat/ice-agent.h
 	nat/stun-client.h
@@ -143,10 +143,10 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	db/provider/db-session-provider.cpp
 	db/provider/db-session.cpp
 	event-log/call-event.cpp
+	event-log/chat-message-event.cpp
 	event-log/conference-event.cpp
 	event-log/conference-participant-event.cpp
 	event-log/event-log.cpp
-	event-log/message-event.cpp
 	logger/logger.cpp
 	nat/ice-agent.cpp
 	nat/stun-client.cpp

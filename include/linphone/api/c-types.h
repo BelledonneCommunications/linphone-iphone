@@ -114,7 +114,7 @@ typedef struct _LinphoneCallEvent LinphoneCallEvent;
 typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
 typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
 typedef struct _LinphoneEventLog LinphoneEventLog;
-typedef struct _LinphoneMessageEvent LinphoneMessageEvent;
+typedef struct _LinphoneChatMessageEvent LinphoneChatMessageEvent;
 
 // =============================================================================
 // C Enums.

@@ -27,34 +27,32 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ConferenceEvent::ConferenceEvent (Type type, const shared_ptr<const Address> &address) :
+ConferenceEvent::ConferenceEvent (Type type, const Address &address) :
 	EventLog(*new ConferenceEventPrivate, type) {
 	L_D(ConferenceEvent);
 	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
-	L_ASSERT(address);
-	d->address = make_shared<Address>(*address);
+	d->address = address;
 }
 
 ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) : ConferenceEvent(src.getType(), src.getAddress()) {}
 
-ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const shared_ptr<const Address> &address) :
+ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const Address &address) :
 	EventLog(p, type) {
 	L_D(ConferenceEvent);
-	L_ASSERT(address);
-	d->address = make_shared<Address>(*address);
+	d->address = address;
 }
 
 ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
 	L_D(ConferenceEvent);
 	if (this != &src) {
 		EventLog::operator=(src);
-		d->address = make_shared<Address>(*src.getPrivate()->address);
+		d->address = src.getPrivate()->address;
 	}
 
 	return *this;
 }
 
-shared_ptr<const Address> ConferenceEvent::getAddress () const {
+const Address &ConferenceEvent::getAddress () const {
 	L_D(const ConferenceEvent);
 	return d->address;
 }

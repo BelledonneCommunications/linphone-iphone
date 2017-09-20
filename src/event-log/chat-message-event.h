@@ -1,5 +1,5 @@
 /*
- * message-event.h
+ * chat-message-event.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MESSAGE_EVENT_H_
-#define _MESSAGE_EVENT_H_
+#ifndef _CHAT_MESSAGE_EVENT_H_
+#define _CHAT_MESSAGE_EVENT_H_
 
 #include <memory>
 
@@ -27,22 +27,22 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Message;
-class MessageEventPrivate;
+class ChatMessage;
+class ChatMessageEventPrivate;
 
-class LINPHONE_PUBLIC MessageEvent : public EventLog {
+class LINPHONE_PUBLIC ChatMessageEvent : public EventLog {
 public:
-	MessageEvent (const std::shared_ptr<Message> &message);
-	MessageEvent (const MessageEvent &src);
+	ChatMessageEvent (const std::shared_ptr<ChatMessage> &chatMessage);
+	ChatMessageEvent (const ChatMessageEvent &src);
 
-	MessageEvent &operator= (const MessageEvent &src);
+	ChatMessageEvent &operator= (const ChatMessageEvent &src);
 
-	std::shared_ptr<Message> getMessage () const;
+	std::shared_ptr<ChatMessage> getChatMessage () const;
 
 private:
-	L_DECLARE_PRIVATE(MessageEvent);
+	L_DECLARE_PRIVATE(ChatMessageEvent);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _MESSAGE_EVENT_H_
+#endif // ifndef _CHAT_MESSAGE_EVENT_H_

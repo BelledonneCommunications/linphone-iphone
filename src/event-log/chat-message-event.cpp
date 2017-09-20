@@ -1,5 +1,5 @@
 /*
- * message-event.cpp
+ * chat-message-event.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 #include "event-log-p.h"
 
-#include "message-event.h"
+#include "chat-message-event.h"
 
 // =============================================================================
 
@@ -26,35 +26,35 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class MessageEventPrivate : public EventLogPrivate {
+class ChatMessageEventPrivate : public EventLogPrivate {
 public:
-	shared_ptr<Message> message;
+	shared_ptr<ChatMessage> chatMessage;
 };
 
 // -----------------------------------------------------------------------------
 
-MessageEvent::MessageEvent (const shared_ptr<Message> &message) :
-	EventLog(*new MessageEventPrivate, EventLog::Type::Message) {
-	L_D(MessageEvent);
-	L_ASSERT(message);
-	d->message = message;
+ChatMessageEvent::ChatMessageEvent (const shared_ptr<ChatMessage> &chatMessage) :
+	EventLog(*new ChatMessageEventPrivate, EventLog::Type::ChatMessage) {
+	L_D(ChatMessageEvent);
+	L_ASSERT(chatMessage);
+	d->chatMessage = chatMessage;
 }
 
-MessageEvent::MessageEvent (const MessageEvent &src) : MessageEvent(src.getMessage()) {}
+ChatMessageEvent::ChatMessageEvent (const ChatMessageEvent &src) : ChatMessageEvent(src.getChatMessage()) {}
 
-MessageEvent &MessageEvent::operator= (const MessageEvent &src) {
-	L_D(MessageEvent);
+ChatMessageEvent &ChatMessageEvent::operator= (const ChatMessageEvent &src) {
+	L_D(ChatMessageEvent);
 	if (this != &src) {
-		EventLog::operator=(src);
-		d->message = src.getPrivate()->message;
+		EventLog::operator= (src);
+		d->chatMessage = src.getPrivate()->chatMessage;
 	}
 
 	return *this;
 }
 
-shared_ptr<Message> MessageEvent::getMessage () const {
-	L_D(const MessageEvent);
-	return d->message;
+shared_ptr<ChatMessage> ChatMessageEvent::getChatMessage () const {
+	L_D(const ChatMessageEvent);
+	return d->chatMessage;
 }
 
 LINPHONE_END_NAMESPACE

@@ -29,15 +29,15 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceParticipantEventPrivate : public ConferenceEventPrivate {
 public:
-	shared_ptr<const Address> participantAddress;
+	Address participantAddress;
 };
 
 // -----------------------------------------------------------------------------
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
-	const shared_ptr<const Address> &conferenceAddress,
-	const shared_ptr<const Address> &participantAddress
+	const Address &conferenceAddress,
+	const Address &participantAddress
 ) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, conferenceAddress) {
 	L_D(ConferenceParticipantEvent);
 	L_ASSERT(
@@ -46,8 +46,7 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 		type == Type::ConferenceParticipantSetAdmin ||
 		type == Type::ConferenceParticipantUnsetAdmin
 	);
-	L_ASSERT(participantAddress);
-	d->participantAddress = make_shared<Address>(*participantAddress);
+	d->participantAddress = participantAddress;
 }
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (const ConferenceParticipantEvent &src) :
@@ -57,13 +56,13 @@ ConferenceParticipantEvent &ConferenceParticipantEvent::operator= (const Confere
 	L_D(ConferenceParticipantEvent);
 	if (this != &src) {
 		ConferenceEvent::operator=(src);
-		d->participantAddress = make_shared<Address>(*src.getPrivate()->participantAddress);
+		d->participantAddress = src.getPrivate()->participantAddress;
 	}
 
 	return *this;
 }
 
-shared_ptr<const Address> ConferenceParticipantEvent::getParticipantAddress () const {
+const Address &ConferenceParticipantEvent::getParticipantAddress () const {
 	L_D(const ConferenceParticipantEvent);
 	return d->participantAddress;
 }

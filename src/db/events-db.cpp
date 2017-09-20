@@ -25,7 +25,7 @@
 #include "abstract/abstract-db-p.h"
 #include "chat/chat-message.h"
 #include "event-log/call-event.h"
-#include "event-log/message-event.h"
+#include "event-log/chat-message-event.h"
 #include "logger/logger.h"
 
 #include "events-db.h"
@@ -283,7 +283,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		switch (eventLog.getType()) {
 			case EventLog::Type::None:
 				return false;
-			case EventLog::Type::Message:
+			case EventLog::Type::ChatMessage:
 			case EventLog::Type::CallStart:
 			case EventLog::Type::CallEnd:
 			case EventLog::Type::ConferenceCreated:

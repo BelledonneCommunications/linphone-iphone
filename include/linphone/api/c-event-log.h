@@ -28,16 +28,19 @@
 #endif // ifdef __cplusplus
 
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_new ();
+LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_clone (const LinphoneEventLog *event_log);
+LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_ref (LinphoneEventLog *event_log);
 LINPHONE_PUBLIC LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_log);
 
 LINPHONE_PUBLIC LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCallEvent *linphone_call_event_clone (const LinphoneCallEvent *call_event);
 LINPHONE_PUBLIC LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event);
 
 LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_new (
 	LinphoneEventLogType type,
 	const LinphoneAddress *address
 );
-
+LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_clone (const LinphoneConferenceEvent *conference_event);
 LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_event_get_address (const LinphoneConferenceEvent *conference_event);
 
 LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *linphone_conference_participant_event_new (
@@ -45,11 +48,20 @@ LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *linphone_conference_particip
 	const LinphoneAddress *conferenceAddress,
 	const LinphoneAddress *participantAddress
 );
+LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *linphone_conference_participant_event_clone (
+	const LinphoneConferenceParticipantEvent *conference_participant_event
+);
+LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_event_get_participant_address (
+	const LinphoneConferenceParticipantEvent *conference_participant_event
+);
 
-LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_event_get_participant_address (const LinphoneConferenceParticipantEvent *conference_participant_event);
-
-LINPHONE_PUBLIC LinphoneMessageEvent *linphone_message_event_new (LinphoneMessage *message);
-LINPHONE_PUBLIC LinphoneMessage *linphone_message_event_get_message (const LinphoneMessageEvent *message_event);
+LINPHONE_PUBLIC LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *chat_message);
+LINPHONE_PUBLIC LinphoneChatMessageEvent *linphone_chat_message_event_clone (
+	const LinphoneChatMessageEvent *chat_message_event
+);
+LINPHONE_PUBLIC LinphoneChatMessage *linphone_chat_message_event_get_chat_message (
+	const LinphoneChatMessageEvent *chat_message_event
+);
 
 #ifdef __cplusplus
 	}
