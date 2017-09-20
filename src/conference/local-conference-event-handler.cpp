@@ -21,8 +21,6 @@
 #include "local-conference-event-handler.h"
 #include "object/object-p.h"
 
-#include "private.h"
-
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
@@ -33,6 +31,9 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif
+
+/* Needs to be included after xml/conference-info.h because of _() macro definition that breaks everything */
+#include "private.h"
 
 // =============================================================================
 

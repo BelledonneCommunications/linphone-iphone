@@ -17,7 +17,6 @@
  */
 
 #include "remote-conference-event-handler.h"
-#include "private.h"
 #include "object/object-p.h"
 
 #if __clang__ || __GNUC__ >= 4
@@ -30,6 +29,9 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif
+
+/* Needs to be included after xml/conference-info.h because of _() macro definition that breaks everything */
+#include "private.h"
 
 // =============================================================================
 
