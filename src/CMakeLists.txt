@@ -104,6 +104,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-call-params.cpp
 	c-wrapper/api/c-chat-message.cpp
+	c-wrapper/api/c-chat-message-cbs.cpp
 	c-wrapper/api/c-chat-room.cpp
 	c-wrapper/api/c-chat-room-cbs.cpp
 	c-wrapper/api/c-event-log.cpp

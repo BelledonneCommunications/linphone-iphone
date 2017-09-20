@@ -88,7 +88,17 @@ typedef struct _LinphoneChatRoom LinphoneChatRoom;
  */
 typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
 
+/**
+ * An chat message is the object that is sent and received through LinphoneChatRooms.
+ * @ingroup chatroom
+ */
 typedef struct _LinphoneMessage LinphoneMessage;
+
+/**
+ * An object to handle the callbacks for the handling a LinphoneChatMessage objects.
+ * @ingroup chatroom
+ */
+typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
 
 /**
 * The LinphoneParticipant object represents a participant of a conference.

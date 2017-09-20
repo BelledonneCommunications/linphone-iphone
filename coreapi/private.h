@@ -174,15 +174,6 @@ typedef struct _CallCallbackObj
 	void * _user_data;
 }CallCallbackObj;
 
-struct _LinphoneChatMessageCbs {
-	belle_sip_object_t base;
-	void *user_data;
-	LinphoneChatMessageCbsMsgStateChangedCb msg_state_changed;
-	LinphoneChatMessageCbsFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatMessage */
-	LinphoneChatMessageCbsFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatMessage */
-	LinphoneChatMessageCbsFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
-};
-
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessageCbs);
 
 typedef enum _LinphoneChatMessageDir{
