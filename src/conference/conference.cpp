@@ -59,7 +59,7 @@ const string& Conference::getId () const {
 }
 
 int Conference::getNbParticipants () const {
-	return participants.size();
+	return static_cast<int>(participants.size());
 }
 
 list<shared_ptr<Participant>> Conference::getParticipants () const {
