@@ -42,9 +42,6 @@
 #include "chat/real-time-text-chat-room-p.h"
 #include "content/content-type.h"
 
-
-BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
-
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	/* do not invoke callbacks on orphan messages */
 	if (state != msg->state && msg->chat_room != NULL) {
@@ -64,12 +61,6 @@ void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessa
 		}
 	}
 }
-
-BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatMessage, belle_sip_object_t,
-						   (belle_sip_object_destroy_t)_linphone_chat_message_destroy,
-						   NULL, // clone
-						   NULL, // marshal
-						   FALSE);
 
 void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason) {
 	lc->chat_deny_code = deny_reason;
@@ -663,38 +654,6 @@ LinphoneChatMessage *linphone_chat_message_clone(const LinphoneChatMessage *msg)
 
 void linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 	belle_sip_object_unref(msg);
-}
-
-static void _linphone_chat_message_destroy(LinphoneChatMessage *msg) {
-	if (msg->op)
-		sal_op_release(msg->op);
-	if (msg->ei)
-		linphone_error_info_unref(msg->ei);
-	if (msg->message)
-		ms_free(msg->message);
-	if (msg->external_body_url)
-		ms_free(msg->external_body_url);
-	if (msg->appdata)
-		ms_free(msg->appdata);
-	if (msg->from)
-		linphone_address_unref(msg->from);
-	if (msg->to)
-		linphone_address_unref(msg->to);
-	if (msg->message_id)
-		ms_free(msg->message_id);
-	if (msg->custom_headers)
-		sal_custom_header_free(msg->custom_headers);
-	if (msg->content_type)
-		ms_free(msg->content_type);
-	if (msg->file_transfer_information) {
-		linphone_content_unref(msg->file_transfer_information);
-	}
-	if (msg->file_transfer_filepath != NULL) {
-		ms_free(msg->file_transfer_filepath);
-	}
-	if (msg->callbacks) {
-		linphone_chat_message_cbs_unref(msg->callbacks);
-	}
 }
 
 void linphone_chat_message_deactivate(LinphoneChatMessage *msg){
