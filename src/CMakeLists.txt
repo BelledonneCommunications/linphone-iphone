@@ -21,7 +21,6 @@
 ############################################################################
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
-	c-wrapper/api/c-event-log.h
 	c-wrapper/c-tools.h
 	c-wrapper/c-types.h
 	content/content.h
@@ -34,20 +33,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	cpim/message/cpim-message.h
 	cpim/parser/cpim-grammar.h
 	cpim/parser/cpim-parser.h
-	db/abstract/abstract-db-p.h
-	db/abstract/abstract-db.h
-	db/events-db.h
-	db/provider/db-session-p.h
-	db/provider/db-session-provider.h
-	db/provider/db-session.h
-	event-log/call-event.h
-	event-log/conference-event-p.h
-	event-log/conference-event.h
-	event-log/conference-participant-event.h
-	event-log/event-log-enums.h
-	event-log/event-log-p.h
-	event-log/event-log.h
-	event-log/message-event.h
 	logger/logger.h
 	message/message.h
 	object/clonable-object-p.h
@@ -57,12 +42,10 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/singleton.h
 	utils/enum-generator.h
 	utils/general.h
-	utils/magic-macros.h
 	utils/utils.h
 )
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
-	c-wrapper/api/c-event-log.cpp
 	content/content.cpp
 	core/core.cpp
 	cpim/header/cpim-core-headers.cpp
@@ -71,15 +54,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	cpim/message/cpim-message.cpp
 	cpim/parser/cpim-grammar.cpp
 	cpim/parser/cpim-parser.cpp
-	db/abstract/abstract-db.cpp
-	db/events-db.cpp
-	db/provider/db-session-provider.cpp
-	db/provider/db-session.cpp
-	event-log/call-event.cpp
-	event-log/conference-event.cpp
-	event-log/conference-participant-event.cpp
-	event-log/event-log.cpp
-	event-log/message-event.cpp
 	logger/logger.cpp
 	message/message.cpp
 	object/clonable-object.cpp
