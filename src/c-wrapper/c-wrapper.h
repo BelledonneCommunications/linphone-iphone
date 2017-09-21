@@ -25,16 +25,32 @@
 
 // =============================================================================
 
-#define L_REGISTER_TYPE(C_TYPE) \
-	extern Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init ();
-#define L_INIT(C_TYPE) \
-	_linphone_ ## C_TYPE ## _init ()
+LINPHONE_BEGIN_NAMESPACE
+
+template<typename CppType, typename CType>
+struct CppTypeToCType {
+	enum { Defined = false };
+};
+
+LINPHONE_END_NAMESPACE
+
+#define L_REGISTER_TYPE(CPP_TYPE, C_TYPE) \
+	extern Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init (); \
+	namespace LINPHONE_NAMESPACE { \
+		class CPP_TYPE; \
+	}; \
+	template<> \
+	struct LINPHONE_NAMESPACE::CppTypeToCType<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE> { \
+		enum { Defined = true }; \
+		typedef C_TYPE cType; \
+		typedef LINPHONE_NAMESPACE::CPP_TYPE cppType; \
+	};
 
 // =============================================================================
 
-L_REGISTER_TYPE(Call);
-L_REGISTER_TYPE(ChatMessage);
-L_REGISTER_TYPE(ChatRoom);
-L_REGISTER_TYPE(Participant);
+L_REGISTER_TYPE(Call, Call);
+L_REGISTER_TYPE(ChatMessage, ChatMessage);
+L_REGISTER_TYPE(ChatRoom, ChatRoom);
+L_REGISTER_TYPE(Participant, Participant);
 
 #endif // ifndef _C_WRAPPER_H_
