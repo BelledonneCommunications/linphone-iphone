@@ -209,6 +209,10 @@ LinphoneChatRoomCbs *linphone_chat_room_get_callbacks (const LinphoneChatRoom *c
 	return cr->cbs;
 }
 
+LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr) {
+	return (LinphoneChatRoomState)GET_CPP_PTR(cr)->getState();
+}
+
 LinphoneParticipant *linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {
 	return L_GET_C_BACK_PTR(GET_CPP_PTR(cr)->addParticipant(
 			*L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address), nullptr, false),

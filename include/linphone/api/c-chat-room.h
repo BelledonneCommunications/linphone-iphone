@@ -231,6 +231,13 @@ LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom
 LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_chat_room_get_callbacks (const LinphoneChatRoom *cr);
 
 /**
+ * Get the state of the chat room.
+ * @param[in] cr LinphoneChatRoom object
+ * @return The state of the chat room
+ */
+LINPHONE_PUBLIC LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr);
+
+/**
  * Add a participant to a chat room. This may fail if this type of chat room does not handle participants.
  * Use linphone_chat_room_can_handle_participants() to know if this chat room handles participants.
  * @param[in] cr A LinphoneChatRoom object
