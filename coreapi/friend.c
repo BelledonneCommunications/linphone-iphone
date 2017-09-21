@@ -45,43 +45,43 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 	const char *str=NULL;
 	switch(ss){
 		case LinphoneStatusOnline:
-		str=_("Online");
+		str="Online";
 		break;
 		case LinphoneStatusBusy:
-		str=_("Busy");
+		str="Busy";
 		break;
 		case LinphoneStatusBeRightBack:
-		str=_("Be right back");
+		str="Be right back";
 		break;
 		case LinphoneStatusAway:
-		str=_("Away");
+		str="Away";
 		break;
 		case LinphoneStatusOnThePhone:
-		str=_("On the phone");
+		str="On the phone";
 		break;
 		case LinphoneStatusOutToLunch:
-		str=_("Out to lunch");
+		str="Out to lunch";
 		break;
 		case LinphoneStatusDoNotDisturb:
-		str=_("Do not disturb");
+		str="Do not disturb";
 		break;
 		case LinphoneStatusMoved:
-		str=_("Moved");
+		str="Moved";
 		break;
 		case LinphoneStatusAltService:
-		str=_("Using another messaging service");
+		str="Using another messaging service";
 		break;
 		case LinphoneStatusOffline:
-		str=_("Offline");
+		str="Offline";
 		break;
 		case LinphoneStatusPending:
-		str=_("Pending");
+		str="Pending";
 		break;
 		case LinphoneStatusVacation:
-		str=_("Vacation");
+		str="Vacation";
 		break;
 		default:
-		str=_("Unknown status");
+		str="Unknown status";
 	}
 	return str;
 }

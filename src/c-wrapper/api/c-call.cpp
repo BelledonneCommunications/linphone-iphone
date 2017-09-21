@@ -246,7 +246,6 @@ static void linphone_call_lost (LinphoneCall *call) {
 	temp = ms_strdup_printf("Media connectivity with %s is lost, call is going to be closed.", from ? from : "?");
 	if (from) ms_free(from);
 	ms_message("LinphoneCall [%p]: %s", call, temp);
-	linphone_core_notify_display_warning(lc, temp);
 	call->non_op_error = TRUE;
 	linphone_error_info_set(call->ei,nullptr, LinphoneReasonIOError, 503, "Media lost", nullptr);
 	linphone_call_terminate(call);

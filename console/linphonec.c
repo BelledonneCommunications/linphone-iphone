@@ -111,9 +111,6 @@ static char **linephonec_readline_completion(const char *text,
 /* These are callback for linphone core */
 static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphonec_display_refer (LinphoneCore * lc, const char *refer_to);
-static void linphonec_display_something (LinphoneCore * lc, const char *something);
-static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
-static void linphonec_display_warning (LinphoneCore * lc, const char *something);
 static void linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState new_call_state);
 
 static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
@@ -122,7 +119,6 @@ static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
 
 static void linphonec_text_received(LinphoneCore *lc, LinphoneChatRoom *cr,
 		const LinphoneAddress *from, const char *msg);
-static void linphonec_display_status (LinphoneCore * lc, const char *something);
 static void linphonec_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 static void print_prompt(LinphoneCore *opm);
 void linphonec_out(const char *fmt,...);
@@ -204,45 +200,6 @@ static void
 linphonec_display_refer (LinphoneCore * lc, const char *refer_to)
 {
 	linphonec_out("Receiving out of call refer to %s\n", refer_to);
-}
-
-/*
- * Linphone core callback
- */
-static void
-linphonec_display_something (LinphoneCore * lc, const char *something)
-{
-	fprintf (stdout, "%s\n%s", something,prompt);
-	fflush(stdout);
-}
-
-/*
- * Linphone core callback
- */
-static void
-linphonec_display_status (LinphoneCore * lc, const char *something)
-{
-	fprintf (stdout, "%s\n%s", something,prompt);
-	fflush(stdout);
-}
-
-/*
- * Linphone core callback
- */
-static void
-linphonec_display_warning (LinphoneCore * lc, const char *something)
-{
-	fprintf (stdout, "Warning: %s\n%s", something,prompt);
-	fflush(stdout);
-}
-
-/*
- * Linphone core callback
- */
-static void
-linphonec_display_url (LinphoneCore * lc, const char *something, const char *url)
-{
-	fprintf (stdout, "%s : %s\n", something, url);
 }
 
 /*
@@ -637,10 +594,6 @@ main (int argc, char *argv[]) {
 	linphonec_vtable.notify_presence_received = linphonec_notify_presence_received;
 	linphonec_vtable.new_subscription_requested = linphonec_new_unknown_subscriber;
 	linphonec_vtable.auth_info_requested = linphonec_prompt_for_auth;
-	linphonec_vtable.display_status = linphonec_display_status;
-	linphonec_vtable.display_message=linphonec_display_something;
-	linphonec_vtable.display_warning=linphonec_display_warning;
-	linphonec_vtable.display_url=linphonec_display_url;
 	linphonec_vtable.text_received=linphonec_text_received;
 	linphonec_vtable.dtmf_received=linphonec_dtmf_received;
 	linphonec_vtable.refer_received=linphonec_display_refer;

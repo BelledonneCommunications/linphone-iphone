@@ -106,11 +106,7 @@ char *linphone_payload_type_get_description(const LinphonePayloadType *pt) {
 static const char *_linphone_core_get_payload_type_codec_description(const LinphoneCore *lc, const OrtpPayloadType *pt) {
 	if (ms_factory_codec_supported(lc->factory, pt->mime_type)){
 		MSFilterDesc *desc=ms_factory_get_encoder(lc->factory, pt->mime_type);
-#ifdef ENABLE_NLS
-		return dgettext("mediastreamer",desc->text);
-#else
 		return desc->text;
-#endif
 	}
 	return NULL;
 }

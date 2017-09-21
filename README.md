@@ -46,7 +46,6 @@ Building liblinphone
 * `ENABLE_VCARD=NO`               : disable VCard support
 * `ENABLE_SQLITE_STORAGE=NO`      : disable SQlite user data storage (message, history, contacts list)
 * `ENABLE_TOOLS=NO`               : do not build tool binaries
-* `ENABLE_NLS=NO`                 : disable internationalization
 * `ENABLE_LIME=YES`               : disable Linphone Instant Messaging Encryption
 
 ### Note for packagers

@@ -230,25 +230,25 @@ char * linphone_call_log_to_str(const LinphoneCallLog *cl){
 	char *to=linphone_address_as_string (cl->to);
 	switch(cl->status){
 		case LinphoneCallAborted:
-			status=_("aborted");
+			status="aborted";
 			break;
 		case LinphoneCallSuccess:
-			status=_("completed");
+			status="completed";
 			break;
 		case LinphoneCallMissed:
-			status=_("missed");
+			status="missed";
 			break;
 		case LinphoneCallAcceptedElsewhere:
-			status=_("answered elsewhere");
+			status="answered elsewhere";
 			break;
 		case LinphoneCallDeclinedElsewhere:
-			status=_("declined elsewhere");
+			status="declined elsewhere";
 			break;
 		default:
-			status=_("unknown");
+			status="unknown";
 	}
-	tmp=ms_strdup_printf(_("%s at %s\nFrom: %s\nTo: %s\nStatus: %s\nDuration: %i mn %i sec\n"),
-			(cl->dir==LinphoneCallIncoming) ? _("Incoming call") : _("Outgoing call"),
+	tmp=ms_strdup_printf("%s at %s\nFrom: %s\nTo: %s\nStatus: %s\nDuration: %i mn %i sec\n",
+			(cl->dir==LinphoneCallIncoming) ? "Incoming call" : "Outgoing call",
 			cl->start_date,
 			from,
 			to,

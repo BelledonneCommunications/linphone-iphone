@@ -1997,8 +1997,6 @@ static void linphone_core_start(LinphoneCore * lc) {
 	}
 #endif
 
-
-	linphone_core_notify_display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
 	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
@@ -2753,13 +2751,6 @@ const char *linphone_core_get_user_agent_version(void){
 	return _ua_version;
 }
 
-static void transport_error(LinphoneCore *lc, const char* transport, int port){
-	char *msg=ortp_strdup_printf("Could not start %s transport on port %i, maybe this port is already used.",transport,port);
-	ms_warning("%s",msg);
-	linphone_core_notify_display_warning(lc,msg);
-	ms_free(msg);
-}
-
 static bool_t transports_unchanged(const LinphoneSipTransports * tr1, const LinphoneSipTransports * tr2){
 	return
 		tr2->udp_port==tr1->udp_port &&
@@ -2800,26 +2791,17 @@ int _linphone_core_apply_transports(LinphoneCore *lc){
 		sal_set_http_proxy_port(sal,linphone_core_get_http_proxy_port(lc));
 	}
 	if (lc->tunnel && linphone_tunnel_sip_enabled(lc->tunnel) && linphone_tunnel_get_activated(lc->tunnel)){
-		if (sal_listen_port(sal,anyaddr,tr->udp_port,SalTransportUDP,TRUE)!=0){
-			transport_error(lc,"udp+tunnel",tr->udp_port);
-		}
+		sal_listen_port(sal,anyaddr,tr->udp_port,SalTransportUDP,TRUE);
 	}else{
 		if (tr->udp_port!=0){
-			if (sal_listen_port(sal,listening_address,tr->udp_port,SalTransportUDP,FALSE)!=0){
-				transport_error(lc,"udp",tr->udp_port);
-			}
+			sal_listen_port(sal,listening_address,tr->udp_port,SalTransportUDP,FALSE);
 		}
 		if (tr->tcp_port!=0){
-			if (sal_listen_port (sal,listening_address,tr->tcp_port,SalTransportTCP,FALSE)!=0){
-				transport_error(lc,"tcp",tr->tcp_port);
-			}
+			sal_listen_port (sal,listening_address,tr->tcp_port,SalTransportTCP,FALSE);
 		}
 		if (linphone_core_sip_transport_supported(lc,LinphoneTransportTls)){
-			if (tr->tls_port!=0){
-				if (sal_listen_port (sal,listening_address,tr->tls_port,SalTransportTLS,FALSE)!=0){
-					transport_error(lc,"tls",tr->tls_port);
-				}
-			}
+			if (tr->tls_port!=0)
+				sal_listen_port (sal,listening_address,tr->tls_port,SalTransportTLS,FALSE);
 		}
 	}
 	return 0;
@@ -3147,7 +3129,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 			belle_http_provider_set_tls_crypto_config(lc->http_provider, lc->http_crypto_config);
 		}
 
-		linphone_core_notify_display_status(lc, _("Configuring"));
 		linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
 
 		remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
@@ -3514,7 +3495,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 
 	if(!linphone_core_can_we_add_call(lc)){
-		linphone_core_notify_display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
 

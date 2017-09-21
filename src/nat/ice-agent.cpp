@@ -557,7 +557,6 @@ int IceAgent::gatherIceCandidates () {
 	} else
 		lWarning() << "ICE is used without STUN server";
 	LinphoneCore *core = mediaSession.getPrivate()->getCore();
-	linphone_core_notify_display_status(core, _("ICE local candidates gathering in progress..."));
 	ice_session_enable_forced_relay(iceSession, core->forced_ice_relay);
 	ice_session_enable_short_turn_refresh(iceSession, core->short_turn_refresh);
 

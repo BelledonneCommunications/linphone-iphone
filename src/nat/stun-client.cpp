@@ -42,7 +42,6 @@ int StunClient::run (int audioPort, int videoPort, int textPort) {
 		lError() << "Could not obtain STUN server addrinfo";
 		return -1;
 	}
-	linphone_core_notify_display_status(core, "Stun lookup in progress...");
 
 	/* Create the RTP sockets and send STUN messages to the STUN server */
 	ortp_socket_t sockAudio = createStunSocket(audioPort);

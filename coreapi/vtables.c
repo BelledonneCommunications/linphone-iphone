@@ -102,41 +102,7 @@ void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneP
 	NOTIFY_IF_EXIST(registration_state_changed, lc,cfg,cstate,message);
 	cleanup_dead_vtable_refs(lc);
 }
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#endif
-#ifdef _MSC_VER
-#pragma warning(disable : 4996)
-#else
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-void linphone_core_notify_show_interface(LinphoneCore *lc){
-	NOTIFY_IF_EXIST(show, lc);
-	cleanup_dead_vtable_refs(lc);
-}
 
-void linphone_core_notify_display_status(LinphoneCore *lc, const char *message) {
-	NOTIFY_IF_EXIST(display_status, lc,message);
-	cleanup_dead_vtable_refs(lc);
-}
-
-void linphone_core_notify_display_message(LinphoneCore *lc, const char *message){
-	NOTIFY_IF_EXIST(display_message, lc,message);
-	cleanup_dead_vtable_refs(lc);
-}
-
-void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message){
-	NOTIFY_IF_EXIST(display_warning, lc,message);
-	cleanup_dead_vtable_refs(lc);
-}
-
-void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url){
-	NOTIFY_IF_EXIST(display_url, lc,message,url);
-	cleanup_dead_vtable_refs(lc);
-}
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic pop
-#endif
 void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	NOTIFY_IF_EXIST(notify_presence_received, lc, lf);
 	cleanup_dead_vtable_refs(lc);

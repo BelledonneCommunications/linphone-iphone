@@ -142,34 +142,6 @@ LINPHONE_PUBLIC const LinphoneAddress * linphone_core_get_current_call_remote_ad
 
 /**
  * Callback prototype
- * @deprecated
- * @donotwrap
- */
-typedef void (*ShowInterfaceCb)(LinphoneCore *lc);
-
-/**
- * Callback prototype
- * @deprecated
- * @donotwrap
- */
-typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message);
-
-/**
- * Callback prototype
- * @deprecated
- * @donotwrap
- */
-typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message);
-
-/**
- * Callback prototype
- * @deprecated
- * @donotwrap
- */
-typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url);
-
-/**
- * Callback prototype
  */
 typedef void (*LinphoneCoreCbFunc)(LinphoneCore *lc,void * user_data);
 
@@ -202,11 +174,6 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreNotifyReceivedCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
 	LinphoneCorePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
 	LinphoneCoreConfiguringStatusCb configuring_status; /** Notifies configuring status changes */
-	LINPHONE_DEPRECATED DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
-	LINPHONE_DEPRECATED DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
-	LINPHONE_DEPRECATED DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
-	LINPHONE_DEPRECATED DisplayUrlCb display_url; /**< @deprecated */
-	LINPHONE_DEPRECATED ShowInterfaceCb show; /**< vNotifies the application that it should show up*/
 	LINPHONE_DEPRECATED LinphoneCoreTextMessageReceivedCb text_received; /**< @deprecated, use #message_received instead <br> A text message has been received */
 	LINPHONE_DEPRECATED LinphoneCoreFileTransferRecvCb file_transfer_recv; /**< @deprecated Callback to store file received attached to a #LinphoneChatMessage */
 	LINPHONE_DEPRECATED LinphoneCoreFileTransferSendCb file_transfer_send; /**< @deprecated Callback to collect file chunk to be sent for a #LinphoneChatMessage */

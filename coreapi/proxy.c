@@ -362,18 +362,10 @@ LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const c
 }
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *cfg){
-	if (cfg->reg_proxy==NULL){
-		if (lc)
-			linphone_core_notify_display_warning(lc,_("The sip proxy address you entered is invalid, it must start with \"sip:\""
-						" followed by a hostname."));
+	if (cfg->reg_proxy==NULL)
 		return FALSE;
-	}
-	if (cfg->identity_address==NULL){
-		if (lc)
-			linphone_core_notify_display_warning(lc,_("The sip identity you entered is invalid.\nIt should look like "
-					"sip:username@proxydomain, such as sip:alice@example.net"));
+	if (cfg->identity_address==NULL)
 		return FALSE;
-	}
 	return TRUE;
 }
 
@@ -741,13 +733,7 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 	if (!username || *username=='\0') return NULL;
 
 	if (is_enum(username,&enum_domain)){
-		if (proxy) {
-			linphone_core_notify_display_status(proxy->lc,_("Looking for telephone number destination..."));
-		}
 		if (enum_lookup(enum_domain,&enumres)<0){
-			if (proxy) {
-				linphone_core_notify_display_status(proxy->lc,_("Could not resolve this number."));
-			}
 			ms_free(enum_domain);
 			return NULL;
 		}
@@ -1226,7 +1212,6 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	SipSetupContext *ssc;
 	SipSetup *ss=sip_setup_lookup(cfg->type);
-	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
 	unsigned int caps;
 	if (!ss) return ;
 	ssc=sip_setup_context_new(ss,cfg);
@@ -1237,14 +1222,8 @@ static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	}
 	caps=(unsigned int)sip_setup_context_get_capabilities(ssc);
 	if (caps & SIP_SETUP_CAP_ACCOUNT_MANAGER){
-		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL,NULL)!=0){
-			{
-				char *tmp=ms_strdup_printf(_("Could not login as %s"),cfg->reg_identity);
-				linphone_core_notify_display_warning(lc,tmp);
-				ms_free(tmp);
-			}
+		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL,NULL)!=0)
 			return;
-		}
 	}
 	if (caps & SIP_SETUP_CAP_PROXY_PROVIDER){
 		char proxy[256];
@@ -1314,14 +1293,6 @@ void * linphone_proxy_config_get_user_data(const LinphoneProxyConfig *cfg) {
 
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
 	LinphoneCore *lc=cfg->lc;
-
-	if (state==LinphoneRegistrationProgress) {
-		char *msg=ortp_strdup_printf(_("Refreshing on %s..."), linphone_proxy_config_get_identity(cfg));
-		linphone_core_notify_display_status(lc,msg);
-		ms_free(msg);
-
-	}
-
 	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
 		ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s] on core [%p]"	,
 					cfg,

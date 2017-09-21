@@ -262,9 +262,6 @@ public:
 		authMethodClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$AuthMethod"));
 		authMethodFromIntId = env->GetStaticMethodID(authMethodClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$AuthMethod;");
 
-		/*displayStatus(LinphoneCore lc,String message);*/
-		displayStatusId = env->GetMethodID(listenerClass,"displayStatus","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;)V");
-
 		/*void generalState(LinphoneCore lc,int state); */
 		globalStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$GlobalState"));
 		globalStateFromIntId = env->GetStaticMethodID(globalStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$GlobalState;");
@@ -454,7 +451,6 @@ public:
 	jobject core;
 
 	jclass listenerClass;
-	jmethodID displayStatusId;
 	jmethodID newSubscriptionRequestId;
 	jmethodID notifyPresenceReceivedId;
 	jmethodID messageReceivedId;
@@ -835,10 +831,6 @@ public:
 
 		memset(vTable, 0, sizeof(LinphoneCoreVTable));
 
-		if (ljb->displayStatusId) {
-			vTable->display_status = displayStatusCb;
-		}
-
 		if (ljb->globalStateId) {
 			vTable->global_state_changed = globalStateChange;
 		}
@@ -958,24 +950,6 @@ public:
 
 	LinphoneCoreVTable vTable;
 
-	static void displayStatusCb(LinphoneCore *lc, const char *message) {
-		JNIEnv *env = 0;
-		jint result = jvm->AttachCurrentThread(&env,NULL);
-		if (result != 0) {
-			ms_error("cannot attach VM");
-			return;
-		}
-
-		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
-		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
-		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
-		jstring msg = message ? env->NewStringUTF(message) : NULL;
-		env->CallVoidMethod(lcData->listener,ljb->displayStatusId,lcData->core,msg);
-		handle_possible_java_exception(env, lcData->listener);
-		if (msg) {
-			env->DeleteLocalRef(msg);
-		}
-	}
 	static void authInfoRequested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);

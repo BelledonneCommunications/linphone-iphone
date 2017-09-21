@@ -60,32 +60,6 @@
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
 #endif
 
-#ifdef ENABLE_NLS
-
-#ifdef _MSC_VER
-// prevent libintl.h from re-defining fprintf and vfprintf
-#ifndef fprintf
-#define fprintf fprintf
-#endif
-#ifndef vfprintf
-#define vfprintf vfprintf
-#endif
-#define _GL_STDIO_H
-#endif
-
-#include <libintl.h>
-
-#ifndef _
-#define _(String) dgettext(GETTEXT_PACKAGE,String)
-#endif
-#else
-#ifndef _
-#define _(something)	(something)
-#endif
-#ifndef ngettext
-#define ngettext(singular, plural, number)	(((number)==1)?(singular):(plural))
-#endif
-#endif
 #ifdef __ANDROID__
 #include <jni.h>
 #endif
@@ -1702,11 +1676,6 @@ void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalS
 void linphone_core_notify_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_core_notify_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
 void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
-void linphone_core_notify_show_interface(LinphoneCore *lc);
-void linphone_core_notify_display_status(LinphoneCore *lc, const char *message);
-void linphone_core_notify_display_message(LinphoneCore *lc, const char *message);
-void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message);
-void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url);
 void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 void linphone_core_notify_authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method);

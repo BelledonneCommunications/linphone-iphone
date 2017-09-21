@@ -150,8 +150,6 @@ void MediaSessionPrivate::accepted () {
 		string nextStateMsg;
 		switch (state) {
 			case LinphoneCallResuming:
-				linphone_core_notify_display_status(core, _("Call resumed."));
-				BCTBX_NO_BREAK; /* Intentional no break */
 			case LinphoneCallConnected:
 #if 0
 				if (call->referer)
@@ -221,7 +219,7 @@ void MediaSessionPrivate::accepted () {
 						break;
 					default:
 						lInfo() << "Incompatible SDP answer received, restoring previous state [" << linphone_call_state_to_string(prevState) << "]";
-						setState(prevState, _("Incompatible media parameters."));
+						setState(prevState, "Incompatible media parameters.");
 						break;
 				}
 				break;
@@ -249,7 +247,6 @@ void MediaSessionPrivate::ackReceived (LinphoneHeaders *headers) {
 bool MediaSessionPrivate::failure () {
 	L_Q(MediaSession);
 	const SalErrorInfo *ei = sal_op_get_error_info(op);
-	const char *msg = ei->full_string;
 	switch (ei->reason) {
 		case SalReasonRedirect:
 			stopStreams();
@@ -292,8 +289,6 @@ bool MediaSessionPrivate::failure () {
 					}
 				}
 			}
-			msg = "Incompatible media parameters.";
-			linphone_core_notify_display_status(core, msg);
 			break;
 		default:
 			break;
@@ -324,7 +319,6 @@ bool MediaSessionPrivate::failure () {
 }
 
 void MediaSessionPrivate::pausedByRemote () {
-	linphone_core_notify_display_status(core, "We are paused by other party");
 	MediaSessionParams *newParams = new MediaSessionParams(*params);
 	if (lp_config_get_int(linphone_core_get_config(core), "sip", "inactive_video_on_pause", 0))
 		newParams->setVideoDirection(LinphoneMediaDirectionInactive);
@@ -335,7 +329,6 @@ void MediaSessionPrivate::remoteRinging () {
 	L_Q(MediaSession);
 	/* Set privacy */
 	q->getCurrentParams()->setPrivacy((LinphonePrivacyMask)sal_op_get_privacy(op));
-	linphone_core_notify_display_status(core, _("Remote ringing."));
 	SalMediaDescription *md = sal_call_get_final_media_description(op);
 	if (md) {
 		/* Initialize the remote call params by invoking linphone_call_get_remote_params(). This is useful as the SDP may not be present in the 200Ok */
@@ -352,11 +345,9 @@ void MediaSessionPrivate::remoteRinging () {
 			if (videoStream)
 				video_stream_send_vfu(videoStream); /* Request for iframe */
 #endif
-		return;
+			return;
 		}
 
-		linphone_core_notify_show_interface(core);
-		linphone_core_notify_display_status(core, _("Early media."));
 		setState(LinphoneCallOutgoingEarlyMedia, "Early media");
 #if 0
 		linphone_core_stop_ringing(lc);
@@ -379,13 +370,11 @@ void MediaSessionPrivate::remoteRinging () {
 		if (lc->ringstream == NULL) start_remote_ring(lc, call);
 #endif
 		lInfo() << "Remote ringing...";
-		linphone_core_notify_display_status(core, _("Remote ringing..."));
 		setState(LinphoneCallOutgoingRinging, "Remote ringing");
 	}
 }
 
 void MediaSessionPrivate::resumed () {
-	linphone_core_notify_display_status(core, "We have been resumed");
 	acceptUpdate(nullptr, LinphoneCallStreamsRunning, "Connected (streams running)");
 }
 
@@ -3294,14 +3283,6 @@ void MediaSessionPrivate::audioStreamAuthTokenReady (const string &authToken, bo
 
 void MediaSessionPrivate::audioStreamEncryptionChanged (bool encrypted) {
 	L_Q(MediaSession);
-	if (encrypted && (params->getMediaEncryption() == LinphoneMediaEncryptionZRTP)) {
-		/* If encryption is DTLS, no status to be displayed */
-		char status[255];
-		memset(status, 0, sizeof(status));
-		snprintf(status, sizeof(status) - 1, _("Authentication token is %s"), authToken.c_str());
-		linphone_core_notify_display_status(core, status);
-	}
-
 	propagateEncryptionChanged();
 
 #ifdef VIDEO_ENABLED
@@ -3694,11 +3675,9 @@ LinphoneStatus MediaSessionPrivate::pause () {
 	setState(LinphoneCallPausing, "Pausing call");
 	makeLocalMediaDescription();
 	sal_call_set_local_media_description(op, localDesc);
-	if (sal_call_update(op, subject.c_str(), false) != 0)
-		linphone_core_notify_display_warning(core, "Could not pause the call");
+	sal_call_update(op, subject.c_str(), false);
 	if (listener)
 		listener->onResetCurrentSession(*q);
-	linphone_core_notify_display_status(core, "Pausing the current call...");
 	if (audioStream || videoStream || textStream)
 		stopStreams();
 	pausedByApp = false;
@@ -4222,9 +4201,6 @@ LinphoneStatus MediaSession::resume () {
 	d->setState(LinphoneCallResuming,"Resuming");
 	if (!d->params->getPrivate()->getInConference() && d->listener)
 		d->listener->onSetCurrentSession(*this);
-	ostringstream os;
-	os << "Resuming the call with " << getRemoteAddressAsString();
-	linphone_core_notify_display_status(d->core, os.str().c_str());
 	if (d->core->sip_conf.sdp_200_ack) {
 		/* We are NOT offering, set local media description after sending the call so that we are ready to
 		 * process the remote offer when it will arrive. */

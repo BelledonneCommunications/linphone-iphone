@@ -324,27 +324,16 @@ static void auth_failure(SalOp *op, SalAuthInfo* info) {
 }
 
 static void register_success(SalOp *op, bool_t registered){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
-	char *msg;
-
 	if (!cfg){
 		ms_message("Registration success for deleted proxy config, ignored");
 		return;
 	}
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
 									registered ? "Registration successful" : "Unregistration done");
-	{
-		if (registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
-		else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
-		linphone_core_notify_display_status(lc,msg);
-		ms_free(msg);
-	}
-
 }
 
 static void register_failure(SalOp *op){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	const SalErrorInfo *ei=sal_op_get_error_info(op);
 	const char *details=ei->full_string;
@@ -354,17 +343,11 @@ static void register_failure(SalOp *op){
 		return ;
 	}
 	if (details==NULL)
-		details=_("no response timeout");
-
-	{
-		char *msg=ortp_strdup_printf(_("Registration on %s failed: %s"),sal_op_get_proxy(op), details);
-		linphone_core_notify_display_status(lc,msg);
-		ms_free(msg);
-	}
+		details="no response timeout";
 
 	if ((ei->reason == SalReasonServiceUnavailable || ei->reason == SalReasonIOError)
 			&& linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk) {
-		linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress,_("Service unavailable, retrying"));
+		linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress,"Service unavailable, retrying");
 	} else {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 	}
@@ -415,11 +398,6 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 		call->refer_to=ms_strdup(referto);
 		call->refer_pending=TRUE;
 		linphone_call_set_state(call,LinphoneCallRefered,"Refered");
-		{
-			char *msg=ms_strdup_printf(_("We are transferred to %s"),referto);
-			linphone_core_notify_display_status(lc,msg);
-			ms_free(msg);
-		}
 		if (call->refer_pending) linphone_core_start_refered_call(lc,call,NULL);
 	}else {
 		linphone_core_notify_refer_received(lc,referto);

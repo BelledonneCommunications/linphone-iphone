@@ -20,10 +20,10 @@
 #include "conference/participant.h"
 #include "local-conference-event-handler.h"
 #include "object/object-p.h"
-#include "xml/conference-info.h"
 
-/* Needs to be included after xml/conference-info.h because of _() macro definition that breaks everything */
 #include "private.h"
+
+#include "xml/conference-info.h"
 
 // =============================================================================
 
