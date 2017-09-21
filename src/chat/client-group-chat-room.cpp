@@ -23,8 +23,8 @@
 
 // =============================================================================
 
-extern LinphoneChatRoom * _linphone_chat_room_init();
-extern LinphoneParticipant * _linphone_participant_init();
+extern LinphoneChatRoom * _linphone_ChatRoom_init();
+extern LinphoneParticipant * _linphone_Participant_init();
 
 using namespace std;
 
@@ -101,11 +101,11 @@ void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
 	}
 	participant = make_shared<Participant>(addr);
 	participants.push_back(participant);
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom, chat_room);
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
 	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(participant, Participant, participant));
+		cb(cr, L_GET_C_BACK_PTR(participant, Participant));
 }
 
 void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
@@ -114,11 +114,11 @@ void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
 		lWarning() << "Participant " << participant << " removed but not in the list of participants!";
 		return;
 	}
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom, chat_room);
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
 	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(participant, Participant, participant));
+		cb(cr, L_GET_C_BACK_PTR(participant, Participant));
 	participants.remove(participant);
 }
 
@@ -129,11 +129,11 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 		return;
 	}
 	participant->setAdmin(isAdmin);
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom, chat_room);
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this->shared_from_this(), ChatRoom);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
 	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(participant, Participant, participant), isAdmin);
+		cb(cr, L_GET_C_BACK_PTR(participant, Participant), isAdmin);
 }
 
 LINPHONE_END_NAMESPACE

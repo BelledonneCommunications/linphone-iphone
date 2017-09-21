@@ -25,7 +25,7 @@
 
 using namespace std;
 
-L_DECLARE_C_STRUCT_IMPL(Participant, Participant, participant,
+L_DECLARE_C_STRUCT_IMPL(Participant, Participant,
 	mutable LinphoneAddress *addressCache;
 );
 

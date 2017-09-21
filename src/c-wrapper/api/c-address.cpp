@@ -23,7 +23,7 @@
 
 // =============================================================================
 
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(Address, Address, address);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(Address, Address);
 
 using namespace std;
 
@@ -36,7 +36,7 @@ LinphoneAddress *linphone_address_new (const char *address) {
 		return nullptr;
 	}
 
-	LinphoneAddress *object = _linphone_address_init();
+	LinphoneAddress *object = _linphone_Address_init();
 	object->cppPtr = cppPtr;
 	return object;
 }

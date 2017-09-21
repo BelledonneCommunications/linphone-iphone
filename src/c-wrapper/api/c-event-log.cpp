@@ -28,11 +28,11 @@
 
 // =============================================================================
 
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(EventLog, EventLog, event_log);
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(CallEvent, CallEvent, call_event);
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceEvent, ConferenceEvent, conference_event);
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceParticipantEvent, ConferenceParticipantEvent, conference_participant_event);
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(ChatMessageEvent, ChatMessageEvent, chat_message_event);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(EventLog, EventLog);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(CallEvent, CallEvent);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceEvent, ConferenceEvent);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceParticipantEvent, ConferenceParticipantEvent);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(ChatMessageEvent, ChatMessageEvent);
 
 using namespace std;
 
@@ -41,7 +41,7 @@ using namespace std;
 // -----------------------------------------------------------------------------
 
 LinphoneEventLog *linphone_event_log_new () {
-	LinphoneEventLog *event_log = _linphone_event_log_init();
+	LinphoneEventLog *event_log = _linphone_EventLog_init();
 	L_SET_CPP_PTR_FROM_C_STRUCT(event_log, new LINPHONE_NAMESPACE::EventLog());
 	return event_log;
 }
@@ -62,7 +62,7 @@ LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_
 // -----------------------------------------------------------------------------
 
 LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneCall *call) {
-	LinphoneCallEvent *call_event = _linphone_call_event_init();
+	LinphoneCallEvent *call_event = _linphone_CallEvent_init();
 	L_SET_CPP_PTR_FROM_C_STRUCT(
 		call_event,
 		new LINPHONE_NAMESPACE::CallEvent(
@@ -74,15 +74,14 @@ LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneC
 }
 
 // TODO: REMOVE ME.
-extern LinphoneCall *_linphone_call_init ();
+extern LinphoneCall *_linphone_Call_init ();
 
 LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event) {
 	return L_GET_C_BACK_PTR(
 		L_GET_CPP_PTR_FROM_C_STRUCT(
 			call_event, CallEvent
 		)->getCall(),
-		Call,
-		call
+		Call
 	);
 }
 
@@ -128,7 +127,7 @@ const LinphoneAddress *linphone_conference_participant_event_get_participant_add
 // -----------------------------------------------------------------------------
 
 LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *chat_message) {
-	LinphoneChatMessageEvent *chat_message_event = _linphone_chat_message_event_init();
+	LinphoneChatMessageEvent *chat_message_event = _linphone_ChatMessageEvent_init();
 	L_SET_CPP_PTR_FROM_C_STRUCT(
 		chat_message_event,
 		new LINPHONE_NAMESPACE::ChatMessageEvent(
@@ -139,14 +138,13 @@ LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *
 }
 
 // TODO: REMOVE ME.
-extern LinphoneChatMessage *_linphone_chat_message_init ();
+extern LinphoneChatMessage *_linphone_ChatMessage_init ();
 
 LinphoneChatMessage *linphone_chat_message_event_get_chat_message (const LinphoneChatMessageEvent *chat_message_event) {
 	return L_GET_C_BACK_PTR(
 		L_GET_CPP_PTR_FROM_C_STRUCT(
 			chat_message_event, ChatMessageEvent
 		)->getChatMessage(),
-		ChatMessage,
-		chat_message
+		ChatMessage
 	);
 }

@@ -28,8 +28,8 @@
 
 #include "chat-room.h"
 
-extern LinphoneChatRoom * _linphone_chat_room_init();
-#define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatRoom, chat_room)
+extern LinphoneChatRoom * _linphone_ChatRoom_init();
+#define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatRoom)
 
 // =============================================================================
 

@@ -261,15 +261,15 @@ LINPHONE_END_NAMESPACE
 
 #define L_INTERNAL_C_STRUCT_NO_XTOR(OBJECT)
 
-#define L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR) \
+#define L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, CONSTRUCTOR, DESTRUCTOR) \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
-	Linphone ## C_TYPE *_linphone_ ## C_NAME ## _init() { \
+	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init() { \
 		Linphone ## C_TYPE * object = belle_sip_object_new(Linphone ## C_TYPE); \
 		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS>(); \
 		CONSTRUCTOR(object); \
 		return object; \
 	} \
-	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_TYPE * object) { \
+	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
 		DESTRUCTOR(object); \
 		object->cppPtr.~shared_ptr (); \
 	} \
@@ -277,7 +277,7 @@ LINPHONE_END_NAMESPACE
 	BELLE_SIP_INSTANCIATE_VPTR( \
 		Linphone ## C_TYPE, \
 		belle_sip_object_t, \
-		_linphone_ ## C_NAME ## _uninit, \
+		_linphone_ ## C_TYPE ## _uninit, \
 		NULL, \
 		NULL, \
 		FALSE \
@@ -292,52 +292,52 @@ LINPHONE_END_NAMESPACE
 // -----------------------------------------------------------------------------
 
 // Declare wrapped C object with constructor/destructor.
-#define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR, ...) \
+#define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(CPP_CLASS, C_TYPE, CONSTRUCTOR, DESTRUCTOR, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR)
+	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, CONSTRUCTOR, DESTRUCTOR)
 
 // Declare wrapped C object.
-#define L_DECLARE_C_STRUCT_IMPL(CPP_CLASS, C_TYPE, C_NAME, ...) \
+#define L_DECLARE_C_STRUCT_IMPL(CPP_CLASS, C_TYPE, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, L_INTERNAL_C_STRUCT_NO_XTOR, L_INTERNAL_C_STRUCT_NO_XTOR)
+	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, L_INTERNAL_C_STRUCT_NO_XTOR, L_INTERNAL_C_STRUCT_NO_XTOR)
 
 // Declare clonable wrapped C object.
-#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_TYPE, C_NAME, ...) \
+#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_TYPE, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		LINPHONE_NAMESPACE::CPP_CLASS *cppPtr; \
 		__VA_ARGS__ \
 	}; \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
-	Linphone ## C_TYPE *_linphone_ ## C_NAME ## _init() { \
+	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init() { \
 		return belle_sip_object_new(Linphone ## C_TYPE); \
 	} \
-	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_TYPE * object) { \
+	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
 		delete object->cppPtr; \
 	} \
-	void _linphone_ ## C_NAME ## _clone(Linphone ## C_TYPE * dest, const Linphone ## C_TYPE * src) { \
+	static void _linphone_ ## C_TYPE ## _clone(Linphone ## C_TYPE * dest, const Linphone ## C_TYPE * src) { \
 		L_ASSERT(src->cppPtr); \
 		dest->cppPtr = new LINPHONE_NAMESPACE::CPP_CLASS(*src->cppPtr); \
 	} \
 	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_TYPE); \
 	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_TYPE, belle_sip_object_t, \
-	_linphone_ ## C_NAME ## _uninit, \
-	_linphone_ ## C_NAME ## _clone, \
+	_linphone_ ## C_TYPE ## _uninit, \
+	_linphone_ ## C_TYPE ## _clone, \
 	NULL, \
 	FALSE \
 	);
 
 #define L_DECLARE_C_STRUCT_NEW_DEFAULT(C_TYPE, C_NAME) \
 	Linphone ## C_TYPE * linphone_ ## C_NAME ## _new() { \
-		Linphone ## C_TYPE * object = _linphone_ ## C_NAME ## _init(); \
+		Linphone ## C_TYPE * object = _linphone_ ## C_TYPE ## _init(); \
 		object->cppPtr = std::make_shared<LINPHONE_NAMESPACE::C_TYPE>(); \
 		return object; \
 	}
@@ -372,9 +372,9 @@ LINPHONE_END_NAMESPACE
 	))
 
 // Get the wrapped C object of a C++ object.
-#define L_GET_C_BACK_PTR(OBJECT, C_TYPE, C_NAME) \
+#define L_GET_C_BACK_PTR(OBJECT, C_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCBackPtr<Linphone ## C_TYPE>( \
-		OBJECT, _linphone_ ## C_NAME ## _init \
+		OBJECT, _linphone_ ## C_TYPE ## _init \
 	)
 
 // Get/set user data on a wrapped C object.
@@ -392,8 +392,8 @@ LINPHONE_END_NAMESPACE
 	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList<TYPE *>(LIST)
 #define L_GET_CPP_LIST_FROM_C_LIST(LIST, TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE *>(LIST)
-#define L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(LIST, CPP_TYPE, C_TYPE, C_NAME) \
-	LINPHONE_NAMESPACE::Wrapper::getCListOfStructPtrFromCppListOfCppObj<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE>(LIST, _linphone_ ## C_NAME ## _init)
+#define L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(LIST, CPP_TYPE, C_TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getCListOfStructPtrFromCppListOfCppObj<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE>(LIST, _linphone_ ## C_TYPE ## _init)
 #define L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(LIST, CPP_TYPE, C_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCppListOfCppObjFromCListOfStructPtr<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE>(LIST)
 
