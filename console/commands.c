@@ -456,14 +456,15 @@ linphonec_parse_command_line(LinphoneCore *lc, char *cl)
 char *
 linphonec_command_generator(const char *text, int state)
 {
-	static int index, len, adv;
+	static size_t len;
+	static int index, adv;
 	char *name;
 
 	if ( ! state )
 	{
 		index=0;
 		adv=0;
-		len=(int)strlen(text);
+		len=strlen(text);
 	}
 	/*
  	 * Return the next name which partially matches
@@ -665,8 +666,8 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 		const char *refer_to=NULL;
 		char arg1[256]={0};
 		char arg2[266]={0};
-		long id2=0;
-		int n=sscanf(args,"%255s %265s %li",arg1,arg2,&id2);
+		int id2=0;
+		int n=sscanf(args,"%255s %265s %d",arg1,arg2,&id2);
 		if (n==1 || isalpha(*arg1)){
 			call=linphone_core_get_current_call(lc);
 			if (call==NULL && bctbx_list_size(linphone_core_get_calls(lc))==1){
@@ -679,13 +680,13 @@ lpc_cmd_transfer(LinphoneCore *lc, char *args)
 			}
 			linphone_call_transfer(call, refer_to);
 		}else if (n==2){
-			long id=atoi(arg1);
+			int id=atoi(arg1);
 			refer_to=args+strlen(arg1)+1;
 			call=linphonec_get_call(id);
 			if (call==NULL) return 0;
 			linphone_call_transfer(call, refer_to);
 		}else if (n==3){
-			long id=atoi(arg1);
+			int id=atoi(arg1);
 			call=linphonec_get_call(id);
 			call2=linphonec_get_call(id2);
 			if (call==NULL || call2==NULL) return 0;
@@ -723,7 +724,7 @@ lpc_cmd_terminate(LinphoneCore *lc, char *args)
 		return 1;
 	}else{
 		/*the argument is a linphonec call id */
-		long id=atoi(args);
+		int id=atoi(args);
 		LinphoneCall *call=linphonec_get_call(id);
 		if (call){
 			if (linphone_call_terminate(call)==-1){
@@ -764,9 +765,9 @@ lpc_cmd_redirect(LinphoneCore *lc, char *args){
 		}
 	} else {
 		char space;
-		long id;
+		int id;
 		int charRead;
-		if ( sscanf(args, "%li%c%n", &id, &space, &charRead) == 2 && space == ' ') {
+		if ( sscanf(args, "%d%c%n", &id, &space, &charRead) == 2 && space == ' ') {
 			LinphoneCall * call = linphonec_get_call(id);
 			if ( call != NULL ) {
 				if (linphone_call_get_state(call)!=LinphoneCallIncomingReceived) {
@@ -799,8 +800,8 @@ lpc_cmd_answer(LinphoneCore *lc, char *args){
 		}
 		return 1;
 	}else{
-		long id;
-		if (sscanf(args,"%li",&id)==1){
+		int id;
+		if (sscanf(args,"%d",&id)==1){
 			LinphoneCall *call=linphonec_get_call (id);
 			if (linphone_call_accept(call)==-1){
 				linphonec_out("Fail to accept call %i\n",id);
@@ -1003,14 +1004,14 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 	{
 		args+=4;
 		if ( ! *args ) return 0;
-		friend_num = strtol(args, NULL, 10);
+		friend_num = (int)strtol(args, NULL, 10);
 #ifndef _WIN32_WCE
 		if ( errno == ERANGE ) {
 			linphonec_out("Invalid friend number\n");
 			return 0;
 		}
 #endif /*_WIN32_WCE*/
-		linphonec_friend_call(lc, friend_num);
+		linphonec_friend_call(lc, (unsigned int)friend_num);
 		return 1;
 	}
 	else if ( !strncmp(args, "delete", 6) )
@@ -1025,7 +1026,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		}
 		else
 		{
-			friend_num = strtol(args, NULL, 10);
+			friend_num = (int)strtol(args, NULL, 10);
 #ifndef _WIN32_WCE
 			if ( errno == ERANGE ) {
 				linphonec_out("Invalid friend number\n");
@@ -1470,10 +1471,10 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 	}
 	if (args)
 	{
-		long id;
-		int n = sscanf(args, "%li", &id);
+		int id;
+		int n = sscanf(args, "%d", &id);
 		if (n == 1){
-			LinphoneCall *call=linphonec_get_call (id);
+			LinphoneCall *call=linphonec_get_call(id);
 			if (call){
 				if(linphone_call_resume(call)==-1){
 					linphonec_out("There was a problem to resume the call check the remote address you gave %s\n",args);
@@ -1505,11 +1506,11 @@ static int lpc_cmd_resume(LinphoneCore *lc, char *args){
 }
 
 static int lpc_cmd_conference(LinphoneCore *lc, char *args){
-	long id;
+	int id;
 	char subcommand[32]={0};
 	int n;
 	if (args==NULL) return 0;
-	n=sscanf(args, "%31s %li", subcommand,&id);
+	n=sscanf(args, "%31s %d", subcommand,&id);
 	if (n == 2){
 		LinphoneCall *call=linphonec_get_call(id);
 		if (call==NULL) return 1;
@@ -2411,12 +2412,12 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 #ifdef VIDEO_ENABLED
 static int _lpc_cmd_video_window(LinphoneCore *lc, char *args, bool_t is_preview){
 	char subcommand[64];
-	long a,b;
+	int a,b;
 	int err;
 	VideoParams *params=is_preview ? &lpc_preview_params : &lpc_video_params;
 
 	if (!args) return 0;
-	err=sscanf(args,"%63s %ld %ld",subcommand,&a,&b);
+	err=sscanf(args,"%63s %d %d",subcommand,&a,&b);
 	if (err>=1){
 		if (strcmp(subcommand,"pos")==0){
 			if (err<3) return 0;
@@ -2442,11 +2443,11 @@ static int _lpc_cmd_video_window(LinphoneCore *lc, char *args, bool_t is_preview
 				              linphone_core_get_native_video_window_id (lc));
 				return 1;
 			} else if (err != 2) return 0;
-			params->wid=(void *)a;
+			params->wid=(void *)(long)a;
 			if (is_preview)
-				linphone_core_set_native_preview_window_id(lc, (void *)a);
+				linphone_core_set_native_preview_window_id(lc, (void *)(long)a);
 			else
-				linphone_core_set_native_video_window_id(lc, (void *)a);
+				linphone_core_set_native_video_window_id(lc, (void *)(long)a);
 		}else if (is_preview==TRUE){
 			if (strcmp(subcommand,"integrated")==0){
 				linphone_core_use_preview_window (lc,FALSE);
