@@ -259,6 +259,8 @@ private:
 
 LINPHONE_END_NAMESPACE
 
+#define L_INTERNAL_C_STRUCT_NO_XTOR(OBJECT)
+
 #define L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR) \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
 	Linphone ## C_TYPE *_linphone_ ## C_NAME ## _init() { \
@@ -289,8 +291,7 @@ LINPHONE_END_NAMESPACE
 // C object declaration.
 // -----------------------------------------------------------------------------
 
-#define L_C_STRUCT_NO_XTOR(OBJECT)
-
+// Declare wrapped C object with constructor/destructor.
 #define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
@@ -299,14 +300,16 @@ LINPHONE_END_NAMESPACE
 	}; \
 	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR)
 
+// Declare wrapped C object.
 #define L_DECLARE_C_STRUCT_IMPL(CPP_CLASS, C_TYPE, C_NAME, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, L_C_STRUCT_NO_XTOR, L_C_STRUCT_NO_XTOR)
+	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, L_INTERNAL_C_STRUCT_NO_XTOR, L_INTERNAL_C_STRUCT_NO_XTOR)
 
+// Declare clonable wrapped C object.
 #define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_TYPE, C_NAME, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
