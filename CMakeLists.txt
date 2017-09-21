@@ -282,21 +282,22 @@ if(MSVC)
 		list(APPEND STRICT_OPTIONS_CPP "/WX")
 	endif()
 else()
-	list(APPEND STRICT_OPTIONS_CPP "\
--Wall \
--Wcast-align \
--Wconversion \
--Werror=return-type \
--Wfloat-equal \
--Winit-self \
--Wno-error=deprecated-declarations \
--Woverloaded-virtual \
--Wpointer-arith \
--Wuninitialized \
--Wunused")
+	list(APPEND STRICT_OPTIONS_CPP
+		"-Wall"
+		"-Wcast-align"
+		"-Wconversion"
+		"-Werror=return-type"
+		"-Wfloat-equal"
+		"-Winit-self"
+		"-Wno-error=deprecated-declarations"
+		"-Woverloaded-virtual"
+		"-Wpointer-arith"
+		"-Wuninitialized"
+		"-Wunused"
+	)
 	CHECK_CXX_COMPILER_FLAG("-Wsuggest-override" SUGGEST_OVERRIDE)
 	if (SUGGEST_OVERRIDE)
-		list(APPEND STRICT_OPTIONS_CPP "-Wsuggest-override -Werror=suggest-override")
+		list(APPEND STRICT_OPTIONS_CPP "-Wsuggest-override" "-Werror=suggest-override")
 	endif ()
 	list(APPEND STRICT_OPTIONS_C "-Wstrict-prototypes" "-Werror=strict-prototypes")
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")

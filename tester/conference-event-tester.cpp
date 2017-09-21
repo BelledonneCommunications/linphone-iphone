@@ -425,11 +425,11 @@ public:
 	~ConferenceEventTester ();
 
 private:
-	void onConferenceCreated (const Address &addr);
-	void onConferenceTerminated (const Address &addr);
-	void onParticipantAdded (const Address &addr);
-	void onParticipantRemoved (const Address &addr);
-	void onParticipantSetAdmin (const Address &addr, bool isAdmin);
+	void onConferenceCreated (const Address &addr) override;
+	void onConferenceTerminated (const Address &addr) override;
+	void onParticipantAdded (const Address &addr) override;
+	void onParticipantRemoved (const Address &addr) override;
+	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
 
 public:
 	RemoteConferenceEventHandler *handler;
