@@ -1,4 +1,0 @@
-#include "share/themes/XLiquid_GTK-1.0.3/gtk-2.0/gtkrc"
-#include "share/themes/Aero-ion3.1/gtk-2.0/gtkrc"
-include "share/themes/Outcrop/gtk-2.0/gtkrc"
-
