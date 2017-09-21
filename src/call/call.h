@@ -76,8 +76,8 @@ public:
 	int getDuration () const;
 	const LinphoneErrorInfo * getErrorInfo () const;
 	LinphoneCallLog * getLog () const;
-	RtpTransport * getMetaRtcpTransport (int streamIndex);
-	RtpTransport * getMetaRtpTransport (int streamIndex);
+	RtpTransport * getMetaRtcpTransport (int streamIndex) const;
+	RtpTransport * getMetaRtpTransport (int streamIndex) const;
 	float getMicrophoneVolumeGain () const;
 	void * getNativeVideoWindowId () const;
 	const MediaSessionParams * getParams () const;
@@ -91,7 +91,7 @@ public:
 	float getSpeakerVolumeGain () const;
 	LinphoneCallState getState () const;
 	LinphoneCallStats * getStats (LinphoneStreamType type) const;
-	int getStreamCount ();
+	int getStreamCount () const;
 	MSFormatType getStreamType (int streamIndex) const;
 	LinphoneCallStats * getTextStats () const;
 	LinphoneCallStats * getVideoStats () const;

@@ -72,11 +72,11 @@ MediaSessionPrivate::MediaSessionPrivate (const Conference &conference, const Ca
 		params = new MediaSessionParams(*(reinterpret_cast<const MediaSessionParams *>(csp)));
 	currentParams = new MediaSessionParams();
 
-	audioStats = linphone_call_stats_ref(linphone_call_stats_new());
+	audioStats = linphone_call_stats_ref(_linphone_call_stats_new());
 	initStats(audioStats, LinphoneStreamTypeAudio);
-	videoStats = linphone_call_stats_ref(linphone_call_stats_new());
+	videoStats = linphone_call_stats_ref(_linphone_call_stats_new());
 	initStats(videoStats, LinphoneStreamTypeVideo);
-	textStats = linphone_call_stats_ref(linphone_call_stats_new());
+	textStats = linphone_call_stats_ref(_linphone_call_stats_new());
 	initStats(textStats, LinphoneStreamTypeText);
 
 	int minPort, maxPort;
@@ -498,9 +498,9 @@ void MediaSessionPrivate::deactivateIce () {
 		videoStream->ms.ice_check_list = nullptr;
 	if (textStream)
 		textStream->ms.ice_check_list = nullptr;
-	audioStats->ice_state = LinphoneIceStateNotActivated;
-	videoStats->ice_state = LinphoneIceStateNotActivated;
-	textStats->ice_state = LinphoneIceStateNotActivated;
+	_linphone_call_stats_set_ice_state(audioStats, LinphoneIceStateNotActivated);
+	_linphone_call_stats_set_ice_state(videoStats, LinphoneIceStateNotActivated);
+	_linphone_call_stats_set_ice_state(textStats, LinphoneIceStateNotActivated);
 	stopStreamsForIceGathering();
 }
 
@@ -845,10 +845,10 @@ void MediaSessionPrivate::updateRemoteSessionIdAndVer () {
 // -----------------------------------------------------------------------------
 
 void MediaSessionPrivate::initStats (LinphoneCallStats *stats, LinphoneStreamType type) {
-	stats->type = type;
-	stats->received_rtcp = nullptr;
-	stats->sent_rtcp = nullptr;
-	stats->ice_state = LinphoneIceStateNotActivated;
+	_linphone_call_stats_set_type(stats, type);
+	_linphone_call_stats_set_received_rtcp(stats, nullptr);
+	_linphone_call_stats_set_sent_rtcp(stats, nullptr);
+	_linphone_call_stats_set_ice_state(stats, LinphoneIceStateNotActivated);
 }
 
 void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
@@ -861,8 +861,8 @@ void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
 		stats = textStats;
 	else
 		return;
-	if (stats->updated) {
-		switch (stats->updated) {
+	if (_linphone_call_stats_get_updated(stats)) {
+		switch (_linphone_call_stats_get_updated(stats)) {
 			case LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE:
 			case LINPHONE_CALL_STATS_SENT_RTCP_UPDATE:
 #if 0
@@ -874,7 +874,7 @@ void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
 		}
 		if (listener)
 			listener->onStatsUpdated(stats);
-		stats->updated = 0;
+		_linphone_call_stats_set_updated(stats, 0);
 	}
 }
 
@@ -924,8 +924,7 @@ int MediaSessionPrivate::selectFixedPort (int streamIndex, pair<int, int> portRa
 		bool alreadyUsed = false;
 		for (const bctbx_list_t *elem = linphone_core_get_calls(core); elem != nullptr; elem = bctbx_list_next(elem)) {
 			LinphoneCall *lcall = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(elem));
-			CallPrivate *callp = linphone_call_get_cpp_obj(lcall)->getPrivate();
-			MediaSession *session = dynamic_cast<MediaSession *>(callp->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
+			MediaSession *session = dynamic_cast<MediaSession *>(L_GET_PRIVATE_FROM_C_STRUCT(lcall, Call)->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
 			int existingPort = session->getPrivate()->mediaPorts[streamIndex].rtpPort;
 			if (existingPort == triedPort) {
 				alreadyUsed = true;
@@ -947,8 +946,7 @@ int MediaSessionPrivate::selectRandomPort (int streamIndex, pair<int, int> portR
 		if (triedPort < portRange.first) triedPort = portRange.first + 2;
 		for (const bctbx_list_t *elem = linphone_core_get_calls(core); elem != nullptr; elem = bctbx_list_next(elem)) {
 			LinphoneCall *lcall = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(elem));
-			CallPrivate *callp = linphone_call_get_cpp_obj(lcall)->getPrivate();
-			MediaSession *session = dynamic_cast<MediaSession *>(callp->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
+			MediaSession *session = dynamic_cast<MediaSession *>(L_GET_PRIVATE_FROM_C_STRUCT(lcall, Call)->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
 			int existingPort = session->getPrivate()->mediaPorts[streamIndex].rtpPort;
 			if (existingPort == triedPort) {
 				alreadyUsed = true;
@@ -2069,9 +2067,9 @@ void MediaSessionPrivate::freeResources () {
 	iceAgent->deleteSession();
 	for (int i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
 		ms_media_stream_sessions_uninit(&sessions[i]);
-	linphone_call_stats_uninit(audioStats);
-	linphone_call_stats_uninit(videoStats);
-	linphone_call_stats_uninit(textStats);
+	_linphone_call_stats_uninit(audioStats);
+	_linphone_call_stats_uninit(videoStats);
+	_linphone_call_stats_uninit(textStats);
 }
 
 void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
@@ -3409,8 +3407,8 @@ void MediaSessionPrivate::fillLogStats (MediaStream *st) {
 void MediaSessionPrivate::updateRtpStats (LinphoneCallStats *stats, int streamIndex) {
 	if (sessions[streamIndex].rtp_session) {
 		const rtp_stats_t *rtpStats = rtp_session_get_stats(sessions[streamIndex].rtp_session);
-		if (stats)
-			memcpy(&(stats->rtp_stats), rtpStats, sizeof(*rtpStats));
+		if (rtpStats)
+			_linphone_call_stats_set_rtp_stats(stats, rtpStats);
 	}
 }
 
@@ -3604,12 +3602,12 @@ void MediaSessionPrivate::reportBandwidth () {
 	reportBandwidthForStream(&textStream->ms, LinphoneStreamTypeText);
 
 	lInfo() << "Bandwidth usage for CallSession [" << q << "]:\n" << fixed << setprecision(2) <<
-		"\tRTP  audio=[d=" << audioStats->download_bandwidth << ",u=" << audioStats->upload_bandwidth <<
-		"], video=[d=" << videoStats->download_bandwidth << ",u=" << videoStats->upload_bandwidth <<
-		"], text=[d=" << textStats->download_bandwidth << ",u=" << textStats->upload_bandwidth << "] kbits/sec\n" <<
-		"\tRTCP audio=[d=" << audioStats->rtcp_download_bandwidth << ",u=" << audioStats->rtcp_upload_bandwidth <<
-		"], video=[d=" << videoStats->rtcp_download_bandwidth << ",u=" << videoStats->rtcp_upload_bandwidth <<
-		"], text=[d=" << textStats->rtcp_download_bandwidth << ",u=" << textStats->rtcp_upload_bandwidth << "] kbits/sec";
+		"\tRTP  audio=[d=" << linphone_call_stats_get_download_bandwidth(audioStats) << ",u=" << linphone_call_stats_get_upload_bandwidth(audioStats) <<
+		"], video=[d=" << linphone_call_stats_get_download_bandwidth(videoStats) << ",u=" << linphone_call_stats_get_upload_bandwidth(videoStats) <<
+		"], text=[d=" << linphone_call_stats_get_download_bandwidth(textStats) << ",u=" << linphone_call_stats_get_upload_bandwidth(textStats) << "] kbits/sec\n" <<
+		"\tRTCP audio=[d=" << linphone_call_stats_get_rtcp_download_bandwidth(audioStats) << ",u=" << linphone_call_stats_get_rtcp_upload_bandwidth(audioStats) <<
+		"], video=[d=" << linphone_call_stats_get_rtcp_download_bandwidth(videoStats) << ",u=" << linphone_call_stats_get_rtcp_upload_bandwidth(videoStats) <<
+		"], text=[d=" << linphone_call_stats_get_rtcp_download_bandwidth(textStats) << ",u=" << linphone_call_stats_get_rtcp_upload_bandwidth(textStats) << "] kbits/sec";
 }
 
 void MediaSessionPrivate::reportBandwidthForStream (MediaStream *ms, LinphoneStreamType type) {
@@ -3624,19 +3622,20 @@ void MediaSessionPrivate::reportBandwidthForStream (MediaStream *ms, LinphoneStr
 		return;
 
 	bool active = ms ? (media_stream_get_state(ms) == MSStreamStarted) : false;
-	stats->download_bandwidth = active ? (float)(media_stream_get_down_bw(ms) * 1e-3) : 0.f;
-	stats->upload_bandwidth = active ? (float)(media_stream_get_up_bw(ms) * 1e-3) : 0.f;
-	stats->rtcp_download_bandwidth = active ? (float)(media_stream_get_rtcp_down_bw(ms) * 1e-3) : 0.f;
-	stats->rtcp_upload_bandwidth = active ? (float)(media_stream_get_rtcp_up_bw(ms) * 1e-3) : 0.f;
-	stats->rtp_remote_family = active ? (ortp_stream_is_ipv6(&ms->sessions.rtp_session->rtp.gs) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec;
+	_linphone_call_stats_set_download_bandwidth(stats, active ? (float)(media_stream_get_down_bw(ms) * 1e-3) : 0.f);
+	_linphone_call_stats_set_upload_bandwidth(stats, active ? (float)(media_stream_get_up_bw(ms) * 1e-3) : 0.f);
+	_linphone_call_stats_set_rtcp_download_bandwidth(stats, active ? (float)(media_stream_get_rtcp_down_bw(ms) * 1e-3) : 0.f);
+	_linphone_call_stats_set_rtcp_upload_bandwidth(stats, active ? (float)(media_stream_get_rtcp_up_bw(ms) * 1e-3) : 0.f);
+	_linphone_call_stats_set_ip_family_of_remote(stats,
+		active ? (ortp_stream_is_ipv6(&ms->sessions.rtp_session->rtp.gs) ? LinphoneAddressFamilyInet6 : LinphoneAddressFamilyInet) : LinphoneAddressFamilyUnspec);
 
 	if (core->send_call_stats_periodical_updates) {
 		if (active)
 			linphone_call_stats_update(stats, ms);
-		stats->updated |= LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
+		_linphone_call_stats_set_updated(stats, _linphone_call_stats_get_updated(stats) | LINPHONE_CALL_STATS_PERIODICAL_UPDATE);
 		if (listener)
 			listener->onStatsUpdated(stats);
-		stats->updated = 0;
+		_linphone_call_stats_set_updated(stats, 0);
 	}
 }
 
@@ -3767,7 +3766,7 @@ void MediaSessionPrivate::terminate () {
 	CallSessionPrivate::terminate();
 }
 
-void MediaSessionPrivate::updateCurrentParams () {
+void MediaSessionPrivate::updateCurrentParams () const {
 	CallSessionPrivate::updateCurrentParams();
 
 	LinphoneVideoDefinition *vdef = linphone_video_definition_new(MS_VIDEO_SIZE_UNKNOWN_W, MS_VIDEO_SIZE_UNKNOWN_H, nullptr);
@@ -4516,8 +4515,8 @@ float MediaSession::getAverageQuality () const {
 	return MediaSessionPrivate::aggregateQualityRatings(audioRating, videoRating);
 }
 
-MediaSessionParams * MediaSession::getCurrentParams () {
-	L_D(MediaSession);
+MediaSessionParams * MediaSession::getCurrentParams () const {
+	L_D(const MediaSession);
 	d->updateCurrentParams();
 	return d->currentParams;
 }
@@ -4538,8 +4537,8 @@ const MediaSessionParams * MediaSession::getMediaParams () const {
 	return d->params;
 }
 
-RtpTransport * MediaSession::getMetaRtcpTransport (int streamIndex) {
-	L_D(MediaSession);
+RtpTransport * MediaSession::getMetaRtcpTransport (int streamIndex) const {
+	L_D(const MediaSession);
 	if ((streamIndex < 0) || (streamIndex >= getStreamCount()))
 		return nullptr;
 	RtpTransport *metaRtp;
@@ -4548,8 +4547,8 @@ RtpTransport * MediaSession::getMetaRtcpTransport (int streamIndex) {
 	return metaRtcp;
 }
 
-RtpTransport * MediaSession::getMetaRtpTransport (int streamIndex) {
-	L_D(MediaSession);
+RtpTransport * MediaSession::getMetaRtpTransport (int streamIndex) const {
+	L_D(const MediaSession);
 	if ((streamIndex < 0) || (streamIndex >= getStreamCount()))
 		return nullptr;
 	RtpTransport *metaRtp;
@@ -4676,7 +4675,7 @@ LinphoneCallStats * MediaSession::getStats (LinphoneStreamType type) const {
 	if (type == LinphoneStreamTypeUnknown)
 		return nullptr;
 	LinphoneCallStats *stats = nullptr;
-	LinphoneCallStats *statsCopy = linphone_call_stats_new();
+	LinphoneCallStats *statsCopy = _linphone_call_stats_new();
 	if (type == LinphoneStreamTypeAudio)
 		stats = d->audioStats;
 	else if (type == LinphoneStreamTypeVideo)
@@ -4690,7 +4689,7 @@ LinphoneCallStats * MediaSession::getStats (LinphoneStreamType type) const {
 	return statsCopy;
 }
 
-int MediaSession::getStreamCount () {
+int MediaSession::getStreamCount () const {
 	/* TODO: Revisit when multiple media streams will be implemented */
 #ifdef VIDEO_ENABLED
 	if (getCurrentParams()->realtimeTextEnabled())
@@ -4725,9 +4724,9 @@ LinphoneCallStats * MediaSession::getVideoStats () const {
 
 bool MediaSession::mediaInProgress () const {
 	L_D(const MediaSession);
-	if ((d->audioStats->ice_state == LinphoneIceStateInProgress)
-		|| (d->videoStats->ice_state == LinphoneIceStateInProgress)
-		|| (d->textStats->ice_state == LinphoneIceStateInProgress))
+	if ((linphone_call_stats_get_ice_state(d->audioStats) == LinphoneIceStateInProgress)
+		|| (linphone_call_stats_get_ice_state(d->videoStats) == LinphoneIceStateInProgress)
+		|| (linphone_call_stats_get_ice_state(d->textStats) == LinphoneIceStateInProgress))
 		return true;
 	/* TODO: could check zrtp state */
 	return false;

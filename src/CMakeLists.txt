@@ -103,7 +103,10 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	address/address.cpp
 	c-wrapper/api/c-address.cpp
+	c-wrapper/api/c-call.cpp
+	c-wrapper/api/c-call-cbs.cpp
 	c-wrapper/api/c-call-params.cpp
+	c-wrapper/api/c-call-stats.cpp
 	c-wrapper/api/c-chat-message.cpp
 	c-wrapper/api/c-chat-message-cbs.cpp
 	c-wrapper/api/c-chat-room.cpp

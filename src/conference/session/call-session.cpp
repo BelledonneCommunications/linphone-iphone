@@ -512,7 +512,7 @@ LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
 	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(core));
 	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
 		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
-		shared_ptr<CallSession> session = linphone_call_get_cpp_obj(call)->getPrivate()->getActiveSession();
+		shared_ptr<CallSession> session = L_GET_PRIVATE_FROM_C_STRUCT(call, Call)->getActiveSession();
 		if (session.get() == q) continue;
 		switch (session->getState()) {
 			case LinphoneCallOutgoingInit:
@@ -668,7 +668,7 @@ void CallSessionPrivate::terminate () {
 	setState(LinphoneCallEnd, "Call terminated");
 }
 
-void CallSessionPrivate::updateCurrentParams () {}
+void CallSessionPrivate::updateCurrentParams () const {}
 
 // -----------------------------------------------------------------------------
 
@@ -1087,8 +1087,8 @@ string CallSession::getRemoteUserAgent () const {
 	return string();
 }
 
-CallSessionParams * CallSession::getCurrentParams () {
-	L_D(CallSession);
+CallSessionParams * CallSession::getCurrentParams () const {
+	L_D(const CallSession);
 	d->updateCurrentParams();
 	return d->currentParams;
 }

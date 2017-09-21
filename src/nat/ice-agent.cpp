@@ -233,35 +233,35 @@ void IceAgent::updateIceStateInCallStats () {
 	LinphoneCallStats *textStats = mediaSession.getPrivate()->getStats(LinphoneStreamTypeText);
 	IceSessionState sessionState = ice_session_state(iceSession);
 	if ((sessionState == IS_Completed) || ((sessionState == IS_Failed) && ice_session_has_completed_check_list(iceSession))) {
-		audioStats->ice_state = LinphoneIceStateNotActivated;
+		_linphone_call_stats_set_ice_state(audioStats, LinphoneIceStateNotActivated);
 		if (audioCheckList && mediaSession.getMediaParams()->audioEnabled())
 			updateIceStateInCallStatsForStream(audioStats, audioCheckList);
 
-		videoStats->ice_state = LinphoneIceStateNotActivated;
+		_linphone_call_stats_set_ice_state(videoStats, LinphoneIceStateNotActivated);
 		if (videoCheckList && mediaSession.getMediaParams()->videoEnabled())
 			updateIceStateInCallStatsForStream(videoStats, videoCheckList);
 
-		textStats->ice_state = LinphoneIceStateNotActivated;
+		_linphone_call_stats_set_ice_state(textStats, LinphoneIceStateNotActivated);
 		if (textCheckList && mediaSession.getMediaParams()->realtimeTextEnabled())
 			updateIceStateInCallStatsForStream(textStats, textCheckList);
 	} else if (sessionState == IS_Running) {
 		if (audioCheckList && mediaSession.getMediaParams()->audioEnabled())
-			audioStats->ice_state = LinphoneIceStateInProgress;
+			_linphone_call_stats_set_ice_state(audioStats, LinphoneIceStateInProgress);
 		if (videoCheckList && mediaSession.getMediaParams()->videoEnabled())
-			videoStats->ice_state = LinphoneIceStateInProgress;
+			_linphone_call_stats_set_ice_state(videoStats, LinphoneIceStateInProgress);
 		if (textCheckList && mediaSession.getMediaParams()->realtimeTextEnabled())
-			textStats->ice_state = LinphoneIceStateInProgress;
+			_linphone_call_stats_set_ice_state(textStats, LinphoneIceStateInProgress);
 	} else {
 		if (audioCheckList && mediaSession.getMediaParams()->audioEnabled())
-			audioStats->ice_state = LinphoneIceStateFailed;
+			_linphone_call_stats_set_ice_state(audioStats, LinphoneIceStateFailed);
 		if (videoCheckList && mediaSession.getMediaParams()->videoEnabled())
-			videoStats->ice_state = LinphoneIceStateFailed;
+			_linphone_call_stats_set_ice_state(videoStats, LinphoneIceStateFailed);
 		if (textCheckList && mediaSession.getMediaParams()->realtimeTextEnabled())
-			textStats->ice_state = LinphoneIceStateFailed;
+			_linphone_call_stats_set_ice_state(textStats, LinphoneIceStateFailed);
 	}
-	lInfo() << "CallSession [" << &mediaSession << "] New ICE state: audio: [" << linphone_ice_state_to_string(audioStats->ice_state)
-		<< "]    video: [" << linphone_ice_state_to_string(videoStats->ice_state)
-		<< "]    text: [" << linphone_ice_state_to_string(textStats->ice_state) << "]";
+	lInfo() << "CallSession [" << &mediaSession << "] New ICE state: audio: [" << linphone_ice_state_to_string(linphone_call_stats_get_ice_state(audioStats))
+		<< "]    video: [" << linphone_ice_state_to_string(linphone_call_stats_get_ice_state(videoStats))
+		<< "]    text: [" << linphone_ice_state_to_string(linphone_call_stats_get_ice_state(textStats)) << "]";
 }
 
 void IceAgent::updateLocalMediaDescriptionFromIce (SalMediaDescription *desc) {
@@ -387,7 +387,7 @@ void IceAgent::addLocalIceCandidates (int family, const char *addr, IceCheckList
 		ice_add_local_candidate(audioCl, "host", family, addr, rtpPort, 1, nullptr);
 		ice_add_local_candidate(audioCl, "host", family, addr, rtcpPort, 2, nullptr);
 		LinphoneCallStats *audioStats = mediaSession.getPrivate()->getStats(LinphoneStreamTypeAudio);
-		audioStats->ice_state = LinphoneIceStateInProgress;
+		_linphone_call_stats_set_ice_state(audioStats, LinphoneIceStateInProgress);
 	}
 	LinphoneCore *core = mediaSession.getPrivate()->getCore();
 	if (linphone_core_video_enabled(core) && videoCl && (ice_check_list_state(videoCl) != ICL_Completed) && !ice_check_list_candidates_gathered(videoCl)) {
@@ -396,7 +396,7 @@ void IceAgent::addLocalIceCandidates (int family, const char *addr, IceCheckList
 		ice_add_local_candidate(videoCl, "host", family, addr, rtpPort, 1, nullptr);
 		ice_add_local_candidate(videoCl, "host", family, addr, rtcpPort, 2, nullptr);
 		LinphoneCallStats *videoStats = mediaSession.getPrivate()->getStats(LinphoneStreamTypeVideo);
-		videoStats->ice_state = LinphoneIceStateInProgress;
+		_linphone_call_stats_set_ice_state(videoStats, LinphoneIceStateInProgress);
 	}
 	if (mediaSession.getMediaParams()->realtimeTextEnabled() && textCl && (ice_check_list_state(textCl) != ICL_Completed) && !ice_check_list_candidates_gathered(textCl)) {
 		int rtpPort = mediaSession.getPrivate()->getRtpPort(LinphoneStreamTypeText);
@@ -404,7 +404,7 @@ void IceAgent::addLocalIceCandidates (int family, const char *addr, IceCheckList
 		ice_add_local_candidate(textCl, "host", family, addr, rtpPort, 1, nullptr);
 		ice_add_local_candidate(textCl, "host", family, addr, rtcpPort, 2, nullptr);
 		LinphoneCallStats *textStats = mediaSession.getPrivate()->getStats(LinphoneStreamTypeText);
-		textStats->ice_state = LinphoneIceStateInProgress;
+		_linphone_call_stats_set_ice_state(textStats, LinphoneIceStateInProgress);
 	}
 }
 
@@ -671,14 +671,14 @@ void IceAgent::updateIceStateInCallStatsForStream (LinphoneCallStats *stats, Ice
 	if (ice_check_list_state(cl) == ICL_Completed) {
 		switch (ice_check_list_selected_valid_candidate_type(cl)) {
 			case ICT_HostCandidate:
-				stats->ice_state = LinphoneIceStateHostConnection;
+				_linphone_call_stats_set_ice_state(stats, LinphoneIceStateHostConnection);
 				break;
 			case ICT_ServerReflexiveCandidate:
 			case ICT_PeerReflexiveCandidate:
-				stats->ice_state = LinphoneIceStateReflexiveConnection;
+				_linphone_call_stats_set_ice_state(stats, LinphoneIceStateReflexiveConnection);
 				break;
 			case ICT_RelayedCandidate:
-				stats->ice_state = LinphoneIceStateRelayConnection;
+				_linphone_call_stats_set_ice_state(stats, LinphoneIceStateRelayConnection);
 				break;
 			case ICT_CandidateInvalid:
 			case ICT_CandidateTypeMax:
@@ -686,7 +686,7 @@ void IceAgent::updateIceStateInCallStatsForStream (LinphoneCallStats *stats, Ice
 				break;
 		}
 	} else
-		stats->ice_state = LinphoneIceStateFailed;
+		_linphone_call_stats_set_ice_state(stats, LinphoneIceStateFailed);
 }
 
 LINPHONE_END_NAMESPACE

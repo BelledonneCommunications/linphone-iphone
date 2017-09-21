@@ -228,19 +228,7 @@ typedef struct _PortConfig{
 	int rtcp_port;
 }PortConfig;
 
-struct _LinphoneCallCbs {
-	belle_sip_object_t base;
-	void *user_data;
-	LinphoneCallCbsDtmfReceivedCb dtmf_received_cb;
-	LinphoneCallCbsEncryptionChangedCb encryption_changed_cb;
-	LinphoneCallCbsInfoMessageReceivedCb info_message_received_cb;
-	LinphoneCallCbsStateChangedCb state_changed_cb;
-	LinphoneCallCbsStatsUpdatedCb stats_updated_cb;
-	LinphoneCallCbsTransferStateChangedCb transfer_state_changed_cb;
-	LinphoneCallCbsAckProcessingCb ack_processing;
-};
-
-LinphoneCallCbs * _linphone_call_cbs_new(void);
+LinphoneCallCbs *_linphone_call_cbs_new(void);
 
 
 void linphone_call_notify_state_changed(LinphoneCall *call, LinphoneCallState cstate, const char *message);
@@ -416,8 +404,21 @@ LINPHONE_PUBLIC void linphone_core_enable_short_turn_refresh(LinphoneCore *lc, b
 void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev);
 void linphone_call_stats_update(LinphoneCallStats *stats, MediaStream *stream);
-void linphone_call_stats_uninit(LinphoneCallStats *stats);
+LinphoneCallStats *_linphone_call_stats_new(void);
+void _linphone_call_stats_uninit(LinphoneCallStats *stats);
 void _linphone_call_stats_clone(LinphoneCallStats *dst, const LinphoneCallStats *src);
+void _linphone_call_stats_set_ice_state (LinphoneCallStats *stats, LinphoneIceState state);
+void _linphone_call_stats_set_type (LinphoneCallStats *stats, LinphoneStreamType type);
+void _linphone_call_stats_set_received_rtcp (LinphoneCallStats *stats, mblk_t *m);
+void _linphone_call_stats_set_sent_rtcp (LinphoneCallStats *stats, mblk_t *m);
+int _linphone_call_stats_get_updated (const LinphoneCallStats *stats);
+void _linphone_call_stats_set_updated (LinphoneCallStats *stats, int updated);
+void _linphone_call_stats_set_rtp_stats (LinphoneCallStats *stats, const rtp_stats_t *rtpStats);
+void _linphone_call_stats_set_download_bandwidth (LinphoneCallStats *stats, float bandwidth);
+void _linphone_call_stats_set_upload_bandwidth (LinphoneCallStats *stats, float bandwidth);
+void _linphone_call_stats_set_rtcp_download_bandwidth (LinphoneCallStats *stats, float bandwidth);
+void _linphone_call_stats_set_rtcp_upload_bandwidth (LinphoneCallStats *stats, float bandwidth);
+void _linphone_call_stats_set_ip_family_of_remote (LinphoneCallStats *stats, LinphoneAddressFamily family);
 void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call);
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer);
 void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md);
@@ -1520,7 +1521,6 @@ void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op);
 void payload_type_set_enable(OrtpPayloadType *pt, bool_t value);
 bool_t payload_type_enabled(const OrtpPayloadType *pt);
 
-bool_t is_payload_type_number_available(const MSList *l, int number, const OrtpPayloadType *ignore);
 LinphonePayloadType *linphone_payload_type_new(LinphoneCore *lc, OrtpPayloadType *ortp_pt);
 bool_t _linphone_core_check_payload_type_usability(const LinphoneCore *lc, const OrtpPayloadType *pt);
 OrtpPayloadType *linphone_payload_type_get_ortp_pt(const LinphonePayloadType *pt);
@@ -1592,40 +1592,6 @@ BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneVideoActivationPolicy);
 
 LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_video_activation_policy_new(void);
 
-/**
- * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
- *
- * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
- * it passes for instantiating the LinphoneCore object (see linphone_core_new() ).
- *
- * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
-**/
-struct _LinphoneCallStats {
-	belle_sip_object_t base;
-	void *user_data;
-	LinphoneStreamType type; /**< Type of the stream which the stats refer to */
-	jitter_stats_t jitter_stats; /**<jitter buffer statistics, see oRTP documentation for details */
-	mblk_t *received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
-	mblk_t *sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
-	float round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
-	LinphoneIceState ice_state; /**< State of ICE processing. */
-	LinphoneUpnpState upnp_state; /**< State of uPnP processing. */
-	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	float local_late_rate; /**<percentage of packet received too late over last second*/
-	float local_loss_rate; /**<percentage of lost packet over last second*/
-	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
-	float rtcp_download_bandwidth; /**<RTCP download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
-	rtp_stats_t rtp_stats; /**< RTP stats */
-	int rtp_remote_family; /**< Ip adress family of the remote destination */
-	int clockrate;  /*RTP clockrate of the stream, provided here for easily converting timestamp units expressed in RTCP packets in milliseconds*/
-	bool_t rtcp_received_via_mux; /*private flag, for non-regression test only*/
-};
-
-BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallStats);
-
-LinphoneCallStats *linphone_call_stats_new(void);
 
 /** Belle Sip-based objects need unique ids
   */
@@ -1823,6 +1789,9 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_na
 
 const char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
 LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const LinphoneConfig *config, const char* section);
+
+
+SalCustomHeader *linphone_info_message_get_headers (const LinphoneInfoMessage *im);
 
 
 #ifdef __cplusplus

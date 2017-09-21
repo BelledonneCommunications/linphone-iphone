@@ -242,25 +242,6 @@ typedef enum _LinphoneAVPFMode {
 typedef struct _LinphoneBuffer LinphoneBuffer;
 
 /**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
- * @ingroup call_control
-**/
-typedef struct _LinphoneCall LinphoneCall;
-
-/**
- * That class holds all the callbacks which are called by LinphoneCall objects.
- *
- * Use linphone_factory_create_call_cbs() to create an instance. Then, call the
- * callback setters on the events you need to monitor and pass the object to
- * a LinphoneCall instance through linphone_call_add_callbacks().
- * @ingroup call_control
- */
-typedef struct _LinphoneCallCbs LinphoneCallCbs;
-
-/** Callback prototype */
-typedef void (*LinphoneCallCbFunc)(LinphoneCall *call, void *user_data);
-
-/**
  * Enum representing the direction of a call.
  * @ingroup call_logs
 **/

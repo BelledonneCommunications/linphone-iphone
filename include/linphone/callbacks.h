@@ -35,67 +35,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
 /**
- * @addtogroup call_control
- * @{
-**/
-
-/**
- * Callback for being notified of received DTMFs.
- * @param call LinphoneCall object that received the dtmf
- * @param dtmf The ascii code of the dtmf
- */
-typedef void (*LinphoneCallCbsDtmfReceivedCb)(LinphoneCall *call, int dtmf);
-
-/**
- * Call encryption changed callback.
- * @param call LinphoneCall object whose encryption is changed.
- * @param on Whether encryption is activated.
- * @param authentication_token An authentication_token, currently set for ZRTP kind of encryption only.
- */
-typedef void (*LinphoneCallCbsEncryptionChangedCb)(LinphoneCall *call, bool_t on, const char *authentication_token);
-
-/**
- * Callback for receiving info messages.
- * @param call LinphoneCall whose info message belongs to.
- * @param msg LinphoneInfoMessage object.
- */
-typedef void (*LinphoneCallCbsInfoMessageReceivedCb)(LinphoneCall *call, const LinphoneInfoMessage *msg);
-
-/**
- * Call state notification callback.
- * @param call LinphoneCall whose state is changed.
- * @param cstate The new state of the call
- * @param message An informational message about the state.
- */
-typedef void (*LinphoneCallCbsStateChangedCb)(LinphoneCall *call, LinphoneCallState cstate, const char *message);
-
-/**
- * Callback for receiving quality statistics for calls.
- * @param call LinphoneCall object whose statistics are notified
- * @param stats LinphoneCallStats object
- */
-typedef void (*LinphoneCallCbsStatsUpdatedCb)(LinphoneCall *call, const LinphoneCallStats *stats);
-
-/**
- * Callback for notifying progresses of transfers.
- * @param call LinphoneCall that was transfered
- * @param cstate The state of the call to transfer target at the far end.
- */
-typedef void (*LinphoneCallCbsTransferStateChangedCb)(LinphoneCall *call, LinphoneCallState cstate);
-
-/**
- * Callback for notifying the processing SIP ACK messages.
- * @param call LinphoneCall for which an ACK is being received or sent
- * @param ack the ACK message
- * @param is_received if TRUE this ACK is an incoming one, otherwise it is an ACK about to be sent.
- */
-typedef void (*LinphoneCallCbsAckProcessingCb)(LinphoneCall *call, LinphoneHeaders *ack, bool_t is_received);
-
-/**
- * @}
-**/
-
-/**
  * @addtogroup initializing
  * @{
 **/

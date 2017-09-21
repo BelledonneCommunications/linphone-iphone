@@ -51,7 +51,7 @@ public:
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
 	LinphoneStatus update (const CallSessionParams *csp);
 
-	CallSessionParams *getCurrentParams ();
+	CallSessionParams *getCurrentParams () const;
 	LinphoneCallDir getDirection () const;
 	int getDuration () const;
 	const LinphoneErrorInfo * getErrorInfo () const;

@@ -27,6 +27,8 @@
 
 #define L_REGISTER_TYPE(C_TYPE) \
 	extern Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init ();
+#define L_INIT(C_TYPE) \
+	_linphone_ ## C_TYPE ## _init ()
 
 // =============================================================================
 

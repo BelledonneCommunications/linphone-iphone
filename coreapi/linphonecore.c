@@ -454,14 +454,6 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 	return 0;
 }
 
-bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call){
-	//return TRUE if the unique(for the moment) incoming call asked to be autoanswered
-	if(call)
-		return sal_call_autoanswer_asked(linphone_call_get_op(call));
-	else
-		return FALSE;
-}
-
 int linphone_core_get_current_call_duration(const LinphoneCore *lc){
 	LinphoneCall *call=linphone_core_get_current_call((LinphoneCore *)lc);
 	if (call)  return linphone_call_get_duration(call);
@@ -3232,7 +3224,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		/* Get immediately a reference to next one in case the one we are going to examine is destroyed
 		 * and removed during linphone_call_start_invite() */
 		calls = bctbx_list_next(calls);
-		L_GET_PRIVATE(linphone_call_get_cpp_obj(call).get())->iterate(current_real_time, one_second_elapsed);
+		L_GET_PRIVATE_FROM_C_STRUCT(call, Call)->iterate(current_real_time, one_second_elapsed);
 	}
 
 	if (linphone_core_video_preview_enabled(lc)){
@@ -3558,9 +3550,9 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	if (linphone_call_params_get_local_conference_mode(params) ==  FALSE)
 #endif
 		lc->current_call=call;
-	bool defer = L_GET_PRIVATE(linphone_call_get_cpp_obj(call).get())->initiateOutgoing();
+	bool defer = L_GET_PRIVATE_FROM_C_STRUCT(call, Call)->initiateOutgoing();
 	if (!defer) {
-		if (L_GET_PRIVATE(linphone_call_get_cpp_obj(call).get())->startInvite(nullptr) != 0) {
+		if (L_GET_PRIVATE_FROM_C_STRUCT(call, Call)->startInvite(nullptr) != 0) {
 			/* The call has already gone to error and released state, so do not return it */
 			call = nullptr;
 		}

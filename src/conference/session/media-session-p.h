@@ -219,7 +219,7 @@ private:
 	LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) override;
 	LinphoneStatus startUpdate () override;
 	void terminate () override;
-	void updateCurrentParams () override;
+	void updateCurrentParams () const override;
 
 	void accept (const MediaSessionParams *params);
 	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo) override;
@@ -236,7 +236,7 @@ private:
 	static const int ecStateMaxLen;
 
 	MediaSessionParams *params = nullptr;
-	MediaSessionParams *currentParams = nullptr;
+	mutable MediaSessionParams *currentParams = nullptr;
 	MediaSessionParams *remoteParams = nullptr;
 
 	AudioStream *audioStream = nullptr;

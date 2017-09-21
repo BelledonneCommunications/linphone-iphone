@@ -30,10 +30,6 @@
 
 // =============================================================================
 
-extern std::shared_ptr<LinphonePrivate::Call> linphone_call_get_cpp_obj(const LinphoneCall *call);
-
-// =============================================================================
-
 LINPHONE_BEGIN_NAMESPACE
 
 class CallPrivate : public ObjectPrivate, CallListener {

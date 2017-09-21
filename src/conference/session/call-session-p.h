@@ -67,7 +67,7 @@ protected:
 	virtual LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo);
 	virtual LinphoneStatus startUpdate ();
 	virtual void terminate ();
-	virtual void updateCurrentParams ();
+	virtual void updateCurrentParams () const;
 
 	void setContactOp ();
 
@@ -83,7 +83,7 @@ protected:
 	CallSessionListener *listener = nullptr;
 
 	CallSessionParams *params = nullptr;
-	CallSessionParams *currentParams = nullptr;
+	mutable CallSessionParams *currentParams = nullptr;
 	CallSessionParams *remoteParams = nullptr;
 
 	LinphoneCallDir direction = LinphoneCallOutgoing;

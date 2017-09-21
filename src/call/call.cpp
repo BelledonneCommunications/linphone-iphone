@@ -372,13 +372,13 @@ LinphoneCallLog * Call::getLog () const {
 	return d->getActiveSession()->getLog();
 }
 
-RtpTransport * Call::getMetaRtcpTransport (int streamIndex) {
-	L_D(Call);
+RtpTransport * Call::getMetaRtcpTransport (int streamIndex) const {
+	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getMetaRtcpTransport(streamIndex);
 }
 
-RtpTransport * Call::getMetaRtpTransport (int streamIndex) {
-	L_D(Call);
+RtpTransport * Call::getMetaRtpTransport (int streamIndex) const {
+	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getMetaRtpTransport(streamIndex);
 }
 
@@ -447,8 +447,8 @@ LinphoneCallStats * Call::getStats (LinphoneStreamType type) const {
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getStats(type);
 }
 
-int Call::getStreamCount () {
-	L_D(Call);
+int Call::getStreamCount () const {
+	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getStreamCount();
 }
 

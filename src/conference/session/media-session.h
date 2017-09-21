@@ -69,11 +69,11 @@ public:
 	std::string getAuthenticationToken () const;
 	bool getAuthenticationTokenVerified () const;
 	float getAverageQuality () const;
-	MediaSessionParams *getCurrentParams ();
+	MediaSessionParams *getCurrentParams () const;
 	float getCurrentQuality () const;
 	const MediaSessionParams *getMediaParams () const;
-	RtpTransport * getMetaRtcpTransport (int streamIndex);
-	RtpTransport * getMetaRtpTransport (int streamIndex);
+	RtpTransport * getMetaRtcpTransport (int streamIndex) const;
+	RtpTransport * getMetaRtpTransport (int streamIndex) const;
 	float getMicrophoneVolumeGain () const;
 	void * getNativeVideoWindowId () const;
 	const CallSessionParams *getParams () const override;
@@ -82,7 +82,7 @@ public:
 	const MediaSessionParams *getRemoteParams ();
 	float getSpeakerVolumeGain () const;
 	LinphoneCallStats * getStats (LinphoneStreamType type) const;
-	int getStreamCount ();
+	int getStreamCount () const;
 	MSFormatType getStreamType (int streamIndex) const;
 	LinphoneCallStats * getTextStats () const;
 	LinphoneCallStats * getVideoStats () const;
